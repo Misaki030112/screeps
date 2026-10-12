@@ -2,6 +2,9 @@
 const PLANS = { W46N8: require('../layouts/W46N8') };
 const PRIORITY = ['spawn', 'extension', 'tower', 'container', 'storage', 'link', 'road', 'rampart', 'terminal', 'extractor', 'lab', 'factory', 'powerSpawn', 'nuker', 'observer'];
 const MAX_SITES = 5;  // keep builder throughput focused
+// Layout v2 (docs/LAYOUT_V2.md) awaits Misaki's approval and most v1 RCL3+ extension/road tiles conflict with it.
+// Until decided, hold those types from this RCL up (tower + ramparts still go in). Delete the entry once decided.
+const HOLD = { W46N8: { fromRcl: 3, types: ['extension', 'road'] } };
 module.exports = { run(room) {
   const plan = PLANS[room.name]; if (!plan) return;
   const rcl = room.controller.level;
@@ -16,7 +19,9 @@ module.exports = { run(room) {
     if (type === 'road' && room.find(FIND_MY_CONSTRUCTION_SITES, { filter: s => s.structureType === STRUCTURE_EXTENSION }).length) continue;
     if (type === 'rampart' && !room.find(FIND_MY_STRUCTURES, { filter: { structureType: STRUCTURE_TOWER } }).length) continue;
     if (hostile && type === 'road') continue;
+    const hold = HOLD[room.name];
     for (let r = 1; r <= rcl; r++) {
+      if (hold && r >= hold.fromRcl && hold.types.includes(type)) continue;
       const list = (plan.rcl[r] || {})[type]; if (!list) continue;
       for (const [x, y] of list) {
         if (budget <= 0) return;
