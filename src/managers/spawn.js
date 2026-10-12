@@ -38,7 +38,8 @@ module.exports = { run(spawn) {
   const dropBacklog = _.sum(room.find(FIND_DROPPED_RESOURCES, { filter: r => r.resourceType === RESOURCE_ENERGY }), r => r.amount);
   const backlog = contBacklog + dropBacklog;
   // extra upgraders soak up a source-container backlog (energy sink is the bottleneck once spawn/extensions are full)
-  const T = { hauler: Math.min(6, 2 + Math.floor(backlog / 700)), upgrader: Math.min(6, (sites ? 2 : 4) + Math.floor(backlog / 1500)), builder: sites ? (backlog >= 1500 ? 3 : 2) : 0, harvester: 0 };
+  // Keep 1 builder when sites=0 for container/road upkeep and so RCL-up tower sites start without waiting a full spawn cycle.
+  const T = { hauler: Math.min(6, 2 + Math.floor(backlog / 700)), upgrader: Math.min(6, (sites ? 2 : 4) + Math.floor(backlog / 1500)), builder: sites ? (backlog >= 1500 ? 3 : 2) : 1, harvester: 0 };
   for (const role of ['hauler', 'upgrader', 'builder']) {
     if ((count[role] || 0) < T[role]) {
       const e = role === 'hauler' && !(count.hauler) ? Math.max(200, avail) : cap;
