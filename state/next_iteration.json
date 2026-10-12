@@ -1,6 +1,6 @@
 {
-  "next_at": "2026-10-13T00:57:00+08:00",
-  "reason": "Shipped adcc62f: builders no longer polish containers while urgent sites exist (was stuck repairing 38,32 toward 80% while ctl container 30,30 waited); upgraders park at controller when haulers exist; backlog counts drops, hauler max 6. Verify: ctl container finishes, builders leave 38,32, upgraders stay near ctl, upgrade >=3/tick, drop at 31,12 drains, energy back to 550/550, no errors. Run earlier if alerts.py exits 2.",
-  "written_at": "2026-10-13T00:35:39+08:00",
-  "commit": "adcc62f"
+  "next_at": "2026-10-13T02:05:00+08:00",
+  "reason": "Shipped e4e8fd6: sticky hauler pickup target (scored energy/travel) fixed haulers ping-ponging between miner overflow drops at 38,32 and the big drop at 31,12; upgrade rate now ~17/tick (was ~4.6 avg), near the 18 WORK cap. Listener got a stale-STATS watchdog (it hung silently 00:48-00:57). Stable now; check at 02:05 that backlog (~10k in containers+drops) drains without starving spawn, haulers/upgraders scale down sensibly, no errors. RCL3 ETA ~03:30-04:30 UTC+8 (needs tower + extension sites). Run earlier if alerts.py exits 2.",
+  "written_at": "2026-10-13T01:04:30+08:00",
+  "commit": "e4e8fd6"
 }
