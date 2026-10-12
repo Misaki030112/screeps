@@ -22,6 +22,25 @@ def write_live():
     os.replace(tmp, os.path.join(M, 'live.json'))
 def append(fn, line):
     with open(os.path.join(M, fn), 'a') as f: f.write(line + '\n')
+SEV = {'low': 0, 'medium': 1, 'high': 2}
+def handle_alert(a):
+    """alerts.jsonl: one line per new episode, severity escalation, or end. alerts_state.json: episodes keyed by id."""
+    path = os.path.join(M, 'alerts_state.json')
+    st = json.load(open(path)) if os.path.exists(path) else {}
+    ep = st.get(a['episode'])
+    a['seen'] = stamp()
+    if ep is None:
+        ep = st[a['episode']] = {'first': a, 'latest': a, 'severity': a.get('severity'), 'acked': False, 'ended': False, 'seen': stamp()}
+        append('alerts.jsonl', json.dumps({'kind': 'new', **a}))
+    else:
+        if SEV.get(a.get('severity'), 0) > SEV.get(ep['severity'], 0):
+            ep['severity'] = a['severity']; ep['acked'] = False
+            append('alerts.jsonl', json.dumps({'kind': 'escalated', **a}))
+        if a.get('ended'):
+            ep['ended'] = True; append('alerts.jsonl', json.dumps({'kind': 'ended', **a}))
+        ep['latest'] = a
+    tmp = path + '.tmp'; json.dump(st, open(tmp, 'w'), indent=1); os.replace(tmp, path)
+
 def decode(msg):
     if msg.startswith('gz:'): return zlib.decompress(base64.b64decode(msg[3:]), 15 + 32).decode()
     return msg
@@ -38,6 +57,10 @@ def on_message(ws, msg):
         lines = (data.get('messages') or {}).get('log', []) + [f'< {r}' for r in (data.get('messages') or {}).get('results', [])]
         if data.get('error'): lines.append('[ERR] ' + data['error'])
         for l in map(html.unescape, lines):
+            if l.startswith('ALERT '):
+                try: handle_alert(json.loads(l[6:]))
+                except Exception as ex: append('errors.log', f'{stamp()} [listener] bad ALERT {ex}: {l[:200]}')
+                continue
             if l.startswith('STATS '):
                 try:
                     st = json.loads(l[6:]); live['stats'] = st

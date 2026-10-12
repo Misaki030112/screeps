@@ -1,5 +1,5 @@
 // Writes Memory.stats each tick; keeps last 20 errors.
-module.exports = { run(errors) {
+module.exports = { run(errors, alerts = []) {
   const s = Memory.stats || (Memory.stats = {});
   const rooms = {};
   for (const n in Game.rooms) {
@@ -16,5 +16,7 @@ module.exports = { run(errors) {
   s.bucket = Game.cpu.bucket;
   s.errors = (s.errors || []).concat(errors).slice(-20);
   if (errors.length) s.lastErrorTick = Game.time;
+  s.alerts = (s.alerts || []).concat(alerts).slice(-30);
+  if (alerts.length) s.lastAlertTick = Game.time;
   s.cpu = Game.cpu.getUsed();
 } };
