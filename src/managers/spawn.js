@@ -36,7 +36,7 @@ module.exports = { run(spawn) {
   const backlog = _.sum(room.find(FIND_STRUCTURES, { filter: s => s.structureType === STRUCTURE_CONTAINER && !(ctl && s.pos.inRangeTo(ctl, 3)) }),
     s => s.store[RESOURCE_ENERGY]);
   // extra upgraders soak up a source-container backlog (energy sink is the bottleneck once spawn/extensions are full)
-  const T = { hauler: Math.min(5, 2 + Math.floor(backlog / 700)), upgrader: Math.min(6, (sites ? 2 : 4) + Math.floor(backlog / 1500)), builder: sites ? 2 : 0, harvester: 0 };
+  const T = { hauler: Math.min(5, 2 + Math.floor(backlog / 700)), upgrader: Math.min(6, (sites ? 2 : 4) + Math.floor(backlog / 1500)), builder: sites ? (backlog >= 1500 ? 3 : 2) : 0, harvester: 0 };
   for (const role of ['hauler', 'upgrader', 'builder']) {
     if ((count[role] || 0) < T[role]) {
       const e = role === 'hauler' && !(count.hauler) ? Math.max(200, avail) : cap;
