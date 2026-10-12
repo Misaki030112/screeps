@@ -60,6 +60,7 @@ if __name__ == '__main__':
     # per-RCL strip
     tiles = []
     for R in range(1, 9):
+        RAMPS.clear(); RAMPS.update(tuple(p) for r, lv in plan['rcl'].items() if int(r) <= R for p in lv.get('rampart', []))
         st = {p: v for p, v in structs.items() if v[1] <= R}
         rd = {tuple(p) for r, lv in plan['rcl'].items() if int(r) <= R for p in lv.get('road', [])}
         tiles.append(draw(st, rd, f'RCL{R}', f'/tmp/rcl{R}.png', None, None, scale=8, label=False).crop((18*8, 8*8, 46*8, 42*8)))
