@@ -63,7 +63,7 @@ def on_message(ws, msg):
                 continue
             if l.startswith('STATS '):
                 try:
-                    st = json.loads(l[6:]); live['stats'] = st
+                    st = json.loads(l[6:]); live['stats'] = st; last_stats[0] = time.time()
                     append('metrics.jsonl', json.dumps({'ts': int(time.time()), 'src': 'ws', 'stats': st}))
                 except Exception as ex: append('errors.log', f'{stamp()} [listener] bad STATS {ex}: {l[:200]}')
                 continue
@@ -80,8 +80,17 @@ def on_message(ws, msg):
                 else: live['objects'].setdefault(oid, {}).update(o)
             live['gameTime'] = data.get('gameTime', live['gameTime'])
         write_live()
+last_stats = [time.time()]
+STALE_S = 180  # STATS arrive every 10 ticks (~40 s); a silent-but-alive socket gets closed so run_listener.sh reconnects
+def watchdog(ws):
+    while True:
+        time.sleep(30)
+        if time.time() - last_stats[0] > STALE_S:
+            append('errors.log', f'{stamp()} [listener] no STATS for {int(time.time()-last_stats[0])}s, reconnecting')
+            ws.close(); os._exit(0)
 def on_open(ws): ws.send('auth ' + TOKEN)
 def on_error(ws, e): append('errors.log', f'{stamp()} [listener] ws error {e}')
 if __name__ == '__main__':
     ws = websocket.WebSocketApp('wss://screeps.com/socket/websocket', on_open=on_open, on_message=on_message, on_error=on_error)
+    threading.Thread(target=watchdog, args=(ws,), daemon=True).start()
     ws.run_forever(ping_interval=30, ping_timeout=10)
