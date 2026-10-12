@@ -2,6 +2,13 @@
 
 First spawn `Spawn1` at W46N8 (35,28), placed 2026-10-12. Novice protection until ~2026-10-28 03:33 (UTC+8).
 
+## Attack alerts (no automatic safe mode — user decision)
+- In-game `src/managers/alerts.js`: hostile creeps by owner (ATTACK/RANGED_ATTACK/CLAIM/HEAL = medium; WORK-only neighbour
+  harvesters = low unless structures lose hits), structure hit loss (natural decay ignored), event-log attackers (= high).
+  Episodes per owner end after 50 quiet ticks. Written to `Memory.stats.alerts` and logged as `ALERT {json}`.
+- The websocket listener appends new/escalated/ended episodes to `metrics/alerts.jsonl` and keeps `metrics/alerts_state.json`.
+- **Check pending:** `python3 /workspace/screeps/alerts.py` (exit 0 none, 1 only low, 2 medium/high; `--json`, `--ack ID|all`, `--all`).
+
 ## Layout
 - `src/main.js` – loop: memory cleanup → spawns → construction → creeps → stats (every step wrapped by `utils/errors`).
 - `src/roles/` – harvester, upgrader, builder (+ `index.js` registry).
