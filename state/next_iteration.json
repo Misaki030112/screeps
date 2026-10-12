@@ -1,6 +1,6 @@
 {
-  "next_at": "2026-10-12T23:38:00+08:00",
-  "reason": "Shipped roads parallelization + 3rd builder (backlog\u22651500). Verify: container (30,30) finishes, \u22651 core road gets progress (>0/300), 3rd builder spawns, upgrade stays ~2+/tick, source backlog/drops start draining, no errors. Run earlier if alerts.py exits 2.",
-  "written_at": "2026-10-12T23:13:35+08:00",
-  "commit": "a9f3cfa"
+  "next_at": "2026-10-13T00:20:00+08:00",
+  "reason": "Shipped container upkeep (newest builder repairs non-redundant container <40% to 80%; source-2 container 38,32 at 61k/250k would collapse in ~6h). Verify: builder repairs 38,32 (hits rising), 31,11 leftover ignored, ctl container (30,30, 4187/5000) completes so upgraders stop walking to source 1, upgrade stays >=3/tick, drops at 31,12 (~3.5k) drain, no errors. Run earlier if alerts.py exits 2.",
+  "written_at": "2026-10-12T23:52:00+08:00",
+  "commit": "d92017d"
 }
