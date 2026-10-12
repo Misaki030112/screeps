@@ -1,6 +1,6 @@
 {
-  "next_at": "2026-10-13T00:20:00+08:00",
-  "reason": "Shipped container upkeep (newest builder repairs non-redundant container <40% to 80%; source-2 container 38,32 at 61k/250k would collapse in ~6h). Verify: builder repairs 38,32 (hits rising), 31,11 leftover ignored, ctl container (30,30, 4187/5000) completes so upgraders stop walking to source 1, upgrade stays >=3/tick, drops at 31,12 (~3.5k) drain, no errors. Run earlier if alerts.py exits 2.",
-  "written_at": "2026-10-12T23:52:00+08:00",
-  "commit": "d92017d"
+  "next_at": "2026-10-13T00:57:00+08:00",
+  "reason": "Shipped adcc62f: builders no longer polish containers while urgent sites exist (was stuck repairing 38,32 toward 80% while ctl container 30,30 waited); upgraders park at controller when haulers exist; backlog counts drops, hauler max 6. Verify: ctl container finishes, builders leave 38,32, upgraders stay near ctl, upgrade >=3/tick, drop at 31,12 drains, energy back to 550/550, no errors. Run earlier if alerts.py exits 2.",
+  "written_at": "2026-10-13T00:35:39+08:00",
+  "commit": "adcc62f"
 }
