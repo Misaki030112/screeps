@@ -17,8 +17,13 @@ let sites = 0;
 g.Game.rooms.W46N8 = { name: 'W46N8', memory: {}, controller: { my: true, level: 3, progress: 0, progressTotal: 1 }, energyAvailable: 300, energyCapacityAvailable: 300,
   getEventLog: () => [], find: t => t === 2 ? [{ owner: { username: 'nb' }, body: [{ type: 'work', hits: 100 }, { type: 'move', hits: 100 }], pos: { x: 1, y: 1 } }] : [], createConstructionSite: () => (sites++, 0) };
 const logs = []; const ol = g.console.log; g.console = { log: m => logs.push(m) };
+let spawned = [];
+g.Game.spawns.Spawn1 = { spawning: null, room: g.Game.rooms.W46N8, spawnCreep: (b, n, o) => (spawned.push([b, o.memory]), 0) };
+g.FIND_MY_CONSTRUCTION_SITES = 1; g.FIND_SOURCES = 6; g.WORK = 'work'; g.CARRY = 'carry'; g.MOVE = 'move';
+g._.filter = (o, fn) => Object.values(o).filter(fn);
 req('main').loop();
 g.console = console;
+if (spawned.length !== 1 || spawned[0][1].role !== 'harvester') throw new Error('spawn test failed ' + JSON.stringify(spawned));
 const al = logs.filter(l => l.startsWith('ALERT ')).map(l => JSON.parse(l.slice(6)));
 if (al.length !== 1 || al[0].severity !== 'low') throw new Error('alert test failed ' + JSON.stringify(logs));
 if (sites !== 5) throw new Error('layout manager placed ' + sites + ' sites, expected 5');
