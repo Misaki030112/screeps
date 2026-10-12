@@ -5,7 +5,7 @@ Novice zone ends ~2026-10-28 03:33 (UTC+8). Spawn safe mode active ~19.6k ticks 
 1. ✅ Extensions — placed from layout plan per RCL (layout manager).
 2. ⏳ **Static miners + haulers + source containers** (containers already in plan at RCL2) — biggest economy win.
 3. ⏳ Roads spawn→sources→controller — started 2026-10-12 22:32; 2026-10-12 23:12 builders split onto roads once lead site ≥40% + 3rd builder when backlog high.
-4. ⏳ **Tower (RCL3)** — tower manager already implemented (attack/heal/repair).
+4. ⏳ **Tower (RCL3)** — 2026-10-13 02:14: v1 RCL3+ extensions/roads HELD in layout.js (`HOLD`) because they conflict with draft layout v2; tower (36,29) + spawn/tower ramparts still auto-place. **Pending decision: Misaki approves layout v2 (docs/LAYOUT_V2.md) or keeps v1 → then remove/replace HOLD.** — tower manager already implemented (attack/heal/repair).
 5. ⏳ **Ramparts** on spawn/tower (plan, after tower) + attack alerts to Misaki (NO auto safe mode — her decision). Deadline 2026-10-28.
 6. Storage (RCL4); upgraders/builders withdraw from storage (energy util already supports it).
 7. Links (RCL5: controller + core link; source links RCL6/7).

@@ -1,6 +1,6 @@
 {
-  "next_at": "2026-10-13T02:05:00+08:00",
-  "reason": "Shipped e4e8fd6: sticky hauler pickup target (scored energy/travel) fixed haulers ping-ponging between miner overflow drops at 38,32 and the big drop at 31,12; upgrade rate now ~17/tick (was ~4.6 avg), near the 18 WORK cap. Listener got a stale-STATS watchdog (it hung silently 00:48-00:57). Stable now; check at 02:05 that backlog (~10k in containers+drops) drains without starving spawn, haulers/upgraders scale down sensibly, no errors. RCL3 ETA ~03:30-04:30 UTC+8 (needs tower + extension sites). Run earlier if alerts.py exits 2.",
-  "written_at": "2026-10-13T01:04:30+08:00",
-  "commit": "e4e8fd6"
+  "next_at": "2026-10-13T03:45:00+08:00",
+  "reason": "Shipped 5d98826: hold v1 RCL3+ extensions/roads (they conflict with draft layout v2 awaiting Misaki's approval); tower 36,29 + ramparts still place at RCL3. Economy healthy: backlog drained (no drops, containers ~1-1.7k), ~13.4/tick upgrade avg 00:57-02:14, progress 27571/45000. RCL3 ETA ~03:50-04:15 UTC+8; at 03:45 check RCL-up, tower site placed, only held types skipped, upgrader/hauler counts vs income, no errors. Listener watchdog reconnecting every ~10-25 min (server console stream drops) - self-healing. Run earlier if alerts.py exits 2.",
+  "written_at": "2026-10-13T02:20:00+08:00",
+  "commit": "5d98826"
 }
