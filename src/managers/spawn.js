@@ -35,7 +35,7 @@ module.exports = { run(spawn) {
   const ctl = room.controller;
   const backlog = _.sum(room.find(FIND_STRUCTURES, { filter: s => s.structureType === STRUCTURE_CONTAINER && !(ctl && s.pos.inRangeTo(ctl, 3)) }),
     s => s.store[RESOURCE_ENERGY]);
-  const T = { hauler: Math.min(4, 2 + Math.floor(backlog / 800)), upgrader: sites ? 2 : 4, builder: sites ? 2 : 0, harvester: 0 };
+  const T = { hauler: Math.min(5, 2 + Math.floor(backlog / 700)), upgrader: sites ? 2 : 4, builder: sites ? 2 : 0, harvester: 0 };
   for (const role of ['hauler', 'upgrader', 'builder']) {
     if ((count[role] || 0) < T[role]) {
       const e = role === 'hauler' && !(count.hauler) ? Math.max(200, avail) : cap;

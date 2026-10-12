@@ -4,7 +4,22 @@ module.exports = {
     if (!c.memory.working && c.store.getFreeCapacity() === 0) c.memory.working = true;
     return c.memory.working;
   },
+  // Prefer energy already near the controller so upgraders stop walking to source containers.
+  getNearController(c) {
+    const ctl = c.room.controller; if (!ctl) return false;
+    const drop = ctl.pos.findInRange(FIND_DROPPED_RESOURCES, 4, {
+      filter: r => r.resourceType === RESOURCE_ENERGY && r.amount > 25,
+    })[0];
+    if (drop) { if (c.pickup(drop) === ERR_NOT_IN_RANGE) c.moveTo(drop); return true; }
+    const cont = ctl.pos.findInRange(FIND_STRUCTURES, 3, {
+      filter: s => (s.structureType === STRUCTURE_CONTAINER || s.structureType === STRUCTURE_STORAGE)
+        && s.store[RESOURCE_ENERGY] > 0,
+    })[0];
+    if (cont) { if (c.withdraw(cont, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) c.moveTo(cont); return true; }
+    return false;
+  },
   get(c) {
+    if (this.getNearController(c)) return;
     const drop = c.pos.findClosestByPath(FIND_DROPPED_RESOURCES, { filter: r => r.resourceType === RESOURCE_ENERGY && r.amount > 50 });
     if (drop) { if (c.pickup(drop) === ERR_NOT_IN_RANGE) c.moveTo(drop); return; }
     const cont = c.pos.findClosestByPath(FIND_STRUCTURES, { filter: s => (s.structureType === STRUCTURE_CONTAINER || s.structureType === STRUCTURE_STORAGE) && s.store[RESOURCE_ENERGY] > 100 });
