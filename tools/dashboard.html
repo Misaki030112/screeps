@@ -1,0 +1,16 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Screeps W46N8</title>
+<style>body{background:#111;color:#ddd;font:13px monospace;display:flex;gap:16px;padding:10px}pre{white-space:pre-wrap;margin:0}#side{flex:1;min-width:400px}.err{color:#f66}</style></head>
+<body><canvas id="c" width="600" height="600"></canvas><div id="side"><pre id="s"></pre><h4>Errors</h4><pre id="e" class="err"></pre><h4>Console</h4><pre id="l"></pre></div>
+<script>
+const C={spawn:'#ffdc00',extension:'#eee',tower:'#f33',storage:'#fa0',link:'#88f',container:'#a65',road:'#777',constructionSite:'#0f0',
+ source:'#ff0',controller:'#fff',mineral:'#0ff',rampart:'#0a0',constructedWall:'#444'};
+let terrain=null; fetch('terrain.txt').then(r=>r.text()).then(t=>terrain=t);
+async function tick(){try{const d=await (await fetch('metrics/live.json?'+Date.now())).json();const x=document.getElementById('c').getContext('2d');const S=12;
+ if(terrain)for(let i=0;i<2500;i++){x.fillStyle=terrain[i]=='1'||terrain[i]=='3'?'#000':terrain[i]=='2'?'#283818':'#2b2b2b';x.fillRect(i%50*S,Math.floor(i/50)*S,S,S)}
+ const own=d.stats&&d.stats.rooms?Object.keys(d.stats.rooms):[];
+ for(const o of Object.values(d.objects)){if(o.x==null)continue;let col=C[o.type]||'#f0f';if(o.type=='creep')col=o.user==d.uid?'#3cf':'#f0f';
+  x.fillStyle=col;const p=o.type=='road'?4:o.type=='creep'?2:1;x.fillRect(o.x*S+p,o.y*S+p,S-2*p,S-2*p)}
+ const s=d.stats||{};document.getElementById('s').textContent=`updated ${d.updated} (UTC+8)  tick ${d.gameTime}\n`+JSON.stringify({cpu:s.cpu,bucket:s.b,gcl:s.gcl,rooms:s.rooms,creeps:s.creeps,errors:s.nerr,wsCpu:d.cpu},null,1);
+ document.getElementById('e').textContent=d.errors_tail.join('\n');document.getElementById('l').textContent=d.console_tail.slice(-20).join('\n');}catch(e){}}
+setInterval(tick,2000);tick();
+</script></body></html>

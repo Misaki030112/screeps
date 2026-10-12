@@ -1,12 +1,13 @@
-# Roadmap (priority order)
+# Roadmap (priority order) — see docs/STRATEGY.md for phases
 
-Deadline: novice protection ends ~2026-10-28 03:33 (UTC+8). Defence (items 4–5) must be live before then.
+Novice zone ends ~2026-10-28 03:33 (UTC+8). Spawn safe mode active ~19.6k ticks (~21 h from 2026-10-12 17:40), 1 more safe mode available.
 
-1. **Extensions** – auto-placed per RCL (done: checkerboard around spawn). Reach RCL2 → 5 ext.
-2. **Roads** – spawn↔sources↔controller (room is 25% swamp; big win).
-3. **Containers + static miners** – container next to each source, 5-WORK miners + haulers; replace generic harvesters.
-4. **Tower (RCL3)** – near spawn; auto-attack hostiles, repair roads/containers; harvesters refill.
-5. **Ramparts/walls** – ramparts on spawn/tower, chokepoint walls on exits; safe-mode trigger when hostiles damage spawn.
-6. **Storage (RCL4)** – central energy buffer; upgraders pull from it.
-7. **Links (RCL5)** – source→controller/storage links.
-8. **Remote mining** – adjacent unowned rooms (reserve + mine), watch neighbours (FungousCoast245, drtk712 RCL8).
+1. ✅ Extensions — placed from layout plan per RCL (layout manager).
+2. ⏳ **Static miners + haulers + source containers** (containers already in plan at RCL2) — biggest economy win.
+3. ⏳ Roads spawn→sources→controller (in plan, placed after extensions finish).
+4. ⏳ **Tower (RCL3)** — tower manager already implemented (attack/heal/repair).
+5. ⏳ **Ramparts** on spawn/tower (plan, after tower) + **auto safe mode** when hostiles damage spawn/tower. Deadline 2026-10-28.
+6. Storage (RCL4); upgraders/builders withdraw from storage (energy util already supports it).
+7. Links (RCL5: controller + core link; source links RCL6/7).
+8. Remote mining in neighbouring rooms (scout first; avoid FungousCoast245/drtk712 territory).
+9. Perimeter min-cut ramparts; CPU optimisation (cached finds, path reuse); 2nd room claim (needs approval).

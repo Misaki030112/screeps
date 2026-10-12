@@ -5,13 +5,26 @@ First spawn `Spawn1` at W46N8 (35,28), placed 2026-10-12. Novice protection unti
 ## Layout
 - `src/main.js` – loop: memory cleanup → spawns → construction → creeps → stats (every step wrapped by `utils/errors`).
 - `src/roles/` – harvester, upgrader, builder (+ `index.js` registry).
-- `src/managers/` – `spawn` (role targets, body sizing), `construction` (extensions), `stats` (Memory.stats).
+- `src/managers/` – `spawn`, `layout` (sites from plan per RCL), `tower`, `stats`; `src/layouts/` – generated plans; `src/utils/report.js` – STATS console line.
 - `src/utils/` – `energy` (gather/toggle), `errors` (try/catch + error buffer).
 - `scripts/build.js` – flattens `src/` to `dist/` (`roles/harvester.js` → `roles.harvester`), rewriting requires.
 - `scripts/check.js` – build + `node --check` + one-tick smoke test with a mocked Game.
 - `upload.js` – runs check, then POSTs `dist/` to `/api/user/code` (branch `default`, active on shard3).
 - `collect.py` → appends Memory.stats to `metrics/metrics.jsonl`; `status.py [--live]` prints a summary.
 - `tools/` – room scouting scripts used to choose the start room; `data/` – scan results.
+
+## Observability
+- **Websocket listener** (`tools/listener.py`, kept alive by `tools/run_listener.sh`): subscribes to
+  `user:<id>/console`, `user:<id>/cpu`, `room:shard3/W46N8`. Writes `metrics/console.log`, `metrics/errors.log`,
+  `metrics/metrics.jsonl` (STATS line the bot logs every 10 ticks ≈ 40 s), `metrics/live.json` (live room objects, updated every tick ≈ 4 s).
+  Start: `nohup tools/run_listener.sh >/dev/null 2>&1 &`  Stop: `kill $(cat metrics/listener.pid); pkill -f "[l]istener.py"`
+- **Dashboard**: `nohup tools/run_dashboard.sh > metrics/dashboard.out 2>&1 &` → http://127.0.0.1:8787/tools/dashboard.html (box browser; refreshes every 2 s: room map, stats, errors, console).
+- `python3 status.py` (summary incl. websocket data) · `.venv/bin/python status.py --map` → `metrics/room_live.png`.
+- `collect.py` (REST Memory.stats, rate-limited 1440/day) remains as a fallback.
+- Python deps live in `.venv/` (websocket-client, pillow).
+
+## Layout
+`tools/plan_layout.py W46N8 35 28` regenerates `data/layout_W46N8.json`, `src/layouts/W46N8.js`, `docs/layout_W46N8.png`. See docs/LAYOUT.md, docs/STRATEGY.md.
 
 ## Usage
 ```
