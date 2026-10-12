@@ -10,7 +10,7 @@ const g = { console, Memory: {}, _: { groupBy: (a, fn) => a.reduce((o, x) => ((o
 function req(n) { if (cache[n]) return cache[n].exports; if (!(n in mods)) throw new Error('missing module ' + n);
   const m = cache[n] = { exports: {} }; vm.runInNewContext(`(function(module,exports,require){${mods[n]}\n})`, g)(m, m.exports, req); return m.exports; }
 // mock one owned RCL3 room so managers execute
-const consts = { FIND_MY_CONSTRUCTION_SITES: 1, FIND_HOSTILE_CREEPS: 2, FIND_MY_STRUCTURES: 3, FIND_MY_CREEPS: 4, FIND_STRUCTURES: 5, FIND_SOURCES: 6,
+const consts = { FIND_MY_CONSTRUCTION_SITES: 1, FIND_HOSTILE_CREEPS: 2, FIND_MY_STRUCTURES: 3, FIND_MY_CREEPS: 4, FIND_STRUCTURES: 5, FIND_SOURCES: 6, FIND_DROPPED_RESOURCES: 7,
   STRUCTURE_TOWER: 'tower', STRUCTURE_EXTENSION: 'extension', STRUCTURE_RAMPART: 'rampart', STRUCTURE_ROAD: 'road', STRUCTURE_CONTAINER: 'container', OK: 0, ATTACK: 'attack', RANGED_ATTACK: 'ranged_attack', WORK: 'work', CLAIM: 'claim', HEAL: 'heal', EVENT_ATTACK: 1 };
 Object.assign(g, consts);
 let sites = 0;
