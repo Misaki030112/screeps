@@ -1,1 +1,6 @@
-{"next_at": "2026-10-12T22:58:00+08:00", "reason": "Shipped 5b5337e (upgraders scale with source-container backlog, max 6). At 22:32 containers held 4979 energy (31,12 and 38,32 full) with spawn+ext full 550/550 -> energy sink is the bottleneck. Verify: 3 extra upgraders spawn (target 5 at current backlog), backlog starts draining, upgrade rate rises above ~1.2-1.5/tick, controller container (30,30, 2187/5000) and 4 core road sites progress, no errors. Run earlier if alerts.py exits 2."}
+{
+  "next_at": "2026-10-12T23:38:00+08:00",
+  "reason": "Shipped roads parallelization + 3rd builder (backlog\u22651500). Verify: container (30,30) finishes, \u22651 core road gets progress (>0/300), 3rd builder spawns, upgrade stays ~2+/tick, source backlog/drops start draining, no errors. Run earlier if alerts.py exits 2.",
+  "written_at": "2026-10-12T23:13:35+08:00",
+  "commit": "a9f3cfa"
+}
