@@ -9,6 +9,13 @@ First spawn `Spawn1` at W46N8 (35,28), placed 2026-10-12. Novice protection unti
 - The websocket listener appends new/escalated/ended episodes to `metrics/alerts.jsonl` and keeps `metrics/alerts_state.json`.
 - **Check pending:** `python3 /workspace/screeps/alerts.py` (exit 0 none, 1 only low, 2 medium/high; `--json`, `--ack ID|all`, `--all`).
 
+## Iterations (state/)
+- `state/next_iteration.json` – `{"next_at": "<ISO time, +08:00>", "reason": "..."}`: when the next improvement iteration is worthwhile.
+  A scheduler/check should run an iteration only when now >= next_at (or when `alerts.py` exits 2).
+- `state/iterations.log` – one line per iteration: `<time UTC+8> | <what changed> | next_at=<ISO>`.
+- Each iteration: analyse (status.py, metrics.jsonl, alerts.py), fix + next ROADMAP step, `node upload.js`, commit, verify, update state/.
+  No safe-mode activation and no major decisions (claims, attacks, spending) without user approval.
+
 ## Layout
 - `src/main.js` – loop: memory cleanup → spawns → construction → creeps → stats (every step wrapped by `utils/errors`).
 - `src/roles/` – harvester, upgrader, builder (+ `index.js` registry).
