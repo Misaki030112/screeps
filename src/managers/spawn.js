@@ -22,14 +22,20 @@ module.exports = { run(spawn) {
   const spawnIt = (body, role, mem = {}) => spawn.spawnCreep(body, role + Game.time, { memory: Object.assign({ role, home: room.name }, mem) });
   // 1) emergency: nothing moves energy to the spawn
   if (!(count.harvester || 0) && !(count.hauler || 0)) return spawnIt(worker(Math.max(200, avail)), 'harvester');
-  // 2) one miner per source (replace ~before death not needed yet)
+  // 2) one miner per source; pre-spawn the replacement so it arrives as the old one dies
+  //    (lead = measured travel time recorded by the miner on arrival + spawn time of the body)
+  const lead = c => (c.memory.travel || 100) + c.body.length * 3;
   for (const s of sources) {
-    if (!mine.some(c => c.memory.role === 'miner' && c.memory.sourceId === s.id && (c.ticksToLive || 1500) > 60)) {
+    if (!mine.some(c => c.memory.role === 'miner' && c.memory.sourceId === s.id && (c.ticksToLive || 1500) > lead(c))) {
       if (avail < Math.min(cap, 550)) return;
       return spawnIt(miner(Math.min(cap, 550)), 'miner', { sourceId: s.id });
     }
   }
-  const T = { hauler: 2, upgrader: sites ? 2 : 4, builder: sites ? 2 : 0, harvester: 0 };
+  // haulers scale with the energy backlog sitting in source containers (hauling is the bottleneck while far sources fill up)
+  const ctl = room.controller;
+  const backlog = _.sum(room.find(FIND_STRUCTURES, { filter: s => s.structureType === STRUCTURE_CONTAINER && !(ctl && s.pos.inRangeTo(ctl, 3)) }),
+    s => s.store[RESOURCE_ENERGY]);
+  const T = { hauler: Math.min(4, 2 + Math.floor(backlog / 800)), upgrader: sites ? 2 : 4, builder: sites ? 2 : 0, harvester: 0 };
   for (const role of ['hauler', 'upgrader', 'builder']) {
     if ((count[role] || 0) < T[role]) {
       const e = role === 'hauler' && !(count.hauler) ? Math.max(200, avail) : cap;

@@ -9,5 +9,7 @@ module.exports = { run(c) {
   }
   if (spot && (c.pos.x !== spot[0] || c.pos.y !== spot[1])) { c.moveTo(spot[0], spot[1], { reusePath: 20 }); if (!c.pos.isNearTo(src)) return; }
   else if (!spot && !c.pos.isNearTo(src)) { c.moveTo(src, { reusePath: 20 }); return; }
+  // ticks spawn->work spot, used for pre-spawning (miners spawned before this code get the default)
+  if (c.memory.travel === undefined && c.ticksToLive) { const t = 1500 - c.ticksToLive; c.memory.travel = t >= 0 && t <= 400 ? t : 100; }
   c.harvest(src);
 } };
