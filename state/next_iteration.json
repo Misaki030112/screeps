@@ -1,6 +1,6 @@
 {
-  "next_at": "2026-10-14T02:45:00+08:00",
-  "reason": "274a4e9 deployed (tick 83624129): with storage haulers/rhaulers no longer hand-feed queen/builders (they refill at storage); home hauler body 6C6M (A need 5.6 carry); model home income = miner harvest ticks. Verify 02:45: hauler rp/100 back <=10 (was 21.7 post-4b8715a) and trip_med ~13-15 (was 22), 8C hauler 83622645 died ~83624192 with no replacement (T.hauler 1), container A (31,12) not backing up >1500 with 1x5C5M until 6C6M replaces ~83624740, queen/builders still fed from storage (storage not draining to 0), upgrader waiting_feed trend, 0 errors. Rampart repair (16 ramparts ~25k->50k) is the current builder sink; then sites=0 -> upgrader EMA can hold 2.",
-  "written_at": "2026-10-14T01:50:00+08:00",
-  "commit": "274a4e9"
+  "next_at": "2026-10-14T03:50:00+08:00",
+  "reason": "89c4562 deployed (tick 83625190): tower tops ramparts up to 50k only while storage >= threat.reserve (1300 when armed); below it only ramparts <5k. Storage had fallen 1040 -> 200 -> 50 (spawn wave ~9k energy/h: 2 upgraders, 2 miners, builder, reserver, 2 haulers, rhauler + tower rampart refills), so no defender reserve. Verify 03:50: storage climbing toward/above 1300 (B ~10/t in, queen spawn refills out), tower stays ~900-1000 with no rampart repair while storage <1300 and resumes above it, ramparts (min 28k) not decaying below ~25k, upgrader waiting_feed keeps falling (36.5% pre-274a4e9 -> 20.3% after), hauler rp/100 stays <=10 (5.2 now), container A (31,12) <1500, 0 errors. If storage still <500 after the wave: builder at RCL4 with sites=0 is a 5W idle-upgrader that walks 27 tiles to source A when storage < reserve -> consider T.builder 0 at RCL4 with storage and no sites.",
+  "written_at": "2026-10-14T02:54:00+08:00",
+  "commit": "89c4562"
 }
