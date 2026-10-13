@@ -1,12 +1,12 @@
 // Layout v2: places construction sites from the plan per RCL and removes structures that conflict with it.
 // Safety: never destroys spawns/towers/storage; destroys conflicting extensions only while at least MIN_EXT
 // non-conflicting extensions are built (spawn energy capacity never drops below RCL2 level); nothing is
-// destroyed while hostiles are present. Runs every 25 ticks (or on RCL change).
+// destroyed while hostiles are present; conflicting extensions go one capacity step at a time (never below CAP_FLOOR). Runs every 25 ticks (or on RCL change).
 const plan = require('../utils/plan');
 const move = require('../utils/move');
 const rc = require('../utils/roomcache');
 const PRIORITY = ['spawn', 'extension', 'tower', 'container', 'storage', 'link', 'road', 'rampart', 'terminal', 'extractor', 'lab', 'factory', 'powerSpawn', 'nuker', 'observer'];
-const MAX_SITES = 5, MIN_EXT = 5;
+const MAX_SITES = 5, MIN_EXT = 5, CAP_FLOOR = 650;
 const NEVER_DESTROY = new Set([STRUCTURE_SPAWN, STRUCTURE_TOWER, STRUCTURE_STORAGE, STRUCTURE_TERMINAL, STRUCTURE_CONTROLLER, STRUCTURE_RAMPART]);
 const WALKABLE = new Set([STRUCTURE_ROAD, STRUCTURE_CONTAINER, STRUCTURE_RAMPART]);
 module.exports = { run(room) {
@@ -35,7 +35,11 @@ module.exports = { run(room) {
     } else if (NEVER_DESTROY.has(t)) log.push(`KEEP conflicting ${t} ${s.pos.x},${s.pos.y} (manual decision)`);
   }
   if (conflictExt.length && !hostile && goodExt >= MIN_EXT) {
-    for (const s of conflictExt) if (s.destroy() === OK) log.push(`destroyed extension ${s.pos.x},${s.pos.y} (good ext ${goodExt})`);
+    // Gradual swap: keep spawn capacity >= CAP_FLOOR (remote reserver CLAIM1+MOVE1 = 650), one v2 site per freed slot.
+    // Order: extensions on planned standing spots first (queen/filler paths), then the emptiest.
+    let spare = Math.floor((room.energyCapacityAvailable - CAP_FLOOR) / EXTENSION_ENERGY_CAPACITY[rcl]);
+    conflictExt.sort((a, b) => (P.standing.has(plan.key(b.pos.x, b.pos.y)) - P.standing.has(plan.key(a.pos.x, a.pos.y))) || (a.store.energy - b.store.energy));
+    for (const s of conflictExt) { if (spare <= 0) break; if (s.destroy() === OK) { spare--; log.push(`destroyed extension ${s.pos.x},${s.pos.y} (good ext ${goodExt}, cap ${room.energyCapacityAvailable})`); } }
   }
   for (const s of sites) {
     const want = P.any[plan.key(s.pos.x, s.pos.y)];

@@ -3,7 +3,7 @@
 // Purpose: catch exceptions, check layout decisions and that every role acts. Usage: node scripts/sim.js [ticks]
 const fs = require('fs'), path = require('path'), vm = require('vm');
 const ROOT = path.join(__dirname, '..'), DIST = path.join(ROOT, 'dist');
-const snap = JSON.parse(fs.readFileSync(path.join(ROOT, 'data/sim_snapshot.json')));
+const snap = JSON.parse(fs.readFileSync(process.env.SIM_SNAP || path.join(ROOT, 'data/sim_snapshot.json')));
 const TICKS = +(process.argv[2] || 60);
 const mods = {}; for (const f of fs.readdirSync(DIST)) mods[f.slice(0, -3)] = fs.readFileSync(path.join(DIST, f), 'utf8');
 const C = { OK: 0, ERR_NOT_IN_RANGE: -9, ERR_NOT_ENOUGH_ENERGY: -6, ERR_INVALID_TARGET: -7, ERR_FULL: -8, ERR_RCL_NOT_ENOUGH: -14, ERR_NOT_ENOUGH_RESOURCES: -6,
@@ -13,6 +13,7 @@ const C = { OK: 0, ERR_NOT_IN_RANGE: -9, ERR_NOT_ENOUGH_ENERGY: -6, ERR_INVALID_
   TOP: 1, RIGHT: 3, BOTTOM: 5, LEFT: 7, LOOK_SOURCES: 'source', LOOK_STRUCTURES: 'structure', LOOK_CONSTRUCTION_SITES: 'constructionSite', BODYPART_COST: { work: 100, carry: 50, move: 50, attack: 80, ranged_attack: 150, heal: 250, claim: 600, tough: 10 }, EVENT_ATTACK: 1 };
 for (const t of ['spawn', 'extension', 'road', 'wall', 'rampart', 'link', 'storage', 'tower', 'observer', 'powerSpawn', 'extractor', 'lab', 'terminal', 'container', 'nuker', 'factory', 'controller'])
   C['STRUCTURE_' + t.replace(/[A-Z]/g, m => '_' + m).toUpperCase()] = t;
+C.EXTENSION_ENERGY_CAPACITY = { 0: 50, 1: 50, 2: 50, 3: 50, 4: 50, 5: 50, 6: 50, 7: 100, 8: 200 };
 C.CONTROLLER_STRUCTURES = { extension: [0, 0, 5, 10, 20, 30, 40, 50, 60], tower: [0, 0, 0, 1, 1, 2, 2, 3, 6], container: [5, 5, 5, 5, 5, 5, 5, 5, 5], road: Array(9).fill(2500), rampart: [0, 0, 2500, 2500, 2500, 2500, 2500, 2500, 2500], storage: [0, 0, 0, 0, 1, 1, 1, 1, 1], link: [0, 0, 0, 0, 0, 2, 3, 4, 6], spawn: [0, 1, 1, 1, 1, 1, 1, 2, 3] };
 const T = fs.readFileSync(path.join(ROOT, 'data/terrain_W46N8.txt'), 'utf8');
 const isWall = (x, y) => T[y * 50 + x] === '1' || T[y * 50 + x] === '3';
