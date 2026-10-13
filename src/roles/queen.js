@@ -58,8 +58,8 @@ module.exports = { fillRoute, run(c) {
   let src = c.memory.src && Game.getObjectById(c.memory.src);
   if (!src || src.store[RESOURCE_ENERGY] < 50) {
     const [fx, fy] = P.pos.fillerContainerA;
-    const cands = [room.storage, rc.at(room, fx, fy, STRUCTURE_CONTAINER)].concat(require('./hauler').pickups(room))
-      .filter(s => s && s.store[RESOURCE_ENERGY] >= 50);
+    const near = require('./hauler').pickups(room).filter(s => s.store[RESOURCE_ENERGY] >= 50).sort((a, b) => c.pos.getRangeTo(a) - c.pos.getRangeTo(b));
+    const cands = [room.storage, rc.at(room, fx, fy, STRUCTURE_CONTAINER)].filter(s => s && s.store[RESOURCE_ENERGY] >= 50).concat(near);
     src = cands[0] || null; c.memory.src = src ? src.id : undefined;
     if (!src) { if (c.store[RESOURCE_ENERGY] > 0) c.memory.working = true; return; }
   }

@@ -60,21 +60,25 @@ module.exports = { pickups, run(c) {
   // deliver
   const queens = room.memory.queenAlive && room.memory.queenAlive > Game.time - 3;
   // Keep ~10% spawn headroom so ctl container still gets fed while builders drain extensions
-  if (room.energyAvailable < room.energyCapacityAvailable * 0.9 && queen.fillRoute(c)) return;
+  // With a live queen haulers stay off the queen stops (contention at 34,25/34,27) and feed filler container A instead;
+  // they only walk the fill route themselves when there is no queen or the room is nearly empty (fallback).
+  const lowE = room.energyAvailable < room.energyCapacityAvailable * (queens ? 0.3 : 0.9);
+  if (lowE && queen.fillRoute(c)) return;
   let dst = c.memory.dst && Game.getObjectById(c.memory.dst);
   if (!dst || dst.store.getFreeCapacity(RESOURCE_ENERGY) === 0 || (dst.body && Game.time % 5 === 0)) {
     const [cx, cy] = P.pos.controllerContainer;
     const opts = [];
+    const [fx, fy] = P.pos.fillerContainerA; const fc = rc.at(room, fx, fy, STRUCTURE_CONTAINER);
+    if (queens && fc && fc.store[RESOURCE_ENERGY] < 400 && fc.store.getFreeCapacity(RESOURCE_ENERGY) >= 100) opts.push(fc); // queen's fixed refill
     const tw = rc.all(room, STRUCTURE_TOWER).filter(t => t.store[RESOURCE_ENERGY] < 600);
     if (!queens) opts.push(...tw);
     const cc = rc.at(room, cx, cy, STRUCTURE_CONTAINER); if (cc && cc.store.getFreeCapacity(RESOURCE_ENERGY) >= 100) opts.push(cc);
     const st = room.storage; if (st && st.store.getFreeCapacity() > 10000) opts.push(st);
-    const [fx, fy] = P.pos.fillerContainerA; const fc = rc.at(room, fx, fy, STRUCTURE_CONTAINER);
     if (fc && fc.store.getFreeCapacity(RESOURCE_ENERGY) >= 200) opts.push(fc);
     // creeps that need energy: queen first (keeps the fill loop short), then builders
     const needCreep = _.filter(Game.creeps, x => x.room.name === room.name && (x.memory.role === 'queen' || x.memory.role === 'builder') && x.store.getFreeCapacity() >= 50);
     needCreep.sort((a, b) => (a.memory.role === 'queen' ? 0 : 1) - (b.memory.role === 'queen' ? 0 : 1));
-    if (needCreep[0] && needCreep[0].memory.role === 'queen') opts.unshift(needCreep[0]); else if (needCreep[0]) opts.push(needCreep[0]);
+    if (needCreep[0] && needCreep[0].memory.role === 'queen' && !(fc && opts[0] === fc)) opts.unshift(needCreep[0]); else if (needCreep[0]) opts.push(needCreep[0]);
     dst = opts[0] || null; c.memory.dst = dst ? dst.id : undefined;
     if (!dst) { const [x, y] = P.pos.controllerDrop; if (move.to(c, x, y, 0)) c.drop(RESOURCE_ENERGY); return; }
   }
