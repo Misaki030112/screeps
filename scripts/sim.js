@@ -17,7 +17,7 @@ C.EXTENSION_ENERGY_CAPACITY = { 0: 50, 1: 50, 2: 50, 3: 50, 4: 50, 5: 50, 6: 50,
 C.CONTROLLER_STRUCTURES = { extension: [0, 0, 5, 10, 20, 30, 40, 50, 60], tower: [0, 0, 0, 1, 1, 2, 2, 3, 6], container: [5, 5, 5, 5, 5, 5, 5, 5, 5], road: Array(9).fill(2500), rampart: [0, 0, 2500, 2500, 2500, 2500, 2500, 2500, 2500], storage: [0, 0, 0, 0, 1, 1, 1, 1, 1], link: [0, 0, 0, 0, 0, 2, 3, 4, 6], spawn: [0, 1, 1, 1, 1, 1, 1, 2, 3] };
 const T = fs.readFileSync(path.join(ROOT, 'data/terrain_W46N8.txt'), 'utf8');
 const isWall = (x, y) => T[y * 50 + x] === '1' || T[y * 50 + x] === '3';
-let objs = {}; let nid = 1; const log = []; const errors = [];
+let objs = {}; let nid = 1; const log = []; const errors = []; const births = [];
 const range = (a, b) => Math.max(Math.abs(a.x - b.x), Math.abs(a.y - b.y));
 class RoomPosition { constructor(x, y, r) { this.x = x; this.y = y; this.roomName = r || 'W46N8'; }
   getRangeTo(a, b) { const p = typeof a === 'number' ? { x: a, y: b } : (a.pos || a); return range(this, p); }
@@ -88,7 +88,8 @@ for (const o of snap.objects) {
     const s = mkStruct(o.type, o.x, o.y, o.user === snap.uid, (o.store || {}).energy || 0, { hits: o.hits || 1000, name: o.name });
     if (o.type === 'spawn') { s.spawning = null; s.room = room; s.spawnCreep = (body, name, opt) => { const cost = body.reduce((t, p) => t + C.BODYPART_COST[p], 0); if (room.energyAvailable < cost) return C.ERR_NOT_ENOUGH_ENERGY;
       let left = cost; for (const e of Object.values(objs).filter(o => o.structureType === 'spawn' || o.structureType === 'extension')) { const d = Math.min(left, e.store.energy); e.store.energy -= d; left -= d; }
-      mkCreep(name, body, s.pos.x, s.pos.y + 1, opt.memory); log.push(`SPAWN ${name} ${body.length}`); return 0; }; g.Game_spawns = g.Game_spawns || {}; g.Game_spawns[o.name] = s; }
+      const bd = (opt.directions || [1, 2, 3, 4, 5, 6, 7, 8]).map(d => DIRS[d]).find(([dx, dy]) => { const nx = s.pos.x + dx, ny = s.pos.y + dy; return !isWall(nx, ny) && !Object.values(objs).some(o => o.pos && o.pos.x === nx && o.pos.y === ny && (o.body || (o.structureType && OBSTACLE.has(o.structureType)))); }) || [0, 1];
+      mkCreep(name, body, s.pos.x + bd[0], s.pos.y + bd[1], opt.memory); births.push([name, opt.memory && opt.memory.role, s.pos.x + bd[0], s.pos.y + bd[1]]); log.push(`SPAWN ${name} ${body.length}`); return 0; }; g.Game_spawns = g.Game_spawns || {}; g.Game_spawns[o.name] = s; }
   } else if (o.type === 'source') { objs[o._id] = { id: o._id, isSource: true, pos: new RoomPosition(o.x, o.y), energy: 3000, energyCapacity: 3000 }; }
 }
 function mkCreep(name, body, x, y, memory) {
@@ -135,7 +136,7 @@ for (let t = 0; t < TICKS; t++) {
   // sources regen not modelled; refill containers a bit to emulate miners
 }
 const errs = (g.Memory.stats && g.Memory.stats.errors) || [];
-const out = { ticks: TICKS, errors: errs.concat(errors), creeps: Object.values(g.Game.creeps).map(c => ({ n: c.name, role: c.memory.role, from: startPos[c.name], to: c.pos.x + ',' + c.pos.y, acts: c.acts, e: c.store.energy })),
+const out = { ticks: TICKS, births, errors: errs.concat(errors), creeps: Object.values(g.Game.creeps).map(c => ({ n: c.name, role: c.memory.role, from: startPos[c.name], to: c.pos.x + ',' + c.pos.y, acts: c.acts, e: c.store.energy })),
   sites: sites.map(s => `${s.structureType} ${s.pos.x},${s.pos.y}`), log: log.filter(l => /LAYOUT|DESTROY|REMOVE|SPAWN|BUILT|ERR|CS |STUCK|^DBG/.test(l)).slice(-400),
   mem: Object.fromEntries(Object.values(g.Game.creeps).map(c => [c.name, c.memory])), prog: sites.map(s => s.progress), energy: `${room.energyAvailable}/${room.energyCapacityAvailable}`, ctlProgress: room.controller.progress, seg90: (g.RawMemory.segments[90] || '').length,
   idle: (() => { const R = JSON.parse(g.RawMemory.segments[90] || '{"s":[]}'), o = {}; for (const [, rows] of R.s) for (const r of rows) { const role = r[0].replace(/[0-9]/g, ''); for (const ch of (r[8] || '')) { o[role] = o[role] || {}; o[role][ch] = (o[role][ch] || 0) + 1; } } return o; })(),

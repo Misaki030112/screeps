@@ -2,6 +2,18 @@
 // Bodies are sized from energyCapacity; if the room has not been full for 300 ticks, sizes fall back to what is available.
 const plan = require('../utils/plan'), rc = require('../utils/roomcache');
 const rep = (n, p) => Array(Math.max(0, n)).fill(p);
+// Birth side. The extension stamp around the spawn is closed except through its fill container, and the default order
+// (TOP first) put new creeps on filler tile 36,27 inside it: they walked out through the queen ring, and
+// upgrader83620552 (10W1C1M) needed 274 ticks from spawn to 31,30 (10-13 22:27). Born outside the stamp first;
+// queen/fillers inside (any stamp tile counts as inside). All 8 directions stay in the list, so a blocked side falls back to the engine default.
+const DXY = { 1: [0, -1], 2: [1, -1], 3: [1, 0], 4: [1, 1], 5: [0, 1], 6: [-1, 1], 7: [-1, 0], 8: [-1, -1] };
+function birthDirs(spawn, role) {
+  const P = plan.get(spawn.room.name); if (!P) return undefined;
+  const inside = new Set([].concat(...Object.values(P.raw.stamps).map(st => Object.keys(st.tiles))).map(k => { const [x, y] = k.split(',').map(Number); return plan.key(x, y); }));
+  const isIn = d => inside.has(plan.key(spawn.pos.x + DXY[d][0], spawn.pos.y + DXY[d][1]));
+  const want = role === 'queen' || role === 'filler', all = [1, 2, 3, 4, 5, 6, 7, 8];
+  return all.filter(d => isIn(d) === want).concat(all.filter(d => isIn(d) !== want));
+}
 const B = {
   // anti-Invader: 5 RANGED_ATTACK + 6 MOVE + 1 HEAL = 1300 (RCL4 full cap); 50 dmg/t at range 3, 12 hp/t self-heal
   defender: e => e >= 1300 ? [].concat(rep(5, RANGED_ATTACK), rep(6, MOVE), [HEAL]) : [].concat(rep(3, RANGED_ATTACK), rep(4, MOVE)),
@@ -67,7 +79,7 @@ module.exports = { targets, run(spawn) {
   const go = (role, body, mem = {}) => {
     const cost = _.sum(body, p => BODYPART_COST[p]);
     if (avail < cost) return ERR_NOT_ENOUGH_ENERGY;
-    return spawn.spawnCreep(body, role + Game.time, { memory: Object.assign({ role, home: room.name }, mem) });
+    return spawn.spawnCreep(body, role + Game.time, { memory: Object.assign({ role, home: room.name }, mem), directions: birthDirs(spawn, role) });
   };
   // 1) emergency: nothing can refill the spawn
   if (!(count.hauler || 0) && !(count.queen || 0) && !(count.harvester || 0) && !(count.filler || 0))
@@ -75,7 +87,7 @@ module.exports = { targets, run(spawn) {
   // 1b) defender: top of the queue; while collecting energy for it only miners/queen may still spawn (non-critical paused)
   const threat = require('./threat'), want = threat.wantDefender(room.name);
   if (want && rcl >= 4) {
-    if (avail >= 1300) { const name = 'defender' + Game.time, rv = spawn.spawnCreep(B.defender(1300), name, { memory: { role: 'defender', home: room.name, remote: want, born: Game.time } });
+    if (avail >= 1300) { const name = 'defender' + Game.time, rv = spawn.spawnCreep(B.defender(1300), name, { memory: { role: 'defender', home: room.name, remote: want, born: Game.time }, directions: birthDirs(spawn, 'defender') });
       if (rv === OK) threat.noteSpawn(want, name); return rv; }
   }
   const hold = !!want;
