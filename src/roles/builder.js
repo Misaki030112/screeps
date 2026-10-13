@@ -1,5 +1,5 @@
 // Builder: picks a site once (priority order), walks a cached path, builds until done. Energy from fixed sources.
-// With no sites it dismantles empty unplanned containers (e.g. v1 leftover 31,11), keeps planned containers
+// With no sites it destroy()s (fallback: dismantles) empty unplanned containers (e.g. v1 leftover 31,11), keeps planned containers
 // healthy, builds remote swamp-road sites when remote is not paused, then helps upgrade from the drop tile.
 const plan = require('../utils/plan'), move = require('../utils/move'), rc = require('../utils/roomcache');
 const remote = require('../managers/remote');
@@ -35,7 +35,7 @@ module.exports = { run(c) {
     // dismantle needs no energy; prefer it when we already flagged a junk target
     if (c.memory.dismantle) {
       const j = Game.getObjectById(c.memory.dismantle);
-      if (j && j.hits > 0) { if (move.to(c, j.pos.x, j.pos.y, 1)) c.dismantle(j); return; }
+      if (j && j.hits > 0 && j.destroy() !== OK) { if (move.to(c, j.pos.x, j.pos.y, 1)) c.dismantle(j); return; }
       delete c.memory.dismantle;
     }
     let src = c.memory.src && Game.getObjectById(c.memory.src);
@@ -64,6 +64,8 @@ module.exports = { run(c) {
     if (sites.length) t = _.min(sites, s => (PRIO[s.structureType] ?? 9) * 100 + c.pos.getRangeTo(s));
     else {
       const junk = junkContainer(home, P);
+      // containers in our own room can be destroyed instantly (ERR_BUSY while hostiles present -> dismantle fallback)
+      if (junk && junk.destroy() === OK) return;
       if (junk) { c.memory.dismantle = junk.id; c.memory.working = false; delete c.memory.t; return; }
       const remoteSite = remoteRoadSite();
       if (remoteSite) t = remoteSite;

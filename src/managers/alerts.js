@@ -12,7 +12,10 @@ module.exports = { run(room) {
   // structure hit loss since last tick (own structures + roads/containers)
   const hitsNow = {}; let loss = 0; const damaged = [];
   const scan = Game.time % 5 === 0;  // structure hit-loss diff every 5 ticks (event log still covers every tick)
+  // our own builders dismantling leftover containers are not an attack
+  const ownDis = scan ? new Set(Object.values(Game.creeps).map(c => c.memory.dismantle).filter(Boolean)) : null;
   if (scan) for (const s of room.find(FIND_STRUCTURES)) {
+    if (ownDis.has(s.id)) continue;
     if (!(s.my || s.structureType === STRUCTURE_ROAD || s.structureType === STRUCTURE_CONTAINER)) continue;
     hitsNow[s.id] = [s.hits, s.ticksToDecay];
     const prev = mem.hits[s.id];

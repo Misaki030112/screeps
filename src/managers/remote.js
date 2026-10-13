@@ -3,7 +3,9 @@
 // remote creeps flee home and remote spawning stops. Logs ALERT lines (picked up by listener -> alerts.py).
 const CFG = { W45N8: { home: 'W46N8', src: [14, 12], cont: [13, 11], ctl: [7, 36], exitHome: [49, 14], exitRemote: [0, 14],
   // swamp tiles on the ideal haul route (model.py pave list); home-side swamps live in layout RCL3 roads
-  roads: [[2, 12]] } };
+  roads: [[2, 12]],
+  // where fleeing remote creeps wait at home while paused: plain tiles off every fixed route/plan tile, near the exit route
+  park: [46, 21] } };
 const PAUSE = 1500, COMBAT = ['attack', 'ranged_attack'];
 function mem(r) { return (Memory.remote = Memory.remote || {})[r] = Memory.remote[r] || { pauseUntil: 0 }; }
 function paused(r) { return (mem(r).pauseUntil || 0) > Game.time; }

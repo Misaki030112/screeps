@@ -14,8 +14,8 @@ function go(c, room, x, y, range) {
 }
 function flee(c) {
   const C = remote.CFG[c.memory.remote];
-  if (c.room.name === C.home && c.pos.x > 1 && c.pos.x < 48) { if (c.store && c.store[RESOURCE_ENERGY] > 0 && c.memory.role === 'rhauler') { c.memory.working = true; return require('./hauler').run(c); } return move.to(c, 33, 26, 3); }
-  go(c, C.home, 33, 26, 3);
+  if (c.room.name === C.home && c.pos.x > 1 && c.pos.x < 48) { if (c.store && c.store[RESOURCE_ENERGY] > 0 && c.memory.role === 'rhauler') { c.memory.working = true; return require('./hauler').run(c); } const [px, py] = C.park || [33, 26]; return move.to(c, px, py, 1); }
+  const [px, py] = C.park || [33, 26]; go(c, C.home, px, py, 1);
 }
 const roles = {
   rminer(c) {
