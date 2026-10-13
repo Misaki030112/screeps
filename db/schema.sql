@@ -13,6 +13,8 @@ CREATE INDEX IF NOT EXISTS creep_ticks_room ON creep_ticks (room, ts DESC);
 CREATE TABLE IF NOT EXISTS creep_cpu (
   ts timestamptz NOT NULL, tick bigint NOT NULL, creep text NOT NULL, role text, cpu_ms real, acts int, work int,
   repaths int, stuck int, target text, commit text);
+-- rp_why: one char per PathFinder search in the window (n=new target, v=version bump, o=off path, s=stuck2, x=stuck8, z=stuck30; see src/utils/move.js)
+ALTER TABLE creep_cpu ADD COLUMN IF NOT EXISTS rp_why text;
 SELECT create_hypertable('creep_cpu', by_range('ts', INTERVAL '1 day'), if_not_exists => true);
 CREATE UNIQUE INDEX IF NOT EXISTS creep_cpu_uq ON creep_cpu (creep, tick, ts);
 

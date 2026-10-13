@@ -5,12 +5,16 @@
 //   stuck 8  -> step to any free neighbour tile, repath (reported to trace)
 //   stuck 30 -> console "STUCK" report once (box audit flags it). No automatic recycling.
 // Paths are invalidated only when the room's structure/site set changes (version bump) — no timed expiry.
+// Cheap shortcuts (no PathFinder): one step from the goal range -> step straight at it if the tile is passable;
+// range-0 goal held by our own stationary creep (old miner/upgrader before it dies) -> wait adjacent, no repath/shove.
+// Every search is traced with a reason: n=new target, v=version bump, o=off path, s=stuck2, x=stuck8, z=stuck30.
 const CM = {};   // heap: roomName -> {v, m}
 const VER = {};  // heap: roomName -> {v, n}  structure+site count signature
 const enc = p => String.fromCharCode(p.x * 50 + p.y + 192);
 const dec = ch => { const v = ch - 192; return [Math.floor(v / 50), v % 50]; };
 const trace = require('./trace');
 const OPP = { 1: 5, 2: 6, 3: 7, 4: 8, 5: 1, 6: 2, 7: 3, 8: 4 };
+const DXY = { 1: [0, -1], 2: [1, -1], 3: [1, 0], 4: [1, 1], 5: [0, 1], 6: [-1, 1], 7: [-1, 0], 8: [-1, -1] };
 function version(room) {
   let e = VER[room.name];
   if (!e || e.t !== Game.time) {
@@ -41,10 +45,10 @@ function matrix(roomName, avoidCreeps) {
   for (const c of room.find(FIND_CREEPS)) m2.set(c.pos.x, c.pos.y, 255);
   return m2;
 }
-function search(c, x, y, range, avoid) {
+function search(c, x, y, range, avoid, why) {
   const r = PathFinder.search(c.pos, { pos: new RoomPosition(x, y, c.room.name), range },
     { plainCost: 2, swampCost: 10, maxRooms: 1, maxOps: 2000, roomCallback: rn => matrix(rn, avoid) });
-  trace.repath(c);
+  trace.repath(c, why);
   return enc(c.pos) + r.path.map(enc).join('');
 }
 function stationary(o) { const P = require('./plan').get(o.room.name); return !!(P && P.standing.has(o.pos.x * 50 + o.pos.y)) && ['miner', 'filler', 'manager', 'upgrader', 'rminer'].includes(o.memory && o.memory.role); }
@@ -59,15 +63,28 @@ module.exports = {
       delete c.memory._m; return true;
     }
     if (c.fatigue > 0) return false;
+    const dist = Math.max(Math.abs(c.pos.x - x), Math.abs(c.pos.y - y));
+    if (range === 0 && dist === 1) { // goal tile held by our own stationary creep: wait here (it will die/leave)
+      const b = c.room.lookForAt(LOOK_CREEPS, x, y)[0];
+      if (b && b.my && stationary(b)) { if (m && m.k === k) { m.s = 0; m.l = enc(c.pos); } return false; }
+    }
     const here = enc(c.pos), v = version(c.room);
     if (m && m.k === k) m.s = m.l === here ? (m.s || 0) + 1 : 0;
     const s = m && m.k === k ? m.s : 0;
     let i = m && m.k === k ? m.p.indexOf(here) : -1;
     if (!m || m.k !== k || m.v !== v || (i < 0 && m.l !== here) || s === 2 || s === 8 || s >= 30 && s % 30 === 0) {
       const keep = m && m.k === k ? m : null;
+      const why = !keep ? 'n' : s === 2 ? 's' : s === 8 ? 'x' : s >= 30 ? 'z' : m.v !== v ? 'v' : 'o';
       if (s === 8) { trace.stuck(c); const d = 1 + (Game.time % 8); c.move(d); }
       if (s === 30) console.log(`STUCK ${c.name} ${c.memory.role} ${c.room.name} ${c.pos.x},${c.pos.y} -> ${k}`);
-      m = c.memory._m = { k, p: search(c, x, y, range, s >= 2), s, v, n: keep ? keep.n : undefined, t0: keep ? keep.t0 : Game.time };
+      let p = null;
+      if (why === 'n' && dist - range === 1) { // one step away: straight step if passable (no search)
+        const dir = c.pos.getDirectionTo(x, y), D = DXY[dir], nx = c.pos.x + D[0], ny = c.pos.y + D[1];
+        const cm = matrix(c.room.name, false);
+        if (nx > 0 && nx < 49 && ny > 0 && ny < 49 && c.room.getTerrain().get(nx, ny) !== TERRAIN_MASK_WALL && (!cm || cm.get(nx, ny) < 255))
+          p = here + enc({ x: nx, y: ny });
+      }
+      m = c.memory._m = { k, p: p || search(c, x, y, range, s >= 2, why), s, v, n: keep ? keep.n : undefined, t0: keep ? keep.t0 : Game.time };
       if (m.n === undefined) m.n = m.p.length - 1;
       if (s === 8) { m.l = here; return false; }
       i = 0;

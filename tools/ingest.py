@@ -6,7 +6,7 @@ from datetime import datetime, timezone
 Q = queue.Queue()
 SQL = {
  'creep_ticks': 'INSERT INTO creep_ticks (ts,tick,room,creep,role,x,y,hits,store,state,commit) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) ON CONFLICT DO NOTHING',
- 'creep_cpu': 'INSERT INTO creep_cpu (ts,tick,creep,role,cpu_ms,acts,work,repaths,stuck,target,commit) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) ON CONFLICT DO NOTHING',
+ 'creep_cpu': 'INSERT INTO creep_cpu (ts,tick,creep,role,cpu_ms,acts,work,repaths,stuck,target,commit,rp_why) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) ON CONFLICT DO NOTHING',
  'path_arrivals': 'INSERT INTO path_arrivals (ts,tick,creep,role,target,planned,actual,commit) VALUES (%s,%s,%s,%s,%s,%s,%s,%s) ON CONFLICT DO NOTHING',
  'room_stats': 'INSERT INTO room_stats (ts,tick,room,rcl,progress,progress_total,energy,energy_cap,sites,hostiles,safe_mode,cpu,bucket,trace_cpu,gcl_progress,creeps,commit) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) ON CONFLICT DO NOTHING',
  'events': 'INSERT INTO events (ts,tick,kind,room,severity,episode,msg,data) VALUES (%s,%s,%s,%s,%s,%s,%s,%s)',

@@ -112,18 +112,34 @@ def record_room(room, data):
                                        'spawning' if o.get('spawning') else ('loaded' if e else 'empty'), cm))
 SEG = 90
 polls = [0]
+# The ring buffer holds the last 300 ticks and is re-read every 60 s, and ts is part of the hypertable unique key,
+# so dedup happens here: only windows/arrivals newer than the last ingested tick are written.
+seen = {'cpu': None, 'arr': None}
+def seed_seen():
+    try:
+        with ingest.db.connect() as c:
+            seen['cpu'] = c.execute("SELECT max(tick) FROM creep_cpu WHERE ts > now() - interval '2 hours'").fetchone()[0] or 0
+            seen['arr'] = c.execute("SELECT max(tick) FROM path_arrivals WHERE ts > now() - interval '2 hours'").fetchone()[0] or 0
+    except Exception as ex: append('errors.log', f'{stamp()} [listener] seed_seen {ex}'); seen['cpu'] = seen['arr'] = 0
 def segment_poller():
-    """in-game per-creep CPU/intent windows: memory segment 90 ring buffer, polled every 60 s (dedup by unique index)."""
+    """in-game per-creep CPU/intent windows: memory segment 90 ring buffer, polled every 60 s (dedup by last tick)."""
     while True:
         try:
+            if seen['cpu'] is None: seed_seen()
             d = req(f'user/memory-segment?segment={SEG}&shard={SHARD}').get('data')
             if d:
                 j = json.loads(d); ts, cm = utcnow(), ingest.commit()
+                mc, ma = seen['cpu'], seen['arr']
                 for t, rows in j.get('s', []):
-                    for n, cpu, acts, work, rp, stk, tgt in rows:
-                        ingest.put('creep_cpu', (ts, t, n, role_of(n), cpu / 100, acts, work, rp, stk, tgt, cm))
+                    if t <= mc: continue
+                    for r in rows:
+                        n, cpu, acts, work, rp, stk, tgt = r[:7]
+                        ingest.put('creep_cpu', (ts, t, n, role_of(n), cpu / 100, acts, work, rp, stk, tgt, cm, r[7] if len(r) > 7 else None))
+                    seen['cpu'] = max(seen['cpu'], t)
+                # arrivals are appended in tick order; same-tick arrivals arrive in the same poll
                 for t, n, role, tgt, plan, act in j.get('a', []):
-                    ingest.put('path_arrivals', (ts, t, n, role, tgt, plan, act, cm))
+                    if t <= ma: continue
+                    ingest.put('path_arrivals', (ts, t, n, role, tgt, plan, act, cm)); seen['arr'] = max(seen['arr'], t)
         except Exception as ex: append('errors.log', f'{stamp()} [listener] segment poll {ex}')
         time.sleep(60)
         polls[0] += 1

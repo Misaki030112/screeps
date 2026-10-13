@@ -10,7 +10,7 @@ const C = { OK: 0, ERR_NOT_IN_RANGE: -9, ERR_NOT_ENOUGH_ENERGY: -6, ERR_INVALID_
   FIND_CREEPS: 101, FIND_MY_CREEPS: 102, FIND_HOSTILE_CREEPS: 103, FIND_SOURCES: 105, FIND_DROPPED_RESOURCES: 106, FIND_STRUCTURES: 107,
   FIND_MY_STRUCTURES: 108, FIND_CONSTRUCTION_SITES: 111, FIND_MY_CONSTRUCTION_SITES: 114, FIND_SOURCES_ACTIVE: 104, LOOK_RESOURCES: 'resource',
   RESOURCE_ENERGY: 'energy', WORK: 'work', CARRY: 'carry', MOVE: 'move', ATTACK: 'attack', RANGED_ATTACK: 'ranged_attack', HEAL: 'heal', CLAIM: 'claim', TOUGH: 'tough',
-  TOP: 1, RIGHT: 3, BOTTOM: 5, LEFT: 7, LOOK_SOURCES: 'source', LOOK_CREEPS: 'creep', FIND_CONSTRUCTION_SITES: 111, LOOK_STRUCTURES: 'structure', LOOK_CONSTRUCTION_SITES: 'constructionSite', BODYPART_COST: { work: 100, carry: 50, move: 50, attack: 80, ranged_attack: 150, heal: 250, claim: 600, tough: 10 }, EVENT_ATTACK: 1 };
+  TOP: 1, RIGHT: 3, BOTTOM: 5, LEFT: 7, LOOK_SOURCES: 'source', LOOK_CREEPS: 'creep', FIND_CONSTRUCTION_SITES: 111, LOOK_STRUCTURES: 'structure', LOOK_CONSTRUCTION_SITES: 'constructionSite', BODYPART_COST: { work: 100, carry: 50, move: 50, attack: 80, ranged_attack: 150, heal: 250, claim: 600, tough: 10 }, EVENT_ATTACK: 1, TERRAIN_MASK_WALL: 1, TERRAIN_MASK_SWAMP: 2 };
 for (const t of ['spawn', 'extension', 'road', 'wall', 'rampart', 'link', 'storage', 'tower', 'observer', 'powerSpawn', 'extractor', 'lab', 'terminal', 'container', 'nuker', 'factory', 'controller'])
   C['STRUCTURE_' + t.replace(/[A-Z]/g, m => '_' + m).toUpperCase()] = t;
 C.EXTENSION_ENERGY_CAPACITY = { 0: 50, 1: 50, 2: 50, 3: 50, 4: 50, 5: 50, 6: 50, 7: 100, 8: 200 };
@@ -63,7 +63,7 @@ room = { name: 'W46N8', memory: {}, get storage() { return Object.values(objs).f
   controller: { id: ctlObj._id, my: true, level: ctlObj.level, progress: ctlObj.progress, progressTotal: 135000, pos: new RoomPosition(ctlObj.x, ctlObj.y), safeModeAvailable: 2, structureType: 'controller' },
   get energyAvailable() { return Object.values(objs).filter(o => o.structureType === 'spawn' || o.structureType === 'extension').reduce((t, o) => t + o.store.energy, 0); },
   get energyCapacityAvailable() { return Object.values(objs).filter(o => o.structureType === 'spawn' || o.structureType === 'extension').reduce((t, o) => t + CAP[o.structureType], 0); },
-  getEventLog: () => [], lookForAtArea: () => [], lookForAt: (t, x, y) => Object.values(objs).filter(o => o.body && o.pos.x === x && o.pos.y === y),
+  getEventLog: () => [], getTerrain: () => ({ get: (x, y) => isWall(x, y) ? 1 : 0 }), lookForAtArea: () => [], lookForAt: (t, x, y) => Object.values(objs).filter(o => o.body && o.pos.x === x && o.pos.y === y),
   find(type, opts) { let r;
     const all = Object.values(objs);
     switch (type) {
@@ -132,7 +132,8 @@ for (let t = 0; t < TICKS; t++) {
 }
 const errs = (g.Memory.stats && g.Memory.stats.errors) || [];
 const out = { ticks: TICKS, errors: errs.concat(errors), creeps: Object.values(g.Game.creeps).map(c => ({ n: c.name, role: c.memory.role, from: startPos[c.name], to: c.pos.x + ',' + c.pos.y, acts: c.acts, e: c.store.energy })),
-  sites: sites.map(s => `${s.structureType} ${s.pos.x},${s.pos.y}`), log: log.filter(l => /LAYOUT|DESTROY|REMOVE|SPAWN|BUILT|ERR|CS |STUCK/.test(l)).slice(0, 200),
-  mem: Object.fromEntries(Object.values(g.Game.creeps).map(c => [c.name, c.memory])), prog: sites.map(s => s.progress), energy: `${room.energyAvailable}/${room.energyCapacityAvailable}`, ctlProgress: room.controller.progress, seg90: (g.RawMemory.segments[90] || '').length };
+  sites: sites.map(s => `${s.structureType} ${s.pos.x},${s.pos.y}`), log: log.filter(l => /LAYOUT|DESTROY|REMOVE|SPAWN|BUILT|ERR|CS |STUCK|^DBG/.test(l)).slice(-400),
+  mem: Object.fromEntries(Object.values(g.Game.creeps).map(c => [c.name, c.memory])), prog: sites.map(s => s.progress), energy: `${room.energyAvailable}/${room.energyCapacityAvailable}`, ctlProgress: room.controller.progress, seg90: (g.RawMemory.segments[90] || '').length,
+  repaths: (() => { const R = JSON.parse(g.RawMemory.segments[90] || '{"s":[]}'), o = {}; for (const [, rows] of R.s) for (const r of rows) { const role = r[0].replace(/[0-9]/g, ''); o[role] = (o[role] || 0) + r[4]; for (const ch of (r[7] || '')) o[role + ':' + ch] = (o[role + ':' + ch] || 0) + 1; } return o; })() };
 console.log(JSON.stringify(out, null, 1));
 if (out.errors.length) process.exit(1);
