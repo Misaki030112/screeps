@@ -9,4 +9,5 @@ if (out.errors.length) throw new Error('sim errors: ' + out.errors.slice(0, 3).j
 const idle = out.creeps.filter(c => c.acts < 50 && c.from);
 if (idle.length > 2) throw new Error('too many idle creeps in sim: ' + JSON.stringify(idle));
 if (!out.log.some(l => l.startsWith('LAYOUT'))) throw new Error('layout manager did nothing in sim');
+if (!(out.seg90 > 100 && out.seg90 < 90000)) throw new Error('trace segment 90 missing/too big: ' + out.seg90);
 console.log(`checks passed: ${fs.readdirSync(DIST).length} modules; sim 600 ticks, 0 errors, energy ${out.energy}, ${out.creeps.length} creeps`);

@@ -5,6 +5,8 @@
 Run via tools/run_listener.sh (auto-restart)."""
 import json, os, sys, time, threading, zlib, base64, html
 import websocket
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import tsdb
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'scripts'))
 from api import TOKEN, ROOT, req
 ROOM, SHARD = 'W46N8', 'shard3'
@@ -63,6 +65,8 @@ def on_message(ws, msg):
                 try: handle_alert(json.loads(l[6:]))
                 except Exception as ex: append('errors.log', f'{stamp()} [listener] bad ALERT {ex}: {l[:200]}')
                 continue
+            if l.startswith('CS '):
+                append('creep_samples.jsonl', l[3:]); continue
             if l.startswith('STATS '):
                 try:
                     st = json.loads(l[6:]); live['stats'] = st; last_stats[0] = time.time()
@@ -76,6 +80,7 @@ def on_message(ws, msg):
     elif ch.endswith('/cpu'):
         live['cpu'] = data; 
     elif ch == f'room:{SHARD}/{WATCH}':
+        record_room(WATCH, data)
         for oid, o in (data.get('objects') or {}).items():
             if o is None: watch['objects'].pop(oid, None)
             else: watch['objects'].setdefault(oid, {}).update(o)
@@ -87,6 +92,7 @@ def on_message(ws, msg):
             watch['last'] = snap
             append('w45n8_activity.jsonl', json.dumps({'t': stamp(), 'tick': data.get('gameTime'), 'creeps': cre, 'container': cont, 'reservation': ctl}))
     elif ch.startswith('room:'):
+        record_room(ch.split('/')[-1], data)
         with lock:
             for oid, o in (data.get('objects') or {}).items():
                 if o is None: live['objects'].pop(oid, None)
@@ -94,6 +100,39 @@ def on_message(ws, msg):
             live['gameTime'] = data.get('gameTime', live['gameTime'])
         write_live()
 last_stats = [time.time()]
+# ---- continuous telemetry: every creep, every room update (no in-game CPU) ----
+rooms_state = {}  # room -> {oid: obj}
+db = [None]
+def record_room(room, data):
+    st = rooms_state.setdefault(room, {})
+    for oid, o in (data.get('objects') or {}).items():
+        if o is None: st.pop(oid, None)
+        elif oid in st: st[oid].update(o)
+        else: st[oid] = dict(o)
+    t = data.get('gameTime')
+    if t is None: return
+    rows = [(t, room, o.get('name'), o.get('x'), o.get('y'), o.get('hits'), (o.get('store') or {}).get('energy', 0), int(time.time()))
+            for o in st.values() if o.get('type') == 'creep' and o.get('user') == UID]
+    if not rows: return
+    try:
+        if db[0] is None: db[0] = tsdb.connect()
+        db[0].executemany('INSERT INTO pos VALUES (?,?,?,?,?,?,?,?)', rows); db[0].commit()
+    except Exception as ex: append('errors.log', f'{stamp()} [listener] tsdb {ex}')
+SEG = 90
+def segment_poller():
+    """in-game per-creep CPU/intent windows: memory segment 90 ring buffer, polled every 60 s (dedup by primary key)."""
+    c = tsdb.connect()
+    while True:
+        try:
+            d = req(f'user/memory-segment?segment={SEG}&shard={SHARD}').get('data')
+            if d:
+                j = json.loads(d)
+                for t, rows in j.get('s', []):
+                    c.executemany('INSERT OR IGNORE INTO cpu VALUES (?,?,?,?,?,?,?,?)', [(t, *r) for r in rows])
+                c.executemany('INSERT OR IGNORE INTO arr VALUES (?,?,?,?,?,?)', j.get('a', []))
+                c.commit()
+        except Exception as ex: append('errors.log', f'{stamp()} [listener] segment poll {ex}')
+        time.sleep(60)
 STALE_S = 180  # STATS arrive every 10 ticks (~40 s); a silent-but-alive socket gets closed so run_listener.sh reconnects
 def watchdog(ws):
     while True:
@@ -106,4 +145,5 @@ def on_error(ws, e): append('errors.log', f'{stamp()} [listener] ws error {e}')
 if __name__ == '__main__':
     ws = websocket.WebSocketApp('wss://screeps.com/socket/websocket', on_open=on_open, on_message=on_message, on_error=on_error)
     threading.Thread(target=watchdog, args=(ws,), daemon=True).start()
+    threading.Thread(target=segment_poller, daemon=True).start()
     ws.run_forever(ping_interval=30, ping_timeout=10)
