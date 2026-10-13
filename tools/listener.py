@@ -8,6 +8,8 @@ import websocket
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'scripts'))
 from api import TOKEN, ROOT, req
 ROOM, SHARD = 'W46N8', 'shard3'
+WATCH = 'W45N8'  # passive scouting of the remote-mining candidate (no creeps sent)
+watch = {'objects': {}, 'last': None}
 M = os.path.join(ROOT, 'metrics'); os.makedirs(M, exist_ok=True)
 UID = req('auth/me')['_id']
 live = {'uid': None, 'stats': None, 'cpu': None, 'objects': {}, 'gameTime': None, 'console_tail': [], 'errors_tail': [], 'updated': None}
@@ -47,7 +49,7 @@ def decode(msg):
 def on_message(ws, msg):
     msg = decode(msg)
     if msg.startswith('auth ok'):
-        for ch in (f'user:{UID}/console', f'user:{UID}/cpu', f'room:{SHARD}/{ROOM}'): ws.send('subscribe ' + ch)
+        for ch in (f'user:{UID}/console', f'user:{UID}/cpu', f'room:{SHARD}/{ROOM}', f'room:{SHARD}/{WATCH}'): ws.send('subscribe ' + ch)
         append('console.log', f'{stamp()} [listener] subscribed'); return
     if msg.startswith('auth failed'): append('errors.log', f'{stamp()} [listener] auth failed'); ws.close(); return
     if not msg.startswith('['): return
@@ -73,6 +75,17 @@ def on_message(ws, msg):
         write_live()
     elif ch.endswith('/cpu'):
         live['cpu'] = data; 
+    elif ch == f'room:{SHARD}/{WATCH}':
+        for oid, o in (data.get('objects') or {}).items():
+            if o is None: watch['objects'].pop(oid, None)
+            else: watch['objects'].setdefault(oid, {}).update(o)
+        cre = sorted((o.get('user'), o.get('name')) for o in watch['objects'].values() if o.get('type') == 'creep')
+        cont = [(o.get('store') or {}).get('energy') for o in watch['objects'].values() if o.get('type') == 'container']
+        ctl = [o.get('reservation') for o in watch['objects'].values() if o.get('type') == 'controller']
+        snap = json.dumps({'creeps': cre, 'container': cont, 'reservation': ctl})
+        if snap != watch['last']:
+            watch['last'] = snap
+            append('w45n8_activity.jsonl', json.dumps({'t': stamp(), 'tick': data.get('gameTime'), 'creeps': cre, 'container': cont, 'reservation': ctl}))
     elif ch.startswith('room:'):
         with lock:
             for oid, o in (data.get('objects') or {}).items():
