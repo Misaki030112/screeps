@@ -101,6 +101,17 @@ def actuals(hours, routes_tiles):
     cov = q(c, f"SELECT count(DISTINCT tick)::float/nullif(max(tick)-min(tick)+1,0) FROM creep_ticks WHERE ts>now()-interval '{H}'")[0][0] or 1
     T_ = T_ * cov  # store deltas are only seen on ingested ticks (dt<=3); normalise by tick coverage
     A['income'] = {k: v / T_ for k, v in inc.items()}
+    # Home sources: harvested energy, not carrier pickups (after storage miner B transfers straight in, which pickups never see).
+    # One 'w' state tick of a miner = one harvest of 2x5 WORK (miner only acts while the source has energy). Normalised by
+    # the creep_cpu window coverage (segment ring), independent of websocket gaps.
+    mrows = q(c, f"""WITH p AS (SELECT creep, mode() WITHIN GROUP (ORDER BY x*100+y) xy FROM creep_ticks
+          WHERE ts>now()-interval '{H}' AND role='miner' AND room=%s GROUP BY 1)
+        SELECT p.xy, sum(length(k.codes) - length(replace(k.codes, 'w', ''))) FROM creep_cpu k JOIN p USING (creep)
+        WHERE k.ts>now()-interval '{H}' GROUP BY 1""", HOME)
+    wt = q(c, f"SELECT count(DISTINCT tick)*5 FROM creep_cpu WHERE ts>now()-interval '{H}'")[0][0] or 1
+    for k in ('A', 'B'):
+        _, sx, sy = src[k]
+        A['income'][k] = sum(10 * n for xy, n in mrows if max(abs(xy // 100 - sx), abs(xy % 100 - sy)) <= 1) / wt
     A['spent'] = {k: v / T_ for k, v in spent.items()}
     A['delivered'] = {k: v / T_ for k, v in deliv.items()}
     A['coverage'] = q(c, f"SELECT count(DISTINCT tick)::float/nullif(max(tick)-min(tick)+1,0) FROM creep_ticks WHERE ts>now()-interval '{H}'")[0][0]

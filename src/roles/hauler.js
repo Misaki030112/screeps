@@ -91,8 +91,9 @@ module.exports = { pickups, handoff, ctlLow, run(c) {
     const cc = rc.at(room, cx, cy, STRUCTURE_CONTAINER); if (cc && cc.store.getFreeCapacity(RESOURCE_ENERGY) >= 100) { if (cc.store[RESOURCE_ENERGY] < CTL_LOW) opts.unshift(cc); else opts.push(cc); }
     const st = room.storage; if (st && st.store.getFreeCapacity() > 10000) opts.push(st);
     if (fc && fc.store.getFreeCapacity(RESOURCE_ENERGY) >= 200) opts.push(fc);
-    // creeps that need energy: queen first (keeps the fill loop short), then builders
-    const needCreep = _.filter(Game.creeps, x => x.room.name === room.name && (x.memory.role === 'queen' || x.memory.role === 'builder') && x.store.getFreeCapacity() >= 50);
+    // creeps that need energy: queen first (keeps the fill loop short), then builders. Pre-storage only: with storage both
+    // refill there, and chasing moving creeps doubled hauler repaths (rp/100 8.6 -> 21.7, trip 13 -> 22 after 4b8715a).
+    const needCreep = st ? [] : _.filter(Game.creeps, x => x.room.name === room.name && (x.memory.role === 'queen' || x.memory.role === 'builder') && x.store.getFreeCapacity() >= 50);
     needCreep.sort((a, b) => (a.memory.role === 'queen' ? 0 : 1) - (b.memory.role === 'queen' ? 0 : 1));
     if (needCreep[0] && needCreep[0].memory.role === 'queen' && !(fc && opts[0] === fc)) opts.unshift(needCreep[0]); else if (needCreep[0]) opts.push(needCreep[0]);
     dst = opts[0] || null; c.memory.dst = dst ? dst.id : undefined;
