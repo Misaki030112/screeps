@@ -1,7 +1,12 @@
 // Hauler (RCL2-6): one FIXED pickup per hauler (its miner container + drops next to it, waits there until full) -> fixed drop-offs:
 // spawn/ext via queen route when no queen, controller container, storage, filler container. No room-wide searches.
 const plan = require('../utils/plan'), move = require('../utils/move'), rc = require('../utils/roomcache');
-const queen = require('./queen');
+const queen = require('./queen'), trace = require('../utils/trace');
+// controller container below this -> it is the first drop-off and a half-full hauler stops waiting (upgraders were idle 35% while haulers waited/fed elsewhere, idle_history 10-13)
+const CTL_LOW = 1000;
+function ctlLow(room, P) { const k = rc.at(room, P.pos.controllerContainer[0], P.pos.controllerContainer[1], STRUCTURE_CONTAINER); return k && k.store[RESOURCE_ENERGY] < CTL_LOW; }
+// one rule for every carrier next to the controller: hand energy straight to an adjacent upgrader that has room (no queue on the drop tile)
+function handoff(c) { const u = c.pos.findInRange(FIND_MY_CREEPS, 1).find(x => x.memory.role === 'upgrader' && x.store.getFreeCapacity() >= 25); return u ? c.transfer(u, RESOURCE_ENERGY) === OK : false; }
 function pickups(room) {
   const P = plan.get(room.name);
   return P.pos.miners.map(([x, y]) => rc.at(room, x, y, STRUCTURE_CONTAINER)).filter(Boolean)
@@ -34,7 +39,7 @@ function legacyPickup(c, room, P) {
   }
   if (move.to(c, src.pos.x, src.pos.y, 1)) { (src.store ? c.withdraw(src, RESOURCE_ENERGY) : c.pickup(src)); delete c.memory.src; }
 }
-module.exports = { pickups, run(c) {
+module.exports = { pickups, handoff, ctlLow, run(c) {
   const room = c.room, P = plan.get(room.name);
   if (c.memory.working && c.store[RESOURCE_ENERGY] === 0) { c.memory.working = false; delete c.memory.dst; }
   if (!c.memory.working && c.store.getFreeCapacity() === 0) c.memory.working = true;
@@ -55,6 +60,8 @@ module.exports = { pickups, run(c) {
     const urgent = room.energyAvailable < room.energyCapacityAvailable * 0.5 && c.store[RESOURCE_ENERGY] + take >= 100;
     if (take >= free || (urgent && take >= 50)) { c.withdraw(cont, RESOURCE_ENERGY); if (take < free) c.memory.working = true; return; }
     if (urgent && c.store[RESOURCE_ENERGY] > 0) c.memory.working = true; // leave with what we have
+    else if (c.store[RESOURCE_ENERGY] >= c.store.getCapacity() / 2 && ctlLow(room, P)) c.memory.working = true; // upgraders starving: go now
+    trace.why(c, cont.store[RESOURCE_ENERGY] < 50 ? 'e' : 'p'); // container empty = source-limited (legit)
     return; // wait (no intents, no pathing)
   }
   // deliver
@@ -77,7 +84,7 @@ module.exports = { pickups, run(c) {
     if (queens && fc && fc.store[RESOURCE_ENERGY] < 400 && fc.store.getFreeCapacity(RESOURCE_ENERGY) >= 100) opts.push(fc); // queen's fixed refill
     const tw = rc.all(room, STRUCTURE_TOWER).filter(t => t.store[RESOURCE_ENERGY] < 600);
     if (!queens) opts.push(...tw);
-    const cc = rc.at(room, cx, cy, STRUCTURE_CONTAINER); if (cc && cc.store.getFreeCapacity(RESOURCE_ENERGY) >= 100) opts.push(cc);
+    const cc = rc.at(room, cx, cy, STRUCTURE_CONTAINER); if (cc && cc.store.getFreeCapacity(RESOURCE_ENERGY) >= 100) { if (cc.store[RESOURCE_ENERGY] < CTL_LOW) opts.unshift(cc); else opts.push(cc); }
     const st = room.storage; if (st && st.store.getFreeCapacity() > 10000) opts.push(st);
     if (fc && fc.store.getFreeCapacity(RESOURCE_ENERGY) >= 200) opts.push(fc);
     // creeps that need energy: queen first (keeps the fill loop short), then builders
@@ -89,7 +96,7 @@ module.exports = { pickups, run(c) {
   }
   // controller container: stand on the drop tile (31,29) — never on upgrader spots
   if (dst.structureType === STRUCTURE_CONTAINER && dst.pos.x === P.pos.controllerContainer[0] && dst.pos.y === P.pos.controllerContainer[1]) {
-    if (move.to(c, dst.pos.x, dst.pos.y, 1)) { c.transfer(dst, RESOURCE_ENERGY); delete c.memory.dst; } return; // upgrader tiles are costly in the matrix, so it stops on 31,29 / 30,29 / 29,29
+    if (move.to(c, dst.pos.x, dst.pos.y, 1)) { c.transfer(dst, RESOURCE_ENERGY); delete c.memory.dst; } else if (!handoff(c)) trace.why(c, 'q'); return; // upgrader tiles are costly in the matrix, so it stops on 31,29 / 30,29 / 29,29
   }
   if (move.to(c, dst.pos.x, dst.pos.y, 1)) { c.transfer(dst, RESOURCE_ENERGY); delete c.memory.dst; }
 } };

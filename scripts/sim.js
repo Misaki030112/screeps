@@ -138,6 +138,7 @@ const errs = (g.Memory.stats && g.Memory.stats.errors) || [];
 const out = { ticks: TICKS, errors: errs.concat(errors), creeps: Object.values(g.Game.creeps).map(c => ({ n: c.name, role: c.memory.role, from: startPos[c.name], to: c.pos.x + ',' + c.pos.y, acts: c.acts, e: c.store.energy })),
   sites: sites.map(s => `${s.structureType} ${s.pos.x},${s.pos.y}`), log: log.filter(l => /LAYOUT|DESTROY|REMOVE|SPAWN|BUILT|ERR|CS |STUCK|^DBG/.test(l)).slice(-400),
   mem: Object.fromEntries(Object.values(g.Game.creeps).map(c => [c.name, c.memory])), prog: sites.map(s => s.progress), energy: `${room.energyAvailable}/${room.energyCapacityAvailable}`, ctlProgress: room.controller.progress, seg90: (g.RawMemory.segments[90] || '').length,
+  idle: (() => { const R = JSON.parse(g.RawMemory.segments[90] || '{"s":[]}'), o = {}; for (const [, rows] of R.s) for (const r of rows) { const role = r[0].replace(/[0-9]/g, ''); for (const ch of (r[8] || '')) { o[role] = o[role] || {}; o[role][ch] = (o[role][ch] || 0) + 1; } } return o; })(),
   repaths: (() => { const R = JSON.parse(g.RawMemory.segments[90] || '{"s":[]}'), o = {}; for (const [, rows] of R.s) for (const r of rows) { const role = r[0].replace(/[0-9]/g, ''); o[role] = (o[role] || 0) + r[4]; for (const ch of (r[7] || '')) o[role + ':' + ch] = (o[role + ':' + ch] || 0) + 1; } return o; })() };
 console.log(JSON.stringify(out, null, 1));
 if (out.errors.length) process.exit(1);

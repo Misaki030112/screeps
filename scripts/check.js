@@ -8,6 +8,8 @@ const out = JSON.parse(execSync(`node ${path.join(__dirname, 'sim.js')} 600`, { 
 if (out.errors.length) throw new Error('sim errors: ' + out.errors.slice(0, 3).join('\n'));
 const idle = out.creeps.filter(c => c.acts < 50 && c.from);
 if (idle.length > 2) throw new Error('too many idle creeps in sim: ' + JSON.stringify(idle));
+if (!Object.keys(out.idle || {}).length) throw new Error('trace state codes missing in segment 90');
+console.log('sim state codes per role (last 300 ticks):', JSON.stringify(out.idle));
 if (!out.log.some(l => l.startsWith('LAYOUT'))) throw new Error('layout manager did nothing in sim');
 if (!(out.seg90 > 100 && out.seg90 < 90000)) throw new Error('trace segment 90 missing/too big: ' + out.seg90);
 console.log(`checks passed: ${fs.readdirSync(DIST).length} modules; sim 600 ticks, 0 errors, energy ${out.energy}, ${out.creeps.length} creeps`);

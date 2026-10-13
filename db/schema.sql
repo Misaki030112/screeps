@@ -15,6 +15,9 @@ CREATE TABLE IF NOT EXISTS creep_cpu (
   repaths int, stuck int, target text, commit text);
 -- rp_why: one char per PathFinder search in the window (n=new target, v=version bump, o=off path, s=stuck2, x=stuck8, z=stuck30; see src/utils/move.js)
 ALTER TABLE creep_cpu ADD COLUMN IF NOT EXISTS rp_why text;
+-- codes: one state char per tick of the window (src/utils/trace.js): w work m move s spawning | idle: e source_empty(legit) p waiting_pickup
+--   u waiting_feed f target_full q queue/blocked n no_task t parked_threat r renewing
+ALTER TABLE creep_cpu ADD COLUMN IF NOT EXISTS codes text;
 SELECT create_hypertable('creep_cpu', by_range('ts', INTERVAL '1 day'), if_not_exists => true);
 CREATE UNIQUE INDEX IF NOT EXISTS creep_cpu_uq ON creep_cpu (creep, tick, ts);
 
@@ -102,3 +105,12 @@ SELECT remote, inc, min(ts) AS started, max(ts) AS ended,
   bool_or(ev='spawn_start') AS defender_used,
   (max(tick) FILTER (WHERE state='SAFE') - inc) * 6 AS energy_lost_est
 FROM incidents WHERE inc IS NOT NULL GROUP BY remote, inc;
+
+-- idle attribution per creep/role per 1h (legit = e,s,r)
+CREATE OR REPLACE VIEW idle_by_reason AS
+  SELECT time_bucket('1 hour', ts) AS bucket, creep, role,
+    CASE ch WHEN 'w' THEN 'working' WHEN 'm' THEN 'moving' WHEN 's' THEN 'spawning' WHEN 'e' THEN 'source_empty' WHEN 'p' THEN 'waiting_pickup'
+      WHEN 'u' THEN 'waiting_feed' WHEN 'f' THEN 'target_full' WHEN 'q' THEN 'queue_blocked' WHEN 'n' THEN 'no_task' WHEN 't' THEN 'parked_threat'
+      WHEN 'r' THEN 'renewing' ELSE 'other' END AS reason,
+    ch IN ('e','s','r','w','m') AS legit, count(*) AS ticks
+  FROM creep_cpu, regexp_split_to_table(codes, '') AS ch WHERE codes IS NOT NULL AND codes <> '' GROUP BY 1, 2, 3, 4, 5;

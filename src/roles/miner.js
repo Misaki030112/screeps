@@ -9,7 +9,7 @@ module.exports = { run(c) {
     c.memory.spot = spot || [src.pos.x, src.pos.y];
   }
   const [x, y] = c.memory.spot;
-  if (!move.to(c, x, y, c.memory.spot[0] === src.pos.x && c.memory.spot[1] === src.pos.y ? 1 : 0)) return;
+  if (!move.to(c, x, y, c.memory.spot[0] === src.pos.x && c.memory.spot[1] === src.pos.y ? 1 : 0)) { require('../utils/trace').why(c, 'q'); return; }
   if (c.memory.travel === undefined && c.ticksToLive) { const t = 1500 - c.ticksToLive; c.memory.travel = t >= 0 && t <= 400 ? t : 100; }
   if (c.store.getCapacity() > 0 && c.store.getFreeCapacity() < c.getActiveBodyparts(WORK) * 2) {
     if (!c.memory.sink || Game.time % 100 === 0) {

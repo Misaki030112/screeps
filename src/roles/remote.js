@@ -12,9 +12,13 @@ function go(c, room, x, y, range) {
   if (c.pos.x === ex && c.pos.y === ey) { c.move(ex === 49 ? RIGHT : LEFT); return false; }
   move.to(c, ex, ey, 0); return false;
 }
+// Paused remote: at home the creep works with the home role that matches its body (reads the threat state only via remote.paused)
+const HOME = { rhauler: 'hauler', rminer: 'builder' };
 function flee(c) {
   const C = remote.CFG[c.memory.remote];
-  if (c.room.name === C.home && c.pos.x > 1 && c.pos.x < 48) { if (c.store && c.store[RESOURCE_ENERGY] > 0 && c.memory.role === 'rhauler') { c.memory.working = true; return require('./hauler').run(c); } const [px, py] = C.park || [33, 26]; return move.to(c, px, py, 1); }
+  if (c.room.name === C.home && c.pos.x > 1 && c.pos.x < 48) {
+    if (HOME[c.memory.role]) { c.memory.home = C.home; return require('./index')[HOME[c.memory.role]].run(c); }
+    const [px, py] = C.park || [33, 26]; require('../utils/trace').why(c, 't'); return move.to(c, px, py, 1); }
   const [px, py] = C.park || [33, 26]; go(c, C.home, px, py, 1);
 }
 const roles = {
@@ -35,6 +39,8 @@ const roles = {
   },
   rhauler(c) {
     const C = remote.CFG[c.memory.remote]; if (remote.paused(c.memory.remote)) return flee(c);
+    if (c.memory.working && !c.memory.full && c.room.name === C.home && c.store[RESOURCE_ENERGY] > 0) return require('./hauler').run(c); // finish a home job after a pause
+    c.memory.working = false;
     if (!c.memory.full && c.store.getFreeCapacity() === 0) { c.memory.full = true; c.memory.load = c.store[RESOURCE_ENERGY]; }
     if (c.memory.full && c.store[RESOURCE_ENERGY] === 0) { c.memory.full = false; c.memory.trips = (c.memory.trips || 0) + 1;
       const m = remote.mem(c.memory.remote); m.delivered = (m.delivered || 0) + (c.memory.load || 0); c.memory.load = 0; }

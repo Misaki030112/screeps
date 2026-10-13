@@ -141,7 +141,7 @@ def segment_poller():
                     if t <= mc: continue
                     for r in rows:
                         n, cpu, acts, work, rp, stk, tgt = r[:7]
-                        ingest.put('creep_cpu', (ts, t, n, role_of(n), cpu / 100, acts, work, rp, stk, tgt, cm, r[7] if len(r) > 7 else None))
+                        ingest.put('creep_cpu', (ts, t, n, role_of(n), cpu / 100, acts, work, rp, stk, tgt, cm, r[7] if len(r) > 7 else None, r[8] if len(r) > 8 else None))
                     seen['cpu'] = max(seen['cpu'], t)
                 # arrivals are appended in tick order; same-tick arrivals arrive in the same poll
                 for t, n, role, tgt, plan, act in j.get('a', []):

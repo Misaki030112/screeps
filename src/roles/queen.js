@@ -43,6 +43,14 @@ function fillRoute(c) {
   if (move.to(c, cur.x, cur.y, cur.r)) { const t = cur.ids.map(needy).find(Boolean); if (t) c.transfer(t, RESOURCE_ENERGY); }
   return true;
 }
+// Room full (52% of queen time historically): ferry filler container A -> controller while A keeps >=400 for the next refill
+function standby(c, room, P) {
+  const H = require('./hauler'); if (!H.ctlLow(room, P)) return false;
+  const [cx, cy] = P.pos.controllerContainer, [fx, fy] = P.pos.fillerContainerA;
+  if (c.store[RESOURCE_ENERGY] > 0) { const k = rc.at(room, cx, cy, STRUCTURE_CONTAINER); if (H.handoff(c)) return true; if (move.to(c, cx, cy, 1)) c.transfer(k, RESOURCE_ENERGY); return true; }
+  const a = rc.at(room, fx, fy, STRUCTURE_CONTAINER); if (!a || a.store[RESOURCE_ENERGY] < 400 + c.store.getCapacity()) return false;
+  if (move.to(c, fx, fy, 1)) c.withdraw(a, RESOURCE_ENERGY); return true;
+}
 module.exports = { fillRoute, run(c) {
   const room = c.room, P = plan.get(room.name);
   room.memory.queenAlive = Game.time;
@@ -51,7 +59,8 @@ module.exports = { fillRoute, run(c) {
   const full = room.energyAvailable >= room.energyCapacityAvailable && !rc.all(room, STRUCTURE_TOWER).some(t => t.store[RESOURCE_ENERGY] < 900);
   if (c.memory.working || (full && c.store[RESOURCE_ENERGY] > 0)) {
     if (!full) { if (fillRoute(c)) return; }
-    if (c.store.getFreeCapacity() === 0 || full) { const [x, y] = P.pos.fillers[0]; move.to(c, x, y, 0); return; } // park
+    if (full && standby(c, room, P)) return;
+    if (c.store.getFreeCapacity() === 0 || full) { const [x, y] = P.pos.fillers[0]; move.to(c, x, y, 0); require('../utils/trace').why(c, 'f'); return; } // park
     c.memory.working = false;
   }
   // refill: storage > filler container A > source container (fixed list)

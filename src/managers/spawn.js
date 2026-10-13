@@ -73,7 +73,8 @@ module.exports = { targets, run(spawn) {
   }
   const hold = !!want;
   // 2) miners (pre-spawned for travel time)
-  const lead = c => (c.memory.travel || 100) + c.body.length * 3;
+  // miner83614486 (10-13) arrived 115 ticks early and idled next to its predecessor: unmeasured travel defaulted to 100 (real ~30)
+  const lead = c => Math.min(c.memory.travel || 40, 80) + c.body.length * 3;
   if (!room.memory.sources) room.memory.sources = room.find(FIND_SOURCES).map(s => s.id);
   for (const s of room.memory.sources.map(id => Game.getObjectById(id)).filter(Boolean)) {
     if (!mine.some(c => c.memory.role === 'miner' && c.memory.sourceId === s.id && (c.ticksToLive || 1500) > lead(c))) {

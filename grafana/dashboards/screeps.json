@@ -538,6 +538,86 @@
      "rawSql": "SELECT ts AS time, remote AS metric, state AS value FROM incidents WHERE $__timeFilter(ts) ORDER BY ts"
     }
    ]
+  },
+  {
+   "type": "timeseries",
+   "title": "Idle by reason (non-working ticks, % of creep-ticks, per role)",
+   "datasource": {
+    "type": "grafana-postgresql-datasource",
+    "uid": "screeps-ts"
+   },
+   "gridPos": {
+    "x": 0,
+    "y": 88,
+    "w": 12,
+    "h": 10
+   },
+   "fieldConfig": {
+    "defaults": {
+     "custom": {
+      "stacking": {
+       "mode": "normal"
+      },
+      "drawStyle": "bars",
+      "fillOpacity": 80
+     },
+     "unit": "percent"
+    },
+    "overrides": []
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "grafana-postgresql-datasource",
+      "uid": "screeps-ts"
+     },
+     "format": "time_series",
+     "rawQuery": true,
+     "editorMode": "code",
+     "rawSql": "SELECT bucket AS time, role||':'||reason AS metric, 100.0*sum(ticks)/sum(sum(ticks)) OVER (PARTITION BY bucket) AS value FROM idle_by_reason WHERE $__timeFilter(bucket) AND reason NOT IN ('working','moving') GROUP BY 1,2 ORDER BY 1"
+    }
+   ]
+  },
+  {
+   "type": "timeseries",
+   "title": "Idle by reason: non-legit % per creep (flag >10%)",
+   "datasource": {
+    "type": "grafana-postgresql-datasource",
+    "uid": "screeps-ts"
+   },
+   "gridPos": {
+    "x": 12,
+    "y": 88,
+    "w": 12,
+    "h": 10
+   },
+   "fieldConfig": {
+    "defaults": {
+     "custom": {
+      "stacking": {
+       "mode": "normal"
+      },
+      "drawStyle": "bars",
+      "fillOpacity": 80
+     },
+     "unit": "percent"
+    },
+    "overrides": []
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "grafana-postgresql-datasource",
+      "uid": "screeps-ts"
+     },
+     "format": "time_series",
+     "rawQuery": true,
+     "editorMode": "code",
+     "rawSql": "SELECT bucket AS time, creep AS metric, 100.0*sum(ticks) FILTER (WHERE NOT legit)/sum(ticks) AS value FROM idle_by_reason WHERE $__timeFilter(bucket) GROUP BY 1,2 ORDER BY 1"
+    }
+   ]
   }
  ],
  "annotations": {

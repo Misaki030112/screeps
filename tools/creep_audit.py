@@ -80,10 +80,25 @@ def main():
     for w, v in res['windows'].items():
         r = v['roles']; L.append(f"[{w}] creep CPU/t " + ', '.join(f"{k}:{m['cpu_t_sum']}" for k, m in sorted(r.items(), key=lambda kv: -kv[1]['cpu_t_sum'])))
         L.append('   worst: ' + '; '.join(f"{x['creep']}({x['score']}: cpu/t {x['cpu_t']} idle {x['idle']} stuck {x['stuck']} osc {x['osc']} excess {x['excess']} rp/100 {x['rp100']})" for x in v['worst'][:3]))
+    # idle attribution (in-game state codes; falls back to retro inference tools/idle_history.py before codes exist)
+    q = c.execute("""SELECT creep, role, sum(ticks) FILTER (WHERE NOT legit)::float / sum(ticks) AS nl, sum(ticks) AS n,
+        (array_agg(reason ORDER BY ticks DESC) FILTER (WHERE NOT legit))[1] AS top FROM idle_by_reason
+        WHERE bucket >= now() - interval '1 hour' GROUP BY 1, 2""").fetchall()
+    if sum(r[3] for r in q) < 500:
+        import idle_history as ih
+        rows = ih.run((now - timedelta(hours=1)).isoformat(), None); sm = ih.summarize(rows, 'creep')
+        q = [(k, k.rstrip('0123456789'), v['nonlegit'] / 100, v['ticks'], next((r for r in v['reasons'] if r not in ih.LEGIT), None)) for k, v in sm.items()]
+        src = 'inferred'
+    else: src = 'codes'
+    idle_flags = sorted([(n, r, round(100 * (x or 0), 1), t) for n, r, x, k, t in q if (x or 0) > 0.10 and k >= 100], key=lambda z: -z[2])
+    res['idle'] = {'source': src, 'flags': idle_flags}
+    L.append(f"[idle 1h, {src}] non-legit >10%: " + ('; '.join(f'{n}({r}) {p}% top={t}' for n, r, p, t in idle_flags) or 'none'))
     regs = {k: v for k, v in res['regressions'].items() if v}
     for k, v in regs.items(): L.append(f'REGRESSION [{k}]: ' + '; '.join(v))
     if res.get('images'): L.append('images: ' + ', '.join(res['images']))
     print('\n'.join(L))
     flags = sum(x['stuck'] + x['osc'] + ((x['excess'] or 0) > 1.6) for v in res['windows'].values() for x in v['worst'][:5])
+    flags += len(idle_flags)
+    json.dump(res, open(os.path.join(M, 'creep_audit.json'), 'w'), indent=1, default=str)
     if '--patrol' in sys.argv: sys.exit(2 if regs.get('deploy') else 1 if (regs or flags) else 0)
 if __name__ == '__main__': main()
