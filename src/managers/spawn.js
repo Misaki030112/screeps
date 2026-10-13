@@ -27,16 +27,21 @@ function targets(room, count, backlog, ctlEnergy, sites) {
   return T;
 }
 // Remote mining (managers/remote.js): after home miners/queen/haulers, before fillers/upgraders/builders.
+// CLAIM1 nets 0 reservation ticks; a low buffer never recovers unless two CLAIM1 overlap (+1/t) or we reach CLAIM2 at RCL4.
 function remoteSpawn(room, E, go, rcl) {
   const remote = require('./remote');
   for (const r in remote.CFG) {
     if (remote.CFG[r].home !== room.name || remote.paused(r)) continue;
-    const live = role => _.filter(Game.creeps, c => c.memory.remote === r && c.memory.role === role && (c.spawning || c.ticksToLive > (role === 'reserver' ? 80 : 120))).length;
     const m = remote.mem(r);
+    const res = (m.res && m.res.ticksToEnd) || 0;
+    const wantRes = (res > 0 && res < 800) ? 2 : 1; // overlap rebuilds buffer while CLAIM1-only
+    const resLead = 150; // travel ~40 + spawn + margin (was 80; late spawn left ticksToEnd≈13)
+    const live = role => _.filter(Game.creeps, c => c.memory.remote === r && c.memory.role === role && (c.spawning || c.ticksToLive > (role === 'reserver' ? resLead : 120))).length;
+    const nRes = _.filter(Game.creeps, c => c.memory.remote === r && c.memory.role === 'reserver' && (c.spawning || (c.ticksToLive || 1500) > 30)).length;
+    // Reserver before haulers when buffer is thin so the 650 cost is not spent on a 3rd rhauler
+    if (nRes < wantRes && res < 4000 && E >= 650) return go('reserver', E >= 1300 ? [CLAIM, CLAIM, MOVE, MOVE] : [CLAIM, MOVE], { remote: r });
     if (live('rhauler') < 2) return go('rhauler', B.hauler(Math.min(E, 800)), { remote: r });
     if (live('rminer') < 1) { const w = Math.min(5, Math.floor((Math.min(E, 700) - 200) / 100)); return go('rminer', [].concat(rep(w, WORK), [CARRY], rep(3, MOVE)), { remote: r }); }
-    const res = m.res && m.res.ticksToEnd || 0;
-    if (live('reserver') < 1 && res < 4000 && E >= 650) return go('reserver', E >= 1300 ? [CLAIM, CLAIM, MOVE, MOVE] : [CLAIM, MOVE], { remote: r });
     if (live('rhauler') < 3 && m.cont && m.cont.e > 1200) return go('rhauler', B.hauler(Math.min(E, 800)), { remote: r });
   }
 }
@@ -72,7 +77,13 @@ module.exports = { targets, run(spawn) {
   const T = targets(room, count, backlog, cc ? cc.store[RESOURCE_ENERGY] : 0, rc.sites(room).length);
   room.memory.roleTargets = T;
   for (const role of ['queen', 'hauler', 'REMOTE', 'filler', 'manager', 'upgrader', 'builder']) {
-    if (role === 'REMOTE') { if (!starving) { const r = remoteSpawn(room, E, go, rcl); if (r !== undefined) return r; } continue; }
+    if (role === 'REMOTE') {
+      // Critical reservation: still spawn even when home is starving (CLAIM1 buffer ~13 ticks is fragile)
+      let criticalRes = false;
+      const remote = require('./remote');
+      for (const rr in remote.CFG) { if (remote.CFG[rr].home !== room.name) continue; const mm = remote.mem(rr); const rv = (mm.res && mm.res.ticksToEnd) || 0; if (rv > 0 && rv < 100) criticalRes = true; }
+      if (!starving || criticalRes) { const r = remoteSpawn(room, E, go, rcl); if (r !== undefined) return r; } continue;
+    }
     if ((count[role] || 0) >= T[role]) continue;
     const mem = {};
     if (role === 'filler') { const used = new Set(mine.filter(c => c.memory.role === 'filler').map(c => c.memory.spot.join())); mem.spot = P.pos.fillers.slice(0, 4).find(s => !used.has(s.join())); }

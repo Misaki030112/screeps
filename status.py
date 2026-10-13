@@ -32,6 +32,6 @@ if os.path.exists(ca):
     A = json.load(open(ca)); print(f"\n[creep audit {A['generated']} UTC+8, deploy {A.get('deploy', {}).get('commit')}]  (tools/creep_audit.py)")
     for w, v in A['windows'].items():
         r = v['roles']; print(f"  {w}: creep CPU/t {round(sum(m['cpu_t_sum'] for m in r.values()), 2)}  stuck {sum(m['stuck'] for m in r.values())}  osc {sum(m['osc'] for m in r.values())}  worst " +
-              ', '.join(f"{x['name']}({x['score']})" for x in v['worst'][:3]))
+              ', '.join(f"{x.get('creep', x.get('name', '?'))}({x['score']})" for x in v['worst'][:3]))
     for k, v in A.get('regressions', {}).items():
         if v: print(f'  REGRESSION [{k}]: ' + '; '.join(v))

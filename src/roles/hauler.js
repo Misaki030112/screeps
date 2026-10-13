@@ -27,14 +27,15 @@ module.exports = { pickups, run(c) {
   }
   // deliver
   const queens = room.memory.queenAlive && room.memory.queenAlive > Game.time - 3;
-  if (room.energyAvailable < room.energyCapacityAvailable && queen.fillRoute(c)) return;
+  // Keep ~10% spawn headroom so ctl container still gets fed while builders drain extensions
+  if (room.energyAvailable < room.energyCapacityAvailable * 0.9 && queen.fillRoute(c)) return;
   let dst = c.memory.dst && Game.getObjectById(c.memory.dst);
   if (!dst || dst.store.getFreeCapacity(RESOURCE_ENERGY) === 0 || (dst.body && Game.time % 5 === 0)) {
     const [cx, cy] = P.pos.controllerContainer;
     const opts = [];
     const tw = rc.all(room, STRUCTURE_TOWER).filter(t => t.store[RESOURCE_ENERGY] < 600);
     if (!queens) opts.push(...tw);
-    const cc = rc.at(room, cx, cy, STRUCTURE_CONTAINER); if (cc && cc.store.getFreeCapacity(RESOURCE_ENERGY) >= 200) opts.push(cc);
+    const cc = rc.at(room, cx, cy, STRUCTURE_CONTAINER); if (cc && cc.store.getFreeCapacity(RESOURCE_ENERGY) >= 100) opts.push(cc);
     const st = room.storage; if (st && st.store.getFreeCapacity() > 10000) opts.push(st);
     const [fx, fy] = P.pos.fillerContainerA; const fc = rc.at(room, fx, fy, STRUCTURE_CONTAINER);
     if (fc && fc.store.getFreeCapacity(RESOURCE_ENERGY) >= 200) opts.push(fc);
