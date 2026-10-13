@@ -119,6 +119,7 @@ def record_room(room, data):
         db[0].executemany('INSERT INTO pos VALUES (?,?,?,?,?,?,?,?)', rows); db[0].commit()
     except Exception as ex: append('errors.log', f'{stamp()} [listener] tsdb {ex}')
 SEG = 90
+polls = [0]
 def segment_poller():
     """in-game per-creep CPU/intent windows: memory segment 90 ring buffer, polled every 60 s (dedup by primary key)."""
     c = tsdb.connect()
@@ -133,6 +134,10 @@ def segment_poller():
                 c.commit()
         except Exception as ex: append('errors.log', f'{stamp()} [listener] segment poll {ex}')
         time.sleep(60)
+        polls[0] += 1
+        if polls[0] % 10 == 0:  # creep audit + heatmaps every ~10 min (prune once a day)
+            import subprocess
+            subprocess.run([sys.executable, os.path.join(ROOT, 'tools', 'creep_audit.py')] + (['--prune'] if polls[0] % 1440 == 0 else []), capture_output=True, timeout=300)
 STALE_S = 180  # STATS arrive every 10 ticks (~40 s); a silent-but-alive socket gets closed so run_listener.sh reconnects
 def watchdog(ws):
     while True:

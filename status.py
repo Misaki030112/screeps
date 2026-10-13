@@ -18,3 +18,11 @@ if os.path.exists(lv):
     L = json.load(open(lv)); w = L.get('stats') or {}
     print(f"\n[websocket live, updated {L.get('updated')} UTC+8] tick {w.get('t')} cpu {w.get('cpu')} bucket {w.get('b')} creeps {w.get('creeps')} rooms {w.get('rooms')}")
     if L.get('errors_tail'): print('Recent console errors:'); [print('  ', e) for e in L['errors_tail'][-5:]]
+ca = os.path.join(ROOT, 'metrics', 'creep_audit.json')
+if os.path.exists(ca):
+    A = json.load(open(ca)); print(f"\n[creep audit {A['generated']} UTC+8, deploy {A.get('deploy', {}).get('commit')}]  (tools/creep_audit.py)")
+    for w, v in A['windows'].items():
+        r = v['roles']; print(f"  {w}: creep CPU/t {round(sum(m['cpu_t_sum'] for m in r.values()), 2)}  stuck {sum(m['stuck'] for m in r.values())}  osc {sum(m['osc'] for m in r.values())}  worst " +
+              ', '.join(f"{x['name']}({x['score']})" for x in v['worst'][:3]))
+    for k, v in A.get('regressions', {}).items():
+        if v: print(f'  REGRESSION [{k}]: ' + '; '.join(v))

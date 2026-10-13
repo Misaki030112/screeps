@@ -1,10 +1,14 @@
 <!doctype html><html><head><meta charset="utf-8"><title>Screeps W46N8</title>
 <style>body{background:#111;color:#ddd;font:13px monospace;display:flex;gap:16px;padding:10px}pre{white-space:pre-wrap;margin:0}#side{flex:1;min-width:400px}.err{color:#f66}</style></head>
-<body><canvas id="c" width="600" height="600"></canvas><div id="side"><pre id="s"></pre><h4>Errors</h4><pre id="e" class="err"></pre><h4>Console</h4><pre id="l"></pre></div>
+<body><canvas id="c" width="600" height="600"></canvas><div id="side"><pre id="s"></pre><h4>Creep audit (24h)</h4><pre id="a"></pre><img id="i1" width="300"><img id="i2" width="300"><h4>Errors</h4><pre id="e" class="err"></pre><h4>Console</h4><pre id="l"></pre></div>
 <script>
 const C={spawn:'#ffdc00',extension:'#eee',tower:'#f33',storage:'#fa0',link:'#88f',container:'#a65',road:'#777',constructionSite:'#0f0',
  source:'#ff0',controller:'#fff',mineral:'#0ff',rampart:'#0a0',constructedWall:'#444'};
 let terrain=null; fetch('terrain.txt').then(r=>r.text()).then(t=>terrain=t);
+async function audit(){try{const A=await (await fetch('metrics/creep_audit.json?'+Date.now())).json();const w=A.windows['24h']||Object.values(A.windows)[0];
+ document.getElementById('a').textContent=`${A.generated} deploy ${A.deploy&&A.deploy.commit}\n`+Object.entries(w.roles).map(([r,m])=>`${r.padEnd(9)} n${m.creeps} cpu/t ${m.cpu_t_sum} idle ${m.idle} excess ${m.excess} stuck ${m.stuck} osc ${m.osc}`).join('\n')+'\nworst: '+w.worst.slice(0,5).map(x=>x.name+'('+x.score+')').join(', ')+'\n'+Object.entries(A.regressions).filter(([k,v])=>v.length).map(([k,v])=>'REGRESSION '+k+': '+v.join('; ')).join('\n');
+ document.getElementById('i1').src='metrics/traffic_W46N8.png?'+Date.now();document.getElementById('i2').src='metrics/traffic_W45N8.png?'+Date.now();}catch(e){}}
+audit();setInterval(audit,60000);
 async function tick(){try{const d=await (await fetch('metrics/live.json?'+Date.now())).json();const x=document.getElementById('c').getContext('2d');const S=12;
  if(terrain)for(let i=0;i<2500;i++){x.fillStyle=terrain[i]=='1'||terrain[i]=='3'?'#000':terrain[i]=='2'?'#283818':'#2b2b2b';x.fillRect(i%50*S,Math.floor(i/50)*S,S,S)}
  const own=d.stats&&d.stats.rooms?Object.keys(d.stats.rooms):[];
