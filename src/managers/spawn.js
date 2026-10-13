@@ -24,7 +24,9 @@ function targets(room, count, backlog, ctlEnergy, sites) {
   T.queen = fillersOn ? 0 : 1;
   T.filler = fillersOn ? 4 : 0;
   T.manager = st && rcl >= 5 ? 1 : 0;
-  T.upgrader = rcl >= 8 ? 1 : Math.min(P.pos.upgraders.length, (sites ? 2 : 3) + Math.floor(ctlEnergy / 700));
+  // Supply-follows-demand on the smoothed ctl container level (ctlEnergy = ~300-tick EMA): an empty container means upgraders
+  // outnumber the feed. A snapshot rule (3 + level/700) spawned 4x7 WORK for ~11/t feed -> upgraders idle 55% waiting_feed (10-13 17:30).
+  T.upgrader = rcl >= 8 ? 1 : Math.min(P.pos.upgraders.length, (sites ? 1 : 2) + Math.floor(ctlEnergy / 700));
   T.builder = sites ? (sites > 3 ? 2 : 1) : (rcl <= 4 ? 1 : 0);
   return T;
 }
@@ -86,7 +88,10 @@ module.exports = { targets, run(spawn) {
   const hp = require('../roles/hauler');
   const backlog = _.sum(hp.pickups(room), s => s.store[RESOURCE_ENERGY]);
   const [cx, cy] = P.pos.controllerContainer; const cc = rc.at(room, cx, cy, STRUCTURE_CONTAINER);
-  const T = targets(room, count, backlog, cc ? cc.store[RESOURCE_ENERGY] : 0, rc.sites(room).length);
+  const m = room.memory, ce = cc ? cc.store[RESOURCE_ENERGY] : 0;
+  m.ctlEma = m.ctlEma === undefined ? ce : m.ctlEma + (ce - m.ctlEma) * Math.min(1, (Game.time - (m.ctlEmaT || Game.time)) / 300);
+  m.ctlEma = Math.round(m.ctlEma); m.ctlEmaT = Game.time;
+  const T = targets(room, count, backlog, m.ctlEma, rc.sites(room).length);
   room.memory.roleTargets = T;
   for (const role of ['queen', 'hauler', 'REMOTE', 'filler', 'manager', 'upgrader', 'builder']) {
     if (role === 'REMOTE') {
