@@ -1,6 +1,7 @@
 // Builder: picks a site once (priority order), walks a cached path, builds until done. Energy from fixed sources.
 // With no sites it destroy()s (fallback: dismantles) empty unplanned containers (e.g. v1 leftover 31,11), keeps planned containers
-// healthy, builds remote swamp-road sites when remote is not paused, then helps upgrade from the drop tile.
+// healthy, builds remote swamp-road sites when remote is not paused. Pre-storage: helps upgrade from the drop tile.
+// With storage + no build work: dump carry into storage and park (never moonlight at ctl / siphon source A).
 const plan = require('../utils/plan'), move = require('../utils/move'), rc = require('../utils/roomcache');
 const remote = require('../managers/remote'), trace = require('../utils/trace');
 const PRIO = { spawn: 0, extension: 1, tower: 2, container: 3, storage: 4, link: 5, rampart: 6, road: 7 };
@@ -26,6 +27,16 @@ function junkContainer(room, P) {
     return (!want || want.type !== 'container') && (s.store[RESOURCE_ENERGY] || 0) < 50 && s.hits > 0;
   }) || null;
 }
+function hasBuildWork(home, P) {
+  if (rc.sites(home).length) return true;
+  if (remoteRoadSite()) return true;
+  return rc.all(home, STRUCTURE_CONTAINER).some(s => P.any[plan.key(s.pos.x, s.pos.y)] && s.hits < s.hitsMax * 0.5);
+}
+function dumpToStorage(c, home) {
+  const st = home.storage; if (!st) return false;
+  if (c.store[RESOURCE_ENERGY] > 0) { if (move.to(c, st.pos.x, st.pos.y, 1)) c.transfer(st, RESOURCE_ENERGY); return true; }
+  return false;
+}
 module.exports = { run(c) {
   const room = c.room, P = plan.get(c.memory.home || room.name) || plan.get(room.name);
   if (!P) return;
@@ -37,6 +48,16 @@ module.exports = { run(c) {
       const j = Game.getObjectById(c.memory.dismantle);
       if (j && j.hits > 0 && j.destroy() !== OK) { if (move.to(c, j.pos.x, j.pos.y, 1)) c.dismantle(j); return; }
       delete c.memory.dismantle;
+    }
+    // With storage + no sites a leftover builder used to siphon source A / moonlight at ctl and
+    // kept storage off the 1300 defender reserve (patrol 10-14 04:53: builder83626083 at 31,29).
+    const home0 = Game.rooms[c.memory.home] || room;
+    if (home0.storage && !hasBuildWork(home0, plan.get(home0.name) || P)) {
+      if (dumpToStorage(c, home0)) return;
+      const junk0 = junkContainer(home0, P);
+      if (junk0 && junk0.destroy() === OK) return;
+      if (junk0) { c.memory.dismantle = junk0.id; return; }
+      trace.why(c, 'n'); return;
     }
     let src = c.memory.src && Game.getObjectById(c.memory.src);
     if (!src || src.store[RESOURCE_ENERGY] < 50) {
@@ -78,7 +99,12 @@ module.exports = { run(c) {
     }
     c.memory.t = t ? t.id : undefined;
   }
-  if (!t) { const [x, y] = P.pos.controllerDrop; if (move.to(c, x, y, 0)) c.upgradeController((Game.rooms[c.memory.home] || room).controller); return; }
+  if (!t) {
+    const home = Game.rooms[c.memory.home] || room;
+    // Pre-storage only: help upgrade. With storage, dump carry then park (see hasBuildWork gate above).
+    if (home.storage) { if (dumpToStorage(c, home)) return; trace.why(c, 'n'); return; }
+    const [x, y] = P.pos.controllerDrop; if (move.to(c, x, y, 0)) c.upgradeController(home.controller); return;
+  }
   // cross-room: walk via remote fixed exits when target is in another room
   if (t.pos.roomName !== c.room.name) {
     const rName = t.pos.roomName;

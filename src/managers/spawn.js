@@ -40,7 +40,11 @@ function targets(room, count, backlog, ctlEnergy, sites) {
   T.manager = st && rcl >= 5 ? 1 : 0;
   // Supply-follows-demand on the smoothed ctl container level (ctlEnergy = ~300-tick EMA): an empty container means upgraders
   // outnumber the feed. A snapshot rule (3 + level/700) spawned 4x7 WORK for ~11/t feed -> upgraders idle 55% waiting_feed (10-13 17:30).
-  T.upgrader = rcl >= 8 ? 1 : Math.min(P.pos.upgraders.length, (sites ? 1 : 2) + Math.floor(ctlEnergy / 700));
+  // With storage, the 3rd+ upgrader waits until storage holds the defender reserve — otherwise 3×10W keeps waiting_feed high
+  // and storage flat (patrol 10-14 04:53: 3 upgraders 39–45% waiting_feed, storage ~100).
+  const extra = Math.floor(ctlEnergy / 700);
+  const allowExtra = !st || room.storage.store[RESOURCE_ENERGY] >= require('./threat').reserve(room.name);
+  T.upgrader = rcl >= 8 ? 1 : Math.min(P.pos.upgraders.length, (sites ? 1 : 2) + (allowExtra ? extra : 0));
   // RCL4 extension push: 2 builders need ~40 e/t but net income ~22 -> spawn/ctl starve, builders no_task ~28%,
   // haulers wait on empty pickups (patrol 10-13 18:40). One fed builder finishes sites faster than two hungry ones.
   // Second builder only after cap>=1300 (20 ext, CLAIM2-ready) when the room can afford the extra demand.
