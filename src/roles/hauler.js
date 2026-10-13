@@ -66,10 +66,14 @@ module.exports = { pickups, run(c) {
   const lowE = room.energyAvailable < room.energyCapacityAvailable * (hold ? 1 : queens ? 0.3 : 0.9);
   if (lowE && queen.fillRoute(c)) return;
   let dst = c.memory.dst && Game.getObjectById(c.memory.dst);
-  if (!dst || dst.store.getFreeCapacity(RESOURCE_ENERGY) === 0 || (dst.body && Game.time % 5 === 0)) {
+  // Re-pick when free <100 (matches selection threshold). Sticky filler A above 400 starved ctl
+  // while fc still had room — upgraders idled with ctl empty and fc ~500+.
+  const [fx, fy] = P.pos.fillerContainerA;
+  if (dst && !dst.body && dst.pos.x === fx && dst.pos.y === fy && queens && dst.store[RESOURCE_ENERGY] >= 400) dst = null;
+  if (!dst || dst.store.getFreeCapacity(RESOURCE_ENERGY) < 100 || (dst.body && Game.time % 5 === 0)) {
     const [cx, cy] = P.pos.controllerContainer;
     const opts = [];
-    const [fx, fy] = P.pos.fillerContainerA; const fc = rc.at(room, fx, fy, STRUCTURE_CONTAINER);
+    const fc = rc.at(room, fx, fy, STRUCTURE_CONTAINER);
     if (queens && fc && fc.store[RESOURCE_ENERGY] < 400 && fc.store.getFreeCapacity(RESOURCE_ENERGY) >= 100) opts.push(fc); // queen's fixed refill
     const tw = rc.all(room, STRUCTURE_TOWER).filter(t => t.store[RESOURCE_ENERGY] < 600);
     if (!queens) opts.push(...tw);

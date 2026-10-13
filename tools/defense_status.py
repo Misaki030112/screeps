@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Defence snapshot for strategy/patrol: tower energy, ramparts, safe mode, remote pause, invaderHarvested, neighbours."""
 import json, os, sys
+from pathlib import Path
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, 'scripts'))
 import api
