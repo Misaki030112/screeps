@@ -1,6 +1,6 @@
 {
-  "next_at": "2026-10-14T04:50:00+08:00",
-  "reason": "dc68c2c deployed (tick 83626192): T.builder=0 when storage exists and sites=0; remote haulers capped at 2 (dropped opportunistic 3rd). Verified 89c4562: tower energy ~800–920 (not draining ramparts to 50k while storage <<1300); ramparts min ~25.7k (floor holding); container A 720; hauler rp/100 ~5.2; 0 errors; threat SAFE/armed=false; reservation ~4300; upgrade ~20.2/t (1h) vs ideal 23.8; storage still ~50–250 after spawn wave. Pending remote-paused home work already in roles/remote.js (rminer→builder, rhauler→hauler). Verify 04:50: storage climbing toward/above 500 then 1300; builder count→0 and stays 0 while sites=0; rhauler→2 as surplus ages out; upgrader waiting_feed falling; upgrade ≥20/t; queen rp/100 ≤12; tower stays ~900 with no rampart top-up while storage <1300; 0 errors. If storage still <300: check queen/upgrader demand (3 live upgraders vs target 2) and whether ctl feed is bottleneck.",
-  "written_at": "2026-10-14T03:59:13+08:00",
-  "commit": "dc68c2c"
+  "next_at": "2026-10-14T05:50:00+08:00",
+  "reason": "c025461 deployed (tick 83627056): leftover builder dumps to storage and parks when no build work (was moonlighting at ctl 31,29); 3rd upgrader gated until storage >=1300 reserve. Verify 05:50: builder no longer at ctl / idle no_task or gone; storage climbing from ~100 toward 500 then 1300 (miner B ~10/t); live upgraders →2 as oldest ages out; waiting_feed falling; upgrade ≥18/t; tower ~900 with no rampart top-up while storage <1300; rhauler=2; sites=0 (defer remote pave until storage ≥1300); 0 errors; threat SAFE. If storage still <300 after 1h: check queen withdrawing from storage while extensions full, and hauler A→ctl vs storage split.",
+  "written_at": "2026-10-14T04:57:06+08:00",
+  "commit": "c025461"
 }
