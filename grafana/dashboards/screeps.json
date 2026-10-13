@@ -428,6 +428,62 @@
      "rawSql": "SELECT ts AS time, kind, room, severity, left(coalesce(msg, data::text), 200) AS msg FROM events WHERE $__timeFilter(ts) AND kind <> 'watch' UNION ALL SELECT ts, 'deploy', null, null, commit || ' ' || coalesce(note,'') FROM deploys WHERE $__timeFilter(ts) ORDER BY 1 DESC LIMIT 200"
     }
    ]
+  },
+  {
+   "id": 15,
+   "type": "table",
+   "title": "Ideal vs actual (tools/model.py, latest run)",
+   "datasource": {
+    "type": "grafana-postgresql-datasource",
+    "uid": "screeps-ts"
+   },
+   "gridPos": {
+    "x": 0,
+    "y": 69,
+    "w": 12,
+    "h": 10
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "grafana-postgresql-datasource",
+      "uid": "screeps-ts"
+     },
+     "rawQuery": true,
+     "editorMode": "code",
+     "format": "table",
+     "rawSql": "SELECT key, round(ideal::numeric,2) ideal, round(actual::numeric,2) actual, unit, round((100*actual/nullif(ideal,0))::numeric,0) AS pct FROM model_params WHERE ts=(SELECT max(ts) FROM model_params) ORDER BY key"
+    }
+   ]
+  },
+  {
+   "id": 16,
+   "type": "timeseries",
+   "title": "Ideal vs actual: upgrade e/t",
+   "datasource": {
+    "type": "grafana-postgresql-datasource",
+    "uid": "screeps-ts"
+   },
+   "gridPos": {
+    "x": 12,
+    "y": 69,
+    "w": 12,
+    "h": 10
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "grafana-postgresql-datasource",
+      "uid": "screeps-ts"
+     },
+     "rawQuery": true,
+     "editorMode": "code",
+     "format": "time_series",
+     "rawSql": "SELECT ts AS time, ideal AS \"ideal upgrade\", actual AS \"actual upgrade (6h)\" FROM model_params WHERE key='upgrade' AND $__timeFilter(ts) ORDER BY 1"
+    }
+   ]
   }
  ],
  "annotations": {

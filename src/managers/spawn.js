@@ -17,7 +17,7 @@ function targets(room, count, backlog, ctlEnergy, sites) {
   const rcl = room.controller.level, P = plan.get(room.name);
   const st = !!room.storage, links = rc.all(room, STRUCTURE_LINK).length;
   const T = {};
-  T.hauler = rcl >= 7 && links >= 4 ? 0 : (rcl >= 6 && links >= 3 ? 1 : Math.min(5, 2 + Math.floor(backlog / 800)));
+  T.hauler = rcl >= 7 && links >= 4 ? 0 : (rcl >= 6 && links >= 3 ? 1 : Math.min(4, 2 + Math.floor(backlog / 1500)));
   const fillersOn = rcl >= 5 && links >= 2;
   T.queen = fillersOn ? 0 : 1;
   T.filler = fillersOn ? 4 : 0;
