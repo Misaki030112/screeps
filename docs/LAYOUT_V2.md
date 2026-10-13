@@ -84,3 +84,16 @@ the v1 search-based code use 1.4–2.8.)
 - Existing neutral container (31,11) is replaced by (31,12); (38,32) is reused.
 - Code: new `layout` manager reading v2 JSON (plus removals), new roles filler / manager / static upgrader,
   path cache util; spawn manager gets per-RCL role table above.
+
+## LIVE since 2026-10-13 08:17 (UTC+8) — adjustments approved by Misaki
+- Kept the existing tower **(36,29)** (it took the hub power-spawn slot; the manager can refill it from RCL5).
+  Power spawn moved to **(36,33)** (RCL8). Towers by RCL: 3 (36,29) · 5 (37,33) · 7 (35,34) · 8 (36,34),(32,30),(32,31).
+- Kept the controller container **(30,30)**: upgraders stand on (30,30),(31,30),(29,30),(31,31),(29,31);
+  controller link **(30,31)** (RCL7); haulers deliver from (31,29)/(30,29)/(29,29).
+- Pre-RCL5 there are no stationary fillers yet: one **queen** walks the fixed stops (filler tiles of stamp A + hub tile)
+  and haulers help fill when the room is not full. Stationary fillers + manager switch on at RCL5 (links).
+- Removed for v2: v1 roads (35,25),(33,26) immediately; v1 extensions (36,25),(38,27),(38,29),(34,31) are destroyed
+  automatically **only after ≥5 non-conflicting extensions are built** (energy capacity never drops below 550).
+  (36,31) stays (hub extension). Old off-plan roads are no longer repaired and will decay; container (31,11) is kept as
+  a spare pickup until it decays.
+- `tools/patch_v2_live.py` applies these adjustments to the planner output; images re-rendered.

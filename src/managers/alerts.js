@@ -11,7 +11,8 @@ module.exports = { run(room) {
   const hostiles = room.find(FIND_HOSTILE_CREEPS);
   // structure hit loss since last tick (own structures + roads/containers)
   const hitsNow = {}; let loss = 0; const damaged = [];
-  for (const s of room.find(FIND_STRUCTURES)) {
+  const scan = Game.time % 5 === 0;  // structure hit-loss diff every 5 ticks (event log still covers every tick)
+  if (scan) for (const s of room.find(FIND_STRUCTURES)) {
     if (!(s.my || s.structureType === STRUCTURE_ROAD || s.structureType === STRUCTURE_CONTAINER)) continue;
     hitsNow[s.id] = [s.hits, s.ticksToDecay];
     const prev = mem.hits[s.id];
@@ -21,8 +22,8 @@ module.exports = { run(room) {
     if (s.hits < prev[0] && !decayed) { loss += prev[0] - s.hits; damaged.push(s.structureType); }
   }
   // owned structures that vanished (destroyed)
-  for (const id in mem.hits) if (hitsNow[id] === undefined && !Game.getObjectById(id)) damaged.push('destroyed:' + id.slice(-4));
-  mem.hits = hitsNow;
+  if (scan) for (const id in mem.hits) if (hitsNow[id] === undefined && !Game.getObjectById(id)) damaged.push('destroyed:' + id.slice(-4));
+  if (scan) mem.hits = hitsNow;
   // event log attackers
   const evAttackers = {}; let evDamage = 0;
   for (const e of room.getEventLog()) {

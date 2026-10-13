@@ -40,6 +40,12 @@ First spawn `Spawn1` at W46N8 (35,28), placed 2026-10-12. Novice protection unti
 ## Layout
 `tools/plan_layout.py W46N8 35 28` regenerates `data/layout_W46N8.json`, `src/layouts/W46N8.js`, `docs/layout_W46N8.png`. See docs/LAYOUT.md, docs/STRATEGY.md.
 
+## Layout v2 (live)
+`data/layout_W46N8_v2.json` → `src/layouts/W46N8.js` (via `tools/plan_v2.py`, `tools/export_v2.py`, `tools/patch_v2_live.py`).
+Checks: `node scripts/check.js` = build + syntax + `scripts/sim.js` (600-tick simulation on `data/sim_snapshot.json`;
+refresh the snapshot from the live room before big changes).
+Deploy lock: while a deploy runs, `state/deploy.lock` exists; the patrol routine must not upload or change layout/spawn logic then.
+
 ## Usage
 ```
 node scripts/check.js      # build + checks only

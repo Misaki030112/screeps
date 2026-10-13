@@ -1,8 +1,9 @@
 // Writes Memory.stats each tick; keeps last 20 errors.
 module.exports = { run(errors, alerts = []) {
+  // room details every 5 ticks; cheap fields every tick
   const s = Memory.stats || (Memory.stats = {});
-  const rooms = {};
-  for (const n in Game.rooms) {
+  const rooms = s.rooms || {};
+  if (Game.time % 5 === 0 || !s.rooms) for (const n in Game.rooms) {
     const r = Game.rooms[n]; if (!r.controller || !r.controller.my) continue;
     rooms[n] = { rcl: r.controller.level, progress: r.controller.progress, progressTotal: r.controller.progressTotal,
       energy: r.energyAvailable, energyCap: r.energyCapacityAvailable,
@@ -12,6 +13,7 @@ module.exports = { run(errors, alerts = []) {
   s.time = Game.time;
   s.gcl = { level: Game.gcl.level, progress: Game.gcl.progress, progressTotal: Game.gcl.progressTotal };
   s.rooms = rooms;
+  for (const n in rooms) if (Game.rooms[n]) { rooms[n].energy = Game.rooms[n].energyAvailable; rooms[n].progress = Game.rooms[n].controller.progress; }
   s.creeps = _.countBy(Game.creeps, c => c.memory.role);
   s.bucket = Game.cpu.bucket;
   s.errors = (s.errors || []).concat(errors).slice(-20);

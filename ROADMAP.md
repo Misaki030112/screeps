@@ -11,3 +11,12 @@ Novice zone ends ~2026-10-28 03:33 (UTC+8). Spawn safe mode active ~19.6k ticks 
 7. Links (RCL5: controller + core link; source links RCL6/7).
 8. Remote mining in neighbouring rooms (scout first; avoid FungousCoast245/drtk712 territory).
 9. Perimeter min-cut ramparts; CPU optimisation (cached finds, path reuse); 2nd room claim (needs approval).
+
+## 2026-10-13: Layout v2 live
+- ✅ v2 layout manager (plan JSON → sites per RCL, safe conflict removal), fixed-position roles (miner spots, queen stops,
+  upgrader spots), cached paths (`utils/move.js`), per-RCL role table (`managers/spawn.js`), link manager (RCL5+),
+  tower repairs only planned structures. Multi-tick simulator `scripts/sim.js` runs in every check.
+- ⏳ RCL3: 10 extensions at stamp A (5 building, 4 more after v1 extensions are removed).
+- ⏳ RCL4 (~ETA afternoon 10-13): storage (37,31); miner B delivers straight into storage; hub extensions.
+- ⏳ RCL5: filler A link + hub link → stationary fillers + manager replace the queen; tower 2.
+- Tuning: CPU is ~4 (vs ~3.6 before) while the 5 old haulers age out to the target of 2–3.
