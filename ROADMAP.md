@@ -9,7 +9,7 @@ Novice zone ends **2026-10-28 03:33 UTC+8**. Defence detail: `docs/DEFENSE.md` (
 2. ✅ Static miners + haulers + queen; TimescaleDB/Grafana + creep audit.
 3. ✅ Remote W45N8 mining (approved); safety pause/flee on combat.
 4. ⏳ **RCL4 today** (ETA ~15:50–17:30): storage (37,31), hub extensions, CLAIM2 reserver, rampart target → 50k. Do not starve upgrade for optional combat.
-5. ⏳ **Remote resume after Invader** (~tick 83614741 / ~15:10+): re-reserve, verify swamp road 2,12, deliver again. Patrol verifies.
+5. ⏳ **Remote resume after Invader** (SAFE since 83614741): re-reserving (ticks climbing), home swamp roads done, W45N8 2,12 building (~336/1500), rhaulers back. Patrol 15:29 deployed hauler sticky-fc fix.
 6. ⏳ **Defence before novice end (deadline review 2026-10-25):**
    - Tower combat reserve ≥800 / queen top-up ≥900 — done 2026-10-13 review.
    - Attack alerts carry `safeModeAvailable` — done 2026-10-13 review.
