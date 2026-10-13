@@ -22,7 +22,7 @@ Load is tiny: ~15 creeps × 1 row per tick (≈3.9 s/tick) ≈ 4 rows/s.
 | Table | Grain | Source | Retention |
 |---|---|---|---|
 | `creep_ticks(ts,tick,room,creep,role,x,y,hits,store,state,commit)` | every own creep, every tick a room update arrives | websocket room objects (0 in-game CPU) | 7 days raw (compressed after 1 day) |
-| `creep_cpu(ts,tick,creep,role,cpu_ms,acts,work,repaths,stuck,target,commit)` | 5-tick window per creep | memory segment 90 ring buffer, polled every 60 s | 30 days (compressed after 1 day) |
+| `creep_cpu(ts,tick,creep,role,cpu_ms,acts,work,repaths,stuck,target,commit,rp_why)` | 5-tick window per creep; `rp_why` = one char per PathFinder search (n new target, v version bump, o off path, s stuck2, x stuck8, z stuck30) | memory segment 90 ring buffer, polled every 60 s; the listener only writes windows newer than the last ingested tick (ts is in the unique key, so the index alone cannot dedup re-reads — fixed 2026-10-13, ~14× duplicates removed) | 30 days (compressed after 1 day) |
 | `path_arrivals(ts,tick,creep,role,target,planned,actual,commit)` | per path completed | segment 90 | forever (small) |
 | `room_stats(ts,tick,room,rcl,progress,…,cpu,bucket,trace_cpu,creeps,commit)` | every 10 ticks | STATS console line | forever (small) |
 | `events(ts,tick,kind,room,severity,episode,msg,data)` | kinds: alert_new/escalated/ended, stuck, layout, error, watch (W45N8), collect | console + listener | forever |
@@ -43,6 +43,8 @@ Continuous aggregates (real-time, refreshed every 1–5 min, kept 400 days): `cr
 ## Audit
 `tools/creep_audit.py` runs `db/audit.sql` over 1h/6h/24h windows, compares each window with the previous one and with the period before the last deploy, writes `metrics/creep_audit.json` and `metrics/traffic_<room>.png`, and has `--patrol` exit codes. The listener runs it every ~10 min.
 
+Stuck (audit): a run of ≥10 samples on one tile with no successful intent **while the creep still had a pending path** (`creep_cpu.target <> ''`); parked/waiting creeps count as idle, not stuck.
+
 ## Example queries (`.venv/bin/python tools/db.py "SQL"`)
 ```sql
 -- ingestion keeps up? ticks seen vs tick span, last 10 min
@@ -61,6 +63,8 @@ SELECT role, target, count(*), round(avg(actual::numeric/planned),2) excess, per
 WITH p AS (SELECT creep, role, tick, (x,y,room) IS DISTINCT FROM (lag(x) OVER w, lag(y) OVER w, lag(room) OVER w) mv FROM creep_ticks WHERE ts > now()-interval '1 hour' WINDOW w AS (PARTITION BY creep ORDER BY tick)),
 g AS (SELECT *, sum(mv::int) OVER (PARTITION BY creep ORDER BY tick) grp FROM p)
 SELECT creep, role, min(tick), count(*) FROM g WHERE role NOT IN ('miner','rminer','upgrader','filler','manager') GROUP BY creep, role, grp HAVING count(*) >= 10 ORDER BY 4 DESC;
+-- why do creeps repath? (reason codes per role, last hour)
+SELECT role, ch, count(*) FROM creep_cpu, regexp_split_to_table(rp_why, '') ch WHERE ts > now()-interval '1 hour' AND rp_why <> '' GROUP BY 1,2 ORDER BY 1,3 DESC;
 -- heatmap of the busiest tiles, 24 h
 SELECT room, x, y, sum(n) FROM tile_traffic_10m WHERE bucket > now()-interval '24 hours' GROUP BY 1,2,3 ORDER BY 4 DESC LIMIT 20;
 -- remote energy flow: rhauler loads arriving home
