@@ -19,7 +19,11 @@ function assignPickup(c, room, P) {
   let e = AS[room.name];
   if (!e || e.t !== Game.time) {
     const [sx, sy] = P.pos.storageDoor;
-    const d = ([x, y]) => Math.max(Math.abs(x - sx), Math.abs(y - sy)), order = P.pos.miners.slice().sort((p, q) => d(q) - d(p));
+    const d = ([x, y]) => Math.max(Math.abs(x - sx), Math.abs(y - sy));
+    // Skip miners adjacent to storage (B at 38,32): they transfer straight in; hauling that container is pure wait.
+    const st = room.storage;
+    const miners = P.pos.miners.filter(([x, y]) => !(st && Math.max(Math.abs(x - st.pos.x), Math.abs(y - st.pos.y)) === 1));
+    const order = (miners.length ? miners : P.pos.miners).slice().sort((p, q) => d(q) - d(p));
     const names = _.filter(Game.creeps, x => x.memory.role === 'hauler' && (x.memory.home || x.room.name) === room.name).map(x => x.name).sort();
     e = AS[room.name] = { t: Game.time, m: {} };
     names.forEach((n, i) => { e.m[n] = order[i % order.length]; });

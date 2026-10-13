@@ -31,7 +31,9 @@ function targets(room, count, backlog, ctlEnergy, sites) {
   const rcl = room.controller.level, P = plan.get(room.name);
   const st = !!room.storage, links = rc.all(room, STRUCTURE_LINK).length;
   const T = {};
-  T.hauler = rcl >= 7 && links >= 4 ? 0 : (rcl >= 6 && links >= 3 ? 1 : Math.min(4, 2 + Math.floor(backlog / 1500)));
+  // With storage, miner B dumps adjacent (38,32→37,31) so only source A needs a hauler; model home carry ~9 → 1×5C5M.
+  // Pre-storage keep 2 so both containers drain. Backlog can still add one extra.
+  T.hauler = rcl >= 7 && links >= 4 ? 0 : (rcl >= 6 && links >= 3 ? 1 : (st ? Math.min(2, 1 + Math.floor(backlog / 1500)) : Math.min(4, 2 + Math.floor(backlog / 1500))));
   const fillersOn = rcl >= 5 && links >= 2;
   T.queen = fillersOn ? 0 : 1;
   T.filler = fillersOn ? 4 : 0;
@@ -121,7 +123,8 @@ module.exports = { targets, run(spawn) {
     if ((count[role] || 0) >= T[role]) continue;
     const mem = {};
     if (role === 'filler') { const used = new Set(mine.filter(c => c.memory.role === 'filler').map(c => c.memory.spot.join())); mem.spot = P.pos.fillers.slice(0, 4).find(s => !used.has(s.join())); }
-    const e = role === 'queen' && !(count.hauler) ? Math.max(300, avail) : Math.min(E, role === 'hauler' ? 800 : role === 'queen' ? 600 : 3000);
+    // Home hauler: 8C8M pre-storage; after storage model need ~5 carry on the A route (500) — 8C was waiting_pickup 23-30%.
+    const e = role === 'queen' && !(count.hauler) ? Math.max(300, avail) : Math.min(E, role === 'hauler' ? (room.storage ? 500 : 800) : role === 'queen' ? 600 : 3000);
     return go(role, B[role](e, rcl), mem);
   }
 } };
