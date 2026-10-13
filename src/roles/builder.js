@@ -42,9 +42,11 @@ module.exports = { run(c) {
     if (!src || src.store[RESOURCE_ENERGY] < 50) {
       const home = Game.rooms[c.memory.home] || room;
       const Ph = plan.get(home.name) || P;
-      const [fx, fy] = Ph.pos.fillerContainerA, [cx, cy] = Ph.pos.controllerContainer;
-      const all = [home.storage].concat(require('./hauler').pickups(home), [rc.at(home, fx, fy, STRUCTURE_CONTAINER), rc.at(home, cx, cy, STRUCTURE_CONTAINER)])
-        .filter(s => s && s.store[RESOURCE_ENERGY] >= 100 + (s === home.storage ? require('../managers/threat').reserve(home.name) : 0)); // storage keeps the defence reserve
+      // Prefer hub stores (storage / filler A); source containers next. NEVER the controller container —
+      // haulers feed ctl for upgraders; builders sipping it kept ctlEma ~150 and pinned us to 1x8W (patrol 10-13 18:40).
+      const [fx, fy] = Ph.pos.fillerContainerA;
+      const all = [home.storage, rc.at(home, fx, fy, STRUCTURE_CONTAINER)].concat(require('./hauler').pickups(home))
+        .filter(s => s && s.store[RESOURCE_ENERGY] >= 50 + (s === home.storage ? require('../managers/threat').reserve(home.name) : 0)); // 50: was 100, left builders no_task while sites existed
       const tw = c.memory.t && Game.getObjectById(c.memory.t);
       let cands = all.filter(s => c.pos.getRangeTo(s) <= 12);
       if (!cands.length && tw) { move.to(c, tw.pos.x, tw.pos.y, 3); return; }

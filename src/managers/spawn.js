@@ -27,7 +27,10 @@ function targets(room, count, backlog, ctlEnergy, sites) {
   // Supply-follows-demand on the smoothed ctl container level (ctlEnergy = ~300-tick EMA): an empty container means upgraders
   // outnumber the feed. A snapshot rule (3 + level/700) spawned 4x7 WORK for ~11/t feed -> upgraders idle 55% waiting_feed (10-13 17:30).
   T.upgrader = rcl >= 8 ? 1 : Math.min(P.pos.upgraders.length, (sites ? 1 : 2) + Math.floor(ctlEnergy / 700));
-  T.builder = sites ? (sites > 3 ? 2 : 1) : (rcl <= 4 ? 1 : 0);
+  // RCL4 extension push: 2 builders need ~40 e/t but net income ~22 -> spawn/ctl starve, builders no_task ~28%,
+  // haulers wait on empty pickups (patrol 10-13 18:40). One fed builder finishes sites faster than two hungry ones.
+  // Second builder only after cap>=1300 (20 ext, CLAIM2-ready) when the room can afford the extra demand.
+  T.builder = sites ? (sites > 3 && room.energyCapacityAvailable >= 1300 ? 2 : 1) : (rcl <= 4 ? 1 : 0);
   return T;
 }
 // Remote mining (managers/remote.js): after home miners/queen/haulers, before fillers/upgraders/builders.
@@ -47,7 +50,9 @@ function remoteSpawn(room, E, go, rcl) {
     if (nRes < wantRes && res < 4000 && E >= 650) return go('reserver', E >= 1300 ? [CLAIM, CLAIM, MOVE, MOVE] : [CLAIM, MOVE], { remote: r });
     if (live('rhauler') < 2) return go('rhauler', B.hauler(Math.min(E, 800)), { remote: r });
     if (live('rminer') < 1) { const w = Math.min(5, Math.floor((Math.min(E, 700) - 200) / 100)); return go('rminer', [].concat(rep(w, WORK), [CARRY], rep(3, MOVE)), { remote: r }); }
-    if (live('rhauler') < 3 && m.cont && m.cont.e > 1200) return go('rhauler', B.hauler(Math.min(E, 800)), { remote: r });
+    // 3rd rhauler only when home hauling is staffed — otherwise the 800 energy should replace a dead home hauler first
+    const homeH = _.filter(Game.creeps, c => c.memory.role === 'hauler' && c.memory.home === room.name).length;
+    if (live('rhauler') < 3 && m.cont && m.cont.e > 1200 && homeH >= 2) return go('rhauler', B.hauler(Math.min(E, 800)), { remote: r });
   }
 }
 module.exports = { targets, run(spawn) {
