@@ -10,7 +10,7 @@ const C = { OK: 0, ERR_NOT_IN_RANGE: -9, ERR_NOT_ENOUGH_ENERGY: -6, ERR_INVALID_
   FIND_CREEPS: 101, FIND_MY_CREEPS: 102, FIND_HOSTILE_CREEPS: 103, FIND_SOURCES: 105, FIND_DROPPED_RESOURCES: 106, FIND_STRUCTURES: 107,
   FIND_MY_STRUCTURES: 108, FIND_CONSTRUCTION_SITES: 111, FIND_MY_CONSTRUCTION_SITES: 114, FIND_SOURCES_ACTIVE: 104, LOOK_RESOURCES: 'resource',
   RESOURCE_ENERGY: 'energy', WORK: 'work', CARRY: 'carry', MOVE: 'move', ATTACK: 'attack', RANGED_ATTACK: 'ranged_attack', HEAL: 'heal', CLAIM: 'claim', TOUGH: 'tough',
-  BODYPART_COST: { work: 100, carry: 50, move: 50, attack: 80, ranged_attack: 150, heal: 250, claim: 600, tough: 10 }, EVENT_ATTACK: 1 };
+  TOP: 1, RIGHT: 3, BOTTOM: 5, LEFT: 7, LOOK_SOURCES: 'source', LOOK_STRUCTURES: 'structure', LOOK_CONSTRUCTION_SITES: 'constructionSite', BODYPART_COST: { work: 100, carry: 50, move: 50, attack: 80, ranged_attack: 150, heal: 250, claim: 600, tough: 10 }, EVENT_ATTACK: 1 };
 for (const t of ['spawn', 'extension', 'road', 'wall', 'rampart', 'link', 'storage', 'tower', 'observer', 'powerSpawn', 'extractor', 'lab', 'terminal', 'container', 'nuker', 'factory', 'controller'])
   C['STRUCTURE_' + t.replace(/[A-Z]/g, m => '_' + m).toUpperCase()] = t;
 C.CONTROLLER_STRUCTURES = { extension: [0, 0, 5, 10, 20, 30, 40, 50, 60], tower: [0, 0, 0, 1, 1, 2, 2, 3, 6], container: [5, 5, 5, 5, 5, 5, 5, 5, 5], road: Array(9).fill(2500), rampart: [0, 0, 2500, 2500, 2500, 2500, 2500, 2500, 2500], storage: [0, 0, 0, 0, 1, 1, 1, 1, 1], link: [0, 0, 0, 0, 0, 2, 3, 4, 6], spawn: [0, 1, 1, 1, 1, 1, 1, 2, 3] };

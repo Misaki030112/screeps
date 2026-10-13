@@ -26,6 +26,20 @@ function targets(room, count, backlog, ctlEnergy, sites) {
   T.builder = sites ? (sites > 3 ? 2 : 1) : (rcl <= 4 ? 1 : 0);
   return T;
 }
+// Remote mining (managers/remote.js): after home miners/queen/haulers, before fillers/upgraders/builders.
+function remoteSpawn(room, E, go, rcl) {
+  const remote = require('./remote');
+  for (const r in remote.CFG) {
+    if (remote.CFG[r].home !== room.name || remote.paused(r)) continue;
+    const live = role => _.filter(Game.creeps, c => c.memory.remote === r && c.memory.role === role && (c.spawning || c.ticksToLive > (role === 'reserver' ? 80 : 120))).length;
+    const m = remote.mem(r);
+    if (live('rhauler') < 2) return go('rhauler', B.hauler(Math.min(E, 800)), { remote: r });
+    if (live('rminer') < 1) { const w = Math.min(5, Math.floor((Math.min(E, 700) - 200) / 100)); return go('rminer', [].concat(rep(w, WORK), [CARRY], rep(3, MOVE)), { remote: r }); }
+    const res = m.res && m.res.ticksToEnd || 0;
+    if (live('reserver') < 1 && res < 4000 && E >= 650) return go('reserver', E >= 1300 ? [CLAIM, CLAIM, MOVE, MOVE] : [CLAIM, MOVE], { remote: r });
+    if (live('rhauler') < 3 && m.cont && m.cont.e > 1200) return go('rhauler', B.hauler(Math.min(E, 800)), { remote: r });
+  }
+}
 module.exports = { targets, run(spawn) {
   if (spawn.spawning) return;
   const room = spawn.room, cap = room.energyCapacityAvailable, avail = room.energyAvailable, rcl = room.controller.level;
@@ -57,7 +71,8 @@ module.exports = { targets, run(spawn) {
   const [cx, cy] = P.pos.controllerContainer; const cc = rc.at(room, cx, cy, STRUCTURE_CONTAINER);
   const T = targets(room, count, backlog, cc ? cc.store[RESOURCE_ENERGY] : 0, rc.sites(room).length);
   room.memory.roleTargets = T;
-  for (const role of ['queen', 'hauler', 'filler', 'manager', 'upgrader', 'builder']) {
+  for (const role of ['queen', 'hauler', 'REMOTE', 'filler', 'manager', 'upgrader', 'builder']) {
+    if (role === 'REMOTE') { if (!starving) { const r = remoteSpawn(room, E, go, rcl); if (r !== undefined) return r; } continue; }
     if ((count[role] || 0) >= T[role]) continue;
     const mem = {};
     if (role === 'filler') { const used = new Set(mine.filter(c => c.memory.role === 'filler').map(c => c.memory.spot.join())); mem.spot = P.pos.fillers.slice(0, 4).find(s => !used.has(s.join())); }

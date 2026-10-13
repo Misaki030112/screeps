@@ -82,3 +82,16 @@ use. The real costs are **risk and diplomacy**.
 2. Contact The Council first (and in what tone: ask to share / ask to join), or mine without asking?
 3. Unreserved only (low profile, +3.7/t) or reserve (+7/t, open claim)?
 4. Accept the creep-loss risk (~1200 energy per lost set) and spend ≈1 CPU?
+
+## LIVE (approved by Misaki 2026-10-13 09:26 UTC+8: reserve + mine now)
+Code: `src/managers/remote.js` (config, safety, Memory.remote), `src/roles/remote.js` (rminer / rhauler / reserver),
+spawn hook in `managers/spawn.js` (after home miners/queen/haulers, before fillers/upgraders/builders; no remote spawning while home is starving).
+- Route: fixed exits W46N8 (49,14) ↔ W45N8 (0,14), cached per-room paths (utils/move).
+- rhauler ×2 (×3 while container > 1200): withdraw from container (13,11) and pick up drops → home, delivers via normal hauler logic.
+- rminer ×1: stands on the container, harvests, repairs the container when hits < 30k, rebuilds it if it is gone. WORK4 at cap 650, WORK5 at ≥700.
+- reserver ×1: CLAIM1 MOVE1 at cap < 1300, CLAIM2 MOVE2 at ≥ 1300 (RCL4). Never attacks a controller reserved by someone else.
+- **Safety:** hostile ATTACK/RANGED_ATTACK creeps in W45N8 or W46N8, or any of our remote creeps damaged → `Memory.remote.W45N8.pauseUntil = now+1500`,
+  remote creeps flee to W46N8 (33,26), remote spawning is paused, and `ALERT {...severity medium|high, remote:"W45N8"}` is logged.
+  The listener → `metrics/alerts_state.json` → `alerts.py` exit 2. The standard alert scan (`managers/alerts.js`) also runs on W45N8 while visible.
+  Nothing attacks; safe mode is untouched.
+- Status: `python3 tools/remote_status.py` (Memory.remote: reservation, container, delivered energy) and `metrics/w45n8_activity.jsonl`.

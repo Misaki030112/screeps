@@ -53,3 +53,4 @@ node upload.js             # check then upload
 python3 status.py --live   # collect + summary
 ```
 Token lives in `.env` (`SCREEPS_TOKEN=...`, chmod 600, gitignored).
+- Remote mining status: `python3 tools/remote_status.py`; W45N8 activity log `metrics/w45n8_activity.jsonl` (docs/REMOTE_W45N8.md).

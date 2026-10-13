@@ -9,7 +9,7 @@ Novice zone ends ~2026-10-28 03:33 (UTC+8). Spawn safe mode active ~19.6k ticks 
 5. ⏳ **Ramparts** on spawn/tower (plan, after tower) + attack alerts to Misaki (NO auto safe mode — her decision). Deadline 2026-10-28.
 6. Storage (RCL4); upgraders/builders withdraw from storage (energy util already supports it).
 7. Links (RCL5: controller + core link; source links RCL6/7).
-8. Remote mining in neighbouring rooms (scout first; avoid FungousCoast245/drtk712 territory).
+8. Remote mining: **W45N8 LIVE since 2026-10-13** (reserved, 1 source; see docs/REMOTE_W45N8.md). Watch diplomatic reaction from The Council (BustJetter/Fandalah). Upgrade reserver to CLAIM2 automatically at RCL4.
 9. Perimeter min-cut ramparts; CPU optimisation (cached finds, path reuse); 2nd room claim (needs approval).
 
 ## 2026-10-13: Layout v2 live
