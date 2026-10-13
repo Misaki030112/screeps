@@ -1,6 +1,6 @@
 {
-  "next_at": "2026-10-14T05:50:00+08:00",
-  "reason": "c025461 deployed (tick 83627056): leftover builder dumps to storage and parks when no build work (was moonlighting at ctl 31,29); 3rd upgrader gated until storage >=1300 reserve. Verify 05:50: builder no longer at ctl / idle no_task or gone; storage climbing from ~100 toward 500 then 1300 (miner B ~10/t); live upgraders →2 as oldest ages out; waiting_feed falling; upgrade ≥18/t; tower ~900 with no rampart top-up while storage <1300; rhauler=2; sites=0 (defer remote pave until storage ≥1300); 0 errors; threat SAFE. If storage still <300 after 1h: check queen withdrawing from storage while extensions full, and hauler A→ctl vs storage split.",
-  "written_at": "2026-10-14T04:57:06+08:00",
-  "commit": "c025461"
+  "next_at": "2026-10-14T07:55:00+08:00",
+  "reason": "e7c3966 (tick 83628959): queen standby ferries storage->ctl when spawn/tower full, ctl<1000 and storage >= max(threat.reserve, cap)+carry (1900), else fc as before. 55051aa (tick 83629007): home hauler with storage = 14C7M road body (1050e, 700 carry) instead of 6C6M. Old haulers die ~83629416 (07:40) and ~83629828; first 14C7M spawns then. Verify 07:55: container A 31,12 falling from 1771 (no overflow/drops); ctl container 30,30 >300 most of the time; upgrader waiting_feed <30%; 1h upgrade >=15/t; storage climbing toward 1900, then queen withdraws storage->ctl (queen target 30,30 from 37,31); 14C7M moves 1 tile/tick loaded on srcA route (trip ~27, no fatigue stalls at 35,31); 0 errors; remote SAFE delivering (delivered >120614). Open: model.py assumes A->hub rt 28, but with storage A goes to ctl (rt ~57) — fix model route; paused-remote creeps home work still pending.",
+  "written_at": "2026-10-14T07:09:00+08:00",
+  "commit": "55051aa"
 }
