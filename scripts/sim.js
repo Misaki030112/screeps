@@ -105,7 +105,9 @@ function mkCreep(name, body, x, y, memory) {
     upgradeController(ctl) { if (range(c.pos, ctl.pos) > 3) return C.ERR_NOT_IN_RANGE; const n = Math.min(c.store.energy, c.getActiveBodyparts('work')); c.store.energy -= n; ctl.progress += n; c.acts++; return 0; },
     build(s) { if (range(c.pos, s.pos) > 3) return C.ERR_NOT_IN_RANGE; const n = Math.min(c.store.energy, c.getActiveBodyparts('work') * 5); c.store.energy -= n; s.progress += n; c.acts++;
       if (s.progress >= s.progressTotal) { sites = sites.filter(z => z !== s); mkStruct(s.structureType, s.pos.x, s.pos.y, true); log.push(`BUILT ${s.structureType} ${s.pos.x},${s.pos.y}`); } return 0; },
-    repair(s) { if (range(c.pos, s.pos) > 3) return C.ERR_NOT_IN_RANGE; c.acts++; return 0; } };
+    repair(s) { if (range(c.pos, s.pos) > 3) return C.ERR_NOT_IN_RANGE; c.acts++; return 0; },
+    dismantle(s) { if (range(c.pos, s.pos) > 1) return C.ERR_NOT_IN_RANGE; const n = c.getActiveBodyparts('work') * 50; s.hits = Math.max(0, (s.hits || 0) - n); c.acts++;
+      if (s.hits <= 0) { delete objs[s.id]; log.push(`DISMANTLE ${s.structureType} ${s.pos.x},${s.pos.y}`); } return 0; } };
   Object.defineProperty(c, 'room', { get: () => room });
   g.Game.creeps[name] = c; objs[c.id] = c; g.Memory.creeps[name] = memory; return c;
 }

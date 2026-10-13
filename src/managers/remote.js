@@ -1,10 +1,20 @@
 // Remote mining W45N8 (approved 2026-10-13). One source, reserved. docs/REMOTE_W45N8.md
 // Safety: hostile combat creeps (or damage to our creeps) in W45N8 or W46N8 -> Memory.remote[R].pauseUntil = now+1500,
 // remote creeps flee home and remote spawning stops. Logs ALERT lines (picked up by listener -> alerts.py).
-const CFG = { W45N8: { home: 'W46N8', src: [14, 12], cont: [13, 11], ctl: [7, 36], exitHome: [49, 14], exitRemote: [0, 14] } };
+const CFG = { W45N8: { home: 'W46N8', src: [14, 12], cont: [13, 11], ctl: [7, 36], exitHome: [49, 14], exitRemote: [0, 14],
+  // swamp tiles on the ideal haul route (model.py pave list); home-side swamps live in layout RCL3 roads
+  roads: [[2, 12]] } };
 const PAUSE = 1500, COMBAT = ['attack', 'ranged_attack'];
 function mem(r) { return (Memory.remote = Memory.remote || {})[r] = Memory.remote[r] || { pauseUntil: 0 }; }
 function paused(r) { return (mem(r).pauseUntil || 0) > Game.time; }
+function placeRoads(r) {
+  const C = CFG[r], room = Game.rooms[r]; if (!room || !C.roads) return;
+  for (const [x, y] of C.roads) {
+    if (room.lookForAt(LOOK_STRUCTURES, x, y).some(s => s.structureType === STRUCTURE_ROAD)) continue;
+    if (room.lookForAt(LOOK_CONSTRUCTION_SITES, x, y).some(s => s.structureType === STRUCTURE_ROAD)) continue;
+    room.createConstructionSite(x, y, STRUCTURE_ROAD);
+  }
+}
 function check(r) {
   const C = CFG[r], m = mem(r);
   for (const rn of [r, C.home]) {
@@ -27,6 +37,7 @@ function check(r) {
     const ct = room.controller; m.res = ct && ct.reservation ? ct.reservation : null;
     const k = room.lookForAt(LOOK_STRUCTURES, C.cont[0], C.cont[1]).find(s => s.structureType === STRUCTURE_CONTAINER);
     m.cont = k ? { id: k.id, e: k.store[RESOURCE_ENERGY], hits: k.hits } : null; m.seen = Game.time;
+    if (!paused(r)) placeRoads(r);
   }
 }
 module.exports = { CFG, paused, mem, run() { for (const r in CFG) check(r); } };
