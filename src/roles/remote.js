@@ -53,4 +53,49 @@ const roles = {
     c.reserveController(ct);
   },
 };
-module.exports = { rminer: { run: roles.rminer }, rhauler: { run: roles.rhauler }, reserver: { run: roles.reserver } };
+// Anti-NPC defender (docs/DEFENDER.md). Spawned on demand only; engages owner 'Invader' only; kites melee at range 3;
+// retreats home (<60% hp: tower heals it) or when a player combat creep / an Invader healer shows up; recycles when done.
+const OPP = { 1: 5, 2: 6, 3: 7, 4: 8, 5: 1, 6: 2, 7: 3, 8: 4 };
+roles.defender = function (c) {
+  const C = remote.CFG[c.memory.remote], m = remote.mem(c.memory.remote);
+  if (c.hits < c.hitsMax) c.heal(c);
+  const here = c.room.name === c.memory.remote;
+  const hostile = here ? c.room.find(FIND_HOSTILE_CREEPS) : [];
+  const inv = hostile.filter(h => h.owner.username === 'Invader');
+  const danger = hostile.some(h => h.owner.username !== 'Invader' && h.body.some(p => p.type === ATTACK || p.type === RANGED_ATTACK))
+    || inv.length > 1 || inv.some(h => h.body.some(p => p.type === HEAL && p.hits > 0)); // RCL4 body handles exactly one Invader
+  if (here && inv.length) c.memory.seen = Game.time;
+  const done = c.ticksToLive < 80 || (here && !inv.length && Game.time - (c.memory.seen || c.memory.born || 0) > 10 && c.memory.arrived);
+  if (here && !c.memory.arrived && c.pos.x > 1 && c.pos.x < 48) c.memory.arrived = Game.time;
+  if (c.hits < c.hitsMax * 0.6) c.memory.hurt = true; else if (c.hits >= c.hitsMax * 0.95) c.memory.hurt = false;
+  if (done || danger) c.memory.recycle = true;
+  if (c.memory.recycle || c.memory.hurt) {
+    const t = here ? inv.find(h => c.pos.inRangeTo(h, 3)) : null; if (t) c.rangedAttack(t);
+    if (c.room.name !== C.home || c.pos.x >= 48) { const sp = Game.spawns[C.spawn || 'Spawn1']; return go(c, C.home, sp ? sp.pos.x : 35, sp ? sp.pos.y : 28, 1); }
+    if (c.memory.hurt && !c.memory.recycle) { const [px, py] = C.park || [33, 26]; return move.to(c, px, py, 1); } // tower heals it
+    const sp = c.pos.findClosestByRange(FIND_MY_SPAWNS); if (!sp) return;
+    if (sp.recycleCreep(c) === ERR_NOT_IN_RANGE) move.to(c, sp.pos.x, sp.pos.y, 1);
+    return;
+  }
+  if (!here || c.pos.x === 0 || c.pos.x === 49 || c.pos.y === 0 || c.pos.y === 49) return go(c, c.memory.remote, C.cont[0], C.cont[1], 2);
+  const t = c.pos.findClosestByRange(inv);
+  if (!t) return move.to(c, C.cont[0], C.cont[1], 2);
+  const r = c.pos.getRangeTo(t);
+  if (r <= 3) c.rangedAttack(t);
+  const melee = t.body.some(p => p.type === ATTACK && p.hits > 0);
+  if (r > 3) { delete c.memory._m; c.moveTo(t, { range: 3, reusePath: 0, maxRooms: 1 }); }
+  else if (melee && r <= 2) {
+    // kite: best of 8 neighbours by (range from target, not swamp, open space) — never kite into a swamp or a corner
+    const T = c.room.getTerrain(); let best = 0, bs = -1e9;
+    for (let k = 1; k <= 8; k++) {
+      const [dx, dy] = [[0, 0], [0, -1], [1, -1], [1, 0], [1, 1], [0, 1], [-1, 1], [-1, 0], [-1, -1]][k];
+      const x = c.pos.x + dx, y = c.pos.y + dy;
+      if (x < 1 || x > 48 || y < 1 || y > 48 || T.get(x, y) === TERRAIN_MASK_WALL) continue;
+      let open = 0; for (let i = -1; i <= 1; i++) for (let j = -1; j <= 1; j++) if (T.get(x + i, y + j) !== TERRAIN_MASK_WALL) open++;
+      const sc = Math.max(Math.abs(x - t.pos.x), Math.abs(y - t.pos.y)) * 10 - (T.get(x, y) === TERRAIN_MASK_SWAMP ? 25 : 0) + open;
+      if (sc > bs) { bs = sc; best = k; }
+    }
+    if (best) c.move(best);
+  }
+};
+module.exports = { rminer: { run: roles.rminer }, rhauler: { run: roles.rhauler }, reserver: { run: roles.reserver }, defender: { run: roles.defender } };

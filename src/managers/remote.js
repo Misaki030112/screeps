@@ -5,10 +5,13 @@ const CFG = { W45N8: { home: 'W46N8', src: [14, 12], cont: [13, 11], ctl: [7, 36
   // swamp tiles on the ideal haul route (model.py pave list); home-side swamps live in layout RCL3 roads
   roads: [[2, 12]],
   // where fleeing remote creeps wait at home while paused: plain tiles off every fixed route/plan tile, near the exit route
-  park: [46, 21] } };
+  park: [46, 21],
+  // anti-Invader defender (docs/DEFENDER.md). OFF until RCL4 stable + CLAIM2 reserver; enable: set true (or Memory.remote.W45N8.defend=true)
+  defend: false } };
 const PAUSE = 1500, COMBAT = ['attack', 'ranged_attack'];
 function mem(r) { return (Memory.remote = Memory.remote || {})[r] = Memory.remote[r] || { pauseUntil: 0 }; }
 function paused(r) { return (mem(r).pauseUntil || 0) > Game.time; }
+function defendOn(r) { return !!(CFG[r].defend || mem(r).defend); }
 function placeRoads(r) {
   const C = CFG[r], room = Game.rooms[r]; if (!room || !C.roads) return;
   for (const [x, y] of C.roads) {
@@ -29,7 +32,8 @@ function check(r) {
       const invOnly = bad.length > 0 && bad.every(h => h.owner.username === 'Invader') && !hurt.length;
       const ttl = invOnly ? Math.max(...bad.map(h => h.ticksToLive || 1500)) : PAUSE;
       const until = Game.time + (invOnly ? Math.min(PAUSE, ttl + 80) : PAUSE);
-      m.pauseUntil = Math.max(m.pauseUntil || 0, until);
+      m.pauseUntil = Math.max(m.pauseUntil || 0, until); m.invOnly = invOnly && (fresh || m.invOnly);
+      if (rn === r) m.inv = { n: bad.length, heal: bad.filter(h => h.body.some(p => p.type === HEAL && p.hits > 0)).length, ttl, t: Game.time };
       if (fresh || Game.time % 50 === 0) {
         const owners = _.uniq(bad.map(h => h.owner.username));
         console.log('ALERT ' + JSON.stringify({ episode: `remote-${r}-${m.pauseStart = fresh ? Game.time : m.pauseStart}`, tick: Game.time, room: rn,
@@ -46,7 +50,11 @@ function check(r) {
     m.cont = k ? { id: k.id, e: k.store[RESOURCE_ENERGY], hits: k.hits } : null; m.seen = Game.time;
     const src = room.lookForAt(LOOK_SOURCES, C.src[0], C.src[1])[0];
     if (src) m.invaderHarvested = src.invaderHarvested;
+    // early resume: defender cleared an Invader-only pause (we have vision, no combat hostiles)
+    if (paused(r) && m.invOnly && defendOn(r) && !room.find(FIND_HOSTILE_CREEPS).some(h => h.body.some(p => COMBAT.includes(p.type) && p.hits > 0))) {
+      m.pauseUntil = Game.time; m.invOnly = false; m.inv = null; console.log('REMOTE ' + r + ' resumed early: invaders cleared');
+    }
     if (!paused(r)) placeRoads(r);
   }
 }
-module.exports = { CFG, paused, mem, run() { for (const r in CFG) check(r); } };
+module.exports = { CFG, paused, mem, defendOn, run() { for (const r in CFG) check(r); } };

@@ -3,6 +3,8 @@
 const plan = require('../utils/plan'), rc = require('../utils/roomcache');
 const rep = (n, p) => Array(Math.max(0, n)).fill(p);
 const B = {
+  // anti-Invader: 5 RANGED_ATTACK + 6 MOVE + 1 HEAL = 1300 (RCL4 full cap); 50 dmg/t at range 3, 12 hp/t self-heal
+  defender: e => e >= 1300 ? [].concat(rep(5, RANGED_ATTACK), rep(6, MOVE), [HEAL]) : [].concat(rep(3, RANGED_ATTACK), rep(4, MOVE)),
   harvester: e => { const n = Math.max(1, Math.min(5, Math.floor(e / 200))); return [].concat(rep(n, WORK), rep(n, CARRY), rep(n, MOVE)); },
   miner: (e, carry) => { const c = carry ? 1 : 0; const w = Math.max(2, Math.min(5, Math.floor((e - 50 - c * 50) / 100)));
     const m = Math.max(1, Math.min(3, Math.floor((e - w * 100 - c * 50) / 50))); return [].concat(rep(w, WORK), rep(c, CARRY), rep(m, MOVE)); },
@@ -31,7 +33,15 @@ function targets(room, count, backlog, ctlEnergy, sites) {
 function remoteSpawn(room, E, go, rcl) {
   const remote = require('./remote');
   for (const r in remote.CFG) {
-    if (remote.CFG[r].home !== room.name || remote.paused(r)) continue;
+    if (remote.CFG[r].home !== room.name) continue;
+    if (remote.paused(r)) {
+      // on-demand defender: Invader-only, no healers, enough TTL left to be worth it, RCL4 body (1300)
+      const m = remote.mem(r), I = m.inv;
+      if (remote.defendOn(r) && rcl >= 4 && m.invOnly && I && !I.heal && I.n === 1 && I.ttl - (Game.time - I.t) > 300
+        && !_.some(Game.creeps, c => c.memory.role === 'defender' && c.memory.remote === r))
+        return go('defender', B.defender(E), { remote: r, born: Game.time });
+      continue;
+    }
     const m = remote.mem(r);
     const res = (m.res && m.res.ticksToEnd) || 0;
     const wantRes = (res > 0 && res < 800) ? 2 : 1; // overlap rebuilds buffer while CLAIM1-only
