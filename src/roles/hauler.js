@@ -7,13 +7,19 @@ function pickups(room) {
   return P.pos.miners.map(([x, y]) => rc.at(room, x, y, STRUCTURE_CONTAINER)).filter(Boolean)
     .concat(rc.all(room, STRUCTURE_CONTAINER).filter(s => !P.any[plan.key(s.pos.x, s.pos.y)])); // leftover containers (e.g. 31,11)
 }
+// Deterministic assignment, recomputed once per tick: haulers sorted by name -> miner containers ordered farthest first,
+// round-robin (2 haulers: far+near, 3: far+near+far). Self-balances when a hauler dies; no stored state to drift.
+const AS = {};
 function assignPickup(c, room, P) {
-  let a = c.memory.hp;
-  if (a && P.pos.miners.some(([x, y]) => x === a[0] && y === a[1])) return a;
-  const n = {};
-  for (const h of _.filter(Game.creeps, x => x.memory.role === 'hauler' && x.memory.home === room.name && x.memory.hp)) n[h.memory.hp.join()] = (n[h.memory.hp.join()] || 0) + 1;
-  const [sx, sy] = P.pos.storageDoor;
-  a = _.min(P.pos.miners, ([x, y]) => (n[x + ',' + y] || 0) * 100 - Math.max(Math.abs(x - sx), Math.abs(y - sy))); // fewest owners, then farthest
+  let e = AS[room.name];
+  if (!e || e.t !== Game.time) {
+    const [sx, sy] = P.pos.storageDoor;
+    const d = ([x, y]) => Math.max(Math.abs(x - sx), Math.abs(y - sy)), order = P.pos.miners.slice().sort((p, q) => d(q) - d(p));
+    const names = _.filter(Game.creeps, x => x.memory.role === 'hauler' && (x.memory.home || x.room.name) === room.name).map(x => x.name).sort();
+    e = AS[room.name] = { t: Game.time, m: {} };
+    names.forEach((n, i) => { e.m[n] = order[i % order.length]; });
+  }
+  const a = e.m[c.name] || P.pos.miners[0];
   c.memory.hp = a; return a;
 }
 function legacyPickup(c, room, P) {
@@ -31,13 +37,17 @@ function legacyPickup(c, room, P) {
 module.exports = { pickups, run(c) {
   const room = c.room, P = plan.get(room.name);
   if (c.memory.working && c.store[RESOURCE_ENERGY] === 0) { c.memory.working = false; delete c.memory.dst; }
-  if (!c.memory.working && c.store.getFreeCapacity() === 0) { c.memory.working = true; delete c.memory.src; }
+  if (!c.memory.working && c.store.getFreeCapacity() === 0) c.memory.working = true;
+  if (c.memory.working && (c.memory.src || c.memory.wt || c.memory.lp)) { delete c.memory.src; delete c.memory.wt; delete c.memory.lp; }
   if (!c.memory.working) {
     // Fixed pickup: each hauler owns one miner container (memory.hp) and waits next to it until it can fill up.
     // No mid-trip switching between sources (that ping-pong cost ~1 PathFinder search per 10 ticks per hauler).
     const a = assignPickup(c, room, P), cont = a && rc.at(room, a[0], a[1], STRUCTURE_CONTAINER);
-    if (!cont) return legacyPickup(c, room, P); // fallback: container missing -> old nearest-energy pick
+    // fallbacks: container missing, or waited > 60 ticks without filling (miner dead/absent) -> one nearest-energy trip
+    if (!cont || c.memory.lp) return legacyPickup(c, room, P);
     if (!move.to(c, a[0], a[1], 1)) return;
+    if (!c.memory.wt) c.memory.wt = Game.time;
+    if (Game.time - c.memory.wt > 60) { delete c.memory.wt; if (c.store[RESOURCE_ENERGY] > 0) c.memory.working = true; else c.memory.lp = 1; return; }
     const free = c.store.getFreeCapacity();
     const drop = c.pos.findInRange(FIND_DROPPED_RESOURCES, 1).find(r => r.resourceType === RESOURCE_ENERGY && r.amount >= 25);
     if (drop) { c.pickup(drop); if (drop.amount >= free) c.memory.working = true; return; }
