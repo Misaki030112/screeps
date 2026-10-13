@@ -2,7 +2,7 @@
 // With no sites it destroy()s (fallback: dismantles) empty unplanned containers (e.g. v1 leftover 31,11), keeps planned containers
 // healthy, builds remote swamp-road sites when remote is not paused, then helps upgrade from the drop tile.
 const plan = require('../utils/plan'), move = require('../utils/move'), rc = require('../utils/roomcache');
-const remote = require('../managers/remote');
+const remote = require('../managers/remote'), trace = require('../utils/trace');
 const PRIO = { spawn: 0, extension: 1, tower: 2, container: 3, storage: 4, link: 5, rampart: 6, road: 7 };
 function remoteRoadSite() {
   for (const r in remote.CFG) {
@@ -49,11 +49,11 @@ module.exports = { run(c) {
         .filter(s => s && s.store[RESOURCE_ENERGY] >= 50 + (s === home.storage ? require('../managers/threat').reserve(home.name) : 0)); // 50: was 100, left builders no_task while sites existed
       const tw = c.memory.t && Game.getObjectById(c.memory.t);
       let cands = all.filter(s => c.pos.getRangeTo(s) <= 12);
-      if (!cands.length && tw) { move.to(c, tw.pos.x, tw.pos.y, 3); return; }
+      if (!cands.length && tw) { move.to(c, tw.pos.x, tw.pos.y, 3); trace.why(c, 'u'); return; } // starved, not no_task
       if (!cands.length) cands = all;
       src = cands.length ? _.max(cands, s => s.store[RESOURCE_ENERGY] / (c.pos.getRangeTo(s) + 15)) : null;
       c.memory.src = src ? src.id : undefined;
-      if (!src) return;
+      if (!src) { trace.why(c, 'u'); return; }
     }
     if (move.to(c, src.pos.x, src.pos.y, 1)) { c.withdraw(src, RESOURCE_ENERGY); delete c.memory.src; }
     return;

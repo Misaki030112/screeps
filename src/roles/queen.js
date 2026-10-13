@@ -70,7 +70,7 @@ module.exports = { fillRoute, run(c) {
     const near = require('./hauler').pickups(room).filter(s => s.store[RESOURCE_ENERGY] >= 50).sort((a, b) => c.pos.getRangeTo(a) - c.pos.getRangeTo(b));
     const cands = [room.storage, rc.at(room, fx, fy, STRUCTURE_CONTAINER)].filter(s => s && s.store[RESOURCE_ENERGY] >= 50).concat(near);
     src = cands[0] || null; c.memory.src = src ? src.id : undefined;
-    if (!src) { if (c.store[RESOURCE_ENERGY] > 0) c.memory.working = true; return; }
+    if (!src) { if (c.store[RESOURCE_ENERGY] > 0) c.memory.working = true; else require('../utils/trace').why(c, 'u'); return; } // starved (was mislabelled target_full)
   }
   if (move.to(c, src.pos.x, src.pos.y, 1)) { c.withdraw(src, RESOURCE_ENERGY); delete c.memory.src; c.memory.working = true; }
 } };
