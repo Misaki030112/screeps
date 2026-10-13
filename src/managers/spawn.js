@@ -44,7 +44,9 @@ function targets(room, count, backlog, ctlEnergy, sites) {
   // RCL4 extension push: 2 builders need ~40 e/t but net income ~22 -> spawn/ctl starve, builders no_task ~28%,
   // haulers wait on empty pickups (patrol 10-13 18:40). One fed builder finishes sites faster than two hungry ones.
   // Second builder only after cap>=1300 (20 ext, CLAIM2-ready) when the room can afford the extra demand.
-  T.builder = sites ? (sites > 3 && room.energyCapacityAvailable >= 1300 ? 2 : 1) : (rcl <= 4 ? 1 : 0);
+  // With storage + sites=0 a lone builder cannot withdraw below threat.reserve, walks to source A / upgrades as a
+  // hungry 5W, and keeps storage off the 1300 defender cushion (patrol 10-14 02:54 → 03:54, storage 1040→50→~100).
+  T.builder = sites ? (sites > 3 && room.energyCapacityAvailable >= 1300 ? 2 : 1) : (st ? 0 : (rcl <= 4 ? 1 : 0));
   return T;
 }
 // Remote mining (managers/remote.js): after home miners/queen/haulers, before fillers/upgraders/builders.
@@ -64,9 +66,9 @@ function remoteSpawn(room, E, go, rcl) {
     if (nRes < wantRes && res < 4000 && E >= 650) return go('reserver', E >= 1300 ? [CLAIM, CLAIM, MOVE, MOVE] : [CLAIM, MOVE], { remote: r });
     if (live('rhauler') < 2) return go('rhauler', B.hauler(Math.min(E, 800)), { remote: r });
     if (live('rminer') < 1) { const w = Math.min(5, Math.floor((Math.min(E, 700) - 200) / 100)); return go('rminer', [].concat(rep(w, WORK), [CARRY], rep(3, MOVE)), { remote: r }); }
-    // 3rd rhauler only when home hauling is staffed — otherwise the 800 energy should replace a dead home hauler first
-    const homeH = _.filter(Game.creeps, c => c.memory.role === 'hauler' && c.memory.home === room.name).length;
-    if (live('rhauler') < 3 && m.cont && m.cont.e > 1200 && homeH >= 2) return go('rhauler', B.hauler(Math.min(E, 800)), { remote: r });
+    // RCL4 target is 2×8C8M remote haulers (user preference). A 3rd was opportunistic on cont>1200 but left
+    // waiting_pickup idle while the container sat near empty (patrol 10-14 03:55: 3 rhaulers, cont ~20e).
+    // Keep the energy for home upgraders / storage reserve instead.
   }
 }
 module.exports = { targets, run(spawn) {
