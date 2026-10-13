@@ -55,11 +55,9 @@ python3 status.py --live   # collect + summary
 Token lives in `.env` (`SCREEPS_TOKEN=...`, chmod 600, gitignored).
 - Remote mining status: `python3 tools/remote_status.py`; W45N8 activity log `metrics/w45n8_activity.jsonl` (docs/REMOTE_W45N8.md).
 
-## Creep telemetry (continuous, long-term)
-- **Store:** `metrics/ts.sqlite` (tools/tsdb.py, SQLite WAL, append-only). Retention 7 days full resolution, then every 10th tick for 60 days (`creep_audit.py --prune`, run daily by the listener).
-  - `pos`: every own creep's room/x/y/hits/energy for **every tick** a room update arrives over the websocket (W46N8 + W45N8). Costs zero in-game CPU.
-  - `cpu`: in-game per-creep CPU, intents, work units, repaths and stuck events in 5-tick windows. Kept in a ring buffer in memory segment 90 (last 300 ticks); the listener polls it every 60 s.
-  - `arr`: path arrivals, planned path length vs actual ticks (route adherence).
-  - `deploys`: tick + git commit of every upload (`python3 scripts/deploy.py "note"`), so before/after comparisons are possible.
-- **Audit:** `tools/creep_audit.py` (also run every ~10 min by the listener) writes `metrics/creep_audit.json` and `metrics/traffic_<room>.png` (log heatmap + trajectories of the 3 worst creeps). It flags stuck/oscillation episodes, idle ratio, repaths/100 ticks, route excess, CPU/tick per creep and role, and work per CPU ms, plus regressions vs the previous window and vs before the last deploy. A summary appears in `status.py` and the dashboard.
-- **Movement** (src/utils/move.js): one cached serialized path per creep and target. Fallback ladder when stuck: 2 ticks → repath around creeps; 4 → swap or push our own non-stationary creep; 8 → step aside and repath; 30 → console `STUCK`. Paths are invalidated only when the room's structure or site count changes. Fixed spots cost 20 in the matrix, so traffic yields to miners, fillers and upgraders. Remote creeps flee home on hostiles (managers/remote.js).
+## Data platform / creep telemetry → see docs/DATA.md
+- TimescaleDB (PostgreSQL 17) + Grafana (http://127.0.0.1:3000), started-if-down by `tools/services.sh` (patrol runs it each iteration; no systemd on the box).
+- The listener ingests every creep's position every tick, plus room stats, alerts, errors, STUCK/LAYOUT lines and segment-90 CPU windows. JSON files are retired, except `metrics/live.json` and `metrics/creep_audit.json`, which remain as dashboard caches.
+- Deploy only with `.venv/bin/python scripts/deploy.py "note"`, which records the commit for before/after comparisons.
+- Patrol: `tools/services.sh && python3 alerts.py && .venv/bin/python tools/creep_audit.py --patrol` (exit 2 = regression after deploy).
+- Movement (src/utils/move.js): cached serialized path per creep+target with a stuck fallback ladder (2: repath around creeps, 4: swap, 8: step aside, 30: STUCK report); paths invalidated only when room structures change.

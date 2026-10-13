@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 """Websocket listener: streams console + cpu + room objects from screeps.com into metrics/.
   metrics/console.log   every console line (UTC+8 stamp)      metrics/errors.log  error lines only
-  metrics/metrics.jsonl STATS lines (every 10 ticks)            metrics/live.json   latest snapshot for dashboard
+  TimescaleDB (tools/ingest.py): creep_ticks, creep_cpu, path_arrivals, room_stats, events, alert_state            metrics/live.json   latest snapshot for dashboard
 Run via tools/run_listener.sh (auto-restart)."""
 import json, os, sys, time, threading, zlib, base64, html
 import websocket
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-import tsdb
+import ingest
+from ingest import now as utcnow
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'scripts'))
 from api import TOKEN, ROOT, req
 ROOM, SHARD = 'W46N8', 'shard3'
@@ -28,22 +29,9 @@ def append(fn, line):
     with open(os.path.join(M, fn), 'a') as f: f.write(line + '\n')
 SEV = {'low': 0, 'medium': 1, 'high': 2}
 def handle_alert(a):
-    """alerts.jsonl: one line per new episode, severity escalation, or end. alerts_state.json: episodes keyed by id."""
-    path = os.path.join(M, 'alerts_state.json')
-    st = json.load(open(path)) if os.path.exists(path) else {}
-    ep = st.get(a['episode'])
-    a['seen'] = stamp()
-    if ep is None:
-        ep = st[a['episode']] = {'first': a, 'latest': a, 'severity': a.get('severity'), 'acked': False, 'ended': False, 'seen': stamp()}
-        append('alerts.jsonl', json.dumps({'kind': 'new', **a}))
-    else:
-        if SEV.get(a.get('severity'), 0) > SEV.get(ep['severity'], 0):
-            ep['severity'] = a['severity']; ep['acked'] = False
-            append('alerts.jsonl', json.dumps({'kind': 'escalated', **a}))
-        if a.get('ended'):
-            ep['ended'] = True; append('alerts.jsonl', json.dumps({'kind': 'ended', **a}))
-        ep['latest'] = a
-    tmp = path + '.tmp'; json.dump(st, open(tmp, 'w'), indent=1); os.replace(tmp, path)
+    """alert episodes -> alert_state table (alerts.py) + events table"""
+    kind = ingest.alert_state(a, stamp())
+    if kind != 'update': ingest.put('events', (utcnow(), a.get('tick'), 'alert_' + kind, a.get('room'), a.get('severity'), a.get('episode'), a.get('owner'), json.dumps(a)))
 
 def decode(msg):
     if msg.startswith('gz:'): return zlib.decompress(base64.b64decode(msg[3:]), 15 + 32).decode()
@@ -70,9 +58,14 @@ def on_message(ws, msg):
             if l.startswith('STATS '):
                 try:
                     st = json.loads(l[6:]); live['stats'] = st; last_stats[0] = time.time()
-                    append('metrics.jsonl', json.dumps({'ts': int(time.time()), 'src': 'ws', 'stats': st}))
+                    for rn, rm in (st.get('rooms') or {}).items():
+                        ingest.put('room_stats', (utcnow(), st.get('t'), rn, rm.get('rcl'), rm.get('progress'), rm.get('progressTotal'), rm.get('energy'), rm.get('energyCap'),
+                            rm.get('sites'), rm.get('hostiles'), rm.get('safeMode'), st.get('cpu'), st.get('b'), st.get('tr'), (st.get('gcl') or {}).get('progress'), json.dumps(st.get('creeps')), ingest.commit()))
                 except Exception as ex: append('errors.log', f'{stamp()} [listener] bad STATS {ex}: {l[:200]}')
                 continue
+            k = l.split(' ', 1)[0]
+            if k in ('STUCK', 'LAYOUT') or '[ERR]' in l or 'Error' in l:
+                ingest.put('events', (utcnow(), live.get('gameTime'), 'error' if k not in ('STUCK', 'LAYOUT') else k.lower(), None, None, None, l[:2000], None))
             append('console.log', f'{stamp()} {l}'); live['console_tail'] = (live['console_tail'] + [f'{stamp()} {l}'])[-40:]
             if '[ERR]' in l or 'Error' in l:
                 append('errors.log', f'{stamp()} {l}'); live['errors_tail'] = (live['errors_tail'] + [f'{stamp()} {l}'])[-20:]
@@ -90,7 +83,7 @@ def on_message(ws, msg):
         snap = json.dumps({'creeps': cre, 'container': cont, 'reservation': ctl})
         if snap != watch['last']:
             watch['last'] = snap
-            append('w45n8_activity.jsonl', json.dumps({'t': stamp(), 'tick': data.get('gameTime'), 'creeps': cre, 'container': cont, 'reservation': ctl}))
+            ingest.put('events', (utcnow(), data.get('gameTime'), 'watch', WATCH, None, None, None, json.dumps({'creeps': cre, 'container': cont, 'reservation': ctl})))
     elif ch.startswith('room:'):
         record_room(ch.split('/')[-1], data)
         with lock:
@@ -102,7 +95,7 @@ def on_message(ws, msg):
 last_stats = [time.time()]
 # ---- continuous telemetry: every creep, every room update (no in-game CPU) ----
 rooms_state = {}  # room -> {oid: obj}
-db = [None]
+role_of = lambda n: ''.join(ch for ch in (n or '') if ch.isalpha()) or None
 def record_room(room, data):
     st = rooms_state.setdefault(room, {})
     for oid, o in (data.get('objects') or {}).items():
@@ -111,33 +104,32 @@ def record_room(room, data):
         else: st[oid] = dict(o)
     t = data.get('gameTime')
     if t is None: return
-    rows = [(t, room, o.get('name'), o.get('x'), o.get('y'), o.get('hits'), (o.get('store') or {}).get('energy', 0), int(time.time()))
-            for o in st.values() if o.get('type') == 'creep' and o.get('user') == UID]
-    if not rows: return
-    try:
-        if db[0] is None: db[0] = tsdb.connect()
-        db[0].executemany('INSERT INTO pos VALUES (?,?,?,?,?,?,?,?)', rows); db[0].commit()
-    except Exception as ex: append('errors.log', f'{stamp()} [listener] tsdb {ex}')
+    ts, cm = utcnow(), ingest.commit()
+    for o in st.values():
+        if o.get('type') == 'creep' and o.get('user') == UID:
+            e = (o.get('store') or {}).get('energy') or 0
+            ingest.put('creep_ticks', (ts, t, room, o.get('name'), role_of(o.get('name')), o.get('x'), o.get('y'), o.get('hits'), e,
+                                       'spawning' if o.get('spawning') else ('loaded' if e else 'empty'), cm))
 SEG = 90
 polls = [0]
 def segment_poller():
-    """in-game per-creep CPU/intent windows: memory segment 90 ring buffer, polled every 60 s (dedup by primary key)."""
-    c = tsdb.connect()
+    """in-game per-creep CPU/intent windows: memory segment 90 ring buffer, polled every 60 s (dedup by unique index)."""
     while True:
         try:
             d = req(f'user/memory-segment?segment={SEG}&shard={SHARD}').get('data')
             if d:
-                j = json.loads(d)
+                j = json.loads(d); ts, cm = utcnow(), ingest.commit()
                 for t, rows in j.get('s', []):
-                    c.executemany('INSERT OR IGNORE INTO cpu VALUES (?,?,?,?,?,?,?,?)', [(t, *r) for r in rows])
-                c.executemany('INSERT OR IGNORE INTO arr VALUES (?,?,?,?,?,?)', j.get('a', []))
-                c.commit()
+                    for n, cpu, acts, work, rp, stk, tgt in rows:
+                        ingest.put('creep_cpu', (ts, t, n, role_of(n), cpu / 100, acts, work, rp, stk, tgt, cm))
+                for t, n, role, tgt, plan, act in j.get('a', []):
+                    ingest.put('path_arrivals', (ts, t, n, role, tgt, plan, act, cm))
         except Exception as ex: append('errors.log', f'{stamp()} [listener] segment poll {ex}')
         time.sleep(60)
         polls[0] += 1
         if polls[0] % 10 == 0:  # creep audit + heatmaps every ~10 min (prune once a day)
             import subprocess
-            subprocess.run([sys.executable, os.path.join(ROOT, 'tools', 'creep_audit.py')] + (['--prune'] if polls[0] % 1440 == 0 else []), capture_output=True, timeout=300)
+            subprocess.run([sys.executable, os.path.join(ROOT, 'tools', 'creep_audit.py')], capture_output=True, timeout=300)
 STALE_S = 180  # STATS arrive every 10 ticks (~40 s); a silent-but-alive socket gets closed so run_listener.sh reconnects
 def watchdog(ws):
     while True:
@@ -150,5 +142,6 @@ def on_error(ws, e): append('errors.log', f'{stamp()} [listener] ws error {e}')
 if __name__ == '__main__':
     ws = websocket.WebSocketApp('wss://screeps.com/socket/websocket', on_open=on_open, on_message=on_message, on_error=on_error)
     threading.Thread(target=watchdog, args=(ws,), daemon=True).start()
+    ingest.start(lambda m: append('errors.log', f'{stamp()} [listener] {m}'))
     threading.Thread(target=segment_poller, daemon=True).start()
     ws.run_forever(ping_interval=30, ping_timeout=10)

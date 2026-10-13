@@ -1,0 +1,451 @@
+{
+ "uid": "screeps-main",
+ "title": "Screeps W46N8",
+ "timezone": "Asia/Shanghai",
+ "refresh": "1m",
+ "time": {
+  "from": "now-6h",
+  "to": "now"
+ },
+ "schemaVersion": 39,
+ "panels": [
+  {
+   "id": 1,
+   "type": "timeseries",
+   "title": "Controller progress / 10 min (W46N8)",
+   "datasource": {
+    "type": "grafana-postgresql-datasource",
+    "uid": "screeps-ts"
+   },
+   "gridPos": {
+    "x": 0,
+    "y": 0,
+    "w": 12,
+    "h": 8
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "grafana-postgresql-datasource",
+      "uid": "screeps-ts"
+     },
+     "rawQuery": true,
+     "editorMode": "code",
+     "format": "time_series",
+     "rawSql": "SELECT bucket AS time, room, (progress - lag(progress) OVER (PARTITION BY room ORDER BY bucket)) / NULLIF(t1 - t0 + 1, 0) AS \"progress/tick\" FROM room_stats_10m WHERE $__timeFilter(bucket) ORDER BY 1"
+    }
+   ]
+  },
+  {
+   "id": 2,
+   "type": "timeseries",
+   "title": "Energy available (avg) and capacity",
+   "datasource": {
+    "type": "grafana-postgresql-datasource",
+    "uid": "screeps-ts"
+   },
+   "gridPos": {
+    "x": 12,
+    "y": 0,
+    "w": 12,
+    "h": 8
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "grafana-postgresql-datasource",
+      "uid": "screeps-ts"
+     },
+     "rawQuery": true,
+     "editorMode": "code",
+     "format": "time_series",
+     "rawSql": "SELECT bucket AS time, energy_avg AS \"energy avg\", energy_cap AS cap FROM room_stats_10m WHERE $__timeFilter(bucket) AND room='W46N8' ORDER BY 1"
+    }
+   ]
+  },
+  {
+   "id": 3,
+   "type": "timeseries",
+   "title": "CPU per tick (avg/max), instrumentation",
+   "datasource": {
+    "type": "grafana-postgresql-datasource",
+    "uid": "screeps-ts"
+   },
+   "gridPos": {
+    "x": 0,
+    "y": 8,
+    "w": 12,
+    "h": 8
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "grafana-postgresql-datasource",
+      "uid": "screeps-ts"
+     },
+     "rawQuery": true,
+     "editorMode": "code",
+     "format": "time_series",
+     "rawSql": "SELECT bucket AS time, cpu_avg AS \"cpu avg\", cpu_max AS \"cpu max\", trace_cpu_avg AS \"trace cpu\" FROM room_stats_10m WHERE $__timeFilter(bucket) AND room='W46N8' ORDER BY 1"
+    }
+   ]
+  },
+  {
+   "id": 4,
+   "type": "timeseries",
+   "title": "Bucket",
+   "datasource": {
+    "type": "grafana-postgresql-datasource",
+    "uid": "screeps-ts"
+   },
+   "gridPos": {
+    "x": 12,
+    "y": 8,
+    "w": 12,
+    "h": 8
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "grafana-postgresql-datasource",
+      "uid": "screeps-ts"
+     },
+     "rawQuery": true,
+     "editorMode": "code",
+     "format": "time_series",
+     "rawSql": "SELECT ts AS time, bucket FROM room_stats WHERE $__timeFilter(ts) AND room='W46N8' ORDER BY 1"
+    }
+   ]
+  },
+  {
+   "id": 5,
+   "type": "timeseries",
+   "title": "Creep CPU per tick by role",
+   "datasource": {
+    "type": "grafana-postgresql-datasource",
+    "uid": "screeps-ts"
+   },
+   "gridPos": {
+    "x": 0,
+    "y": 16,
+    "w": 12,
+    "h": 8
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "grafana-postgresql-datasource",
+      "uid": "screeps-ts"
+     },
+     "rawQuery": true,
+     "editorMode": "code",
+     "format": "time_series",
+     "rawSql": "SELECT bucket AS time, role, cpu_ms / NULLIF(ticks,0) AS cpu_t FROM role_cpu_10m WHERE $__timeFilter(bucket) ORDER BY 1"
+    }
+   ]
+  },
+  {
+   "id": 6,
+   "type": "timeseries",
+   "title": "Idle ratio by role",
+   "datasource": {
+    "type": "grafana-postgresql-datasource",
+    "uid": "screeps-ts"
+   },
+   "gridPos": {
+    "x": 12,
+    "y": 16,
+    "w": 12,
+    "h": 8
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "grafana-postgresql-datasource",
+      "uid": "screeps-ts"
+     },
+     "rawQuery": true,
+     "editorMode": "code",
+     "format": "time_series",
+     "rawSql": "SELECT bucket AS time, role, idle_windows::float / NULLIF(windows,0) AS idle FROM role_cpu_10m WHERE $__timeFilter(bucket) ORDER BY 1"
+    }
+   ]
+  },
+  {
+   "id": 7,
+   "type": "timeseries",
+   "title": "Work per CPU ms by role",
+   "datasource": {
+    "type": "grafana-postgresql-datasource",
+    "uid": "screeps-ts"
+   },
+   "gridPos": {
+    "x": 0,
+    "y": 24,
+    "w": 12,
+    "h": 8
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "grafana-postgresql-datasource",
+      "uid": "screeps-ts"
+     },
+     "rawQuery": true,
+     "editorMode": "code",
+     "format": "time_series",
+     "rawSql": "SELECT bucket AS time, role, work / NULLIF(cpu_ms,0) AS work_per_cpu FROM role_cpu_10m WHERE $__timeFilter(bucket) ORDER BY 1"
+    }
+   ]
+  },
+  {
+   "id": 8,
+   "type": "timeseries",
+   "title": "Repaths per 100 ticks by role",
+   "datasource": {
+    "type": "grafana-postgresql-datasource",
+    "uid": "screeps-ts"
+   },
+   "gridPos": {
+    "x": 12,
+    "y": 24,
+    "w": 12,
+    "h": 8
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "grafana-postgresql-datasource",
+      "uid": "screeps-ts"
+     },
+     "rawQuery": true,
+     "editorMode": "code",
+     "format": "time_series",
+     "rawSql": "SELECT bucket AS time, role, repaths * 100.0 / NULLIF(ticks * creeps,0) AS rp100 FROM role_cpu_10m WHERE $__timeFilter(bucket) ORDER BY 1"
+    }
+   ]
+  },
+  {
+   "id": 9,
+   "type": "timeseries",
+   "title": "Route excess (actual/planned) by role",
+   "datasource": {
+    "type": "grafana-postgresql-datasource",
+    "uid": "screeps-ts"
+   },
+   "gridPos": {
+    "x": 0,
+    "y": 32,
+    "w": 12,
+    "h": 8
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "grafana-postgresql-datasource",
+      "uid": "screeps-ts"
+     },
+     "rawQuery": true,
+     "editorMode": "code",
+     "format": "time_series",
+     "rawSql": "SELECT time_bucket('10 minutes', ts) AS time, role, avg(actual::float/NULLIF(planned,0)) AS excess FROM path_arrivals WHERE $__timeFilter(ts) GROUP BY 1,2 ORDER BY 1"
+    }
+   ]
+  },
+  {
+   "id": 10,
+   "type": "timeseries",
+   "title": "Trip time (median ticks) by role",
+   "datasource": {
+    "type": "grafana-postgresql-datasource",
+    "uid": "screeps-ts"
+   },
+   "gridPos": {
+    "x": 12,
+    "y": 32,
+    "w": 12,
+    "h": 8
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "grafana-postgresql-datasource",
+      "uid": "screeps-ts"
+     },
+     "rawQuery": true,
+     "editorMode": "code",
+     "format": "time_series",
+     "rawSql": "SELECT time_bucket('10 minutes', ts) AS time, role, percentile_cont(0.5) WITHIN GROUP (ORDER BY actual) AS trip FROM path_arrivals WHERE $__timeFilter(ts) GROUP BY 1,2 ORDER BY 1"
+    }
+   ]
+  },
+  {
+   "id": 11,
+   "type": "table",
+   "title": "Creep efficiency (selected range)",
+   "datasource": {
+    "type": "grafana-postgresql-datasource",
+    "uid": "screeps-ts"
+   },
+   "gridPos": {
+    "x": 0,
+    "y": 40,
+    "w": 24,
+    "h": 9
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "grafana-postgresql-datasource",
+      "uid": "screeps-ts"
+     },
+     "rawQuery": true,
+     "editorMode": "code",
+     "format": "table",
+     "rawSql": "SELECT creep, min(role) role, round((sum(cpu_ms)/(count(*)*5))::numeric,3) cpu_t, round(avg((acts=0)::int)::numeric,2) idle, round((sum(work)/NULLIF(sum(cpu_ms),0))::numeric,1) work_per_cpu, round(sum(repaths)*100.0/(count(*)*5),1) rp100, sum(stuck) stuck_ev FROM creep_cpu WHERE $__timeFilter(ts) GROUP BY creep ORDER BY cpu_t DESC"
+    }
+   ]
+  },
+  {
+   "id": 12,
+   "type": "xychart",
+   "title": "Tile traffic W46N8 (x,y; size=visits)",
+   "datasource": {
+    "type": "grafana-postgresql-datasource",
+    "uid": "screeps-ts"
+   },
+   "gridPos": {
+    "x": 0,
+    "y": 49,
+    "w": 12,
+    "h": 12
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "grafana-postgresql-datasource",
+      "uid": "screeps-ts"
+     },
+     "rawQuery": true,
+     "editorMode": "code",
+     "format": "table",
+     "rawSql": "SELECT x, 49 - y AS y_flipped, sum(n) AS visits FROM tile_traffic_10m WHERE $__timeFilter(bucket) AND room='W46N8' GROUP BY x, y"
+    }
+   ],
+   "options": {
+    "seriesMapping": "auto",
+    "series": [
+     {
+      "x": "x",
+      "y": "y_flipped",
+      "pointSize": {
+       "field": "visits",
+       "min": 2,
+       "max": 14
+      }
+     }
+    ]
+   }
+  },
+  {
+   "id": 13,
+   "type": "xychart",
+   "title": "Tile traffic W45N8",
+   "datasource": {
+    "type": "grafana-postgresql-datasource",
+    "uid": "screeps-ts"
+   },
+   "gridPos": {
+    "x": 12,
+    "y": 49,
+    "w": 12,
+    "h": 12
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "grafana-postgresql-datasource",
+      "uid": "screeps-ts"
+     },
+     "rawQuery": true,
+     "editorMode": "code",
+     "format": "table",
+     "rawSql": "SELECT x, 49 - y AS y_flipped, sum(n) AS visits FROM tile_traffic_10m WHERE $__timeFilter(bucket) AND room='W45N8' GROUP BY x, y"
+    }
+   ],
+   "options": {
+    "seriesMapping": "auto",
+    "series": [
+     {
+      "x": "x",
+      "y": "y_flipped",
+      "pointSize": {
+       "field": "visits",
+       "min": 2,
+       "max": 14
+      }
+     }
+    ]
+   }
+  },
+  {
+   "id": 14,
+   "type": "table",
+   "title": "Events (alerts, STUCK, errors, layout, deploys)",
+   "datasource": {
+    "type": "grafana-postgresql-datasource",
+    "uid": "screeps-ts"
+   },
+   "gridPos": {
+    "x": 0,
+    "y": 61,
+    "w": 24,
+    "h": 8
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "grafana-postgresql-datasource",
+      "uid": "screeps-ts"
+     },
+     "rawQuery": true,
+     "editorMode": "code",
+     "format": "table",
+     "rawSql": "SELECT ts AS time, kind, room, severity, left(coalesce(msg, data::text), 200) AS msg FROM events WHERE $__timeFilter(ts) AND kind <> 'watch' UNION ALL SELECT ts, 'deploy', null, null, commit || ' ' || coalesce(note,'') FROM deploys WHERE $__timeFilter(ts) ORDER BY 1 DESC LIMIT 200"
+    }
+   ]
+  }
+ ],
+ "annotations": {
+  "list": [
+   {
+    "name": "deploys",
+    "datasource": {
+     "type": "grafana-postgresql-datasource",
+     "uid": "screeps-ts"
+    },
+    "enable": true,
+    "iconColor": "orange",
+    "target": {
+     "rawQuery": true,
+     "rawSql": "SELECT ts AS time, commit || ' ' || coalesce(note,'') AS text FROM deploys WHERE $__timeFilter(ts)",
+     "format": "table"
+    }
+   }
+  ]
+ }
+}
