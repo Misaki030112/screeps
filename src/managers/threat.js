@@ -121,7 +121,10 @@ function incident(r, s, e, o) {
     inv: (o.inv || []).length, invTtl: Math.max(0, ...(o.inv || []).map(i => i.ttl)), def: o.def, delivered: m.delivered || 0 }, e)));
 }
 function run(r) {
-  const m = mem(r), c = cfg(r), o = sense(r), prev = m.th || {};
+  const m = mem(r), c = cfg(r), o = sense(r);
+  // one-off migration from the old pauseUntil scheme (pre-FSM wait-out still running): continue it as WAIT
+  if (m.pauseUntil !== undefined) { if (m.pauseUntil > Game.time) m.th = { st: S.WAIT, since: Game.time, why: 'migrated', until: m.pauseUntil }; delete m.pauseUntil; delete m.invOnly; delete m.inv; }
+  const prev = m.th || {};
   m.armed = o.armed;
   const { s, ev } = step(prev, o, c, Game.time);
   const startInc = prev.inc || s.inc;
