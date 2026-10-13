@@ -25,11 +25,16 @@ function check(r) {
     const hurt = _.filter(Game.creeps, c => c.memory.remote === r && c.room.name === rn && c.hits < c.hitsMax);
     if (bad.length || hurt.length) {
       const fresh = !paused(r);
-      m.pauseUntil = Game.time + PAUSE;
+      // Invader-only: pause until they age out (+buffer), not a flat 1500 (saves resume time after short TTL left)
+      const invOnly = bad.length > 0 && bad.every(h => h.owner.username === 'Invader') && !hurt.length;
+      const ttl = invOnly ? Math.max(...bad.map(h => h.ticksToLive || 1500)) : PAUSE;
+      const until = Game.time + (invOnly ? Math.min(PAUSE, ttl + 80) : PAUSE);
+      m.pauseUntil = Math.max(m.pauseUntil || 0, until);
       if (fresh || Game.time % 50 === 0) {
         const owners = _.uniq(bad.map(h => h.owner.username));
         console.log('ALERT ' + JSON.stringify({ episode: `remote-${r}-${m.pauseStart = fresh ? Game.time : m.pauseStart}`, tick: Game.time, room: rn,
           owner: owners.join(',') || 'unknown', severity: hurt.length ? 'high' : 'medium', creeps: bad.length, remote: r, ourHurt: hurt.length,
+          invOnly, pauseUntil: m.pauseUntil,
           action: `remote creeps fleeing home, remote spawning paused until ${m.pauseUntil}`, positions: bad.slice(0, 5).map(h => [h.pos.x, h.pos.y]) }));
       }
     }
@@ -39,6 +44,8 @@ function check(r) {
     const ct = room.controller; m.res = ct && ct.reservation ? ct.reservation : null;
     const k = room.lookForAt(LOOK_STRUCTURES, C.cont[0], C.cont[1]).find(s => s.structureType === STRUCTURE_CONTAINER);
     m.cont = k ? { id: k.id, e: k.store[RESOURCE_ENERGY], hits: k.hits } : null; m.seen = Game.time;
+    const src = room.lookForAt(LOOK_SOURCES, C.src[0], C.src[1])[0];
+    if (src) m.invaderHarvested = src.invaderHarvested;
     if (!paused(r)) placeRoads(r);
   }
 }

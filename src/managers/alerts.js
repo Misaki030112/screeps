@@ -49,9 +49,16 @@ module.exports = { run(room) {
     if (escalated) ep.sev = sev;
     ep.last = Game.time; ep.maxCreeps = Math.max(ep.maxCreeps, creeps.length); ep.damage += evDamage + (dangerous ? loss : 0);
     if (isNew || escalated || (sev === 'high' && Game.time % 10 === 0)) {
-      out.push({ episode: ep.id, tick: Game.time, room: room.name, owner, severity: ep.sev, creeps: creeps.length,
+      const ctl = room.controller;
+      const payload = { episode: ep.id, tick: Game.time, room: room.name, owner, severity: ep.sev, creeps: creeps.length,
         body: parts, bodies: creeps.slice(0, 5).map(bodySummary), structureHitLoss: loss, damaged: damaged.slice(0, 10),
-        eventDamage: evDamage, totalDamage: ep.damage, positions: creeps.slice(0, 5).map(c => [c.pos.x, c.pos.y]) });
+        eventDamage: evDamage, totalDamage: ep.damage, positions: creeps.slice(0, 5).map(c => [c.pos.x, c.pos.y]) };
+      if (sev !== 'low' && ctl && ctl.my) {
+        payload.safeModeAvailable = ctl.safeModeAvailable || 0;
+        payload.safeMode = ctl.safeMode || 0;
+        payload.safeModeNote = 'NEVER auto-activate; alert Misaki and wait for her decision';
+      }
+      out.push(payload);
     }
   }
   if (!hostiles.length && loss > 0 && damaged.length) {

@@ -1,16 +1,30 @@
 # Roadmap (priority order) — see docs/STRATEGY.md for phases
 
-Novice zone ends ~2026-10-28 03:33 (UTC+8). Spawn safe mode active ~19.6k ticks (~21 h from 2026-10-12 17:40), 1 more safe mode available.
+Novice zone ends **2026-10-28 03:33 UTC+8**. Defence detail: `docs/DEFENSE.md` (strategy review 2026-10-13).
+**Safe mode: NEVER auto-activate** — alert Misaki.
 
-1. ✅ Extensions — placed from layout plan per RCL (layout manager).
-2. ⏳ **Static miners + haulers + source containers** (containers already in plan at RCL2) — biggest economy win.
-3. ⏳ Roads spawn→sources→controller — started 2026-10-12 22:32; 2026-10-12 23:12 builders split onto roads once lead site ≥40% + 3rd builder when backlog high.
-4. ⏳ **Tower (RCL3)** — 2026-10-13 02:14: v1 RCL3+ extensions/roads HELD in layout.js (`HOLD`) because they conflict with draft layout v2; tower (36,29) + spawn/tower ramparts still auto-place. **Pending decision: Misaki approves layout v2 (docs/LAYOUT_V2.md) or keeps v1 → then remove/replace HOLD.** — tower manager already implemented (attack/heal/repair).
-5. ⏳ **Ramparts** on spawn/tower (plan, after tower) + attack alerts to Misaki (NO auto safe mode — her decision). Deadline 2026-10-28.
-6. Storage (RCL4); upgraders/builders withdraw from storage (energy util already supports it).
-7. Links (RCL5: controller + core link; source links RCL6/7).
-8. Remote mining: **W45N8 LIVE since 2026-10-13** (reserved, 1 source; see docs/REMOTE_W45N8.md). Watch diplomatic reaction from The Council (BustJetter/Fandalah). Upgrade reserver to CLAIM2 automatically at RCL4.
-9. Perimeter min-cut ramparts; CPU optimisation (cached finds, path reuse); 2nd room claim (needs approval).
+## Priority now (2026-10-13)
+
+1. ✅ Layout v2 live; RCL3 10/10 v2 extensions; tower (36,29) + spawn/tower ramparts (~27k ≥ 20k target).
+2. ✅ Static miners + haulers + queen; TimescaleDB/Grafana + creep audit.
+3. ✅ Remote W45N8 mining (approved); safety pause/flee on combat.
+4. ⏳ **RCL4 today** (ETA ~15:50–17:30): storage (37,31), hub extensions, CLAIM2 reserver, rampart target → 50k. Do not starve upgrade for optional combat.
+5. ⏳ **Remote resume after Invader** (~tick 83614741 / ~15:10+): re-reserve, verify swamp road 2,12, deliver again. Patrol verifies.
+6. ⏳ **Defence before novice end (deadline review 2026-10-25):**
+   - Tower combat reserve ≥800 / queen top-up ≥900 — done 2026-10-13 review.
+   - Attack alerts carry `safeModeAvailable` — done 2026-10-13 review.
+   - **Propose (needs Misaki):** Invader-only remote defender ATTACK5 MOVE5 after RCL4 stable (see DEFENSE.md); still flee from players.
+   - RCL5 tower #2; min-cut outer ramparts design before 10-25 if Council hostility rises.
+7. Links (RCL5); minerals (RCL6); 2nd room claim (**approval required**).
+
+## Log
+
+## 2026-10-13 14:40 strategy review (first run)
+- Topic: defence readiness before novice end. Wrote `docs/DEFENSE.md`; refreshed `docs/STRATEGY.md` (removed wrong safe-mode auto-trigger).
+- 24h: RCL2→RCL3, v2 live, remote +27k then Invader pause; upgrade ~16–19/t last hour vs ideal ~23.6 (remote paused); CPU ~4; nerr 0.
+- Code: tower repair reserve 800, queen tower top-up 900, alerts include safeMode fields, remote Invader-only pause uses TTL+80.
+- **Not implemented (proposal):** remote Invader defender — wait until RCL4+CLAIM2 stable; Misaki approval to fight NPCs.
+- Safe mode spawn buffer ending ~15:00; 2 available. Patrol next_at 15:15 unchanged.
 
 ## 2026-10-13: Layout v2 live
 - ✅ v2 layout manager (plan JSON → sites per RCL, safe conflict removal), fixed-position roles (miner spots, queen stops,

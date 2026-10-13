@@ -1,4 +1,4 @@
-# W46N8 Layout v2 — final RCL1–8 plan (DRAFT, awaiting approval, not live)
+# W46N8 Layout v2 — final RCL1–8 plan (LIVE since 2026-10-13; see LIVE section)
 
 Files: `data/layout_W46N8_v2.json` (every structure by RCL, removals, fixed creep positions, routes),
 `docs/layout_W46N8_v2.png` (final RCL8 plan), `docs/layout_W46N8_v2_rcl.png` (per-RCL strip),

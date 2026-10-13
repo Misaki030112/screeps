@@ -1,8 +1,7 @@
 # Remote mining evaluation: W45N8 (east of W46N8), 2026-10-13 09:20 (UTC+8)
 
-**Status: evaluation only. No creeps sent, nothing reserved.** Passive scouting is on: the websocket listener also
-subscribes to `room:shard3/W45N8` and writes every change (creeps by owner, container energy, reservation) to
-`metrics/w45n8_activity.jsonl`.
+**Status: LIVE** (Misaki approved 2026-10-13). Defence / invader policy: see `docs/DEFENSE.md`.
+Listener still records W45N8 activity (DB + archived `metrics/archive/w45n8_activity.jsonl`).
 
 ## Facts (game API)
 | Item | W45N8 |
@@ -37,8 +36,8 @@ creeps that cross our room travel W47N8 → W46N8 → W45N8.
 - **Diplomatic:** W45N8 is signed as Council-protected, their creeps pass through it, and the container there is probably theirs. Reserving it is
   an open challenge. Unreserved mining from "their" container is a softer but still visible one. Retaliation could hit our room after
   safe mode ends, and we are RCL3 with 1 tower.
-- **NPC invaders:** remote rooms spawn invaders after roughly 50–100k energy harvested (≈ 0.5–1 day at 5/tick). Small invader groups
-  kill miners/haulers, so we need a small defender or accept losses.
+- **NPC invaders:** ~100k harvested (±30%) + sector stronghold; enter only via exits to neutral rooms (for W45N8: south W45N7).
+  First live Invader 2026-10-13 → flee+pause (see DEFENSE.md). Optional cheap defender proposed post-RCL4.
 
 ## Economics (energy/tick, creeps last 1500 ticks; reserver 600)
 Round trip storage↔source ≈ 62 tiles + loading ≈ 66 ticks. Without roads haulers need 1 MOVE per CARRY.

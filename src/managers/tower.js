@@ -21,6 +21,6 @@ module.exports = { run(room) {
   const rep = mem.towerRep && Game.getObjectById(mem.towerRep);
   for (const t of towers) {
     if (heal && heal.hits < heal.hitsMax) t.heal(heal);
-    else if (rep && t.store[RESOURCE_ENERGY] > 500) t.repair(rep);
+    else if (rep && t.store[RESOURCE_ENERGY] > 800) t.repair(rep); // keep ≥800 for combat (novice ends 2026-10-28)
   }
 } };

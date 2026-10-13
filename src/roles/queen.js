@@ -24,7 +24,7 @@ function stops(room) {
   }
   return h.st;
 }
-function needy(id) { const s = Game.getObjectById(id); return s && s.store.getFreeCapacity(RESOURCE_ENERGY) > (s.structureType === STRUCTURE_TOWER ? 300 : 0) ? s : null; }
+function needy(id) { const s = Game.getObjectById(id); return s && s.store.getFreeCapacity(RESOURCE_ENERGY) > (s.structureType === STRUCTURE_TOWER ? 100 : 0) ? s : null; } // towers topped to ≥900
 function fillRoute(c) {
   const st = stops(c.room);
   // current stop: transfer to one needy neighbour per tick
@@ -48,7 +48,7 @@ module.exports = { fillRoute, run(c) {
   room.memory.queenAlive = Game.time;
   if (c.memory.working && c.store[RESOURCE_ENERGY] === 0) c.memory.working = false;
   if (!c.memory.working && c.store.getFreeCapacity() === 0) c.memory.working = true;
-  const full = room.energyAvailable >= room.energyCapacityAvailable && !rc.all(room, STRUCTURE_TOWER).some(t => t.store[RESOURCE_ENERGY] < 700);
+  const full = room.energyAvailable >= room.energyCapacityAvailable && !rc.all(room, STRUCTURE_TOWER).some(t => t.store[RESOURCE_ENERGY] < 900);
   if (c.memory.working || (full && c.store[RESOURCE_ENERGY] > 0)) {
     if (!full) { if (fillRoute(c)) return; }
     if (c.store.getFreeCapacity() === 0 || full) { const [x, y] = P.pos.fillers[0]; move.to(c, x, y, 0); return; } // park
