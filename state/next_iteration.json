@@ -1,6 +1,6 @@
 {
-  "next_at": "2026-10-14T03:50:00+08:00",
-  "reason": "89c4562 deployed (tick 83625190): tower tops ramparts up to 50k only while storage >= threat.reserve (1300 when armed); below it only ramparts <5k. Storage had fallen 1040 -> 200 -> 50 (spawn wave ~9k energy/h: 2 upgraders, 2 miners, builder, reserver, 2 haulers, rhauler + tower rampart refills), so no defender reserve. Verify 03:50: storage climbing toward/above 1300 (B ~10/t in, queen spawn refills out), tower stays ~900-1000 with no rampart repair while storage <1300 and resumes above it, ramparts (min 28k) not decaying below ~25k, upgrader waiting_feed keeps falling (36.5% pre-274a4e9 -> 20.3% after), hauler rp/100 stays <=10 (5.2 now), container A (31,12) <1500, 0 errors. If storage still <500 after the wave: builder at RCL4 with sites=0 is a 5W idle-upgrader that walks 27 tiles to source A when storage < reserve -> consider T.builder 0 at RCL4 with storage and no sites.",
-  "written_at": "2026-10-14T02:54:00+08:00",
-  "commit": "89c4562"
+  "next_at": "2026-10-14T04:50:00+08:00",
+  "reason": "dc68c2c deployed (tick 83626192): T.builder=0 when storage exists and sites=0; remote haulers capped at 2 (dropped opportunistic 3rd). Verified 89c4562: tower energy ~800–920 (not draining ramparts to 50k while storage <<1300); ramparts min ~25.7k (floor holding); container A 720; hauler rp/100 ~5.2; 0 errors; threat SAFE/armed=false; reservation ~4300; upgrade ~20.2/t (1h) vs ideal 23.8; storage still ~50–250 after spawn wave. Pending remote-paused home work already in roles/remote.js (rminer→builder, rhauler→hauler). Verify 04:50: storage climbing toward/above 500 then 1300; builder count→0 and stays 0 while sites=0; rhauler→2 as surplus ages out; upgrader waiting_feed falling; upgrade ≥20/t; queen rp/100 ≤12; tower stays ~900 with no rampart top-up while storage <1300; 0 errors. If storage still <300: check queen/upgrader demand (3 live upgraders vs target 2) and whether ctl feed is bottleneck.",
+  "written_at": "2026-10-14T03:59:13+08:00",
+  "commit": "dc68c2c"
 }
