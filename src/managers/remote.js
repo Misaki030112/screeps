@@ -6,12 +6,14 @@ const CFG = { W45N8: { home: 'W46N8', src: [14, 12], cont: [13, 11], ctl: [7, 36
   roads: [[2, 12]],
   // where fleeing remote creeps wait at home while paused: plain tiles off every fixed route/plan tile, near the exit route
   park: [46, 21],
-  // anti-Invader defender (docs/DEFENDER.md). OFF until RCL4 stable + CLAIM2 reserver; enable: set true (or Memory.remote.W45N8.defend=true)
-  defend: false } };
-const PAUSE = 1500, COMBAT = ['attack', 'ranged_attack'];
-function mem(r) { return (Memory.remote = Memory.remote || {})[r] = Memory.remote[r] || { pauseUntil: 0 }; }
-function paused(r) { return (mem(r).pauseUntil || 0) > Game.time; }
-function defendOn(r) { return !!(CFG[r].defend || mem(r).defend); }
+  // anti-Invader defender (docs/DEFENDER.md). Flag ON, but threat.armed() only arms it when RCL4 has been stable 1500 ticks
+  // (cap>=1300, full within 300t) AND a CLAIM>=2 reserver is alive. Thresholds: threat.DEF, per-room override `threat: {...}`.
+  defend: true } };
+// Threat handling lives in ./threat (one state machine per remote). This file: config, bookkeeping, roads, ALERT lines.
+const threat = require('./threat');
+function mem(r) { return (Memory.remote = Memory.remote || {})[r] = Memory.remote[r] || {}; }
+function paused(r) { return !threat.safe(r); }
+function defendOn(r) { return threat.armed(r); }
 function placeRoads(r) {
   const C = CFG[r], room = Game.rooms[r]; if (!room || !C.roads) return;
   for (const [x, y] of C.roads) {
@@ -21,28 +23,15 @@ function placeRoads(r) {
   }
 }
 function check(r) {
-  const C = CFG[r], m = mem(r);
-  for (const rn of [r, C.home]) {
-    const room = Game.rooms[rn]; if (!room) continue;
-    const bad = room.find(FIND_HOSTILE_CREEPS).filter(h => h.body.some(p => COMBAT.includes(p.type) && p.hits > 0));
-    const hurt = _.filter(Game.creeps, c => c.memory.remote === r && c.room.name === rn && c.hits < c.hitsMax);
-    if (bad.length || hurt.length) {
-      const fresh = !paused(r);
-      // Invader-only: pause until they age out (+buffer), not a flat 1500 (saves resume time after short TTL left)
-      const invOnly = bad.length > 0 && bad.every(h => h.owner.username === 'Invader') && !hurt.length;
-      const ttl = invOnly ? Math.max(...bad.map(h => h.ticksToLive || 1500)) : PAUSE;
-      const until = Game.time + (invOnly ? Math.min(PAUSE, ttl + 80) : PAUSE);
-      m.pauseUntil = Math.max(m.pauseUntil || 0, until); m.invOnly = invOnly && (fresh || m.invOnly);
-      if (rn === r) m.inv = { n: bad.length, heal: bad.filter(h => h.body.some(p => p.type === HEAL && p.hits > 0)).length, ttl, t: Game.time };
-      if (fresh || Game.time % 50 === 0) {
-        const owners = _.uniq(bad.map(h => h.owner.username));
-        console.log('ALERT ' + JSON.stringify({ episode: `remote-${r}-${m.pauseStart = fresh ? Game.time : m.pauseStart}`, tick: Game.time, room: rn,
-          owner: owners.join(',') || 'unknown', severity: hurt.length ? 'high' : 'medium', creeps: bad.length, remote: r, ourHurt: hurt.length,
-          invOnly, pauseUntil: m.pauseUntil,
-          action: `remote creeps fleeing home, remote spawning paused until ${m.pauseUntil}`, positions: bad.slice(0, 5).map(h => [h.pos.x, h.pos.y]) }));
-      }
-    }
+  const C = CFG[r], m = mem(r), was = threat.state(r).st, th = threat.run(r);
+  if (th.st !== threat.S.SAFE && (was === threat.S.SAFE || Game.time % 50 === 0)) {
+    if (was === threat.S.SAFE) m.pauseStart = Game.time;
+    const inv = th.last || [];
+    console.log('ALERT ' + JSON.stringify({ episode: `remote-${r}-${m.pauseStart}`, tick: Game.time, room: r, owner: th.why === 'player' ? 'player' : 'Invader',
+      severity: th.why === 'player' ? 'high' : 'medium', creeps: inv.length, remote: r, state: th.st, why: th.why, invOnly: th.why !== 'player',
+      action: th.st === 'THREAT' ? 'defender requested' : th.st === 'DEFEND' ? 'defender engaging' : `remote paused (${th.why})`, positions: inv.slice(0, 5).map(h => [h.x, h.y]) }));
   }
+  if (th.st === threat.S.SAFE && was !== threat.S.SAFE) console.log('ALERT ' + JSON.stringify({ episode: `remote-${r}-${m.pauseStart}`, tick: Game.time, room: r, severity: 'low', remote: r, ended: true, action: 'remote resumed' }));
   const room = Game.rooms[r];
   if (room) {
     const ct = room.controller; m.res = ct && ct.reservation ? ct.reservation : null;
@@ -50,10 +39,6 @@ function check(r) {
     m.cont = k ? { id: k.id, e: k.store[RESOURCE_ENERGY], hits: k.hits } : null; m.seen = Game.time;
     const src = room.lookForAt(LOOK_SOURCES, C.src[0], C.src[1])[0];
     if (src) m.invaderHarvested = src.invaderHarvested;
-    // early resume: defender cleared an Invader-only pause (we have vision, no combat hostiles)
-    if (paused(r) && m.invOnly && defendOn(r) && !room.find(FIND_HOSTILE_CREEPS).some(h => h.body.some(p => COMBAT.includes(p.type) && p.hits > 0))) {
-      m.pauseUntil = Game.time; m.invOnly = false; m.inv = null; console.log('REMOTE ' + r + ' resumed early: invaders cleared');
-    }
     if (!paused(r)) placeRoads(r);
   }
 }

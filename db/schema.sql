@@ -84,3 +84,21 @@ ALTER MATERIALIZED VIEW role_cpu_10m SET (timescaledb.materialized_only = false)
 ALTER MATERIALIZED VIEW room_stats_10m SET (timescaledb.materialized_only = false);
 ALTER TABLE creep_cpu SET (timescaledb.compress, timescaledb.compress_segmentby = 'creep', timescaledb.compress_orderby = 'tick');
 SELECT add_compression_policy('creep_cpu', INTERVAL '1 day', if_not_exists => true);
+
+-- remote threat FSM incidents (src/managers/threat.js 'INCIDENT {json}' lines, one row per transition/milestone).
+-- ev: threat | wait | defend(=spawn end/dispatch) | spawn_start | arrive | cleared | cancel | resume ; inc = tick the incident started
+CREATE TABLE IF NOT EXISTS incidents (
+  ts timestamptz NOT NULL, tick bigint, remote text, inc bigint, ev text, from_state text, state text, why text,
+  inv int, inv_ttl int, def text, dur int, data jsonb);
+CREATE INDEX IF NOT EXISTS incidents_inc ON incidents (remote, inc, tick);
+-- one row per incident: timings + estimated energy lost (paused ticks × 6 e/t remote net income, tools/model.py)
+CREATE OR REPLACE VIEW incident_summary AS
+SELECT remote, inc, min(ts) AS started, max(ts) AS ended,
+  max(tick) FILTER (WHERE ev='spawn_start') - inc AS ticks_to_spawn,
+  max(tick) FILTER (WHERE ev='defend') - inc AS ticks_to_dispatch,
+  max(tick) FILTER (WHERE ev='arrive') - inc AS ticks_to_arrive,
+  max(tick) FILTER (WHERE state='SAFE') - inc AS paused_ticks,
+  (array_agg(why ORDER BY tick DESC))[1] AS outcome,
+  bool_or(ev='spawn_start') AS defender_used,
+  (max(tick) FILTER (WHERE state='SAFE') - inc) * 6 AS energy_lost_est
+FROM incidents WHERE inc IS NOT NULL GROUP BY remote, inc;

@@ -11,7 +11,9 @@ module.exports = { run(c) {
     if (c.store[RESOURCE_ENERGY] > 0 && c.pos.inRangeTo(room.controller, 3)) c.upgradeController(room.controller);
     return;
   }
-  if (c.store[RESOURCE_ENERGY] <= c.getActiveBodyparts(WORK)) {
+  // defender energy readiness without storage: stop drawing so haulers' energy goes to extensions (threat.holding)
+  const hold = !room.storage && require('../managers/threat').holding(room.name);
+  if (!hold && c.store[RESOURCE_ENERGY] <= c.getActiveBodyparts(WORK)) {
     const [lx, ly] = P.pos.controllerLink, [cx, cy] = P.pos.controllerContainer;
     const l = rc.at(room, lx, ly, STRUCTURE_LINK), k = rc.at(room, cx, cy, STRUCTURE_CONTAINER);
     const s = (l && l.store[RESOURCE_ENERGY] > 0) ? l : (k && k.store[RESOURCE_ENERGY] > 0 ? k : null);

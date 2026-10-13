@@ -62,7 +62,8 @@ module.exports = { pickups, run(c) {
   // Keep ~10% spawn headroom so ctl container still gets fed while builders drain extensions
   // With a live queen haulers stay off the queen stops (contention at 34,25/34,27) and feed filler container A instead;
   // they only walk the fill route themselves when there is no queen or the room is nearly empty (fallback).
-  const lowE = room.energyAvailable < room.energyCapacityAvailable * (queens ? 0.3 : 0.9);
+  const hold = require('../managers/threat').holding(room.name); // collecting 1300 for a defender: fill extensions first
+  const lowE = room.energyAvailable < room.energyCapacityAvailable * (hold ? 1 : queens ? 0.3 : 0.9);
   if (lowE && queen.fillRoute(c)) return;
   let dst = c.memory.dst && Game.getObjectById(c.memory.dst);
   if (!dst || dst.store.getFreeCapacity(RESOURCE_ENERGY) === 0 || (dst.body && Game.time % 5 === 0)) {

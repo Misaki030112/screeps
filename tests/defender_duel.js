@@ -52,10 +52,16 @@ function scenario(name, invTypes, boosted) {
   const G = { Game: { time: 0, spawns: {}, creeps: {} }, FIND_HOSTILE_CREEPS: 103, FIND_MY_SPAWNS: 112, ATTACK: 'attack', RANGED_ATTACK: 'ranged_attack', HEAL: 'heal',
     TERRAIN_MASK_WALL: 1, TERRAIN_MASK_SWAMP: 2, ERR_NOT_IN_RANGE: -9, RIGHT: 3, LEFT: 7, TOP: 1, BOTTOM: 5, RESOURCE_ENERGY: 'energy' };
   const remoteMock = { CFG: { W45N8: { home: 'W46N8', src: [14, 12], cont: [13, 11], exitHome: [49, 14], exitRemote: [0, 14], park: [46, 21] } }, mem: () => mem, paused: () => true };
+  // real FSM drives the defender: observation from the sim each tick (tests/threat_fsm.js covers step() in isolation)
+  const TH = require(path.join(ROOT, 'src/managers/threat.js'));
+  let th = { st: 'DEFEND', since: 0, def: d.name, seen: 0, last: [] };
+  const threatMock = { S: TH.S, cfg: () => TH.DEF, state: () => th, noteRecycle() {} };
+  const observe = () => ({ vis: true, players: 0, core: false, hurtNoInv: false, bucket: 10000, armed: true, def: d.hits > 0 ? 'out' : 'dead',
+    inv: creeps.filter(c => !c.my && c.hits > 0).map(c => ({ x: c.pos.x, y: c.pos.y, ttl: 1400, heal: act(c, 'heal') > 0, ranged3: act(c, 'ranged_attack') >= 3 })) });
   const moveMock = { to(c, x, y, r) { if (rng(c.pos, { x, y }) > r) stepTo(c, x, y, occ, r); return rng(c.pos, { x, y }) <= r; } };
   const src = fs.readFileSync(path.join(ROOT, 'src/roles/remote.js'), 'utf8');
   const mod = { exports: {} };
-  vm.runInNewContext(src, Object.assign(G, { module: mod, require: p => p.includes('managers/remote') ? remoteMock : p.includes('utils/move') ? moveMock : {} }));
+  vm.runInNewContext(src, Object.assign(G, { module: mod, require: p => p.includes('managers/threat') ? threatMock : p.includes('managers/remote') ? remoteMock : p.includes('utils/move') ? moveMock : {} }));
   const role = mod.exports.defender.run;
   let t = 0, retreated = false, dmgTaken = 0;
   for (; t < 400; t++) {
@@ -63,6 +69,7 @@ function scenario(name, invTypes, boosted) {
     const inv = creeps.filter(c => !c.my && c.hits > 0);
     if (!inv.length || d.hits <= 0) break;
     if (d.pos.x <= 1 && (d.memory.recycle || d.memory.hurt)) { retreated = true; break; } // crossed to W46N8: Invaders never leave their room (maxRooms 1); tower heals // left room toward home
+    th = TH.step(th, observe(), TH.DEF, t + 1).s; th.def = d.name;
     role(d); if (d.memory.recycle && d.pos.x <= 1) { retreated = true; }
     for (const v of inv) { // NPC AI
       const r = rng(v.pos, d.pos);

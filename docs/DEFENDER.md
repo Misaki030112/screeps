@@ -1,7 +1,7 @@
-# W45N8 anti-NPC defender (design, 2026-10-13) — code in place, **disabled** (`remote.CFG.W45N8.defend=false`)
+# W45N8 anti-NPC defender — threat state machine (2026-10-13 rev 2). Flag `defend: true`, **armed only by code gate** `threat.armed()`
 
-Enable only after: RCL4 stable (energyCapacity 1300 reliably full) **and** reserver is CLAIM×2.
-Enable = set `defend: true` in `src/managers/remote.js` and deploy, or console `Memory.remote.W45N8.defend=true`.
+Gate (code, `src/managers/threat.js armed()`, unit-tested): flag AND RCL≥4 with cap≥1300 held ≥1500 ticks AND room full within the last 300 ticks AND a reserver with ≥2 CLAIM seen within 1500 ticks. Flag off = `defend:false` in CFG (or patrol leaves it); the gate cannot be bypassed by the flag alone.
+§3 below is superseded by §6 for decisions (the role's kite/heal mechanics are unchanged).
 
 ## 1. Invader mechanics (read from the engine/back-end source, screeps/engine + screeps/backend-local)
 | Item | Fact |
@@ -59,3 +59,51 @@ Real W45N8 terrain, engine bodies/damage/fatigue/boost rules, Invader AI per eng
 - Healer pairs and 2+ raids (≈10%): need 2 defenders or a 1800+ body (RCL5). Skipped for now.
 - Optional cheap win independent of the defender: don't flee at first sight; Invaders spawn ≥30 tiles away, so remote creeps could keep working until an Invader is within ~8 tiles. Not implemented (more logic, needs testing).
 - Invader core buster (see §1).
+
+
+## 6. Response pipeline = one state machine per remote (`src/managers/threat.js`)
+Rules: **one pure function** `step(state, obs, cfg, tick) -> {state, events}` decides everything; `sense(r)` is the only code that inspects hostiles for remotes; roles / spawn / remote manager only **read** `threat.state(r)`, `safe(r)`, `holding(home)`, `wantDefender(home)`, `reserve(home)`. All thresholds are data in `threat.DEF` (per-room override `CFG[r].threat`). No other file may add threat special cases — add a state/threshold here instead.
+
+```mermaid
+stateDiagram-v2
+  [*] --> SAFE
+  SAFE --> THREAT: solo NPC Invader, no HEAL, <3 RA, TTL>=300, gate ok (armed, bucket>=3000, <4 spawns/day, 0 deaths/day)
+  SAFE --> WAIT: gate closed / short TTL / escalated / player / core
+  THREAT --> DEFEND: defender out of spawn
+  THREAT --> SAFE: Invader gone (dead or projected TTL<=0) = cancel
+  THREAT --> WAIT: 200 ticks without spawn (timeout) / escalated / short TTL
+  DEFEND --> SAFE: vision, no Invader for 10 ticks (killed)
+  DEFEND --> WAIT: defender died / expired / escalated / 450-tick timeout
+  WAIT --> SAFE: timer (last TTL+80; players 1500) or vision shows clear (not for players) / core gone
+  SAFE --> WAIT: player combat creep or our creep losing hits with no Invader (any state)
+```
+Effects of each state (read by consumers): SAFE = remote works. THREAT = remote creeps at home park; spawn: defender first, only miners/queen otherwise (non-critical paused); haulers fill extensions to 100%; upgraders stop drawing if no storage; builders keep 1300 in storage. DEFEND = defender engages (kite at 3, heal self, <60% hp home to tower, back ≥95%). Any other state = defender recycles at Spawn1 (≈1000 refund); remote creeps stay home.
+
+### Edge cases
+| Case | Handling |
+|---|---|
+| Invader dies / expires during spawn | THREAT→SAFE `cancel`; defender sees non-DEFEND state and recycles (≈1000 back). Without vision TTL is projected from last sighting. |
+| Second Invader / healer / 3×RA arrives mid-fight | `escalated` → WAIT (TTL+80); defender recycles. Pairs need RCL5 body (§5). |
+| Player combat creeps (remote or home) | WAIT `player` 1500, high-severity ALERT, never engaged, not cleared early by vision (The Council diplomacy). |
+| Our creep losing hits with no Invader visible | Treated as player (`hurtNoInv`); old damage ignored (per-creep last-hits compare). |
+| Defender dies | WAIT `defender_died`; death logged; `maxDeaths=1/day` → further waves wait-out that day. |
+| Defender TTL<80 mid-fight | Recycles itself (`noteRecycle`, not counted as death) → WAIT `defender_expired`. |
+| Defender stuck on route / fight drags | `defendTimeout` 450 ticks from dispatch → WAIT; move.js stuck ladder still applies. |
+| Spawn busy / renewing / energy short | THREAT holds non-critical spawns; `readyTimeout` 200 → WAIT (wait-out = old behaviour). Spawning defender never times out. |
+| Energy drained by repeated waves | `maxPerDay=4` spawns / 22k ticks; builders keep a 1300 storage reserve while armed. |
+| CPU bucket low | bucket<3000 → wait-out (`cpu`). |
+| Invader core in remote | WAIT `core`, rechecked every 500 ticks, never attacked (needs separate buster + your decision). |
+| Reservation lost / flipped (core or player) | Reserver never `attackController`; core → WAIT core; player → WAIT player. Reservation simply rebuilds after SAFE. |
+| Short-TTL Invader (<300) | WAIT `short_ttl` (not worth 280 net energy). |
+| No vision (everyone fled) | Last sighting carried with projected TTL; WAIT timers run without vision. |
+| Global reset / Memory loss | State lives in `Memory.remote[r].th`; missing → SAFE, re-detected next tick (pure step, no heap state). |
+| False detection of own creeps | `FIND_HOSTILE_CREEPS` never returns ours; only creeps with live ATTACK/RA/HEAL count; harmless player scouts ignored. |
+| Home-room NPC Invaders | Tower's job; not a remote state. |
+| Multiple remotes later | One `th` per remote; `wantDefender(home)` serves the first THREAT; budgets are per remote. |
+| Flag on before RCL4/CLAIM2 | `armed()` false → wait-out exactly like today. |
+
+### Incident log (DB)
+Every transition prints `INCIDENT {json}` (ev threat/spawn_start/defend/arrive/cleared/cancel/wait/resume, why, inv count, TTL, `dur` since start, `inc` id) → listener → table `incidents`; view `incident_summary` gives ticks_to_spawn / dispatch / arrive, paused_ticks, outcome, energy_lost_est (paused × 6 e/t). Grafana: "Remote threat incidents" table + "Remote threat FSM state" timeline.
+
+### Tests (run by `scripts/check.js`, i.e. on every deploy)
+`tests/threat_fsm.js` 24 cases (every row above + purity + gate). `tests/defender_duel.js` now drives the role through the real `step()` on W45N8 terrain.

@@ -44,7 +44,7 @@ module.exports = { run(c) {
       const Ph = plan.get(home.name) || P;
       const [fx, fy] = Ph.pos.fillerContainerA, [cx, cy] = Ph.pos.controllerContainer;
       const all = [home.storage].concat(require('./hauler').pickups(home), [rc.at(home, fx, fy, STRUCTURE_CONTAINER), rc.at(home, cx, cy, STRUCTURE_CONTAINER)])
-        .filter(s => s && s.store[RESOURCE_ENERGY] >= 100);
+        .filter(s => s && s.store[RESOURCE_ENERGY] >= 100 + (s === home.storage ? require('../managers/threat').reserve(home.name) : 0)); // storage keeps the defence reserve
       const tw = c.memory.t && Game.getObjectById(c.memory.t);
       let cands = all.filter(s => c.pos.getRangeTo(s) <= 12);
       if (!cands.length && tw) { move.to(c, tw.pos.x, tw.pos.y, 3); return; }

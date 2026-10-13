@@ -11,3 +11,7 @@ if (idle.length > 2) throw new Error('too many idle creeps in sim: ' + JSON.stri
 if (!out.log.some(l => l.startsWith('LAYOUT'))) throw new Error('layout manager did nothing in sim');
 if (!(out.seg90 > 100 && out.seg90 < 90000)) throw new Error('trace segment 90 missing/too big: ' + out.seg90);
 console.log(`checks passed: ${fs.readdirSync(DIST).length} modules; sim 600 ticks, 0 errors, energy ${out.energy}, ${out.creeps.length} creeps`);
+// threat FSM unit tests (incl. the code-level enable gate armed()) + defender duel on real terrain driven by the real FSM
+execSync('node ' + path.join(__dirname, '..', 'tests', 'threat_fsm.js'), { stdio: 'pipe' });
+execSync('node ' + path.join(__dirname, '..', 'tests', 'defender_duel.js'), { stdio: 'pipe' });
+console.log('threat FSM tests + defender duel passed');

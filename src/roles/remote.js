@@ -1,5 +1,5 @@
 // Remote roles: rminer (sits on container, repairs it), rhauler (container -> home via hauler delivery), reserver.
-const move = require('../utils/move'), remote = require('../managers/remote');
+const move = require('../utils/move'), remote = require('../managers/remote'), threat = require('../managers/threat');
 // cross-room travel through fixed exits; returns true when in range of target
 function go(c, room, x, y, range) {
   const C = remote.CFG[c.memory.remote];
@@ -57,27 +57,23 @@ const roles = {
 // retreats home (<60% hp: tower heals it) or when a player combat creep / an Invader healer shows up; recycles when done.
 const OPP = { 1: 5, 2: 6, 3: 7, 4: 8, 5: 1, 6: 2, 7: 3, 8: 4 };
 roles.defender = function (c) {
-  const C = remote.CFG[c.memory.remote], m = remote.mem(c.memory.remote);
+  // Reads the FSM only (managers/threat.js); never decides about players/escalation itself.
+  const rm = c.memory.remote, C = remote.CFG[rm], th = threat.state(rm), K = threat.cfg(rm);
   if (c.hits < c.hitsMax) c.heal(c);
-  const here = c.room.name === c.memory.remote;
-  const hostile = here ? c.room.find(FIND_HOSTILE_CREEPS) : [];
-  const inv = hostile.filter(h => h.owner.username === 'Invader');
-  const danger = hostile.some(h => h.owner.username !== 'Invader' && h.body.some(p => p.type === ATTACK || p.type === RANGED_ATTACK))
-    || inv.length > 1 || inv.some(h => h.body.some(p => p.type === HEAL && p.hits > 0)); // RCL4 body handles exactly one Invader
-  if (here && inv.length) c.memory.seen = Game.time;
-  const done = c.ticksToLive < 80 || (here && !inv.length && Game.time - (c.memory.seen || c.memory.born || 0) > 10 && c.memory.arrived);
-  if (here && !c.memory.arrived && c.pos.x > 1 && c.pos.x < 48) c.memory.arrived = Game.time;
-  if (c.hits < c.hitsMax * 0.6) c.memory.hurt = true; else if (c.hits >= c.hitsMax * 0.95) c.memory.hurt = false;
-  if (done || danger) c.memory.recycle = true;
+  const here = c.room.name === rm;
+  const inv = here ? c.room.find(FIND_HOSTILE_CREEPS).filter(h => h.owner.username === 'Invader') : [];
+  const mine = th.def === c.name;
+  c.memory.recycle = !mine || (th.st !== threat.S.DEFEND && th.st !== threat.S.THREAT) || c.ticksToLive < 80; // recomputed each tick: a returning defender can be reused by a new THREAT
+  if (c.hits < c.hitsMax * K.hp) c.memory.hurt = true; else if (c.hits >= c.hitsMax * K.hpBack) c.memory.hurt = false;
   if (c.memory.recycle || c.memory.hurt) {
-    const t = here ? inv.find(h => c.pos.inRangeTo(h, 3)) : null; if (t) c.rangedAttack(t);
+    const t = inv.find(h => c.pos.inRangeTo(h, 3)); if (t) c.rangedAttack(t);
     if (c.room.name !== C.home || c.pos.x >= 48) { const sp = Game.spawns[C.spawn || 'Spawn1']; return go(c, C.home, sp ? sp.pos.x : 35, sp ? sp.pos.y : 28, 1); }
     if (c.memory.hurt && !c.memory.recycle) { const [px, py] = C.park || [33, 26]; return move.to(c, px, py, 1); } // tower heals it
     const sp = c.pos.findClosestByRange(FIND_MY_SPAWNS); if (!sp) return;
-    if (sp.recycleCreep(c) === ERR_NOT_IN_RANGE) move.to(c, sp.pos.x, sp.pos.y, 1);
+    if (c.pos.isNearTo(sp)) { threat.noteRecycle(rm, c.name); sp.recycleCreep(c); } else move.to(c, sp.pos.x, sp.pos.y, 1);
     return;
   }
-  if (!here || c.pos.x === 0 || c.pos.x === 49 || c.pos.y === 0 || c.pos.y === 49) return go(c, c.memory.remote, C.cont[0], C.cont[1], 2);
+  if (!here || c.pos.x === 0 || c.pos.x === 49 || c.pos.y === 0 || c.pos.y === 49) return go(c, rm, C.cont[0], C.cont[1], 2);
   const t = c.pos.findClosestByRange(inv);
   if (!t) return move.to(c, C.cont[0], C.cont[1], 2);
   const r = c.pos.getRangeTo(t);

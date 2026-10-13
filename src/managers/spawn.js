@@ -34,14 +34,7 @@ function remoteSpawn(room, E, go, rcl) {
   const remote = require('./remote');
   for (const r in remote.CFG) {
     if (remote.CFG[r].home !== room.name) continue;
-    if (remote.paused(r)) {
-      // on-demand defender: Invader-only, no healers, enough TTL left to be worth it, RCL4 body (1300)
-      const m = remote.mem(r), I = m.inv;
-      if (remote.defendOn(r) && rcl >= 4 && m.invOnly && I && !I.heal && I.n === 1 && I.ttl - (Game.time - I.t) > 300
-        && !_.some(Game.creeps, c => c.memory.role === 'defender' && c.memory.remote === r))
-        return go('defender', B.defender(E), { remote: r, born: Game.time });
-      continue;
-    }
+    if (remote.paused(r)) continue; // defender is spawned from the top of run() (threat.wantDefender)
     const m = remote.mem(r);
     const res = (m.res && m.res.ticksToEnd) || 0;
     const wantRes = (res > 0 && res < 800) ? 2 : 1; // overlap rebuilds buffer while CLAIM1-only
@@ -72,6 +65,13 @@ module.exports = { targets, run(spawn) {
   // 1) emergency: nothing can refill the spawn
   if (!(count.hauler || 0) && !(count.queen || 0) && !(count.harvester || 0) && !(count.filler || 0))
     return go(count.miner ? 'hauler' : 'harvester', count.miner ? B.hauler(Math.max(200, avail)) : B.harvester(Math.max(200, avail)));
+  // 1b) defender: top of the queue; while collecting energy for it only miners/queen may still spawn (non-critical paused)
+  const threat = require('./threat'), want = threat.wantDefender(room.name);
+  if (want && rcl >= 4) {
+    if (avail >= 1300) { const name = 'defender' + Game.time, rv = spawn.spawnCreep(B.defender(1300), name, { memory: { role: 'defender', home: room.name, remote: want, born: Game.time } });
+      if (rv === OK) threat.noteSpawn(want, name); return rv; }
+  }
+  const hold = !!want;
   // 2) miners (pre-spawned for travel time)
   const lead = c => (c.memory.travel || 100) + c.body.length * 3;
   if (!room.memory.sources) room.memory.sources = room.find(FIND_SOURCES).map(s => s.id);
@@ -81,6 +81,7 @@ module.exports = { targets, run(spawn) {
       return go('miner', B.miner(Math.min(E, carry ? 800 : 650), carry), { sourceId: s.id });
     }
   }
+  if (hold) { if (!(count.queen || 0) && !(count.filler || 0)) return go('queen', B.queen(Math.max(300, avail))); return ERR_BUSY; }
   const hp = require('../roles/hauler');
   const backlog = _.sum(hp.pickups(room), s => s.store[RESOURCE_ENERGY]);
   const [cx, cy] = P.pos.controllerContainer; const cc = rc.at(room, cx, cy, STRUCTURE_CONTAINER);

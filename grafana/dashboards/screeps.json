@@ -484,6 +484,60 @@
      "rawSql": "SELECT ts AS time, ideal AS \"ideal upgrade\", actual AS \"actual upgrade (6h)\" FROM model_params WHERE key='upgrade' AND $__timeFilter(ts) ORDER BY 1"
     }
    ]
+  },
+  {
+   "type": "table",
+   "title": "Remote threat incidents (threat FSM, incident_summary)",
+   "datasource": {
+    "type": "grafana-postgresql-datasource",
+    "uid": "screeps-ts"
+   },
+   "gridPos": {
+    "x": 0,
+    "y": 79,
+    "w": 14,
+    "h": 9
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "grafana-postgresql-datasource",
+      "uid": "screeps-ts"
+     },
+     "format": "table",
+     "rawQuery": true,
+     "editorMode": "code",
+     "rawSql": "SELECT started, remote, inc, outcome, defender_used, ticks_to_spawn, ticks_to_dispatch, ticks_to_arrive, paused_ticks, energy_lost_est FROM incident_summary WHERE started > now() - interval '30 days' ORDER BY started DESC LIMIT 50"
+    }
+   ]
+  },
+  {
+   "type": "state-timeline",
+   "title": "Remote threat FSM state",
+   "datasource": {
+    "type": "grafana-postgresql-datasource",
+    "uid": "screeps-ts"
+   },
+   "gridPos": {
+    "x": 14,
+    "y": 79,
+    "w": 10,
+    "h": 9
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "grafana-postgresql-datasource",
+      "uid": "screeps-ts"
+     },
+     "format": "time_series",
+     "rawQuery": true,
+     "editorMode": "code",
+     "rawSql": "SELECT ts AS time, remote AS metric, state AS value FROM incidents WHERE $__timeFilter(ts) ORDER BY ts"
+    }
+   ]
   }
  ],
  "annotations": {
