@@ -16,7 +16,7 @@ Novice zone ends ~2026-10-28 03:33 (UTC+8). Spawn safe mode active ~19.6k ticks 
 - ✅ v2 layout manager (plan JSON → sites per RCL, safe conflict removal), fixed-position roles (miner spots, queen stops,
   upgrader spots), cached paths (`utils/move.js`), per-RCL role table (`managers/spawn.js`), link manager (RCL5+),
   tower repairs only planned structures. Multi-tick simulator `scripts/sim.js` runs in every check.
-- ⏳ RCL3: 10 extensions at stamp A (5 building, 4 more after v1 extensions are removed).
-- ⏳ RCL4 (~ETA afternoon 10-13): storage (37,31); miner B delivers straight into storage; hub extensions.
+- ⏳ RCL3: 10 extensions at stamp A. 2026-10-13 09:56: 5 v2 built → gradual swap started (c4680d1: one v1 ext destroyed per 50 cap above 650, so the CLAIM1 reserver stays spawnable). v1 36,25 + 38,29 gone; 38,27 + 34,31 go as v2 sites finish; 36,31 kept (RCL4 plan ext), so 35,27 waits for RCL4.
+- ⏳ RCL4 (ETA ~18:00–21:00 10-13 at 7–10/t during the build phase): storage (37,31); miner B delivers straight into storage; hub extensions.
 - ⏳ RCL5: filler A link + hub link → stationary fillers + manager replace the queen; tower 2.
 - Tuning: CPU is ~4 (vs ~3.6 before) while the 5 old haulers age out to the target of 2–3.
