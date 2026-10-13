@@ -41,22 +41,28 @@ module.exports = { run(room) {
     conflictExt.sort((a, b) => (P.standing.has(plan.key(b.pos.x, b.pos.y)) - P.standing.has(plan.key(a.pos.x, a.pos.y))) || (a.store.energy - b.store.energy));
     for (const s of conflictExt) { if (spare <= 0) break; if (s.destroy() === OK) { spare--; log.push(`destroyed extension ${s.pos.x},${s.pos.y} (good ext ${goodExt}, cap ${room.energyCapacityAvailable})`); } }
   }
+  // Storage before ramparts: 4 RCL4 rampart sites filled MAX_SITES and unlocked a 2nd hungry builder
+  // (sites>3) while storage was only 11% done — one fed builder finishes storage faster (patrol 10-13 20:52).
+  const hasStorage = structs.some(s => s.structureType === STRUCTURE_STORAGE);
   for (const s of sites) {
     const want = P.any[plan.key(s.pos.x, s.pos.y)];
-    const ok = s.structureType === STRUCTURE_RAMPART ? P.ramparts[plan.key(s.pos.x, s.pos.y)] : want && want.type === s.structureType;
+    const ok = s.structureType === STRUCTURE_RAMPART
+      ? !!(hasStorage && P.ramparts[plan.key(s.pos.x, s.pos.y)])
+      : want && want.type === s.structureType;
     if (!ok) { s.remove(); log.push(`removed site ${s.structureType} ${s.pos.x},${s.pos.y}`); }
   }
-  // ---- placement
-  let budget = MAX_SITES - sites.length;
-  const have = new Set(structs.map(s => s.structureType + plan.key(s.pos.x, s.pos.y)).concat(sites.map(s => s.structureType + plan.key(s.pos.x, s.pos.y))));
+  // ---- placement (re-find sites: removals above leave the cached array stale)
+  const sitesNow = room.find(FIND_MY_CONSTRUCTION_SITES);
+  let budget = MAX_SITES - sitesNow.length;
+  const have = new Set(structs.map(s => s.structureType + plan.key(s.pos.x, s.pos.y)).concat(sitesNow.map(s => s.structureType + plan.key(s.pos.x, s.pos.y))));
   const wanted = plan.upTo(room.name, rcl);
-  const extSites = sites.some(s => s.structureType === STRUCTURE_EXTENSION);
+  const extSites = sitesNow.some(s => s.structureType === STRUCTURE_EXTENSION);
   const hasTower = structs.some(s => s.structureType === STRUCTURE_TOWER);
   for (const type of PRIORITY) {
     if (budget <= 0) break;
     if (type === 'road' && (extSites || hostile)) continue;
     if (type === 'rampart') {
-      if (!hasTower) continue;
+      if (!hasTower || !hasStorage) continue; // after storage is up (see site cleanup above)
       for (const k in P.ramparts) {
         if (budget <= 0) break;
         if (P.ramparts[k] > rcl || have.has('rampart' + k)) continue;
