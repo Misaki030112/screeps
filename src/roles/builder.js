@@ -1,7 +1,8 @@
 // Builder: picks a site once (priority order), walks a cached path, builds until done. Energy from fixed sources.
 // With no sites it destroy()s (fallback: dismantles) empty unplanned containers (e.g. v1 leftover 31,11), keeps planned containers
 // healthy, builds remote swamp-road sites when remote is not paused. Pre-storage: helps upgrade from the drop tile.
-// With storage + no build work: dump carry into storage and park (never moonlight at ctl / siphon source A).
+// With storage + no build/repair work: dump carry into storage and park (never moonlight at ctl / siphon source A).
+// Repair work includes planned roads/containers <60% so paused remote→builder (rminer) stays useful.
 const plan = require('../utils/plan'), move = require('../utils/move'), rc = require('../utils/roomcache');
 const remote = require('../managers/remote'), trace = require('../utils/trace');
 const PRIO = { spawn: 0, extension: 1, tower: 2, container: 3, storage: 4, link: 5, rampart: 6, road: 7 };
@@ -27,10 +28,15 @@ function junkContainer(room, P) {
     return (!want || want.type !== 'container') && (s.store[RESOURCE_ENERGY] || 0) < 50 && s.hits > 0;
   }) || null;
 }
+function repairables(home, P) {
+  // Planned roads/containers below 60% — paused rminer→builder was 99% no_task with sites=0 (patrol 10-14 05:52).
+  return rc.all(home, STRUCTURE_ROAD).concat(rc.all(home, STRUCTURE_CONTAINER))
+    .filter(s => P.any[plan.key(s.pos.x, s.pos.y)] && s.hits < s.hitsMax * 0.6);
+}
 function hasBuildWork(home, P) {
   if (rc.sites(home).length) return true;
   if (remoteRoadSite()) return true;
-  return rc.all(home, STRUCTURE_CONTAINER).some(s => P.any[plan.key(s.pos.x, s.pos.y)] && s.hits < s.hitsMax * 0.5);
+  return repairables(home, P).length > 0;
 }
 function dumpToStorage(c, home) {
   const st = home.storage; if (!st) return false;
@@ -93,8 +99,8 @@ module.exports = { run(c) {
       const remoteSite = remoteRoadSite();
       if (remoteSite) t = remoteSite;
       else {
-        const conts = rc.all(home, STRUCTURE_CONTAINER).filter(s => P.any[plan.key(s.pos.x, s.pos.y)] && s.hits < s.hitsMax * 0.5);
-        t = conts.length ? _.min(conts, s => s.hits) : null;
+        const hurt = repairables(home, P);
+        t = hurt.length ? _.min(hurt, s => s.hits / s.hitsMax) : null;
       }
     }
     c.memory.t = t ? t.id : undefined;

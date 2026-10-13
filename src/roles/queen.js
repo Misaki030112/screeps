@@ -59,11 +59,25 @@ module.exports = { fillRoute, run(c) {
   const full = room.energyAvailable >= room.energyCapacityAvailable && !rc.all(room, STRUCTURE_TOWER).some(t => t.store[RESOURCE_ENERGY] < 900);
   if (c.memory.working || (full && c.store[RESOURCE_ENERGY] > 0)) {
     if (!full) { if (fillRoute(c)) return; }
+    // ctl ferry only from fc (standby), never by draining storage while spawn/tower are full —
+    // that kept storage ~100 for hours (patrol 10-14 05:50: queen src=storage, extensions 1300/1300).
     if (full && standby(c, room, P)) return;
-    if (c.store.getFreeCapacity() === 0 || full) { const [x, y] = P.pos.fillers[0]; move.to(c, x, y, 0); require('../utils/trace').why(c, 'f'); return; } // park
+    if (c.store.getFreeCapacity() === 0 || full) {
+      // dump leftover carry back to storage before parking (was sitting target_full with 360–400e)
+      if (full && room.storage && c.store[RESOURCE_ENERGY] > 0) {
+        if (move.to(c, room.storage.pos.x, room.storage.pos.y, 1)) c.transfer(room.storage, RESOURCE_ENERGY);
+        return;
+      }
+      const [x, y] = P.pos.fillers[0]; move.to(c, x, y, 0); require('../utils/trace').why(c, 'f'); return;
+    }
     c.memory.working = false;
   }
-  // refill: storage > filler container A > source container (fixed list)
+  // Spawn/tower full: do not refill from storage. standby already pulls fc→ctl when ctlLow.
+  if (full) {
+    if (standby(c, room, P)) return;
+    const [x, y] = P.pos.fillers[0]; move.to(c, x, y, 0); require('../utils/trace').why(c, 'f'); return;
+  }
+  // refill: storage > filler container A > source container (fixed list) — only when spawn/tower need energy
   let src = c.memory.src && Game.getObjectById(c.memory.src);
   if (!src || src.store[RESOURCE_ENERGY] < 50) {
     const [fx, fy] = P.pos.fillerContainerA;
