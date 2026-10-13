@@ -23,9 +23,14 @@ const roles = {
     if (!go(c, c.memory.remote, C.cont[0], C.cont[1], 0)) return;
     const src = c.room.lookForAt(LOOK_SOURCES, C.src[0], C.src[1])[0];
     const k = c.room.lookForAt(LOOK_STRUCTURES, C.cont[0], C.cont[1]).find(s => s.structureType === STRUCTURE_CONTAINER);
-    if (k && k.hits < 30000 && c.store[RESOURCE_ENERGY] >= 10) return c.repair(k);
-    if (!k && c.store[RESOURCE_ENERGY] >= 5) { const s = c.room.lookForAt(LOOK_CONSTRUCTION_SITES, C.cont[0], C.cont[1])[0];
-      if (s) return c.build(s); c.room.createConstructionSite(C.cont[0], C.cont[1], STRUCTURE_CONTAINER); }
+    // Unowned-room containers decay 50 hits/t; keep >=100k so it survives a ~1500-tick threat pause with nobody repairing
+    // (30k lasted only 600 ticks: container lost during the 2026-10-13 Invader pause). Steady-state cost is the same (= decay).
+    if (k && k.hits < 100000 && c.store[RESOURCE_ENERGY] >= 10) return c.repair(k);
+    if (!k) { const s = c.room.lookForAt(LOOK_CONSTRUCTION_SITES, C.cont[0], C.cont[1])[0];
+      if (!s) c.room.createConstructionSite(C.cont[0], C.cont[1], STRUCTURE_CONTAINER);
+      // harvest and build share a tick: build only when the next harvest would overflow the store (or source empty)
+      // -> ~25 built per 3.5 ticks = 7.1/t (was 5/t: building every 10 harvested)
+      else if (c.store[RESOURCE_ENERGY] > 0 && (c.store.getFreeCapacity() < 2 * c.getActiveBodyparts(WORK) || !src || src.energy === 0)) return c.build(s); }
     if (src && src.energy > 0) c.harvest(src);
   },
   rhauler(c) {
