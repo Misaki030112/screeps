@@ -43,13 +43,19 @@ function fillRoute(c) {
   if (move.to(c, cur.x, cur.y, cur.r)) { const t = cur.ids.map(needy).find(Boolean); if (t) c.transfer(t, RESOURCE_ENERGY); }
   return true;
 }
-// Room full (52% of queen time historically): ferry filler container A -> controller while A keeps >=400 for the next refill
+// Room full (52% of queen time historically): ferry surplus -> controller container while it is low.
+// Source: storage above one full spawn refill (>= defender reserve), else filler container A above 400 for the next refill.
+// Without the storage leg source B + remote energy never reached the controller (10-14 06:58: upgrade 9.7/t, storage
+// spent on spawns, upgraders waiting_feed ~50%); with no floor it drained storage to ~100 (05:50), hence the floor.
+function storageFloor(room) { return Math.max(require('../managers/threat').reserve(room.name), room.energyCapacityAvailable); }
 function standby(c, room, P) {
   const H = require('./hauler'); if (!H.ctlLow(room, P)) return false;
   const [cx, cy] = P.pos.controllerContainer, [fx, fy] = P.pos.fillerContainerA;
   if (c.store[RESOURCE_ENERGY] > 0) { const k = rc.at(room, cx, cy, STRUCTURE_CONTAINER); if (H.handoff(c)) return true; if (move.to(c, cx, cy, 1)) c.transfer(k, RESOURCE_ENERGY); return true; }
-  const a = rc.at(room, fx, fy, STRUCTURE_CONTAINER); if (!a || a.store[RESOURCE_ENERGY] < 400 + c.store.getCapacity()) return false;
-  if (move.to(c, fx, fy, 1)) c.withdraw(a, RESOURCE_ENERGY); return true;
+  const cap = c.store.getCapacity(), st = room.storage, a = rc.at(room, fx, fy, STRUCTURE_CONTAINER);
+  const src = st && st.store[RESOURCE_ENERGY] >= storageFloor(room) + cap ? st : a && a.store[RESOURCE_ENERGY] >= 400 + cap ? a : null;
+  if (!src) return false;
+  if (move.to(c, src.pos.x, src.pos.y, 1)) c.withdraw(src, RESOURCE_ENERGY); return true;
 }
 module.exports = { fillRoute, run(c) {
   const room = c.room, P = plan.get(room.name);
@@ -59,8 +65,7 @@ module.exports = { fillRoute, run(c) {
   const full = room.energyAvailable >= room.energyCapacityAvailable && !rc.all(room, STRUCTURE_TOWER).some(t => t.store[RESOURCE_ENERGY] < 900);
   if (c.memory.working || (full && c.store[RESOURCE_ENERGY] > 0)) {
     if (!full) { if (fillRoute(c)) return; }
-    // ctl ferry only from fc (standby), never by draining storage while spawn/tower are full —
-    // that kept storage ~100 for hours (patrol 10-14 05:50: queen src=storage, extensions 1300/1300).
+    // ctl ferry via standby (storage only above storageFloor, else fc)
     if (full && standby(c, room, P)) return;
     if (c.store.getFreeCapacity() === 0 || full) {
       // dump leftover carry back to storage before parking (was sitting target_full with 360–400e)
@@ -72,7 +77,7 @@ module.exports = { fillRoute, run(c) {
     }
     c.memory.working = false;
   }
-  // Spawn/tower full: do not refill from storage. standby already pulls fc→ctl when ctlLow.
+  // Spawn/tower full: no refill for the fill route; standby ferries surplus (storage above floor / fc) to ctl when ctlLow.
   if (full) {
     if (standby(c, room, P)) return;
     const [x, y] = P.pos.fillers[0]; move.to(c, x, y, 0); require('../utils/trace').why(c, 'f'); return;

@@ -22,4 +22,5 @@ console.log(`checks passed: ${fs.readdirSync(DIST).length} modules; sim 600 tick
 // threat FSM unit tests (incl. the code-level enable gate armed()) + defender duel on real terrain driven by the real FSM
 execSync('node ' + path.join(__dirname, '..', 'tests', 'threat_fsm.js'), { stdio: 'pipe' });
 execSync('node ' + path.join(__dirname, '..', 'tests', 'defender_duel.js'), { stdio: 'pipe' });
-console.log('threat FSM tests + defender duel passed');
+execSync('node ' + path.join(__dirname, '..', 'tests', 'queen_standby.js'), { stdio: 'pipe' });
+console.log('threat FSM tests + defender duel + queen standby passed');
