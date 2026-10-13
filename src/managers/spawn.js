@@ -21,6 +21,8 @@ const B = {
   miner: (e, carry) => { const c = carry ? 1 : 0; const w = Math.max(2, Math.min(5, Math.floor((e - 50 - c * 50) / 100)));
     const m = Math.max(1, Math.min(3, Math.floor((e - w * 100 - c * 50) / 50))); return [].concat(rep(w, WORK), rep(c, CARRY), rep(m, MOVE)); },
   hauler: e => { const n = Math.max(2, Math.min(8, Math.floor(e / 100))); return [].concat(rep(n, CARRY), rep(n, MOVE)); },
+  // home hauler with storage: the A->ctl route is fully paved, so 2 CARRY : 1 MOVE still moves 1 tile/tick loaded
+  roadHauler: e => { const n = Math.max(1, Math.min(8, Math.floor(e / 150))); return [].concat(rep(2 * n, CARRY), rep(n, MOVE)); },
   queen: e => { const n = Math.max(2, Math.min(6, Math.floor(e / 150))); return [].concat(rep(2 * n, CARRY), rep(n, MOVE)); },
   upgrader: (e, rcl) => { const w = Math.max(1, Math.min(rcl >= 8 ? 15 : 10, Math.floor((e - 100) / 100))); return [].concat(rep(w, WORK), [CARRY, MOVE]); },
   builder: e => { const n = Math.max(1, Math.min(5, Math.floor(e / 200))); return [].concat(rep(n, WORK), rep(n, CARRY), rep(n, MOVE)); },
@@ -31,7 +33,7 @@ function targets(room, count, backlog, ctlEnergy, sites) {
   const rcl = room.controller.level, P = plan.get(room.name);
   const st = !!room.storage, links = rc.all(room, STRUCTURE_LINK).length;
   const T = {};
-  // With storage, miner B dumps adjacent (38,32→37,31) so only source A needs a hauler; model home carry ~6 → 1×6C6M.
+  // With storage, miner B dumps adjacent (38,32→37,31) so only source A needs a hauler: 1×14C7M road hauler (see body note below).
   // Pre-storage keep 2 so both containers drain. Backlog can still add one extra.
   T.hauler = rcl >= 7 && links >= 4 ? 0 : (rcl >= 6 && links >= 3 ? 1 : (st ? Math.min(2, 1 + Math.floor(backlog / 1500)) : Math.min(4, 2 + Math.floor(backlog / 1500))));
   const fillersOn = rcl >= 5 && links >= 2;
@@ -129,8 +131,10 @@ module.exports = { targets, run(spawn) {
     if ((count[role] || 0) >= T[role]) continue;
     const mem = {};
     if (role === 'filler') { const used = new Set(mine.filter(c => c.memory.role === 'filler').map(c => c.memory.spot.join())); mem.spot = P.pos.fillers.slice(0, 4).find(s => !used.has(s.join())); }
-    // Home hauler: 8C8M pre-storage; after storage model need 5.6 carry on the A route (10/t x rt 28) -> 6C6M (5C moved 8.9/t < 10).
-    const e = role === 'queen' && !(count.hauler) ? Math.max(300, avail) : Math.min(E, role === 'hauler' ? (room.storage ? 600 : 800) : role === 'queen' ? 600 : 3000);
-    return go(role, B[role](e, rcl), mem);
+    // Home hauler: 8C8M pre-storage. With storage it hauls source A -> ctl container (27 tiles, measured cycle ~57-66t, not the
+    // model's A->hub rt 28): 10/t x 66 = 660 carry -> one 14C7M road hauler (700, 1050e). 2x6C6M (600 carry) let
+    // container A pile up to 1771/2000 (patrol 10-14 07:05) while upgraders sat waiting_feed ~50%.
+    const e = role === 'queen' && !(count.hauler) ? Math.max(300, avail) : Math.min(E, role === 'hauler' ? (room.storage ? 1050 : 800) : role === 'queen' ? 600 : 3000);
+    return go(role, role === 'hauler' && room.storage ? B.roadHauler(e) : B[role](e, rcl), mem);
   }
 } };
