@@ -201,8 +201,11 @@ def main():
     # rminer 5W1C3M, upgraders WORK-heavy; cost/tick:
     ideal_haul_cost = carry_need * 75 / 1500  # 2C+1M per 100 cap => 1.5x50 per carry
     ideal_overhead = 2 * 700 / 1500 + 700 / 1500 + ideal_haul_cost + 1300 / 600 + 650 / 1500 + 600 / 1500 + road_decay + 0.7  # miners, rminer, haulers, reserver, queen, builder-lite, decay
+    # Upgraders are creeps too: 12W1C1M = 1300 per 1500 ticks buys 12 upgrade/t, so each upgrade/t carries 1300/1500/12
+    # upkeep. Live overhead already counts them; the ideal left them out (~1.6/t too optimistic, patrol 10-14 15:25).
+    up_upkeep = 1300 / 1500 / 12
     M['ideal_overhead'] = ideal_overhead
-    M['upgrade_max_ideal'] = tot_income - ideal_overhead
+    M['upgrade_max_ideal'] = (tot_income - ideal_overhead) / (1 + up_upkeep)
     M['upgrade_max_live_comp'] = tot_income - overhead_min
     work_up = sum(b.count('w') for b in bodies.get('upgrader', []))
     M['upgrader_work'] = work_up; M['upgrader_bound'] = 'energy' if work_up > M['upgrade_max_live_comp'] else 'WORK'

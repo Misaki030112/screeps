@@ -1,6 +1,6 @@
 {
-  "next_at": "2026-10-14T15:15:00+08:00",
-  "reason": "VERIFY f0127a3 queen surplus ferry PASS: 13:55-14:25 upgrade 24.0/t every 5-min bucket (WORK cap 2x12W), storage 1173->2300 never <1173 (ferry floor 1300; the dips were spawn refills), ctl 360-1700, 0 errors. New gap 14:30-14:36: lone A->ctl hauler83634137 died ~83635697 and was only replaced on death (21-part body = 63t spawn + ~27t walk); ctl 0, 3 upgraders (3rd 12W opened at storage 2300) did ~3/t for ~90t. FIX 051e7ed: pre-spawn home hauler + queen with the upgrader rule (TTL <= parts*3+30); emergency check and queen sizing use alive counts. Verify 15:15: queen83634451 (dies ~83635952) replacement born BEFORE its death (pre-spawn at TTL<=66); no 2-queen deadlock in stamp; next hauler pre-spawn not until ~83637110; upgrade/t back to >=22 once ctl refills; 3rd upgrader83635647 waiting_feed should fall as container A backlog drains (2 haulers); <=3 upgraders; 0 errors.",
-  "written_at": "2026-10-14T14:40:00+08:00",
-  "commit": "051e7ed"
+  "next_at": "2026-10-14T16:20:00+08:00",
+  "reason": "VERIFY 051e7ed partial PASS: queen83635920 born 83635921, 64t before queen83634451 died 83635985 (no ctl/spawn gap, single queen, no deadlock); upgrader83636285 pre-spawned at 83636311 before upgrader83634816 died 83636356; <=3 upgraders; 0 game errors; 55b6242 link plan A deployed 15:21 (dormant at RCL4). NOT yet: upgrade/t >=22 — 14:40-15:20 avg ~16/t because a spawn wave (8 creeps, ~8.3k energy in ~770t incl. a backlog-triggered 2nd 14C7M hauler) pulled storage 2100->1000 below the 1300 ferry floor; ctl hits 0 each bucket, upgraders waiting_feed ~27%. Transient, energy conserved. Verify 16:20: storage back above 1300 and ferry running, upgrade/t >=20 over 30 min; home hauler83635701 replacement pre-spawned at TTL<=93 (~83637170) before its death ~83637263; hauler count back to 1 target (2nd ages out 83637641, must NOT be replaced unless container A >=1500); 0 errors.",
+  "written_at": "2026-10-14T15:30:00+08:00",
+  "commit": "55b6242"
 }

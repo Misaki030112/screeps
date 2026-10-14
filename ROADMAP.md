@@ -12,7 +12,7 @@ Focus (Misaki 10-14): **W46N8 upgrade speed**; expansion (2nd account W47N8, W45
 3. ⏳ **RCL5 tonight (~21:00–22:00 UTC+8)** — see `docs/RCL5.md`.
    - ✅ Shipped: `plan.STATIONARY_FILL=false` (queen regime continues; no link sites), build order tower→extension, rampart growth throttle.
    - Patrol watchpoints in RCL5.md (tower 37,33 first; queen serves stamp B + tower 2; storage ≥ 1300 despite rampart growth).
-4. ❓ **Decision for Misaki: RCL5–6 link plan** (RCL5.md table). Recommended **A: hub 37,29 + controller 30,31 at RCL5, source A 30,11 at RCL6**, queen until RCL7. Implement only after approval (layout change, no demolition).
+4. ✅ **Link plan A approved by Misaki (10-14)** and coded in 55b6242 (`plan.LINK_PLAN`: hub 37,29 + ctl 30,31 at RCL5, source A 30,11 at RCL6; queen until RCL7). Deployed 15:21; dormant until RCL5 — patrol verifies link sites + transfers after RCL5.
 5. ⏳ **Defence before novice end (deadline review 2026-10-25):** tower 2 at RCL5 (first site); ramparts 100k (throttled ≤4 e/t); min-cut outer ramparts design; safe-mode decision tree with Misaki. Threat now: BustJetter scouts only (0 dmg); Fandalah W44N8 now RCL6.
 6. ⏸ After RCL5 + defence review: re-open expansion proposals (`docs/REMOTE_EVAL.md`) — **approval required**.
 7. Later: RCL6 terminal/extractor/labs; 2nd room (**approval required**).
