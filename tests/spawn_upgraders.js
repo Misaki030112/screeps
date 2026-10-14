@@ -33,7 +33,13 @@ const cases = [
   ['retiring: TTL 73 still counts; spawning never retires; other roles never retire', () => {
     assert.strictEqual(S.retiring({ memory: { role: 'upgrader' }, body: Array(14), ticksToLive: 73 }), false);
     assert.strictEqual(S.retiring({ memory: { role: 'upgrader' }, body: Array(14), spawning: true }), false);
-    assert.strictEqual(S.retiring({ memory: { role: 'queen' }, body: Array(12), ticksToLive: 5 }), false); }],
+    assert.strictEqual(S.retiring({ memory: { role: 'miner' }, body: Array(12), ticksToLive: 5 }), false); }],
+  ['retiring: home hauler (21 parts) at TTL 93 and queen (12 parts) at TTL 66 pre-spawn; TTL 94 / 67 still count', () => {
+    assert.strictEqual(S.retiring({ memory: { role: 'hauler' }, body: Array(21), ticksToLive: 93 }), true);
+    assert.strictEqual(S.retiring({ memory: { role: 'hauler' }, body: Array(21), ticksToLive: 94 }), false);
+    assert.strictEqual(S.retiring({ memory: { role: 'queen' }, body: Array(12), ticksToLive: 66 }), true);
+    assert.strictEqual(S.retiring({ memory: { role: 'queen' }, body: Array(12), ticksToLive: 67 }), false); }],
+  ['retiring: remote creeps never use the home pre-spawn rule', () => assert.strictEqual(S.retiring({ memory: { role: 'hauler', remote: 'W45N8' }, body: Array(16), ticksToLive: 5 }), false)],
   ['RCL8 still 15W max', () => assert.strictEqual(S.B.upgrader(5000, 8).filter(p => p === 'work').length, 15)],
 ];
 let fail = 0; for (const [n, f] of cases) { try { f(); console.log('ok  ', n); } catch (e) { fail++; console.log('FAIL', n, e.message); } }

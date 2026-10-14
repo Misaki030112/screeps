@@ -61,10 +61,13 @@ function targets(room, count, backlog, ctlEnergy, sites) {
   T.builder = sites ? (sites > 3 && room.energyCapacityAvailable >= 1300 ? 2 : 1) : (st ? 0 : (rcl <= 4 ? 1 : 0));
   return T;
 }
-// Upgrader pre-spawn: a dying upgrader stops counting once its TTL is under spawn time + walk (~21 tiles measured) + margin,
+// Pre-spawn: a dying upgrader / home hauler / queen stops counting once its TTL is under spawn time + walk + margin,
 // so the replacement is queued while the room is still full. Counting it to death let upgrader83631342 (died 83632876) go
 // unreplaced 276 ticks: a remote reserver/rhauler/rminer wave took the 1300 first, 1x10W upgraded ~10/t (patrol 10-14 11:43).
-function retiring(c) { return c.memory.role === 'upgrader' && !c.spawning && c.ticksToLive <= c.body.length * 3 + 30; }
+// Same gap for the lone A->ctl hauler: hauler83634137 died ~83635697, the 21-part replacement spawned 63t, ctl container
+// sat at 0 and 3 upgraders (36W) did ~3/t for ~90t (patrol 10-14 14:36). Miners/rhaulers/reservers have their own leads.
+const PRESPAWN = new Set(['upgrader', 'hauler', 'queen']);
+function retiring(c) { return PRESPAWN.has(c.memory.role) && !c.memory.remote && !c.spawning && c.ticksToLive <= c.body.length * 3 + 30; }
 // Pure rule for remote hauler early-replace (exported for unit tests).
 function rhaulerNeed(liveCount, allCount, target) {
   target = target === undefined ? 2 : target;
@@ -102,7 +105,8 @@ module.exports = { targets, rhaulerNeed, retiring, B, run(spawn) {
   const starving = Game.time - (room.memory.lastFull || Game.time) > 300;
   const E = starving ? Math.max(300, avail) : cap;
   const mine = _.filter(Game.creeps, c => c.memory.home === room.name || (!c.memory.home && c.room.name === room.name));
-  const count = _.countBy(mine.filter(c => !retiring(c)), c => c.memory.role);
+  const count = _.countBy(mine.filter(c => !retiring(c)), c => c.memory.role); // replacement targets
+  const alive = _.countBy(mine, c => c.memory.role); // who can refill the spawn right now (retiring ones still work)
   const P = plan.get(room.name);
   const go = (role, body, mem = {}) => {
     const cost = _.sum(body, p => BODYPART_COST[p]);
@@ -110,7 +114,7 @@ module.exports = { targets, rhaulerNeed, retiring, B, run(spawn) {
     return spawn.spawnCreep(body, role + Game.time, { memory: Object.assign({ role, home: room.name }, mem), directions: birthDirs(spawn, role) });
   };
   // 1) emergency: nothing can refill the spawn
-  if (!(count.hauler || 0) && !(count.queen || 0) && !(count.harvester || 0) && !(count.filler || 0))
+  if (!(alive.hauler || 0) && !(alive.queen || 0) && !(alive.harvester || 0) && !(alive.filler || 0))
     return go(count.miner ? 'hauler' : 'harvester', count.miner ? B.hauler(Math.max(200, avail)) : B.harvester(Math.max(200, avail)));
   // 1b) defender: top of the queue; while collecting energy for it only miners/queen may still spawn (non-critical paused)
   const threat = require('./threat'), want = threat.wantDefender(room.name);
@@ -152,7 +156,7 @@ module.exports = { targets, rhaulerNeed, retiring, B, run(spawn) {
     // Home hauler: 8C8M pre-storage. With storage it hauls source A -> ctl container (27 tiles, measured cycle ~57-66t, not the
     // model's A->hub rt 28): 10/t x 66 = 660 carry -> one 14C7M road hauler (700, 1050e). 2x6C6M (600 carry) let
     // container A pile up to 1771/2000 (patrol 10-14 07:05) while upgraders sat waiting_feed ~50%.
-    const e = role === 'queen' && !(count.hauler) ? Math.max(300, avail) : Math.min(E, role === 'hauler' ? (room.storage ? 1050 : 800) : role === 'queen' ? 600 : 3000);
+    const e = role === 'queen' && !(alive.hauler) ? Math.max(300, avail) : Math.min(E, role === 'hauler' ? (room.storage ? 1050 : 800) : role === 'queen' ? 600 : 3000);
     return go(role, role === 'hauler' && room.storage ? B.roadHauler(e) : B[role](e, rcl), mem);
   }
 } };
