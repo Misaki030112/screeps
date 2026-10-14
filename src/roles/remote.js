@@ -66,6 +66,7 @@ const roles = {
     const ct = c.room.controller; if (!ct) return;
     if (ct.reservation && ct.reservation.username !== c.owner.username) return; // never attackController
     c.reserveController(ct);
+    const S = require('../utils/sign'); if (S.needs(ct, c.owner.username)) c.signController(ct, S.SIGN);
   },
 };
 // Anti-NPC defender (docs/DEFENDER.md). Spawned on demand only; engages owner 'Invader' only; kites melee at range 3;

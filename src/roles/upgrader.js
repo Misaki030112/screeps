@@ -1,13 +1,12 @@
 // Upgrader on a fixed spot next to the controller container (30,30) / controller link (30,31). Never wanders.
 const plan = require('../utils/plan'), move = require('../utils/move'), rc = require('../utils/roomcache');
-// Desired controller sign (one constant). One upgrader detours 1-2 tiles to sign when it differs, then returns to its spot.
-const SIGN = 'Peace grows here, guarded by steel. Cross in war, fall in silence. 和平在此，越界必诛。';
-module.exports = { SIGN, run(c) {
+const sign = require('../utils/sign'); // one-shot detour to sign when sign differs, then back to spot
+module.exports = { run(c) {
   const room = c.room, P = plan.get(room.name), ctl = room.controller;
-  if (ctl && ctl.my && (!ctl.sign || ctl.sign.text !== SIGN || ctl.sign.username !== (ctl.owner || {}).username)
+  if (ctl && ctl.my && sign.needs(ctl, (ctl.owner || {}).username)
       && !_.some(Game.creeps, x => x !== c && x.memory.signing)) {
     c.memory.signing = 1;
-    if (c.pos.isNearTo(ctl)) { c.signController(ctl, SIGN); delete c.memory.signing; }
+    if (c.pos.isNearTo(ctl)) { c.signController(ctl, sign.SIGN); delete c.memory.signing; }
     else { move.to(c, ctl.pos.x, ctl.pos.y, 1); return; }
   } else if (c.memory.signing) delete c.memory.signing;
   if (!c.memory.spot) {
