@@ -61,6 +61,10 @@ function targets(room, count, backlog, ctlEnergy, sites) {
   T.builder = sites ? (sites > 3 && room.energyCapacityAvailable >= 1300 ? 2 : 1) : (st ? 0 : (rcl <= 4 ? 1 : 0));
   return T;
 }
+// Upgrader pre-spawn: a dying upgrader stops counting once its TTL is under spawn time + walk (~21 tiles measured) + margin,
+// so the replacement is queued while the room is still full. Counting it to death let upgrader83631342 (died 83632876) go
+// unreplaced 276 ticks: a remote reserver/rhauler/rminer wave took the 1300 first, 1x10W upgraded ~10/t (patrol 10-14 11:43).
+function retiring(c) { return c.memory.role === 'upgrader' && !c.spawning && c.ticksToLive <= c.body.length * 3 + 30; }
 // Pure rule for remote hauler early-replace (exported for unit tests).
 function rhaulerNeed(liveCount, allCount, target) {
   target = target === undefined ? 2 : target;
@@ -91,14 +95,14 @@ function remoteSpawn(room, E, go, rcl) {
     // (patrol 10-14 03:55: 3 rhaulers, cont ~20e). Keep energy for home upgraders / storage reserve instead.
   }
 }
-module.exports = { targets, rhaulerNeed, B, run(spawn) {
+module.exports = { targets, rhaulerNeed, retiring, B, run(spawn) {
   if (spawn.spawning) return;
   const room = spawn.room, cap = room.energyCapacityAvailable, avail = room.energyAvailable, rcl = room.controller.level;
   if (avail >= cap) room.memory.lastFull = Game.time;
   const starving = Game.time - (room.memory.lastFull || Game.time) > 300;
   const E = starving ? Math.max(300, avail) : cap;
   const mine = _.filter(Game.creeps, c => c.memory.home === room.name || (!c.memory.home && c.room.name === room.name));
-  const count = _.countBy(mine, c => c.memory.role);
+  const count = _.countBy(mine.filter(c => !retiring(c)), c => c.memory.role);
   const P = plan.get(room.name);
   const go = (role, body, mem = {}) => {
     const cost = _.sum(body, p => BODYPART_COST[p]);

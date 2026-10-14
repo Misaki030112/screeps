@@ -29,6 +29,11 @@ const cases = [
   ['sites: base 1', () => assert.strictEqual(up({ sites: 2, storage: 0 }), 1)],
   ['RCL4 1300 cap -> 12W1C1M costing exactly 1300', () => { const b = S.B.upgrader(1300, 4); assert.strictEqual(b.filter(p => p === 'work').length, 12); assert.strictEqual(b.length, 14); }],
   ['body shrinks with available energy (800 -> 7W)', () => assert.strictEqual(S.B.upgrader(800, 4).filter(p => p === 'work').length, 7)],
+  ['retiring: 14-part upgrader at TTL 72 (=14*3+30) no longer counts', () => assert.strictEqual(S.retiring({ memory: { role: 'upgrader' }, body: Array(14), ticksToLive: 72 }), true)],
+  ['retiring: TTL 73 still counts; spawning never retires; other roles never retire', () => {
+    assert.strictEqual(S.retiring({ memory: { role: 'upgrader' }, body: Array(14), ticksToLive: 73 }), false);
+    assert.strictEqual(S.retiring({ memory: { role: 'upgrader' }, body: Array(14), spawning: true }), false);
+    assert.strictEqual(S.retiring({ memory: { role: 'queen' }, body: Array(12), ticksToLive: 5 }), false); }],
   ['RCL8 still 15W max', () => assert.strictEqual(S.B.upgrader(5000, 8).filter(p => p === 'work').length, 15)],
 ];
 let fail = 0; for (const [n, f] of cases) { try { f(); console.log('ok  ', n); } catch (e) { fail++; console.log('FAIL', n, e.message); } }
