@@ -170,17 +170,20 @@ def main():
     for k, (r, s, cont) in srcs.items():
         cap_src = 3000 if r == HOME or True else 1500   # reserved remote = 3000
         inc = cap_src / 300
-        dk = 'storage' if False else 'hub'
-        # split: home sources feed hub+ctl; remote feeds ctl (closest to west exit) — use the shorter of hub/ctl
-        tgt = min(('hub', 'ctl'), key=lambda t: R[f'{k}->{t}']['tiles'])
-        dist = R[f'{k}->{tgt}']['tiles']
-        rt_ticks_11 = path_ticks(T, roads, R[f'{k}->{tgt}']['path'], hauler_body, True) + dist  # loaded + empty back
-        carry = inc * (rt_ticks_11 + 4) / 50     # +4 ticks pickup/transfer overhead
+        # Live topology (src/roles/hauler.js): with storage A -> ctl container (14C7M road hauler), B's miner transfers
+        # straight into the adjacent storage (no hauling; the queen ferries the surplus to ctl, short leg not modelled here),
+        # remote -> ctl. Pre-storage: the shorter of hub/ctl.
+        has_st = bool(O(HOME, 'storage'))
+        tgt = {'A': 'ctl', 'B': 'storage', 'R': 'ctl'}[k] if has_st else min(('hub', 'ctl'), key=lambda t: R[f'{k}->{t}']['tiles'])
+        adjacent = tgt == 'storage' and max(abs(cont[0] - storage[0]), abs(cont[1] - storage[1])) <= 1
+        dist = 0 if adjacent else R[f'{k}->{tgt}']['tiles']
+        rt_ticks_11 = 0 if adjacent else path_ticks(T, roads, R[f'{k}->{tgt}']['path'], hauler_body, True) + dist  # loaded + empty back
+        carry = 0 if adjacent else inc * (rt_ticks_11 + 4) / 50     # +4 ticks pickup/transfer overhead
         M['sources'][k] = dict(room=r, income=inc, target=tgt, dist=dist, swamp=R[f'{k}->{tgt}']['swamp'], unpaved=R[f'{k}->{tgt}']['unpaved'],
                                roundtrip_1to1=rt_ticks_11 + 4, carry_need=carry, carry_need_paved_formula=2 * dist * inc / 50,
                                work_need=math.ceil(inc / 2), container_decay_e=(0.1 if r == HOME else 0.5))
         tot_income += inc; carry_need += carry
-        route_tiles |= set(R[f'{k}->{tgt}']['path'])
+        if not adjacent: route_tiles |= set(R[f'{k}->{tgt}']['path'])
     route_tiles |= set(R['A->ctl']['path']) | set(R['B->ctl']['path'])
     # remote fixed costs: reserver (CLAIM2 at 1300 or 2xCLAIM1 overlap) + container repair
     reserver = (1300 / 600) if rcl >= 4 else (650 / 600)

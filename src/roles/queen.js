@@ -57,7 +57,7 @@ function standby(c, room, P) {
   if (!src) return false;
   if (move.to(c, src.pos.x, src.pos.y, 1)) c.withdraw(src, RESOURCE_ENERGY); return true;
 }
-module.exports = { fillRoute, run(c) {
+module.exports = { fillRoute, storageFloor, run(c) {
   const room = c.room, P = plan.get(room.name);
   room.memory.queenAlive = Game.time;
   if (c.memory.working && c.store[RESOURCE_ENERGY] === 0) c.memory.working = false;

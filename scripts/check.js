@@ -23,4 +23,5 @@ console.log(`checks passed: ${fs.readdirSync(DIST).length} modules; sim 600 tick
 execSync('node ' + path.join(__dirname, '..', 'tests', 'threat_fsm.js'), { stdio: 'pipe' });
 execSync('node ' + path.join(__dirname, '..', 'tests', 'defender_duel.js'), { stdio: 'pipe' });
 execSync('node ' + path.join(__dirname, '..', 'tests', 'queen_standby.js'), { stdio: 'pipe' });
-console.log('threat FSM tests + defender duel + queen standby passed');
+execSync('node ' + path.join(__dirname, '..', 'tests', 'spawn_upgraders.js'), { stdio: 'pipe' });
+console.log('threat FSM tests + defender duel + queen standby + spawn upgraders passed');
