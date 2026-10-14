@@ -1,6 +1,6 @@
 {
-  "next_at": "2026-10-14T08:55:00+08:00",
-  "reason": "9e8f5c7 (tick 83630088): extra (3rd) upgrader only when storage >= queen ferry floor max(reserve,cap)=1300 + 1000 (=2300); old gate (storage>=1300) spawned upgrader83629807 at ~08:00 before the ferry started (waiting_feed 0-18% with 2x10W 07:30-07:59 -> 45-47% with 3x10W 08:00-08:14). Model now uses live topology (A->ctl rt 54, B->storage adjacent, R->ctl rt 74). Verify 08:55: upgrader83628946 dies ~83630481 (~08:44) and is NOT replaced while storage <2300 (upgraders 3->2); upgrader waiting_feed <25% after; queen ferries storage->ctl (arrivals at 30,30, storage hovering ~1700, ctl container >300); 1h upgrade >=15/t (was 15.4); rhauler 4->2 after old ones die ~83630171/83630219; 0 errors. Still open: paused-remote creeps home work; hauler 'p' wait ~30% at container A is source-bound (10/t vs 700 carry) — consider relabel as 'e'-like legit or leave-at-half rule.",
-  "written_at": "2026-10-14T08:21:00+08:00",
-  "commit": "9e8f5c7"
+  "next_at": "2026-10-14T09:40:00+08:00",
+  "reason": "e053428 (tick 83630727): paused remote\u2192builder repairs planned roads/containers <80% (was 60%; last pause rminer 87.6% no_task \u2014 planned roads healthy, containers ~60.4% just missed) + remapped creeps upgrade from fc/source containers when idle (never drain storage reserve). VERIFY 9e8f5c7 PASS: upgrader83628946 died 83630480 \u2192 count 3\u21922; 83630615 only replaced base-2 after 29038 died; waiting_feed 35.7%\u219212.5% post-death; queen 6\u00d7 arrivals at 30,30; ctl 950; 1h upgrade 17.3/t; rhauler 4\u21922 @83630171/219; 0 errors. Live: RCL4 191k/405k (~47%), storage ~1000 (below ferry floor 1300), u2 h1 q1 m2+rhauler2 rminer1, threat SAFE, remote res~4000 CLAIM2. Verify 09:40: 0 errors; upgrader waiting_feed stays <25%; storage climbing (need \u22652300 for 3rd upgrader / ideal 23.5/t); ctl container >300; no 3rd upgrader while storage<2300. Full e053428 pause-behaviour only on next Invader pause. Open: hauler 'p' wait at A is source-bound (10/t vs 700 carry); storage growth to unlock 3rd upgrader.",
+  "written_at": "2026-10-14T09:01:51+08:00",
+  "commit": "e053428"
 }
