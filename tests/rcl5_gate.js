@@ -25,6 +25,9 @@ const cases = [
   ['layout: tower before extension; link skipped while flag off', () => { const L = fs.readFileSync(src('managers/layout.js'), 'utf8');
     const pr = eval(L.match(/const PRIORITY = (\[[^\]]+\])/)[1]); assert.ok(pr.indexOf('tower') < pr.indexOf('extension'));
     assert.ok(pr.indexOf('extension') < pr.indexOf('link')); }],
+  ['builder PRIO: tower before extension (matches layout)', () => { const B = fs.readFileSync(src('roles/builder.js'), 'utf8');
+    const m = B.match(/const PRIO = (\{[^}]+\})/); assert.ok(m, 'PRIO missing');
+    const pr = eval('('+m[1]+')'); assert.ok(pr.tower < pr.extension, 'tower='+pr.tower+' ext='+pr.extension); }],
   ['tower: RCL5 rampart at 60k (above RCL4 50k) repairs only every 5th tick', () => {
     assert.strictEqual(TW.growthPaused(ramp(60000), 5, 101), true); assert.strictEqual(TW.growthPaused(ramp(60000), 5, 100), false); }],
   ['tower: rampart below previous target (fresh/damaged) full speed', () => assert.strictEqual(TW.growthPaused(ramp(30000), 5, 101), false)],

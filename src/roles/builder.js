@@ -6,7 +6,7 @@
 // when even that is idle the remapped creep upgrades from fc/source containers (never drains the storage reserve).
 const plan = require('../utils/plan'), move = require('../utils/move'), rc = require('../utils/roomcache');
 const remote = require('../managers/remote'), trace = require('../utils/trace');
-const PRIO = { spawn: 0, extension: 1, tower: 2, container: 3, storage: 4, link: 5, rampart: 6, road: 7 };
+const PRIO = { spawn: 0, tower: 1, extension: 2, container: 3, storage: 4, link: 5, rampart: 6, road: 7 }; // match layout PRIORITY (tower before extension)
 function remoteRoadSite() {
   for (const r in remote.CFG) {
     if (remote.paused(r)) continue;
@@ -107,6 +107,11 @@ module.exports = { run(c) {
   }
   let t = c.memory.t && Game.getObjectById(c.memory.t);
   if (t && t.hits !== undefined && t.progress === undefined && t.hits >= t.hitsMax * 0.9) t = null;
+  // Stickiness must not skip a higher-priority site (patrol 10-14 22:40: tower 37,33 at 0 while extensions built).
+  if (t && t.progress !== undefined) {
+    const home = Game.rooms[c.memory.home] || room;
+    if (rc.sites(home).some(s => (PRIO[s.structureType] ?? 9) < (PRIO[t.structureType] ?? 9))) t = null;
+  }
   if (!t) {
     const home = Game.rooms[c.memory.home] || room;
     const sites = rc.sites(home);
