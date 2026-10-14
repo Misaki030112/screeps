@@ -122,9 +122,11 @@ function remoteSpawn(room, go, avail) {
 // Same for the storage-era home hauler (source A -> ctl container): it does not refill the spawn (queen does, from storage),
 // and a starving-sized 6C3M (300 carry / ~70t cycle = 4.3/t of source A's 10/t) starved the 12W upgrader for 1500 ticks
 // while container A piled up (patrol 10-15 01:43).
-function bodyEnergy(role, E, cap, avail, haulerAlive, hasStorage) {
+// Same for a miner while another miner still works (the other source, or the predecessor it replaces): a starving-sized
+// 4W1C2M on source A mines 8/t of 10/t for 1500 ticks (miner83645106, patrol 10-15 02:25). With no miner alive, recover small.
+function bodyEnergy(role, E, cap, avail, haulerAlive, hasStorage, minerAlive) {
   if (role === 'queen' && !haulerAlive) return Math.max(300, avail);
-  const fromCap = role === 'upgrader' || (role === 'hauler' && hasStorage);
+  const fromCap = role === 'upgrader' || (role === 'hauler' && hasStorage) || (role === 'miner' && minerAlive);
   return Math.min(fromCap ? cap : E, role === 'hauler' ? (hasStorage ? 1050 : 800) : role === 'queen' ? 600 : 3000);
 }
 module.exports = { targets, rhaulerNeed, remoteNext, retiring, B, reserverBody, nearFull, bodyEnergy, run(spawn) {
@@ -159,7 +161,7 @@ module.exports = { targets, rhaulerNeed, remoteNext, retiring, B, reserverBody, 
   for (const s of room.memory.sources.map(id => Game.getObjectById(id)).filter(Boolean)) {
     if (!mine.some(c => c.memory.role === 'miner' && c.memory.sourceId === s.id && (c.ticksToLive || 1500) > lead(c))) {
       const carry = rcl >= 4;
-      return go('miner', B.miner(Math.min(E, carry ? 800 : 650), carry), { sourceId: s.id });
+      return go('miner', B.miner(Math.min(bodyEnergy('miner', E, cap, avail, !!alive.hauler, !!room.storage, !!alive.miner), carry ? 800 : 650), carry), { sourceId: s.id });
     }
   }
   if (hold) { if (!(count.queen || 0) && !(count.filler || 0)) return go('queen', B.queen(Math.max(300, avail))); return ERR_BUSY; }

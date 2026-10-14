@@ -49,6 +49,10 @@ const cases = [
     const b = S.B.roadHauler(S.bodyEnergy('hauler', 300, 1700, 300, true, true));
     assert.strictEqual(b.filter(p => p === 'carry').length, 14); assert.strictEqual(b.filter(p => p === 'move').length, 7);
     assert.strictEqual(S.bodyEnergy('hauler', 300, 1300, 300, true, false), 300); }],
+  ['starving: miner sized from cap (5W1C3M) while another miner works; avail-sized when none alive', () => {
+    const b = S.B.miner(Math.min(S.bodyEnergy('miner', 400, 1750, 400, true, true, true), 800), true);
+    assert.strictEqual(b.filter(p => p === 'work').length, 5); assert.strictEqual(b.filter(p => p === 'move').length, 3);
+    assert.strictEqual(S.bodyEnergy('miner', 400, 1750, 400, true, true, false), 400); }],
   ['RCL8 still 15W max', () => assert.strictEqual(S.B.upgrader(5000, 8).filter(p => p === 'work').length, 15)],
 ];
 let fail = 0; for (const [n, f] of cases) { try { f(); console.log('ok  ', n); } catch (e) { fail++; console.log('FAIL', n, e.message); } }
