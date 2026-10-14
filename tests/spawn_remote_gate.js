@@ -28,6 +28,13 @@ const cases = [
   ['nearFull cap-100', () => assert.strictEqual(S.nearFull(1300, 1400), true)],
   ['nearFull below band', () => assert.strictEqual(S.nearFull(1299, 1400), false)],
   ['nearFull low cap', () => assert.strictEqual(S.nearFull(250, 300), true)],
+  // remoteNext: producer before carriers (patrol 10-15 00:08: 1 rhauler, 0 rminer, cont 10e)
+  ['1 rhauler + 0 rminer -> rminer', () => assert.strictEqual(S.remoteNext({ nRes: 1, wantRes: 1, res: 2943, avail: 1269, rmLive: 0, rhLive: 1, rhAll: 1 }), 'rminer')],
+  ['rminer live + 1 rhauler -> rhauler', () => assert.strictEqual(S.remoteNext({ nRes: 1, wantRes: 1, res: 2943, avail: 1269, rmLive: 1, rhLive: 1, rhAll: 1 }), 'rhauler')],
+  ['full set -> nothing', () => assert.strictEqual(S.remoteNext({ nRes: 1, wantRes: 1, res: 2943, avail: 1500, rmLive: 1, rhLive: 2, rhAll: 2 }), null)],
+  ['no reserver, res<4000 -> reserver first', () => assert.strictEqual(S.remoteNext({ nRes: 0, wantRes: 1, res: 2943, avail: 700, rmLive: 0, rhLive: 0, rhAll: 0 }), 'reserver')],
+  ['res>=4000 skips reserver', () => assert.strictEqual(S.remoteNext({ nRes: 0, wantRes: 1, res: 4100, avail: 1500, rmLive: 1, rhLive: 2, rhAll: 2 }), null)],
+  ['2 dying + 1 new rhauler -> no 4th', () => assert.strictEqual(S.remoteNext({ nRes: 1, wantRes: 1, res: 3000, avail: 1500, rmLive: 1, rhLive: 1, rhAll: 3 }), null)],
 ];
 let fail = 0;
 for (const [n, f] of cases) {

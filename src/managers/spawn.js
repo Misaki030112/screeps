@@ -80,30 +80,42 @@ function rhaulerNeed(liveCount, allCount, target) {
 function reserverBody(avail) { return avail >= 1300 ? [CLAIM, CLAIM, MOVE, MOVE] : [CLAIM, MOVE]; }
 // lastFull must move during builds that rarely hit exact cap (extensions/builders siphon).
 function nearFull(avail, cap) { return avail >= Math.max(0, cap - 100); }
-function remoteSpawn(room, E, go, rcl, avail) {
-  const remote = require('./remote');
+// Pure remote spawn order. Producer (rminer) before carriers: a lone rhauler with no rminer earns 0
+// (patrol 10-15 00:08: needRemote fired only on zero creeps, spawned 1 rhauler, then starving closed the gate; cont 10e, rminer 0).
+// The remote is income, so it is NOT gated by home starving: that gate turned an RCL5 build drain into a remote blackout twice.
+function remoteNext(s) {
+  if (s.nRes < s.wantRes && s.res < 4000 && s.avail >= 650) return 'reserver';
+  if (s.rmLive < 1) return 'rminer';
+  // RCL4 target is 2×8C8M. Early-replace at TTL≤120: both rhaulers born ~50t apart age out together and
+  // would spawn 2 replacements on top of 2 dying → 4 creeps / ~1600e wipe (patrol 10-14 09:51: energy 1300→4).
+  // Cap total (dying+new) at target+1 so only one overlap is in flight.
+  if (rhaulerNeed(s.rhLive, s.rhAll)) return 'rhauler';
+  // A 3rd was opportunistic on cont>1200 but left waiting_pickup idle while the container sat near empty
+  // (patrol 10-14 03:55: 3 rhaulers, cont ~20e). Keep energy for home upgraders / storage reserve instead.
+  return null;
+}
+// Bodies from cap (not starving E): a starving-sized 3C3M rhauler would count as live for 1500 ticks.
+function remoteSpawn(room, go, avail) {
+  const remote = require('./remote'), cap = room.energyCapacityAvailable;
   for (const r in remote.CFG) {
     if (remote.CFG[r].home !== room.name) continue;
     if (remote.paused(r)) continue; // defender is spawned from the top of run() (threat.wantDefender)
     const m = remote.mem(r);
     const res = (m.res && m.res.ticksToEnd) || 0;
-    const wantRes = (res > 0 && res < 800) ? 2 : 1; // overlap rebuilds buffer while CLAIM1-only
     const resLead = 150; // travel ~40 + spawn + margin (was 80; late spawn left ticksToEnd≈13)
-    const live = role => _.filter(Game.creeps, c => c.memory.remote === r && c.memory.role === role && (c.spawning || c.ticksToLive > (role === 'reserver' ? resLead : 120))).length;
-    const nRes = _.filter(Game.creeps, c => c.memory.remote === r && c.memory.role === 'reserver' && (c.spawning || (c.ticksToLive || 1500) > 30)).length;
-    // Reserver before haulers when buffer is thin so the 650 cost is not spent on a 3rd rhauler
-    if (nRes < wantRes && res < 4000 && avail >= 650) return go('reserver', reserverBody(avail), { remote: r });
-    // RCL4 target is 2×8C8M. Early-replace at TTL≤120: both rhaulers born ~50t apart age out together and
-    // would spawn 2 replacements on top of 2 dying → 4 creeps / ~1600e wipe (patrol 10-14 09:51: energy 1300→4).
-    // Cap total (dying+new) at target+1 so only one overlap is in flight.
-    const allRh = _.filter(Game.creeps, c => c.memory.remote === r && c.memory.role === 'rhauler').length;
-    if (rhaulerNeed(live('rhauler'), allRh)) return go('rhauler', B.hauler(Math.min(E, 800)), { remote: r });
-    if (live('rminer') < 1) { const w = Math.min(5, Math.floor((Math.min(E, 700) - 200) / 100)); return go('rminer', [].concat(rep(w, WORK), [CARRY], rep(3, MOVE)), { remote: r }); }
-    // A 3rd was opportunistic on cont>1200 but left waiting_pickup idle while the container sat near empty
-    // (patrol 10-14 03:55: 3 rhaulers, cont ~20e). Keep energy for home upgraders / storage reserve instead.
+    const mineR = role => _.filter(Game.creeps, c => c.memory.remote === r && c.memory.role === role);
+    const live = role => mineR(role).filter(c => c.spawning || c.ticksToLive > (role === 'reserver' ? resLead : 120)).length;
+    const next = remoteNext({
+      nRes: mineR('reserver').filter(c => c.spawning || (c.ticksToLive || 1500) > 30).length,
+      wantRes: (res > 0 && res < 800) ? 2 : 1, // overlap rebuilds buffer while CLAIM1-only
+      res, avail, rmLive: live('rminer'), rhLive: live('rhauler'), rhAll: mineR('rhauler').length,
+    });
+    if (next === 'reserver') return go('reserver', reserverBody(avail), { remote: r });
+    if (next === 'rminer') { const w = Math.min(5, Math.floor((Math.min(cap, 700) - 200) / 100)); return go('rminer', [].concat(rep(w, WORK), [CARRY], rep(3, MOVE)), { remote: r }); }
+    if (next === 'rhauler') return go('rhauler', B.hauler(Math.min(cap, 800)), { remote: r });
   }
 }
-module.exports = { targets, rhaulerNeed, retiring, B, reserverBody, nearFull, run(spawn) {
+module.exports = { targets, rhaulerNeed, remoteNext, retiring, B, reserverBody, nearFull, run(spawn) {
   if (spawn.spawning) return;
   const room = spawn.room, cap = room.energyCapacityAvailable, avail = room.energyAvailable, rcl = room.controller.level;
   if (nearFull(avail, cap)) room.memory.lastFull = Game.time; // cap-100: RCL5 build rarely hits exact cap
@@ -148,20 +160,7 @@ module.exports = { targets, rhaulerNeed, retiring, B, reserverBody, nearFull, ru
   const T = targets(room, count, backlog, m.ctlEma, rc.sites(room).length);
   room.memory.roleTargets = T;
   for (const role of ['queen', 'hauler', 'REMOTE', 'filler', 'manager', 'upgrader', 'builder']) {
-    if (role === 'REMOTE') {
-      // Critical reservation: still spawn even when home is starving (CLAIM1 buffer ~13 ticks is fragile).
-      // Also restore remote when SAFE but zero remote creeps — starving during RCL5 build (cap never hit)
-      // otherwise blackouts income for hours (patrol 10-14 23:20: remotes gone after 23:07, cont 1610 idle).
-      let criticalRes = false, needRemote = false;
-      const remote = require('./remote');
-      for (const rr in remote.CFG) {
-        if (remote.CFG[rr].home !== room.name) continue;
-        const mm = remote.mem(rr); const rv = (mm.res && mm.res.ticksToEnd) || 0;
-        if (rv > 0 && rv < 100) criticalRes = true;
-        if (!remote.paused(rr) && !_.some(Game.creeps, c => c.memory.remote === rr && c.memory.role !== 'defender')) needRemote = true;
-      }
-      if (!starving || criticalRes || needRemote) { const r = remoteSpawn(room, E, go, rcl, avail); if (r !== undefined) return r; } continue;
-    }
+    if (role === 'REMOTE') { const r = remoteSpawn(room, go, avail); if (r !== undefined) return r; continue; }
     if ((count[role] || 0) >= T[role]) continue;
     const mem = {};
     if (role === 'filler') { const used = new Set(mine.filter(c => c.memory.role === 'filler').map(c => c.memory.spot.join())); mem.spot = P.pos.fillers.slice(0, 4).find(s => !used.has(s.join())); }
