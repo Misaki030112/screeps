@@ -24,4 +24,5 @@ execSync('node ' + path.join(__dirname, '..', 'tests', 'threat_fsm.js'), { stdio
 execSync('node ' + path.join(__dirname, '..', 'tests', 'defender_duel.js'), { stdio: 'pipe' });
 execSync('node ' + path.join(__dirname, '..', 'tests', 'queen_standby.js'), { stdio: 'pipe' });
 execSync('node ' + path.join(__dirname, '..', 'tests', 'spawn_upgraders.js'), { stdio: 'pipe' });
-console.log('threat FSM tests + defender duel + queen standby + spawn upgraders passed');
+execSync('node ' + path.join(__dirname, '..', 'tests', 'builder_remote.js'), { stdio: 'pipe' });
+console.log('threat FSM tests + defender duel + queen standby + spawn upgraders + builder remote passed');

@@ -2,7 +2,8 @@
 // With no sites it destroy()s (fallback: dismantles) empty unplanned containers (e.g. v1 leftover 31,11), keeps planned containers
 // healthy, builds remote swamp-road sites when remote is not paused. Pre-storage: helps upgrade from the drop tile.
 // With storage + no build/repair work: dump carry into storage and park (never moonlight at ctl / siphon source A).
-// Repair work includes planned roads/containers <60% so paused remote→builder (rminer) stays useful.
+// Repair work includes planned roads/containers <80% so paused remote→builder (rminer) stays useful;
+// when even that is idle the remapped creep upgrades from fc/source containers (never drains the storage reserve).
 const plan = require('../utils/plan'), move = require('../utils/move'), rc = require('../utils/roomcache');
 const remote = require('../managers/remote'), trace = require('../utils/trace');
 const PRIO = { spawn: 0, extension: 1, tower: 2, container: 3, storage: 4, link: 5, rampart: 6, road: 7 };
@@ -29,9 +30,10 @@ function junkContainer(room, P) {
   }) || null;
 }
 function repairables(home, P) {
-  // Planned roads/containers below 60% — paused rminer→builder was 99% no_task with sites=0 (patrol 10-14 05:52).
+  // Planned roads/containers below 80%. At 60% (patrol 10-14 05:52) containers sat ~60.4% and planned roads
+  // were all healthy, so paused rminer→builder still hit 87.6% no_task (idle at storage 38,30).
   return rc.all(home, STRUCTURE_ROAD).concat(rc.all(home, STRUCTURE_CONTAINER))
-    .filter(s => P.any[plan.key(s.pos.x, s.pos.y)] && s.hits < s.hitsMax * 0.6);
+    .filter(s => P.any[plan.key(s.pos.x, s.pos.y)] && s.hits < s.hitsMax * 0.8);
 }
 function hasBuildWork(home, P) {
   if (rc.sites(home).length) return true;
@@ -42,6 +44,23 @@ function dumpToStorage(c, home) {
   const st = home.storage; if (!st) return false;
   if (c.store[RESOURCE_ENERGY] > 0) { if (move.to(c, st.pos.x, st.pos.y, 1)) c.transfer(st, RESOURCE_ENERGY); return true; }
   return false;
+}
+// Paused remote→builder (roles/remote HOME map): keep WORK busy when roads are healthy. Never siphon storage
+// below the defender reserve — pull from filler A / source containers only (patrol 10-14 pause: storage ~100).
+function remoteHelpUpgrade(c, home, P) {
+  if (!c.memory.remote || !home.controller) return false;
+  if (c.store[RESOURCE_ENERGY] > 0) {
+    const [x, y] = P.pos.controllerDrop;
+    if (move.to(c, x, y, 0)) c.upgradeController(home.controller);
+    return true;
+  }
+  const [fx, fy] = P.pos.fillerContainerA;
+  const cands = [rc.at(home, fx, fy, STRUCTURE_CONTAINER)].concat(require('./hauler').pickups(home))
+    .filter(s => s && s.store[RESOURCE_ENERGY] >= 50);
+  const src = cands.length ? _.max(cands, s => s.store[RESOURCE_ENERGY] / (c.pos.getRangeTo(s) + 15)) : null;
+  if (!src) { trace.why(c, 'u'); return true; }
+  if (move.to(c, src.pos.x, src.pos.y, 1)) c.withdraw(src, RESOURCE_ENERGY);
+  return true;
 }
 module.exports = { run(c) {
   const room = c.room, P = plan.get(c.memory.home || room.name) || plan.get(room.name);
@@ -59,6 +78,7 @@ module.exports = { run(c) {
     // kept storage off the 1300 defender reserve (patrol 10-14 04:53: builder83626083 at 31,29).
     const home0 = Game.rooms[c.memory.home] || room;
     if (home0.storage && !hasBuildWork(home0, plan.get(home0.name) || P)) {
+      if (c.memory.remote) { if (remoteHelpUpgrade(c, home0, plan.get(home0.name) || P)) return; }
       if (dumpToStorage(c, home0)) return;
       const junk0 = junkContainer(home0, P);
       if (junk0 && junk0.destroy() === OK) return;
@@ -107,8 +127,11 @@ module.exports = { run(c) {
   }
   if (!t) {
     const home = Game.rooms[c.memory.home] || room;
-    // Pre-storage only: help upgrade. With storage, dump carry then park (see hasBuildWork gate above).
-    if (home.storage) { if (dumpToStorage(c, home)) return; trace.why(c, 'n'); return; }
+    // Pre-storage only: help upgrade. With storage, dump carry then park — unless this is a paused remote helper.
+    if (home.storage) {
+      if (c.memory.remote && remoteHelpUpgrade(c, home, P)) return;
+      if (dumpToStorage(c, home)) return; trace.why(c, 'n'); return;
+    }
     const [x, y] = P.pos.controllerDrop; if (move.to(c, x, y, 0)) c.upgradeController(home.controller); return;
   }
   // cross-room: walk via remote fixed exits when target is in another room
