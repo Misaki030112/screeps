@@ -1,6 +1,6 @@
 {
-  "next_at": "2026-10-15T06:40:00+08:00",
-  "reason": "05:40 patrol: VERIFY fa9c1fa partial PASS — th=SAFE since 83649097 (timer; Invader gone 83649134, left on its own, no 2nd defender, no new death), remote resumed (reserver83649098 rminer83649158 rhauler83649191 spawned, res 1924 ticksToEnd, cont 1520). delivered still 252274 (rhauler en route). Economy energy-bound after incident: upgrade 1h ~7/t vs ideal 21.2 (5310t window: R income 3.9 paused, builder 7.0/t build-out finished, defender 1300); energy 159/1800, storage 100-250, sites 0, links 37,29(320)/30,31(0) built, hub below SEND 400. Audit idle>10% upgraders waiting_feed 64-65%, hauler wp 28%, queen tf 24% = energy-bound; errors 0, cpu 3.5 bucket 10000. No code change. VERIFY next: delivered rising, 2nd rhauler spawned, R income >=7/t, storage climbing, upg >=12/t 30-min, link hub->ctl transfers seen once storage surplus returns, no new defender death.",
-  "written_at": "2026-10-15T05:43:00+08:00",
-  "commit": "fa9c1fa"
+  "next_at": "2026-10-15T07:35:00+08:00",
+  "reason": "06:57 patrol: VERIFY fa9c1fa recovery mostly PASS + shipped 05c2664. Criteria: delivered 252274->259984 PASS; 2 rhaulers PASS; R income 1h 6.24 (borderline FAIL, recovering); storage 50-250->1200-1600 PASS; upg 30m 16.6/t PASS (>=12); link hub->ctl NOT seen FAIL (root cause: storageFloor=max(reserve,cap)=1800 blocked ferry while storage<=1600 and spawn full); no new defDeath PASS (still 83647829). Fix 05c2664: storageFloor=reserve when armed so hub link ferry can start. Threat SAFE since 83649097. VERIFY next: hub link energy/transfers, upg>=18/t 30m, R income>=7/t, queen waiting_feed/target_full drop, no new defender death.",
+  "written_at": "2026-10-15T06:57:00+08:00",
+  "commit": "05c2664"
 }
