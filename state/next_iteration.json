@@ -1,6 +1,6 @@
 {
-  "next_at": "2026-10-14T11:40:00+08:00",
-  "reason": "526f36f (tick 83632486): RCL4 upgrader body 12W1C1M (cap 10->12; 2x12=24 WORK ~ ideal 23.5). Gap found 10:55: 1h upgrade 19.2/t WORK-bound (2x10W=20) while ctl container held 1008 and storage parked ~1483 at ferry floor so the 3rd-upgrader gate (2300) never opens; recent R delivered ~7.8/t (139924->146924 in ~890t), rminer harvest 8.1-8.7/t. 8f7870d rhauler cap not yet exercised (no replacement wave since 10:00; rhaulers 2 steady). Verify 11:40: upgrader83631342 (dies ~83632842) replaced by 12W1C1M; upgrade/t rising toward 22-24 once both are 12W (second ~83633650); waiting_feed <25%; storage not drained below floor; rhauler count <=3 during replacement (rhauler83631479 dies ~83632979); energy not wiped <100 on replace; 0 errors.",
-  "written_at": "2026-10-14T11:00:00+08:00",
-  "commit": "526f36f"
+  "next_at": "2026-10-14T12:20:00+08:00",
+  "reason": "8d19ec0 (tick 83633199): upgrader pre-spawn (retiring = TTL <= parts*3+30 stops counting). Gap found 11:43: upgrader83631342 died 83632876 with room full 1300, but REMOTE (reserver 83632851 2CLAIM, rhauler 83632949, rminer 83633011, rhauler 83633053) took the energy first; replacement upgrader83633152 only at 83633152 (276 ticks on 1x10W, ~10/t), and as 11W (starving fallback). 526f36f 12W never got a full-energy spawn yet. Verify 12:20: upgrader83632150 (10W, dies ~83633685) replaced by a 12W spawned ~83633613 BEFORE it dies (no single-upgrader gap); upgrade/t 1h recovering toward 22+; <=4 upgraders; no spot clash; rhaulers <=3 (8f7870d held this wave: max 3 seen); rminer idle (1h 41%) re-check after replacement rminer83633011; energy not wiped; 0 errors.",
+  "written_at": "2026-10-14T11:48:00+08:00",
+  "commit": "8d19ec0"
 }
