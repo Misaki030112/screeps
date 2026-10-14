@@ -40,6 +40,11 @@ const cases = [
     assert.strictEqual(S.retiring({ memory: { role: 'queen' }, body: Array(12), ticksToLive: 66 }), true);
     assert.strictEqual(S.retiring({ memory: { role: 'queen' }, body: Array(12), ticksToLive: 67 }), false); }],
   ['retiring: remote creeps never use the home pre-spawn rule', () => assert.strictEqual(S.retiring({ memory: { role: 'hauler', remote: 'W45N8' }, body: Array(16), ticksToLive: 5 }), false)],
+  ['starving: upgrader still sized from cap (12W at cap 1650), others from avail', () => {
+    assert.strictEqual(S.B.upgrader(S.bodyEnergy('upgrader', 300, 1650, 300, true, true), 5).filter(p => p === 'work').length, 12);
+    assert.strictEqual(S.bodyEnergy('builder', 300, 1650, 300, true, true), 300);
+    assert.strictEqual(S.bodyEnergy('hauler', 1650, 1650, 1650, true, true), 1050);
+    assert.strictEqual(S.bodyEnergy('queen', 300, 1650, 420, false, true), 420); }],
   ['RCL8 still 15W max', () => assert.strictEqual(S.B.upgrader(5000, 8).filter(p => p === 'work').length, 15)],
 ];
 let fail = 0; for (const [n, f] of cases) { try { f(); console.log('ok  ', n); } catch (e) { fail++; console.log('FAIL', n, e.message); } }

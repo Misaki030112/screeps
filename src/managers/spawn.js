@@ -115,7 +115,15 @@ function remoteSpawn(room, go, avail) {
     if (next === 'rhauler') return go('rhauler', B.hauler(Math.min(cap, 800)), { remote: r });
   }
 }
-module.exports = { targets, rhaulerNeed, remoteNext, retiring, B, reserverBody, nearFull, run(spawn) {
+// Energy to size a home body with. Starving (no near-full for 300t) shrinks bodies to what is available, except the upgrader:
+// it sits 1500 ticks on one of 1-2 slots, so a 300e 2W upgrader caps upgrade at ~2/t for its whole life. It is the last home
+// role before builders, so waiting for cap blocks nothing above it (patrol 10-15 00:50: RCL5 build drain, starving since
+// 83643025, upgrader died unreplaced, the next spawn would have been sized to avail ~300).
+function bodyEnergy(role, E, cap, avail, haulerAlive, hasStorage) {
+  if (role === 'queen' && !haulerAlive) return Math.max(300, avail);
+  return Math.min(role === 'upgrader' ? cap : E, role === 'hauler' ? (hasStorage ? 1050 : 800) : role === 'queen' ? 600 : 3000);
+}
+module.exports = { targets, rhaulerNeed, remoteNext, retiring, B, reserverBody, nearFull, bodyEnergy, run(spawn) {
   if (spawn.spawning) return;
   const room = spawn.room, cap = room.energyCapacityAvailable, avail = room.energyAvailable, rcl = room.controller.level;
   if (nearFull(avail, cap)) room.memory.lastFull = Game.time; // cap-100: RCL5 build rarely hits exact cap
@@ -167,7 +175,7 @@ module.exports = { targets, rhaulerNeed, remoteNext, retiring, B, reserverBody, 
     // Home hauler: 8C8M pre-storage. With storage it hauls source A -> ctl container (27 tiles, measured cycle ~57-66t, not the
     // model's A->hub rt 28): 10/t x 66 = 660 carry -> one 14C7M road hauler (700, 1050e). 2x6C6M (600 carry) let
     // container A pile up to 1771/2000 (patrol 10-14 07:05) while upgraders sat waiting_feed ~50%.
-    const e = role === 'queen' && !(alive.hauler) ? Math.max(300, avail) : Math.min(E, role === 'hauler' ? (room.storage ? 1050 : 800) : role === 'queen' ? 600 : 3000);
+    const e = bodyEnergy(role, E, cap, avail, !!alive.hauler, !!room.storage);
     return go(role, role === 'hauler' && room.storage ? B.roadHauler(e) : B[role](e, rcl), mem);
   }
 } };
