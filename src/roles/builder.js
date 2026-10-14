@@ -62,6 +62,19 @@ function remoteHelpUpgrade(c, home, P) {
   if (move.to(c, src.pos.x, src.pos.y, 1)) c.withdraw(src, RESOURCE_ENERGY);
   return true;
 }
+// Starved builder waits in range of its site but OFF roads: parked on the 37,32/36,32 trunk it blocked the home
+// hauler, whose detour through unpaved swamp cost ~50 ticks per source-A trip (patrol 10-15 02:53).
+function waitNear(c, t, P) {
+  if (!move.to(c, t.pos.x, t.pos.y, 3) || !c.room.lookForAt(LOOK_STRUCTURES, c.pos.x, c.pos.y).length) return;
+  const T = c.room.getTerrain();
+  for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) {
+    const x = c.pos.x + dx, y = c.pos.y + dy;
+    if ((!dx && !dy) || x < 1 || y < 1 || x > 48 || y > 48 || T.get(x, y) & TERRAIN_MASK_WALL || P.standing.has(plan.key(x, y))) continue;
+    if (Math.max(Math.abs(t.pos.x - x), Math.abs(t.pos.y - y)) > 3) continue;
+    if (c.room.lookForAt(LOOK_STRUCTURES, x, y).length || c.room.lookForAt(LOOK_CONSTRUCTION_SITES, x, y).length || c.room.lookForAt(LOOK_CREEPS, x, y).length) continue;
+    c.move(c.pos.getDirectionTo(x, y)); return;
+  }
+}
 module.exports = { run(c) {
   const room = c.room, P = plan.get(c.memory.home || room.name) || plan.get(room.name);
   if (!P) return;
@@ -96,7 +109,7 @@ module.exports = { run(c) {
         .filter(s => s && s.store[RESOURCE_ENERGY] >= 50 + (s === home.storage ? require('../managers/threat').reserve(home.name) : 0)); // 50: was 100, left builders no_task while sites existed
       const tw = c.memory.t && Game.getObjectById(c.memory.t);
       let cands = all.filter(s => c.pos.getRangeTo(s) <= 12);
-      if (!cands.length && tw) { move.to(c, tw.pos.x, tw.pos.y, 3); trace.why(c, 'u'); return; } // starved, not no_task
+      if (!cands.length && tw) { waitNear(c, tw, Ph); trace.why(c, 'u'); return; } // starved, not no_task
       if (!cands.length) cands = all;
       src = cands.length ? _.max(cands, s => s.store[RESOURCE_ENERGY] / (c.pos.getRangeTo(s) + 15)) : null;
       c.memory.src = src ? src.id : undefined;

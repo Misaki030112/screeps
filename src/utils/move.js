@@ -1,6 +1,6 @@
 // Movement (simple by design): one cached path per creep+target, serialized one char per tile in memory (_m).
 // Fallback ladder when the creep does not change position (fatigue excluded):
-//   stuck 2  -> repath once treating creeps as obstacles
+//   stuck 2  -> repath once treating creeps as obstacles (kept only if not much costlier than the blocked path)
 //   stuck 4  -> swap with / push our own non-stationary blocker
 //   stuck 8  -> step to any free neighbour tile, repath (reported to trace)
 //   stuck 30 -> console "STUCK" report once (box audit flags it). No automatic recycling.
@@ -49,8 +49,15 @@ function search(c, x, y, range, avoid, why) {
   const r = PathFinder.search(c.pos, { pos: new RoomPosition(x, y, c.room.name), range },
     { plainCost: 2, swampCost: 10, maxRooms: 1, maxOps: 2000, roomCallback: rn => matrix(rn, avoid) });
   trace.repath(c, why);
-  return enc(c.pos) + r.path.map(enc).join('');
+  return [enc(c.pos) + r.path.map(enc).join(''), r.cost];
 }
+// cost of the rest of a cached path (same costs as search, creeps ignored)
+function restCost(room, p, i) {
+  const m = matrix(room.name, false), T = room.getTerrain(); let cost = 0;
+  for (let j = i + 1; j < p.length; j++) { const [x, y] = dec(p.charCodeAt(j)); cost += (m && m.get(x, y)) || (T.get(x, y) & TERRAIN_MASK_SWAMP ? 10 : 2); }
+  return cost;
+}
+const DETOUR = 12; // stuck-2 path may cost at most this much more than the blocked rest; else wait for the stuck-4 swap
 function stationary(o) { const P = require('./plan').get(o.room.name); return !!(P && P.standing.has(o.pos.x * 50 + o.pos.y)) && ['miner', 'filler', 'manager', 'upgrader', 'rminer'].includes(o.memory && o.memory.role); }
 module.exports = {
   invalidate(roomName) { const e = VER[roomName]; if (e) e.n = -1; },
@@ -84,7 +91,12 @@ module.exports = {
         if (nx > 0 && nx < 49 && ny > 0 && ny < 49 && c.room.getTerrain().get(nx, ny) !== TERRAIN_MASK_WALL && (!cm || cm.get(nx, ny) < 255))
           p = here + enc({ x: nx, y: ny });
       }
-      m = c.memory._m = { k, p: p || search(c, x, y, range, s >= 2, why), s, v, n: keep ? keep.n : undefined, t0: keep ? keep.t0 : Game.time };
+      let cost = 0;
+      if (!p) [p, cost] = search(c, x, y, range, s >= 2, why);
+      // A creep parked on the trunk (builder on 37,32) made the stuck-2 path a ~50-tick swamp detour that stayed cached
+      // for the whole trip (patrol 10-15 02:53). Keep the old path instead; stuck 4 swaps/pushes our own blocker.
+      if (why === 's' && i >= 0 && cost > restCost(c.room, keep.p, i) + DETOUR) { keep.l = here; return false; }
+      m = c.memory._m = { k, p, s, v, n: keep ? keep.n : undefined, t0: keep ? keep.t0 : Game.time };
       if (m.n === undefined) m.n = m.p.length - 1;
       if (s === 8) { m.l = here; return false; }
       i = 0;
