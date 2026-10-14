@@ -18,6 +18,7 @@ it('happy path SAFE->THREAT->DEFEND->SAFE(killed)', () => {
   assert.deepStrictEqual(r.evs, ['threat:solo', 'defend:dispatched', 'cleared:killed']);
 });
 it('gate closed (flag off / RCL<4 / no CLAIM2) -> WAIT wait-out, never THREAT', () => { const r = run([[1, { inv: solo(), armed: false }]]); assert.strictEqual(r.s.st, 'WAIT'); assert.strictEqual(r.s.why, 'gate'); assert.strictEqual(r.s.until, 1 + 1400 + C.waitBuffer); });
+it('WAIT gate clears with solo still present -> THREAT (re-arm)', () => assert.deepStrictEqual(run([[1, { inv: solo(), armed: false }], [50, { inv: solo(1350), armed: true }]]).states, ['WAIT', 'THREAT']));
 it('CPU bucket low -> WAIT cpu', () => assert.strictEqual(run([[1, { inv: solo(), bucket: 1000 }]]).s.why, 'cpu'));
 it('daily budget exhausted -> WAIT budget', () => assert.strictEqual(run([[1, { inv: solo(), spawnsDay: C.maxPerDay }]]).s.why, 'budget'));
 it('after a defender death today -> WAIT deaths', () => assert.strictEqual(run([[1, { inv: solo(), deathsDay: 1 }]]).s.why, 'deaths'));
@@ -60,7 +61,7 @@ it('memory loss / global reset: missing state starts SAFE and re-detects next ti
 it('step is pure (does not mutate input state)', () => { const s = { st: 'SAFE', since: 1 }; T.step(s, base({ inv: solo() }), C, 2); assert.deepStrictEqual(s, { st: 'SAFE', since: 1 }); });
 // armed() gate in Game context
 it('armed(): flag + RCL4 stable 1500t + full + CLAIM2 reserver', () => {
-  const home = { controller: { level: 4 }, energyCapacityAvailable: 1300, memory: { lastFull: 0 } };
+  const home = { controller: { level: 4 }, energyCapacityAvailable: 1300, energyAvailable: 0, memory: { lastFull: 0 } };
   global.Memory = { remote: {}, creeps: {} }; global.Game = { time: 1000, rooms: { W46N8: home }, creeps: {} };
   const R = require(path.join(__dirname, '..', 'src/managers/remote.js')); R.CFG.W45N8.defend = true;
   home.memory.lastFull = 1000; assert.strictEqual(T.armed('W45N8'), false); // RCL4 just reached
@@ -68,6 +69,11 @@ it('armed(): flag + RCL4 stable 1500t + full + CLAIM2 reserver', () => {
   Game.creeps.r = { memory: { role: 'reserver', remote: 'W45N8' }, getActiveBodyparts: () => 2 }; assert.strictEqual(T.armed('W45N8'), true);
   R.CFG.W45N8.defend = false; assert.strictEqual(T.armed('W45N8'), false); R.CFG.W45N8.defend = true;
   home.energyCapacityAvailable = 800; assert.strictEqual(T.armed('W45N8'), false); // lost RCL4 capacity resets the stability clock
+  // RCL5 build: lastFull stale but energyAvailable covers defender cost -> still armed
+  home.controller.level = 5; home.energyCapacityAvailable = 1800; home.energyAvailable = 1400;
+  home.memory = {}; Game.time = 5000; assert.strictEqual(T.armed('W45N8'), true);
+  home.energyAvailable = 400; assert.strictEqual(T.armed('W45N8'), false); // cannot afford and lastFull missing
+  home.memory.lastFull = 4900; assert.strictEqual(T.armed('W45N8'), true); // recently near-full still counts
 });
 for (const [n, f] of cases) { try { f(); pass++; console.log('ok   ' + n); } catch (e) { console.log('FAIL ' + n + '\n     ' + e.message); } }
 console.log(`${pass}/${cases.length} passed`); if (pass !== cases.length) process.exit(1);

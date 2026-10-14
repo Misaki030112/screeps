@@ -71,6 +71,9 @@ function step(s, o, c, t) {
       break;
     case S.WAIT:
       if (s.why === 'core') { if (o.vis && !o.core) go(S.SAFE, 'core_gone'); else if (t >= s.until) s.until = t + c.coreRecheck; }
+      // gate/cpu/budget cleared while a solo Invader is still here: arm and fight (do not wait out the whole TTL)
+      else if ((s.why === 'gate' || s.why === 'cpu' || s.why === 'budget') && !gateReason(o, c) && k === 'solo') {
+        delete s.until; s.inc = t; delete s.recycling; go(S.THREAT, 'solo', { inv: o.inv }); }
       else if (s.why !== 'player' && o.vis && k === 'none') go(S.SAFE, 'clear_seen');
       else if (t >= s.until) go(S.SAFE, 'timer');
       break;
@@ -85,8 +88,13 @@ function armed(r) { // code-level enable gate: flag AND RCL4 stable AND CLAIM2 r
   const R = require('./remote'), C = R.CFG[r], m = mem(r), home = Game.rooms[C.home];
   if (!(C.defend || m.defend) || !home || !home.controller) return false;
   const hm = home.memory, c = cfg(r);
-  if (home.controller.level >= 4 && home.energyCapacityAvailable >= c.reserve) hm.rcl4Since = hm.rcl4Since || Game.time; else delete hm.rcl4Since;
-  const stable = hm.rcl4Since && Game.time - hm.rcl4Since >= c.stableTicks && Game.time - (hm.lastFull || 0) < 300;
+  // RCL5+ already held RCL4 for >>stableTicks; seed the clock so a Memory wipe cannot disarm mid-raid
+  if (home.controller.level >= 5) hm.rcl4Since = Math.min(hm.rcl4Since || Game.time, Game.time - c.stableTicks);
+  else if (home.controller.level >= 4 && home.energyCapacityAvailable >= c.reserve) hm.rcl4Since = hm.rcl4Since || Game.time;
+  else delete hm.rcl4Since;
+  // Ready = recently near-full OR can pay for a defender now (RCL5 build keeps avail < cap-100 for long stretches → lastFull goes stale)
+  const ready = Game.time - (hm.lastFull || 0) < 300 || home.energyAvailable >= c.reserve;
+  const stable = hm.rcl4Since && Game.time - hm.rcl4Since >= c.stableTicks && ready;
   if (_.some(Game.creeps, x => x.memory.role === 'reserver' && x.memory.remote === r && x.getActiveBodyparts(CLAIM) >= 2)) m.claim2 = Game.time;
   return !!(stable && m.claim2 && Game.time - m.claim2 < 1500);
 }
