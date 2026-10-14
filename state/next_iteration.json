@@ -1,7 +1,6 @@
 {
-  "next_at": "2026-10-15T00:50:00+08:00",
-  "reason": "00:10 patrol: remotes still dead after 1bbd300 — needRemote only fired on ZERO remote creeps, spawned 1 rhauler, then starving (lastFull 83643025, ~1300t old; cap 1550 during RCL5 ext build, avail ~1270) closed the gate: rminer 0, cont 10e, delivered ~flat 235.5k, upgrade 1h 5.9/t vs ideal 21.3. FIXED+deployed abaf0dd: remote not gated by home starving, order reserver>rminer>rhauler (pure remoteNext, tested), bodies from cap. Post-deploy: reserver83644349 spawned (res 2943). VERIFY next: rminer + 2 rhaulers live, cont filling, delivered climbing, avail reaches cap-100 (lastFull moves), storage toward 1300, ext 25->30 (cap 1800). SAFE, BustJetter scouts LOW only, 0 errors, cpu~2.2 bucket 10k. No claim/attack/credits/safe mode."
-,
-  "written_at": "2026-10-15T00:12:00+08:00",
-  "commit": "abaf0dd"
+  "next_at": "2026-10-15T01:30:00+08:00",
+  "reason": "00:50 patrol: rminer spawned (abaf0dd working), 1 rhauler, reserver res 3343. Home energy-bound by RCL5 build (3 ext + container 34,34 + link 30,31 sites, builders waiting_feed ~50%), starving since 83643025 (lastFull never moved). Upgrader died unreplaced (replacement wave hauler/queen/rminer first) -> upgrade 1h 1.65/t, ctl container 508 parked. FIXED 694020a: upgrader body sized from cap even when starving (would have been a 2W 300e upgrader for 1500t). VERIFY: rhauler #2 then 12W upgrader spawned (not tiny), ctl container draining, upgrade/t back to >=10, ext sites done -> cap 1800, lastFull moves. Watch: home road hauler is starving-sized 6C3M (300 carry vs ~660 needed) - if container A piles >1000, size hauler from cap too. SAFE, BustJetter scouts LOW only, 0 errors, cpu ~3-4 bucket 10k.",
+  "written_at": "2026-10-15T00:53:00+08:00",
+  "commit": "694020a"
 }
