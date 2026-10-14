@@ -75,7 +75,8 @@ def q(c, sql, *a):
 
 def actuals(hours, routes_tiles):
     c = db.connect(); H = f"{hours} hours"; A = {}
-    rs = q(c, f"SELECT min(tick),max(tick),min(progress),max(progress),avg(cpu),avg(energy::float/nullif(energy_cap,0)),max(rcl),min(rcl) FROM room_stats WHERE room=%s AND ts>now()-interval '{H}'", HOME)[0]
+    # only rows at the current RCL: progress resets on level-up, a window spanning it would give None/garbage
+    rs = q(c, f"SELECT min(tick),max(tick),min(progress),max(progress),avg(cpu),avg(energy::float/nullif(energy_cap,0)),max(rcl),min(rcl) FROM room_stats WHERE room=%s AND ts>now()-interval '{H}' AND rcl=(SELECT rcl FROM room_stats WHERE room=%s ORDER BY ts DESC LIMIT 1)", HOME, HOME)[0]
     A['ticks'] = (rs[1] - rs[0]) if rs[0] else 0
     A['upgrade_per_tick'] = (rs[3] - rs[2]) / A['ticks'] if A['ticks'] and rs[6] == rs[7] else None
     A['cpu'] = float(rs[4] or 0); A['energy_fill'] = float(rs[5] or 0)
@@ -155,6 +156,9 @@ def main():
                                    swamp=sum(T[p] == 'swamp' for p in path), unpaved=sum(p not in roads for p in path))
     # also "ideal if fully paved" lengths are the same tiles; travel ticks per body
     hauler_body = ['carry'] * 8 + ['move'] * 8
+    # live bodies per route (src/roles): home A hauler 14C7M (2:1, needs roads), remote hauler 8C8M (1:1, plain-speed)
+    route_body = {'A': ['carry'] * 14 + ['move'] * 7, 'B': hauler_body, 'R': hauler_body}
+    REMOTE_AVAIL = 0.93   # measured 10-13/14: Invader pauses ~105 min/24h (04:56-06:41) => ~7% remote downtime
     road_body = lambda e: (['carry'] * (2 * min(16, e // 150)) + ['move'] * min(16, e // 150))
     M = {'rcl': rcl, 'progress': prog, 'energy_cap': cap, 'sources': {}}
     upkeep_creeps = 0; spawn_time = 0; bodies = {}
@@ -169,7 +173,7 @@ def main():
     tot_income = 0; carry_need = 0; route_tiles = set()
     for k, (r, s, cont) in srcs.items():
         cap_src = 3000 if r == HOME or True else 1500   # reserved remote = 3000
-        inc = cap_src / 300
+        inc = cap_src / 300 * (REMOTE_AVAIL if r == REMOTE else 1)
         # Live topology (src/roles/hauler.js): with storage A -> ctl container (14C7M road hauler), B's miner transfers
         # straight into the adjacent storage (no hauling; the queen ferries the surplus to ctl, short leg not modelled here),
         # remote -> ctl. Pre-storage: the shorter of hub/ctl.
@@ -177,7 +181,7 @@ def main():
         tgt = {'A': 'ctl', 'B': 'storage', 'R': 'ctl'}[k] if has_st else min(('hub', 'ctl'), key=lambda t: R[f'{k}->{t}']['tiles'])
         adjacent = tgt == 'storage' and max(abs(cont[0] - storage[0]), abs(cont[1] - storage[1])) <= 1
         dist = 0 if adjacent else R[f'{k}->{tgt}']['tiles']
-        rt_ticks_11 = 0 if adjacent else path_ticks(T, roads, R[f'{k}->{tgt}']['path'], hauler_body, True) + dist  # loaded + empty back
+        rt_ticks_11 = 0 if adjacent else path_ticks(T, roads, R[f'{k}->{tgt}']['path'], route_body[k], True) + path_ticks(T, roads, R[f'{k}->{tgt}']['path'], route_body[k], False)  # loaded + empty back
         carry = 0 if adjacent else inc * (rt_ticks_11 + 4) / 50     # +4 ticks pickup/transfer overhead
         M['sources'][k] = dict(room=r, income=inc, target=tgt, dist=dist, swamp=R[f'{k}->{tgt}']['swamp'], unpaved=R[f'{k}->{tgt}']['unpaved'],
                                roundtrip_1to1=rt_ticks_11 + 4, carry_need=carry, carry_need_paved_formula=2 * dist * inc / 50,
