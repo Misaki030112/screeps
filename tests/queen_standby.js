@@ -1,5 +1,5 @@
 // Queen standby source choice (src/roles/queen.js): when spawn/tower are full and the controller container is low,
-// ferry from storage any SURPLUS above max(defender reserve, spawn capacity) (partial OK; never below floor),
+// ferry from storage any SURPLUS above the defender reserve (or spawn cap if unarmed) (partial OK; never below floor),
 // else filler container A above 400 + carry.
 // node tests/queen_standby.js -> exits 1 on failure
 const path = require('path'), assert = require('assert');
@@ -19,8 +19,8 @@ stub('roles/hauler.js', { ctlLow: () => W.cc.store.energy < 1000, handoff: () =>
 stub('managers/links.js', { ctlLinkLow: () => !!W.hub, roles: () => ({ hub: W.hub }) });
 const Q = require(src('roles/queen.js'));
 function run(o) {
-  W = Object.assign({ reserve: 1300, cc: obj(30, 30, 200, 2000), fc: obj(35, 24, 0, 2000), st: obj(37, 31, 0, 1e6) }, o);
-  const room = { name: 'W46N8', energyAvailable: 1300, energyCapacityAvailable: 1300, storage: W.st, memory: {} };
+  W = Object.assign({ reserve: 1300, cc: obj(30, 30, 200, 2000), fc: obj(35, 24, 0, 2000), st: obj(37, 31, 0, 1e6), cap: 1300 }, o);
+  const room = { name: 'W46N8', energyAvailable: W.cap, energyCapacityAvailable: W.cap, storage: W.st, memory: {} };
   const withdrawn = [];
   const c = { room, memory: {}, store: Object.assign({ [RESOURCE_ENERGY]: o.carry || 0 }, store(o.carry || 0, 400)), pos: { getRangeTo: () => 1, findInRange: () => [] },
     _e: o.carry || 0, withdraw: (t, _r, amt) => withdrawn.push({ src: t === W.st ? 'storage' : t === W.fc ? 'fc' : '?', amt }), transfer: (t) => { W.to = t === W.hub ? 'hub' : t === W.cc ? 'cc' : '?'; return 0; } };
@@ -37,6 +37,9 @@ const cases = [
   ['plan A: carried surplus goes into the hub link, not the ctl container', () => assert.strictEqual(run({ carry: 400, st: obj(37, 31, 2000, 1e6), hub: obj(37, 29, 0, 800) }).to, 'hub')],
   ['plan A: hub link full -> falls back to ctl container ferry', () => assert.strictEqual(run({ carry: 400, st: obj(37, 31, 2000, 1e6), hub: obj(37, 29, 800, 800) }).to, 'cc')],
   ['plan A: hub wanted but storage at floor -> no drain', () => assert.deepStrictEqual(run({ st: obj(37, 31, 1300, 1e6), cc: obj(30, 30, 1500, 2000), hub: obj(37, 29, 0, 800) }).withdrawn, [])],
+  // RCL5: spawn cap 1800 must NOT raise the floor above the defender reserve (else link ferry never starts)
+  ['RCL5 cap 1800 + reserve 1300, storage 1500 -> partial ferry (not blocked by cap)', () => assert.deepStrictEqual(run({ cap: 1800, st: obj(37, 31, 1500, 1e6), hub: obj(37, 29, 0, 800) }).withdrawn, [{ src: 'storage', amt: 200 }])],
+  ['RCL5 cap 1800 + reserve 1300, storage 1600 hub -> ferry into hub', () => assert.strictEqual(run({ cap: 1800, carry: 300, st: obj(37, 31, 1600, 1e6), hub: obj(37, 29, 0, 800) }).to, 'hub')],
 ];
 let fail = 0; for (const [n, f] of cases) { try { f(); console.log('ok  ', n); } catch (e) { fail++; console.log('FAIL', n, e.message); } }
 console.log(`queen standby: ${cases.length - fail}/${cases.length}`); process.exit(fail ? 1 : 0);

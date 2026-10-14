@@ -43,14 +43,21 @@ function fillRoute(c) {
   if (move.to(c, cur.x, cur.y, cur.r)) { const t = cur.ids.map(needy).find(Boolean); if (t) c.transfer(t, RESOURCE_ENERGY); }
   return true;
 }
-// Room full (52% of queen time historically): ferry surplus -> controller container while it is low.
-// Source: storage SURPLUS above one full spawn refill (>= defender reserve), else filler container A above 400 for the next refill.
+// Room full (52% of queen time historically): ferry surplus -> controller / hub link while ctl feed is low.
+// Source: storage SURPLUS above the defender reserve, else filler container A above 400 for the next refill.
 // Without the storage leg source B + remote energy never reached the controller (10-14 06:58: upgrade 9.7/t, storage
 // spent on spawns, upgraders waiting_feed ~50%); with no floor it drained storage to ~100 (05:50), hence the floor.
 // Require floor+carry (e7c3966) left a dead band: storage 1300..1699 with ctl empty and upgraders waiting_feed while the
 // queen parked target_full (patrol 10-14 13:35: storage 1473-1673, ctl 0 for ~40t stretches, upgrade avg ~18 vs 24 when fed).
 // Ferry any surplus above the floor (partial withdraw); never dip below the floor.
-function storageFloor(room) { return Math.max(require('../managers/threat').reserve(room.name), room.energyCapacityAvailable); }
+// RCL5 bug (patrol 10-15 06:53): max(reserve, energyCapacityAvailable) became 1800 once cap hit 1800, so storage
+// sitting at 1300..1600 never ferried — hub link stayed empty, link plan A idle, upgraders waiting_feed while spawn
+// was full for 100+ ticks. Floor is the defender reserve when armed; spawn cap only as the unarmed fallback
+// (standby already runs only when spawn/tower are full, so spawn refill does not need a floor).
+function storageFloor(room) {
+  const r = require('../managers/threat').reserve(room.name);
+  return r || room.energyCapacityAvailable;
+}
 // RCL5+ link plan A: with hub + controller links built, the ferry target is the hub link (2 tiles from storage) instead of
 // walking to the controller container; links.js forwards hub -> controller link.
 function standby(c, room, P) {
