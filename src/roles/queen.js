@@ -51,10 +51,17 @@ function fillRoute(c) {
 // queen parked target_full (patrol 10-14 13:35: storage 1473-1673, ctl 0 for ~40t stretches, upgrade avg ~18 vs 24 when fed).
 // Ferry any surplus above the floor (partial withdraw); never dip below the floor.
 function storageFloor(room) { return Math.max(require('../managers/threat').reserve(room.name), room.energyCapacityAvailable); }
+// RCL5+ link plan A: with hub + controller links built, the ferry target is the hub link (2 tiles from storage) instead of
+// walking to the controller container; links.js forwards hub -> controller link.
 function standby(c, room, P) {
-  const H = require('./hauler'); if (!H.ctlLow(room, P)) return false;
+  const H = require('./hauler'), Lk = require('../managers/links');
+  const hub = Lk.ctlLinkLow(room) && Lk.roles(room).hub;
+  const toHub = hub && hub.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
+  if (!toHub && !H.ctlLow(room, P)) return false;
   const [cx, cy] = P.pos.controllerContainer, [fx, fy] = P.pos.fillerContainerA;
-  if (c.store[RESOURCE_ENERGY] > 0) { const k = rc.at(room, cx, cy, STRUCTURE_CONTAINER); if (H.handoff(c)) return true; if (move.to(c, cx, cy, 1)) c.transfer(k, RESOURCE_ENERGY); return true; }
+  if (c.store[RESOURCE_ENERGY] > 0) {
+    if (toHub) { if (move.to(c, hub.pos.x, hub.pos.y, 1)) c.transfer(hub, RESOURCE_ENERGY); return true; }
+    const k = rc.at(room, cx, cy, STRUCTURE_CONTAINER); if (H.handoff(c)) return true; if (move.to(c, cx, cy, 1)) c.transfer(k, RESOURCE_ENERGY); return true; }
   const cap = c.store.getCapacity(), st = room.storage, a = rc.at(room, fx, fy, STRUCTURE_CONTAINER);
   const floor = storageFloor(room);
   const surplus = st ? st.store[RESOURCE_ENERGY] - floor : 0;

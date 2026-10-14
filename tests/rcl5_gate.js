@@ -24,12 +24,31 @@ const cases = [
   ['flag on, RCL5 + 1 link: queen until 2 links', () => { const t = T(5, { flag: true, links: 1 }); assert.deepStrictEqual([t.queen, t.filler], [1, 0]); }],
   ['layout: tower before extension; link skipped while flag off', () => { const L = fs.readFileSync(src('managers/layout.js'), 'utf8');
     const pr = eval(L.match(/const PRIORITY = (\[[^\]]+\])/)[1]); assert.ok(pr.indexOf('tower') < pr.indexOf('extension'));
-    assert.ok(/type === 'link' && !plan\.STATIONARY_FILL/.test(L)); }],
+    assert.ok(pr.indexOf('extension') < pr.indexOf('link')); }],
   ['tower: RCL5 rampart at 60k (above RCL4 50k) repairs only every 5th tick', () => {
     assert.strictEqual(TW.growthPaused(ramp(60000), 5, 101), true); assert.strictEqual(TW.growthPaused(ramp(60000), 5, 100), false); }],
   ['tower: rampart below previous target (fresh/damaged) full speed', () => assert.strictEqual(TW.growthPaused(ramp(30000), 5, 101), false)],
   ['tower: RCL3 (no previous target) and non-ramparts never throttled', () => {
     assert.strictEqual(TW.growthPaused(ramp(15000), 3, 101), false); assert.strictEqual(TW.growthPaused({ structureType: 'road', hits: 4000 }, 5, 101), false); }],
 ];
+// ---- link plan A (real plan.js + links.js)
+cases.push(...(() => {
+  delete require.cache[require.resolve(src('utils/plan.js'))]; delete require.cache[require.resolve(src('managers/links.js'))];
+  const realPlan = require(src('utils/plan.js'));
+  const links = (o) => Object.entries(o).map(([n, [x, y, en, cd]]) => ({ n, pos: { x, y }, store: { energy: en }, cooldown: cd || 0, sent: [], transferEnergy(t) { this.sent.push(t.n); } }));
+  const runLinks = (L) => { stub('utils/plan.js', realPlan); stub('utils/roomcache.js', { all: () => L });
+    delete require.cache[require.resolve(src('managers/links.js'))]; global.Game = { time: 3 }; require(src('managers/links.js')).run({ name: 'W46N8' }); return L; };
+  const up = (r) => realPlan.upTo('W46N8', r).filter(s => s.type === 'link').map(s => [s.x, s.y]).sort();
+  return [
+    ['plan A: RCL5 links = hub 37,29 + ctl 30,31 (no stamp-A 35,26)', () => assert.deepStrictEqual(up(5), [[30, 31], [37, 29]])],
+    ['plan A: RCL6 adds source A 30,11', () => assert.deepStrictEqual(up(6), [[30, 11], [30, 31], [37, 29]])],
+    ['links: hub >= SEND sends to low ctl link', () => { const L = runLinks(links({ hub: [37, 29, 600], ctl: [30, 31, 100] })); assert.deepStrictEqual(L[0].sent, ['ctl']); }],
+    ['links: ctl link above threshold -> hub holds', () => { const L = runLinks(links({ hub: [37, 29, 800], ctl: [30, 31, 500] })); assert.deepStrictEqual(L[0].sent, []); }],
+    ['links: hub below SEND holds', () => { const L = runLinks(links({ hub: [37, 29, 300], ctl: [30, 31, 0] })); assert.deepStrictEqual(L[0].sent, []); }],
+    ['links: source A -> ctl when low, else -> hub', () => {
+      let L = runLinks(links({ hub: [37, 29, 0], ctl: [30, 31, 0], a: [30, 11, 800] })); assert.deepStrictEqual(L[2].sent, ['ctl']);
+      L = runLinks(links({ hub: [37, 29, 0], ctl: [30, 31, 700], a: [30, 11, 800] })); assert.deepStrictEqual(L[2].sent, ['hub']); }],
+  ];
+})());
 let fail = 0; for (const [n, f] of cases) { try { f(); console.log('ok  ', n); } catch (e) { fail++; console.log('FAIL', n, e.message); } }
 console.log(`rcl5 gate: ${cases.length - fail}/${cases.length}`); process.exit(fail ? 1 : 0);

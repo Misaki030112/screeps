@@ -62,7 +62,6 @@ module.exports = { run(room) {
   for (const type of PRIORITY) {
     if (budget <= 0) break;
     if (type === 'road' && (extSites || hostile)) continue;
-    if (type === 'link' && !plan.STATIONARY_FILL) continue; // link plan pending (docs/RCL5.md)
     if (type === 'rampart') {
       if (!hasTower || !hasStorage) continue; // after storage is up (see site cleanup above)
       for (const k in P.ramparts) {

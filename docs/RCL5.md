@@ -66,3 +66,22 @@ Expansion remains **shelved**: none of this changes the 10-25 deadline review (m
 - Queen reaches stamp B extensions + tower 2 (direct stops); `idle_by_reason` queen `target_full` should drop (more work), hauler should not walk the fill route above 90%.
 - Upgrade during the ~40k build (tower + 10 ext + container + road) falls to 1 base upgrader + storage-surplus extras — expected ≈ 2–3 h; afterwards back to ~20–24/t.
 - Ramparts climb 50k→100k at ≤ 4 e/t; storage must not fall below the 1300 defender reserve because of towers.
+
+## Decision record — link plan A (Misaki 2026-10-14 ~15:20 UTC+8: "哪种收益效率更高就用哪个")
+Check against the table above: C keeps ~20–24/t with 0 cost but no RCL6 gain; B is ≈ neutral only after 4 extra roles and −50% as-is;
+A is ≈ +0–2/t at RCL5 (no queen walk to ctl; −0.5/t link loss; no manager needed since the queen fills the hub) and +~10/t of
+walk-free source-A delivery at RCL6 (A hauler retired, −0.7/t upkeep). **A has the highest net efficiency → adopted.**
+
+Implemented:
+- `plan.LINK_PLAN = { hub 37,29 @RCL5, ctl 30,31 @RCL5, srcA 30,11 @RCL6 }` — single source of link positions while
+  `STATIONARY_FILL` is false (overrides the v2 json links 35,26 / 30,11@6 / 30,31@7). `STATIONARY_FILL` stays **false**: queen through RCL7, no fillers/manager.
+- Build order unchanged by design: spawn → tower → extension → container → storage → **link** → road (tower 2 first, links
+  after the 10 extensions; ~10k for 2 links).
+- `links.js`: senders (source link, hub) transfer to the ctl link when it is < 400 and the sender holds ≥ 400.
+- Queen standby: when both links exist and the ctl link is < 400, ferry storage surplus above the defender floor into the hub
+  link (2 tiles from storage) instead of walking to the ctl container; falls back to the container if the hub is full.
+- Upgraders: controller link first, then container (unchanged).
+- Tests: `tests/rcl5_gate.js` (plan A positions, link transfer rules), `tests/queen_standby.js` (hub ferry, floor kept).
+
+Expected: during the RCL5 build (~40k: tower, 10 ext, container, 2 links) upgrade ≈ base-upgrader level for ~2–3 h; afterwards
+~24/t (2×12W cap) with fewer feed gaps; RCL6 + source-A link frees the A hauler.
