@@ -36,8 +36,11 @@ Pre-spawning on the harvest counter is **rejected**: the goal is hidden and rand
 1. **Spawn on demand only** (`managers/spawn.js`): remote paused **and** Invader-only **and** exactly 1 Invader **and** no HEAL part **and** its TTL > 300 **and** RCL ≥ 4 **and** no defender alive. Otherwise keep today's behaviour (pause, wait it out).
 2. **Travel** on the fixed remote route (same exits as haulers: home (49,14) → remote (0,14)).
 3. **Engage only `owner === 'Invader'`.** Any player creep with ATTACK/RANGED, a second Invader, or an Invader healer ⇒ abort and go home (we never fight players: diplomacy with The Council).
-4. **Ranged + kite** (not melee): melee would trade 30–60/t adjacent; at range 3 a smallMelee only lands its 1 RA (10–20/t), which ≤ self-heal 12/t unboosted. When the target has ATTACK and range ≤ 2, step to the best neighbour (max range, avoid swamp −25, prefer open space); approach with `moveTo(range 3)` when range > 3. `rangedAttack` + `heal(self)` every tick (both allowed together).
-5. **Damaged < 60%** ⇒ retreat to W46N8 park (46,21); Invaders cannot follow across the border; the tower heals our hurt creeps; re-engage at ≥ 95% if the target still lives. No "standing still until death".
+4. **Ranged + kite** (not melee): melee would trade 30–60/t adjacent; at range 3 a smallMelee only lands its 1 RA (10–20/t), which ≤ self-heal 12/t unboosted. `rangedAttack` + `heal(self)` every tick (both allowed together).
+   Kiting (`src/utils/kite.js`, since 2026-10-15) for a melee target within 8: best of stay + 8 neighbours by a tick model, not plain range — small Invaders and the defender have equal speed (1 tile/t plain, ~5 t stuck per swamp tile) and melee lands on tick start. `adj(m)` = first tick the Invader can stand next to m (Dijkstra from it); a tile is safe if we leave it before that; "room" = tiles reachable through safe tiles (dead ends / swamp locks score low). Engage: enough room, then range 3. A plain tile next to our exit tile (0,14) counts as full room (one step leaves the room; NPCs never follow). If the Invader stops coming for 10 ticks (range 4–8 not shrinking) → `moveTo(range 3)`; beyond 8 → `moveTo(range 3)`.
+   On an exit tile with an Invader within 4 the defender fights instead of stepping toward the container.
+5. **Damaged < 60%** ⇒ retreat to W46N8 park (46,21); Invaders cannot follow across the border; the tower heals our hurt creeps; re-engage at ≥ 95% if the target still lives. No "standing still until death". While a melee Invader is within 3 the retreat kites (flee: safe steps closest to the exit) instead of pathing home through it; one tile from the exit it just steps out.
+   2026-10-15 death (defender83647721): boosted smallMelee camping the walled west-exit pocket (ringed by swamp); the old kite only ran at range ≤ 2, walked north into swamp, got caught, and the < 60% retreat `go()` walked back through the Invader. Fixed as above.
 6. **Done** (no Invader for 10 ticks after arrival, or TTL < 80) ⇒ walk to Spawn1 and `recycleCreep` (refund ≈1 000 energy dropped by the spawn; the queen/manager picks it up).
 7. **Early resume**: `managers/remote.js` lifts the Invader-only pause as soon as the room is visible with no combat hostiles ⇒ miners/haulers/reserver go back at once.
 
@@ -46,12 +49,21 @@ CPU: one `find(FIND_HOSTILE_CREEPS)` per tick in the remote room, ≤ 1 `moveTo`
 ## 4. Test (`node tests/defender_duel.js`, results in metrics/defender_duel.json)
 Real W45N8 terrain, engine bodies/damage/fatigue/boost rules, Invader AI per engine `findAttack.js`, spawn edge random (bottom/right), 20 runs each:
 
-| Scenario | Expect | Wins | Retreats | Defender died | Median ticks | Median dmg taken |
+| Scenario | Expect | Wins | Retreats | Defender died | Max melee hits | Median dmg taken |
 |---|---|---|---|---|---|---|
-| smallMelee | win | 19 | 0 | 1 | 48 | 140 |
-| smallMelee boosted (50% of raids) | win | 19 | 0 | 1 | 52 | 340 |
-| melee + ranged | retreat (not spawned) | 0 | 20 | 0 | – | 0 |
-| melee + healer | retreat (not spawned) | 0 | 20 | 0 | – | 0 |
+| smallMelee | win | 20 | 0 | 0 | 0 | 140 |
+| smallMelee boosted (50% of raids) | win | 20 | 0 | 0 | 0 | 340 |
+| melee + ranged | retreat (not spawned) | 0 | 20 | 0 | 0 | 0 |
+| melee + healer | retreat (not spawned) | 0 | 20 | 0 | 0 | 0 |
+| exit camp boosted (Invader at (1,17), we enter at (0,14) / (1,14)) | no death | 0 | 20 | 0 | 8 | 780 |
+| hurt (58%) flee past the camp | no death, 0 melee | 0 | 20 | 0 | 0 | 20 |
+| camp re-entry, Invader adjacent to the exit | no death | 0 | 20 | 0 | 8 | 660 |
+| melee not chasing, range 6 | win, 0 melee | 20 | 0 | 0 | 0 | 340 |
+| healthy, melee at range 4 | win, 0 melee | 20 | 0 | 0 | 0 | 340 |
+| diag: hurt in the open, chaser between us and home | not asserted | 0 | 0 | 20 | 9 | – |
+
+(2026-10-15: sim fatigue now follows engine order — move needs fatigue 0 at tick start, fatigue drops at tick end.) `tests/kite.js` unit-tests the step choice on real terrain.
+The exit camp is a trap at equal speed (no kiting room): the defender fights next to the exit, steps out at < 60%, heals at home and comes back (2+ rounds). The diag row is a known loss: once RA parts are gone (front of the body) the Invader's 20/t chip > our 12/t heal eats the MOVE parts and it catches us; engage avoids getting there (0 melee hits).
 
 `scripts/check.js` (build + 600-tick home sim) passes with the code present and the flag off.
 

@@ -22,6 +22,7 @@ console.log(`checks passed: ${fs.readdirSync(DIST).length} modules; sim 600 tick
 // threat FSM unit tests (incl. the code-level enable gate armed()) + defender duel on real terrain driven by the real FSM
 execSync('node ' + path.join(__dirname, '..', 'tests', 'threat_fsm.js'), { stdio: 'pipe' });
 execSync('node ' + path.join(__dirname, '..', 'tests', 'defender_duel.js'), { stdio: 'pipe' });
+execSync('node ' + path.join(__dirname, '..', 'tests', 'kite.js'), { stdio: 'pipe' });
 execSync('node ' + path.join(__dirname, '..', 'tests', 'queen_standby.js'), { stdio: 'pipe' });
 execSync('node ' + path.join(__dirname, '..', 'tests', 'spawn_upgraders.js'), { stdio: 'pipe' });
 execSync('node ' + path.join(__dirname, '..', 'tests', 'builder_remote.js'), { stdio: 'pipe' });
@@ -29,4 +30,4 @@ execSync('node ' + path.join(__dirname, '..', 'tests', 'spawn_rhauler.js'), { st
 execSync('node ' + path.join(__dirname, '..', 'tests', 'spawn_remote_gate.js'), { stdio: 'pipe' });
 execSync('node ' + path.join(__dirname, '..', 'tests', 'rcl5_gate.js'), { stdio: 'pipe' });
 execSync('node ' + path.join(__dirname, '..', 'tests', 'move_detour.js'), { stdio: 'pipe' });
-console.log('threat FSM tests + defender duel + queen standby + spawn upgraders + builder remote + spawn rhauler + spawn remote gate + rcl5 gate + move detour passed');
+console.log('threat FSM tests + defender duel + kite + queen standby + spawn upgraders + builder remote + spawn rhauler + spawn remote gate + rcl5 gate + move detour passed');
