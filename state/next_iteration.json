@@ -1,6 +1,6 @@
 {
-  "next_at": "2026-10-15T07:35:00+08:00",
-  "reason": "06:57 patrol: VERIFY fa9c1fa recovery mostly PASS + shipped 05c2664. Criteria: delivered 252274->259984 PASS; 2 rhaulers PASS; R income 1h 6.24 (borderline FAIL, recovering); storage 50-250->1200-1600 PASS; upg 30m 16.6/t PASS (>=12); link hub->ctl NOT seen FAIL (root cause: storageFloor=max(reserve,cap)=1800 blocked ferry while storage<=1600 and spawn full); no new defDeath PASS (still 83647829). Fix 05c2664: storageFloor=reserve when armed so hub link ferry can start. Threat SAFE since 83649097. VERIFY next: hub link energy/transfers, upg>=18/t 30m, R income>=7/t, queen waiting_feed/target_full drop, no new defender death.",
-  "written_at": "2026-10-15T06:57:00+08:00",
-  "commit": "05c2664"
+  "next_at": "2026-10-15T08:20:00+08:00",
+  "reason": "07:35 patrol: VERIFY 05c2664 PASS mostly. upg 30m 18.63/t, 1h 18.95 PASS (>=18); R income 1h 8.88 / 30m 8.75 PASS (>=7); delivered 259984->264104 PASS; 2 rhaulers PASS; storage 900-1600 (1200 live) PASS; no new defDeath (still 83647829) PASS; th SAFE since 83649097 PASS; hub link 37,29 live 170e (was 320 @05:43, only transferEnergy drains it -> hub->ctl sends happened) PASS-indirect; queen idle_history nonlegit 17.5%->16.0% (fa9c1fa->05c2664) PARTIAL, upgrader nonlegit 27.0->12.6%. Found: reserver83650835 spawned CLAIM1 at avail<1300 with res ~2900 -> m.claim2 (83650289) goes stale at 83651789 -> armed=false -> no defender + storageFloor reverts to cap 1800 (re-blocks hub ferry). Shipped 4538f79: remoteNext waits for CLAIM2 (skips reserver, falls through) when cap>=1300 && avail<1300 && res>=1000. VERIFY next: replacement reserver (~tick 83651405, TTL<=30) has 2 CLAIM; m.claim2 refreshed; armed stays true; reservation not dropping below ~2500; upg>=18 holds; no errors.",
+  "written_at": "2026-10-15T07:40:00+08:00",
+  "commit": "4538f79"
 }
