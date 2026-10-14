@@ -1,6 +1,6 @@
 {
-  "next_at": "2026-10-14T20:05:00+08:00",
-  "reason": "18:42 patrol: no code gap. 1h upgrade 17.2/t (18:00 hour 15.3) vs ideal 21.3 = natural replacement wave 17:58-18:36 (hauler, queen, reserver, rminer, rhauler, upgrader83639223, miner ~7 spawns in ~400t) drained storage to 50-350 and ctl container to 0 (upgraders waiting_feed 26-35%); before it 17:23-17:58 ran 22-24/t, and 18:42 already back to E 1300, storage 1250, ctl 807, 22.9/t. Income A 9.98 B 10 R 8.57 at theoretical, so no energy lost, only timing. Watch item: during the wave the room was below 1300 for ~250t (18:07-18:24) = defender readiness gap; acceptable now, cap 1800 at RCL5 eases it. Verify 20:05: 1h upgrade >=20, storage >=1300, 0 errors, res rising (4315 now). Then set the RCL5 watch: ETA ~21:15-21:45 (48.6k left at ~19.5/t, 4.0 s/tick); at RCL5 check tower 37,33 first site + 4 ext, then link plan A (hub 37,29, ctl 30,31) after the 10 ext.",
-  "written_at": "2026-10-14T18:44:00+08:00",
-  "commit": "bed57a8"
+  "next_at": "2026-10-14T21:15:00+08:00",
+  "reason": "20:12 patrol: no code gap. Verify from 18:44: 1h upgrade 17.9 FAIL (>=20) — dragged by 19:23-20:05 replacement/reserver wave (storage 1500→300, ctl often 0); before wave 18:46-19:18 ran 22-24/t. storage ~700-950 FAIL (>=1300) still recovering (was 1250 at 18:44). 0 errors PASS. res 4292 vs 4315 (oscillates around CLAIM2 gate 4000, not a bug). Bodies OK: rhauler 2×8C8M, upgrader 2×12W=24, claim2 stamped 83640593. Income A9.98 B9.97 R7.91 ≈ theoretical; model ideal 21.3 vs actual 1h 17.9 = timing only. LARGEST GAP deferred: spawn-wave energy wipe (reserver 1300 + rhauler/queen/rminer overlap) — no simple fix without hysteresis redesign; propose after RCL5. Paused-remote HOME work already in roles/remote.js. RCL5 watch: ~22.6k left, ETA ~21:20-21:45 at 18-22/t; at RCL5 tower 37,33 first + 4 ext (plan A links after 10 ext, STATIONARY_FILL false). Do NOT claim/attack/credits/safe mode.",
+  "written_at": "2026-10-14T20:13:00+08:00",
+  "commit": "3971688"
 }
