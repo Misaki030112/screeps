@@ -1,6 +1,6 @@
 {
-  "next_at": "2026-10-15T02:52:00+08:00",
-  "reason": "02:25 patrol: 94835de verified (hauler83646262 14C7M spawned, cont A 916 not overflowing, upgrade 1h 3.5->11.4/t; ctl cont 0 = 12W upgrader eats all A delivery, energy-bound during RCL5 build). New gap: miner83645106 on source A is starving-sized 4W1C2M (8/t of 10/t); its replacement (due ~83646565, ~02:38) would again be avail-sized. FIXED 63e4a5c: miner body from cap while another miner is alive (18/18 tests, sim live 0 errors, 0 game errors post-deploy). VERIFY: new source-A miner is 5W1C3M, income A ~10/t, no spawn stall (avail reaches 700); sites ext 31,34 (2975/3000), container 34,34, links 30,31 37,29, rampart 37,33; cap 1750. SAFE, LOW BustJetter scouts only, cpu ~3.8 bucket 10k.",
-  "written_at": "2026-10-15T02:27:00+08:00",
-  "commit": "63e4a5c"
+  "next_at": "2026-10-15T03:40:00+08:00",
+  "reason": "02:53 patrol: 63e4a5c verified (new source-A miner83646554 is 5W1C3M, income A ~9.9/t, ext 31,34 done, cap 1800 = 30/30 ext). New gap: builders starved-waiting at range 3 of container site 34,34 parked ON the trunk road (37,32 / 36,32); home hauler 14C7M hit stuck-2, repathed around creeps and committed to a swamp detour (36,22 / 34,23 / 33,23 / 32,24 / 31,25 / 31,26 / 32,26 unpaved swamp = ~10 ticks/tile loaded), ~40-50 extra ticks per A->ctl trip (pre-fix 25 min: ~70 loaded ticks stalled on swamp; hauler 's' repaths 38/3h, rhauler 38/3h). FIXED c526c0c: move.js keeps the blocked path when the creep-avoiding path costs >12 more than the blocked rest (stuck-4 swap clears own creeps); starved builder waits off roads (verified live: builder moved to 36,33). 3/3 move_detour tests, sim 0 errors, 0 game errors post-deploy. VERIFY: hauler83646262 loaded ticks on unpaved swamp ~0, A cycle median < 67 (rt ideal 56), ctl delivered/t up, upgrade 1h > 10.9/t; no new STUCK/osc; sites container 34,34 (3595/5000), links 30,31 37,29, rampart 37,33, road 35,33. SAFE, LOW BustJetter scouts only, cpu ~3.7 bucket 10k.",
+  "written_at": "2026-10-15T03:04:00+08:00",
+  "commit": "c526c0c"
 }
