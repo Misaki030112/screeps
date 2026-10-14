@@ -24,7 +24,10 @@ const B = {
   // home hauler with storage: the A->ctl route is fully paved, so 2 CARRY : 1 MOVE still moves 1 tile/tick loaded
   roadHauler: e => { const n = Math.max(1, Math.min(8, Math.floor(e / 150))); return [].concat(rep(2 * n, CARRY), rep(n, MOVE)); },
   queen: e => { const n = Math.max(2, Math.min(6, Math.floor(e / 150))); return [].concat(rep(2 * n, CARRY), rep(n, MOVE)); },
-  upgrader: (e, rcl) => { const w = Math.max(1, Math.min(rcl >= 8 ? 15 : 10, Math.floor((e - 100) / 100))); return [].concat(rep(w, WORK), [CARRY, MOVE]); },
+  // Upgraders walk once (spawn -> ctl spot, ~6 tiles) then sit, so 1 MOVE is enough. RCL4: 2x10W = 20 WORK was the binding
+  // limit (1h upgrade ~19/t, ctl container 1000+ unused, storage parked at the ferry floor so the 3rd-upgrader gate never opened;
+  // patrol 10-14 10:55). Cap 12 -> 12W1C1M = 1300 = RCL4 full cap, 2x12 = 24 WORK ~ model ideal 23.5.
+  upgrader: (e, rcl) => { const w = Math.max(1, Math.min(rcl >= 8 ? 15 : 12, Math.floor((e - 100) / 100))); return [].concat(rep(w, WORK), [CARRY, MOVE]); },
   builder: e => { const n = Math.max(1, Math.min(5, Math.floor(e / 200))); return [].concat(rep(n, WORK), rep(n, CARRY), rep(n, MOVE)); },
   filler: e => [CARRY, CARRY, CARRY, MOVE],
   manager: e => [].concat(rep(Math.min(16, Math.floor((e - 50) / 50)), CARRY), [MOVE]),
@@ -88,7 +91,7 @@ function remoteSpawn(room, E, go, rcl) {
     // (patrol 10-14 03:55: 3 rhaulers, cont ~20e). Keep energy for home upgraders / storage reserve instead.
   }
 }
-module.exports = { targets, rhaulerNeed, run(spawn) {
+module.exports = { targets, rhaulerNeed, B, run(spawn) {
   if (spawn.spawning) return;
   const room = spawn.room, cap = room.energyCapacityAvailable, avail = room.energyAvailable, rcl = room.controller.level;
   if (avail >= cap) room.memory.lastFull = Game.time;

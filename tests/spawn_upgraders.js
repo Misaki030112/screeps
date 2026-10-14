@@ -3,7 +3,7 @@
 // node tests/spawn_upgraders.js -> exits 1 on failure
 const path = require('path'), assert = require('assert');
 const src = p => path.join(__dirname, '..', 'src', p);
-Object.assign(global, { RESOURCE_ENERGY: 'energy', STRUCTURE_LINK: 'link', STRUCTURE_CONTAINER: 'container', STRUCTURE_SPAWN: 'spawn', STRUCTURE_EXTENSION: 'extension', STRUCTURE_TOWER: 'tower', _: { filter: () => [] } });
+Object.assign(global, { WORK: 'work', CARRY: 'carry', MOVE: 'move', RESOURCE_ENERGY: 'energy', STRUCTURE_LINK: 'link', STRUCTURE_CONTAINER: 'container', STRUCTURE_SPAWN: 'spawn', STRUCTURE_EXTENSION: 'extension', STRUCTURE_TOWER: 'tower', _: { filter: () => [] } });
 let W;
 const stub = (p, exp) => { require.cache[require.resolve(src(p))] = { id: p, filename: p, loaded: true, exports: exp }; };
 const P = { pos: { upgraders: [[29, 30], [30, 31], [31, 30]], controllerContainer: [30, 30], fillerContainerA: [35, 24], fillers: [], miners: [] }, raw: { stamps: {} }, any: {} };
@@ -27,6 +27,9 @@ const cases = [
   ['no storage: EMA only (pre-storage behaviour)', () => assert.strictEqual(up({ hasStorage: false, ema: 1400 }), 3)],
   ['capped by upgrader spots', () => assert.strictEqual(up({ storage: 9000, ema: 5000 }), 3)],
   ['sites: base 1', () => assert.strictEqual(up({ sites: 2, storage: 0 }), 1)],
+  ['RCL4 1300 cap -> 12W1C1M costing exactly 1300', () => { const b = S.B.upgrader(1300, 4); assert.strictEqual(b.filter(p => p === 'work').length, 12); assert.strictEqual(b.length, 14); }],
+  ['body shrinks with available energy (800 -> 7W)', () => assert.strictEqual(S.B.upgrader(800, 4).filter(p => p === 'work').length, 7)],
+  ['RCL8 still 15W max', () => assert.strictEqual(S.B.upgrader(5000, 8).filter(p => p === 'work').length, 15)],
 ];
 let fail = 0; for (const [n, f] of cases) { try { f(); console.log('ok  ', n); } catch (e) { fail++; console.log('FAIL', n, e.message); } }
 console.log(`spawn upgraders: ${cases.length - fail}/${cases.length}`); process.exit(fail ? 1 : 0);
