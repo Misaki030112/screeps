@@ -1,5 +1,6 @@
 // Queen standby source choice (src/roles/queen.js): when spawn/tower are full and the controller container is low,
-// ferry from storage only above max(defender reserve, spawn capacity) + carry, else filler container A above 400 + carry.
+// ferry from storage any SURPLUS above max(defender reserve, spawn capacity) (partial OK; never below floor),
+// else filler container A above 400 + carry.
 // node tests/queen_standby.js -> exits 1 on failure
 const path = require('path'), assert = require('assert');
 const src = p => path.join(__dirname, '..', 'src', p);
@@ -20,15 +21,16 @@ function run(o) {
   W = Object.assign({ reserve: 1300, cc: obj(30, 30, 200, 2000), fc: obj(35, 24, 0, 2000), st: obj(37, 31, 0, 1e6) }, o);
   const room = { name: 'W46N8', energyAvailable: 1300, energyCapacityAvailable: 1300, storage: W.st, memory: {} };
   const withdrawn = [];
-  const c = { room, memory: {}, store: Object.assign({ [RESOURCE_ENERGY]: 0 }, store(0, 600)), pos: { getRangeTo: () => 1, findInRange: () => [] },
-    withdraw: (t) => withdrawn.push(t === W.st ? 'storage' : t === W.fc ? 'fc' : '?'), transfer: () => 0 };
+  const c = { room, memory: {}, store: Object.assign({ [RESOURCE_ENERGY]: 0 }, store(0, 400)), pos: { getRangeTo: () => 1, findInRange: () => [] },
+    withdraw: (t, _r, amt) => withdrawn.push({ src: t === W.st ? 'storage' : t === W.fc ? 'fc' : '?', amt }), transfer: () => 0 };
   Q.run(c); return { withdrawn, why: W.why };
 }
 const cases = [
-  ['storage above floor+carry -> ferry from storage', () => assert.deepStrictEqual(run({ st: obj(37, 31, 2000, 1e6) }).withdrawn, ['storage'])],
-  ['storage below floor+carry, fc empty -> park (no drain)', () => { const r = run({ st: obj(37, 31, 1800, 1e6) }); assert.deepStrictEqual(r.withdrawn, []); assert.strictEqual(r.why, 'f'); }],
-  ['storage below floor, fc >= 400+carry -> ferry from fc', () => assert.deepStrictEqual(run({ st: obj(37, 31, 500, 1e6), fc: obj(35, 24, 1100, 2000) }).withdrawn, ['fc'])],
-  ['not armed (reserve 0): floor is spawn capacity 1300', () => { assert.deepStrictEqual(run({ reserve: 0, st: obj(37, 31, 1899, 1e6) }).withdrawn, []); assert.deepStrictEqual(run({ reserve: 0, st: obj(37, 31, 1900, 1e6) }).withdrawn, ['storage']); }],
+  ['storage full surplus -> ferry full carry from storage', () => assert.deepStrictEqual(run({ st: obj(37, 31, 2000, 1e6) }).withdrawn, [{ src: 'storage', amt: 400 }])],
+  ['storage in old dead-band (floor..floor+carry) -> partial ferry', () => assert.deepStrictEqual(run({ st: obj(37, 31, 1500, 1e6) }).withdrawn, [{ src: 'storage', amt: 200 }])],
+  ['storage exactly at floor -> park (no drain)', () => { const r = run({ st: obj(37, 31, 1300, 1e6) }); assert.deepStrictEqual(r.withdrawn, []); assert.strictEqual(r.why, 'f'); }],
+  ['storage below floor, fc >= 400+carry -> ferry from fc', () => assert.deepStrictEqual(run({ st: obj(37, 31, 500, 1e6), fc: obj(35, 24, 1100, 2000) }).withdrawn, [{ src: 'fc', amt: undefined }])],
+  ['not armed (reserve 0): floor is spawn capacity 1300', () => { assert.deepStrictEqual(run({ reserve: 0, st: obj(37, 31, 1300, 1e6) }).withdrawn, []); assert.deepStrictEqual(run({ reserve: 0, st: obj(37, 31, 1301, 1e6) }).withdrawn, [{ src: 'storage', amt: 1 }]); }],
   ['ctl container not low -> no ferry', () => assert.deepStrictEqual(run({ st: obj(37, 31, 9000, 1e6), cc: obj(30, 30, 1500, 2000) }).withdrawn, [])],
 ];
 let fail = 0; for (const [n, f] of cases) { try { f(); console.log('ok  ', n); } catch (e) { fail++; console.log('FAIL', n, e.message); } }

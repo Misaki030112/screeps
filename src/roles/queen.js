@@ -44,18 +44,23 @@ function fillRoute(c) {
   return true;
 }
 // Room full (52% of queen time historically): ferry surplus -> controller container while it is low.
-// Source: storage above one full spawn refill (>= defender reserve), else filler container A above 400 for the next refill.
+// Source: storage SURPLUS above one full spawn refill (>= defender reserve), else filler container A above 400 for the next refill.
 // Without the storage leg source B + remote energy never reached the controller (10-14 06:58: upgrade 9.7/t, storage
 // spent on spawns, upgraders waiting_feed ~50%); with no floor it drained storage to ~100 (05:50), hence the floor.
+// Require floor+carry (e7c3966) left a dead band: storage 1300..1699 with ctl empty and upgraders waiting_feed while the
+// queen parked target_full (patrol 10-14 13:35: storage 1473-1673, ctl 0 for ~40t stretches, upgrade avg ~18 vs 24 when fed).
+// Ferry any surplus above the floor (partial withdraw); never dip below the floor.
 function storageFloor(room) { return Math.max(require('../managers/threat').reserve(room.name), room.energyCapacityAvailable); }
 function standby(c, room, P) {
   const H = require('./hauler'); if (!H.ctlLow(room, P)) return false;
   const [cx, cy] = P.pos.controllerContainer, [fx, fy] = P.pos.fillerContainerA;
   if (c.store[RESOURCE_ENERGY] > 0) { const k = rc.at(room, cx, cy, STRUCTURE_CONTAINER); if (H.handoff(c)) return true; if (move.to(c, cx, cy, 1)) c.transfer(k, RESOURCE_ENERGY); return true; }
   const cap = c.store.getCapacity(), st = room.storage, a = rc.at(room, fx, fy, STRUCTURE_CONTAINER);
-  const src = st && st.store[RESOURCE_ENERGY] >= storageFloor(room) + cap ? st : a && a.store[RESOURCE_ENERGY] >= 400 + cap ? a : null;
+  const floor = storageFloor(room);
+  const surplus = st ? st.store[RESOURCE_ENERGY] - floor : 0;
+  const src = surplus > 0 ? st : a && a.store[RESOURCE_ENERGY] >= 400 + cap ? a : null;
   if (!src) return false;
-  if (move.to(c, src.pos.x, src.pos.y, 1)) c.withdraw(src, RESOURCE_ENERGY); return true;
+  if (move.to(c, src.pos.x, src.pos.y, 1)) c.withdraw(src, RESOURCE_ENERGY, src === st ? Math.min(cap, surplus) : undefined); return true;
 }
 module.exports = { fillRoute, storageFloor, run(c) {
   const room = c.room, P = plan.get(room.name);

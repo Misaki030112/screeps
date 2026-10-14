@@ -1,6 +1,6 @@
 {
-  "next_at": "2026-10-14T13:30:00+08:00",
-  "reason": "9f9f37e (tick 83633872): room_stats now logs storage / ctl container / ctlEma (spawn-gate inputs). 8d19ec0 VERIFY 12:30: no single-upgrader gap (count 2->3 at 83633347 with a 12W via the extra-upgrader gate, 3->2 at 83633685 when 10W died); pre-spawn path itself not yet exercised. Verify 13:30: upgrader83633152 (11W, dies ~83634690 ~13:25) replaced by a 12W spawned at TTL<=69 (~83634621) BEFORE death -> 2x12W=24 WORK; upgrade/t since 2u ~22.2 -> >=23; storage/ctl/ctl_ema columns non-null every row; if a 3rd upgrader spawns, confirm storage>=2300 and ctl_ema>=700 at that tick; <=3 upgraders; rhaulers <=3; 0 errors.",
-  "written_at": "2026-10-14T12:33:00+08:00",
-  "commit": "9f9f37e"
+  "next_at": "2026-10-14T14:30:00+08:00",
+  "reason": "VERIFY 8d19ec0 11W->12W pre-spawn PASS: upgrader83634621 (12W, work med 108) born 83634622 BEFORE upgrader83633152 (11W, work med 99) death 83634689; overlap 67t; after death 2x12W. storage/ctl/ctl_ema non-null every 9f9f37e row; <=3 upgraders; rhaulers<=3; 0 errors. upgrade/t target >=23 FAIL: avg ~18 (energy-bound); when ctl fed hits 24/t. Root cause: queen ferry required storage>=floor+carry (1700) leaving dead-band 1300-1699 with ctl empty (seen 1473-1673 / ctl0 stretches). FIX: ferry any surplus above floor via partial withdraw. Verify 14:30: with storage in 1300-1700 and ctlLow, queen withdraws partial and ctl stops flatlining 0; upgrade/t (post-deploy window) >=22; storage never <1300 from ferry; <=3 upgraders; 0 errors.",
+  "written_at": "2026-10-14T13:41:10+08:00",
+  "commit": "PENDING"
 }
