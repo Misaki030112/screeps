@@ -67,7 +67,7 @@ def on_message(ws, msg):
                     st = json.loads(l[6:]); live['stats'] = st; last_stats[0] = time.time()
                     for rn, rm in (st.get('rooms') or {}).items():
                         ingest.put('room_stats', (utcnow(), st.get('t'), rn, rm.get('rcl'), rm.get('progress'), rm.get('progressTotal'), rm.get('energy'), rm.get('energyCap'),
-                            rm.get('sites'), rm.get('hostiles'), rm.get('safeMode'), st.get('cpu'), st.get('b'), st.get('tr'), (st.get('gcl') or {}).get('progress'), json.dumps(st.get('creeps')), ingest.commit()))
+                            rm.get('sites'), rm.get('hostiles'), rm.get('safeMode'), st.get('cpu'), st.get('b'), st.get('tr'), (st.get('gcl') or {}).get('progress'), json.dumps(st.get('creeps')), ingest.commit(), rm.get('storage'), rm.get('ctl'), rm.get('ctlEma')))
                 except Exception as ex: append('errors.log', f'{stamp()} [listener] bad STATS {ex}: {l[:200]}')
                 continue
             k = l.split(' ', 1)[0]

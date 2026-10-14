@@ -34,6 +34,8 @@ CREATE TABLE IF NOT EXISTS room_stats (
   gcl_progress double precision, creeps jsonb, commit text);
 SELECT create_hypertable('room_stats', by_range('ts', INTERVAL '7 days'), if_not_exists => true);
 CREATE UNIQUE INDEX IF NOT EXISTS room_stats_uq ON room_stats (room, tick, ts);
+-- spawn-gate inputs (since 2026-10-14 12:30): storage energy, controller container energy, ctlEma (300-tick EMA used by spawn.js)
+ALTER TABLE room_stats ADD COLUMN IF NOT EXISTS storage int, ADD COLUMN IF NOT EXISTS ctl int, ADD COLUMN IF NOT EXISTS ctl_ema int;
 
 -- alerts, errors, STUCK, LAYOUT, listener events
 CREATE TABLE IF NOT EXISTS events (
