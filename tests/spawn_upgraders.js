@@ -45,6 +45,10 @@ const cases = [
     assert.strictEqual(S.bodyEnergy('builder', 300, 1650, 300, true, true), 300);
     assert.strictEqual(S.bodyEnergy('hauler', 1650, 1650, 1650, true, true), 1050);
     assert.strictEqual(S.bodyEnergy('queen', 300, 1650, 420, false, true), 420); }],
+  ['starving: storage-era home hauler sized from cap (14C7M), pre-storage hauler from avail', () => {
+    const b = S.B.roadHauler(S.bodyEnergy('hauler', 300, 1700, 300, true, true));
+    assert.strictEqual(b.filter(p => p === 'carry').length, 14); assert.strictEqual(b.filter(p => p === 'move').length, 7);
+    assert.strictEqual(S.bodyEnergy('hauler', 300, 1300, 300, true, false), 300); }],
   ['RCL8 still 15W max', () => assert.strictEqual(S.B.upgrader(5000, 8).filter(p => p === 'work').length, 15)],
 ];
 let fail = 0; for (const [n, f] of cases) { try { f(); console.log('ok  ', n); } catch (e) { fail++; console.log('FAIL', n, e.message); } }

@@ -119,9 +119,13 @@ function remoteSpawn(room, go, avail) {
 // it sits 1500 ticks on one of 1-2 slots, so a 300e 2W upgrader caps upgrade at ~2/t for its whole life. It is the last home
 // role before builders, so waiting for cap blocks nothing above it (patrol 10-15 00:50: RCL5 build drain, starving since
 // 83643025, upgrader died unreplaced, the next spawn would have been sized to avail ~300).
+// Same for the storage-era home hauler (source A -> ctl container): it does not refill the spawn (queen does, from storage),
+// and a starving-sized 6C3M (300 carry / ~70t cycle = 4.3/t of source A's 10/t) starved the 12W upgrader for 1500 ticks
+// while container A piled up (patrol 10-15 01:43).
 function bodyEnergy(role, E, cap, avail, haulerAlive, hasStorage) {
   if (role === 'queen' && !haulerAlive) return Math.max(300, avail);
-  return Math.min(role === 'upgrader' ? cap : E, role === 'hauler' ? (hasStorage ? 1050 : 800) : role === 'queen' ? 600 : 3000);
+  const fromCap = role === 'upgrader' || (role === 'hauler' && hasStorage);
+  return Math.min(fromCap ? cap : E, role === 'hauler' ? (hasStorage ? 1050 : 800) : role === 'queen' ? 600 : 3000);
 }
 module.exports = { targets, rhaulerNeed, remoteNext, retiring, B, reserverBody, nearFull, bodyEnergy, run(spawn) {
   if (spawn.spawning) return;
