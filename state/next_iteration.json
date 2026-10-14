@@ -1,6 +1,6 @@
 {
-  "next_at": "2026-10-15T01:30:00+08:00",
-  "reason": "00:50 patrol: rminer spawned (abaf0dd working), 1 rhauler, reserver res 3343. Home energy-bound by RCL5 build (3 ext + container 34,34 + link 30,31 sites, builders waiting_feed ~50%), starving since 83643025 (lastFull never moved). Upgrader died unreplaced (replacement wave hauler/queen/rminer first) -> upgrade 1h 1.65/t, ctl container 508 parked. FIXED 694020a: upgrader body sized from cap even when starving (would have been a 2W 300e upgrader for 1500t). VERIFY: rhauler #2 then 12W upgrader spawned (not tiny), ctl container draining, upgrade/t back to >=10, ext sites done -> cap 1800, lastFull moves. Watch: home road hauler is starving-sized 6C3M (300 carry vs ~660 needed) - if container A piles >1000, size hauler from cap too. SAFE, BustJetter scouts LOW only, 0 errors, cpu ~3-4 bucket 10k.",
-  "written_at": "2026-10-15T00:53:00+08:00",
-  "commit": "694020a"
+  "next_at": "2026-10-15T02:25:00+08:00",
+  "reason": "01:43 patrol: 694020a verified (12W upgrader83645399 spawned, rhauler #2 spawned, remote res 3178 cont 30). New gap: lone home hauler is starving-sized 6C3M (300 carry / ~70t = 4.3/t vs source A 10/t) -> ctl container drained 508->0, container A 802 rising, upgrade 1h 3.5/t vs ideal 21.3. FIXED 94835de: storage-era home hauler body from cap (14C7M, capped 1050) even when starving (17/17 tests, sim ok, 0 errors post-deploy). Self-correct path: backlog>=1500 spawns 2nd hauler (now 14C7M) or replacement at TTL ~93 (hauler83644711 dies ~83646237). VERIFY: a 14C7M hauler spawned, container A not overflowing 2000, ctl container refilling, upgrade/t climbing toward >=10; remaining RCL5 sites ext 31,34 32,33 + container 34,34 + links 30,31 37,29; cap 1700 (28 ext). SAFE, LOW BustJetter scouts only, cpu ~3.2 bucket 10k.",
+  "written_at": "2026-10-15T01:46:00+08:00",
+  "commit": "94835de"
 }
