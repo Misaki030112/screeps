@@ -75,7 +75,12 @@ function rhaulerNeed(liveCount, allCount, target) {
 }
 // Remote mining (managers/remote.js): after home miners/queen/haulers, before fillers/upgraders/builders.
 // CLAIM1 nets 0 reservation ticks; a low buffer never recovers unless two CLAIM1 overlap (+1/t) or we reach CLAIM2 at RCL4.
-function remoteSpawn(room, E, go, rcl) {
+// CLAIM2 costs 1300: size the body from avail (not E=cap), else avail 650-1299 requests CLAIM2, returns
+// ERR_NOT_ENOUGH_ENERGY and blocks rhauler/rminer (patrol 10-14 23:20: remotes dead, energy stuck ~1200 during RCL5 build).
+function reserverBody(avail) { return avail >= 1300 ? [CLAIM, CLAIM, MOVE, MOVE] : [CLAIM, MOVE]; }
+// lastFull must move during builds that rarely hit exact cap (extensions/builders siphon).
+function nearFull(avail, cap) { return avail >= Math.max(0, cap - 100); }
+function remoteSpawn(room, E, go, rcl, avail) {
   const remote = require('./remote');
   for (const r in remote.CFG) {
     if (remote.CFG[r].home !== room.name) continue;
@@ -87,7 +92,7 @@ function remoteSpawn(room, E, go, rcl) {
     const live = role => _.filter(Game.creeps, c => c.memory.remote === r && c.memory.role === role && (c.spawning || c.ticksToLive > (role === 'reserver' ? resLead : 120))).length;
     const nRes = _.filter(Game.creeps, c => c.memory.remote === r && c.memory.role === 'reserver' && (c.spawning || (c.ticksToLive || 1500) > 30)).length;
     // Reserver before haulers when buffer is thin so the 650 cost is not spent on a 3rd rhauler
-    if (nRes < wantRes && res < 4000 && E >= 650) return go('reserver', E >= 1300 ? [CLAIM, CLAIM, MOVE, MOVE] : [CLAIM, MOVE], { remote: r });
+    if (nRes < wantRes && res < 4000 && avail >= 650) return go('reserver', reserverBody(avail), { remote: r });
     // RCL4 target is 2×8C8M. Early-replace at TTL≤120: both rhaulers born ~50t apart age out together and
     // would spawn 2 replacements on top of 2 dying → 4 creeps / ~1600e wipe (patrol 10-14 09:51: energy 1300→4).
     // Cap total (dying+new) at target+1 so only one overlap is in flight.
@@ -98,10 +103,10 @@ function remoteSpawn(room, E, go, rcl) {
     // (patrol 10-14 03:55: 3 rhaulers, cont ~20e). Keep energy for home upgraders / storage reserve instead.
   }
 }
-module.exports = { targets, rhaulerNeed, retiring, B, run(spawn) {
+module.exports = { targets, rhaulerNeed, retiring, B, reserverBody, nearFull, run(spawn) {
   if (spawn.spawning) return;
   const room = spawn.room, cap = room.energyCapacityAvailable, avail = room.energyAvailable, rcl = room.controller.level;
-  if (avail >= cap) room.memory.lastFull = Game.time;
+  if (nearFull(avail, cap)) room.memory.lastFull = Game.time; // cap-100: RCL5 build rarely hits exact cap
   const starving = Game.time - (room.memory.lastFull || Game.time) > 300;
   const E = starving ? Math.max(300, avail) : cap;
   const mine = _.filter(Game.creeps, c => c.memory.home === room.name || (!c.memory.home && c.room.name === room.name));
@@ -144,11 +149,18 @@ module.exports = { targets, rhaulerNeed, retiring, B, run(spawn) {
   room.memory.roleTargets = T;
   for (const role of ['queen', 'hauler', 'REMOTE', 'filler', 'manager', 'upgrader', 'builder']) {
     if (role === 'REMOTE') {
-      // Critical reservation: still spawn even when home is starving (CLAIM1 buffer ~13 ticks is fragile)
-      let criticalRes = false;
+      // Critical reservation: still spawn even when home is starving (CLAIM1 buffer ~13 ticks is fragile).
+      // Also restore remote when SAFE but zero remote creeps — starving during RCL5 build (cap never hit)
+      // otherwise blackouts income for hours (patrol 10-14 23:20: remotes gone after 23:07, cont 1610 idle).
+      let criticalRes = false, needRemote = false;
       const remote = require('./remote');
-      for (const rr in remote.CFG) { if (remote.CFG[rr].home !== room.name) continue; const mm = remote.mem(rr); const rv = (mm.res && mm.res.ticksToEnd) || 0; if (rv > 0 && rv < 100) criticalRes = true; }
-      if (!starving || criticalRes) { const r = remoteSpawn(room, E, go, rcl); if (r !== undefined) return r; } continue;
+      for (const rr in remote.CFG) {
+        if (remote.CFG[rr].home !== room.name) continue;
+        const mm = remote.mem(rr); const rv = (mm.res && mm.res.ticksToEnd) || 0;
+        if (rv > 0 && rv < 100) criticalRes = true;
+        if (!remote.paused(rr) && !_.some(Game.creeps, c => c.memory.remote === rr && c.memory.role !== 'defender')) needRemote = true;
+      }
+      if (!starving || criticalRes || needRemote) { const r = remoteSpawn(room, E, go, rcl, avail); if (r !== undefined) return r; } continue;
     }
     if ((count[role] || 0) >= T[role]) continue;
     const mem = {};
