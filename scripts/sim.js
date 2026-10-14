@@ -103,6 +103,7 @@ function mkCreep(name, body, x, y, memory) {
     pickup() { return 0; }, drop() { c.store.energy = 0; return 0; },
     harvest(s) { if (range(c.pos, s.pos) > 1) return C.ERR_NOT_IN_RANGE; const n = c.getActiveBodyparts('work') * 2; const cont = Object.values(objs).find(o => o.structureType === 'container' && o.pos.x === c.pos.x && o.pos.y === c.pos.y);
       if (c.store.getFreeCapacity() > 0) c.store.energy = Math.min(c.store.getCapacity(), c.store.energy + n); else if (cont) cont.store.energy = Math.min(2000, cont.store.energy + n); c.acts++; return 0; },
+    signController(ctl, text) { if (range(c.pos, ctl.pos) > 1) return C.ERR_NOT_IN_RANGE; ctl.sign = { username: (c.owner || {}).username, text }; return 0; },
     upgradeController(ctl) { if (range(c.pos, ctl.pos) > 3) return C.ERR_NOT_IN_RANGE; const n = Math.min(c.store.energy, c.getActiveBodyparts('work')); c.store.energy -= n; ctl.progress += n; c.acts++; return 0; },
     build(s) { if (range(c.pos, s.pos) > 3) return C.ERR_NOT_IN_RANGE; const n = Math.min(c.store.energy, c.getActiveBodyparts('work') * 5); c.store.energy -= n; s.progress += n; c.acts++;
       if (s.progress >= s.progressTotal) { sites = sites.filter(z => z !== s); mkStruct(s.structureType, s.pos.x, s.pos.y, true); log.push(`BUILT ${s.structureType} ${s.pos.x},${s.pos.y}`); } return 0; },
