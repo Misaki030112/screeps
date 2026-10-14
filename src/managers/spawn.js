@@ -58,6 +58,11 @@ function targets(room, count, backlog, ctlEnergy, sites) {
   T.builder = sites ? (sites > 3 && room.energyCapacityAvailable >= 1300 ? 2 : 1) : (st ? 0 : (rcl <= 4 ? 1 : 0));
   return T;
 }
+// Pure rule for remote hauler early-replace (exported for unit tests).
+function rhaulerNeed(liveCount, allCount, target) {
+  target = target === undefined ? 2 : target;
+  return liveCount < target && allCount < target + 1;
+}
 // Remote mining (managers/remote.js): after home miners/queen/haulers, before fillers/upgraders/builders.
 // CLAIM1 nets 0 reservation ticks; a low buffer never recovers unless two CLAIM1 overlap (+1/t) or we reach CLAIM2 at RCL4.
 function remoteSpawn(room, E, go, rcl) {
@@ -73,14 +78,17 @@ function remoteSpawn(room, E, go, rcl) {
     const nRes = _.filter(Game.creeps, c => c.memory.remote === r && c.memory.role === 'reserver' && (c.spawning || (c.ticksToLive || 1500) > 30)).length;
     // Reserver before haulers when buffer is thin so the 650 cost is not spent on a 3rd rhauler
     if (nRes < wantRes && res < 4000 && E >= 650) return go('reserver', E >= 1300 ? [CLAIM, CLAIM, MOVE, MOVE] : [CLAIM, MOVE], { remote: r });
-    if (live('rhauler') < 2) return go('rhauler', B.hauler(Math.min(E, 800)), { remote: r });
+    // RCL4 target is 2×8C8M. Early-replace at TTL≤120: both rhaulers born ~50t apart age out together and
+    // would spawn 2 replacements on top of 2 dying → 4 creeps / ~1600e wipe (patrol 10-14 09:51: energy 1300→4).
+    // Cap total (dying+new) at target+1 so only one overlap is in flight.
+    const allRh = _.filter(Game.creeps, c => c.memory.remote === r && c.memory.role === 'rhauler').length;
+    if (rhaulerNeed(live('rhauler'), allRh)) return go('rhauler', B.hauler(Math.min(E, 800)), { remote: r });
     if (live('rminer') < 1) { const w = Math.min(5, Math.floor((Math.min(E, 700) - 200) / 100)); return go('rminer', [].concat(rep(w, WORK), [CARRY], rep(3, MOVE)), { remote: r }); }
-    // RCL4 target is 2×8C8M remote haulers (user preference). A 3rd was opportunistic on cont>1200 but left
-    // waiting_pickup idle while the container sat near empty (patrol 10-14 03:55: 3 rhaulers, cont ~20e).
-    // Keep the energy for home upgraders / storage reserve instead.
+    // A 3rd was opportunistic on cont>1200 but left waiting_pickup idle while the container sat near empty
+    // (patrol 10-14 03:55: 3 rhaulers, cont ~20e). Keep energy for home upgraders / storage reserve instead.
   }
 }
-module.exports = { targets, run(spawn) {
+module.exports = { targets, rhaulerNeed, run(spawn) {
   if (spawn.spawning) return;
   const room = spawn.room, cap = room.energyCapacityAvailable, avail = room.energyAvailable, rcl = room.controller.level;
   if (avail >= cap) room.memory.lastFull = Game.time;
