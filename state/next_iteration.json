@@ -1,6 +1,6 @@
 {
-  "next_at": "2026-10-14T10:45:00+08:00",
-  "reason": "8f7870d (tick 83631574): rhauler early-replace overlap capped at target+1 (was live<2 only \u2192 both aging rhaulers spawned 2 replacements \u2192 4 creeps / energy 1300\u21924 @09:51). tests/spawn_rhauler.js 8/8; check+sim 0 err. VERIFY 09:40 goals: 0 errors PASS; upgrader waiting_feed ~4\u20136% PASS (<25%); ctl container 340\u2013900 PASS (>300); upgraders=2 while storage<2300 PASS; storage 1000\u21921753\u21921453 after spawn wave (climbing but not yet \u22652300 for 3rd). Live @09:58: RCL4 208k/405k (~51%), 1h upgrade ~18/t vs ideal 23.5 (WORK-bound 20), energy recovering ~713/1300, storage 1453, ctl 751, roles m2 h1 q1 u2 + rminer1 rhauler4(wave) reserver gated res~4186, threat SAFE, delivered 139924, cont ~50e, cpu~4 bucket 10k, alerts LOW BustJetter scouts dmg0 only. Open: storage\u2192\u22652300 unlock 3rd upgrader (ideal WORK~23); R income 5.3 vs 10 (unpaved 20 route tiles + cont empty); e053428 pause-behaviour full verify only on next Invader pause. Verify 10:45: 0 errors; rhauler count \u22643 during any replacement; energy not wiped to <100 on replace; waiting_feed <25%; storage climbing toward 2300; no 3rd upgrader while storage<2300.",
-  "written_at": "2026-10-14T09:58:27+08:00",
-  "commit": "8f7870d"
+  "next_at": "2026-10-14T11:40:00+08:00",
+  "reason": "526f36f (tick 83632486): RCL4 upgrader body 12W1C1M (cap 10->12; 2x12=24 WORK ~ ideal 23.5). Gap found 10:55: 1h upgrade 19.2/t WORK-bound (2x10W=20) while ctl container held 1008 and storage parked ~1483 at ferry floor so the 3rd-upgrader gate (2300) never opens; recent R delivered ~7.8/t (139924->146924 in ~890t), rminer harvest 8.1-8.7/t. 8f7870d rhauler cap not yet exercised (no replacement wave since 10:00; rhaulers 2 steady). Verify 11:40: upgrader83631342 (dies ~83632842) replaced by 12W1C1M; upgrade/t rising toward 22-24 once both are 12W (second ~83633650); waiting_feed <25%; storage not drained below floor; rhauler count <=3 during replacement (rhauler83631479 dies ~83632979); energy not wiped <100 on replace; 0 errors.",
+  "written_at": "2026-10-14T11:00:00+08:00",
+  "commit": "526f36f"
 }
