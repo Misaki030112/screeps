@@ -39,10 +39,10 @@ function targets(room, count, backlog, ctlEnergy, sites) {
   // With storage, miner B dumps adjacent (38,32→37,31) so only source A needs a hauler: 1×14C7M road hauler (see body note below).
   // Pre-storage keep 2 so both containers drain. Backlog can still add one extra.
   T.hauler = rcl >= 7 && links >= 4 ? 0 : (rcl >= 6 && links >= 3 ? 1 : (st ? Math.min(2, 1 + Math.floor(backlog / 1500)) : Math.min(4, 2 + Math.floor(backlog / 1500))));
-  const fillersOn = rcl >= 5 && links >= 2;
+  const fillersOn = plan.STATIONARY_FILL && rcl >= 5 && links >= 2; // off: queen regime at RCL5+ (docs/RCL5.md)
   T.queen = fillersOn ? 0 : 1;
   T.filler = fillersOn ? 4 : 0;
-  T.manager = st && rcl >= 5 ? 1 : 0;
+  T.manager = plan.STATIONARY_FILL && st && rcl >= 5 ? 1 : 0; // manager tile 36,30 is also a queen stop
   // Supply-follows-demand on the smoothed ctl container level (ctlEnergy = ~300-tick EMA): an empty container means upgraders
   // outnumber the feed. A snapshot rule (3 + level/700) spawned 4x7 WORK for ~11/t feed -> upgraders idle 55% waiting_feed (10-13 17:30).
   // With storage, the 3rd+ upgrader needs real surplus: storage SURPLUS above the queen's ferry floor (max(defender reserve, cap)).

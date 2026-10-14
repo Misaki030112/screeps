@@ -118,10 +118,10 @@ We match the conservative early pattern today; Overmind’s fight-remotes patter
 
 ## Checklist before novice ends (deadline **2026-10-25** review)
 
-- [ ] RCL4 storage + rampart target 50k
+- [x] RCL4 storage + rampart target 50k — done 2026-10-14 (16 ramparts 50–57k)
 - [ ] Tower energy discipline (≥800 combat reserve) — **done 2026-10-13**
 - [ ] Attack alerts include `safeModeAvailable` — **done 2026-10-13**
 - [ ] Decide remote Invader-defender policy (proposal above)
-- [ ] RCL5 tower 2
+- [ ] RCL5 tower 2 — first RCL5 site since 2026-10-14 review (build order tower→extension); RCL5 assessment in `docs/RCL5.md`
 - [ ] Min-cut / outer ramparts design pass
 - [ ] Confirm safe-mode decision tree with Misaki (when she would activate)

@@ -92,6 +92,7 @@ the v1 search-based code use 1.4–2.8.)
   controller link **(30,31)** (RCL7); haulers deliver from (31,29)/(30,29)/(29,29).
 - Pre-RCL5 there are no stationary fillers yet: one **queen** walks the fixed stops (filler tiles of stamp A + hub tile)
   and haulers help fill when the room is not full. Stationary fillers + manager switch on at RCL5 (links).
+  **2026-10-14:** switch held off (`plan.STATIONARY_FILL=false`) — the RCL5 slice lacks a storage→ctl carrier and stamp-B/tower-2 filling; link-plan options in `docs/RCL5.md`.
 - Removed for v2: v1 roads (35,25),(33,26) immediately; v1 extensions (36,25),(38,27),(38,29),(34,31) are destroyed
   automatically **only after ≥5 non-conflicting extensions are built** (energy capacity never drops below 550).
   (36,31) stays (hub extension). Old off-plan roads are no longer repaired and will decay; container (31,11) is kept as

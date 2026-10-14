@@ -16,8 +16,13 @@ function build(name) {
   const standing = new Set([...pos.fillers, pos.manager, ...pos.upgraders, ...pos.miners].map(([x, y]) => key(x, y)));
   return { raw: p, any, ramparts, pos, standing, byRcl };
 }
+// RCL5+ fill network (links, stationary fillers, manager). OFF: the RCL2-4 regime continues at RCL5+ (queen fills every
+// extension/tower incl. stamp B and ferries storage->ctl) and link sites are not placed. Turning it on as built would drop the
+// queen with nothing to replace its storage->ctl ferry or fill stamp B / tower 2 (docs/RCL5.md, review 10-14): needs Misaki's
+// link-plan decision + the missing roles first.
+const STATIONARY_FILL = false;
 module.exports = {
-  key,
+  key, STATIONARY_FILL,
   get(name) { if (!(name in cache)) cache[name] = build(name); return cache[name]; },
   // wanted structures up to rcl: [{type,x,y,rcl}]
   upTo(name, rcl) { const P = this.get(name); return P ? Object.values(P.any).filter(s => s.rcl <= rcl) : []; },

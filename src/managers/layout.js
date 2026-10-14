@@ -5,7 +5,8 @@
 const plan = require('../utils/plan');
 const move = require('../utils/move');
 const rc = require('../utils/roomcache');
-const PRIORITY = ['spawn', 'extension', 'tower', 'container', 'storage', 'link', 'road', 'rampart', 'terminal', 'extractor', 'lab', 'factory', 'powerSpawn', 'nuker', 'observer'];
+// Tower before extensions (Overmind BuildPriorities): with MAX_SITES 5, RCL5 tower 2 would otherwise wait for ~7 of 10 extensions.
+const PRIORITY = ['spawn', 'tower', 'extension', 'container', 'storage', 'link', 'road', 'rampart', 'terminal', 'extractor', 'lab', 'factory', 'powerSpawn', 'nuker', 'observer'];
 const MAX_SITES = 5, MIN_EXT = 5, CAP_FLOOR = 650;
 const NEVER_DESTROY = new Set([STRUCTURE_SPAWN, STRUCTURE_TOWER, STRUCTURE_STORAGE, STRUCTURE_TERMINAL, STRUCTURE_CONTROLLER, STRUCTURE_RAMPART]);
 const WALKABLE = new Set([STRUCTURE_ROAD, STRUCTURE_CONTAINER, STRUCTURE_RAMPART]);
@@ -61,6 +62,7 @@ module.exports = { run(room) {
   for (const type of PRIORITY) {
     if (budget <= 0) break;
     if (type === 'road' && (extSites || hostile)) continue;
+    if (type === 'link' && !plan.STATIONARY_FILL) continue; // link plan pending (docs/RCL5.md)
     if (type === 'rampart') {
       if (!hasTower || !hasStorage) continue; // after storage is up (see site cleanup above)
       for (const k in P.ramparts) {

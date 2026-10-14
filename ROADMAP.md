@@ -3,21 +3,22 @@
 Novice zone ends **2026-10-28 03:33 UTC+8**. Defence detail: `docs/DEFENSE.md` (strategy review 2026-10-13).
 **Safe mode: NEVER auto-activate** — alert Misaki.
 
-## Priority now (2026-10-13)
+## Priority now (2026-10-14 strategy review)
 
-1. ✅ Layout v2 live; RCL3 10/10 v2 extensions; tower (36,29) + spawn/tower ramparts (~27k ≥ 20k target).
-2. ✅ Static miners + haulers + queen; TimescaleDB/Grafana + creep audit.
-3. ✅ Remote W45N8 mining (approved); safety pause/flee on combat.
-4. ⏳ **RCL4 today** (ETA ~15:50–17:30): storage (37,31), hub extensions, CLAIM2 reserver, rampart target → 50k. Do not starve upgrade for optional combat.
-5. ⏳ **Remote resume after Invader** (SAFE since 83614741): re-reserving (ticks climbing), home swamp roads done, W45N8 2,12 building (~336/1500), rhaulers back. Patrol 15:29 deployed hauler sticky-fc fix.
-6. ⏳ **Defence before novice end (deadline review 2026-10-25):**
-   - Tower combat reserve ≥800 / queen top-up ≥900 — done 2026-10-13 review.
-   - Attack alerts carry `safeModeAvailable` — done 2026-10-13 review.
-   - **Propose (needs Misaki):** Invader-only remote defender ATTACK5 MOVE5 after RCL4 stable (see DEFENSE.md); still flee from players.
-   - RCL5 tower #2; min-cut outer ramparts design before 10-25 if Council hostility rises.
-7. Links (RCL5); minerals (RCL6); 2nd room claim (**approval required**).
+Focus (Misaki 10-14): **W46N8 upgrade speed**; expansion (2nd account W47N8, W45N7 remote, W45N8 road paving) shelved until after RCL5 + defence assessment.
+
+1. ✅ RCL4 (10-13 17:01): storage 37,31, 20 ext, CLAIM2, 16 ramparts ≥ 50k, remote W45N8 live (~7.5 e/t delivered 24h, 175k total).
+2. ✅ Upgrade economy near model ideal: 2–3 × 12W, queen storage→ctl ferry, pre-spawn upgrader/hauler/queen; ~20/t (2h), 24/t when ctl fed (ideal 23.5).
+3. ⏳ **RCL5 tonight (~21:00–22:00 UTC+8)** — see `docs/RCL5.md`.
+   - ✅ Shipped: `plan.STATIONARY_FILL=false` (queen regime continues; no link sites), build order tower→extension, rampart growth throttle.
+   - Patrol watchpoints in RCL5.md (tower 37,33 first; queen serves stamp B + tower 2; storage ≥ 1300 despite rampart growth).
+4. ❓ **Decision for Misaki: RCL5–6 link plan** (RCL5.md table). Recommended **A: hub 37,29 + controller 30,31 at RCL5, source A 30,11 at RCL6**, queen until RCL7. Implement only after approval (layout change, no demolition).
+5. ⏳ **Defence before novice end (deadline review 2026-10-25):** tower 2 at RCL5 (first site); ramparts 100k (throttled ≤4 e/t); min-cut outer ramparts design; safe-mode decision tree with Misaki. Threat now: BustJetter scouts only (0 dmg); Fandalah W44N8 now RCL6.
+6. ⏸ After RCL5 + defence review: re-open expansion proposals (`docs/REMOTE_EVAL.md`) — **approval required**.
+7. Later: RCL6 terminal/extractor/labs; 2nd room (**approval required**).
 
 ## Log
+- 2026-10-14 14:45 strategy review: topic RCL5 transition (RCL5 ETA tonight). Found the as-built RCL5 role switch would drop the queen (only storage→ctl carrier) once 2 links exist → upgrade ~10/t instead of ~20–24; stamp B / tower 2 unserved; tower 2 queued behind 10 extensions; 2 towers would pour ~10.6k into ramparts at 20 e/t. Shipped gate + build order + throttle (tests/rcl5_gate.js); link plan proposal → Misaki.
 - 2026-10-13 16:13 patrol: remote container 13,11 decayed during the Invader pause (30k repair cap = 600t) -> R income 0 since resume; 99e654b: rminer keeps container >=100k, rebuild 7.1/t. Paused-creep home work deferred (home energy-bound).
 
 ## 2026-10-13 14:40 strategy review (first run)
