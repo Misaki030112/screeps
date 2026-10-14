@@ -1,6 +1,6 @@
 {
-  "next_at": "2026-10-14T14:30:00+08:00",
-  "reason": "VERIFY 8d19ec0 11W->12W pre-spawn PASS: upgrader83634621 (12W, work med 108) born 83634622 BEFORE upgrader83633152 (11W, work med 99) death 83634689; overlap 67t; after death 2x12W. storage/ctl/ctl_ema non-null every 9f9f37e row; <=3 upgraders; rhaulers<=3; 0 errors. upgrade/t target >=23 FAIL: avg ~18 (energy-bound); when ctl fed hits 24/t. Root cause: queen ferry required storage>=floor+carry (1700) leaving dead-band 1300-1699 with ctl empty (seen 1473-1673 / ctl0 stretches). FIX: ferry any surplus above floor via partial withdraw. Verify 14:30: with storage in 1300-1700 and ctlLow, queen withdraws partial and ctl stops flatlining 0; upgrade/t (post-deploy window) >=22; storage never <1300 from ferry; <=3 upgraders; 0 errors.",
-  "written_at": "2026-10-14T13:41:10+08:00",
-  "commit": "f0127a3"
+  "next_at": "2026-10-14T15:15:00+08:00",
+  "reason": "VERIFY f0127a3 queen surplus ferry PASS: 13:55-14:25 upgrade 24.0/t every 5-min bucket (WORK cap 2x12W), storage 1173->2300 never <1173 (ferry floor 1300; the dips were spawn refills), ctl 360-1700, 0 errors. New gap 14:30-14:36: lone A->ctl hauler83634137 died ~83635697 and was only replaced on death (21-part body = 63t spawn + ~27t walk); ctl 0, 3 upgraders (3rd 12W opened at storage 2300) did ~3/t for ~90t. FIX 051e7ed: pre-spawn home hauler + queen with the upgrader rule (TTL <= parts*3+30); emergency check and queen sizing use alive counts. Verify 15:15: queen83634451 (dies ~83635952) replacement born BEFORE its death (pre-spawn at TTL<=66); no 2-queen deadlock in stamp; next hauler pre-spawn not until ~83637110; upgrade/t back to >=22 once ctl refills; 3rd upgrader83635647 waiting_feed should fall as container A backlog drains (2 haulers); <=3 upgraders; 0 errors.",
+  "written_at": "2026-10-14T14:40:00+08:00",
+  "commit": "051e7ed"
 }
