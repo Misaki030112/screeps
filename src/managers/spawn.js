@@ -83,8 +83,13 @@ function nearFull(avail, cap) { return avail >= Math.max(0, cap - 100); }
 // Pure remote spawn order. Producer (rminer) before carriers: a lone rhauler with no rminer earns 0
 // (patrol 10-15 00:08: needRemote fired only on zero creeps, spawned 1 rhauler, then starving closed the gate; cont 10e, rminer 0).
 // The remote is income, so it is NOT gated by home starving: that gate turned an RCL5 build drain into a remote blackout twice.
+// CLAIM2 wait: with cap>=1300 and a comfortable buffer, skip (not block) the reserver until avail>=1300. A CLAIM1 spawned at
+// avail 650-1299 while res was ~2900 (patrol 10-15 07:35: reserver83650835 1C1M) lets m.claim2 go stale after 1500t ->
+// armed=false -> no defender AND queen storageFloor falls back to cap 1800, re-blocking the hub link ferry (05c2664).
+const RES_WAIT = 1000;
 function remoteNext(s) {
-  if (s.nRes < s.wantRes && s.res < 4000 && s.avail >= 650) return 'reserver';
+  const waitClaim2 = (s.cap || 0) >= 1300 && s.avail < 1300 && s.res >= RES_WAIT;
+  if (s.nRes < s.wantRes && s.res < 4000 && s.avail >= 650 && !waitClaim2) return 'reserver';
   if (s.rmLive < 1) return 'rminer';
   // RCL4 target is 2×8C8M. Early-replace at TTL≤120: both rhaulers born ~50t apart age out together and
   // would spawn 2 replacements on top of 2 dying → 4 creeps / ~1600e wipe (patrol 10-14 09:51: energy 1300→4).
@@ -108,7 +113,7 @@ function remoteSpawn(room, go, avail) {
     const next = remoteNext({
       nRes: mineR('reserver').filter(c => c.spawning || (c.ticksToLive || 1500) > 30).length,
       wantRes: (res > 0 && res < 800) ? 2 : 1, // overlap rebuilds buffer while CLAIM1-only
-      res, avail, rmLive: live('rminer'), rhLive: live('rhauler'), rhAll: mineR('rhauler').length,
+      res, avail, cap, rmLive: live('rminer'), rhLive: live('rhauler'), rhAll: mineR('rhauler').length,
     });
     if (next === 'reserver') return go('reserver', reserverBody(avail), { remote: r });
     if (next === 'rminer') { const w = Math.min(5, Math.floor((Math.min(cap, 700) - 200) / 100)); return go('rminer', [].concat(rep(w, WORK), [CARRY], rep(3, MOVE)), { remote: r }); }
