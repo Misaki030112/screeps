@@ -1,6 +1,6 @@
 {
-  "next_at": "2026-10-15T21:37:00+08:00",
-  "reason": "19:40 HOLD (no deploy, live == d1aa88e). Upg 6h 20.35 / 1h 19.64 (room_stats 18:20-19:40 ~19.3) vs expected 21.19 (ideal 21.78); energy-bound (upgrader waiting_feed 16-19% = 24 WORK > net income), storage ~950 delta -0.1. 1h dip = second replacement wave (queen 83661069, hauler 83661193, miner 83661256 all spawned in last ~6 min-20 min); upgrader handoffs overlap 33-66t, OK. R income 9.88, A 9.95, B 9.89. Overhead actual ~9.4 vs model live 8.3: unexplained ~1.1/t, coverage 0.85 (19:30 bucket missing) so not trusted yet. Remote SAFE res 2253 claim2 armed; errors0 cpu~3.1-4.0 bkt10k; alerts exit1 LOW BustJetter 4T4M scouts only. CORRECTION: remote-pause useful-work IS implemented since b95aa6e (roles/remote.js flee(): rhauler->hauler, rminer->builder at home via remote.paused/threat.safe; resume path returns) - remove from pending. Next: recheck 6h upg after replacement wave settles; if 6h still <20.6 investigate the ~1.1/t overhead gap (spawn energy vs model upkeep, tower/rampart repair).",
-  "written_at": "2026-10-15T19:44:00+08:00",
-  "commit": "d1aa88e"
+  "next_at": "2026-10-15T21:08:00+08:00",
+  "reason": "20:50 alerts exit2: MEDIUM solo Invader smallMelee (2T1W1A1RA5M, unboosted, 1000hp, ttl~1475) in W45N8 dismantling container (100.4k->95.4k). FSM was WAIT why=deaths (defDeaths 83647829 = boosted exit-camp death, cause fixed fa9c1fa, duel smallMelee 20/20) -> would wait out ~1550t (~13k remote energy) while container erodes. FIX 10f881a: WAIT re-arms on ANY cleared spawn gate (GATES list incl. deaths) + test; one-off cleared the stale fixed-bug death from Memory.remote.W45N8.defDeaths. Verified: THREAT solo, defender83662420 spawned at 83662420. NEXT (verify): did DEFEND end SAFE killed (not died/timeout)? container hits, remote resumed, defender recycled. If killed -> report fix+outcome to Misaki briefly in Chinese; if died -> deaths gate re-blocks (by design), investigate duel sim vs real. Then resume pending: recheck 6h upg (<20.6 -> investigate ~1.1/t overhead gap).",
+  "written_at": "2026-10-15T20:53:00+08:00",
+  "commit": "10f881a"
 }
