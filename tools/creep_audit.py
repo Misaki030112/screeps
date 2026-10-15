@@ -41,7 +41,10 @@ def heatmap(c, room, a, b, worst):
     im = Image.new('RGB', (50 * S, 50 * S + 20), (30, 30, 30)); d = ImageDraw.Draw(im)
     for i, ch in enumerate(T[:2500]):
         x, y = i % 50, i // 50; d.rectangle([x * S, y * S, x * S + S - 1, y * S + S - 1], fill=(0, 0, 0) if ch in '13' else (35, 50, 30) if ch == '2' else (55, 55, 55))
-    H = c.execute('SELECT x, y, sum(n) FROM tile_traffic_10m WHERE room=%s AND bucket >= %s AND bucket < %s GROUP BY x, y', (room, a, b)).fetchall()
+    try:
+        H = c.execute('SELECT x, y, sum(n) FROM tile_traffic_10m WHERE room=%s AND bucket >= %s AND bucket < %s GROUP BY x, y', (room, a, b)).fetchall()
+    except Exception:
+        H = c.execute('SELECT x, y, count(*) FROM creep_ticks WHERE room=%s AND ts >= %s AND ts < %s GROUP BY x, y', (room, a, b)).fetchall()
     mx = max((n for *_, n in H), default=1)
     for x, y, n in H:
         v = math.log1p(n) / math.log1p(mx); d.rectangle([x * S, y * S, x * S + S - 1, y * S + S - 1], fill=(int(60 + 195 * v), int(200 * (1 - v)), 40))
@@ -81,9 +84,12 @@ def main():
         r = v['roles']; L.append(f"[{w}] creep CPU/t " + ', '.join(f"{k}:{m['cpu_t_sum']}" for k, m in sorted(r.items(), key=lambda kv: -kv[1]['cpu_t_sum'])))
         L.append('   worst: ' + '; '.join(f"{x['creep']}({x['score']}: cpu/t {x['cpu_t']} idle {x['idle']} stuck {x['stuck']} osc {x['osc']} excess {x['excess']} rp/100 {x['rp100']})" for x in v['worst'][:3]))
     # idle attribution (in-game state codes; falls back to retro inference tools/idle_history.py before codes exist)
-    q = c.execute("""SELECT creep, role, sum(ticks) FILTER (WHERE NOT legit)::float / sum(ticks) AS nl, sum(ticks) AS n,
-        (array_agg(reason ORDER BY ticks DESC) FILTER (WHERE NOT legit))[1] AS top FROM idle_by_reason
-        WHERE bucket >= now() - interval '1 hour' GROUP BY 1, 2""").fetchall()
+    try:
+        q = c.execute("""SELECT creep, role, sum(ticks) FILTER (WHERE NOT legit)::float / sum(ticks) AS nl, sum(ticks) AS n,
+            (array_agg(reason ORDER BY ticks DESC) FILTER (WHERE NOT legit))[1] AS top FROM idle_by_reason
+            WHERE bucket >= now() - interval '1 hour' GROUP BY 1, 2""").fetchall()
+    except Exception:
+        q = []
     if sum(r[3] for r in q) < 500:
         import idle_history as ih
         rows = ih.run((now - timedelta(hours=1)).isoformat(), None); sm = ih.summarize(rows, 'creep')
