@@ -1,6 +1,6 @@
 {
-  "next_at": "2026-10-15T12:20:00+08:00",
-  "reason": "11:52 iteration: no fix needed. f420b18 (rminer measured pre-spawn lead) deployed 11:40 by parent, errors 0, cpu 3.5 bucket ok. upg 1h 21.27 = live comp 21.28 (ideal 21.84, energy-bound). RCL5 156.6k/1.215M, ETA RCL6 ideal 55h / window-avg 63h (window includes pause). storage 1050, rhaulers back to 2, remote cont 300e, res 3973 claim2 fresh, SAFE. Links hub 37,29 + ctl 30,31 live, no sites. Ramparts 17 @ ~57-59k (repair throttled at low storage, by design). Audit idle: queen target_full 24%, upgrader waiting_feed 15-22% (energy-bound), rhauler waiting_pickup 13-15% (miner-bound) - no small fix. Next: verify rminer83653376 (dies ~tick 83654890) handoff under the new lead: replacement arrives before death, no source_empty gap.",
-  "written_at": "2026-10-15T11:53:00+08:00",
-  "commit": "f420b18"
+  "next_at": "2026-10-15T13:50:00+08:00",
+  "reason": "12:22 iteration: rminer handoff under f420b18 OK - replacement 83654755 adjacent to container ~83654845, old 83653376 died 83654901, new on tile by 83654910, no source_empty gap (but ~55t early: travel was measured on the container tile incl. the wait -> lead would drift to the 160 cap). Found remote R harvest only ~9/t (income 8.7): rminer repair (50 hits/t container decay, 1 tick in 10 at 5W) blocks harvest in the same tick. Deployed 0eb0b7b: rminer 6W1C3M (800e; 250 harvest + ~25 repair ticks per 300 regen -> 10/t, +~0.9 e/t net) + travel measured at range 1. errors 0, bucket 10000. Next: verify first 6W rminer (spawn ~tick 83656110 ~13:31, old 83654755 dies ~83656280 ~13:41): body 6W, handoff gap, then R income -> ~9.5/t over following hours.",
+  "written_at": "2026-10-15T12:28:00+08:00",
+  "commit": "0eb0b7b"
 }
