@@ -79,7 +79,9 @@ def actuals(hours, routes_tiles):
     rs = q(c, f"SELECT min(tick),max(tick),min(progress),max(progress),avg(cpu),avg(energy::float/nullif(energy_cap,0)),max(rcl),min(rcl) FROM room_stats WHERE room=%s AND ts>now()-interval '{H}' AND rcl=(SELECT rcl FROM room_stats WHERE room=%s ORDER BY ts DESC LIMIT 1)", HOME, HOME)[0]
     A['ticks'] = (rs[1] - rs[0]) if rs[0] else 0
     ts = q(c, f"SELECT extract(epoch from max(ts)-min(ts))/nullif(max(tick)-min(tick),0) FROM room_stats WHERE room=%s AND ts>now()-interval '{H}'", HOME)[0][0]
-    A['tick_s'] = float(ts) if ts else None  # measured server tick time (was hard-coded 3.9; 10-15 measured 4.08)
+    A['tick_s'] = float(ts) if ts else None
+    sd = q(c, f"SELECT (array_agg(storage ORDER BY ts DESC))[1]-(array_agg(storage ORDER BY ts))[1] FROM room_stats WHERE room=%s AND ts>now()-interval '{H}'", HOME)[0][0]
+    A['storage_delta'] = (sd or 0) / A['ticks'] if A['ticks'] else 0  # measured server tick time (was hard-coded 3.9; 10-15 measured 4.08)
     A['upgrade_per_tick'] = (rs[3] - rs[2]) / A['ticks'] if A['ticks'] and rs[6] == rs[7] else None
     A['cpu'] = float(rs[4] or 0); A['energy_fill'] = float(rs[5] or 0)
     # 1h recent upgrade rate as well
@@ -160,7 +162,7 @@ def main():
     hauler_body = ['carry'] * 8 + ['move'] * 8
     # live bodies per route (src/roles): home A hauler 14C7M (2:1, needs roads), remote hauler 8C8M (1:1, plain-speed)
     route_body = {'A': ['carry'] * 14 + ['move'] * 7, 'B': hauler_body, 'R': hauler_body}
-    REMOTE_AVAIL = 0.93   # measured 10-13/14: Invader pauses ~105 min/24h (04:56-06:41) => ~7% remote downtime
+    REMOTE_AVAIL = 1.0    # steady state; Invader downtime now lives in tools/flow.py stochastic layer (was 0.93)   # measured 10-13/14: Invader pauses ~105 min/24h (04:56-06:41) => ~7% remote downtime
     road_body = lambda e: (['carry'] * (2 * min(16, e // 150)) + ['move'] * min(16, e // 150))
     M = {'rcl': rcl, 'progress': prog, 'energy_cap': cap, 'sources': {}}
     upkeep_creeps = 0; spawn_time = 0; bodies = {}
@@ -239,6 +241,14 @@ def main():
                 cum += ((PROG[lv] - prog) if lv == rcl + 1 else PROG[lv]) / actual_up
                 M['eta_actual'][lv] = dict(ticks=round(cum), hours=round(cum * tick_s / 3600, 1))
     else: heat = {}
+    import flow
+    n_ramp = len(O(HOME, 'rampart'))
+    M['flow'] = flow.steady(M, n_ramp)
+    if not a.no_db:
+        c = db.connect(); eps, span, nd = flow.events(c, q)
+        M['flow']['stochastic'] = st = flow.stochastic(eps, span, nd, M['actual'].get('tick_s') or 4.08)
+        M['flow']['upgrade_expected'] = round((M['flow']['net'] - st['expected_loss']) / (1 + flow.UP_UPKEEP), 2)
+        A = M['actual']; M['flow']['measured_sinks'] = dict(upgrade=A['upgrade_per_tick'], build=A['spent'].get('builder', 0), storage_delta=A.get('storage_delta', 0))
     json.dump(M, open(os.path.join(ROOT, 'metrics', 'model.json'), 'w'), indent=1, default=str)
     render(T, roads, block, objs, R, srcs, heat, route_tiles)
     if not a.no_db and 'actual' in M: write_db(M)
@@ -292,6 +302,7 @@ def report(M):
     for k, s in M['sources'].items(): print(f" src {k}: dist {s['dist']} -> {s['target']} swamp {s['swamp']} unpaved {s['unpaved']} rt {s['roundtrip_1to1']} carry {s['carry_need']:.1f}")
     for k in ('income_theoretical', 'upkeep_creeps', 'overhead_live', 'ideal_overhead', 'upgrade_max_ideal', 'upgrade_max_live_comp', 'upgrader_work', 'upgrader_bound', 'hauler_carry_need', 'hauler_carry_live', 'spawn_util', 'build_rate_max', 'cpu_budget_per_creep', 'eta_ideal', 'eta_actual'):
         if k in M: print(f" {k}: {M[k]}")
+    if 'flow' in M: print(' flow:', json.dumps(M['flow'], default=str))
     if 'actual' in M: print(' actual:', json.dumps(M['actual'], default=str)[:3000])
     print(' pave:', len(M['pave']), M['pave'][:30])
 if __name__ == '__main__': main()

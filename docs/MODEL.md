@@ -29,3 +29,14 @@ upgrade rate (room_stats progress), pickups per source (positive store deltas wi
 | Construction / storage refill (Δstorage) | **missing** | model is steady-state; actual upgrade must be compared as upgrade + build + Δstorage |
 | Miner replacement gap (no pre-spawn) | **missing** | remote pickup 8.2/t vs 10; miner pre-spawn pending |
 | Structure | improve | rewrite as explicit flow balance: gross income − (upkeep + decay + link loss + tower) = upgrade + build + Δstorage |
+
+## Source-rooted flow (tools/flow.py, 2026-10-15) — replaces the "income − overhead" headline
+Per source: gross 10/t → losses (container decay, link 3% on B's storage→ctl leg) → source upkeep (miner, haulers with ×1.10
+congestion/pickup on the round trip, reserver for the remote) = net. Shared upkeep (queen, builder-lite, roads, ramparts 0.03/t each)
+once; upgrade = net / (1 + 1300/1500/12). Steady state has no downtime (REMOTE_AVAIL=1); Invader risk is the separate stochastic layer:
+EV = episodes per tick (events table, 7 d) × per-episode (downtime ×10/t, defender 1300 × defenders/episode, container rebuild 5000 × 0.25).
+Gains: Invader tombstones only hold carried resources (none), body energy is not refunded → 0.
+Validation compares upgrade_expected with measured upgrade + build + storage delta. ETA hours use measured tick seconds.
+
+10-15 11:45 (6 h): A 8.78, B 9.13, R 5.99 net; shared 1.43; net 22.47 → upgrade 20.96 steady, 20.31 with Invader EV 0.69/t (range 0.11–1.15;
+3 episodes / 7 d ≈ one per 19.5k ticks ≈ 195k remote energy). Measured sinks 18.40 + 0.51 + 0.19 = 19.10 (−6%; last 2 h upgrade 20.7, +2%).
