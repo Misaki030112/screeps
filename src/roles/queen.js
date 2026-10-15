@@ -56,7 +56,7 @@ function fillRoute(c) {
 // (standby already runs only when spawn/tower are full, so spawn refill does not need a floor).
 function storageFloor(room) {
   const r = require('../managers/threat').reserve(room.name);
-  return r || room.energyCapacityAvailable;
+  return (r || room.energyCapacityAvailable) + require('../managers/walls').reserved(room); // wall fund is not ferry energy
 }
 // RCL5+ link plan A: with hub + controller links built, the ferry target is the hub link (2 tiles from storage) instead of
 // walking to the controller container; links.js forwards hub -> controller link.

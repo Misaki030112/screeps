@@ -244,3 +244,12 @@ The 13 v2 ramparts on filler/manager stand tiles ((34,25) (34,27) (36,25) (36,27
   an approved defense gate, or a stand tile only when STATIONARY_FILL is on). Not dismantled: they decay out in ~22k ticks.
 - Saves ~0.39 e/t upkeep plus ~4.4k (RCL5 target) / ~30k (RCL6 target) growth. Also blocks the later empty-tile v2 ramparts.
 - **Re-evaluate at RCL7** (or whenever STATIONARY_FILL is re-enabled).
+
+
+## Implementation (2026-10-16, `src/managers/walls.js`, inert until phase `build`)
+- **Sites** (`placeSites`, called by `layout.run` with its leftover site budget, ≤2 barrier sites open): 6 gate ramparts (TR×2, TL, BR, W, S) → `with_gate` trunk roads (TR, W, S new tiles) → `walls_in_build_order` (41) → repair spurs marked "wall phase" (NW 28,10-30,12, W 7,29, S 16,42-13,45 and 18,44). `on_demand` trunks (BR, TL) are not placed. `layout.js` keeps these sites (`walls.planned`) instead of removing them as off-plan.
+- **Hits steps** (`target`): RCL6 100k → 300k, RCL7 adds 1M, RCL8 3M. A step is raised only when every built gate/wall has reached the previous one; the builder always repairs the lowest barrier in +10k chunks, so the set rises evenly.
+- **Budget** (`fund`): the 20k bank that latches the phase is the opening fund. It then accrues 10% (storage < 50k), 20% (50–150k), 35% (≥ 150k or RCL8) of NET = 23 e/t (model net income), capped at 50k. Builder repairs debit it. *Deviation from the table above:* "storage < 20k → 0" is not applied after the latch, because supply-follows-demand keeps storage near the floor and the walls would stay at 1 hit; the fund is held back from spending instead (`queen.storageFloor` adds it, so the ctl ferry and upgrader extras leave it alone).
+- **Threat** (remote holding, or a player combat creep in home): repair needs no fund; the storage defender reserve still applies.
+- **Towers** only keep gate ramparts at ≥ 5k (fresh ramparts decay); the hits steps are builder work. Spawn adds one builder while there is a repair job and ≥ 3k fund.
+- Tests: `tests/walls_barriers.js`, `tests/builder_walls.js` (run by `scripts/check.js`).

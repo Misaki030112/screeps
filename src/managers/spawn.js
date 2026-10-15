@@ -61,6 +61,7 @@ function targets(room, count, backlog, ctlEnergy, sites) {
   // With storage + sites=0 a lone builder cannot withdraw below threat.reserve, walks to source A / upgrades as a
   // hungry 5W, and keeps storage off the 1300 defender cushion (patrol 10-14 02:54 → 03:54, storage 1040→50→~100).
   T.builder = sites ? (sites > 3 && room.energyCapacityAvailable >= 1300 ? 2 : 1) : (st ? 0 : (rcl <= 4 ? 1 : 0));
+  if (!T.builder && st && require('./walls').wantBuilder(room)) T.builder = 1; // wall-phase barrier repair (funded)
   return T;
 }
 // Pre-spawn: a dying upgrader / home hauler / queen stops counting once its TTL is under spawn time + walk + margin,

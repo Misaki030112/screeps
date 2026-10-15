@@ -116,7 +116,7 @@ function mkCreep(name, body, x, y, memory) {
 g.Game = { time: 83607700, creeps: {}, spawns: {}, rooms: { W46N8: room }, gcl: { level: 2, progress: 0, progressTotal: 1 }, cpu: { bucket: 10000, getUsed: () => 0 }, getObjectById: id => objs[id] || sites.find(s => s.id === id) || (id === room.controller.id ? room.controller : null) };
 g.Game.spawns = g.Game_spawns;
 // optional extra Memory (e.g. {"remote": {...}}) and tick from the snapshot
-if (snap.memory) Object.assign(g.Memory, snap.memory); if (snap.time) g.Game.time = snap.time;
+if (snap.memory) Object.assign(g.Memory, snap.memory); if (snap.roomMemory) Object.assign(room.memory, snap.roomMemory); if (snap.time) g.Game.time = snap.time;
 // creeps from snapshot
 for (const o of snap.objects.filter(o => o.type === 'creep' && o.user === snap.uid)) {
   const mem = snap.creepMem[o.name] || { role: 'hauler' };

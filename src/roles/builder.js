@@ -38,7 +38,7 @@ function repairables(home, P) {
 function hasBuildWork(home, P) {
   if (rc.sites(home).length) return true;
   if (remoteRoadSite()) return true;
-  return repairables(home, P).length > 0;
+  return repairables(home, P).length > 0 || !!require('../managers/walls').repairJob(home);
 }
 function dumpToStorage(c, home) {
   const st = home.storage; if (!st) return false;
@@ -119,13 +119,15 @@ module.exports = { run(c) {
     return;
   }
   let t = c.memory.t && Game.getObjectById(c.memory.t);
-  if (t && t.hits !== undefined && t.progress === undefined && t.hits >= t.hitsMax * 0.9) t = null;
+  if (t && t.hits !== undefined && t.progress === undefined && t.hits >= (c.memory.tcap || t.hitsMax * 0.9)) t = null;
+  if (t && c.memory.tcap && rc.sites(Game.rooms[c.memory.home] || room).length) t = null; // a new site outranks barrier hits
   // Stickiness must not skip a higher-priority site (patrol 10-14 22:40: tower 37,33 at 0 while extensions built).
   if (t && t.progress !== undefined) {
     const home = Game.rooms[c.memory.home] || room;
     if (rc.sites(home).some(s => (PRIO[s.structureType] ?? 9) < (PRIO[t.structureType] ?? 9))) t = null;
   }
   if (!t) {
+    delete c.memory.tcap;
     const home = Game.rooms[c.memory.home] || room;
     const sites = rc.sites(home);
     if (sites.length) t = _.min(sites, s => (PRIO[s.structureType] ?? 9) * 100 + c.pos.getRangeTo(s));
@@ -139,6 +141,8 @@ module.exports = { run(c) {
       else {
         const hurt = repairables(home, P);
         t = hurt.length ? _.min(hurt, s => s.hits / s.hitsMax) : null;
+        const job = !t && require('../managers/walls').repairJob(home); // v4 barrier hits step (lowest first, +10k chunks)
+        if (job) { t = Game.getObjectById(job.id); c.memory.tcap = job.cap; }
       }
     }
     c.memory.t = t ? t.id : undefined;
@@ -166,6 +170,7 @@ module.exports = { run(c) {
   }
   if (move.to(c, t.pos.x, t.pos.y, 3)) {
     const r = t.progress !== undefined ? c.build(t) : c.repair(t);
+    if (r === OK && c.memory.tcap) require('../managers/walls').spend(c.room, Math.min(c.store[RESOURCE_ENERGY], c.getActiveBodyparts(WORK)));
     if (r !== OK && r !== ERR_NOT_ENOUGH_RESOURCES) delete c.memory.t;
     if (r === OK && t.progress !== undefined && t.progressTotal - t.progress <= c.getActiveBodyparts(WORK) * 5) { rc.invalidate(c.room.name); require('../utils/move').invalidate(c.room.name); }
   }

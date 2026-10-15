@@ -23,4 +23,91 @@ function phase(room) {
   }
   return 'bank';
 }
-module.exports = { START, NOVICE_END, phase };
+
+// ---- v4 barriers (layout.defense; docs/DEFENSE_PLAN.md). Everything below is inert unless phase()==='build'.
+// Site order (policy.order): 6 gate ramparts -> with_gate trunk roads (TR, W, S) -> walls_in_build_order -> wall-phase repair spurs.
+// At most SITE_CAP barrier-phase sites at once so they never crowd out core RCL sites (layout MAX_SITES 5 is shared).
+const SITE_CAP = 2;
+const plan = () => require('../utils/plan');
+function defense(P) { return P && P.raw && P.raw.defense; }
+const memo = {};
+function lists(P) {
+  const name = P.raw.room; if (memo[name]) return memo[name];
+  const d = defense(P), gates = [], walls = [], roads = [];
+  for (const g of ['TR', 'TL', 'BR', 'W', 'S']) for (const t of (d.gates[g] || [])) gates.push(t);
+  for (const g in d.trunks) if (d.trunks[g].mode === 'with_gate') for (const t of d.trunks[g].new_tiles) roads.push(t);
+  for (const t of d.walls_in_build_order) walls.push(t);
+  for (const g in d.repair) { const r = d.repair[g]; if (/wall phase/.test(r.build_with || '')) for (const t of (r.spur || [])) roads.push(t); }
+  const k = (x, y) => x * 50 + y, type = {};
+  for (const [x, y] of gates) type[k(x, y)] = 'rampart';
+  for (const [x, y] of roads) if (!type[k(x, y)]) type[k(x, y)] = 'road';
+  for (const [x, y] of walls) type[k(x, y)] = STRUCTURE_WALL;
+  const order = gates.map(t => [t, 'rampart']).concat(roads.filter(([x, y]) => type[k(x, y)] === 'road').map(t => [t, 'road']), walls.map(t => [t, STRUCTURE_WALL]));
+  return (memo[name] = { gates, walls, order, type });
+}
+// Is (x,y) a barrier-phase tile of this structure type? (layout.js keeps these sites instead of removing them as off-plan)
+function planned(P, x, y, t) { return !!defense(P) && lists(P).type[x * 50 + y] === t; }
+// Hits steps per RCL (policy.hits); stepRule: raise ALL barriers to step k before any to k+1.
+const STEPS = { 6: [100000, 300000], 7: [100000, 300000, 1000000], 8: [100000, 300000, 1000000, 3000000] };
+function barriers(room, P) {
+  const L = lists(P), rc = require('../utils/roomcache'), out = [];
+  for (const [x, y] of L.gates) { const s = rc.at(room, x, y, STRUCTURE_RAMPART); if (s) out.push(s); }
+  for (const [x, y] of L.walls) { const s = rc.at(room, x, y, STRUCTURE_WALL); if (s) out.push(s); }
+  return out;
+}
+function target(room, B) { // current step: the lowest step not yet reached by every built barrier
+  const st = STEPS[Math.min(8, room.controller.level)] || [];
+  if (!st.length || !B.length) return 0;
+  const low = _.min(B.map(s => s.hits));
+  return st.find(h => low < h) || st[st.length - 1];
+}
+// Budget (policy.budget): a fund in room.memory.walls.fund. The 20k bank that latched the phase is the opening fund (supply-follows-
+// demand keeps storage near the floor afterwards, so a literal "storage<20k -> 0" would freeze the walls at 1 hit); it then accrues
+// RATE x NET per tick (NET = model net income ~23 e/t) and builder repairs debit it. queen.storageFloor adds the fund, so the ctl
+// ferry / upgrader extras never spend it. Threat (remote holding or hostile player in home): cap lifted, storage reserve still kept.
+const NET = 23, FUND_MAX = 50000;
+function rate(room) {
+  const e = room.storage ? room.storage.store[RESOURCE_ENERGY] : 0;
+  if (room.controller.level >= 8 || e >= 150000) return 0.35;
+  return e >= 50000 ? 0.20 : 0.10;
+}
+function fund(room) {
+  const m = room.memory.walls; if (!m || !m.started) return 0;
+  if (m.fund === undefined) { m.fund = START; m.ft = Game.time; }
+  if (Game.time > (m.ft || Game.time)) { m.fund = Math.min(FUND_MAX, m.fund + (Game.time - m.ft) * rate(room) * NET); m.ft = Game.time; }
+  return m.fund;
+}
+function spend(room, e) { const m = room.memory.walls; if (m && m.fund !== undefined) m.fund = Math.max(0, m.fund - e); }
+function threat(room) { return require('./threat').holding(room.name) || playerCombat(room); }
+// Storage energy the ctl ferry / upgrader extras must leave alone.
+function reserved(room) { const m = room.memory && room.memory.walls; return m && m.started && room.storage ? Math.min(fund(room), room.storage.store[RESOURCE_ENERGY]) : 0; }
+// Builder repair job: lowest barrier below the step target, capped at +CHUNK so the set rises evenly. null = no work / no budget.
+const CHUNK = 10000;
+function repairJob(room) {
+  const P = plan().get(room.name);
+  if (!defense(P) || phase(room) !== 'build') return null;
+  if (!threat(room) && fund(room) < 100) return null;
+  const B = barriers(room, P), tgt = target(room, B);
+  const low = B.filter(s => s.hits < tgt); if (!low.length) return null;
+  const s = _.min(low, x => x.hits);
+  return { id: s.id, cap: Math.min(tgt, s.hits + CHUNK) };
+}
+// Spawn: one builder while there is repair work and >= one builder-life of fund (5W x 1500t would spend at most 7.5k).
+function wantBuilder(room) { const j = repairJob(room); return !!j && (threat(room) || fund(room) >= 3000); }
+// Sites (called by layout.run with its leftover budget).
+function placeSites(room, budget) {
+  const P = plan().get(room.name);
+  if (!defense(P) || phase(room) !== 'build' || budget <= 0) return [];
+  const rc = require('../utils/roomcache'), L = lists(P), log = [];
+  const open = rc.sites(room).filter(s => planned(P, s.pos.x, s.pos.y, s.structureType)).length;
+  let n = Math.min(budget, SITE_CAP - open);
+  for (const [[x, y], t] of L.order) {
+    if (n <= 0) break;
+    if (rc.at(room, x, y, t) || room.lookForAt(LOOK_CONSTRUCTION_SITES, x, y).length) continue;
+    const r = room.createConstructionSite(x, y, t);
+    if (r === OK) { n--; log.push(`site ${t} ${x},${y}`); }
+    else if (!(room.memory.walls.bad || (room.memory.walls.bad = {}))[x * 50 + y]) { room.memory.walls.bad[x * 50 + y] = r; log.push(`FAIL ${t} ${x},${y} r=${r}`); }
+  }
+  return log;
+}
+module.exports = { START, NOVICE_END, phase, planned, STEPS, target, barriers, fund, spend, reserved, repairJob, wantBuilder, placeSites, lists };

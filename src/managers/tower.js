@@ -24,7 +24,9 @@ module.exports = { growthPaused, run(room) {
     const target = funded ? RAMPART_TARGET[room.controller.level] : Math.min(RAMPART_FLOOR, RAMPART_TARGET[room.controller.level]);
     const hurt = room.find(FIND_MY_CREEPS).find(c => c.hits < c.hitsMax);
     mem.towerHeal = hurt ? hurt.id : undefined;
-    const cand = rc.all(room, STRUCTURE_RAMPART).filter(s => s.hits < target && plan.rampartWanted(P, room, s.pos.x, s.pos.y))
+    // v4 gate ramparts: towers only keep them alive (FLOOR); hits steps are builder work from the wall fund (managers/walls.js)
+    const W = require('./walls');
+    const cand = rc.all(room, STRUCTURE_RAMPART).filter(s => s.hits < (W.planned(P, s.pos.x, s.pos.y, STRUCTURE_RAMPART) ? Math.min(RAMPART_FLOOR, target) : target) && plan.rampartWanted(P, room, s.pos.x, s.pos.y))
       .concat(rc.all(room, STRUCTURE_ROAD).concat(rc.all(room, STRUCTURE_CONTAINER))
         .filter(s => P.any[plan.key(s.pos.x, s.pos.y)] && s.hits < s.hitsMax * 0.6));
     mem.towerRep = cand.length ? _.min(cand, s => s.hits / (s.structureType === STRUCTURE_RAMPART ? target : s.hitsMax)).id : undefined;

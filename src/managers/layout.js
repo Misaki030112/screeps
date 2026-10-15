@@ -5,6 +5,7 @@
 const plan = require('../utils/plan');
 const move = require('../utils/move');
 const rc = require('../utils/roomcache');
+const walls = require('./walls');
 // Tower before extensions (Overmind BuildPriorities): with MAX_SITES 5, RCL5 tower 2 would otherwise wait for ~7 of 10 extensions.
 const PRIORITY = ['spawn', 'tower', 'extension', 'container', 'storage', 'link', 'road', 'rampart', 'terminal', 'extractor', 'lab', 'factory', 'powerSpawn', 'nuker', 'observer'];
 const MAX_SITES = 5, MIN_EXT = 5, CAP_FLOOR = 650;
@@ -56,9 +57,9 @@ module.exports = { obsoleteContainer, run(room) {
   const hasStorage = structs.some(s => s.structureType === STRUCTURE_STORAGE);
   for (const s of sites) {
     const want = P.any[plan.key(s.pos.x, s.pos.y)];
-    const ok = s.structureType === STRUCTURE_RAMPART
+    const ok = walls.planned(P, s.pos.x, s.pos.y, s.structureType) || (s.structureType === STRUCTURE_RAMPART
       ? !!(hasStorage && P.ramparts[plan.key(s.pos.x, s.pos.y)])
-      : want && want.type === s.structureType;
+      : want && want.type === s.structureType);
     if (!ok) { s.remove(); log.push(`removed site ${s.structureType} ${s.pos.x},${s.pos.y}`); }
   }
   // ---- placement (re-find sites: removals above leave the cached array stale)
@@ -96,5 +97,7 @@ module.exports = { obsoleteContainer, run(room) {
       if (r === OK) { budget--; log.push(`site ${type} ${w.x},${w.y}`); }
     }
   }
+  // v4 gates/trunks/walls once the wall phase is 'build' (managers/walls.js; no-op before)
+  if (budget > 0) log.push(...walls.placeSites(room, budget));
   if (log.length) { console.log('LAYOUT ' + log.join('; ')); move.invalidate(room.name); rc.invalidate(room.name); mem.layoutKick = log.some(l => l.startsWith('destroyed')) ? 1 : undefined; }
 } };
