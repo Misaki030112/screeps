@@ -1,6 +1,6 @@
 {
-  "next_at": "2026-10-15T11:50:00+08:00",
-  "reason": "10:45 iteration: no deploy, 4538f79 holding (HEAD c72c6db adds only RCL7/8 tower moves + inert defense data in layouts/W46N8.js; bundle with next real code deploy). All 09:25 checks PASS: upg 30m 21.08 / 1h 21.30 (= model ideal 21.24, energy-bound), storage avg 1150 (900-1400), reserver cycle fresh (res 3998, claim2 83653700, armed, SAFE since 83649097), errors 0, cpu ~3.9 bucket 10000. RCL5 136.2k/1.215M, ETA RCL6 ~55h at current rate. Live comp 20.52 vs ideal 21.24: gap = temporary 3rd rhauler overlap (83652165 expiring) - not a fix. Audit idle: upgrader waiting_feed 12% (energy-bound, storage floor by design), queen target_full 20%, rhauler waiting_pickup 12-21% (remote container ~30e, rminer source_empty legit -> miner-bound). Ramparts ~57k -> 100k throttled. Walls per v5 policy wait for RCL6 + storage 20k. Next: confirm rhaulers back to 2, upg 1h >=20, storage >=900, rampart growth continuing.",
-  "written_at": "2026-10-15T10:47:00+08:00",
-  "commit": "4538f79"
+  "next_at": "2026-10-15T12:20:00+08:00",
+  "reason": "11:52 iteration: no fix needed. f420b18 (rminer measured pre-spawn lead) deployed 11:40 by parent, errors 0, cpu 3.5 bucket ok. upg 1h 21.27 = live comp 21.28 (ideal 21.84, energy-bound). RCL5 156.6k/1.215M, ETA RCL6 ideal 55h / window-avg 63h (window includes pause). storage 1050, rhaulers back to 2, remote cont 300e, res 3973 claim2 fresh, SAFE. Links hub 37,29 + ctl 30,31 live, no sites. Ramparts 17 @ ~57-59k (repair throttled at low storage, by design). Audit idle: queen target_full 24%, upgrader waiting_feed 15-22% (energy-bound), rhauler waiting_pickup 13-15% (miner-bound) - no small fix. Next: verify rminer83653376 (dies ~tick 83654890) handoff under the new lead: replacement arrives before death, no source_empty gap.",
+  "written_at": "2026-10-15T11:53:00+08:00",
+  "commit": "f420b18"
 }
