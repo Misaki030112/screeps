@@ -87,9 +87,12 @@ function nearFull(avail, cap) { return avail >= Math.max(0, cap - 100); }
 // avail 650-1299 while res was ~2900 (patrol 10-15 07:35: reserver83650835 1C1M) lets m.claim2 go stale after 1500t ->
 // armed=false -> no defender AND queen storageFloor falls back to cap 1800, re-blocking the hub link ferry (05c2664).
 const RES_WAIT = 1000;
+// Spawn a reserver only below RES_SPAWN: 2 CLAIM add ~2×530 per life against decay 1/t, so one per ~1060t (~1.2/t) instead of
+// back-to-back (8 per ~5000t ≈ 2.1/t holding ~4000, 10-15 data). 2000 still covers the longest Invader pause seen (~1700t).
+const RES_SPAWN = 2000;
 function remoteNext(s) {
   const waitClaim2 = (s.cap || 0) >= 1300 && s.avail < 1300 && s.res >= RES_WAIT;
-  if (s.nRes < s.wantRes && s.res < 4000 && s.avail >= 650 && !waitClaim2) return 'reserver';
+  if (s.nRes < s.wantRes && s.res < RES_SPAWN && s.avail >= 650 && !waitClaim2) return 'reserver';
   if (s.rmLive < 1) return 'rminer';
   // RCL4 target is 2×8C8M. Early-replace at TTL≤120: both rhaulers born ~50t apart age out together and
   // would spawn 2 replacements on top of 2 dying → 4 creeps / ~1600e wipe (patrol 10-14 09:51: energy 1300→4).

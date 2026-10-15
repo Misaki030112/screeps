@@ -32,15 +32,15 @@ const cases = [
   ['1 rhauler + 0 rminer -> rminer', () => assert.strictEqual(S.remoteNext({ nRes: 1, wantRes: 1, res: 2943, avail: 1269, rmLive: 0, rhLive: 1, rhAll: 1 }), 'rminer')],
   ['rminer live + 1 rhauler -> rhauler', () => assert.strictEqual(S.remoteNext({ nRes: 1, wantRes: 1, res: 2943, avail: 1269, rmLive: 1, rhLive: 1, rhAll: 1 }), 'rhauler')],
   ['full set -> nothing', () => assert.strictEqual(S.remoteNext({ nRes: 1, wantRes: 1, res: 2943, avail: 1500, rmLive: 1, rhLive: 2, rhAll: 2 }), null)],
-  ['no reserver, res<4000 -> reserver first', () => assert.strictEqual(S.remoteNext({ nRes: 0, wantRes: 1, res: 2943, avail: 700, rmLive: 0, rhLive: 0, rhAll: 0 }), 'reserver')],
-  ['res>=4000 skips reserver', () => assert.strictEqual(S.remoteNext({ nRes: 0, wantRes: 1, res: 4100, avail: 1500, rmLive: 1, rhLive: 2, rhAll: 2 }), null)],
+  ['no reserver, res<2000 -> reserver first', () => assert.strictEqual(S.remoteNext({ nRes: 0, wantRes: 1, res: 1943, avail: 700, rmLive: 0, rhLive: 0, rhAll: 0 }), 'reserver')],
+  ['res>=2000 skips reserver', () => assert.strictEqual(S.remoteNext({ nRes: 0, wantRes: 1, res: 2100, avail: 1500, rmLive: 1, rhLive: 2, rhAll: 2 }), null)],
   // CLAIM2 wait (patrol 10-15 07:35: CLAIM1 spawned at res ~2900 -> claim2 stale -> disarm + storageFloor 1800)
-  ['cap 1800 avail 1100 res 2900 -> wait for CLAIM2, fall through to rhauler', () => assert.strictEqual(S.remoteNext({ nRes: 0, wantRes: 1, res: 2900, avail: 1100, cap: 1800, rmLive: 1, rhLive: 1, rhAll: 1 }), 'rhauler')],
-  ['cap 1800 avail 1100 res 2900 full set -> null (no CLAIM1)', () => assert.strictEqual(S.remoteNext({ nRes: 0, wantRes: 1, res: 2900, avail: 1100, cap: 1800, rmLive: 1, rhLive: 2, rhAll: 2 }), null)],
-  ['cap 1800 avail 1300 res 2900 -> reserver (CLAIM2)', () => assert.strictEqual(S.remoteNext({ nRes: 0, wantRes: 1, res: 2900, avail: 1300, cap: 1800, rmLive: 1, rhLive: 2, rhAll: 2 }), 'reserver')],
+  ['cap 1800 avail 1100 res 1900 -> wait for CLAIM2, fall through to rhauler', () => assert.strictEqual(S.remoteNext({ nRes: 0, wantRes: 1, res: 1900, avail: 1100, cap: 1800, rmLive: 1, rhLive: 1, rhAll: 1 }), 'rhauler')],
+  ['cap 1800 avail 1100 res 1900 full set -> null (no CLAIM1)', () => assert.strictEqual(S.remoteNext({ nRes: 0, wantRes: 1, res: 1900, avail: 1100, cap: 1800, rmLive: 1, rhLive: 2, rhAll: 2 }), null)],
+  ['cap 1800 avail 1300 res 1900 -> reserver (CLAIM2)', () => assert.strictEqual(S.remoteNext({ nRes: 0, wantRes: 1, res: 1900, avail: 1300, cap: 1800, rmLive: 1, rhLive: 2, rhAll: 2 }), 'reserver')],
   ['cap 1800 avail 700 res 900 (low buffer) -> CLAIM1 now', () => assert.strictEqual(S.remoteNext({ nRes: 0, wantRes: 1, res: 900, avail: 700, cap: 1800, rmLive: 1, rhLive: 2, rhAll: 2 }), 'reserver')],
   ['cap 1800 avail 700 res 0 (unreserved) -> CLAIM1 now', () => assert.strictEqual(S.remoteNext({ nRes: 0, wantRes: 1, res: 0, avail: 700, cap: 1800, rmLive: 0, rhLive: 0, rhAll: 0 }), 'reserver')],
-  ['cap 1200 (RCL<4) avail 700 res 2900 -> CLAIM1 (no wait)', () => assert.strictEqual(S.remoteNext({ nRes: 0, wantRes: 1, res: 2900, avail: 700, cap: 1200, rmLive: 1, rhLive: 2, rhAll: 2 }), 'reserver')],
+  ['cap 1200 (RCL<4) avail 700 res 1900 -> CLAIM1 (no wait)', () => assert.strictEqual(S.remoteNext({ nRes: 0, wantRes: 1, res: 1900, avail: 700, cap: 1200, rmLive: 1, rhLive: 2, rhAll: 2 }), 'reserver')],
   ['2 dying + 1 new rhauler -> no 4th', () => assert.strictEqual(S.remoteNext({ nRes: 1, wantRes: 1, res: 3000, avail: 1500, rmLive: 1, rhLive: 1, rhAll: 3 }), null)],
 ];
 let fail = 0;
