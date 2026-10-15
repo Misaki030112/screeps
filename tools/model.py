@@ -78,6 +78,8 @@ def actuals(hours, routes_tiles):
     # only rows at the current RCL: progress resets on level-up, a window spanning it would give None/garbage
     rs = q(c, f"SELECT min(tick),max(tick),min(progress),max(progress),avg(cpu),avg(energy::float/nullif(energy_cap,0)),max(rcl),min(rcl) FROM room_stats WHERE room=%s AND ts>now()-interval '{H}' AND rcl=(SELECT rcl FROM room_stats WHERE room=%s ORDER BY ts DESC LIMIT 1)", HOME, HOME)[0]
     A['ticks'] = (rs[1] - rs[0]) if rs[0] else 0
+    ts = q(c, f"SELECT extract(epoch from max(ts)-min(ts))/nullif(max(tick)-min(tick),0) FROM room_stats WHERE room=%s AND ts>now()-interval '{H}'", HOME)[0][0]
+    A['tick_s'] = float(ts) if ts else None  # measured server tick time (was hard-coded 3.9; 10-15 measured 4.08)
     A['upgrade_per_tick'] = (rs[3] - rs[2]) / A['ticks'] if A['ticks'] and rs[6] == rs[7] else None
     A['cpu'] = float(rs[4] or 0); A['energy_fill'] = float(rs[5] or 0)
     # 1h recent upgrade rate as well
@@ -228,6 +230,9 @@ def main():
         M['actual'] = A
         actual_up = A['upgrade_per_tick']
         M['eta_actual'] = {}
+        if A.get('tick_s'):
+            tick_s = A['tick_s']
+            for v in M['eta_ideal'].values(): v['hours'] = round(v['ticks'] * tick_s / 3600, 1)
         if actual_up:
             cum = 0
             for lv in range(rcl + 1, 7):
