@@ -54,7 +54,7 @@ h=[Patch(color='#5a3a1a',label=f'实心墙 constructedWall ({len(cut)-len(gates)
    Line2D([],[],marker='^',ls='',color='#d00000',mec='k',ms=14,label='塔(已建)'),Line2D([],[],marker='^',ls='',color='#ff9999',mec='k',ms=14,label='塔(规划)'),
    Line2D([],[],color='#ff8c00',lw=3.5,label='能源A ↔ 仓库 (RCL6 后走 link)'),Line2D([],[],color='#c71585',lw=5,label='能源B 矿工 → 仓库'),
    Line2D([],[],color='#228b22',ls='--',lw=3.5,label='外矿 W45N8 路线(经门)'),Line2D([],[],color='#00b8d4',ls=':',lw=4,label='中心 link → 控制器 link'),
-   Line2D([],[],color='#000',lw=2.5,label='干道 TR（随门一起修，5 格新路）'),Line2D([],[],color='#888',ls=(0,(1,1.5)),lw=2.5,label='干道 BL/TL/BR（按需再修）'),
+   Line2D([],[],color='#000',lw=2.5,label='干道 TR（随门一起修，6 格新路）'),Line2D([],[],color='#888',ls=(0,(1,1.5)),lw=2.5,label='干道 BL/TL/BR（按需再修）'),
    Line2D([],[],color='#9932cc',lw=2,label='queen 填充路线'),Line2D([],[],color='#e02020',ls=':',lw=3,label='塔补能路线')]
 ax.legend(handles=h,loc='upper center',bbox_to_anchor=(0.5,-0.04),ncol=2,fontsize=13,framealpha=.95)
 s=R['mc_score']

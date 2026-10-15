@@ -10,3 +10,8 @@ const g=Object.values(L.defense.gates).flat().map(k); assert.deepStrictEqual(g.s
 assert.strictEqual(L.defense.walls_in_build_order.length,33);
 const all=new Set(); for(const r in L.rcl) for(const t in L.rcl[r]) for(const p of L.rcl[r][t]) if(t!=='rampart'&&t!=='road') { assert.ok(!all.has(k(p)),'dup '+k(p)); all.add(k(p)); }
 console.log('defense_gate OK');
+// v6 repair access: spurs only in defense.repair, phases set, never in rcl roads
+const rep=L.defense.repair; assert.ok(rep&&rep['NW_26-28_7-12']&&rep['W_23_27-29']);
+const roads=new Set(); for(const r in L.rcl) for(const p of (L.rcl[r].road||[])) roads.add(k(p));
+for(const n in rep) for(const p of rep[n].spur) assert.ok(!roads.has(k(p)),'spur in rcl roads '+k(p));
+console.log('repair access OK');
