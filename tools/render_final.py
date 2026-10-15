@@ -1,4 +1,4 @@
-"""Final (RCL8) base plan image for W46N8: layout v2 + link plan A + defense v6. Output docs/final_layout_rcl8.png."""
+"""Final (RCL8) base plan image for W46N8: layout v2 + link plan A + final outer walls (Misaki 2026-10-15). Output docs/final_layout_rcl8.png."""
 import json, os, collections
 from PIL import Image, ImageDraw, ImageFont
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -31,23 +31,19 @@ roads = {tuple(p) for lv in L['rcl'].values() for p in lv.get('road', [])}
 for rt in L['routes'].values(): roads |= {tuple(p) for p in rt}
 trunk = set(); [trunk.update(map(tuple, t['path'])) for t in D['trunks'].values()]
 spur = set(); [spur.update(map(tuple, v['spur'])) for v in D['repair'].values()]
+base_roads = set(roads)
 roads |= trunk | spur
-import sys
-VARIANT = sys.argv[1] if len(sys.argv) > 1 else 'v6'
 walls = {tuple(p) for p in D['walls_in_build_order']}
 gates = {tuple(p) for g in D['gates'].values() for p in g}
-if VARIANT == 'misaki':  # Misaki 10-15: outer W/SW chokepoints x=6 (y24-32), x=10 (y46-48), x=20 (y44-47) replace W/SW v6 segment
-    old = {p for p in walls | gates if p[0] <= 23 and p[1] >= 26}
-    walls -= old; gates -= old
-    walls |= {(6, y) for y in range(24, 33) if y != 28} | {(10, y) for y in (46, 47, 48)} | {(20, y) for y in (44, 45, 46, 47)}
-    gates |= {(6, 28)}
 ramp_over = {tuple(p) for lv in L['rcl'].values() for p in lv.get('rampart', []) if tuple(p) in st}
 stand = {tuple(p) for p in L['positions']['fillers']} | {tuple(L['positions']['manager'])}
 repstand = {tuple(p) for v in D['repair'].values() for p in v['stand']}
 # draw roads
 for p in roads:
     if p in st and st[p][0] not in ('road', 'container'): continue
-    c = (230, 210, 120) if p in spur and p not in trunk else (205, 205, 205); d.ellipse(box(*p, 18), fill=c)
+    if p in spur and p not in trunk: d.ellipse(box(*p, 15), fill=(255, 170, 0))
+    elif p in trunk and p not in base_roads: d.ellipse(box(*p, 14), fill=(0, 255, 255))
+    else: d.ellipse(box(*p, 16), fill=(205, 205, 205))
 COL = dict(spawn=(255, 215, 0), extension=(250, 250, 250), tower=(230, 40, 40), storage=(255, 140, 0), terminal=(170, 80, 255),
            link=(0, 200, 255), lab=(255, 90, 200), factory=(150, 110, 60), powerSpawn=(255, 60, 60), nuker=(120, 255, 120),
            observer=(80, 120, 255), extractor=(200, 200, 200), container=(140, 100, 60))
@@ -76,7 +72,7 @@ for i in range(0, 51, 5):
     d.line([(M + i * S, M + 40), (M + i * S, M + 40 + 50 * S)], fill=(255, 255, 255, 70), width=2)
     d.line([(M, M + 40 + i * S), (M + 50 * S, M + 40 + i * S)], fill=(255, 255, 255, 70), width=2)
     if i < 50: d.text((M + i * S + 4, M + 14), str(i), fill=(220, 220, 220), font=F(22)); d.text((14, M + 40 + i * S + 4), str(i), fill=(220, 220, 220), font=F(22))
-d.text((M, 12), ('W46N8（shard3）RCL8 最终布局：布局 v2 + link 方案 A + 防御 v6' + ('（Misaki 外移墙线方案）' if VARIANT == 'misaki' else '')), fill=(255, 255, 255), font=F(30))
+d.text((M, 12), 'W46N8（shard3）RCL8 最终布局（定稿）：布局 v2 + link 方案 A + 外推墙线', fill=(255, 255, 255), font=F(30))
 cnt = collections.Counter(t for t, r in st.values() if t != 'road')
 lx = M + 50 * S + 30; ly = M + 50
 def leg(draw_fn, text):
@@ -100,15 +96,17 @@ for t in ['spawn', 'extension', 'tower', 'storage', 'link', 'terminal', 'lab', '
 leg(lambda x, y: d.rectangle([x, y, x + 34, y + 34], fill=(105, 70, 40)), f'实心墙 {len(walls)}')
 leg(lambda x, y: d.rectangle([x, y, x + 34, y + 34], fill=(0, 230, 200)), f'rampart 门 {len(gates)}')
 leg(lambda x, y: d.rectangle([x, y, x + 34, y + 34], outline=(40, 255, 80), width=5), f'建筑上的 rampart {len(ramp_over)}')
-leg(lambda x, y: d.ellipse([x + 8, y + 8, x + 26, y + 26], fill=(205, 205, 205)), f'道路/干道 {len(roads)}')
-leg(lambda x, y: d.ellipse([x + 8, y + 8, x + 26, y + 26], fill=(230, 210, 120)), f'修墙支路 {len(spur - trunk)}')
+leg(lambda x, y: d.ellipse([x + 8, y + 8, x + 26, y + 26], fill=(205, 205, 205)), f'经济道路 {len(base_roads)}')
+leg(lambda x, y: d.ellipse([x + 8, y + 8, x + 26, y + 26], fill=(0, 255, 255)), f'通往各门的干道（新铺）{len(trunk - base_roads)}')
+leg(lambda x, y: d.ellipse([x + 8, y + 8, x + 26, y + 26], fill=(255, 170, 0)), f'修墙支路 {len(spur - trunk - base_roads)}')
 leg(lambda x, y: (d.line([(x + 4, y + 4), (x + 30, y + 30)], fill=(255, 230, 0), width=5), d.line([(x + 4, y + 30), (x + 30, y + 4)], fill=(255, 230, 0), width=5)), f'修墙站位 {len(repstand)}')
 leg(lambda x, y: d.ellipse([x + 4, y + 4, x + 30, y + 30], outline=(255, 255, 0), width=3), f'补能员/管理员站位（未来，不建 rampart）{len(stand)}')
 leg(lambda x, y: d.ellipse([x, y, x + 34, y + 34], fill=(255, 240, 60)), '能量矿 2')
 leg(lambda x, y: d.rectangle([x, y, x + 34, y + 34], fill=(90, 90, 255)), '控制器 (28,32)')
 leg(lambda x, y: d.polygon([(x + 17, y), (x + 34, y + 17), (x + 17, y + 34), (x, y + 17)], outline=(220, 220, 220), width=4), '矿物 (40,24)')
+for g, nm in [((6, 28), '西门'), ((20, 44), '南门'), ((25, 16), '左上门'), ((44, 27), '右下门'), ((47, 16), '右上门')]: d.text((box(*g)[0] - 8, box(*g)[1] - 26), nm, fill=(0, 255, 220), font=F(20))
 ly += 10
 for t, c in [('平地', TC['0']), ('沼泽', TC['2']), ('天然石壁', (30, 30, 30))]: leg(lambda x, y, c=c: d.rectangle([x, y, x + 34, y + 34], fill=c, outline=(120, 120, 120)), t)
 d.text((lx, ly + 10), '格子上的数字 = 在第几级建造', fill=(200, 200, 200), font=F(20))
-out = os.path.join(ROOT, 'docs', 'final_layout_rcl8.png' if VARIANT == 'v6' else 'final_layout_rcl8_misaki.png'); im.save(out); print(out, im.size, dict(cnt))
+out = os.path.join(ROOT, 'docs', 'final_layout_rcl8.png'); im.save(out); print(out, im.size, dict(cnt))
 bad = {t: (cnt.get(t, 0), l) for t, l in LIMIT8.items() if cnt.get(t, 0) != l}; print('limit mismatch', bad)
