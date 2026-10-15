@@ -1,6 +1,6 @@
 {
-  "next_at": "2026-10-15T21:08:00+08:00",
-  "reason": "20:50 alerts exit2: MEDIUM solo Invader smallMelee (2T1W1A1RA5M, unboosted, 1000hp, ttl~1475) in W45N8 dismantling container (100.4k->95.4k). FSM was WAIT why=deaths (defDeaths 83647829 = boosted exit-camp death, cause fixed fa9c1fa, duel smallMelee 20/20) -> would wait out ~1550t (~13k remote energy) while container erodes. FIX 10f881a: WAIT re-arms on ANY cleared spawn gate (GATES list incl. deaths) + test; one-off cleared the stale fixed-bug death from Memory.remote.W45N8.defDeaths. Verified: THREAT solo, defender83662420 spawned at 83662420. NEXT (verify): did DEFEND end SAFE killed (not died/timeout)? container hits, remote resumed, defender recycled. If killed -> report fix+outcome to Misaki briefly in Chinese; if died -> deaths gate re-blocks (by design), investigate duel sim vs real. Then resume pending: recheck 6h upg (<20.6 -> investigate ~1.1/t overhead gap).",
-  "written_at": "2026-10-15T20:53:00+08:00",
-  "commit": "10f881a"
+  "next_at": "2026-10-16T03:15:00+08:00",
+  "reason": "Shipped 44da00e wall phase + RCL6 banking gate (dormant until RCL6, ETA ~10-17 22:00). Health fine: upgrade 20.7/t (1410t) vs ideal 21.8, 1h 22.7; remote SAFE res~2066 delivered 399.9k; CPU ~3.9 errors 0; LOW only (BustJetter scout ended, Fandalah 1-MOVE scout W45N8). NEXT: code wall/gate site placement + hits-step budget + builder repair (walls.phase()==='build') before RCL6; recheck upgrade 6h.",
+  "written_at": "2026-10-16T01:15:14+08:00",
+  "commit": "44da00e"
 }

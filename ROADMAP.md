@@ -7,6 +7,7 @@ Novice zone ends **2026-10-28 03:33 UTC+8**. Defence detail: `docs/DEFENSE.md` (
 
 - RCL5 since 10-14 ~21:30; upgrade back to ~21/t (06:00–14:00). **RCL6 ETA 10-17 ~21:00 – 10-18 early morning.**
 - ✅ Shipped `plan.RCL6_MINERALS=false`: RCL6 builds source-A link + 10 ext only (~35k) instead of ~295k incl. terminal/labs/extractor (would cost ~14 h of upgrading, idle without miner/lab/market code).
+- ✅ 10-16 01:15 (44da00e) wall step 1/2: `managers/walls.js` phase off→bank→build (latched at storage ≥ 20k + no threat, or early after novice end on a player combat creep); spawn holds 1 upgrader while `bank` (RCL6/7). **Next: gate+wall sites in build order, hits-step budget, builder repair** (dormant until `build`; until coded, a latched build only frees upgrader extras).
 - ⏳ **Before RCL6 (deadline 10-17 18:00): code the v4 wall policy** with a reachable start — storage has never exceeded 2.3k, so `storage>=20000` needs a banking step (hold upgrader extras after the RCL6 core build until storage ≥ 20k). Step 1 (100k) ≈ 43k energy, step 2 (300k) ≈ +76k.
 - ⏳ RCL6 watchpoints: miner A → link 30,11; queen serves new extensions; home hauler idle → T.hauler 0 if > 70% idle.
 - ⏸ Terminal/extractor/labs + selling O: **Misaki decision**, recommended after walls step 2 / after 10-28.
