@@ -32,6 +32,7 @@ function classify(o, c) {
   if (inv.length === 1 && !inv[0].heal && !inv[0].ranged3) return inv[0].ttl >= c.minTtl ? 'solo' : 'short';
   return 'invader'; // too many / healer / 3xRA / short TTL -> wait-out
 }
+const GATES = ['gate', 'cpu', 'budget', 'deaths']; // every reason gateReason() can return
 function gateReason(o, c) { // why we may not spawn a defender now ('' = ok)
   if (!o.armed) return 'gate';
   if (o.bucket < c.minBucket) return 'cpu';
@@ -71,8 +72,8 @@ function step(s, o, c, t) {
       break;
     case S.WAIT:
       if (s.why === 'core') { if (o.vis && !o.core) go(S.SAFE, 'core_gone'); else if (t >= s.until) s.until = t + c.coreRecheck; }
-      // gate/cpu/budget cleared while a solo Invader is still here: arm and fight (do not wait out the whole TTL)
-      else if ((s.why === 'gate' || s.why === 'cpu' || s.why === 'budget') && !gateReason(o, c) && k === 'solo') {
+      // a spawn gate (gate/cpu/budget/deaths) cleared while a solo Invader is still here: arm and fight (do not wait out the whole TTL)
+      else if (GATES.includes(s.why) && !gateReason(o, c) && k === 'solo') {
         delete s.until; s.inc = t; delete s.recycling; go(S.THREAT, 'solo', { inv: o.inv }); }
       else if (s.why !== 'player' && o.vis && k === 'none') go(S.SAFE, 'clear_seen');
       else if (t >= s.until) go(S.SAFE, 'timer');

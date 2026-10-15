@@ -22,6 +22,7 @@ it('WAIT gate clears with solo still present -> THREAT (re-arm)', () => assert.d
 it('CPU bucket low -> WAIT cpu', () => assert.strictEqual(run([[1, { inv: solo(), bucket: 1000 }]]).s.why, 'cpu'));
 it('daily budget exhausted -> WAIT budget', () => assert.strictEqual(run([[1, { inv: solo(), spawnsDay: C.maxPerDay }]]).s.why, 'budget'));
 it('after a defender death today -> WAIT deaths', () => assert.strictEqual(run([[1, { inv: solo(), deathsDay: 1 }]]).s.why, 'deaths'));
+it('WAIT deaths: death ages out of the day window with solo present -> THREAT (re-arm)', () => assert.deepStrictEqual(run([[1, { inv: solo(), deathsDay: 1 }], [50, { inv: solo(1350), deathsDay: 0 }]]).states, ['WAIT', 'THREAT']));
 it('short TTL Invader not worth it -> WAIT', () => assert.strictEqual(run([[1, { inv: solo(200) }]]).s.why, 'short_ttl'));
 it('healer / pair / 3xRA -> WAIT escalated', () => {
   assert.strictEqual(run([[1, { inv: [{ ttl: 1400, heal: true }] }]]).s.why, 'escalated');
