@@ -24,8 +24,10 @@ function flee(c) {
 const roles = {
   rminer(c) {
     const C = remote.CFG[c.memory.remote]; if (remote.paused(c.memory.remote)) return flee(c);
+    // travel = ticks to reach range 1 of the container (the old miner still sits on it; measuring on the tile itself
+    // added the wait: 83654755 adjacent at ~+65, on tile +130 -> lead drifting to the 160 cap, ~50-100t overlap)
+    if (c.memory.travel === undefined && c.ticksToLive && c.room.name === c.memory.remote && c.pos.isNearTo(C.cont[0], C.cont[1])) { const t = 1500 - c.ticksToLive; c.memory.travel = t >= 0 && t <= 300 ? t : 110; }
     if (!go(c, c.memory.remote, C.cont[0], C.cont[1], 0)) return;
-    if (c.memory.travel === undefined && c.ticksToLive) { const t = 1500 - c.ticksToLive; c.memory.travel = t >= 0 && t <= 300 ? t : 110; }
     const src = c.room.lookForAt(LOOK_SOURCES, C.src[0], C.src[1])[0];
     const k = c.room.lookForAt(LOOK_STRUCTURES, C.cont[0], C.cont[1]).find(s => s.structureType === STRUCTURE_CONTAINER);
     // Unowned-room containers decay 50 hits/t; keep >=100k so it survives a ~1500-tick threat pause with nobody repairing

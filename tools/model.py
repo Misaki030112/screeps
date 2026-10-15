@@ -202,9 +202,9 @@ def main():
     overhead_min = upkeep_creeps + road_decay + sum(s['container_decay_e'] for s in M['sources'].values())
     M['overhead_live'] = overhead_min; M['road_decay'] = road_decay; M['reserver_cost'] = reserver
     # ideal minimal composition (RCL4, 1300 cap): 2x miner 5W1C3M(700), haulers 2C:1M on roads, CLAIM2 reserver,
-    # rminer 5W1C3M, upgraders WORK-heavy; cost/tick:
+    # rminer 6W1C3M (800: repair ticks block harvest, 5W only ~9/t), upgraders WORK-heavy; cost/tick:
     ideal_haul_cost = carry_need * 75 / 1500  # 2C+1M per 100 cap => 1.5x50 per carry
-    ideal_overhead = 2 * 700 / 1500 + 700 / 1500 + ideal_haul_cost + 1300 / 600 + 650 / 1500 + 600 / 1500 + road_decay + 0.7  # miners, rminer, haulers, reserver, queen, builder-lite, decay
+    ideal_overhead = 2 * 700 / 1500 + 800 / 1500 + ideal_haul_cost + 1300 / 600 + 650 / 1500 + 600 / 1500 + road_decay + 0.7  # miners, rminer, haulers, reserver, queen, builder-lite, decay
     # Upgraders are creeps too: 12W1C1M = 1300 per 1500 ticks buys 12 upgrade/t, so each upgrade/t carries 1300/1500/12
     # upkeep. Live overhead already counts them; the ideal left them out (~1.6/t too optimistic, patrol 10-14 15:25).
     up_upkeep = 1300 / 1500 / 12

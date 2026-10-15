@@ -121,7 +121,9 @@ function remoteSpawn(room, go, avail) {
       res, avail, cap, rmLive: live('rminer'), rhLive: live('rhauler'), rhAll: mineR('rhauler').length,
     });
     if (next === 'reserver') return go('reserver', reserverBody(avail), { remote: r });
-    if (next === 'rminer') { const w = Math.min(5, Math.floor((Math.min(cap, 700) - 200) / 100)); return go('rminer', [].concat(rep(w, WORK), [CARRY], rep(3, MOVE)), { remote: r }); }
+    // rminer 6W: repair (50 hits/t container decay, 1 tick in 10 at 5W) blocks harvest in the same tick, so 5W harvested ~9/t
+    // (R income 8.7 measured 10-15); 6W = 250 harvest + ~25 repair ticks per 300-tick regen -> full 10/t, +25t slack for handoffs.
+    if (next === 'rminer') { const w = Math.min(6, Math.floor((Math.min(cap, 800) - 200) / 100)); return go('rminer', [].concat(rep(w, WORK), [CARRY], rep(3, MOVE)), { remote: r }); }
     if (next === 'rhauler') return go('rhauler', B.hauler(Math.min(cap, 800)), { remote: r });
   }
 }

@@ -7,7 +7,8 @@ Stochastic layer (separate): expected value = frequency (from events) x per-even
 """
 LINK_LOSS = 0.03          # LINK_LOSS_RATIO
 CONGESTION = 1.10         # measured hauler cycles 70/64, rhauler 92/84 (10-15): swaps, pickup waits, blocked tiles
-MINER = 700 / 1500        # 5W1C3M
+MINER = 700 / 1500        # 5W1C3M (home)
+RMINER = 800 / 1500       # 6W1C3M: remote repair ticks block harvest, 5W only ~9/t
 RESERVER = 1300 / (2 * 530)  # 2 CLAIM x ~530 working ticks per life vs decay 1/t, spawned only below 2000 (was 1300/600 = back-to-back)
 UP_UPKEEP = 1300 / 1500 / 12
 
@@ -23,7 +24,7 @@ def steady(M, n_ramparts=0, link_share_B=1.0, queen=650, builder=600):
         hc, carry = haul_cost(gross, rt) if rt else (0, 0)
         loss = {'container_decay': s['container_decay_e'],
                 'link': gross * LINK_LOSS * link_share_B if k == 'B' else 0.0}
-        upkeep = {'miner': MINER, 'haulers': hc, 'reserver': RESERVER if s['room'] != 'W46N8' else 0.0}
+        upkeep = {'miner': RMINER if s['room'] != 'W46N8' else MINER, 'haulers': hc, 'reserver': RESERVER if s['room'] != 'W46N8' else 0.0}
         net = gross - sum(loss.values()) - sum(upkeep.values())
         out[k] = dict(gross=gross, losses=loss, upkeep=upkeep, carry=round(carry, 1), net=round(net, 2))
     shared = {'queen': queen / 1500, 'builder_lite': builder / 1500, 'roads': M.get('road_decay', 0), 'ramparts': 0.03 * n_ramparts}
