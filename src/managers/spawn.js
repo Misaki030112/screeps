@@ -109,7 +109,9 @@ function remoteSpawn(room, go, avail) {
     const res = (m.res && m.res.ticksToEnd) || 0;
     const resLead = 150; // travel ~40 + spawn + margin (was 80; late spawn left ticksToEnd≈13)
     const mineR = role => _.filter(Game.creeps, c => c.memory.remote === r && c.memory.role === role);
-    const live = role => mineR(role).filter(c => c.spawning || c.ticksToLive > (role === 'reserver' ? resLead : 120)).length;
+    // rminer lead = measured travel + spawn time + 10 (fixed 120 arrived ~3t after the old one died: born+121 vs ttl 118, 10-15 data)
+    const rmLead = c => Math.min(c.memory.travel || 110, 160) + c.body.length * 3 + 10;
+    const live = role => mineR(role).filter(c => c.spawning || c.ticksToLive > (role === 'reserver' ? resLead : role === 'rminer' ? rmLead(c) : 120)).length;
     const next = remoteNext({
       nRes: mineR('reserver').filter(c => c.spawning || (c.ticksToLive || 1500) > 30).length,
       wantRes: (res > 0 && res < 800) ? 2 : 1, // overlap rebuilds buffer while CLAIM1-only
