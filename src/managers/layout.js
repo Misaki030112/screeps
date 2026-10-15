@@ -10,7 +10,16 @@ const PRIORITY = ['spawn', 'tower', 'extension', 'container', 'storage', 'link',
 const MAX_SITES = 5, MIN_EXT = 5, CAP_FLOOR = 650;
 const NEVER_DESTROY = new Set([STRUCTURE_SPAWN, STRUCTURE_TOWER, STRUCTURE_STORAGE, STRUCTURE_TERMINAL, STRUCTURE_CONTROLLER, STRUCTURE_RAMPART]);
 const WALKABLE = new Set([STRUCTURE_ROAD, STRUCTURE_CONTAINER, STRUCTURE_RAMPART]);
-module.exports = { run(room) {
+// A container listed in layout.remove (removeAt <= rcl) whose energy has another sink: a link or storage within 1 tile.
+function obsoleteContainer(room, P, rcl, structs) {
+  return structs.find(s => {
+    if (s.structureType !== STRUCTURE_CONTAINER) return false;
+    const w = P.any[plan.key(s.pos.x, s.pos.y)];
+    if (!w || w.type !== 'container' || !w.removeAt || rcl < w.removeAt) return false;
+    return structs.some(o => (o.structureType === STRUCTURE_LINK || o.structureType === STRUCTURE_STORAGE) && o.pos.getRangeTo(s.pos) <= 1);
+  });
+}
+module.exports = { obsoleteContainer, run(room) {
   const P = plan.get(room.name); if (!P) return;
   const rcl = room.controller.level, mem = room.memory;
   if (Game.time % 25 && mem.layoutRcl === rcl && !mem.layoutKick) return;
@@ -78,7 +87,12 @@ module.exports = { run(room) {
       if (w.type !== type) continue;
       const k = plan.key(w.x, w.y);
       if (have.has(type + k) || blocked.has(k)) continue;
-      const r = room.createConstructionSite(w.x, w.y, type);
+      if (w.removeAt && rcl >= w.removeAt) continue; // planned removal: do not rebuild
+      let r = room.createConstructionSite(w.x, w.y, type);
+      if (r === ERR_RCL_NOT_ENOUGH && type === 'container' && !hostile) { // limit hit: free a slot from the removal list only
+        const old = obsoleteContainer(room, P, rcl, structs);
+        if (old && old.destroy() === OK) { log.push(`destroyed obsolete container ${old.pos.x},${old.pos.y} for ${w.x},${w.y}`); continue; }
+      }
       if (r === OK) { budget--; log.push(`site ${type} ${w.x},${w.y}`); }
     }
   }

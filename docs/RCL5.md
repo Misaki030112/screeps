@@ -87,3 +87,9 @@ Expected: during the RCL5 build (~40k: tower, 10 ext, container, 2 links) upgrad
 ~24/t (2×12W cap) with fewer feed gaps; RCL6 + source-A link frees the A hauler.
 
 - 2026-10-15: empty filler/manager stand-tile ramparts no longer repaired/placed while STATIONARY_FILL=false — see docs/DEFENSE_PLAN.md; re-evaluate at RCL7.
+
+- 2026-10-15 16:55 final-plan convergence (docs/final_layout_rcl8.png): link plan A extended to 6 links — RCL7 (32,34), RCL8 (30,25)
+  and (35,26). Filler-stamp container (30,27, RCL7) not planned while STATIONARY_FILL=false (removed from layout data). Planned
+  removals (layout.remove: 38,32@RCL4, 31,12@RCL6) are executed by layout.js only when a planned container hits the 5-container
+  limit, only for listed containers, and only if a link/storage is adjacent (31,12 waits for the source-A link); never rebuilt.
+  Test: tests/containers_links.js.
