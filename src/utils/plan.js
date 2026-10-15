@@ -15,6 +15,10 @@ function build(name) {
       any[key(x, y)] = { type: t, rcl: r, x, y };
     }
   }
+  if (!RCL6_MINERALS) { // terminal / extractor / labs + mineral container are not planned (not placed, not kept by the planner)
+    const mm = p.positions.mineralMiner;
+    for (const k in any) if (DEFERRED.has(any[k].type) || (mm && any[k].type === 'container' && any[k].x === mm[0] && any[k].y === mm[1])) delete any[k];
+  }
   if (!STATIONARY_FILL) {
     for (const k in any) if (any[k].type === 'link') delete any[k];
     for (const n in LINK_PLAN) { const [x, y, r] = LINK_PLAN[n]; any[key(x, y)] = { type: 'link', rcl: r, x, y }; }
@@ -28,8 +32,14 @@ function build(name) {
 // queen with nothing to replace its storage->ctl ferry or fill stamp B / tower 2 (docs/RCL5.md, review 10-14): needs Misaki's
 // link-plan decision + the missing roles first.
 const STATIONARY_FILL = false;
+// RCL6 mineral/market block (strategy review 10-15, docs/RCL6.md). OFF: terminal (100k), 3 labs (150k), extractor (5k) and the
+// mineral container (5k) are not placed. As planned they would take ~260k of RCL6's ~295k build energy (~12k ticks of upgrading,
+// RCL7 ~14 h later) and sit idle: no mineral-miner role, no lab/boost code, and selling O needs Misaki's market decision.
+// RCL6 then builds only the source-A link + 10 extensions (~35k). Turn on after Misaki approves minerals/market.
+const RCL6_MINERALS = false;
+const DEFERRED = new Set(['terminal', 'extractor', 'lab']);
 module.exports = {
-  key, STATIONARY_FILL, LINK_PLAN,
+  key, STATIONARY_FILL, LINK_PLAN, RCL6_MINERALS,
   get(name) { if (!(name in cache)) cache[name] = build(name); return cache[name]; },
   // wanted structures up to rcl: [{type,x,y,rcl}]
   upTo(name, rcl) { const P = this.get(name); return P ? Object.values(P.any).filter(s => s.rcl <= rcl) : []; },

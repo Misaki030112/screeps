@@ -1,7 +1,7 @@
 # Strategy — W46N8 (home) + W45N8 (remote), 20 CPU, shard3
 
 Sources: Screeps docs (control, defense, invaders, CPU), screepers wiki, Overmind / TooAngel / Hivemind patterns.
-Last full refresh: **2026-10-14 strategy review** (RCL5 readiness: `docs/RCL5.md`) (see also `docs/DEFENSE.md`, `docs/LAYOUT_V2.md`, `docs/REMOTE_W45N8.md`, `docs/MODEL.md`, `docs/DATA.md`).
+Last full refresh: **2026-10-14 strategy review** (RCL5 readiness: `docs/RCL5.md`); 2026-10-15 review: RCL6 readiness `docs/RCL6.md` (see also `docs/DEFENSE.md`, `docs/LAYOUT_V2.md`, `docs/REMOTE_W45N8.md`, `docs/MODEL.md`, `docs/DATA.md`).
 
 ## Principles
 
@@ -35,7 +35,7 @@ Ideal vs actual: `tools/model.py` / Grafana. Remaining gap ≈ ctl-feed dead-ban
 | P2 Defence | RCL3 | tower #1, ramparts spawn/tower, **alerts (no auto SM)**, 10 ext, layout v2 | tower live before novice ends ✅ early |
 | P3 Storage + remote harden | RCL4 | storage, 20 ext, CLAIM2 reserver, rampart HP 50k, optional Invader defender (see DEFENSE.md) | storage > 50k |
 | P4 Links | RCL5 | tower #2 first; link plan per `docs/RCL5.md` (recommended: hub + controller link at RCL5, source A at RCL6; stationary fillers from RCL7) — needs Misaki | CPU avg < 15 |
-| P5 Minerals | RCL6 | terminal, extractor, labs, source A link | terminal active |
+| P5 RCL6 | RCL6 | source A link + 10 ext first; v4 walls (bank storage to 20k first); terminal/extractor/labs **deferred** (`plan.RCL6_MINERALS`, Misaki decides minerals/market) | walls step 2 |
 | P6 Expand | RCL6+, GCL≥2 | **2nd room only with Misaki approval** | 2nd room RCL3 |
 | P7 RCL7–8 | — | spawns 2–3, factory, 6 towers, power spawn, nuker, observer; min-cut if needed | RCL8 |
 
