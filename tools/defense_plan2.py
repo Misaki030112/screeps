@@ -8,6 +8,7 @@ S={}
 for r,d in L['rcl'].items():
     for t,ps in d.items():
         for p in ps: S.setdefault(tuple(p),[]).append(t)
+MINER_FEED=False
 roads={tuple(p) for r in L['routes'].values() for p in r}|{p for p,t in S.items() if 'road' in t}
 SRCA={(30,11),(31,12),(32,11)}; EASTRD={(41,22),(42,21),(43,20)}
 core=[p for p,t in S.items() if p not in SRCA|EASTRD and set(t)-{'road'}]+[(28,32)]+[tuple(p) for p in L['positions']['upgraders']]
@@ -64,6 +65,7 @@ def evaluate(cut,inside,tag):
     corepts=[(35,28),(37,31),(28,32),(35,31),(30,34)]
     def feats(t):
         exp=min(ch(t,o) for o in outside_walk)  # range to nearest tile enemy can stand on
+        if MINER_FEED and ch(t,(31,12))<=1 and exp>=4: return exp,0  # source-A miner fills tower directly
         if ch(t,(36,30))<=1: return min(ch(t,o) for o in outside_walk),0  # stationary manager fills directly
         reach=min((D.get((t[0]+dx,t[1]+dy),99) for dx in(-1,0,1) for dy in(-1,0,1)),default=99)
         return exp,reach
