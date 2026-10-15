@@ -85,3 +85,5 @@ Implemented:
 
 Expected: during the RCL5 build (~40k: tower, 10 ext, container, 2 links) upgrade ≈ base-upgrader level for ~2–3 h; afterwards
 ~24/t (2×12W cap) with fewer feed gaps; RCL6 + source-A link frees the A hauler.
+
+- 2026-10-15: empty filler/manager stand-tile ramparts no longer repaired/placed while STATIONARY_FILL=false — see docs/DEFENSE_PLAN.md; re-evaluate at RCL7.

@@ -68,7 +68,7 @@ module.exports = { run(room) {
         if (budget <= 0) break;
         if (P.ramparts[k] > rcl || have.has('rampart' + k)) continue;
         const x = Math.floor(k / 50), y = k % 50;
-        if (!structs.some(s => s.pos.x === x && s.pos.y === y && s.structureType !== 'road') && !P.standing.has(+k)) continue; // rampart only over something
+        if (!plan.rampartWanted(P, room, x, y)) continue; // rampart only over something (stand tiles only with STATIONARY_FILL)
         if (room.createConstructionSite(x, y, 'rampart') === OK) { budget--; log.push(`site rampart ${x},${y}`); }
       }
       continue;

@@ -211,3 +211,11 @@
 1. 采用 B 方案（能源 A 在墙外，加 2 格局部 rampart）。
 2. 塔位：RCL7 的第 3 座塔从 (35,34) 改到 (39,23)；RCL8 的另外两座从 (36,34)、(32,31) 改到 (40,23)、(41,24)，保留 (32,30)。
 3. 什么时候开始放墙由你决定，建议不早于 RCL6。
+
+## Decision 2026-10-15 16:45 — empty stand-tile ramparts (Misaki delegated)
+The 13 v2 ramparts on filler/manager stand tiles ((34,25) (34,27) (36,25) (36,27) (33,33) (31,33) (33,35) (31,35) (31,26) (31,24)
+(29,26) (29,24) manager (36,30)) cover nothing while `STATIONARY_FILL=false` (link plan A, queen through RCL7).
+- Towers no longer repair them and layout.js no longer places empty-tile ramparts (`plan.rampartWanted`: over a real structure,
+  an approved defense gate, or a stand tile only when STATIONARY_FILL is on). Not dismantled: they decay out in ~22k ticks.
+- Saves ~0.39 e/t upkeep plus ~4.4k (RCL5 target) / ~30k (RCL6 target) growth. Also blocks the later empty-tile v2 ramparts.
+- **Re-evaluate at RCL7** (or whenever STATIONARY_FILL is re-enabled).

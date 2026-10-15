@@ -32,6 +32,15 @@ function build(name) {
 // queen with nothing to replace its storage->ctl ferry or fill stamp B / tower 2 (docs/RCL5.md, review 10-14): needs Misaki's
 // link-plan decision + the missing roles first.
 const STATIONARY_FILL = false;
+// Rampart worth building/repairing? Over a real structure (not road/rampart), an approved defense gate, or — only while
+// STATIONARY_FILL is on — a filler/manager stand tile. Decision 2026-10-15 (Misaki, docs/DEFENSE_PLAN.md): the 13 empty
+// stand-tile ramparts are no longer repaired (left to decay, not dismantled); re-evaluate at RCL7.
+function rampartWanted(P, room, x, y) {
+  if (room.lookForAt(LOOK_STRUCTURES, x, y).some(s => s.structureType !== STRUCTURE_ROAD && s.structureType !== STRUCTURE_RAMPART)) return true;
+  const g = P && P.raw.defense && P.raw.defense.gates;
+  if (g && Object.values(g).some(a => a.some(([gx, gy]) => gx === x && gy === y))) return true;
+  return !!(STATIONARY_FILL && P && P.standing.has(key(x, y)));
+}
 // RCL6 mineral/market block (strategy review 10-15, docs/RCL6.md). OFF: terminal (100k), 3 labs (150k), extractor (5k) and the
 // mineral container (5k) are not placed. As planned they would take ~260k of RCL6's ~295k build energy (~12k ticks of upgrading,
 // RCL7 ~14 h later) and sit idle: no mineral-miner role, no lab/boost code, and selling O needs Misaki's market decision.
@@ -39,7 +48,7 @@ const STATIONARY_FILL = false;
 const RCL6_MINERALS = false;
 const DEFERRED = new Set(['terminal', 'extractor', 'lab']);
 module.exports = {
-  key, STATIONARY_FILL, LINK_PLAN, RCL6_MINERALS,
+  key, STATIONARY_FILL, rampartWanted, LINK_PLAN, RCL6_MINERALS,
   get(name) { if (!(name in cache)) cache[name] = build(name); return cache[name]; },
   // wanted structures up to rcl: [{type,x,y,rcl}]
   upTo(name, rcl) { const P = this.get(name); return P ? Object.values(P.any).filter(s => s.rcl <= rcl) : []; },
