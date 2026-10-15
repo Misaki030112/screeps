@@ -3,7 +3,7 @@
 // node tests/rcl5_gate.js -> exits 1 on failure
 const path = require('path'), assert = require('assert'), fs = require('fs');
 const src = p => path.join(__dirname, '..', 'src', p);
-Object.assign(global, { WORK: 'work', CARRY: 'carry', MOVE: 'move', RESOURCE_ENERGY: 'energy', STRUCTURE_LINK: 'link', STRUCTURE_CONTAINER: 'container',
+Object.assign(global, { FIND_HOSTILE_CREEPS: 103, WORK: 'work', CARRY: 'carry', MOVE: 'move', RESOURCE_ENERGY: 'energy', STRUCTURE_LINK: 'link', STRUCTURE_CONTAINER: 'container',
   STRUCTURE_SPAWN: 'spawn', STRUCTURE_EXTENSION: 'extension', STRUCTURE_TOWER: 'tower', STRUCTURE_RAMPART: 'rampart', STRUCTURE_ROAD: 'road', _: { filter: () => [] } });
 const stub = (p, exp) => { require.cache[require.resolve(src(p))] = { id: p, filename: p, loaded: true, exports: exp }; };
 const P = { pos: { upgraders: [[29, 30], [30, 31], [31, 30]], controllerContainer: [30, 30], fillerContainerA: [35, 24], fillers: [], miners: [] }, raw: { stamps: {} }, any: {} };
@@ -15,7 +15,7 @@ stub('utils/trace.js', { why: () => {} });
 stub('managers/threat.js', { reserve: () => 1300, holding: () => false });
 const S = require(src('managers/spawn.js')), TW = require(src('managers/tower.js'));
 const T = (rcl, o = {}) => { FLAG = !!o.flag; LINKS = o.links === undefined ? 2 : o.links;
-  return S.targets({ name: 'W46N8', controller: { level: rcl }, energyCapacityAvailable: 1800, storage: { store: { energy: 2000 } } }, {}, 0, 500, 0); };
+  return S.targets({ name: 'W46N8', controller: { level: rcl }, energyCapacityAvailable: 1800, storage: { store: { energy: 2000 } }, memory: {}, find: () => [] }, {}, 0, 500, 0); };
 const ramp = hits => ({ structureType: 'rampart', hits });
 const cases = [
   ['flag off, RCL5 + 2 links: queen stays, no fillers/manager', () => { const t = T(5); assert.deepStrictEqual([t.queen, t.filler, t.manager], [1, 0, 0]); }],
