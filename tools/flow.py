@@ -8,7 +8,7 @@ Stochastic layer (separate): expected value = frequency (from events) x per-even
 LINK_LOSS = 0.03          # LINK_LOSS_RATIO
 CONGESTION = 1.10         # measured hauler cycles 70/64, rhauler 92/84 (10-15): swaps, pickup waits, blocked tiles
 MINER = 700 / 1500        # 5W1C3M
-RESERVER = 1300 / 600     # 2CLAIM2MOVE... CLAIM life 600
+RESERVER = 1300 / (2 * 530)  # 2 CLAIM x ~530 working ticks per life vs decay 1/t, spawned only below 2000 (was 1300/600 = back-to-back)
 UP_UPKEEP = 1300 / 1500 / 12
 
 def haul_cost(inc, rt):   # 2C:1M road hauler: carry parts * 75e per 1500
