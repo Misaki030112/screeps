@@ -18,6 +18,14 @@ Load is tiny: ~15 creeps × 1 row per tick (≈3.9 s/tick) ≈ 4 rows/s.
 - Websocket listener (`tools/run_listener.sh`) writes through `tools/ingest.py`: one background writer, batches every 2 s, retries on DB errors. The old dashboard at http://127.0.0.1:8787/tools/dashboard.html still uses `metrics/live.json` (cache only) and `metrics/creep_audit.json`.
 - There is no systemd. After a box restart, run `tools/services.sh` (the patrol does this every iteration).
 
+## Box restarts and persistence (incident 2026-10-15)
+- **Incident:** the box was stuck 20:57–23:28 (UTC+8) and came back from a fresh system image. `/workspace` and `/home/box` were kept, but system dirs (`/usr`, `/etc`, `/var/lib`) and apt packages were reset. PGDATA was at the Debian default `/var/lib/postgresql/17/main`, so the TimescaleDB data was lost. `services.sh` only started services and could not reinstall them. The 23:33 run reinstalled the packages and initialised an empty DB. No old cluster survived anywhere (searched for PG_VERSION). Recovered: the pre-Timescale archive `metrics/archive/` (10-12 17:20 → 10-13 10:19, via backfill) plus deploy rows `ef368d3` and `10f881a`. The data from 10-13 10:19 to 10-15 23:33 is gone.
+- **Now:** PGDATA = `var/pg17` and its conf templates in `var/pg17-conf`. Grafana data is in `grafana/data`, the Grafana .deb is in `var/pkgs`, and Python deps are in `requirements.txt`. All of these are under /workspace and gitignored where needed.
+- `tools/services.sh` reinstalls missing packages and the venv. It re-adopts `var/pg17` with `pg_createcluster -d` and drops the empty default cluster that apt creates. It refuses (exit 3) when a cluster elsewhere holds a `screeps` DB. It never runs initdb over existing data. If `var/pg17` is missing entirely, it creates a cluster there and restores the newest dump.
+- **Backups:** `tools/pg_backup.sh` (called by services.sh) runs `pg_dump -Fc` when the newest dump is >6h old. It keeps 8 in `var/backups`, plus the 2 newest in the agent store `/cursor/stores/store-f5e64756-…/screeps-db` (a second copy outside the box disk). Each dump is ~110 KB now. Use `--force` to dump now. To restore by hand: create the extension, `timescaledb_pre_restore()`, `pg_restore` as postgres (no `--role`), then `timescaledb_post_restore()`.
+- **Tested 23:40:** stop pg → services.sh restarts it from var/pg17. Fresh-box simulation (moved away /etc config and /var/lib data, apt-style default cluster) → dropped the default cluster, adopted var/pg17, data intact. Restore of the newest dump into a scratch DB returns the same row counts.
+- Note: the reinstalled TimescaleDB is the Debian 2.19 (Apache) build, not 2.30, so there are no continuous aggregates; creep_audit falls back (029cbfb).
+
 ## Schema (db/schema.sql, apply with `.venv/bin/python tools/db.py --init`)
 | Table | Grain | Source | Retention |
 |---|---|---|---|
