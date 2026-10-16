@@ -8,7 +8,46 @@
 import sys, os, json, time
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'scripts')); import api
 CMDS = {'observe', 'hold', 'steal', 'attack', 'retreat', 'guard'}
-def setm(path, value): return api.req('user/memory', {'path': path, 'value': value, 'shard': api.SHARD})
+
+def _js_literal(value):
+    if isinstance(value, bool): return 'true' if value else 'false'
+    if value is None: return 'null'
+    if isinstance(value, (int, float)): return str(value)
+    return json.dumps(value, separators=(',', ':'))
+
+def setm(path, value, timeout=15):
+    """Set Memory.<path>=value via console, ensuring parent objects exist first.
+    The memory POST API silently fails (returns ok) when a parent is missing;
+    console TypeError is invisible to the API. Poll until the value is visible."""
+    parts = path.split('.')
+    expr_parts = []
+    cur = 'Memory'
+    for p in parts[:-1]:
+        cur = f'{cur}.{p}'
+        expr_parts.append(f'{cur}={cur}||{{}}')
+    leaf = f'Memory.{".".join(parts)}'
+    expr_parts.append(f'{leaf}={_js_literal(value)}')
+    expr = ';'.join(expr_parts)
+    r = api.req('user/console', {'expression': expr, 'shard': api.SHARD})
+    if not r.get('ok'):
+        print('console write failed:', r, file=sys.stderr)
+        sys.exit(1)
+    deadline = time.time() + timeout
+    while time.time() < deadline:
+        try:
+            got = api.memory(path)
+            if got == value:
+                return {'ok': 1, 'path': path, 'value': value, 'verified': True}
+        except KeyError:
+            pass
+        time.sleep(1)
+    print(f'ERROR: Memory.{path} did not become {value!r} within {timeout}s', file=sys.stderr)
+    try:
+        print(f'  last read: {api.memory(path)!r}', file=sys.stderr)
+    except Exception as ex:
+        print(f'  last read error: {ex}', file=sys.stderr)
+    sys.exit(1)
+
 def probe():
     try: p = api.memory('ops.probe')
     except KeyError: return {}   # 'Incorrect memory path': Memory.ops.probe not created yet
