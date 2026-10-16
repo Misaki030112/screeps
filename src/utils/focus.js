@@ -38,7 +38,7 @@ function pick(towers, hostiles, o = {}) {
   return hurt || null; // hold fire
 }
 // Drain-pattern tracker. mem: {id: {hits, max, dmg, cyc, spent, seen, ban}}. present: hostiles now in room; shotId/energy: what we
-// fired last tick. A cycle = we damaged it, then it recovered to >=90% (healed on the strip or out of room). >=2 cycles, or >=1000
+// fired last tick. A cycle = we knocked it to <=70%, then it recovered to >=90% (healed on the strip or out of room). >=2 cycles, or >=1000
 // tower energy spent with hits recovered -> ban for BAN ticks. Returns Set of banned ids.
 const BAN = 1500;
 function track(mem, present, time, shotId, spent) {
@@ -46,8 +46,9 @@ function track(mem, present, time, shotId, spent) {
   for (const h of present) {
     const max = h.hitsMax || h.body.length * 100, r = mem[h.id] || (mem[h.id] = { hits: h.hits, max, dmg: false, cyc: 0, spent: 0 });
     if (shotId === h.id) r.spent += spent || 0;
-    if (h.hits < r.hits - 0.5) r.dmg = true;
-    else if (r.dmg && h.hits >= max * 0.9) { r.dmg = false; r.cyc++; }
+    // a cycle needs a REAL knock-down (<=70%) then recovery to >=90%: a 5000hp tank tickled to 94% and healed is not a drain (10-16 dpefwd3)
+    if (h.hits < r.hits - 0.5) { r.dmg = true; r.low = Math.min(r.low === undefined ? h.hits : r.low, h.hits); }
+    else if (r.dmg && h.hits >= max * 0.9) { if (r.low <= max * 0.7) r.cyc++; r.dmg = false; r.low = undefined; }
     r.hits = h.hits; r.max = max; r.seen = time;
     if (!r.ban && (r.cyc >= 2 || (r.spent >= 1000 && h.hits >= max * 0.9))) r.ban = time + BAN;
     if (r.ban && time >= r.ban) { r.ban = 0; r.cyc = 0; r.spent = 0; }

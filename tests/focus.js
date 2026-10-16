@@ -40,3 +40,10 @@ while (sq.length && tick < 200) { tick++; const p = F.pick(T, sq); if (!p) break
   for (const h of sq) h.hits = Math.min(h.body.length * 100, h.hits + F.healOn(h, sq) * (h === p.h ? 0 : 0));
   p.h.hits -= p.net; sq = sq.filter(h => h.hits > 0); }
 assert.ok(!sq.length, 'towers must kill the squad'); console.log(`focus ok; towers-only sim: squad dead in ${tick} ticks, ${e} tower energy`);
+{ // 10-16 dpefwd3: big tank lightly scratched (5000->4700) and healed twice is NOT a drain
+  const F = require('../src/utils/focus'), mem = {}, h = { id: 't', hits: 5000, hitsMax: 5000, body: [] };
+  let b; for (let i = 0; i < 3; i++) { h.hits = 4700; F.track(mem, [h], i * 2, 't', 20); h.hits = 5000; b = F.track(mem, [h], i * 2 + 1); }
+  require('assert').ok(!b.has('t'), 'light scratches must not ban');
+  for (let i = 0; i < 2; i++) { h.hits = 3000; F.track(mem, [h], 10 + i * 2, 't', 20); h.hits = 5000; b = F.track(mem, [h], 11 + i * 2); }
+  require('assert').ok(b.has('t'), 'real knock-down cycles ban'); console.log('focus dpefwd3 ok');
+}
