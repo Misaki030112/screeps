@@ -2,11 +2,31 @@
 const move = require('../utils/move'), remote = require('../managers/remote'), threat = require('../managers/threat');
 // cross-room travel through fixed exits along remote.route (home -> via... -> remote); returns true when in range of target
 const OFF = (x, y) => x === 49 ? RIGHT : x === 0 ? LEFT : y === 49 ? BOTTOM : TOP;
+// Border step-in. A creep still on an exit tile at the end of a tick is sent back to the other room, so a failed step-in
+// = bounce. 2026-10-16: loaded W45N7 rhaulers arriving at W46N8 49,21 stepped straight LEFT onto 48,21 while an outbound
+// rhauler stepped 47->48,21 on its cached path; the outbound one won, the loaded one stayed on 49 and bounced to W45N8
+// (2-4 ticks/trip). Pick an inward tile (straight first, then diagonals) that is not wall, not occupied and not the next
+// cached step (_m) of a nearby creep of ours. pure: inward(x, y, wall(x,y), busy(x,y)) -> direction
+function inward(x, y, wall, busy) {
+  const [dx, dy] = x === 0 ? [1, 0] : x === 49 ? [-1, 0] : y === 0 ? [0, 1] : [0, -1];
+  const C = dx ? [[dx, 0], [dx, -1], [dx, 1]] : [[0, dy], [-1, dy], [1, dy]];
+  const D = (a, b) => ({ '0,-1': TOP, '1,-1': TOP_RIGHT, '1,0': RIGHT, '1,1': BOTTOM_RIGHT, '0,1': BOTTOM, '-1,1': BOTTOM_LEFT, '-1,0': LEFT, '-1,-1': TOP_LEFT })[a + ',' + b];
+  const ok = C.filter(([a, b]) => { const nx = x + a, ny = y + b; return nx > 0 && nx < 49 && ny > 0 && ny < 49 && !wall(nx, ny); });
+  const free = ok.find(([a, b]) => !busy(x + a, y + b));
+  const [a, b] = free || ok[0] || C[0]; return D(a, b);
+}
+function stepIn(c) {
+  const T = c.room.getTerrain(), taken = new Set();
+  for (const o of c.pos.findInRange(FIND_CREEPS, 3)) { if (o === c) continue; taken.add(o.pos.x * 50 + o.pos.y);
+    const m = o.my && o.memory && o.memory._m; if (m && m.p) { const i = m.p.indexOf(String.fromCharCode(o.pos.x * 50 + o.pos.y + 192)), ch = i >= 0 ? m.p.charCodeAt(i + 1) : 0;
+      if (ch) taken.add(ch - 192); } }
+  return inward(c.pos.x, c.pos.y, (x, y) => T.get(x, y) === TERRAIN_MASK_WALL, (x, y) => taken.has(x * 50 + y));
+}
 function go(c, room, x, y, range, rr) {
   const rm = rr || c.memory.remote;
   if (c.room.name === room) {
     // just crossed: step off the border first
-    if (c.pos.x === 0 || c.pos.x === 49 || c.pos.y === 0 || c.pos.y === 49) { delete c.memory._m; c.move(c.pos.x === 0 ? RIGHT : c.pos.x === 49 ? LEFT : c.pos.y === 0 ? BOTTOM : TOP); return false; }
+    if (c.pos.x === 0 || c.pos.x === 49 || c.pos.y === 0 || c.pos.y === 49) { delete c.memory._m; c.move(stepIn(c)); return false; }
     return move.to(c, x, y, range);
   }
   const R = remote.route(rm), i = R.indexOf(c.room.name), j = R.indexOf(room);
@@ -196,4 +216,4 @@ roles.rscout = function (c) {
   if (remote.paused(c.memory.remote)) return flee(c);
   go(c, c.memory.remote, x, y, 1);
 };
-module.exports = { repairNow, rminer: { run: roles.rminer }, rhauler: { run: roles.rhauler }, reserver: { run: roles.reserver }, defender: { run: roles.defender }, rscout: { run: roles.rscout } };
+module.exports = { repairNow, inward, rminer: { run: roles.rminer }, rhauler: { run: roles.rhauler }, reserver: { run: roles.reserver }, defender: { run: roles.defender }, rscout: { run: roles.rscout } };
