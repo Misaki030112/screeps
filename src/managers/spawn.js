@@ -229,6 +229,13 @@ module.exports = { rhTarget, birthDirs, targets, rhaulerNeed, remoteNext, retiri
     if (avail < _.sum(b, p => BODYPART_COST[p])) return ERR_NOT_ENOUGH_ENERGY;
     const rv = spawn.spawnCreep(b, name, { memory: { role: 'probe', home: room.name, born: Game.time }, directions: birthDirs(spawn, 'probe') });
     if (rv === OK) PR.noteSpawned(name); return rv; }
+  // 2c) W47N8 conquest (roles/conquest.js): only when Memory.ops.cq.spawn/claim set; storage floor 3100
+  const CQ = require('../roles/conquest');
+  { const w = CQ.wantSpawn(room); if (w) {
+    if (avail < _.sum(w.body, p => BODYPART_COST[p])) return ERR_NOT_ENOUGH_ENERGY;
+    const name = w.role + Game.time;
+    const rv = spawn.spawnCreep(w.body, name, { memory: w.mem, directions: birthDirs(spawn, w.role) });
+    if (rv === OK) CQ.noteSpawned(name, w.role); return rv; } }
   const hp = require('../roles/hauler');
   const backlog = _.sum(hp.pickups(room), s => s.store[RESOURCE_ENERGY]);
   const [cx, cy] = P.pos.controllerContainer; const cc = rc.at(room, cx, cy, STRUCTURE_CONTAINER);
