@@ -1,6 +1,8 @@
 // Movement (simple by design): one cached path per creep+target, serialized one char per tile in memory (_m).
 // Fallback ladder when the creep does not change position (fatigue excluded):
-//   stuck 2  -> repath once treating creeps as obstacles (kept only if not much costlier than the blocked path)
+//   stuck 2  -> repath once treating creeps as obstacles (kept only if not much costlier than the blocked path;
+//               an INCOMPLETE creep-avoiding path = goal walled in by creeps -> keep the old path and swap at stuck 4.
+//               10-16: W45N7 rminer orbited 700t around 4 rhaulers boxing in the container, never reaching s=4)
 //   stuck 4  -> swap with / push our own non-stationary blocker
 //   stuck 8  -> step to any free neighbour tile, repath (reported to trace)
 //   stuck 30 -> console "STUCK" report once (box audit flags it). No automatic recycling.
@@ -51,7 +53,7 @@ function search(c, x, y, range, avoid, why) {
   const r = PathFinder.search(c.pos, { pos: new RoomPosition(x, y, c.room.name), range },
     { plainCost: 2, swampCost: 10, maxRooms: 1, maxOps: 2000, roomCallback: rn => matrix(rn, avoid) });
   trace.repath(c, why);
-  return [enc(c.pos) + r.path.map(enc).join(''), r.cost];
+  return [enc(c.pos) + r.path.map(enc).join(''), r.incomplete ? Infinity : r.cost];
 }
 // cost of the rest of a cached path (same costs as search, creeps ignored)
 function restCost(room, p, i) {

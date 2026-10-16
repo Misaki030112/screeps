@@ -6,8 +6,20 @@ import os, sys, json, subprocess, time
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__))); os.chdir(ROOT)
 sys.path.insert(0, 'scripts'); sys.path.insert(0, 'tools'); import api, db
 LOCK = 'state/deploy.lock'
-own = not os.path.exists(LOCK)
-if own: open(LOCK, 'w').write(f'deploy.py {time.strftime("%F %T")}\n')
+WAIT, STALE = 300, 900   # wait up to 5 min for another deploy; a lock older than 15 min is considered dead
+def acquire():
+    t0 = time.time()
+    while True:
+        try:
+            fd = os.open(LOCK, os.O_CREAT | os.O_EXCL | os.O_WRONLY)   # atomic: only one deploy can win
+            os.write(fd, f'deploy.py pid={os.getpid()} {time.strftime("%F %T")}\n'.encode()); os.close(fd); return
+        except FileExistsError:
+            try: age = time.time() - os.path.getmtime(LOCK)
+            except FileNotFoundError: continue
+            if age > STALE: print(f'removing stale lock ({age:.0f}s)'); os.remove(LOCK); continue
+            if time.time() - t0 > WAIT: sys.exit(f'deploy.lock held by: {open(LOCK).read().strip()} -- refusing to deploy')
+            print('deploy.lock held, waiting...'); time.sleep(5)
+acquire()
 try:
     subprocess.run(['node', 'scripts/check.js'], check=True)
     mods = {f[:-3]: open('dist/' + f).read() for f in os.listdir('dist')}
@@ -18,4 +30,4 @@ try:
     with db.connect() as c: c.execute('INSERT INTO deploys VALUES (now(),%s,%s,%s)', (t, h, ' '.join(sys.argv[1:])))
     print('deployed', h, 'tick', t)
 finally:
-    if own: os.remove(LOCK)
+    os.remove(LOCK)

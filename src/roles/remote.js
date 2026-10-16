@@ -43,6 +43,22 @@ const REP = { urgent: 30000, batch: 100000, idle: 100000 };
 function repairNow(hits, free, perHarvest, srcEmpty) {
   return hits < REP.urgent || (hits < REP.batch && free < perHarvest) || (srcEmpty && hits < REP.idle);
 }
+// 10-16 W45N7: the container (21,15) has only 3 free neighbours north (20-22,14) + 22,16 (22,15 is a foreign site, rest wall).
+// Waiting rhaulers filled all of them; the replacement rminer orbited outside for ~700t, source untouched at 3000/3000.
+// Rule: while our rminer is in the room but NOT yet on the container tile, rhaulers adjacent to the container back off to
+// range 3 so the approach tiles are free; they come back once the miner sits on the container.
+function yieldToMiner(c, C) {
+  const [cx, cy] = C.cont, d = Math.max(Math.abs(c.pos.x - cx), Math.abs(c.pos.y - cy));
+  const mine = c.room.find(FIND_MY_CREEPS, { filter: o => o.memory.role === 'rminer' && o.memory.remote === c.memory.remote });
+  const minerIn = mine.some(o => o.pos.x === cx && o.pos.y === cy);
+  if (mine.length && !minerIn) { if (d <= 2) awayFrom(c, cx, cy); return true; }
+  return false;
+}
+function awayFrom(c, cx, cy) {
+  const r = PathFinder.search(c.pos, { pos: new RoomPosition(cx, cy, c.room.name), range: 3 },
+    { flee: true, maxRooms: 1, roomCallback: rn => move.foreignSites(rn, new PathFinder.CostMatrix()) });
+  if (r.path.length) c.move(c.pos.getDirectionTo(r.path[0]));
+}
 const HOME = { rhauler: 'hauler', rminer: 'builder' };
 function flee(c) {
   const C = remote.CFG[c.memory.remote];
@@ -96,6 +112,7 @@ const roles = {
     if (c.room.name === C.home && !c.memory.dep) c.memory.dep = Game.time;
     if (c.room.name === c.memory.remote && c.pos.x > 0 && c.pos.x < 49) { const sv = S.pick(c); if (sv) { if (move.to(c, sv.pos.x, sv.pos.y, 1)) S.take(c, sv); return; } }
     if (!go(c, c.memory.remote, C.cont[0], C.cont[1], 1)) return;
+    if (yieldToMiner(c, C)) return;
     const drop = c.pos.findInRange(FIND_DROPPED_RESOURCES, 2).find(r => r.resourceType === RESOURCE_ENERGY && r.amount >= 30);
     if (drop) { if (c.pickup(drop) === ERR_NOT_IN_RANGE) c.moveTo(drop, { costCallback: move.foreignSites }); return; }
     const k = c.room.lookForAt(LOOK_STRUCTURES, C.cont[0], C.cont[1]).find(s => s.structureType === STRUCTURE_CONTAINER);
