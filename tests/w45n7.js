@@ -68,4 +68,11 @@ ok('buffered energy: outsider enters even if 3 wait', !stageOut(null, STAGE.ener
 ok('in-room closest 2 stay', !stageOut('a', 40, ['a', 'b', 'c']) && !stageOut('b', 40, ['a', 'b', 'c']));
 ok('in-room 3rd leaves', stageOut('c', 40, ['a', 'b', 'c']));
 ok('in-room alone stays', !stageOut('a', 40, ['a']));
-console.log(`w45n7 + stageOut: ${n} ok`);
+// 6) viaTake: staged rhauler takes one load from the via (W45N8) container, leaving VIA_KEEP for its own haulers
+const { viaTake, VIA_KEEP } = require(src('roles/remote.js'));
+ok('via full container: take', viaTake(2000, 400));
+ok('via keeps reserve: exact edge', viaTake(VIA_KEEP + 400, 400) && !viaTake(VIA_KEEP + 399, 400));
+ok('via low: no take', !viaTake(900, 400));
+ok('no free capacity: no take', !viaTake(2000, 0));
+ok('unknown container: no take', !viaTake(undefined, 400));
+console.log(`w45n7 + stageOut + viaTake: ${n} ok`);

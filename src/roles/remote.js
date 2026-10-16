@@ -73,6 +73,9 @@ function stageOut(me, contE, inRemote, waiters, energy) {
   if (me) return inRemote.length >= waiters && inRemote.slice(0, waiters).indexOf(me) < 0;
   return inRemote.length >= waiters; // outside: don't enter once remote already has its waiter slots
 }
+// pure: take a full load from the via container only while it keeps >= VIA_KEEP for its own haulers.
+const VIA_KEEP = 800;
+function viaTake(contE, free) { return free > 0 && (contE || 0) - free >= VIA_KEEP; }
 function stageVia(c, C) {
   if (!C.via || c.memory.full || c.store[RESOURCE_ENERGY] > 0) return false;
   const m = remote.mem(c.memory.remote), e = (m.cont && m.cont.e) || 0;
@@ -93,6 +96,18 @@ function stageVia(c, C) {
     return true;
   }
   if (c.room.name !== via) return false; // let normal go() bring us to via first
+  // Staged = idle surplus. W45N8's own 2x8C8M haul ~9.2/t (rt ~88) vs ~9.9 mined: its container sat at 2000 for ~700t
+  // (patrol 10-16 19:06). A staged hauler takes one load from the via container instead of waiting (0 spawn cost).
+  const vC = remote.CFG[via], vm = remote.mem(via);
+  if (vC && vC.cont && !remote.paused(via, 'rhauler') && viaTake(vm.cont && vm.cont.e, c.store.getFreeCapacity())) {
+    const k = c.room.lookForAt(LOOK_STRUCTURES, vC.cont[0], vC.cont[1]).find(s => s.structureType === STRUCTURE_CONTAINER);
+    if (k && viaTake(k.store[RESOURCE_ENERGY], c.store.getFreeCapacity())) {
+      if (!c.pos.isNearTo(k)) { move.to(c, k.pos.x, k.pos.y, 1); return true; }
+      if (c.withdraw(k, RESOURCE_ENERGY) === OK) { // full now (store updates next tick); credit via, keep the W45N7 rt sample
+        c.memory.full = true; c.memory.load = c.store.getFreeCapacity(); c.memory.from = via; delete c.memory.dep; }
+      return true;
+    }
+  }
   const ex = remote.exitTile(c.memory.remote, via, c.memory.remote);
   if (!ex) return false;
   if (Math.max(Math.abs(c.pos.x - ex[0]), Math.abs(c.pos.y - ex[1])) <= 2) {
@@ -135,7 +150,7 @@ const roles = {
     c.memory.working = false;
     if (!c.memory.full && c.store.getFreeCapacity() === 0) { c.memory.full = true; c.memory.load = c.store[RESOURCE_ENERGY]; }
     if (c.memory.full && c.store[RESOURCE_ENERGY] === 0) { c.memory.full = false; c.memory.trips = (c.memory.trips || 0) + 1;
-      const m = remote.mem(c.memory.remote); m.delivered = (m.delivered || 0) + (c.memory.load || 0); c.memory.load = 0; }
+      const m = remote.mem(c.memory.from || c.memory.remote); m.delivered = (m.delivered || 0) + (c.memory.load || 0); c.memory.load = 0; delete c.memory.from; }
     if (c.memory.full) {
       if (c.memory.dep && c.room.name === C.home && c.pos.x < 48) { c.memory.rt = Game.time - c.memory.dep; delete c.memory.dep; } // measured round trip
       if (c.room.name !== C.home || c.pos.x >= 48) return go(c, C.home, 40, 20, 5);
@@ -275,4 +290,4 @@ roles.rscout = function (c) {
   if (remote.paused(c.memory.remote)) return flee(c);
   go(c, c.memory.remote, x, y, 1);
 };
-module.exports = { repairNow, inward, stageOut, STAGE, rminer: { run: roles.rminer }, rhauler: { run: roles.rhauler }, reserver: { run: roles.reserver }, defender: { run: roles.defender }, rscout: { run: roles.rscout } };
+module.exports = { repairNow, inward, stageOut, STAGE, viaTake, VIA_KEEP, rminer: { run: roles.rminer }, rhauler: { run: roles.rhauler }, reserver: { run: roles.reserver }, defender: { run: roles.defender }, rscout: { run: roles.rscout } };
