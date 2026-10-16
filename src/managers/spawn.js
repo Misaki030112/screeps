@@ -165,7 +165,7 @@ module.exports = { targets, rhaulerNeed, remoteNext, retiring, B, reserverBody, 
     return go(count.miner ? 'hauler' : 'harvester', count.miner ? B.hauler(Math.max(200, avail)) : B.harvester(Math.max(200, avail)));
   // 1b) defender: top of the queue; while collecting energy for it only miners/queen may still spawn (non-critical paused)
   const threat = require('./threat'), want = threat.wantDefender(room.name);
-  if (want && rcl >= 4) {
+  if (want && rcl >= 4 && threat.armed(want)) {
     if (avail >= 1300) { const name = 'defender' + Game.time, rv = spawn.spawnCreep(B.defender(1300), name, { memory: { role: 'defender', home: room.name, remote: want, born: Game.time }, directions: birthDirs(spawn, 'defender') });
       if (rv === OK) threat.noteSpawn(want, name); return rv; }
   }

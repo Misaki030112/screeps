@@ -148,3 +148,12 @@ We match the conservative early pattern today; Overmind’s fight-remotes patter
 - Drain tracker `focus.track` → `room.memory.drain[id]`: a cycle = we damaged it, then it recovered to ≥90% (healed on strip or outside). ≥2 cycles, or ≥1000 tower energy spent with hits recovered → banned for 1500 ticks.
 - Banned creep: held fire only while on the exit strip (x/y ≤1 or ≥48); still shot if it moves inward, hurts us, or dies within 2 ticks.
 - Energy floor: targets that neither hurt us nor die within 2 ticks are only shot by towers with ≥300 energy (`FIRE_FLOOR`).
+
+## 2026-10-16: no defensive combat creeps (Misaki: all energy to upgrading)
+All spawning of combat creeps on enemy presence is off by default, controlled by `Memory.defense` flags (managers/home.js FLAGS):
+- `guards` (home guards vs players), `earlyWalls`: off since fccf46c.
+- `remoteDefender` (W45N8 anti-Invader defender, docs/DEFENDER.md): off since this change. `threat.armed()` returns false unless
+  `Memory.defense.remoteDefender === true`; the FSM goes WAIT 'gate' (remote creeps park at home, Invader waited out), and a
+  THREAT/DEFEND already in progress drops to WAIT so any live defender walks to spawn and recycles. No energy hold for upgraders/builders.
+  This was what still spawned `defender…` creeps (5 RANGED_ATTACK + 6 MOVE + HEAL, 1300e) when an NPC Invader entered W45N8.
+Kept: tower focus fire, civilian flee, remote creeps going home. Re-enable from console: `Memory.defense = { remoteDefender: true }`.

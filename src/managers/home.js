@@ -5,7 +5,7 @@
 //   wantGuards    : guards to keep while hostiles are in the room, sized to the threat
 // Switches (Misaki 2026-10-16 09:51: the BustJetter squad is not worth slowing the upgrade for). Code default OFF;
 // re-enable without a deploy from the console: Memory.defense = { earlyWalls: true, guards: true }
-const FLAGS = { earlyWalls: false, guards: false };
+const FLAGS = { earlyWalls: false, guards: false, remoteDefender: false }; // remoteDefender: W45N8 anti-Invader defender (threat.armed)
 const on = k => { const m = typeof Memory !== 'undefined' && Memory.defense; return m && m[k] !== undefined ? !!m[k] : FLAGS[k]; };
 const C = {}; const now = () => (typeof Game === 'undefined' ? 0 : Game.time); const COMBAT = ['attack', 'ranged_attack', 'heal', 'work'];
 function hostiles(room) {

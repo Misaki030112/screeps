@@ -59,12 +59,14 @@ function step(s, o, c, t) {
       break;
     case S.THREAT:
       if (k === 'none') go(S.SAFE, 'gone');
+      else if (!o.armed) waitNpc('gate'); // disarmed mid-THREAT: wait out, any defender recycles
       else if (k !== 'solo') waitNpc(k === 'short' ? 'short_ttl' : 'escalated');
       else if (o.def === 'out') go(S.DEFEND, 'dispatched');
       else if (o.def !== 'spawning' && t - s.since > c.readyTimeout) waitNpc('timeout');
       break;
     case S.DEFEND:
-      if (o.def === 'dead') waitNpc('defender_died');
+      if (!o.armed && k !== 'none') waitNpc('gate');
+      else if (o.def === 'dead') waitNpc('defender_died');
       else if (o.def === 'none') waitNpc('defender_expired');
       else if (k === 'none' && o.vis && t - s.gone >= c.clearTicks) go(S.SAFE, 'killed');
       else if (k === 'invader') waitNpc('escalated');
@@ -87,6 +89,8 @@ const mem = r => { const R = Memory.remote = Memory.remote || {}; R[r] = R[r] ||
 const hist = (m, key, c) => (m[key] = (m[key] || []).filter(x => Game.time - x < c.dayTicks));
 function armed(r) { // code-level enable gate: flag AND RCL4 stable AND CLAIM2 reserver (patrol may flip only the flag)
   const R = require('./remote'), C = R.CFG[r], m = mem(r), home = Game.rooms[C.home];
+  // Misaki 10-16: no defensive combat creeps, all energy to upgrading. Off unless Memory.defense.remoteDefender === true.
+  if (!require('./home').on('remoteDefender')) return false;
   if (!(C.defend || m.defend) || !home || !home.controller) return false;
   const hm = home.memory, c = cfg(r);
   // RCL5+ already held RCL4 for >>stableTicks; seed the clock so a Memory wipe cannot disarm mid-raid

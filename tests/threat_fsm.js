@@ -60,10 +60,13 @@ it('WAIT on NPC ends early when vision shows the room clear', () => assert.deepS
 it('WAIT timer ends without vision', () => assert.deepStrictEqual(run([[1, { inv: solo(100), armed: false }], [180, { vis: false }], [182, { vis: false }]]).states, ['WAIT', 'WAIT', 'SAFE']));
 it('memory loss / global reset: missing state starts SAFE and re-detects next tick', () => { assert.strictEqual(T.step(undefined, base({ inv: solo() }), C, 5).s.st, 'THREAT'); assert.strictEqual(T.step({}, base({}), C, 5).s.st, 'SAFE'); });
 it('step is pure (does not mutate input state)', () => { const s = { st: 'SAFE', since: 1 }; T.step(s, base({ inv: solo() }), C, 2); assert.deepStrictEqual(s, { st: 'SAFE', since: 1 }); });
+it('disarmed mid-THREAT/DEFEND -> WAIT gate (defender recycles)', () => {
+  assert.deepStrictEqual(run([[1, { inv: solo() }], [2, { inv: solo(), armed: false, def: 'spawning' }]]).states, ['THREAT', 'WAIT']);
+  assert.deepStrictEqual(run([[1, { inv: solo() }], [2, { inv: solo(), def: 'out' }], [3, { inv: solo(), armed: false, def: 'out' }]]).states, ['THREAT', 'DEFEND', 'WAIT']); });
 // armed() gate in Game context
 it('armed(): flag + RCL4 stable 1500t + full + CLAIM2 reserver', () => {
   const home = { controller: { level: 4 }, energyCapacityAvailable: 1300, energyAvailable: 0, memory: { lastFull: 0 } };
-  global.Memory = { remote: {}, creeps: {} }; global.Game = { time: 1000, rooms: { W46N8: home }, creeps: {} };
+  global.Memory = { remote: {}, creeps: {}, defense: { remoteDefender: true } }; global.Game = { time: 1000, rooms: { W46N8: home }, creeps: {} };
   const R = require(path.join(__dirname, '..', 'src/managers/remote.js')); R.CFG.W45N8.defend = true;
   home.memory.lastFull = 1000; assert.strictEqual(T.armed('W45N8'), false); // RCL4 just reached
   Game.time = 2600; home.memory.lastFull = 2590; assert.strictEqual(T.armed('W45N8'), false); // no CLAIM2
@@ -75,6 +78,7 @@ it('armed(): flag + RCL4 stable 1500t + full + CLAIM2 reserver', () => {
   home.memory = {}; Game.time = 5000; assert.strictEqual(T.armed('W45N8'), true);
   home.energyAvailable = 400; assert.strictEqual(T.armed('W45N8'), false); // cannot afford and lastFull missing
   home.memory.lastFull = 4900; assert.strictEqual(T.armed('W45N8'), true); // recently near-full still counts
+  delete Memory.defense; assert.strictEqual(T.armed('W45N8'), false); // default off (Misaki 10-16: all energy to upgrading)
 });
 for (const [n, f] of cases) { try { f(); pass++; console.log('ok   ' + n); } catch (e) { console.log('FAIL ' + n + '\n     ' + e.message); } }
 console.log(`${pass}/${cases.length} passed`); if (pass !== cases.length) process.exit(1);
