@@ -1,4 +1,4 @@
 {
-  "next_at": "2026-10-17T07:15:00+08:00",
-  "reason": "Steady state 05:12, no deploy (live 5943068). upg 1h 22.1 / 86m 24.3 vs ideal 21.7 (energy-bound; upgrader waiting_feed ~45% expected with WORK 24), RCL5 916k/1.215M ETA RCL6 ~14.2h (~10-17 19:30). Live snapshot showed upgrader 2 / hauler 1 (replacement wave?) - re-check counts back to u3 h2, ctl container refill, storage ~3.0k. Remotes SAFE armed res 2237/1462, conts W45N8 1864 W45N7 588. CPU ~5.5-6.1 bkt10k errors0. Pending idea (ROADMAP L56) shared path cache only if CPU tight."
+  "next_at": "2026-10-17T08:15:00+08:00",
+  "reason": "VERIFY 78f9114 (deployed 07:31 tick 83692655): one builder should spawn (no home sites, T.builder from remote road site W45N8 2,12 0/1500), first load from home storage, refills from W45N8 cont (>= free+400), site done in ~200-300t, then builder dumps + recycles after 50t idle (memory.nt). Check: no errors, site progress, W45N8 rhaulers still fed, builder not stuck/no_task, after completion loaded W45N8 rhaulers use 2,12 (no 5t wait at 3,12), builder gone (T.builder 0). Baseline: upg 6h ~24 / 1h 19.6 vs ideal 21.7 (energy-bound), RCL5 959.9k/1.215M ETA RCL6 ~12.3h (~19:40), storage ~4.1k, conts W45N8 2000 W45N7 0, res 1945/1764 SAFE armed, CPU ~6 bkt10k errors0."
 }
