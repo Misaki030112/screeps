@@ -59,3 +59,13 @@ ok('energyHold on (gate + needE + solo)', TH.energyHold('W46N8') && TH.holding('
 Memory.remote.W45N7.needE = false; ok('no hold when the gate is not energy', !TH.energyHold('W46N8'));
 Memory.remote.W45N7.needE = true; Memory.remote.W45N7.th.last = [{ heal: true }]; ok('no hold for healer group', !TH.energyHold('W46N8'));
 console.log(`w45n7 + energyHold: ${n} ok`);
+
+// 5) stageOut: empty rhauler via-staging when container is drained
+const { stageOut, STAGE } = require(src('roles/remote.js'));
+ok('low energy + 2 waiters: outsider stages', stageOut(null, 40, ['a', 'b']));
+ok('low energy + 1 waiter: outsider enters', !stageOut(null, 40, ['a']));
+ok('buffered energy: outsider enters even if 3 wait', !stageOut(null, STAGE.energy, ['a', 'b', 'c']));
+ok('in-room closest 2 stay', !stageOut('a', 40, ['a', 'b', 'c']) && !stageOut('b', 40, ['a', 'b', 'c']));
+ok('in-room 3rd leaves', stageOut('c', 40, ['a', 'b', 'c']));
+ok('in-room alone stays', !stageOut('a', 40, ['a']));
+console.log(`w45n7 + stageOut: ${n} ok`);

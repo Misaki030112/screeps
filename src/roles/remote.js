@@ -59,6 +59,47 @@ function awayFrom(c, cx, cy) {
     { flee: true, maxRooms: 1, roomCallback: rn => move.foreignSites(rn, new PathFinder.CostMatrix()) });
   if (r.path.length) c.move(c.pos.getDirectionTo(r.path[0]));
 }
+// Multi-hop (W45N7): container has ~3 free neighbours. Empty rhaulers piled on them (patrol 10-16 18:00:
+// tiles 20-22,14 + 22,16 dominated traffic; 6× waiting_pickup lost/h 300-676). Cap concurrent empty waiters
+// in the remote; extras hold in the last via room until the container buffers energy for a load.
+const STAGE = { waiters: 2, energy: 350 };
+// pure: should `me` stay out / leave? inRemote = empty-rhauler names in remote, closest-to-cont first.
+// me = creep name when already in remote, falsy when still in via/home.
+// inRemote = empty-rhauler names in remote, closest-to-container first.
+function stageOut(me, contE, inRemote, waiters, energy) {
+  waiters = waiters === undefined ? STAGE.waiters : waiters;
+  energy = energy === undefined ? STAGE.energy : energy;
+  if (contE >= energy) return false;
+  if (me) return inRemote.length >= waiters && inRemote.slice(0, waiters).indexOf(me) < 0;
+  return inRemote.length >= waiters; // outside: don't enter once remote already has its waiter slots
+}
+function stageVia(c, C) {
+  if (!C.via || c.memory.full || c.store[RESOURCE_ENERGY] > 0) return false;
+  const m = remote.mem(c.memory.remote), e = (m.cont && m.cont.e) || 0;
+  const [cx, cy] = C.cont;
+  const inR = _.filter(Game.creeps, o => o.memory.role === 'rhauler' && o.memory.remote === c.memory.remote
+    && !o.memory.full && (o.store[RESOURCE_ENERGY] || 0) === 0 && o.room && o.room.name === c.memory.remote);
+  const ordered = inR.slice().sort((a, b) => {
+    const da = Math.max(Math.abs(a.pos.x - cx), Math.abs(a.pos.y - cy));
+    const db = Math.max(Math.abs(b.pos.x - cx), Math.abs(b.pos.y - cy));
+    return da - db || a.name.localeCompare(b.name);
+  }).map(o => o.name);
+  const inRemote = c.room.name === c.memory.remote;
+  if (!stageOut(inRemote ? c.name : null, e, ordered)) return false;
+  const via = C.via[C.via.length - 1];
+  if (inRemote) {
+    const ex = remote.exitTile(c.memory.remote, c.memory.remote, via);
+    if (ex) go(c, via, ex[0], ex[1], 0);
+    return true;
+  }
+  if (c.room.name !== via) return false; // let normal go() bring us to via first
+  const ex = remote.exitTile(c.memory.remote, via, c.memory.remote);
+  if (!ex) return false;
+  if (Math.max(Math.abs(c.pos.x - ex[0]), Math.abs(c.pos.y - ex[1])) <= 2) {
+    require('../utils/trace').why(c, 'p'); return true;
+  }
+  move.to(c, ex[0], ex[1], 2); return true;
+}
 const HOME = { rhauler: 'hauler', rminer: 'builder' };
 function flee(c) {
   const C = remote.CFG[c.memory.remote];
@@ -111,6 +152,7 @@ const roles = {
     if (c.room.name === C.home && c.ticksToLive && c.ticksToLive < (c.memory.rt || C.rt || 200) + 40) { c.memory.home = C.home; return require('./hauler').run(c); }
     if (c.room.name === C.home && !c.memory.dep) c.memory.dep = Game.time;
     if (c.room.name === c.memory.remote && c.pos.x > 0 && c.pos.x < 49) { const sv = S.pick(c); if (sv) { if (move.to(c, sv.pos.x, sv.pos.y, 1)) S.take(c, sv); return; } }
+    if (stageVia(c, C)) return;
     if (!go(c, c.memory.remote, C.cont[0], C.cont[1], 1)) return;
     if (yieldToMiner(c, C)) return;
     const drop = c.pos.findInRange(FIND_DROPPED_RESOURCES, 2).find(r => r.resourceType === RESOURCE_ENERGY && r.amount >= 30);
@@ -233,4 +275,4 @@ roles.rscout = function (c) {
   if (remote.paused(c.memory.remote)) return flee(c);
   go(c, c.memory.remote, x, y, 1);
 };
-module.exports = { repairNow, inward, rminer: { run: roles.rminer }, rhauler: { run: roles.rhauler }, reserver: { run: roles.reserver }, defender: { run: roles.defender }, rscout: { run: roles.rscout } };
+module.exports = { repairNow, inward, stageOut, STAGE, rminer: { run: roles.rminer }, rhauler: { run: roles.rhauler }, reserver: { run: roles.reserver }, defender: { run: roles.defender }, rscout: { run: roles.rscout } };
