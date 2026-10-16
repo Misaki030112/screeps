@@ -1,7 +1,7 @@
 # Strategy — W46N8 (home) + W45N8 (remote), 20 CPU, shard3
 
 Sources: Screeps docs (control, defense, invaders, CPU), screepers wiki, Overmind / TooAngel / Hivemind patterns.
-Last full refresh: **2026-10-14 strategy review** (RCL5 readiness: `docs/RCL5.md`); 2026-10-15 review: RCL6 readiness `docs/RCL6.md` (see also `docs/DEFENSE.md`, `docs/LAYOUT_V2.md`, `docs/REMOTE_W45N8.md`, `docs/MODEL.md`, `docs/DATA.md`).
+Last full refresh: **2026-10-16 strategy review** (defence before novice end: `docs/DEFENSE_NOVICE.md`); prior: RCL6 readiness `docs/RCL6.md` (10-15), RCL5 `docs/RCL5.md` (10-14). Also `docs/DEFENSE.md`, `docs/DEFENSE_PLAN.md`, `docs/LAYOUT_V2.md`, `docs/REMOTE_W45N8.md`, `docs/MODEL.md`, `docs/DATA.md`.
 
 ## Principles
 
@@ -12,17 +12,18 @@ Last full refresh: **2026-10-14 strategy review** (RCL5 readiness: `docs/RCL5.md
 5. **Growth after RCL4:** remote mining (W45N8 approved and live), then links; a 2nd room only with explicit Misaki approval (GCL 2 already allows a claim).
 6. **Major decisions need approval:** claim/expand, attack or provoke player neighbours, spend credits/pixels, activate safe mode, respawn.
 
-## Current state (2026-10-14 ~14:45 UTC+8)
+## Current state (2026-10-16 ~14:35 UTC+8)
 
 | | |
 |---|---|
-| Home | W46N8 RCL4 288.6k/405k, cap 1300, storage ~2.2k, 1 tower (1000), 16 ramparts 50–57k (target 50k ✓), safe mode **3 available** |
-| Upgrade | ~20/t (last 2h), 24/t when ctl container fed; 24h avg 14.3/t (incl. RCL4 build phase); model ideal 23.5 (energy-bound) |
-| RCL5 ETA | **tonight ~21:00–22:00** — transition plan `docs/RCL5.md` |
-| Remote | W45N8 SAFE, reserved (CLAIM2, ~4350 ticks), delivered 175k total (~7.5 e/t over 24h); 4 Invader episodes in 48h |
-| CPU | ~4.1 avg (max 19.6 spike), bucket 10000 |
-| Novice ends | **2026-10-28 03:33 UTC+8** |
-| Neighbours | The Council: BustJetter (W47N9 RCL6, reserves W47N8; scouts our room constantly, 0 dmg), Fandalah (W44N8 **RCL6**, up from 5). RCL8 drtk712 W46N9 / FungousCoast245 W46N7 outside our novice zone; home has no N/S exits |
+| Home | W46N8 RCL5 **~631k/1.215M** (~52%), cap 1800, storage ~2.0–2.4k, **2 towers** (~970e), critical ramparts ≥100k (filler stand-tiles decaying by design), safe mode **4 available** |
+| Upgrade | ctl_ema ≈21–23/t (energy-bound; model ideal ~21.8–23.5); ~+270k progress in ~15.5 h DB window |
+| RCL6 ETA | **~10-17 21:00 – 10-18 morning** — then bank 20k → outer walls (`docs/DEFENSE_NOVICE.md`) |
+| Remote | W45N8 SAFE, CLAIM2, reservation ~1.9k, delivered **~506k**, container 100k hits; **remoteDefender ON** |
+| Defence flags | `remoteDefender` ON; `guards` / `earlyWalls` **OFF** (upgrade-first; Misaki 10-16) |
+| CPU | ~4.0–4.5 avg, bucket 10000, nerr 0 |
+| Novice ends | **2026-10-28 03:33 UTC+8** (~11.5 days) |
+| Neighbours | Council: BustJetter W47N9 RCL6 + W48N9 ~8 combat (watch, thinned); scouts through us 0 dmg. Fandalah W44N8 RCL6 no combat. RCL8 N/S still outside our exits |
 
 Ideal vs actual: `tools/model.py` / Grafana. Remaining gap ≈ ctl-feed dead-bands (closing) and remote pauses; more upgrade needs more income (expansion — shelved).
 
@@ -33,9 +34,9 @@ Ideal vs actual: `tools/model.py` / Grafana. Remaining gap ≈ ctl-feed dead-ban
 | P0 Bootstrap | spawn placed | harvesters → miners path | RCL2 ✅ |
 | P1 Economy | RCL2 | extensions, containers, static miners + haulers, core roads | RCL3 ✅ |
 | P2 Defence | RCL3 | tower #1, ramparts spawn/tower, **alerts (no auto SM)**, 10 ext, layout v2 | tower live before novice ends ✅ early |
-| P3 Storage + remote harden | RCL4 | storage, 20 ext, CLAIM2 reserver, rampart HP 50k, optional Invader defender (see DEFENSE.md) | storage > 50k |
+| P3 Storage + remote harden | RCL4 | storage, 20 ext, CLAIM2 reserver, rampart HP 50k, Invader defender ON (DEFENDER.md) | storage > 50k ✅ (economy); walls bank still pending |
 | P4 Links | RCL5 | tower #2 first; link plan per `docs/RCL5.md` (recommended: hub + controller link at RCL5, source A at RCL6; stationary fillers from RCL7) — needs Misaki | CPU avg < 15 |
-| P5 RCL6 | RCL6 | source A link + 10 ext first; v4 walls (bank storage to 20k first); terminal/extractor/labs **deferred** (`plan.RCL6_MINERALS`, Misaki decides minerals/market) | walls step 2 |
+| P5 RCL6 | RCL6 | source A link + 10 ext first; v4 walls (bank 20k → step 1 100k before 10-28); terminal/extractor/labs **deferred** (`plan.RCL6_MINERALS`) | wall step 1 live; step 2 may finish after novice end |
 | P6 Expand | RCL6+, GCL≥2 | **2nd room only with Misaki approval** | 2nd room RCL3 |
 | P7 RCL7–8 | — | spawns 2–3, factory, 6 towers, power spawn, nuker, observer; min-cut if needed | RCL8 |
 
@@ -44,6 +45,6 @@ Ideal vs actual: `tools/model.py` / Grafana. Remaining gap ≈ ctl-feed dead-ban
 - Never let refill/harvesters drop to 0 (emergency body from `energyAvailable`).
 - ≤ 5 construction sites; planner every 50 ticks or on RCL change.
 - Every upload passes `scripts/check.js` (+ `scripts/sim.js`).
-- Remote: flee + pause on hostile combat (Invader or player); never attack players; NPC defender only if approved.
+- Remote: flee + pause on player combat; **NPC Invader defender ON** (W45N8); never attack players.
 - Safe mode: **alert only** — Misaki decides.
 - Patrol owns `state/next_iteration.json` cadence; strategy review updates docs/roadmap and small safe code fixes.

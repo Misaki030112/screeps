@@ -1,7 +1,7 @@
 # Defence readiness — W46N8 + remote W45N8
 
 First strategy-review write-up: **2026-10-13 14:40 (UTC+8)**.  
-Novice zone ends **2026-10-28 03:33 UTC+8** (~14.5 days). Hard rule: **NEVER auto-activate safe mode** — alert Misaki and wait.
+Novice zone ends **2026-10-28 03:33 UTC+8**. Schedule: **`docs/DEFENSE_NOVICE.md`** (2026-10-16). Hard rule: **NEVER auto-activate safe mode** — alert Misaki and wait.
 
 ## Home (W46N8) — current
 
@@ -118,13 +118,17 @@ We match the conservative early pattern today; Overmind’s fight-remotes patter
 
 ## Checklist before novice ends (deadline **2026-10-25** review)
 
-- [x] RCL4 storage + rampart target 50k — done 2026-10-14 (16 ramparts 50–57k)
-- [ ] Tower energy discipline (≥800 combat reserve) — **done 2026-10-13**
-- [ ] Attack alerts include `safeModeAvailable` — **done 2026-10-13**
-- [ ] Decide remote Invader-defender policy (proposal above)
-- [ ] RCL5 tower 2 — first RCL5 site since 2026-10-14 review (build order tower→extension); RCL5 assessment in `docs/RCL5.md`
-- [ ] Min-cut / outer ramparts design pass
+Full timeline: **`docs/DEFENSE_NOVICE.md`**.
+
+- [x] RCL4 storage + rampart target 50k — done 2026-10-14
+- [x] Tower energy discipline (≥800 combat reserve) — 2026-10-13
+- [x] Attack alerts include `safeModeAvailable` — 2026-10-13
+- [x] Remote Invader-defender ON (W45N8) — restored 2026-10-16
+- [x] RCL5 tower 2 — live
+- [x] Outer wall geometry + v4 policy coded (dormant until RCL6 bank) — 2026-10-15/16
+- [ ] RCL6 → bank 20k → wall step 1 (100k) before 2026-10-28
 - [ ] Confirm safe-mode decision tree with Misaki (when she would activate)
+- [ ] 2026-10-25 deadline review (guards / minerals / W45N7 / step 2)
 
 ## Home defense (2026-10-16, BustJetter squad 2x RA + 6 HEAL in W47N8)
 - **Towers** (`utils/focus.js`, `managers/tower.js`): all towers fire one target. net = tower dmg at range (600 ≤5 → 150 ≥20; TOUGH/boost reduced) − max heal reachable from every hostile healer (self/adjacent 12/HEAL, range 2-3 4, boosts ×2-4). Healer first if net>0, else fastest kill; net≤0 → hold fire unless it is hurting us; edge-strip targets only if dead within 1 tick (anti-drain). Sticky on a target dying within 2 ticks. Holding fire: heal own creeps, repair only barriers <2000 hits with tower >500.
