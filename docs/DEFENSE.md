@@ -149,11 +149,11 @@ We match the conservative early pattern today; Overmind’s fight-remotes patter
 - Banned creep: held fire only while on the exit strip (x/y ≤1 or ≥48); still shot if it moves inward, hurts us, or dies within 2 ticks.
 - Energy floor: targets that neither hurt us nor die within 2 ticks are only shot by towers with ≥300 energy (`FIRE_FLOOR`).
 
-## 2026-10-16: no defensive combat creeps (Misaki: all energy to upgrading)
-All spawning of combat creeps on enemy presence is off by default, controlled by `Memory.defense` flags (managers/home.js FLAGS):
-- `guards` (home guards vs players), `earlyWalls`: off since fccf46c.
-- `remoteDefender` (W45N8 anti-Invader defender, docs/DEFENDER.md): off since this change. `threat.armed()` returns false unless
-  `Memory.defense.remoteDefender === true`; the FSM goes WAIT 'gate' (remote creeps park at home, Invader waited out), and a
-  THREAT/DEFEND already in progress drops to WAIT so any live defender walks to spawn and recycles. No energy hold for upgraders/builders.
-  This was what still spawned `defender…` creeps (5 RANGED_ATTACK + 6 MOVE + HEAL, 1300e) when an NPC Invader entered W45N8.
-Kept: tower focus fire, civilian flee, remote creeps going home. Re-enable from console: `Memory.defense = { remoteDefender: true }`.
+## 2026-10-16: home combat creeps off; remote anti-Invader on (Misaki)
+`Memory.defense` / `managers/home.js` FLAGS:
+- `guards` (home vs players), `earlyWalls`: **default off** since fccf46c (BustJetter squad not worth slowing upgrade).
+- `remoteDefender` (W45N8 anti-NPC-Invader, docs/DEFENDER.md): briefly defaulted off in c6ce97e (misread as home guards);
+  **restored default ON** 10-16 ~10:39 (Misaki: keep remote defender). `threat.armed()` follows the flag; WAIT `'gate'`
+  re-arms to THREAT when the flag is on and a solo Invader is still present. Explicit off without redeploy:
+  `Memory.defense.remoteDefender = false`. Mid-fight disarm still drops THREAT/DEFEND → WAIT and recycles a live defender.
+Kept always: tower focus fire, civilian flee, remote creeps parking at home on player combat / wait-out.

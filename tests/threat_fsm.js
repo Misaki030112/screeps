@@ -78,7 +78,8 @@ it('armed(): flag + RCL4 stable 1500t + full + CLAIM2 reserver', () => {
   home.memory = {}; Game.time = 5000; assert.strictEqual(T.armed('W45N8'), true);
   home.energyAvailable = 400; assert.strictEqual(T.armed('W45N8'), false); // cannot afford and lastFull missing
   home.memory.lastFull = 4900; assert.strictEqual(T.armed('W45N8'), true); // recently near-full still counts
-  delete Memory.defense; assert.strictEqual(T.armed('W45N8'), false); // default off (Misaki 10-16: all energy to upgrading)
+  delete Memory.defense; assert.strictEqual(T.armed('W45N8'), true); // default ON (Misaki 10:39: keep remote anti-Invader)
+  Memory.defense = { remoteDefender: false }; assert.strictEqual(T.armed('W45N8'), false); // explicit off still works
 });
 for (const [n, f] of cases) { try { f(); pass++; console.log('ok   ' + n); } catch (e) { console.log('FAIL ' + n + '\n     ' + e.message); } }
 console.log(`${pass}/${cases.length} passed`); if (pass !== cases.length) process.exit(1);

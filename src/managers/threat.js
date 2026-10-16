@@ -89,7 +89,7 @@ const mem = r => { const R = Memory.remote = Memory.remote || {}; R[r] = R[r] ||
 const hist = (m, key, c) => (m[key] = (m[key] || []).filter(x => Game.time - x < c.dayTicks));
 function armed(r) { // code-level enable gate: flag AND RCL4 stable AND CLAIM2 reserver (patrol may flip only the flag)
   const R = require('./remote'), C = R.CFG[r], m = mem(r), home = Game.rooms[C.home];
-  // Misaki 10-16: no defensive combat creeps, all energy to upgrading. Off unless Memory.defense.remoteDefender === true.
+  // remoteDefender (home.js FLAGS) defaults ON; Memory.defense.remoteDefender can force off without redeploy.
   if (!require('./home').on('remoteDefender')) return false;
   if (!(C.defend || m.defend) || !home || !home.controller) return false;
   const hm = home.memory, c = cfg(r);
