@@ -13,6 +13,11 @@ from api import TOKEN, ROOT, req
 ROOM, SHARD = 'W46N8', 'shard3'
 WATCH = 'W45N8'  # remote: watch events + creep trail
 TRAIL = ('W45N7',)  # other remotes: creep trail only (creep_ticks), not mixed into live.json
+# The server delivers at most 2 room subscriptions per user per tick: with 3 it answers 'err@room:… subscribe limit reached'
+# in rotation and every room loses ~25-60% of ticks (test 10-17 01:35: 2 rooms 10/10 ticks, 3 rooms 7-8/10 each; home coverage
+# fell ~95% -> 35-70% after W45N7 was added 16:25). So: ROOM always, plus ONE remote slot rotating WATCH / TRAIL rooms.
+ROT = ((WATCH, 600), ('W45N7', 300))  # (room, seconds held)
+rot = {'i': 0}
 watch = {'objects': {}, 'last': None}
 M = os.path.join(ROOT, 'metrics'); os.makedirs(M, exist_ok=True)
 UID = req('auth/me')['_id']
@@ -40,11 +45,16 @@ def decode(msg):
 def on_message(ws, msg):
     msg = decode(msg)
     if msg.startswith('auth ok'):
-        for ch in (f'user:{UID}/console', f'user:{UID}/cpu', f'room:{SHARD}/{ROOM}', f'room:{SHARD}/{WATCH}', *(f'room:{SHARD}/{r}' for r in TRAIL)): ws.send('subscribe ' + ch)
+        for ch in (f'user:{UID}/console', f'user:{UID}/cpu', f'room:{SHARD}/{ROOM}'): ws.send('subscribe ' + ch)
+        sub_remote(ws, ROT[rot['i']][0])
         append('console.log', f'{stamp()} [listener] subscribed'); return
     if msg.startswith('auth failed'): append('errors.log', f'{stamp()} [listener] auth failed'); ws.close(); return
     if not msg.startswith('['): return
     ch, data = json.loads(msg)
+    if not isinstance(data, dict):  # e.g. ['err@room:shard3/W45N7', 'subscribe limit reached']
+        errs[ch] = errs.get(ch, 0) + 1
+        if errs[ch] in (1, 100) or errs[ch] % 1000 == 0: append('errors.log', f'{stamp()} [listener] {ch}: {str(data)[:100]} (x{errs[ch]})')
+        return
     if ch.endswith('/console'):
         if data.get('shard') not in (None, SHARD): return
         lines = (data.get('messages') or {}).get('log', []) + [f'< {r}' for r in (data.get('messages') or {}).get('results', [])]
@@ -103,6 +113,18 @@ def on_message(ws, msg):
             live['gameTime'] = data.get('gameTime', live['gameTime'])
         write_live()
 last_stats = [time.time()]
+errs = {}
+def sub_remote(ws, room):
+    """(re)subscribe the single remote slot; drop cached objects so a returning room never replays stale creeps"""
+    rooms_state.pop(room, None)
+    if room == WATCH: watch['objects'] = {}
+    ws.send(f'subscribe room:{SHARD}/{room}')
+def rotator(ws):
+    while True:
+        time.sleep(ROT[rot['i']][1])
+        old = ROT[rot['i']][0]; rot['i'] = (rot['i'] + 1) % len(ROT)
+        try: ws.send(f'unsubscribe room:{SHARD}/{old}'); sub_remote(ws, ROT[rot['i']][0])
+        except Exception as ex: append('errors.log', f'{stamp()} [listener] rotate {ex}')
 # ---- continuous telemetry: every creep, every room update (no in-game CPU) ----
 rooms_state = {}  # room -> {oid: obj}
 role_of = lambda n: ''.join(ch for ch in (n or '') if ch.isalpha()) or None
@@ -169,6 +191,7 @@ def on_error(ws, e): append('errors.log', f'{stamp()} [listener] ws error {e}')
 if __name__ == '__main__':
     ws = websocket.WebSocketApp('wss://screeps.com/socket/websocket', on_open=on_open, on_message=on_message, on_error=on_error)
     threading.Thread(target=watchdog, args=(ws,), daemon=True).start()
+    threading.Thread(target=rotator, args=(ws,), daemon=True).start()
     ingest.start(lambda m: append('errors.log', f'{stamp()} [listener] {m}'))
     threading.Thread(target=segment_poller, daemon=True).start()
     ws.run_forever(ping_interval=30, ping_timeout=10)

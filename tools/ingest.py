@@ -36,9 +36,16 @@ def _loop(log):
             try: c.close()
             except Exception: pass
             c = None
-            for t, rows in batch.items():  # retry once later
-                for r in rows: Q.put((t, r))
-            time.sleep(5)
+            # One bad table must not poison the batch: re-queueing everything made every later batch fail on the same row
+            # (missing `incidents` table, 10-16/17: whole batches lost until the listener restarted). Retry table by table,
+            # drop only the rows of a table that still fails.
+            for t, rows in batch.items():
+                try:
+                    with db.connect(autocommit=False) as c1:
+                        with c1.cursor() as cur: cur.executemany(SQL[t], rows)
+                        c1.commit(); state['rows'] += len(rows)
+                except Exception as ex1: log(f'[ingest] dropped {len(rows)} {t} rows: {str(ex1)[:150]}')
+            time.sleep(1)
 def start(log): threading.Thread(target=_loop, args=(log,), daemon=True).start()
 def alert_state(a, stamp):
     """upsert alert episode (alerts.py reads alert_state)"""
