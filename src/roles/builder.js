@@ -75,7 +75,7 @@ function waitNear(c, t, P) {
     c.move(c.pos.getDirectionTo(x, y)); return;
   }
 }
-module.exports = { run(c) {
+module.exports = { remoteRoadSite, run(c) {
   const room = c.room, P = plan.get(c.memory.home || room.name) || plan.get(room.name);
   if (!P) return;
   if (c.memory.working && c.store[RESOURCE_ENERGY] === 0) { c.memory.working = false; }
@@ -96,7 +96,18 @@ module.exports = { run(c) {
       const junk0 = junkContainer(home0, P);
       if (junk0 && junk0.destroy() === OK) return;
       if (junk0) { c.memory.dismantle = junk0.id; return; }
+      // nothing left for 50t (e.g. the one-off remote road builder): recycle at the spawn instead of idling ~1200t (energy back);
+      // the 50t grace keeps a home builder alive across short gaps between layout site batches
+      if (!c.memory.remote && (c.memory.nt = (c.memory.nt || 0) + 1) > 50 && require('../utils/salvage').retire(c, 1500)) return;
       trace.why(c, 'n'); return;
+    }
+    delete c.memory.nt;
+    // Remote road site (W45N8 2,12 swamp, 0/1500 since RCL5: no home sites -> no builder): refill from that remote's
+    // container (often full at 2000 = overflow) instead of a ~50-tile round trip home; keep 400 for the rhaulers.
+    const rt = c.memory.t && Game.getObjectById(c.memory.t), RC = rt && rt.pos.roomName === room.name && remote.CFG[room.name];
+    if (RC && RC.cont) {
+      const k = room.lookForAt(LOOK_STRUCTURES, RC.cont[0], RC.cont[1]).find(s => s.structureType === STRUCTURE_CONTAINER);
+      if (k && k.store[RESOURCE_ENERGY] >= c.store.getFreeCapacity() + 400) { if (move.to(c, k.pos.x, k.pos.y, 1)) c.withdraw(k, RESOURCE_ENERGY); return; }
     }
     let src = c.memory.src && Game.getObjectById(c.memory.src);
     if (!src || src.store[RESOURCE_ENERGY] < 50) {
@@ -120,6 +131,7 @@ module.exports = { run(c) {
   }
   let t = c.memory.t && Game.getObjectById(c.memory.t);
   if (t && t.hits !== undefined && t.progress === undefined && t.hits >= (c.memory.tcap || t.hitsMax * 0.9)) t = null;
+  if (t && t.pos.roomName !== (c.memory.home || room.name) && remote.CFG[t.pos.roomName] && remote.paused(t.pos.roomName)) t = null; // remote under threat: leave
   if (t && c.memory.tcap && rc.sites(Game.rooms[c.memory.home] || room).length) t = null; // a new site outranks barrier hits
   // Stickiness must not skip a higher-priority site (patrol 10-14 22:40: tower 37,33 at 0 while extensions built).
   if (t && t.progress !== undefined) {

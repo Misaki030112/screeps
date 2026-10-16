@@ -69,6 +69,9 @@ function targets(room, count, backlog, ctlEnergy, sites) {
   // hungry 5W, and keeps storage off the 1300 defender cushion (patrol 10-14 02:54 → 03:54, storage 1040→50→~100).
   T.builder = sites ? (sites > 3 && room.energyCapacityAvailable >= 1300 ? 2 : 1) : (st ? 0 : (rcl <= 4 ? 1 : 0));
   if (!T.builder && st && require('./walls').wantBuilder(room)) T.builder = 1; // wall-phase barrier repair (funded)
+  // remote road sites (remote.CFG roads, not multi-hop) only count once nothing at home needs a builder (patrol 10-17 07:25:
+  // W45N8 2,12 swamp site 0/1500 for days; loaded W45N8 rhaulers lose ~4t per trip on the 3,12 swamp, container overflows at 2000)
+  if (!T.builder && st && require('../roles/builder').remoteRoadSite()) T.builder = 1;
   return T;
 }
 // Pre-spawn: a dying upgrader / home hauler / queen stops counting once its TTL is under spawn time + walk + margin,

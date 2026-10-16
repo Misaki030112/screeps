@@ -9,6 +9,7 @@ const stub = (p, exp) => { require.cache[require.resolve(src(p))] = { id: p, fil
 const P = { pos: { upgraders: [[29, 30], [30, 31], [31, 30]], controllerContainer: [30, 30], fillerContainerA: [35, 24], fillers: [], miners: [] }, raw: { stamps: {} }, any: {} };
 let FLAG = false, LINKS = 2;
 stub('utils/plan.js', { get: () => P, key: (x, y) => x * 50 + y, get STATIONARY_FILL() { return FLAG; } });
+stub('roles/builder.js', { remoteRoadSite: () => null }); // remote road builder gate (spawn.targets)
 stub('utils/move.js', { to: () => true });
 stub('utils/roomcache.js', { all: (r, t) => (t === 'link' ? Array(LINKS).fill({}) : []), at: () => null, get: () => ({ at: [] }), sites: () => [] });
 stub('utils/trace.js', { why: () => {} });

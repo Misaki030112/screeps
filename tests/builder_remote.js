@@ -26,7 +26,8 @@ stub('utils/roomcache.js', {
   get: () => ({ at: [] }),
 });
 stub('utils/trace.js', { why: (c, k) => { W.why = k; } });
-stub('managers/remote.js', { CFG: {}, paused: () => true });
+const RCFG = {};
+stub('managers/remote.js', { CFG: RCFG, paused: r => !(RCFG[r] && RCFG[r].live) });
 stub('managers/threat.js', { reserve: () => 1300 });
 stub('roles/hauler.js', { pickups: () => [W.srcA].filter(Boolean) });
 const B = require(src('roles/builder.js'));
@@ -94,6 +95,25 @@ const cases = [
     });
     assert.strictEqual(r.why, 'n');
     assert.strictEqual(r.upgraded, false);
+  }],
+  ['remote road builder in the remote room refills from that remote container (keeps 400)', () => {
+    RCFG.W45N8 = { cont: [13, 11], roads: [[2, 12]], live: true };
+    global.LOOK_STRUCTURES = 'structure';
+    const k = cont(13, 11, 250000, 2000), site = { id: 's1', pos: { roomName: 'W45N8', x: 2, y: 12 }, progress: 0, progressTotal: 1500, structureType: 'road' };
+    Game.getObjectById = id => (id === 's1' ? site : null);
+    let got = null;
+    const R = { name: 'W45N8', lookForAt: (t, x, y) => (t === 'structure' && x === 13 && y === 11 ? [k] : t === 'constructionSite' && x === 2 && y === 12 ? [site] : []) };
+    Game.rooms.W45N8 = R;
+    W = { sites: [], roads: [], containers: [] };
+    const store = { energy: 0, [RESOURCE_ENERGY]: 0, getCapacity: () => 250, getFreeCapacity: () => 250, getUsedCapacity: () => 0 };
+    const c = { room: R, memory: { role: 'builder', home: 'W46N8', t: 's1', working: false }, store, pos: { x: 6, y: 11, getRangeTo: () => 7 },
+      withdraw: t => { got = t; } };
+    Game.rooms.W46N8 = { name: 'W46N8', storage: { pos: { x: 37, y: 31 }, store: { [RESOURCE_ENERGY]: 4000 } } };
+    B.run(c);
+    assert.strictEqual(got, k);
+    k.store[RESOURCE_ENERGY] = 600; got = null; B.run(c);
+    assert.notStrictEqual(got, k, 'must leave >=400 for rhaulers');
+    delete RCFG.W45N8; delete Game.getObjectById;
   }],
 ];
 let fail = 0;
