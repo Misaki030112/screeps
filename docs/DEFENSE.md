@@ -173,3 +173,17 @@ Last fight waited **31 ticks** to gather 1300 (`spawn_start` waited). Fix (does 
 - `spawn.js`: while `wantDefender` and `avail < 1300`, hold **all** spawns except queen (miners no longer sneak in and reset the pool).
 - `roles/upgrader.js`: `threat.holding()` pauses withdrawals with **or without** storage until `noteSpawn` sets `th.def` (holding clears → upgraders resume).
 - Haulers already fill extensions to 100% while holding; builders still respect the 1300 storage reserve.
+
+### Fixes from the W45N8 fight trajectory review (2026-10-16)
+Tests: `tests/remote_fixes.js` (+ existing duel/kite/threat suites). Sim 600 ticks: 0 errors.
+1. **rminer repair** (`roles/remote.js repairNow`): repair first only <30k; <50k batch-repair when the store is full; while the
+   source regenerates repair for free up to 100k. (Was: any repair <100k beat harvest.)
+2. **Kite hold** (`utils/kite.js`): target approaching, range ≥4, not on swamp → stand still (it walks into our range 3).
+   **Ranged-only targets** (`rangedOf` without ATTACK): close to range 3 and fire, no kiting away.
+3. **Swamp/flip-flop**: `move.to` already uses plain 2 / swamp 10; the defender's direct `moveTo` now does too.
+   Kite has direction inertia (`memory.kd`: +2 same step, −4 reverse).
+4. **After the kill**: during `clearTicks` the defender holds at the kill spot (`memory.lk`), no walk to the container.
+5. **resumeEarly** (`threat.earlyNext`, `safe(r, role)`): DEFEND + defender in the room + every target <15% hp (or already dead)
+   → rminer/rhauler return early; sticky until a target is healed back ≥30% or DEFEND ends. Reserver and spawning unchanged.
+6. **Birth side** (`spawn.birthDirs`): remote roles take the outside-stamp spawn tiles nearest W45N8's home exit (49,14)
+   first. Spawn 35,28 only has the south row (34–36,29) outside the stamp, so order is (36,29),(35,29),(34,29).

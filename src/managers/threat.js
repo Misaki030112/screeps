@@ -84,6 +84,15 @@ function step(s, o, c, t) {
   if (s.st === S.SAFE) { delete s.inc; delete s.until; }
   return { s, ev };
 }
+// resumeEarly (W45N8 review): in DEFEND with our defender in the room and the target <15% hp (or already dead, waiting
+// clearTicks), rminer/rhauler go back early. Sticky until a target is back above 30% (healed) or the state leaves DEFEND.
+const EARLY = { on: 0.15, off: 0.3, roles: ['rminer', 'rhauler'] };
+function earlyNext(s, defIn) {
+  if (s.st !== S.DEFEND || !defIn) return false;
+  const inv = s.last || [], f = i => i.hitsMax ? i.hits / i.hitsMax : 1;
+  if (inv.some(i => f(i) >= EARLY.off)) return false;
+  return !!s.early || inv.every(i => f(i) < EARLY.on);
+}
 // ---------- I/O adapter ----------
 const mem = r => { const R = Memory.remote = Memory.remote || {}; R[r] = R[r] || {}; return R[r]; };
 const hist = (m, key, c) => (m[key] = (m[key] || []).filter(x => Game.time - x < c.dayTicks));
@@ -113,7 +122,7 @@ function sense(r) {
     o.players += hs.filter(h => h.owner.username !== 'Invader' && h.body.some(p => COMBAT.includes(p.type) && p.hits > 0)).length;
     if (rn === r) {
       o.inv = hs.filter(h => h.owner.username === 'Invader' && h.body.some(p => COMBAT.includes(p.type) && p.hits > 0)).map(h => ({ x: h.pos.x, y: h.pos.y, ttl: h.ticksToLive || 1500,
-        heal: body(h, HEAL), ranged3: h.getActiveBodyparts(RANGED_ATTACK) >= 3, hits: h.hits, boosted: h.body.some(p => p.boost) }));
+        heal: body(h, HEAL), ranged3: h.getActiveBodyparts(RANGED_ATTACK) >= 3, hits: h.hits, hitsMax: h.hitsMax, boosted: h.body.some(p => p.boost) }));
       o.core = rm.find(FIND_HOSTILE_STRUCTURES).some(s => s.structureType === STRUCTURE_INVADER_CORE);
       // our creep hurt with no Invader visible => someone else (player) did it
       // our creep LOST hits this tick with no Invader visible => someone else (player) did it (old damage is ignored)
@@ -144,6 +153,7 @@ function run(r) {
   for (const e of ev) incident(r, Object.assign({}, s, { inc: startInc }), Object.assign(e, startInc ? { dur: Game.time - startInc } : {}), o);
   if (s.st === S.DEFEND && o.defIn && !s.arrived) { s.arrived = Game.time; incident(r, s, { ev: 'arrive', travel: Game.time - s.since }, o); }
   if (s.st !== S.DEFEND) delete s.arrived;
+  s.early = earlyNext(s, o.defIn);
   if (s.st !== S.THREAT && s.st !== S.DEFEND) { if (s.def && !Game.creeps[s.def]) delete s.def; } // defender (if alive) reads state and recycles
   if ((o.def === 'dead' || o.def === 'none') && s.def && !Game.creeps[s.def]) { delete s.def; delete s.recycling; }
   m.th = s;
@@ -153,7 +163,8 @@ const state = r => ((Memory.remote || {})[r] || {}).th || { st: S.SAFE };
 const remotesOf = home => Object.keys(require('./remote').CFG).filter(r => require('./remote').CFG[r].home === home);
 module.exports = { S, DEF, cfg, classify, step, sense, run, state, armed,
   // remote creeps stay home unless SAFE
-  safe: r => state(r).st === S.SAFE,
+  safe: (r, role) => state(r).st === S.SAFE || (!!role && EARLY.roles.includes(role) && !!state(r).early),
+  earlyNext, EARLY,
   // first remote of this home that needs a defender spawned now
   wantDefender: home => remotesOf(home).find(r => state(r).st === S.THREAT && !state(r).def),
   // home is collecting 1300 for a remote defender (clears once noteSpawn sets th.def): spawn holds all but queen,

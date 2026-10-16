@@ -12,8 +12,14 @@ function birthDirs(spawn, role) {
   const inside = new Set([].concat(...Object.values(P.raw.stamps).map(st => Object.keys(st.tiles))).map(k => { const [x, y] = k.split(',').map(Number); return plan.key(x, y); }));
   const isIn = d => inside.has(plan.key(spawn.pos.x + DXY[d][0], spawn.pos.y + DXY[d][1]));
   const want = role === 'queen' || role === 'filler', all = [1, 2, 3, 4, 5, 6, 7, 8];
-  return all.filter(d => isIn(d) === want).concat(all.filter(d => isIn(d) !== want));
+  const out = all.filter(d => isIn(d) === want);
+  // remote creeps: outside tiles ordered by range to the remote's home exit (W45N8: exitHome 49,14 -> NE of spawn 35,28)
+  const R = require('./remote').CFG, rc0 = REMOTE_ROLES.has(role) && Object.values(R).find(c => c.home === spawn.room.name);
+  if (rc0) { const [ex, ey] = rc0.exitHome, d2 = d => { const dx = Math.abs(spawn.pos.x + DXY[d][0] - ex), dy = Math.abs(spawn.pos.y + DXY[d][1] - ey); return Math.max(dx, dy) * 100 + dx + dy; };
+    out.sort((a, b) => d2(a) - d2(b)); }
+  return out.concat(all.filter(d => isIn(d) !== want));
 }
+const REMOTE_ROLES = new Set(['rminer', 'rhauler', 'reserver', 'defender']);
 const B = {
   // anti-Invader: 5 RANGED_ATTACK + 6 MOVE + 1 HEAL = 1300 (RCL4 full cap); 50 dmg/t at range 3, 12 hp/t self-heal
   defender: e => e >= 1300 ? [].concat(rep(5, RANGED_ATTACK), rep(6, MOVE), [HEAL]) : [].concat(rep(3, RANGED_ATTACK), rep(4, MOVE)),
@@ -145,7 +151,7 @@ function bodyEnergy(role, E, cap, avail, haulerAlive, hasStorage, minerAlive) {
   const fromCap = role === 'upgrader' || (role === 'hauler' && hasStorage) || (role === 'miner' && minerAlive);
   return Math.min(fromCap ? cap : E, role === 'hauler' ? (hasStorage ? 1050 : 800) : role === 'queen' ? 600 : 3000);
 }
-module.exports = { targets, rhaulerNeed, remoteNext, retiring, B, reserverBody, nearFull, bodyEnergy, run(spawn) {
+module.exports = { birthDirs, targets, rhaulerNeed, remoteNext, retiring, B, reserverBody, nearFull, bodyEnergy, run(spawn) {
   if (spawn.spawning) return;
   const room = spawn.room, cap = room.energyCapacityAvailable, avail = room.energyAvailable, rcl = room.controller.level;
   if (nearFull(avail, cap)) room.memory.lastFull = Game.time; // cap-100: RCL5 build rarely hits exact cap

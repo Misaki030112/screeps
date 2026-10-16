@@ -12,7 +12,7 @@ const CFG = { W45N8: { home: 'W46N8', src: [14, 12], cont: [13, 11], ctl: [7, 36
 // Threat handling lives in ./threat (one state machine per remote). This file: config, bookkeeping, roads, ALERT lines.
 const threat = require('./threat');
 function mem(r) { return (Memory.remote = Memory.remote || {})[r] = Memory.remote[r] || {}; }
-function paused(r) { return !threat.safe(r); }
+function paused(r, role) { return !threat.safe(r, role); } // role: rminer/rhauler may resume early (threat.EARLY)
 function defendOn(r) { return threat.armed(r); }
 function placeRoads(r) {
   const C = CFG[r], room = Game.rooms[r]; if (!room || !C.roads) return;

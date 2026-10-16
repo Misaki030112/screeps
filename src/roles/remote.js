@@ -13,6 +13,11 @@ function go(c, room, x, y, range) {
   move.to(c, ex, ey, 0); return false;
 }
 // Paused remote: at home the creep works with the home role that matches its body (reads the threat state only via remote.paused)
+// pure rule (tests/remote_fixes.js): urgent <30k; batch <50k when full; free repair <100k while the source regenerates
+const REP = { urgent: 30000, batch: 50000, idle: 100000 };
+function repairNow(hits, free, perHarvest, srcEmpty) {
+  return hits < REP.urgent || (hits < REP.batch && free < perHarvest) || (srcEmpty && hits < REP.idle);
+}
 const HOME = { rhauler: 'hauler', rminer: 'builder' };
 function flee(c) {
   const C = remote.CFG[c.memory.remote];
@@ -23,7 +28,7 @@ function flee(c) {
 }
 const roles = {
   rminer(c) {
-    const C = remote.CFG[c.memory.remote]; if (remote.paused(c.memory.remote)) return flee(c);
+    const C = remote.CFG[c.memory.remote]; if (remote.paused(c.memory.remote, 'rminer')) return flee(c);
     // travel = ticks to reach range 1 of the container (the old miner still sits on it; measuring on the tile itself
     // added the wait: 83654755 adjacent at ~+65, on tile +130 -> lead drifting to the 160 cap, ~50-100t overlap)
     if (c.memory.travel === undefined && c.ticksToLive && c.room.name === c.memory.remote && c.pos.isNearTo(C.cont[0], C.cont[1])) { const t = 1500 - c.ticksToLive; c.memory.travel = t >= 0 && t <= 300 ? t : 110; }
@@ -32,7 +37,9 @@ const roles = {
     const k = c.room.lookForAt(LOOK_STRUCTURES, C.cont[0], C.cont[1]).find(s => s.structureType === STRUCTURE_CONTAINER);
     // Unowned-room containers decay 50 hits/t; keep >=100k so it survives a ~1500-tick threat pause with nobody repairing
     // (30k lasted only 600 ticks: container lost during the 2026-10-13 Invader pause). Steady-state cost is the same (= decay).
-    if (k && k.hits < 100000 && c.store[RESOURCE_ENERGY] >= 10) return c.repair(k);
+    // Repair vs harvest (W45N8 review 2026-10-16): repair blocks harvest in the same tick. Urgent <30k: repair first.
+    // <50k: batch — harvest until the store is full, then repair. Source empty (regen wait): repair for free up to 100k.
+    if (k && c.store[RESOURCE_ENERGY] >= 10 && repairNow(k.hits, c.store.getFreeCapacity(), 2 * c.getActiveBodyparts(WORK), !src || src.energy === 0)) return c.repair(k);
     if (!k) { const s = c.room.lookForAt(LOOK_CONSTRUCTION_SITES, C.cont[0], C.cont[1])[0];
       if (!s) c.room.createConstructionSite(C.cont[0], C.cont[1], STRUCTURE_CONTAINER);
       // harvest and build share a tick: build only when the next harvest would overflow the store (or source empty)
@@ -41,7 +48,7 @@ const roles = {
     if (src && src.energy > 0) c.harvest(src);
   },
   rhauler(c) {
-    const C = remote.CFG[c.memory.remote]; if (remote.paused(c.memory.remote)) return flee(c);
+    const C = remote.CFG[c.memory.remote]; if (remote.paused(c.memory.remote, 'rhauler')) return flee(c);
     if (c.memory.working && !c.memory.full && c.room.name === C.home && c.store[RESOURCE_ENERGY] > 0) return require('./hauler').run(c); // finish a home job after a pause
     c.memory.working = false;
     if (!c.memory.full && c.store.getFreeCapacity() === 0) { c.memory.full = true; c.memory.load = c.store[RESOURCE_ENERGY]; }
@@ -81,8 +88,11 @@ const roles = {
 // Anti-NPC defender (docs/DEFENDER.md). Spawned on demand only; engages owner 'Invader' only; kites melee at range 3;
 // retreats home (<60% hp: tower heals it) or when a player combat creep / an Invader healer shows up; recycles when done.
 // melee NPC: kite with utils/kite (terrain-aware escape room, prefers range 3)
-function kite(c, t, flee) { const d = require('../utils/kite').step(c, t, flee, remote.CFG[c.memory.remote].exitRemote); if (d) c.move(d); }
+// opt.approaching: target closed in since last tick (kite holds at >=4 off swamp); c.memory.kd = last step (direction inertia)
+function kite(c, t, flee, approaching) { const d = require('../utils/kite').step(c, t, flee, remote.CFG[c.memory.remote].exitRemote, { approaching, last: c.memory.kd });
+  c.memory.kd = d || undefined; if (d) c.move(d); }
 const meleeOf = h => h.body.some(p => p.type === ATTACK && p.hits > 0);
+const rangedOf = h => h.body.some(p => p.type === RANGED_ATTACK && p.hits > 0);
 roles.defender = function (c) {
   // Reads the FSM only (managers/threat.js); never decides about players/escalation itself.
   const rm = c.memory.remote, C = remote.CFG[rm], th = threat.state(rm), K = threat.cfg(rm);
@@ -93,6 +103,7 @@ roles.defender = function (c) {
   c.memory.recycle = !mine || (th.st !== threat.S.DEFEND && th.st !== threat.S.THREAT) || c.ticksToLive < 80; // recomputed each tick: a returning defender can be reused by a new THREAT
   if (c.hits < c.hitsMax * K.hp) c.memory.hurt = true; else if (c.hits >= c.hitsMax * K.hpBack) c.memory.hurt = false;
   if (c.memory.recycle || c.memory.hurt) {
+    delete c.memory.lk;
     const t = inv.find(h => c.pos.inRangeTo(h, 3)); if (t) c.rangedAttack(t);
     // a melee Invader within 3 (e.g. camping the exit): get clear first; pathing home now walks into it (2026-10-15 death).
     // Exception: one step from the exit tile -> stepping onto it leaves the room this tick.
@@ -107,13 +118,17 @@ roles.defender = function (c) {
   // on an exit tile with an Invader within 4 (exit campers): fight from here instead of blindly stepping toward the container
   if (!here || (edge && !inv.some(h => c.pos.inRangeTo(h, 4)))) return go(c, rm, C.cont[0], C.cont[1], 2);
   const t = c.pos.findClosestByRange(inv);
-  if (!t) return move.to(c, C.cont[0], C.cont[1], 2);
-  const r = c.pos.getRangeTo(t);
+  // after a kill (FSM still DEFEND for clearTicks): hold at the kill spot (tombstone stays covered), don't walk to the container
+  if (!t) { if (c.memory.lk) return; return move.to(c, C.cont[0], C.cont[1], 2); }
+  c.memory.lk = [t.pos.x, t.pos.y];
+  const r = c.pos.getRangeTo(t), prev = c.memory.kr || 99;
   if (r <= 3) c.rangedAttack(t);
+  // pure ranged target (no ATTACK): kiting only gives it free shots — close to range 3 and trade (we out-heal/out-damage small ones)
+  if (rangedOf(t) && !meleeOf(t)) { c.memory.kr = r; if (r > 3) { delete c.memory._m; c.moveTo(t, { range: 3, reusePath: 0, maxRooms: 1, plainCost: 2, swampCost: 10 }); } return; }
   // melee target (it chases us): within 8 let it come and hold range 3 (utils/kite); moveTo would walk into swamp -> 5-tick lock -> melee.
   // If it stops coming (busy elsewhere / wall in the way: range 4-8 not shrinking for 10 ticks), approach normally.
   c.memory.kw = r > 3 && r <= 8 && r >= (c.memory.kr || 99) ? (c.memory.kw || 0) + 1 : 0; c.memory.kr = r;
-  if (meleeOf(t) && r <= 8 && c.memory.kw <= 10) return kite(c, t, false);
-  if (r > 3) { delete c.memory._m; c.moveTo(t, { range: 3, reusePath: 0, maxRooms: 1 }); }
+  if (meleeOf(t) && r <= 8 && c.memory.kw <= 10) return kite(c, t, false, r < prev);
+  if (r > 3) { delete c.memory._m; c.moveTo(t, { range: 3, reusePath: 0, maxRooms: 1, plainCost: 2, swampCost: 10 }); }
 };
-module.exports = { rminer: { run: roles.rminer }, rhauler: { run: roles.rhauler }, reserver: { run: roles.reserver }, defender: { run: roles.defender } };
+module.exports = { repairNow, rminer: { run: roles.rminer }, rhauler: { run: roles.rhauler }, reserver: { run: roles.reserver }, defender: { run: roles.defender } };

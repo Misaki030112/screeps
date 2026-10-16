@@ -24,8 +24,14 @@ function dijkstra(T, x0, y0, d0, ok, max = MAX_T) {
   return { L, A, n };
 }
 // returns the direction to move (0 = stay); exit = [x, y] of the exit tile we leave by
-function step(c, t, flee, exit) {
-  const T = c.room.getTerrain(), mv = t.body.filter(p => p.type === MOVE && p.hits > 0).length || 1;
+// opt.approaching: the target closed in since last tick -> at range >=4 on a non-swamp tile just hold (it comes to us; stepping
+//   around wasted moves and walked into swamp, W45N8 2026-10-16). opt.last: our previous step -> inertia (no flip-flop).
+const OPPD = [0, 5, 6, 7, 8, 1, 2, 3, 4];
+function step(c, t, flee, exit, opt = {}) {
+  const T = c.room.getTerrain();
+  const r0 = Math.max(Math.abs(c.pos.x - t.pos.x), Math.abs(c.pos.y - t.pos.y));
+  if (!flee && opt.approaching && r0 >= 4 && !(T.get(c.pos.x, c.pos.y) & TERRAIN_MASK_SWAMP)) return 0;
+  const mv = t.body.filter(p => p.type === MOVE && p.hits > 0).length || 1;
   const { A } = dijkstra(T, t.pos.x, t.pos.y, Math.ceil((t.fatigue || 0) / (2 * mv)), () => true);
   const adj = k => { const x = (k / 50) | 0, y = k % 50; let m = 32767; for (const [dx, dy] of D9) { const v = A[(x + dx) * 50 + y + dy]; if (v < m) m = v; } return m; };
   const H = flee && exit ? dijkstra(T, exit[0], exit[1], 0, () => true, 400).L : null;
@@ -39,7 +45,8 @@ function step(c, t, flee, exit) {
       : dwell >= a ? 0 : Math.min(dijkstra(T, x, y, dwell, (nk, d) => d < adj(nk)).n, ROOM_MAX);
     const sc = !room ? (a - dwell) * 10 + r // caught either way: delay it (a swamp lock is the worst)
       : 1000 + (flee ? (room >= ROOM_OK ? 1000 - (H ? H[x * 50 + y] : 0) : 0) + room * 2 + r
-      : Math.min(room, ROOM_OK) * 10 - Math.abs(r - 3) * 3 + (r <= 3 ? 5 : 0));
+      : Math.min(room, ROOM_OK) * 10 - Math.abs(r - 3) * 3 + (r <= 3 ? 5 : 0))
+      + (opt.last && k ? (k === opt.last ? 2 : k === OPPD[opt.last] ? -4 : 0) : 0);
     if (sc > bs) { bs = sc; best = k; }
   }
   return best;
