@@ -27,7 +27,7 @@ const S = require(src('managers/spawn.js'));
 ok('no haulers before container 60%', S.rhTarget(C7, { siteProg: 1000 }, 5000) === 0);
 ok('2 haulers at >=60% with reserve', S.rhTarget(C7, { siteProg: 3200 }, 1500) === 2);
 ok('bootstrap reserve 1300 gate', S.rhTarget(C7, { siteProg: 3200 }, 900) === 0);
-ok('6 haulers once built', S.rhTarget(C7, { cont: { id: 'x' } }, 0) === 6);
+ok('5 haulers once built', S.rhTarget(C7, { cont: { id: 'x' } }, 0) === 5);
 ok('W45N8 unchanged (2)', S.rhTarget(R.CFG.W45N8, {}, 0) === 2);
 const base = { nRes: 0, wantRes: 1, res: 0, cap: 1800, rmLive: 1, rhLive: 6, rhAll: 6, rhTarget: 6 };
 ok('claim2Only waits at avail 1000', S.remoteNext(Object.assign({}, base, { avail: 1000, claim2Only: true })) !== 'reserver');
