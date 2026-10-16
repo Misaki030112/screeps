@@ -1,7 +1,7 @@
 // Hauler (RCL2-6): one FIXED pickup per hauler (its miner container + drops next to it, waits there until full) -> fixed drop-offs:
 // spawn/ext via queen route when no queen, controller container, storage, filler container. No room-wide searches.
 const plan = require('../utils/plan'), move = require('../utils/move'), rc = require('../utils/roomcache');
-const queen = require('./queen'), trace = require('../utils/trace');
+const queen = require('./queen'), trace = require('../utils/trace'), salvage = require('../utils/salvage');
 // controller container below this -> it is the first drop-off and a half-full hauler stops waiting (upgraders were idle 35% while haulers waited/fed elsewhere, idle_history 10-13)
 const CTL_LOW = 1000;
 function ctlLow(room, P) { const k = rc.at(room, P.pos.controllerContainer[0], P.pos.controllerContainer[1], STRUCTURE_CONTAINER); return k && k.store[RESOURCE_ENERGY] < CTL_LOW; }
@@ -48,7 +48,12 @@ module.exports = { pickups, handoff, ctlLow, run(c) {
   if (c.memory.working && c.store[RESOURCE_ENERGY] === 0) { c.memory.working = false; delete c.memory.dst; }
   if (!c.memory.working && c.store.getFreeCapacity() === 0) c.memory.working = true;
   if (c.memory.working && (c.memory.src || c.memory.wt || c.memory.lp)) { delete c.memory.src; delete c.memory.wt; delete c.memory.lp; }
+  // old hauler: no new load it can't deliver (2026-10-16: 2 haulers died holding 700/650 on the ctl road); empty -> recycle
+  if (!c.memory.working && salvage.retire(c, 50)) return;
   if (!c.memory.working) {
+    // salvage first: drops/tombstones/ruins worth the detour (utils/salvage), one carrier per pile
+    const sv = salvage.pick(c);
+    if (sv) { delete c.memory.wt; if (move.to(c, sv.pos.x, sv.pos.y, 1)) salvage.take(c, sv); return; }
     // Fixed pickup: each hauler owns one miner container (memory.hp) and waits next to it until it can fill up.
     // No mid-trip switching between sources (that ping-pong cost ~1 PathFinder search per 10 ticks per hauler).
     const a = assignPickup(c, room, P), cont = a && rc.at(room, a[0], a[1], STRUCTURE_CONTAINER);

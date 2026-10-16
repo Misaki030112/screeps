@@ -81,6 +81,7 @@ module.exports = { fillRoute, storageFloor, run(c) {
   room.memory.queenAlive = Game.time;
   if (c.memory.working && c.store[RESOURCE_ENERGY] === 0) c.memory.working = false;
   if (!c.memory.working && c.store.getFreeCapacity() === 0) c.memory.working = true;
+  if (!c.memory.working && require('../utils/salvage').retire(c, 25)) return; // 2026-10-16: queen died holding 200
   const full = room.energyAvailable >= room.energyCapacityAvailable && !rc.all(room, STRUCTURE_TOWER).some(t => t.store[RESOURCE_ENERGY] < 900);
   if (c.memory.working || (full && c.store[RESOURCE_ENERGY] > 0)) {
     if (!full) { if (fillRoute(c)) return; }

@@ -48,6 +48,7 @@ const roles = {
     if (c.memory.full && c.store[RESOURCE_ENERGY] === 0) { c.memory.full = false; c.memory.trips = (c.memory.trips || 0) + 1;
       const m = remote.mem(c.memory.remote); m.delivered = (m.delivered || 0) + (c.memory.load || 0); c.memory.load = 0; }
     if (c.memory.full) {
+      if (c.memory.dep && c.room.name === C.home && c.pos.x < 48) { c.memory.rt = Game.time - c.memory.dep; delete c.memory.dep; } // measured round trip
       if (c.room.name !== C.home || c.pos.x >= 48) return go(c, C.home, 40, 20, 5);
       c.memory.working = true; require('./hauler').run(c); return;
     }
@@ -56,6 +57,11 @@ const roles = {
     const R = Game.rooms[c.memory.remote];
     if (R && c.store[RESOURCE_ENERGY] === 0 && !R.lookForAt(LOOK_STRUCTURES, C.cont[0], C.cont[1]).some(s => s.structureType === STRUCTURE_CONTAINER)
       && !R.find(FIND_DROPPED_RESOURCES).some(r => r.amount >= 100)) return flee(c);
+    // too old for another round trip (2026-10-16: rhaulers died at the home exit holding 400/296): work at home, recycle when empty
+    const S = require('../utils/salvage');
+    if (c.room.name === C.home && c.ticksToLive && c.ticksToLive < (c.memory.rt || 200) + 40) { c.memory.home = C.home; return require('./hauler').run(c); }
+    if (c.room.name === C.home && !c.memory.dep) c.memory.dep = Game.time;
+    if (c.room.name === c.memory.remote && c.pos.x > 0 && c.pos.x < 49) { const sv = S.pick(c); if (sv) { if (move.to(c, sv.pos.x, sv.pos.y, 1)) S.take(c, sv); return; } }
     if (!go(c, c.memory.remote, C.cont[0], C.cont[1], 1)) return;
     const drop = c.pos.findInRange(FIND_DROPPED_RESOURCES, 2).find(r => r.resourceType === RESOURCE_ENERGY && r.amount >= 30);
     if (drop) { if (c.pickup(drop) === ERR_NOT_IN_RANGE) c.moveTo(drop); return; }
