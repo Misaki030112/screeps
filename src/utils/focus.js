@@ -27,12 +27,33 @@ function pick(towers, hostiles, o = {}) {
       edge: h.pos.x <= 1 || h.pos.y <= 1 || h.pos.x >= 48 || h.pos.y >= 48 }; });
   const prev = o.prev && rows.find(r => r.h.id === o.prev && r.net > 0 && r.ttk <= 2);
   if (prev) return prev;
-  // edge anti-drain: on the exit strip it steps out before we can kill it -> only shoot if dead within 1 tick
-  const ok = rows.filter(r => r.net > 0 && (!r.edge || r.ttk <= 1));
+  // anti-drain (Misaki 10-16): shoot edge-sitters by default; only creeps with an OBSERVED drain pattern (o.banned, see track())
+  // are skipped while they sit on the exit strip, unless dead within 2 ticks or hurting us
+  const hurting = o.hurting || new Set(), banned = o.banned || new Set();
+  const ok = rows.filter(r => r.net > 0 && !(banned.has(r.h.id) && r.edge && r.ttk > 2 && !hurting.has(r.h.id)));
   const healers = ok.filter(r => r.healer);
   const best = (healers.length ? healers : ok).sort((a, b) => a.ttk - b.ttk)[0];
   if (best) return best;
   const hurt = rows.filter(r => o.hurting && o.hurting.has(r.h.id)).sort((a, b) => b.net - a.net)[0];
   return hurt || null; // hold fire
 }
-module.exports = { towerDmg, effective, healOn, healPow, pick };
+// Drain-pattern tracker. mem: {id: {hits, max, dmg, cyc, spent, seen, ban}}. present: hostiles now in room; shotId/energy: what we
+// fired last tick. A cycle = we damaged it, then it recovered to >=90% (healed on the strip or out of room). >=2 cycles, or >=1000
+// tower energy spent with hits recovered -> ban for BAN ticks. Returns Set of banned ids.
+const BAN = 1500;
+function track(mem, present, time, shotId, spent) {
+  const out = new Set();
+  for (const h of present) {
+    const max = h.hitsMax || h.body.length * 100, r = mem[h.id] || (mem[h.id] = { hits: h.hits, max, dmg: false, cyc: 0, spent: 0 });
+    if (shotId === h.id) r.spent += spent || 0;
+    if (h.hits < r.hits - 0.5) r.dmg = true;
+    else if (r.dmg && h.hits >= max * 0.9) { r.dmg = false; r.cyc++; }
+    r.hits = h.hits; r.max = max; r.seen = time;
+    if (!r.ban && (r.cyc >= 2 || (r.spent >= 1000 && h.hits >= max * 0.9))) r.ban = time + BAN;
+    if (r.ban && time >= r.ban) { r.ban = 0; r.cyc = 0; r.spent = 0; }
+    if (r.ban) out.add(h.id);
+  }
+  for (const id in mem) if (time - mem[id].seen > BAN) delete mem[id];
+  return out;
+}
+module.exports = { track, BAN, towerDmg, effective, healOn, healPow, pick };

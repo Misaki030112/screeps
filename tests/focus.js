@@ -9,10 +9,20 @@ let sq = [c('r1', 10, 25, '8R 8M'), c('r2', 10, 26, '9R 9M'), c('h', 9, 25, '6H 
 assert.strictEqual(F.pick(T, sq).h.id, 'h');
 // healer exactly heals self 72: net = 300-72
 assert.ok(Math.abs(F.pick(T, sq).net - 228) < 1e-6);
-// healer on exit strip, RA inside -> shoot the RA (net 300-72 adj heal)
-sq = [c('r1', 3, 25, '8R 8M'), c('h', 1, 25, '6H 6M')]; assert.strictEqual(F.pick(T, sq).h.id, 'r1');
-// lone edge tank, not hurting us -> hold fire
-assert.strictEqual(F.pick(T, [c('t', 0, 25, '14T 14M')]), null);
+// healer on exit strip, RA inside -> healer priority still applies (edge no longer exempt)
+sq = [c('r1', 3, 25, '8R 8M'), c('h', 1, 25, '6H 6M')]; assert.strictEqual(F.pick(T, sq).h.id, 'h');
+// lone edge tank (pbefv33 4T4M at 1,27) -> shoot by default
+assert.strictEqual(F.pick(T, [c('t', 1, 27, '4T 4M')]).h.id, 't');
+// drain pattern: damaged -> healed back twice -> banned; then held on edge, shot if inward or hurting us
+{ const m = {}, k = c('t', 1, 27, '4T 4M'); let t = 0, b;
+  const step = (hits) => { k.hits = hits; b = F.track(m, [k], ++t, 't', 20); };
+  step(800); step(500); step(800); assert.ok(!b.has('t')); step(300); F.track(m, [], ++t); step(800);
+  assert.ok(b.has('t'), 'banned after 2 cycles');
+  assert.strictEqual(F.pick(T, [k], { banned: b }), null);
+  assert.ok(F.pick(T, [Object.assign({}, k, { pos: { x: 5, y: 27 } })], { banned: b }), 'inward -> fire');
+  assert.ok(F.pick(T, [k], { banned: b, hurting: new Set(['t']) }), 'hurting -> fire');
+  const low = Object.assign({}, k, { hits: 200 }); assert.ok(F.pick(T, [low], { banned: b }), 'killable -> fire');
+  b = F.track(m, [k], t + F.BAN + 1, null, 0); assert.ok(!b.has('t'), 'ban expires'); }
 // heavy heal ball out-heals: 4 boosted healers around a tank -> net<=0 -> hold
 const xb = id => { const k = c(id, 20, 21, '10H 10M'); k.body = k.body.map(p => p.type === 'heal' ? Object.assign({}, p, { boost: 'XLHO2' }) : p); return k; };
 assert.strictEqual(F.pick(T, [c('t', 20, 20, '10T 10M'), xb('a'), xb('b')]), null);

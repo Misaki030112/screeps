@@ -141,3 +141,10 @@ We match the conservative early pattern today; Overmind’s fight-remotes patter
 - `guards` off: no guards and no threat spawn hold — upgraders/builders/remote keep spawning with hostiles in the room.
 - Still active: tower focus fire (healer-first, heal-aware, anti-drain), civilian flee, queen tower priority, remote creeps
   waiting at home on a player combat creep (threat FSM), remote Invader defender (unchanged).
+
+## Tower anti-drain v2 (2026-10-16, Misaki)
+- Towers shoot hostile player creeps in the room **by default**, edge-sitters included (old rule "edge target only if killable in 1 tick" removed; it let BustJetter's 4T4M pbefv33 sit at (1,27) untouched).
+- Healer-first / net-damage focus fire unchanged for squads; net<=0 hold only happens when real healers out-heal us.
+- Drain tracker `focus.track` → `room.memory.drain[id]`: a cycle = we damaged it, then it recovered to ≥90% (healed on strip or outside). ≥2 cycles, or ≥1000 tower energy spent with hits recovered → banned for 1500 ticks.
+- Banned creep: held fire only while on the exit strip (x/y ≤1 or ≥48); still shot if it moves inward, hurts us, or dies within 2 ticks.
+- Energy floor: targets that neither hurt us nor die within 2 ticks are only shot by towers with ≥300 energy (`FIRE_FLOOR`).
