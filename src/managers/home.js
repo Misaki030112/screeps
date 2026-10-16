@@ -5,8 +5,9 @@
 //   wantGuards    : guards to keep while hostiles are in the room, sized to the threat
 // Switches (Misaki 2026-10-16): home earlyWalls/guards default OFF (BustJetter not worth slowing upgrade);
 // remoteDefender default ON (W45N8 anti-NPC-Invader; Misaki 10:39 restore — do not wait out remotes).
-// Override from console without deploy: Memory.defense = { earlyWalls: true, guards: true, remoteDefender: false }
-const FLAGS = { earlyWalls: false, guards: false, remoteDefender: true }; // remoteDefender: W45N8 anti-Invader defender (threat.armed)
+// remotePatrol default ON (Misaki 10-16 W45N7): after a kill the remote defender patrols W45N8<->W45N7 until TTL instead of recycling.
+// Override from console without deploy: Memory.defense = { earlyWalls: true, guards: true, remoteDefender: false, remotePatrol: false }
+const FLAGS = { earlyWalls: false, guards: false, remoteDefender: true, remotePatrol: true }; // remoteDefender: W45N8 anti-Invader defender (threat.armed)
 const on = k => { const m = typeof Memory !== 'undefined' && Memory.defense; return m && m[k] !== undefined ? !!m[k] : FLAGS[k]; };
 const C = {}; const now = () => (typeof Game === 'undefined' ? 0 : Game.time); const COMBAT = ['attack', 'ranged_attack', 'heal', 'work'];
 function hostiles(room) {

@@ -116,7 +116,7 @@ function body(h, t) { return h.body.some(p => p.type === t && p.hits > 0); }
 function sense(r) {
   const R = require('./remote'), C = R.CFG[r], m = mem(r), room = Game.rooms[r], c = cfg(r), th = m.th || {};
   const o = { vis: !!room, inv: [], players: 0, core: false, hurtNoInv: false, bucket: Game.cpu.bucket, armed: armed(r) };
-  for (const rn of [r, C.home]) {
+  for (const rn of [r, C.home].concat(C.via || [])) { // via rooms (W45N7 through W45N8): players there block the route too
     const rm = Game.rooms[rn]; if (!rm) continue;
     const hs = rm.find(FIND_HOSTILE_CREEPS); // never contains our own creeps (no false positives from own creeps)
     o.players += hs.filter(h => h.owner.username !== 'Invader' && h.body.some(p => COMBAT.includes(p.type) && p.hits > 0)).length;
@@ -156,9 +156,19 @@ function run(r) {
   s.early = earlyNext(s, o.defIn);
   if (s.st !== S.THREAT && s.st !== S.DEFEND) { if (s.def && !Game.creeps[s.def]) delete s.def; } // defender (if alive) reads state and recycles
   if ((o.def === 'dead' || o.def === 'none') && s.def && !Game.creeps[s.def]) { delete s.def; delete s.recycling; }
+  if (s.def2 && !Game.creeps[s.def2]) delete s.def2;
+  if (s.st !== S.DEFEND || (s.def && s.def2)) delete s.need2;
+  if (!s.def && s.def2) { s.def = s.def2; delete s.def2; }
+  // adopt a patrolling defender (roles/remote patrol, Memory.defense.remotePatrol) instead of spawning a new one
+  if (s.st === S.THREAT && !s.def) { const p = adoptable(r); if (p) { s.def = p.name; p.memory.remote = r; p.memory.patrol = false;
+    console.log('INCIDENT ' + JSON.stringify({ remote: r, tick: Game.time, inc: s.inc || null, state: s.st, ev: 'adopt', def: p.name, ttl: p.ticksToLive })); } }
   m.th = s;
   return s;
 }
+// a live patrolling defender of the same home with enough TTL for a fight (travel + defendTimeout)
+function adoptable(r) { const C = require('./remote').CFG[r];
+  return _.filter(Game.creeps, x => x.memory.role === 'defender' && x.memory.patrol && x.memory.home === C.home && !x.spawning && x.ticksToLive > 300)
+    .sort((a, b) => b.ticksToLive - a.ticksToLive)[0]; }
 const state = r => ((Memory.remote || {})[r] || {}).th || { st: S.SAFE };
 const remotesOf = home => Object.keys(require('./remote').CFG).filter(r => require('./remote').CFG[r].home === home);
 module.exports = { S, DEF, cfg, classify, step, sense, run, state, armed,
@@ -166,14 +176,18 @@ module.exports = { S, DEF, cfg, classify, step, sense, run, state, armed,
   safe: (r, role) => state(r).st === S.SAFE || (!!role && EARLY.roles.includes(role) && !!state(r).early),
   earlyNext, EARLY,
   // first remote of this home that needs a defender spawned now
-  wantDefender: home => remotesOf(home).find(r => state(r).st === S.THREAT && !state(r).def),
+  wantDefender: home => remotesOf(home).find(r => (state(r).st === S.THREAT && !state(r).def) || (state(r).st === S.DEFEND && state(r).need2 && !state(r).def2)),
+  // defender could not win alone: ask for a 2nd one (counts against maxPerDay like any spawn)
+  request2(r) { const m = mem(r), th = m.th, c = cfg(r); if (!th || th.st !== S.DEFEND || th.need2 || th.def2) return;
+    if (hist(m, 'defSpawns', c).length >= c.maxPerDay) return; th.need2 = Game.time;
+    console.log('INCIDENT ' + JSON.stringify({ remote: r, tick: Game.time, inc: th.inc || null, state: th.st, ev: 'need2', def: th.def })); },
   // home is collecting 1300 for a remote defender (clears once noteSpawn sets th.def): spawn holds all but queen,
   // haulers fill extensions to 100%, upgraders pause withdrawals (spawn/ext economy). Home guards use home.js, not this.
-  holding: home => remotesOf(home).some(r => state(r).st === S.THREAT && !state(r).def),
+  holding: home => remotesOf(home).some(r => (state(r).st === S.THREAT && !state(r).def) || (state(r).st === S.DEFEND && state(r).need2 && !state(r).def2)),
   // storage energy reserved for defence (builders must not go below it)
   reserve: home => remotesOf(home).some(r => ((Memory.remote || {})[r] || {}).armed) ? DEF.reserve : 0,
   // the defender tells the FSM it is recycling itself (so its disappearance is not counted as a death)
   noteRecycle(r, name) { const th = mem(r).th; if (th) th.recycling = name; },
-  noteSpawn(r, name) { const m = mem(r); (m.defSpawns = m.defSpawns || []).push(Game.time); m.th.def = name;
+  noteSpawn(r, name) { const m = mem(r); (m.defSpawns = m.defSpawns || []).push(Game.time); if (m.th.def && Game.creeps[m.th.def]) m.th.def2 = name; else m.th.def = name;
     console.log('INCIDENT ' + JSON.stringify({ remote: r, tick: Game.time, inc: m.th.inc || null, state: m.th.st, ev: 'spawn_start', def: name, waited: Game.time - m.th.since })); },
 };

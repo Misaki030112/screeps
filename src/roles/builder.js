@@ -9,7 +9,7 @@ const remote = require('../managers/remote'), trace = require('../utils/trace');
 const PRIO = { spawn: 0, tower: 1, extension: 2, container: 3, storage: 4, link: 5, rampart: 6, road: 7 }; // match layout PRIORITY (tower before extension)
 function remoteRoadSite() {
   for (const r in remote.CFG) {
-    if (remote.paused(r)) continue;
+    if (remote.paused(r) || remote.CFG[r].via) continue; // multi-hop remotes (W45N7): no roads yet (P5)
     const room = Game.rooms[r]; if (!room) continue;
     const roads = remote.CFG[r].roads || [];
     for (const [x, y] of roads) {

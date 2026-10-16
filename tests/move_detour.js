@@ -7,7 +7,7 @@ const stub = (p, exp) => { require.cache[require.resolve(src(p))] = { id: p, fil
 const SWAMP = new Set(['33,30', '33,29', '33,28']); // detour tiles
 let altCost, moves, searches;
 class CM { constructor() { this.d = {}; } get(x, y) { return this.d[x + ',' + y] || 0; } set(x, y, v) { this.d[x + ',' + y] = v; } clone() { const c = new CM(); Object.assign(c.d, this.d); return c; } }
-Object.assign(global, { TERRAIN_MASK_WALL: 1, TERRAIN_MASK_SWAMP: 2, FIND_STRUCTURES: 1, FIND_CONSTRUCTION_SITES: 2, FIND_MY_CONSTRUCTION_SITES: 3, FIND_CREEPS: 4, LOOK_CREEPS: 'creep',
+Object.assign(global, { TERRAIN_MASK_WALL: 1, TERRAIN_MASK_SWAMP: 2, FIND_STRUCTURES: 1, FIND_CONSTRUCTION_SITES: 2, FIND_MY_CONSTRUCTION_SITES: 3, FIND_HOSTILE_CONSTRUCTION_SITES: 5, FIND_CREEPS: 4, LOOK_CREEPS: 'creep',
   STRUCTURE_ROAD: 'road', STRUCTURE_CONTAINER: 'container', STRUCTURE_RAMPART: 'rampart', Game: { time: 100, rooms: {} },
   RoomPosition: function (x, y, r) { this.x = x; this.y = y; this.roomName = r; },
   PathFinder: { CostMatrix: CM, search: () => { searches++; return { path: [{ x: 33, y: 30 }, { x: 33, y: 29 }, { x: 33, y: 28 }, { x: 34, y: 27 }], cost: altCost }; } } });

@@ -53,18 +53,19 @@ function scenario(name, invTypes, boosted, opt = {}) {
     move(k) { this.intents.move = k; return 0; }, moveTo(t, o) { stepTo(this, t.pos.x, t.pos.y, occ, o.range || 1); return 0; } });
   const G = { Game: { time: 0, spawns: {}, creeps: {} }, FIND_HOSTILE_CREEPS: 103, FIND_MY_SPAWNS: 112, ATTACK: 'attack', MOVE: 'move', RANGED_ATTACK: 'ranged_attack', HEAL: 'heal',
     TERRAIN_MASK_WALL: 1, TERRAIN_MASK_SWAMP: 2, ERR_NOT_IN_RANGE: -9, RIGHT: 3, LEFT: 7, TOP: 1, BOTTOM: 5, RESOURCE_ENERGY: 'energy' };
-  const remoteMock = { CFG: { W45N8: { home: 'W46N8', src: [14, 12], cont: [13, 11], exitHome: [49, 14], exitRemote: [0, 14], park: [46, 21] } }, mem: () => mem, paused: () => true };
+  const remoteMock = { CFG: { W45N8: { home: 'W46N8', src: [14, 12], cont: [13, 11], exitHome: [49, 14], exitRemote: [0, 14], park: [46, 21] } }, mem: () => mem, paused: () => true,
+    route: () => ['W46N8', 'W45N8'], exitTile: (r, from) => from === 'W46N8' ? [49, 14] : [0, 14] };
   // real FSM drives the defender: observation from the sim each tick (tests/threat_fsm.js covers step() in isolation)
   const TH = require(path.join(ROOT, 'src/managers/threat.js'));
   let th = { st: 'DEFEND', since: 0, def: d.name, seen: 0, last: [] };
-  const threatMock = { S: TH.S, cfg: () => TH.DEF, state: () => th, noteRecycle() {} };
+  const threatMock = { S: TH.S, cfg: () => TH.DEF, state: () => th, noteRecycle() {}, request2() { th.need2 = 1; } };
   const observe = () => ({ vis: true, players: 0, core: false, hurtNoInv: false, bucket: 10000, armed: true, def: d.hits > 0 ? 'out' : 'dead',
     inv: creeps.filter(c => !c.my && c.hits > 0).map(c => ({ x: c.pos.x, y: c.pos.y, ttl: 1400, heal: act(c, 'heal') > 0, ranged3: act(c, 'ranged_attack') >= 3 })) });
   const moveMock = { to(c, x, y, r) { if (rng(c.pos, { x, y }) > r) stepTo(c, x, y, occ, r); return rng(c.pos, { x, y }) <= r; } };
   const kiteMod = { exports: {} }; vm.runInNewContext(fs.readFileSync(path.join(ROOT, 'src/utils/kite.js'), 'utf8'), Object.assign({}, G, { module: kiteMod })); const kiteM = kiteMod.exports;
   const src = fs.readFileSync(path.join(ROOT, 'src/roles/remote.js'), 'utf8');
   const mod = { exports: {} };
-  vm.runInNewContext(src, Object.assign(G, { module: mod, require: p => p.includes('utils/kite') ? kiteM : p.includes('managers/threat') ? threatMock : p.includes('managers/remote') ? remoteMock : p.includes('utils/move') ? moveMock : {} }));
+  vm.runInNewContext(src, Object.assign(G, { module: mod, require: p => p.includes('utils/kite') ? kiteM : p.includes('managers/threat') ? threatMock : p.includes('managers/remote') ? remoteMock : p.includes('utils/move') ? moveMock : p.includes('utils/focus') ? require(path.join(ROOT, 'src/utils/focus.js')) : p.includes('managers/home') ? { on: () => false } : {} }));
   const role = mod.exports.defender.run;
   let t = 0, retreated = false, dmgTaken = 0, meleeHits = 0;
   for (; t < 400; t++) {

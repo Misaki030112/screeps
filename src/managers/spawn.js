@@ -19,7 +19,7 @@ function birthDirs(spawn, role) {
     out.sort((a, b) => d2(a) - d2(b)); }
   return out.concat(all.filter(d => isIn(d) !== want));
 }
-const REMOTE_ROLES = new Set(['rminer', 'rhauler', 'reserver', 'defender']);
+const REMOTE_ROLES = new Set(['rminer', 'rhauler', 'reserver', 'defender', 'rscout']);
 const B = {
   // anti-Invader: 5 RANGED_ATTACK + 6 MOVE + 1 HEAL = 1300 (RCL4 full cap); 50 dmg/t at range 3, 12 hp/t self-heal
   defender: e => e >= 1300 ? [].concat(rep(5, RANGED_ATTACK), rep(6, MOVE), [HEAL]) : [].concat(rep(3, RANGED_ATTACK), rep(4, MOVE)),
@@ -102,39 +102,56 @@ const RES_WAIT = 1000;
 const RES_SPAWN = 2000;
 function remoteNext(s) {
   const waitClaim2 = (s.cap || 0) >= 1300 && s.avail < 1300 && s.res >= RES_WAIT;
-  if (s.nRes < s.wantRes && s.res < RES_SPAWN && s.avail >= 650 && !waitClaim2) return 'reserver';
+  if (s.nRes < s.wantRes && s.res < RES_SPAWN && s.avail >= (s.claim2Only ? 1300 : 650) && !waitClaim2) return 'reserver'; // claim2Only: 600-TTL CLAIM1 on a 150-tile walk nets ~0
   if (s.rmLive < 1) return 'rminer';
   // RCL4 target is 2×8C8M. Early-replace at TTL≤120: both rhaulers born ~50t apart age out together and
   // would spawn 2 replacements on top of 2 dying → 4 creeps / ~1600e wipe (patrol 10-14 09:51: energy 1300→4).
   // Cap total (dying+new) at target+1 so only one overlap is in flight.
-  if (rhaulerNeed(s.rhLive, s.rhAll)) return 'rhauler';
+  if (rhaulerNeed(s.rhLive, s.rhAll, s.rhTarget)) return 'rhauler';
   // A 3rd was opportunistic on cont>1200 but left waiting_pickup idle while the container sat near empty
   // (patrol 10-14 03:55: 3 rhaulers, cont ~20e). Keep energy for home upgraders / storage reserve instead.
   return null;
 }
 // Bodies from cap (not starving E): a starving-sized 3C3M rhauler would count as live for 1500 ticks.
+// Per-remote: C.lead (prespawn travel, W45N7 140), C.haulers (target, default 2), C.rhGap (min ticks between rhauler births: ages
+// stay staggered so replacements never bunch), C.travel (rminer default travel). Ramp (multi-hop W45N7): rhaulers only once the
+// container is >=60% built (before that the rminer spends all it mines on the build -> haulers would idle), and while the container
+// is not built yet a new rhauler also needs storage >= the 1300 defender reserve (bootstrap: an Invader is likely, 169k harvested).
+function rhTarget(C, m, storageE) {
+  const want = C.haulers || 2; if (!C.via) return want;
+  if (m.cont) return want;
+  if ((m.siteProg || 0) < 3000) return 0;
+  return storageE >= 1300 ? Math.min(2, want) : 0;
+}
 function remoteSpawn(room, go, avail) {
   const remote = require('./remote'), cap = room.energyCapacityAvailable;
   for (const r in remote.CFG) {
-    if (remote.CFG[r].home !== room.name) continue;
-    if (remote.paused(r)) continue; // defender is spawned from the top of run() (threat.wantDefender)
+    const C = remote.CFG[r];
+    if (C.home !== room.name) continue;
+    if (remote.paused(r)) continue; // also Memory.remotes[r].off; defender is spawned from the top of run() (threat.wantDefender)
     const m = remote.mem(r);
     const res = (m.res && m.res.ticksToEnd) || 0;
-    const resLead = 150; // travel ~40 + spawn + margin (was 80; late spawn left ticksToEnd≈13)
+    const lead = C.lead || 0;
+    const resLead = 150 + lead; // travel ~40 + spawn + margin (was 80; late spawn left ticksToEnd≈13); W45N7 +140 walk
     const mineR = role => _.filter(Game.creeps, c => c.memory.remote === r && c.memory.role === role);
     // rminer lead = measured travel + spawn time + 10 (fixed 120 arrived ~3t after the old one died: born+121 vs ttl 118, 10-15 data)
-    const rmLead = c => Math.min(c.memory.travel || 110, 160) + c.body.length * 3 + 10;
-    const live = role => mineR(role).filter(c => c.spawning || c.ticksToLive > (role === 'reserver' ? resLead : role === 'rminer' ? rmLead(c) : 120)).length;
+    const rmLead = c => Math.min(c.memory.travel || C.travel || 110, C.travel ? C.travel + 60 : 160) + c.body.length * 3 + 10;
+    const live = role => mineR(role).filter(c => c.spawning || c.ticksToLive > (role === 'reserver' ? resLead : role === 'rminer' ? rmLead(c) : 120 + lead)).length;
+    const rhAll = mineR('rhauler'), target = rhTarget(C, m, room.storage ? room.storage.store[RESOURCE_ENERGY] : 0);
+    const gapOk = !C.rhGap || Game.time - (m.lastRh || 0) >= C.rhGap;
     const next = remoteNext({
-      nRes: mineR('reserver').filter(c => c.spawning || (c.ticksToLive || 1500) > 30).length,
+      nRes: mineR('reserver').filter(c => c.spawning || (c.ticksToLive || 1500) > 30 + lead).length,
       wantRes: (res > 0 && res < 800) ? 2 : 1, // overlap rebuilds buffer while CLAIM1-only
-      res, avail, cap, rmLive: live('rminer'), rhLive: live('rhauler'), rhAll: mineR('rhauler').length,
+      res, avail, cap, rmLive: live('rminer'), rhLive: gapOk ? live('rhauler') : 99, rhAll: rhAll.length, rhTarget: target, claim2Only: !!C.via,
     });
     if (next === 'reserver') return go('reserver', reserverBody(avail), { remote: r });
     // rminer 6W: repair (50 hits/t container decay, 1 tick in 10 at 5W) blocks harvest in the same tick, so 5W harvested ~9/t
     // (R income 8.7 measured 10-15); 6W = 250 harvest + ~25 repair ticks per 300-tick regen -> full 10/t, +25t slack for handoffs.
     if (next === 'rminer') { const w = Math.min(6, Math.floor((Math.min(cap, 800) - 200) / 100)); return go('rminer', [].concat(rep(w, WORK), [CARRY], rep(3, MOVE)), { remote: r }); }
-    if (next === 'rhauler') return go('rhauler', B.hauler(Math.min(cap, 800)), { remote: r });
+    if (next === 'rhauler') { const rv = go('rhauler', B.hauler(Math.min(cap, 800)), { remote: r }); if (rv === OK) m.lastRh = Game.time; return rv; }
+    // vision fallback (P4): no vision for 100+ ticks and no rminer/reserver alive or en route -> one 1-MOVE scout (50e)
+    if (C.scout && !Game.rooms[r] && Game.time - (m.seen || 0) > 100 && !rhAll.length && !mineR('rminer').length && !mineR('reserver').length && !mineR('rscout').length)
+      return go('rscout', [MOVE], { remote: r });
   }
 }
 // Energy to size a home body with. Starving (no near-full for 300t) shrinks bodies to what is available, except the upgrader:
@@ -151,7 +168,7 @@ function bodyEnergy(role, E, cap, avail, haulerAlive, hasStorage, minerAlive) {
   const fromCap = role === 'upgrader' || (role === 'hauler' && hasStorage) || (role === 'miner' && minerAlive);
   return Math.min(fromCap ? cap : E, role === 'hauler' ? (hasStorage ? 1050 : 800) : role === 'queen' ? 600 : 3000);
 }
-module.exports = { birthDirs, targets, rhaulerNeed, remoteNext, retiring, B, reserverBody, nearFull, bodyEnergy, run(spawn) {
+module.exports = { rhTarget, birthDirs, targets, rhaulerNeed, remoteNext, retiring, B, reserverBody, nearFull, bodyEnergy, run(spawn) {
   if (spawn.spawning) return;
   const room = spawn.room, cap = room.energyCapacityAvailable, avail = room.energyAvailable, rcl = room.controller.level;
   if (nearFull(avail, cap)) room.memory.lastFull = Game.time; // cap-100: RCL5 build rarely hits exact cap

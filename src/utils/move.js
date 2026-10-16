@@ -33,6 +33,8 @@ function matrix(roomName, avoidCreeps) {
       if (s.structureType === STRUCTURE_ROAD) { if (m.get(s.pos.x, s.pos.y) === 0) m.set(s.pos.x, s.pos.y, 1); }
       else if (s.structureType !== STRUCTURE_CONTAINER && !(s.structureType === STRUCTURE_RAMPART && (s.my || s.isPublic))) m.set(s.pos.x, s.pos.y, 255);
     }
+    // foreign construction sites are trampled (destroyed) when stepped on: never path over them (W45N7 22,15 BustJetter's container)
+    for (const s of room.find(FIND_HOSTILE_CONSTRUCTION_SITES)) m.set(s.pos.x, s.pos.y, 255);
     for (const s of room.find(FIND_MY_CONSTRUCTION_SITES))
       if (![STRUCTURE_ROAD, STRUCTURE_CONTAINER, STRUCTURE_RAMPART].includes(s.structureType)) m.set(s.pos.x, s.pos.y, 255);
     // fixed spots (fillers/miners/upgraders/manager) are expensive so traffic yields to them
@@ -59,7 +61,10 @@ function restCost(room, p, i) {
 }
 const DETOUR = 12; // stuck-2 path may cost at most this much more than the blocked rest; else wait for the stuck-4 swap
 function stationary(o) { const P = require('./plan').get(o.room.name); return !!(P && P.standing.has(o.pos.x * 50 + o.pos.y)) && ['miner', 'filler', 'manager', 'upgrader', 'rminer'].includes(o.memory && o.memory.role); }
+// costCallback for raw creep.moveTo calls (defender etc.): same foreign-site protection
+function foreignSites(rn, m) { const room = Game.rooms[rn]; if (room) for (const s of room.find(FIND_HOSTILE_CONSTRUCTION_SITES)) m.set(s.pos.x, s.pos.y, 255); return m; }
 module.exports = {
+  foreignSites,
   invalidate(roomName) { const e = VER[roomName]; if (e) e.n = -1; },
   // returns true when in range (arrived)
   to(c, x, y, range = 0) {

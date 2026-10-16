@@ -8,11 +8,24 @@ const CFG = { W45N8: { home: 'W46N8', src: [14, 12], cont: [13, 11], ctl: [7, 36
   park: [46, 21],
   // anti-Invader defender (docs/DEFENDER.md). Flag ON, but threat.armed() only arms it when RCL4 has been stable 1500 ticks
   // (cap>=1300, full within 300t) AND a CLAIM>=2 reserver is alive. Thresholds: threat.DEF, per-room override `threat: {...}`.
-  defend: true } };
+  defend: true },
+  // W45N7 (Misaki approved 2026-10-16 14:39; plan /workspace/w45n7_ops_plan_cn.md, docs/REMOTE_W45N7.md). Reached only through
+  // W45N8's south exit. Source 21,16 has exactly two open neighbours: 21,15 (OUR container) and 22,15 = BustJetter's container
+  // site (never step on it: foreign sites are 255 in utils/move matrix + `avoid` here). No roads now (P5 after RCL6, ask first).
+  W45N7: { home: 'W46N8', via: ['W45N8'], src: [21, 16], cont: [21, 15], ctl: [6, 40], avoid: [[22, 15]],
+    exits: { 'W46N8>W45N8': [49, 21], 'W45N8>W45N7': [21, 49], 'W45N7>W45N8': [21, 0], 'W45N8>W46N8': [0, 21] },
+    park: [46, 21], lead: 140, travel: 150, rt: 230, haulers: 6, rhGap: 60, scout: [19, 12], defend: true,
+    threat: { readyTimeout: 250, defendTimeout: 650 } } }; // ~150t further than W45N8
+// route helpers: rooms home -> via... -> remote; exit tile for leaving `from` towards `to`
+function route(r) { const C = CFG[r]; return [C.home].concat(C.via || [], [r]); }
+function exitTile(r, from, to) { const C = CFG[r]; if (C.exits) return C.exits[from + '>' + to];
+  return from === C.home ? C.exitHome : C.exitRemote; }
+// rollback switch (no redeploy): Memory.remotes.<room>.off = true -> no spawns, remote creeps work at home
+function off(r) { return !!(((Memory.remotes || {})[r] || {}).off); }
 // Threat handling lives in ./threat (one state machine per remote). This file: config, bookkeeping, roads, ALERT lines.
 const threat = require('./threat');
 function mem(r) { return (Memory.remote = Memory.remote || {})[r] = Memory.remote[r] || {}; }
-function paused(r, role) { return !threat.safe(r, role); } // role: rminer/rhauler may resume early (threat.EARLY)
+function paused(r, role) { return off(r) || !threat.safe(r, role); } // role: rminer/rhauler may resume early (threat.EARLY)
 function defendOn(r) { return threat.armed(r); }
 function placeRoads(r) {
   const C = CFG[r], room = Game.rooms[r]; if (!room || !C.roads) return;
@@ -37,9 +50,12 @@ function check(r) {
     const ct = room.controller; m.res = ct && ct.reservation ? ct.reservation : null;
     const k = room.lookForAt(LOOK_STRUCTURES, C.cont[0], C.cont[1]).find(s => s.structureType === STRUCTURE_CONTAINER);
     m.cont = k ? { id: k.id, e: k.store[RESOURCE_ENERGY], hits: k.hits } : null; m.seen = Game.time;
+    const site = !k && room.lookForAt(LOOK_CONSTRUCTION_SITES, C.cont[0], C.cont[1]).find(s => s.my && s.structureType === STRUCTURE_CONTAINER);
+    m.siteProg = site ? site.progress : (k ? 5000 : 0);
     const src = room.lookForAt(LOOK_SOURCES, C.src[0], C.src[1])[0];
     if (src) m.invaderHarvested = src.invaderHarvested;
     if (!paused(r)) placeRoads(r);
+    if (C.avoid) for (const [x, y] of C.avoid) { const f = room.lookForAt(LOOK_CONSTRUCTION_SITES, x, y).find(s => !s.my); m.foreign = f ? f.progress : null; } // watch only
   }
 }
-module.exports = { CFG, paused, mem, defendOn, run() { for (const r in CFG) check(r); } };
+module.exports = { CFG, route, exitTile, off, paused, mem, defendOn, run() { for (const r in CFG) check(r); } };

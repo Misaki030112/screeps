@@ -36,4 +36,6 @@ execSync('node ' + path.join(__dirname, '..', 'tests', 'spawn_remote_gate.js'), 
 execSync('node ' + path.join(__dirname, '..', 'tests', 'rcl5_gate.js'), { stdio: 'pipe' });
 execSync('node ' + path.join(__dirname, '..', 'tests', 'rcl6_gate.js'), { stdio: 'pipe' });
 execSync('node ' + path.join(__dirname, '..', 'tests', 'move_detour.js'), { stdio: 'pipe' });
+execSync('node ' + path.join(__dirname, '..', 'tests', 'w45n7.js'), { stdio: 'pipe' });
+execSync('node ' + path.join(__dirname, '..', 'tests', 'rminer_lead.js'), { stdio: 'pipe' });
 console.log('threat FSM tests + defender energy hold + defender duel + kite + queen standby + spawn upgraders + builder remote + spawn rhauler + spawn remote gate + rcl5 gate + move detour + salvage passed');

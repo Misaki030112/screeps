@@ -57,4 +57,28 @@ function track(mem, present, time, shotId, spent) {
   for (const id in mem) if (time - mem[id].seen > BAN) delete mem[id];
   return out;
 }
-module.exports = { track, BAN, towerDmg, effective, healOn, healPow, pick };
+// Remote defender target pick (Misaki 10-16 W45N7 plan). dmg(r) = our ranged damage at range r (10/RA part, 0 beyond 3).
+// net = effective(dmg) - heal reachable on it; healer first if net>0, else fastest kill; sticky on prev if dead within 3 shots.
+// mass: rangedMassAttack when >=3 hostiles within 2 AND its total (10/4/1 per part at r1/2/3, TOUGH-reduced) beats the single shot.
+function pickDef(me, ra, hostiles, prev) {
+  if (!hostiles.length || !ra) return null;
+  const rows = hostiles.map(h => { const r = rng(me, h.pos), raw = r <= 3 ? 10 * ra : 0, net = raw ? effective(h, raw) - healOn(h, hostiles) : -1;
+    return { h, r, net, ttk: net > 0 ? h.hits / net : Infinity, healer: healPow(h) > 0 }; });
+  const inR = rows.filter(x => x.r <= 3);
+  const massTot = inR.reduce((s, x) => s + effective(x.h, ra * (x.r <= 1 ? 10 : x.r === 2 ? 4 : 1)), 0);
+  const mass = rows.filter(x => x.r <= 2).length >= 3;
+  const p = prev && rows.find(x => x.h.id === prev && x.net > 0 && x.ttk <= 3);
+  const ok = rows.filter(x => x.net > 0), healers = ok.filter(x => x.healer);
+  // out of range now: still choose a goal (closest healer, else closest) so we know where to move
+  const best = p || (healers.length ? healers : ok).sort((a, b) => a.ttk - b.ttk)[0]
+    || rows.filter(x => x.healer).sort((a, b) => a.r - b.r)[0] || rows.sort((a, b) => a.r - b.r)[0];
+  return { h: best.h, net: best.net, mass: mass && massTot > Math.max(0, best.r <= 3 ? effective(best.h, 10 * ra) : 0) };
+}
+// Can one defender win a duel? we: {hits, ra, heal}; enemy heal on itself vs our net; its ranged dps vs our heal. Melee is kited (ignored).
+function canWin(we, h, hostiles) {
+  const net = effective(h, 10 * we.ra) - healOn(h, hostiles); if (net <= 0) return false;
+  let dps = 0; for (const x of hostiles) for (const q of x.body) if (q.type === 'ranged_attack' && q.hits > 0) dps += 10 * ({ '': 1, KO: 2, KHO2: 3, XKHO2: 4 }[q.boost || ''] || 1);
+  const theirNet = dps - 12 * (we.heal || 0); if (theirNet <= 0) return true;
+  return h.hits / net < 0.8 * (we.hits * 0.6) / theirNet; // must kill before we hit the 60% retreat line (with margin)
+}
+module.exports = { pickDef, canWin, track, BAN, towerDmg, effective, healOn, healPow, pick };

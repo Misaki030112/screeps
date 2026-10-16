@@ -2,7 +2,7 @@
 const assert = require('assert'), fs = require('fs');
 const s = fs.readFileSync(__dirname + '/../src/managers/spawn.js', 'utf8');
 const m = s.match(/const rmLead = (c => [^;]+);/); assert(m, 'rmLead missing');
-const rmLead = eval(m[1]);
+const C = {}; const rmLead = eval(m[1]);
 const body = new Array(9);
 assert.strictEqual(rmLead({ memory: { travel: 94 }, body }), 94 + 27 + 10); // new arrives 10t before old dies
 assert.strictEqual(rmLead({ memory: {}, body }), 110 + 27 + 10);
