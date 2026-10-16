@@ -1,6 +1,4 @@
 {
-  "next_at": "2026-10-16T15:00:00+08:00",
-  "reason": "Deployed 205fbe1 (tick 83676759): rminer batch-repair threshold 50k->100k. 0247656's 50k batch let the W45N8 container fall 100k (11:00) -> 50.4k (13:10) because source R rarely empties (income R 8.55/10) so the free <100k branch never fired; 50k = only ~1000t of threat-pause buffer (10-13 container was lost this way) while BustJetter holds 13 combat creeps in W48N9. Same repair cost (= decay 0.5 e/t). Post-deploy cont 54.4k and rising, errors[]. Health: RCL5 605.5k/1.215M, upg 15m 21.9 / 1h 23.5 / 6h 20.0 vs ideal 21.8 (recovered, energy-bound); CPU ~4.1-4.4 bkt 10k; sites0 hostiles0; reservation 2099; delivered 494.4k; remote SAFE. Audit 'regressions' (miner excess 5.0, upgrader trip) are single-sample spawn-walk noise (38,32 miner 20-25t for 5 tiles both before/after deploy); rminer cpu up ~0.15 small. Alerts LOW only. NEXT: container >=95k and holding, R income not lower, upg 1h >=20.",
-  "written_at": "2026-10-16T13:14:30+08:00",
-  "commit": "205fbe1"
+  "next_at": "2026-10-16T16:30:00+08:00",
+  "reason": "Deployed 371eef6+f5dc78c (tick 83678543): threat.armed ready also when storage>=1300 — W45N7 bootstrap kept avail<1300/lastFull stale → both remotes armed=false (Invader would wait-out). Post-deploy armed8=armed7=true. W45N7 res started (~30t), siteProg~1.4k/5k at 21,15, foreign 22,15~2.8k ignore. W45N8 SAFE cont 100k hits res~1680 delivered 510k. upg 1h 18.3 vs ideal 21.7 (ctl starved while spawn drains for W45N7 CLAIM2/rminer — expected ramp). Watch: armed holds, W45N7 cont build, upg 1h back >=20, R income, no Invader gate."
 }
