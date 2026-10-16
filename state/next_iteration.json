@@ -1,4 +1,4 @@
 {
-  "next_at": "2026-10-17T02:30:00+08:00",
-  "reason": "VERIFY da5965e listener fix: creep_ticks coverage home/W45N8 ~100% (was 35-70% since 16:25 because 3 room subs > server limit 2), W45N7 rotation slot (300s per 15 min) produces rows and no stale creeps, incidents rows ingest, no 'str'.get errors. Then recompute rhauler home-drop rate on clean data (expect ~20/t; the 00:20-01:25 fall to 4-11/t was mostly missing ticks). Note: audits/motion since 16:25 used partial data. Game state at 01:25: RCL5 836k/1.215M ETA RCL6 ~18.8h, upg1h 23.2 vs ideal 21.7, storage ~3.5k, W45N8 cont hit 2000 ~170t during a 10-spawn replacement wave (83686862-83687387), drained to 1650 by 01:26; remotes SAFE armed; CPU ~6.4 bkt10k errors0."
+  "next_at": "2026-10-17T05:00:00+08:00",
+  "reason": "Steady state after VERIFY da5965e PASS (home creep_ticks 100%, remote slots 2/3 and 1/3 as designed, no 'str'.get errors; one watchdog reconnect 02:38 after 209s server STATS gap, handled). Clean-data rhauler home drop 01:40-02:34 = 20.95/t (778/778 ticks), so the earlier 4-11/t dip was missing data. Re-check: upg1h vs ideal 21.7, RCL6 ETA (~17h, ~10-17 19:30), remote containers not pinned at 2000, listener reconnect frequency, CPU/bucket, errors. Pending idea (ROADMAP L56): queen rp100 ~8.7 / rhauler ~5 -> shared path cache only if CPU becomes tight (now ~6.4, bucket 10k)."
 }
