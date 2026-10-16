@@ -98,6 +98,7 @@ const mem = r => { const R = Memory.remote = Memory.remote || {}; R[r] = R[r] ||
 const hist = (m, key, c) => (m[key] = (m[key] || []).filter(x => Game.time - x < c.dayTicks));
 function armed(r) { // code-level enable gate: flag AND RCL4 stable AND CLAIM2 reserver (patrol may flip only the flag)
   const R = require('./remote'), C = R.CFG[r], m = mem(r), home = Game.rooms[C.home];
+  m.needE = false;
   // remoteDefender (home.js FLAGS) defaults ON; Memory.defense.remoteDefender can force off without redeploy.
   if (!require('./home').on('remoteDefender')) return false;
   if (!(C.defend || m.defend) || !home || !home.controller) return false;
@@ -106,10 +107,14 @@ function armed(r) { // code-level enable gate: flag AND RCL4 stable AND CLAIM2 r
   if (home.controller.level >= 5) hm.rcl4Since = Math.min(hm.rcl4Since || Game.time, Game.time - c.stableTicks);
   else if (home.controller.level >= 4 && home.energyCapacityAvailable >= c.reserve) hm.rcl4Since = hm.rcl4Since || Game.time;
   else delete hm.rcl4Since;
-  // Ready = recently near-full OR can pay for a defender now (RCL5 build keeps avail < cap-100 for long stretches → lastFull goes stale)
-  const ready = Game.time - (hm.lastFull || 0) < 300 || home.energyAvailable >= c.reserve;
+  // Ready = recently near-full OR can pay for a defender now (RCL5 build / dual-remote spawn keeps avail < reserve
+  // for long stretches → lastFull goes stale; storage holds the 1300 — queen/haulers can refill ext in <50t)
+  const stor = home.storage && home.storage.store[RESOURCE_ENERGY] || 0;
+  const ready = Game.time - (hm.lastFull || 0) < 300 || home.energyAvailable >= c.reserve || stor >= c.reserve;
   const stable = hm.rcl4Since && Game.time - hm.rcl4Since >= c.stableTicks && ready;
   if (_.some(Game.creeps, x => x.memory.role === 'reserver' && x.memory.remote === r && x.getActiveBodyparts(CLAIM) >= 2)) m.claim2 = Game.time;
+  // only the energy readiness is missing (flag on, RCL ok, CLAIM2 ok): spawn.js may hold to collect the 1300 (energyHold)
+  m.needE = !ready && !!hm.rcl4Since && Game.time - hm.rcl4Since >= c.stableTicks && !!m.claim2 && Game.time - m.claim2 < 1500;
   return !!(stable && m.claim2 && Game.time - m.claim2 < 1500);
 }
 function body(h, t) { return h.body.some(p => p.type === t && p.hits > 0); }
@@ -183,7 +188,11 @@ module.exports = { S, DEF, cfg, classify, step, sense, run, state, armed,
     console.log('INCIDENT ' + JSON.stringify({ remote: r, tick: Game.time, inc: th.inc || null, state: th.st, ev: 'need2', def: th.def })); },
   // home is collecting 1300 for a remote defender (clears once noteSpawn sets th.def): spawn holds all but queen,
   // haulers fill extensions to 100%, upgraders pause withdrawals (spawn/ext economy). Home guards use home.js, not this.
-  holding: home => remotesOf(home).some(r => (state(r).st === S.THREAT && !state(r).def) || (state(r).st === S.DEFEND && state(r).need2 && !state(r).def2)),
+  holding: home => remotesOf(home).some(r => (state(r).st === S.THREAT && !state(r).def) || (state(r).st === S.DEFEND && state(r).need2 && !state(r).def2)) || module.exports.energyHold(home),
+  // bootstrap reserve (W45N7 plan): a solo Invader is waited out ONLY because extensions are below 1300 -> hold spawns (queen still
+  // refills) until energyAvailable reaches 1300; armed() then turns true and the FSM re-arms WAIT(gate) -> THREAT -> defender.
+  energyHold: home => remotesOf(home).some(r => { const t = state(r), m = (Memory.remote || {})[r] || {};
+    return t.st === S.WAIT && t.why === 'gate' && m.needE && (t.last || []).length === 1 && !t.last[0].heal && !t.last[0].ranged3; }),
   // storage energy reserved for defence (builders must not go below it)
   reserve: home => remotesOf(home).some(r => ((Memory.remote || {})[r] || {}).armed) ? DEF.reserve : 0,
   // the defender tells the FSM it is recycling itself (so its disappearance is not counted as a death)

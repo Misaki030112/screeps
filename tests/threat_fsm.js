@@ -2,7 +2,7 @@
 // node tests/threat_fsm.js  -> exits 1 on failure
 const path = require('path'), assert = require('assert');
 global._ = { some: (o, f) => Object.values(o).some(f), filter: (o, f) => Object.values(o).filter(f) };
-Object.assign(global, { HEAL: 'heal', RANGED_ATTACK: 'ranged_attack', CLAIM: 'claim', FIND_HOSTILE_CREEPS: 1, FIND_HOSTILE_STRUCTURES: 2, STRUCTURE_INVADER_CORE: 'invaderCore' });
+Object.assign(global, { HEAL: 'heal', RANGED_ATTACK: 'ranged_attack', CLAIM: 'claim', RESOURCE_ENERGY: 'energy', FIND_HOSTILE_CREEPS: 1, FIND_HOSTILE_STRUCTURES: 2, STRUCTURE_INVADER_CORE: 'invaderCore' });
 const T = require(path.join(__dirname, '..', 'src/managers/threat.js'));
 const C = Object.assign({}, T.DEF);
 const solo = (ttl = 1400) => [{ x: 40, y: 49, ttl, heal: false, ranged3: false }];
@@ -77,7 +77,9 @@ it('armed(): flag + RCL4 stable 1500t + full + CLAIM2 reserver', () => {
   home.controller.level = 5; home.energyCapacityAvailable = 1800; home.energyAvailable = 1400;
   home.memory = {}; Game.time = 5000; assert.strictEqual(T.armed('W45N8'), true);
   home.energyAvailable = 400; assert.strictEqual(T.armed('W45N8'), false); // cannot afford and lastFull missing
-  home.memory.lastFull = 4900; assert.strictEqual(T.armed('W45N8'), true); // recently near-full still counts
+  home.storage = { store: { [RESOURCE_ENERGY]: 1600 } }; assert.strictEqual(T.armed('W45N8'), true); // dual-remote: storage covers defender
+  home.storage.store[RESOURCE_ENERGY] = 500; assert.strictEqual(T.armed('W45N8'), false); // storage too low
+  home.storage = null; home.memory.lastFull = 4900; assert.strictEqual(T.armed('W45N8'), true); // recently near-full still counts
   delete Memory.defense; assert.strictEqual(T.armed('W45N8'), true); // default ON (Misaki 10:39: keep remote anti-Invader)
   Memory.defense = { remoteDefender: false }; assert.strictEqual(T.armed('W45N8'), false); // explicit off still works
 });
