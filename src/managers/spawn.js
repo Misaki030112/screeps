@@ -223,6 +223,12 @@ module.exports = { rhTarget, birthDirs, targets, rhaulerNeed, remoteNext, retiri
     }
   }
   if (hold) { if (!(count.queen || 0) && !(count.filler || 0)) return go('queen', B.queen(Math.max(300, avail))); return ERR_BUSY; }
+  // 2b) one-off manual probe (roles/probe.js): only when Memory.ops.probe.spawn === true and storage >= 3100 (1300 defender reserve kept)
+  const PR = require('../roles/probe');
+  if (PR.wantSpawn(room)) { const name = 'probe' + Game.time, b = PR.BODY();
+    if (avail < _.sum(b, p => BODYPART_COST[p])) return ERR_NOT_ENOUGH_ENERGY;
+    const rv = spawn.spawnCreep(b, name, { memory: { role: 'probe', home: room.name, born: Game.time }, directions: birthDirs(spawn, 'probe') });
+    if (rv === OK) PR.noteSpawned(name); return rv; }
   const hp = require('../roles/hauler');
   const backlog = _.sum(hp.pickups(room), s => s.store[RESOURCE_ENERGY]);
   const [cx, cy] = P.pos.controllerContainer; const cc = rc.at(room, cx, cy, STRUCTURE_CONTAINER);
