@@ -11,7 +11,8 @@ from ingest import now as utcnow
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'scripts'))
 from api import TOKEN, ROOT, req
 ROOM, SHARD = 'W46N8', 'shard3'
-WATCH = 'W45N8'  # passive scouting of the remote-mining candidate (no creeps sent)
+WATCH = 'W45N8'  # remote: watch events + creep trail
+TRAIL = ('W45N7',)  # other remotes: creep trail only (creep_ticks), not mixed into live.json
 watch = {'objects': {}, 'last': None}
 M = os.path.join(ROOT, 'metrics'); os.makedirs(M, exist_ok=True)
 UID = req('auth/me')['_id']
@@ -39,7 +40,7 @@ def decode(msg):
 def on_message(ws, msg):
     msg = decode(msg)
     if msg.startswith('auth ok'):
-        for ch in (f'user:{UID}/console', f'user:{UID}/cpu', f'room:{SHARD}/{ROOM}', f'room:{SHARD}/{WATCH}'): ws.send('subscribe ' + ch)
+        for ch in (f'user:{UID}/console', f'user:{UID}/cpu', f'room:{SHARD}/{ROOM}', f'room:{SHARD}/{WATCH}', *(f'room:{SHARD}/{r}' for r in TRAIL)): ws.send('subscribe ' + ch)
         append('console.log', f'{stamp()} [listener] subscribed'); return
     if msg.startswith('auth failed'): append('errors.log', f'{stamp()} [listener] auth failed'); ws.close(); return
     if not msg.startswith('['): return
@@ -91,6 +92,8 @@ def on_message(ws, msg):
         if snap != watch['last']:
             watch['last'] = snap
             ingest.put('events', (utcnow(), data.get('gameTime'), 'watch', WATCH, None, None, None, json.dumps({'creeps': cre, 'container': cont, 'reservation': ctl})))
+    elif ch.split('/')[-1] in TRAIL:
+        record_room(ch.split('/')[-1], data)
     elif ch.startswith('room:'):
         record_room(ch.split('/')[-1], data)
         with lock:
@@ -141,7 +144,8 @@ def segment_poller():
                     if t <= mc: continue
                     for r in rows:
                         n, cpu, acts, work, rp, stk, tgt = r[:7]
-                        ingest.put('creep_cpu', (ts, t, n, role_of(n), cpu / 100, acts, work, rp, stk, tgt, cm, r[7] if len(r) > 7 else None, r[8] if len(r) > 8 else None))
+                        ingest.put('creep_cpu', (ts, t, n, role_of(n), cpu / 100, acts, work, rp, stk, tgt, cm, r[7] if len(r) > 7 else None, r[8] if len(r) > 8 else None,
+                                                  r[9] if len(r) > 9 else None, r[10] / 100 if len(r) > 10 else None))
                     seen['cpu'] = max(seen['cpu'], t)
                 # arrivals are appended in tick order; same-tick arrivals arrive in the same poll
                 for t, n, role, tgt, plan, act in j.get('a', []):

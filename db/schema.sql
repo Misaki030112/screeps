@@ -18,6 +18,9 @@ ALTER TABLE creep_cpu ADD COLUMN IF NOT EXISTS rp_why text;
 -- codes: one state char per tick of the window (src/utils/trace.js): w work m move s spawning | idle: e source_empty(legit) p waiting_pickup
 --   u waiting_feed f target_full q queue/blocked n no_task t parked_threat r renewing
 ALTER TABLE creep_cpu ADD COLUMN IF NOT EXISTS codes text;
+-- fails: wrapped intents returning an error other than ERR_NOT_IN_RANGE; cpu_max: worst single-tick creep CPU (ms) in the window
+ALTER TABLE creep_cpu ADD COLUMN IF NOT EXISTS fails int;
+ALTER TABLE creep_cpu ADD COLUMN IF NOT EXISTS cpu_max real;
 SELECT create_hypertable('creep_cpu', by_range('ts', INTERVAL '1 day'), if_not_exists => true);
 CREATE UNIQUE INDEX IF NOT EXISTS creep_cpu_uq ON creep_cpu (creep, tick, ts);
 

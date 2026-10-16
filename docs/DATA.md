@@ -78,3 +78,9 @@ SELECT room, x, y, sum(n) FROM tile_traffic_10m WHERE bucket > now()-interval '2
 -- remote energy flow: rhauler loads arriving home
 SELECT time_bucket('1 hour', ts) h, count(*) FILTER (WHERE store > 0 AND room='W46N8' AND x < 48) FROM creep_ticks WHERE role='rhauler' GROUP BY 1 ORDER BY 1;
 ```
+
+## Motion audit (tools/creep_motion.py, 2026-10-16)
+Per creep from the websocket trail (now W46N8 + W45N8 + W45N7) and segment-90 windows: swamp fatigue ticks, circling (revisits within one leg),
+A-B-A bounces, non-legit idle by reason (in-game codes), partial rhauler departures, empty-move share, cpu/t, cpu_max (worst single tick), fails
+(intents returning an error other than ERR_NOT_IN_RANGE). Ranked by estimated creep-ticks lost per hour. Patrol: `.venv/bin/python tools/creep_motion.py --hours 1 --patrol`
+(exit 1 = some creep loses >= 60 ticks/h, a tick costs >= 2 ms, or an intent failed). `idle_by_reason` view must exist (re-apply db/schema.sql after a DB reinstall).
