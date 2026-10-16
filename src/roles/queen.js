@@ -36,7 +36,8 @@ function fillRoute(c) {
   }
   if (!cur || !cur.ids.some(needy)) {
     let best = -1, bd = 1e9;
-    st.forEach((s, i) => { if (s.ids.some(needy)) { const d = c.pos.getRangeTo(s.x, s.y); if (d < bd) { bd = d; best = i; } } });
+    const war = require('../managers/home').active(c.room), tw = s => war && s.ids.some(id => { const o = Game.getObjectById(id); return o && o.structureType === STRUCTURE_TOWER && o.store.getFreeCapacity(RESOURCE_ENERGY) > 100; });
+    st.forEach((s, i) => { if (s.ids.some(needy)) { const d = c.pos.getRangeTo(s.x, s.y) - (tw(s) ? 100 : 0); if (d < bd) { bd = d; best = i; } } });
     if (best < 0) { delete c.memory.stop; return false; }
     c.memory.stop = best; cur = st[best];
   }

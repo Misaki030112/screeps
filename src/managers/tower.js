@@ -16,8 +16,18 @@ module.exports = { growthPaused, run(room) {
   const towers = rc.all(room, STRUCTURE_TOWER);
   if (!towers.length) return;
   const hostiles = room.find(FIND_HOSTILE_CREEPS);
-  if (hostiles.length) { for (const t of towers) t.attack(t.pos.findClosestByRange(hostiles)); return; }
   const mem = room.memory;
+  if (hostiles.length) { // focus fire (utils/focus): healer first when killable, never feed edge drainers
+    const H = require('./home'), F = require('../utils/focus');
+    const p = F.pick(towers.map(t => ({ pos: t.pos, energy: t.store[RESOURCE_ENERGY] })), hostiles, { prev: mem.focus, hurting: H.hurting(room) });
+    mem.focus = p ? p.h.id : undefined;
+    if (p) { for (const t of towers) t.attack(p.h); return; }
+    // holding fire: heal our creeps; repair only critical barriers (<2000) and keep >=500 for the next shot window
+    const hurt = room.find(FIND_MY_CREEPS).find(c => c.hits < c.hitsMax);
+    const crit = !hurt && rc.all(room, STRUCTURE_RAMPART).concat(rc.all(room, STRUCTURE_WALL)).filter(s => s.hits < 2000)[0];
+    for (const t of towers) { if (hurt) t.heal(hurt); else if (crit && t.store[RESOURCE_ENERGY] > 500) t.repair(crit); }
+    return;
+  }
   if (Game.time % 10 === 0) {
     const P = plan.get(room.name), st = room.storage;
     const funded = !st || st.store[RESOURCE_ENERGY] >= require('./threat').reserve(room.name);

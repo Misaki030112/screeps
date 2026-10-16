@@ -13,6 +13,9 @@ function playerCombat(room) {
 function phase(room) {
   const m = room.memory.walls;
   if (m && m.started) return 'build';
+  // approved early trigger (Misaki 2026-10-16 "先等，来到隔壁再修"): a player combat squad adjacent (defAlert) or inside -> start now, any RCL
+  const H = require('./home');
+  if (H.alert(room) || H.active(room)) { room.memory.walls = { started: Game.time, why: 'threat', fund: 0, ft: Game.time }; console.log(`WALLS start ${room.name} t=${Game.time} why=threat`); return 'build'; }
   if (room.controller.level < 6 || !room.storage) return 'off';
   const calm = !require('./threat').holding(room.name) && !room.find(FIND_HOSTILE_CREEPS).length;
   const early = Date.now() >= NOVICE_END && playerCombat(room);
@@ -78,7 +81,7 @@ function fund(room) {
   return m.fund;
 }
 function spend(room, e) { const m = room.memory.walls; if (m && m.fund !== undefined) m.fund = Math.max(0, m.fund - e); }
-function threat(room) { return require('./threat').holding(room.name) || playerCombat(room); }
+function threat(room) { return require('./threat').holding(room.name) || playerCombat(room) || require('./home').alert(room); }
 // Storage energy the ctl ferry / upgrader extras must leave alone.
 function reserved(room) { const m = room.memory && room.memory.walls; return m && m.started && room.storage ? Math.min(fund(room), room.storage.store[RESOURCE_ENERGY]) : 0; }
 // Builder repair job: lowest barrier below the step target, capped at +CHUNK so the set rises evenly. null = no work / no budget.
@@ -101,7 +104,9 @@ function placeSites(room, budget) {
   const rc = require('../utils/roomcache'), L = lists(P), log = [];
   const open = rc.sites(room).filter(s => planned(P, s.pos.x, s.pos.y, s.structureType)).length;
   let n = Math.min(budget, SITE_CAP - open);
-  for (const [[x, y], t] of L.order) {
+  // threat start: west gate (6,28) + west wall x=6 first (the side the squad faces), then the normal order
+  const west = ([[x]]) => x <= 6 ? 0 : 1, order = room.memory.walls.why === 'threat' ? L.order.slice().sort((a, b) => west(a) - west(b)) : L.order;
+  for (const [[x, y], t] of order) {
     if (n <= 0) break;
     if (rc.at(room, x, y, t) || room.lookForAt(LOOK_CONSTRUCTION_SITES, x, y).length) continue;
     const r = room.createConstructionSite(x, y, t);

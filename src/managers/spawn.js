@@ -28,6 +28,7 @@ const B = {
   // limit (1h upgrade ~19/t, ctl container 1000+ unused, storage parked at the ferry floor so the 3rd-upgrader gate never opened;
   // patrol 10-14 10:55). Cap 12 -> 12W1C1M = 1300 = RCL4 full cap, 2x12 = 24 WORK ~ model ideal 23.5.
   upgrader: (e, rcl) => { const w = Math.max(1, Math.min(rcl >= 8 ? 15 : 12, Math.floor((e - 100) / 100))); return [].concat(rep(w, WORK), [CARRY, MOVE]); },
+  guard: e => { const n = Math.max(1, Math.min(6, Math.floor((e - 300) / 200))); return [].concat(rep(n, RANGED_ATTACK), rep(n + 1, MOVE), [HEAL]); },
   builder: e => { const n = Math.max(1, Math.min(5, Math.floor(e / 200))); return [].concat(rep(n, WORK), rep(n, CARRY), rep(n, MOVE)); },
   filler: e => [CARRY, CARRY, CARRY, MOVE],
   manager: e => [].concat(rep(Math.min(16, Math.floor((e - 50) / 50)), CARRY), [MOVE]),
@@ -168,7 +169,14 @@ module.exports = { targets, rhaulerNeed, remoteNext, retiring, B, reserverBody, 
     if (avail >= 1300) { const name = 'defender' + Game.time, rv = spawn.spawnCreep(B.defender(1300), name, { memory: { role: 'defender', home: room.name, remote: want, born: Game.time }, directions: birthDirs(spawn, 'defender') });
       if (rv === OK) threat.noteSpawn(want, name); return rv; }
   }
-  const hold = !!want;
+  // 1c) home guards while player combat creeps are in the room (managers/home); queen first so towers stay fed
+  const H = require('./home'), homeThreat = H.active(room);
+  if (homeThreat) {
+    if (!(alive.queen || 0) && !(alive.filler || 0)) return go('queen', B.queen(Math.max(300, avail)));
+    if ((alive.guard || 0) < H.wantGuards(room)) { const b = B.guard(Math.max(500, Math.min(cap, avail))); // spawn now with what we have: towers carry the fight, speed matters
+      return go('guard', b, { born: Game.time }); }
+  }
+  const hold = !!want || homeThreat; // threat: no upgraders/builders/remote spawns until clear
   // 2) miners (pre-spawned for travel time)
   // miner83614486 (10-13) arrived 115 ticks early and idled next to its predecessor: unmeasured travel defaulted to 100 (real ~30)
   const lead = c => Math.min(c.memory.travel || 40, 80) + c.body.length * 3;
