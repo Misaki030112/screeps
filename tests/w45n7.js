@@ -51,3 +51,11 @@ ok('sticky on dying prev', F.pickDef(me, 5, [dying, fresh], 'd').h.id === 'd');
 ok('canWin vs small melee', F.canWin({ hits: 1300, ra: 5, heal: 1 }, melee, [melee]));
 ok('cannot win vs 6-heal healer', !F.canWin({ hits: 1300, ra: 5, heal: 1 }, bigHeal, [bigHeal]));
 console.log(`w45n7: ${n} ok`);
+// 4) energyHold: WAIT(gate) on a solo Invader only because energy < 1300 -> hold spawns
+delete require.cache[require.resolve(src('managers/threat.js'))];
+const TH = require(src('managers/threat.js'));
+Memory.remote = { W45N7: { needE: true, th: { st: 'WAIT', why: 'gate', last: [{ heal: false, ranged3: false }] } }, W45N8: { th: { st: 'SAFE' } } };
+ok('energyHold on (gate + needE + solo)', TH.energyHold('W46N8') && TH.holding('W46N8'));
+Memory.remote.W45N7.needE = false; ok('no hold when the gate is not energy', !TH.energyHold('W46N8'));
+Memory.remote.W45N7.needE = true; Memory.remote.W45N7.th.last = [{ heal: true }]; ok('no hold for healer group', !TH.energyHold('W46N8'));
+console.log(`w45n7 + energyHold: ${n} ok`);

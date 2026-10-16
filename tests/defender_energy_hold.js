@@ -30,7 +30,7 @@ stub('utils/roomcache.js', {
 });
 stub('utils/trace.js', { why: () => {} });
 stub('managers/threat.js', {
-  holding: () => HOLD, wantDefender: () => WANT, armed: () => ARMED,
+  holding: () => HOLD, wantDefender: () => WANT, armed: () => ARMED, energyHold: () => false,
   reserve: () => 1300, noteSpawn: (r, n) => { W.noted = [r, n]; },
 });
 stub('managers/home.js', { on: () => false, active: () => false, wantGuards: () => 0 });

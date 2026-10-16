@@ -203,7 +203,7 @@ module.exports = { rhTarget, birthDirs, targets, rhaulerNeed, remoteNext, retiri
     if ((alive.guard || 0) < H.wantGuards(room)) { const b = B.guard(Math.max(500, Math.min(cap, avail))); // spawn now with what we have: towers carry the fight, speed matters
       return go('guard', b, { born: Game.time }); }
   }
-  const hold = !!want || homeThreat; // threat: no upgraders/builders/remote spawns until clear
+  const hold = !!want || homeThreat || threat.energyHold(room.name); // energyHold: collect 1300 for a gated remote defender // threat: no upgraders/builders/remote spawns until clear
   // 2) miners (pre-spawned for travel time)
   // miner83614486 (10-13) arrived 115 ticks early and idled next to its predecessor: unmeasured travel defaulted to 100 (real ~30)
   const lead = c => Math.min(c.memory.travel || 40, 80) + c.body.length * 3;
