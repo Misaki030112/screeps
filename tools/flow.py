@@ -11,6 +11,14 @@ MINER = 700 / 1500        # 5W1C3M (home)
 RMINER = 800 / 1500       # 6W1C3M: remote repair ticks block harvest, 5W only ~9/t
 RESERVER = 1300 / (2 * 530)  # 2 CLAIM x ~530 working ticks per life vs decay 1/t, spawned only below 2000 (was 1300/600 = back-to-back)
 UP_UPKEEP = 1300 / 1500 / 12
+# Remotes not on the model.py grid (W45N7 via W45N8, ~80 tiles; docs/REMOTE_W45N7.md). Fixed-fleet upkeep, measured routes:
+# empty ~77t / loaded ~89t one way. 6 x 8C8M (800) haulers, 6W1C3M miner, one 2-CLAIM reserver, container decay 0.5/t.
+EXTRA_REMOTES = {'W45N7': dict(gross=10.0, container_decay=0.5, miner=800 / 1500, reserver=RESERVER, haulers=6 * 800 / 1500)}
+# 2026-10-16 lessons (not steady-state terms, they are the fluctuation band):
+# - spawn contention: a remote opening queues ~6 haulers (~290 spawn ticks); upgraders fell to 1 for ~400t, 1h rate 13/t.
+#   Fixed 147bbda (base upgrader quota ahead of remote carriers).
+# - container deadlock: waiting haulers filled all 4 tiles around the W45N7 container, new miner orbited ~700t (00e1ded).
+#   Each miner swap is now a watch point; a repeat costs ~10/t x gap.
 
 def haul_cost(inc, rt):   # 2C:1M road hauler: carry parts * 75e per 1500
     carry = inc * (rt * CONGESTION + 4) / 50
@@ -27,6 +35,10 @@ def steady(M, n_ramparts=0, link_share_B=1.0, queen=650, builder=600):
         upkeep = {'miner': RMINER if s['room'] != 'W46N8' else MINER, 'haulers': hc, 'reserver': RESERVER if s['room'] != 'W46N8' else 0.0}
         net = gross - sum(loss.values()) - sum(upkeep.values())
         out[k] = dict(gross=gross, losses=loss, upkeep=upkeep, carry=round(carry, 1), net=round(net, 2))
+    for k, r in EXTRA_REMOTES.items():
+        loss = {'container_decay': r['container_decay'], 'link': 0.0}
+        upkeep = {'miner': r['miner'], 'haulers': r['haulers'], 'reserver': r['reserver']}
+        out[k] = dict(gross=r['gross'], losses=loss, upkeep=upkeep, carry=48, net=round(r['gross'] - sum(loss.values()) - sum(upkeep.values()), 2))
     shared = {'queen': queen / 1500, 'builder_lite': builder / 1500, 'roads': M.get('road_decay', 0), 'ramparts': 0.03 * n_ramparts}
     net = sum(v['net'] for v in out.values()) - sum(shared.values())
     return dict(sources=out, shared=shared, gross=sum(v['gross'] for v in out.values()), net=round(net, 2),

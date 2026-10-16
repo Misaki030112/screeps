@@ -40,3 +40,10 @@ Validation compares upgrade_expected with measured upgrade + build + storage del
 
 10-15 11:45 (6 h): A 8.78, B 9.13, R 5.99 net; shared 1.43; net 22.47 → upgrade 20.96 steady, 20.31 with Invader EV 0.69/t (range 0.11–1.15;
 3 episodes / 7 d ≈ one per 19.5k ticks ≈ 195k remote energy). Measured sinks 18.40 + 0.51 + 0.19 = 19.10 (−6%; last 2 h upgrade 20.7, +2%).
+
+## 2026-10-16 18:00 update: W45N7 added (flow.EXTRA_REMOTES)
+W45N7 net = 10 − 0.5 container − 0.53 miner − 1.23 reserver − 3.20 haulers (6×8C8M) = **4.54/t** (the design figure of 4.2 included congestion).
+Total net 28.09 → **upgrade ceiling 26.2/t** (steady state, before Invader EV). Invader EV in the DB is 0 now: the events table was lost in the 10-15 reset. The last measured value was 0.69/t for one remote; budget 0.7–1.4 for two. The realised share has been about 94% of the model (10-15 check: −6%). **Realistic steady rate is 24–25/t.**
+WORK cap: 12W per upgrader (1800 cap, code min 12); 3 upgraders = 36 WORK, so the rate is energy-bound, not WORK-bound. 2 upgraders = 24 WORK is binding just below the ceiling.
+Spawn: about 0.38 utilisation pre-W45N7, plus about 0.23 for W45N7 (96 hauler parts, 10 miner, reserver ×2.5), plus a 3rd upgrader → about 0.65. One spawn is enough.
+Fluctuation (hourly W46N8 rate 10-16 00–15h, W45N8 only): 17.0–23.4, median about 20; a ±3/t band per hour. New sources of dips: remote opening spawn contention (16:00h 14.6/t, fixed in 147bbda); a miner swap deadlock (fixed in 00e1ded); the 3rd upgrader gate (storage ≥ floor+1000).
