@@ -9,6 +9,7 @@ const stats = require('./managers/stats');
 const err = require('./utils/errors');
 const remote = require('./managers/remote');
 const trace = require('./utils/trace');
+const visuals = require('./managers/visuals');
 module.exports.loop = function () {
   trace.wrap();
   const newAlerts = [];
@@ -20,6 +21,7 @@ module.exports.loop = function () {
   for (const n in Game.creeps) { const c = Game.creeps[n]; if (c.spawning) continue; /* no intents possible; avoids stuck-ladder repaths + false STUCK */ if (!c.memory.role) c.memory.role = 'harvester';
     if (!c.memory.v2) { for (const k of ['spot', '_move', '_m', 'src', 'dst', 't', 'sink', 'stop', 'repairId']) delete c.memory[k]; c.memory.v2 = 1; } if (c.memory.role !== 'guard' && c.memory.role !== 'defender' && require('./managers/home').flee(c, 4)) continue; const t0 = Game.cpu.getUsed(); err.wrap('creep ' + n, () => (roles[c.memory.role] || roles.harvester).run(c)); trace.cpu(c, Game.cpu.getUsed() - t0); }
   const tt = Game.cpu.getUsed(); err.wrap('trace', () => { trace.tick(); trace.run(); }); Memory.traceCpu = Math.round((Game.cpu.getUsed() - tt) * 1000) / 1000;
+  const tv = Game.cpu.getUsed(); err.wrap('visuals', () => visuals.run()); Memory.visualsCpu = Math.round((Game.cpu.getUsed() - tv) * 1000) / 1000;
   err.wrap('stats', () => stats.run(err.flush(), newAlerts));
   err.wrap('report', () => report.run());
 };
