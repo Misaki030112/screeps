@@ -141,7 +141,7 @@ function remoteSpawn(room, go, avail) {
     const gapOk = !C.rhGap || Game.time - (m.lastRh || 0) >= C.rhGap;
     const next = remoteNext({
       nRes: mineR('reserver').filter(c => c.spawning || (c.ticksToLive || 1500) > 30 + lead).length,
-      wantRes: (res > 0 && res < 800) ? 2 : 1, // overlap rebuilds buffer while CLAIM1-only
+      wantRes: (res > 0 && res < 800 && !C.via) ? 2 : 1, // overlap rebuilds buffer while CLAIM1-only; W45N7 is CLAIM2-only (+1/t each), no 2nd 1300 up front
       res, avail, cap, rmLive: live('rminer'), rhLive: gapOk ? live('rhauler') : 99, rhAll: rhAll.length, rhTarget: target, claim2Only: !!C.via,
     });
     if (next === 'reserver') return go('reserver', reserverBody(avail), { remote: r });
