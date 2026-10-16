@@ -45,6 +45,7 @@ function legacyPickup(c, room, P) {
 }
 module.exports = { pickups, handoff, ctlLow, run(c) {
   const room = c.room, P = plan.get(room.name);
+  if (room.name === c.memory.home && salvage.dump(c)) return; // Invader loot (minerals) -> storage first
   if (c.memory.working && c.store[RESOURCE_ENERGY] === 0) { c.memory.working = false; delete c.memory.dst; }
   if (!c.memory.working && c.store.getFreeCapacity() === 0) c.memory.working = true;
   if (c.memory.working && (c.memory.src || c.memory.wt || c.memory.lp)) { delete c.memory.src; delete c.memory.wt; delete c.memory.lp; }

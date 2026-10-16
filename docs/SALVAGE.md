@@ -15,3 +15,12 @@
 - Root cause: `retire()` — hauler TTL <= 50, queen <= 25: no new load; carrying -> deliver; empty -> recycle at spawn.
   rhaulers do not leave home when TTL < measured round trip (`memory.rt`, default 200) + 40; they work as home haulers.
 - Fits the final RCL8 plan: no structures, no new routines. Test: `tests/salvage.js`.
+
+## Loot (2026-10-16, after invader_W45N8_499)
+- The boosted smallMelee died at tick 83674723 (4,11); its tombstone held **0 energy, GO 10, KO 5, ZH 5, UH 5**. Old salvage
+  counted energy only, so a rhauler stood next to it and ignored it; tombstones last 5 ticks/body part (50 ticks) and it decayed.
+- Now (src/utils/salvage.js): when the carrier's home has a storage (W46N8 does), any resource counts; a mineral unit is
+  valued as 5 energy for the worth-the-detour test. `take()` withdraws energy first, then the largest other resource.
+  `dump()`: a carrier holding non-energy goes to the home storage before any energy job (haulers and rhaulers at home).
+  No storage -> non-energy is ignored (and dropped if somehow carried) so it never blocks energy hauling.
+- Hostile-creep exclusion (5 tiles of ATTACK/RANGED) unchanged. Tests: tests/salvage.js (4 new cases).

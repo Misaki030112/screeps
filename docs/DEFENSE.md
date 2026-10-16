@@ -157,3 +157,13 @@ We match the conservative early pattern today; Overmind’s fight-remotes patter
   re-arms to THREAT when the flag is on and a solo Invader is still present. Explicit off without redeploy:
   `Memory.defense.remoteDefender = false`. Mid-fight disarm still drops THREAT/DEFEND → WAIT and recycles a live defender.
 Kept always: tower focus fire, civilian flee, remote creeps parking at home on player combat / wait-out.
+
+## Remote defender review — invader_W45N8_499 (2026-10-16)
+Invader: boosted smallMelee (2 TOUGH GO, 5 MOVE, 1 RA KO, 1 WORK ZH, 1 ATTACK UH), seen 83674476 at (13,33).
+Timeline: 476 seen -> WAIT 'gate' (remoteDefender flag had been switched off by us) -> 590 flag back on, THREAT -> 621 spawn start
+(31 ticks collecting 1300) -> 657 out -> 681 arrived (24 travel) -> 683–687 stuck 5 ticks on swamp (2,16) while approaching ->
+684–698 Invader walked to us, defender held range 4–7 (kite) -> 699 range 3, shooting -> 723 Invader dead (~24 ticks of fire,
+matches 1086 effective hp / 50). Defender ended 1200/1200, then recycled at home. Remote resumed (rhauler at (3,11) by 750).
+Findings: combat logic worked as simulated (duel test: boosted smallMelee median 54 ticks, 0 deaths). Real losses were outside
+the fight: 114 ticks of flag-off wait (human/agent decision, not code) and 31 ticks waiting for 1300 energy. Missed loot fixed
+in salvage (docs/SALVAGE.md). No defender code change: no clear win found (swamp step on approach costs ≤5 ticks).
