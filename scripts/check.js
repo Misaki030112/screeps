@@ -20,6 +20,7 @@ if (!out.log.some(l => l.startsWith('LAYOUT'))) throw new Error('layout manager 
 if (!(out.seg90 > 100 && out.seg90 < 90000)) throw new Error('trace segment 90 missing/too big: ' + out.seg90);
 console.log(`checks passed: ${fs.readdirSync(DIST).length} modules; sim 600 ticks, 0 errors, energy ${out.energy}, ${out.creeps.length} creeps`);
 // threat FSM unit tests (incl. the code-level enable gate armed()) + defender duel on real terrain driven by the real FSM
+execSync('node ' + path.join(__dirname, '..', 'tests', 'defender_energy_hold.js'), { stdio: 'pipe' });
 execSync('node ' + path.join(__dirname, '..', 'tests', 'threat_fsm.js'), { stdio: 'pipe' });
 execSync('node ' + path.join(__dirname, '..', 'tests', 'defender_duel.js'), { stdio: 'pipe' });
 execSync('node ' + path.join(__dirname, '..', 'tests', 'kite.js'), { stdio: 'pipe' });
@@ -35,4 +36,4 @@ execSync('node ' + path.join(__dirname, '..', 'tests', 'spawn_remote_gate.js'), 
 execSync('node ' + path.join(__dirname, '..', 'tests', 'rcl5_gate.js'), { stdio: 'pipe' });
 execSync('node ' + path.join(__dirname, '..', 'tests', 'rcl6_gate.js'), { stdio: 'pipe' });
 execSync('node ' + path.join(__dirname, '..', 'tests', 'move_detour.js'), { stdio: 'pipe' });
-console.log('threat FSM tests + defender duel + kite + queen standby + spawn upgraders + builder remote + spawn rhauler + spawn remote gate + rcl5 gate + move detour + salvage passed');
+console.log('threat FSM tests + defender energy hold + defender duel + kite + queen standby + spawn upgraders + builder remote + spawn rhauler + spawn remote gate + rcl5 gate + move detour + salvage passed');

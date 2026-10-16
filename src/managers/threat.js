@@ -156,7 +156,8 @@ module.exports = { S, DEF, cfg, classify, step, sense, run, state, armed,
   safe: r => state(r).st === S.SAFE,
   // first remote of this home that needs a defender spawned now
   wantDefender: home => remotesOf(home).find(r => state(r).st === S.THREAT && !state(r).def),
-  // home is collecting energy for a defender: spawn holds non-critical roles, haulers fill extensions, upgraders/builders hold draw
+  // home is collecting 1300 for a remote defender (clears once noteSpawn sets th.def): spawn holds all but queen,
+  // haulers fill extensions to 100%, upgraders pause withdrawals (spawn/ext economy). Home guards use home.js, not this.
   holding: home => remotesOf(home).some(r => state(r).st === S.THREAT && !state(r).def),
   // storage energy reserved for defence (builders must not go below it)
   reserve: home => remotesOf(home).some(r => ((Memory.remote || {})[r] || {}).armed) ? DEF.reserve : 0,

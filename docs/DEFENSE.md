@@ -166,4 +166,10 @@ Timeline: 476 seen -> WAIT 'gate' (remoteDefender flag had been switched off by 
 matches 1086 effective hp / 50). Defender ended 1200/1200, then recycled at home. Remote resumed (rhauler at (3,11) by 750).
 Findings: combat logic worked as simulated (duel test: boosted smallMelee median 54 ticks, 0 deaths). Real losses were outside
 the fight: 114 ticks of flag-off wait (human/agent decision, not code) and 31 ticks waiting for 1300 energy. Missed loot fixed
-in salvage (docs/SALVAGE.md). No defender code change: no clear win found (swamp step on approach costs ≤5 ticks).
+in salvage (docs/SALVAGE.md). Combat approach: no clear win (swamp step ≤5 ticks). Energy wait fixed below.
+
+### Energy reserve for remote defender (2026-10-16)
+Last fight waited **31 ticks** to gather 1300 (`spawn_start` waited). Fix (does not touch home `guards`, still default off):
+- `spawn.js`: while `wantDefender` and `avail < 1300`, hold **all** spawns except queen (miners no longer sneak in and reset the pool).
+- `roles/upgrader.js`: `threat.holding()` pauses withdrawals with **or without** storage until `noteSpawn` sets `th.def` (holding clears → upgraders resume).
+- Haulers already fill extensions to 100% while holding; builders still respect the 1300 storage reserve.

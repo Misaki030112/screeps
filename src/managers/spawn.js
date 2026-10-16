@@ -163,11 +163,15 @@ module.exports = { targets, rhaulerNeed, remoteNext, retiring, B, reserverBody, 
   // 1) emergency: nothing can refill the spawn
   if (!(alive.hauler || 0) && !(alive.queen || 0) && !(alive.harvester || 0) && !(alive.filler || 0))
     return go(count.miner ? 'hauler' : 'harvester', count.miner ? B.hauler(Math.max(200, avail)) : B.harvester(Math.max(200, avail)));
-  // 1b) defender: top of the queue; while collecting energy for it only miners/queen may still spawn (non-critical paused)
+  // 1b) defender: top of the queue. While collecting the 1300, hold EVERYTHING except queen (refill) —
+  // miners used to keep spawning and stretched the wait to ~31t (invader_W45N8_499, 2026-10-16).
+  // Holding ends the tick noteSpawn sets th.def (wantDefender/holding go false → upgraders resume).
   const threat = require('./threat'), want = threat.wantDefender(room.name);
   if (want && rcl >= 4 && threat.armed(want)) {
     if (avail >= 1300) { const name = 'defender' + Game.time, rv = spawn.spawnCreep(B.defender(1300), name, { memory: { role: 'defender', home: room.name, remote: want, born: Game.time }, directions: birthDirs(spawn, 'defender') });
       if (rv === OK) threat.noteSpawn(want, name); return rv; }
+    if (!(alive.queen || 0) && !(alive.filler || 0)) return go('queen', B.queen(Math.max(300, avail)));
+    return ERR_BUSY; // reserve energyAvailable for the defender; home guards (off) never reach here while want is set
   }
   // 1c) home guards while player combat creeps are in the room (managers/home); queen first so towers stay fed
   const H = require('./home'), homeThreat = H.on('guards') && H.active(room); // guards + spawn hold behind Memory.defense.guards

@@ -89,7 +89,7 @@ stateDiagram-v2
   WAIT --> SAFE: timer (last TTL+80; players 1500) or vision shows clear (not for players) / core gone
   SAFE --> WAIT: player combat creep or our creep losing hits with no Invader (any state)
 ```
-Effects of each state (read by consumers): SAFE = remote works. THREAT = remote creeps at home park; spawn: defender first, only miners/queen otherwise (non-critical paused); haulers fill extensions to 100%; upgraders stop drawing if no storage; builders keep 1300 in storage. DEFEND = defender engages (kite at 3, heal self, <60% hp home to tower, back ≥95%). Any other state = defender recycles at Spawn1 (≈1000 refund); remote creeps stay home.
+Effects of each state (read by consumers): SAFE = remote works. THREAT = remote creeps at home park; spawn: defender first, while collecting 1300 only queen may spawn (miners held too — cuts the ~31t energy wait); haulers fill extensions to 100%; upgraders pause withdrawals until spawn starts (with or without storage); builders keep 1300 in storage. DEFEND = defender engages (kite at 3, heal self, <60% hp home to tower, back ≥95%). Any other state = defender recycles at Spawn1 (≈1000 refund); remote creeps stay home.
 
 ### Edge cases
 | Case | Handling |
