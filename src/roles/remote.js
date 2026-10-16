@@ -67,7 +67,8 @@ const roles = {
     if (c.room.name === C.home && c.store[RESOURCE_ENERGY] > 0 && c.store[RESOURCE_ENERGY] < 50) { c.memory.working = true; return require('./hauler').run(c); }
     // remote container gone (Invader / decay; rminer rebuilding it): nothing to collect -> haul at home until it exists (10-13: 2 rhaulers 100% idle)
     const R = Game.rooms[c.memory.remote];
-    if (R && c.store[RESOURCE_ENERGY] === 0 && !R.lookForAt(LOOK_STRUCTURES, C.cont[0], C.cont[1]).some(s => s.structureType === STRUCTURE_CONTAINER)
+    // multi-hop (W45N7, ~100t walk): leave once our site is >=60% so we arrive about when it completes
+    if (R && c.store[RESOURCE_ENERGY] === 0 && !(C.via && (remote.mem(c.memory.remote).siteProg || 0) >= 3000) && !R.lookForAt(LOOK_STRUCTURES, C.cont[0], C.cont[1]).some(s => s.structureType === STRUCTURE_CONTAINER)
       && !R.find(FIND_DROPPED_RESOURCES).some(r => r.amount >= 100)) return flee(c);
     // too old for another round trip (2026-10-16: rhaulers died at the home exit holding 400/296): work at home, recycle when empty
     const S = require('../utils/salvage');
