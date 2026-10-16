@@ -10,12 +10,22 @@ const COMBAT = ['attack', 'ranged_attack', 'work', 'claim'];
 function playerCombat(room) {
   return room.find(FIND_HOSTILE_CREEPS).some(h => h.owner.username !== 'Invader' && h.body.some(p => COMBAT.includes(p.type) && p.hits > 0));
 }
+// early start switched off: back to the normal schedule; drop unbuilt (<10% progress) planned barrier sites. Built structures untouched.
+function unearly(room) {
+  delete room.memory.walls; delete room.memory.defAlert;
+  const P = plan().get(room.name); let n = 0;
+  for (const s of (room.find(FIND_MY_CONSTRUCTION_SITES) || [])) {
+    if ((s.structureType === STRUCTURE_RAMPART || s.structureType === STRUCTURE_WALL) && P && planned(P, s.pos.x, s.pos.y, s.structureType) && s.progress < 0.1 * s.progressTotal && s.remove() === OK) n++;
+  }
+  console.log(`WALLS early start cancelled ${room.name} t=${Game.time} sites removed=${n}`);
+}
 function phase(room) {
+  const H = require('./home');
+  if (room.memory.walls && room.memory.walls.why === 'threat' && !H.on('earlyWalls')) unearly(room);
   const m = room.memory.walls;
   if (m && m.started) return 'build';
   // approved early trigger (Misaki 2026-10-16 "先等，来到隔壁再修"): a player combat squad adjacent (defAlert) or inside -> start now, any RCL
-  const H = require('./home');
-  if (H.alert(room) || H.active(room)) { room.memory.walls = { started: Game.time, why: 'threat', fund: 0, ft: Game.time }; console.log(`WALLS start ${room.name} t=${Game.time} why=threat`); return 'build'; }
+  if (H.on('earlyWalls') && (H.alert(room) || H.active(room))) { room.memory.walls = { started: Game.time, why: 'threat', fund: 0, ft: Game.time }; console.log(`WALLS start ${room.name} t=${Game.time} why=threat`); return 'build'; }
   if (room.controller.level < 6 || !room.storage) return 'off';
   const calm = !require('./threat').holding(room.name) && !room.find(FIND_HOSTILE_CREEPS).length;
   const early = Date.now() >= NOVICE_END && playerCombat(room);

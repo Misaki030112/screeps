@@ -131,3 +131,13 @@ We match the conservative early pattern today; Overmind’s fight-remotes patter
 - **Guards** (`roles/guard.js`, `managers/home.js`): while player combat creeps are in W46N8, 1 guard (2 if RA+ATTACK parts ≥12), body nRA+(n+1)M+HEAL sized from available energy. Never leave the room, fight only within 15 of a tower, shoot the towers' focus (healer first), kite melee, retreat <60% to the spawn, recycle 100t after clear. Spawn order under threat: emergency → remote defender → queen → guards → miners; upgraders/builders/remote held.
 - **Civilians**: every non-combat creep steps away (PathFinder flee) from a hostile ATTACK/RANGED creep within 4 in our room. Queen refills towers first under threat. Remote creeps already wait at home on any player combat creep (threat FSM `player`).
 - **Early walls**: `room.memory.defAlert = <tick>` (set from console when a squad is adjacent — Misaki's approved trigger) or a player combat creep inside starts the wall phase at any RCL (`why: threat`, fund 0, threat lifts the cap). Site order puts the west gate (6,28) and west wall x=6 first, then the final-plan order. Nothing off-plan. Safe mode is never automatic.
+
+### Paused 2026-10-16 09:51 (Misaki: "就这点兵力先不用大惊小怪，提前修墙和防守兵暂时不需要，会拖慢升级")
+- Switches in `managers/home.js` `FLAGS` (code default **off**), overridable from the console without deploying:
+  `Memory.defense = { earlyWalls: true, guards: true }` (either key alone works; `delete Memory.defense` = back to defaults).
+- `earlyWalls` off: `defAlert` / a squad in the room no longer starts walls. A wall latch with `why: 'threat'` is cleared once
+  (`defAlert` deleted, phase back to the normal off/bank/build schedule of DEFENSE_PLAN.md) and unbuilt planned rampart/wall
+  sites (<10% progress) are removed; built structures and progressed sites stay.
+- `guards` off: no guards and no threat spawn hold — upgraders/builders/remote keep spawning with hostiles in the room.
+- Still active: tower focus fire (healer-first, heal-aware, anti-drain), civilian flee, queen tower priority, remote creeps
+  waiting at home on a player combat creep (threat FSM), remote Invader defender (unchanged).

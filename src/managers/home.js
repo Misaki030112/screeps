@@ -3,6 +3,10 @@
 //   alert(room)   : room.memory.defAlert > Game.time — set from the console when a Council combat squad sits in an ADJACENT room
 //                   (her approved early-wall trigger, 2026-10-16). Starts walls early; does not spawn anything by itself.
 //   wantGuards    : guards to keep while hostiles are in the room, sized to the threat
+// Switches (Misaki 2026-10-16 09:51: the BustJetter squad is not worth slowing the upgrade for). Code default OFF;
+// re-enable without a deploy from the console: Memory.defense = { earlyWalls: true, guards: true }
+const FLAGS = { earlyWalls: false, guards: false };
+const on = k => { const m = typeof Memory !== 'undefined' && Memory.defense; return m && m[k] !== undefined ? !!m[k] : FLAGS[k]; };
 const C = {}; const now = () => (typeof Game === 'undefined' ? 0 : Game.time); const COMBAT = ['attack', 'ranged_attack', 'heal', 'work'];
 function hostiles(room) {
   const k = room.name; if (C[k] && C[k].t === now()) return C[k].h;
@@ -10,11 +14,11 @@ function hostiles(room) {
   C[k] = { t: now(), h }; return h;
 }
 const players = room => hostiles(room).filter(h => h.owner.username !== 'Invader');
-const alert = room => ((room.memory && room.memory.defAlert) || 0) > now();
+const alert = room => on('earlyWalls') && ((room.memory && room.memory.defAlert) || 0) > now();
 const active = room => players(room).length > 0;
 const parts = (hs, t) => hs.reduce((s, h) => s + h.body.filter(p => p.type === t && p.hits > 0).length, 0);
 // Guards: 0 for scouts/healer-only; 1 for small squads; 2 when ranged+melee parts >= 12. Towers do most of the killing.
-function wantGuards(room) { const hs = players(room); const dmg = parts(hs, 'ranged_attack') + parts(hs, 'attack'); return !dmg ? 0 : dmg >= 12 ? 2 : 1; }
+function wantGuards(room) { if (!on('guards')) return 0; const hs = players(room); const dmg = parts(hs, 'ranged_attack') + parts(hs, 'attack'); return !dmg ? 0 : dmg >= 12 ? 2 : 1; }
 // creeps that are damaging us (target of tower fire even when net<=0)
 function hurting(room) {
   const s = new Set(), mine = room.find(FIND_MY_CREEPS).concat(room.find(FIND_MY_STRUCTURES));
@@ -33,4 +37,4 @@ function flee(c, r = 5) {
   if (res.path.length) { c.move(c.pos.getDirectionTo(res.path[0])); return true; }
   return false;
 }
-module.exports = { hostiles, players, alert, active, wantGuards, hurting, flee };
+module.exports = { FLAGS, on, hostiles, players, alert, active, wantGuards, hurting, flee };

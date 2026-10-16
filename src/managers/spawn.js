@@ -170,7 +170,7 @@ module.exports = { targets, rhaulerNeed, remoteNext, retiring, B, reserverBody, 
       if (rv === OK) threat.noteSpawn(want, name); return rv; }
   }
   // 1c) home guards while player combat creeps are in the room (managers/home); queen first so towers stay fed
-  const H = require('./home'), homeThreat = H.active(room);
+  const H = require('./home'), homeThreat = H.on('guards') && H.active(room); // guards + spawn hold behind Memory.defense.guards
   if (homeThreat) {
     if (!(alive.queen || 0) && !(alive.filler || 0)) return go('queen', B.queen(Math.max(300, avail)));
     if ((alive.guard || 0) < H.wantGuards(room)) { const b = B.guard(Math.max(500, Math.min(cap, avail))); // spawn now with what we have: towers carry the fight, speed matters
