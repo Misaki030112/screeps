@@ -168,7 +168,15 @@ function bodyEnergy(role, E, cap, avail, haulerAlive, hasStorage, minerAlive) {
   const fromCap = role === 'upgrader' || (role === 'hauler' && hasStorage) || (role === 'miner' && minerAlive);
   return Math.min(fromCap ? cap : E, role === 'hauler' ? (hasStorage ? 1050 : 800) : role === 'queen' ? 600 : 3000);
 }
-module.exports = { rhTarget, birthDirs, targets, rhaulerNeed, remoteNext, retiring, B, reserverBody, nearFull, bodyEnergy, run(spawn) {
+// Spawn queue order. Base upgrader quota (1 with sites, else 2) jumps ahead of REMOTE so a remote
+// rhauler wave cannot leave the room on a single 12W for hundreds of ticks (patrol 2026-10-16 16:42).
+function spawnOrder(count, T, nSites) {
+  const baseUp = Math.min(nSites ? 1 : 2, T.upgrader || 0);
+  return (count.upgrader || 0) < baseUp
+    ? ['queen', 'hauler', 'upgrader', 'REMOTE', 'filler', 'manager', 'builder']
+    : ['queen', 'hauler', 'REMOTE', 'filler', 'manager', 'upgrader', 'builder'];
+}
+module.exports = { rhTarget, birthDirs, targets, rhaulerNeed, remoteNext, retiring, B, reserverBody, nearFull, bodyEnergy, spawnOrder, run(spawn) {
   if (spawn.spawning) return;
   const room = spawn.room, cap = room.energyCapacityAvailable, avail = room.energyAvailable, rcl = room.controller.level;
   if (nearFull(avail, cap)) room.memory.lastFull = Game.time; // cap-100: RCL5 build rarely hits exact cap
@@ -221,9 +229,10 @@ module.exports = { rhTarget, birthDirs, targets, rhaulerNeed, remoteNext, retiri
   const m = room.memory, ce = cc ? cc.store[RESOURCE_ENERGY] : 0;
   m.ctlEma = m.ctlEma === undefined ? ce : m.ctlEma + (ce - m.ctlEma) * Math.min(1, (Game.time - (m.ctlEmaT || Game.time)) / 300);
   m.ctlEma = Math.round(m.ctlEma); m.ctlEmaT = Game.time;
-  const T = targets(room, count, backlog, m.ctlEma, rc.sites(room).length);
+  const nSites = rc.sites(room).length;
+  const T = targets(room, count, backlog, m.ctlEma, nSites);
   room.memory.roleTargets = T;
-  for (const role of ['queen', 'hauler', 'REMOTE', 'filler', 'manager', 'upgrader', 'builder']) {
+  for (const role of spawnOrder(count, T, nSites)) {
     if (role === 'REMOTE') { const r = remoteSpawn(room, go, avail); if (r !== undefined) return r; continue; }
     if ((count[role] || 0) >= T[role]) continue;
     const mem = {};

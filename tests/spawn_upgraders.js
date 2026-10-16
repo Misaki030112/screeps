@@ -54,6 +54,18 @@ const cases = [
     assert.strictEqual(b.filter(p => p === 'work').length, 5); assert.strictEqual(b.filter(p => p === 'move').length, 3);
     assert.strictEqual(S.bodyEnergy('miner', 400, 1750, 400, true, true, false), 400); }],
   ['RCL8 still 15W max', () => assert.strictEqual(S.B.upgrader(5000, 8).filter(p => p === 'work').length, 15)],
+  ['spawnOrder: 1 upgrader below base 2 -> upgrader before REMOTE', () => {
+    const o = S.spawnOrder({ upgrader: 1 }, { upgrader: 2 }, 0);
+    assert.ok(o.indexOf('upgrader') < o.indexOf('REMOTE')); }],
+  ['spawnOrder: 2 upgraders at base -> REMOTE before upgrader', () => {
+    const o = S.spawnOrder({ upgrader: 2 }, { upgrader: 2 }, 0);
+    assert.ok(o.indexOf('REMOTE') < o.indexOf('upgrader')); }],
+  ['spawnOrder: 2 of 3 (extra) -> REMOTE before upgrader', () => {
+    const o = S.spawnOrder({ upgrader: 2 }, { upgrader: 3 }, 0);
+    assert.ok(o.indexOf('REMOTE') < o.indexOf('upgrader')); }],
+  ['spawnOrder: 0 upgrader with sites -> upgrader before REMOTE', () => {
+    const o = S.spawnOrder({ upgrader: 0 }, { upgrader: 1 }, 2);
+    assert.ok(o.indexOf('upgrader') < o.indexOf('REMOTE')); }],
 ];
 let fail = 0; for (const [n, f] of cases) { try { f(); console.log('ok  ', n); } catch (e) { fail++; console.log('FAIL', n, e.message); } }
 console.log(`spawn upgraders: ${cases.length - fail}/${cases.length}`); process.exit(fail ? 1 : 0);
