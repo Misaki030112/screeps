@@ -13,7 +13,7 @@ const REFRESH = 50, MIN_BUCKET = 2000, MAX_AGE = 1500, MIN_LEN = 4, MAX_HOME = 6
 const HOME_ROLES = { hauler: '运输', queen: '女王', filler: '填充', manager: '管家', upgrader: '升级', builder: '建造', miner: '矿工', harvester: '采集' };
 const NAMES = { source: '能量源', controller: '控制器', storage: '仓库', container: '容器', spawn: '出生点', extension: '扩展',
   link: '链接', tower: '塔', terminal: '终端', mineral: '矿物', road: '路' };
-const PALETTE_R = ['#ffd400', '#ff66cc', '#ffffff'];
+const REMOTE_COLOR = { W45N8: '#ffd400', W45N7: '#ff66cc' };
 const PALETTE_H = ['#33ccff', '#66ff66', '#ff9933', '#b388ff', '#ff4d4d', '#00e6b8'];
 const L = {};  // creep -> {k, prev, pts}  (home legs)
 const T = {};  // creep -> pts             (remote loaded trips)
@@ -26,7 +26,7 @@ function save(key, pts, label, remote) { const g = G[key] || (G[key] = { n: 0 })
 const KN = {};
 function nameAt(k) { // "x,y,range" in HOME -> Chinese name of what sits there
   if (KN[k]) return KN[k];
-  const [x, y] = k.split(',').map(Number), room = Game.rooms[HOME]; let n = `(${x},${y})`;
+  const [x, y] = k.split(',').map(Number), room = Game.rooms[HOME]; let n = `站位(${x},${y})`;
   if (room && room.lookForAt) {
     const s = room.lookForAt('source', x, y)[0] ? 'source' : room.lookForAt('mineral', x, y)[0] ? 'mineral'
       : ((room.lookForAt('structure', x, y).find(o => o.structureType !== 'road' && o.structureType !== 'rampart') || {}).structureType);
@@ -46,8 +46,8 @@ function record() {
       const k = c.memory._m ? c.memory._m.k : null; let l = L[n];
       if (!l) l = L[n] = { k, prev: null, pts: [] };
       if (k !== l.k) {
-        if (l.k && l.pts.length >= MIN_LEN) { const ends = [l.prev || 'start', l.k].sort();
-          save('H:' + role + ':' + ends.join('|'), l.pts, HOME_ROLES[role] + ' ' + ends.map(e => e === 'start' ? '出发点' : nameAt(e)).join('↔'), false); }
+        if (l.k && l.prev && l.pts.length >= MIN_LEN) { const ends = [l.prev, l.k].sort();
+          save('H:' + role + ':' + ends.join('|'), l.pts, HOME_ROLES[role] + ' ' + ends.map(nameAt).join('↔'), false); }
         if (l.k) l.prev = l.k; l.k = k; l.pts = [];
       }
       if (k) push(l.pts, c);
@@ -61,7 +61,7 @@ function build() {
   const home = live.filter(k => !G[k].remote).sort((a, b) => G[b].n * G[b].pts.length - G[a].n * G[a].pts.length || (a < b ? -1 : 1)).slice(0, MAX_HOME);
   const rooms = {}, legend = [], out = [], all = rem.concat(home);
   all.forEach((k, i) => {
-    const g = G[k], color = g.remote ? PALETTE_R[rem.indexOf(k) % PALETTE_R.length] : PALETTE_H[home.indexOf(k) % PALETTE_H.length];
+    const g = G[k], color = g.remote ? (REMOTE_COLOR[k.slice(2)] || '#ffffff') : PALETTE_H[home.indexOf(k) % PALETTE_H.length];
     const off = (i - (all.length - 1) / 2) * 0.05; let cur = null;
     for (const [r, x, y] of g.pts) {
       if (!cur || cur.room !== r) { cur = { room: r, color, pts: [] }; (rooms[r] = rooms[r] || []).push(cur); }

@@ -8,7 +8,7 @@ one colour per route, split per room so routes cross room edges. Chinese legend 
   empty again the trip (remote container -> home drop-off, across rooms) is complete. The latest complete trip per remote is drawn.
 - **Home routes**: every movement leg of home roles (hauler, queen, filler, manager, upgrader, builder, miner) is recorded —
   a leg = one `move.js` target key (`_m.k`) from start tile to arrival. Legs are grouped by role + unordered {previous target, target}
-  (e.g. 运输 仓库↔能量源(x,y)); the latest leg per group is drawn. Up to 6 busiest groups (trips x length, last 1500 ticks).
+  (e.g. 运输 仓库↔能量源(x,y)); the first leg after spawn (no previous target) is ignored; unnamed tiles show as 站位(x,y); the latest leg per group is drawn. Up to 6 busiest groups (trips x length, last 1500 ticks).
 - Snapshot rebuilt every 50 ticks; drawn every tick. A global reset clears the heap: lines reappear after the next trips.
 - `Memory.routesLive` (refreshed every 50 ticks): `[{key,label,color,len,n,age,pts:'room:x:y;...'}]` for verification.
 
