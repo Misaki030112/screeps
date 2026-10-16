@@ -13,8 +13,10 @@ function go(c, room, x, y, range) {
   move.to(c, ex, ey, 0); return false;
 }
 // Paused remote: at home the creep works with the home role that matches its body (reads the threat state only via remote.paused)
-// pure rule (tests/remote_fixes.js): urgent <30k; batch <50k when full; free repair <100k while the source regenerates
-const REP = { urgent: 30000, batch: 50000, idle: 100000 };
+// pure rule (tests/remote_fixes.js): urgent <30k; batch <100k when full; free repair <100k while the source regenerates.
+// batch was 50k (0247656): same repair ticks (= decay) but only ~1000t of pause buffer; R rarely empties so the free
+// branch never topped it up (100k 11:00 -> 50.4k 13:10 10-16). 100k keeps the ~2000t buffer at no extra cost.
+const REP = { urgent: 30000, batch: 100000, idle: 100000 };
 function repairNow(hits, free, perHarvest, srcEmpty) {
   return hits < REP.urgent || (hits < REP.batch && free < perHarvest) || (srcEmpty && hits < REP.idle);
 }
@@ -38,7 +40,7 @@ const roles = {
     // Unowned-room containers decay 50 hits/t; keep >=100k so it survives a ~1500-tick threat pause with nobody repairing
     // (30k lasted only 600 ticks: container lost during the 2026-10-13 Invader pause). Steady-state cost is the same (= decay).
     // Repair vs harvest (W45N8 review 2026-10-16): repair blocks harvest in the same tick. Urgent <30k: repair first.
-    // <50k: batch — harvest until the store is full, then repair. Source empty (regen wait): repair for free up to 100k.
+    // <100k: batch — harvest until the store is full, then repair. Source empty (regen wait): repair for free up to 100k.
     if (k && c.store[RESOURCE_ENERGY] >= 10 && repairNow(k.hits, c.store.getFreeCapacity(), 2 * c.getActiveBodyparts(WORK), !src || src.energy === 0)) return c.repair(k);
     if (!k) { const s = c.room.lookForAt(LOOK_CONSTRUCTION_SITES, C.cont[0], C.cont[1])[0];
       if (!s) c.room.createConstructionSite(C.cont[0], C.cont[1], STRUCTURE_CONTAINER);

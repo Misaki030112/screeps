@@ -176,7 +176,7 @@ Last fight waited **31 ticks** to gather 1300 (`spawn_start` waited). Fix (does 
 
 ### Fixes from the W45N8 fight trajectory review (2026-10-16)
 Tests: `tests/remote_fixes.js` (+ existing duel/kite/threat suites). Sim 600 ticks: 0 errors.
-1. **rminer repair** (`roles/remote.js repairNow`): repair first only <30k; <50k batch-repair when the store is full; while the
+1. **rminer repair** (`roles/remote.js repairNow`): repair first only <30k; <100k batch-repair when the store is full (was <50k in 0247656; raised 10-16 13:15 to keep the ~2000t pause buffer, same cost); while the
    source regenerates repair for free up to 100k. (Was: any repair <100k beat harvest.)
 2. **Kite hold** (`utils/kite.js`): target approaching, range ≥4, not on swamp → stand still (it walks into our range 3).
    **Ranged-only targets** (`rangedOf` without ATTACK): close to range 3 and fire, no kiting away.

@@ -8,7 +8,9 @@ const { repairNow } = require(path.join(ROOT, 'src/roles/remote.js'));
 ok('urgent <30k repairs even with room', repairNow(29000, 40, 12, false));
 ok('40k with room: harvest', !repairNow(40000, 40, 12, false));
 ok('40k full: batch repair', repairNow(40000, 6, 12, false));
-ok('60k full: no repair', !repairNow(60000, 6, 12, false));
+ok('60k full: batch repair', repairNow(60000, 6, 12, false));
+ok('60k with room: harvest', !repairNow(60000, 40, 12, false));
+ok('120k full: no repair', !repairNow(120000, 6, 12, false));
 ok('source empty: free repair <100k', repairNow(90000, 40, 12, true) && !repairNow(120000, 40, 12, true));
 // 2) kite hold + inertia
 const T = fs.readFileSync(path.join(ROOT, 'data/terrain_W45N8.txt'), 'utf8');
