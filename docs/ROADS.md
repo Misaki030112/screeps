@@ -53,3 +53,4 @@ energy not starved (storage >= 1300) · errors 0 · CPU · walls.phase === 'road
 - Changed: walls.phase 'roads' now also holds upgraders at 1 (as 'bank'), so road builders are not starved by upgraders.
 - Added tests/roads_transition.js (RCL5->6 sim: gate, init, core->home->W45N8->done, batch, no vision, paused, off, RCL drop).
 - Residual: home trunk tile 40,23 is under the RCL8 tower plan (road must be removed before that tower, RCL8 only).
+- Changed (patrol 10-17 19:40): in walls.phase 'roads' the held upgrader is spawned 6W1C1M (700e, ~6/t) instead of 12W (spawn.bodyEnergy buildMode), so builders get the spare ~6/t. Measured before: upgrade 13.9/t, build 5.9/t, storage -4.2/t. Full size returns automatically when roads are done.

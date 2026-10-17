@@ -172,7 +172,12 @@ function remoteSpawn(room, go, avail) {
 // while container A piled up (patrol 10-15 01:43).
 // Same for a miner while another miner still works (the other source, or the predecessor it replaces): a starving-sized
 // 4W1C2M on source A mines 8/t of 10/t for 1500 ticks (miner83645106, patrol 10-15 02:25). With no miner alive, recover small.
-function bodyEnergy(role, E, cap, avail, haulerAlive, hasStorage, minerAlive) {
+// RCL6 road/build mode (walls.phase 'roads', Misaki 2026-10-17: construction before upgrading): the one held upgrader is
+// sized 6W1C1M (700e, ~6/t) instead of 12W. A 12W ate source A's whole 10/t while builders sat waiting_feed ~43% and storage
+// fell under the 1300 reserve (patrol 10-17 19:40: upgrade 13.9/t vs build 5.9/t). Surplus ctl feed spills to storage -> builders.
+const BUILD_UP_E = 700;
+function bodyEnergy(role, E, cap, avail, haulerAlive, hasStorage, minerAlive, buildMode) {
+  if (role === 'upgrader' && buildMode) return Math.min(cap, BUILD_UP_E);
   if (role === 'queen' && !haulerAlive) return Math.max(300, avail);
   const fromCap = role === 'upgrader' || (role === 'hauler' && hasStorage) || (role === 'miner' && minerAlive);
   return Math.min(fromCap ? cap : E, role === 'hauler' ? (hasStorage ? 1050 : 800) : role === 'queen' ? 600 : 3000);
@@ -262,7 +267,8 @@ module.exports = { rhTarget, birthDirs, targets, rhaulerNeed, remoteNext, retiri
     // Home hauler: 8C8M pre-storage. With storage it hauls source A -> ctl container (27 tiles, measured cycle ~57-66t, not the
     // model's A->hub rt 28): 10/t x 66 = 660 carry -> one 14C7M road hauler (700, 1050e). 2x6C6M (600 carry) let
     // container A pile up to 1771/2000 (patrol 10-14 07:05) while upgraders sat waiting_feed ~50%.
-    const e = bodyEnergy(role, E, cap, avail, !!alive.hauler, !!room.storage);
+    const buildMode = role === 'upgrader' && rcl >= 6 && rcl < 8 && require('./walls').phase(room) === 'roads';
+    const e = bodyEnergy(role, E, cap, avail, !!alive.hauler, !!room.storage, undefined, buildMode);
     return go(role, role === 'hauler' && room.storage ? B.roadHauler(e) : B[role](e, rcl), mem);
   }
 } };

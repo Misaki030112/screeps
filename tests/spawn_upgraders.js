@@ -28,6 +28,12 @@ const cases = [
   ['no storage: EMA only (pre-storage behaviour)', () => assert.strictEqual(up({ hasStorage: false, ema: 1400 }), 3)],
   ['capped by upgrader spots', () => assert.strictEqual(up({ storage: 9000, ema: 5000 }), 3)],
   ['sites: base 1', () => assert.strictEqual(up({ sites: 2, storage: 0 }), 1)],
+  ['road/build mode: upgrader body 700e (6W1C1M), normal mode cap; other roles unaffected', () => {
+    assert.strictEqual(S.bodyEnergy('upgrader', 1850, 1850, 1850, true, true, undefined, true), 700);
+    assert.deepStrictEqual(S.B.upgrader(S.bodyEnergy('upgrader', 1850, 1850, 1850, true, true, undefined, true), 6).filter(p => p === 'work').length, 6);
+    assert.strictEqual(S.bodyEnergy('upgrader', 300, 1850, 300, true, true, undefined, false), 1850);
+    assert.strictEqual(S.bodyEnergy('upgrader', 300, 550, 300, true, true, undefined, true), 550);
+    assert.strictEqual(S.bodyEnergy('builder', 1850, 1850, 1850, true, true, undefined, true), 1850); }],
   ['RCL4 1300 cap -> 12W1C1M costing exactly 1300', () => { const b = S.B.upgrader(1300, 4); assert.strictEqual(b.filter(p => p === 'work').length, 12); assert.strictEqual(b.length, 14); }],
   ['body shrinks with available energy (800 -> 7W)', () => assert.strictEqual(S.B.upgrader(800, 4).filter(p => p === 'work').length, 7)],
   ['retiring: 14-part upgrader at TTL 72 (=14*3+30) no longer counts', () => assert.strictEqual(S.retiring({ memory: { role: 'upgrader' }, body: Array(14), ticksToLive: 72 }), true)],
