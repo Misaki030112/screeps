@@ -2,35 +2,34 @@
 //   core   RCL6 core build (10 ext + link 30,11, placed by layout.js) must be finished first
 //   home   trunk roads to the wall gates (defense.trunks with_gate: TR, W, S) + home leg of the remote haul routes
 //   W45N8  remote haul road in W45N8 (route storage -> container 13,11)
-//   W45N7  remote haul road W45N8 south leg + W45N7 (route -> container 21,15)
+//   (W45N7 road dropped by Misaki 2026-10-17 17:47: W45N7 haulers stay 8C8M)
 //   done   -> walls.phase() may start banking / building barriers
 // Only active at controller.level >= 6. Sites in batches (BATCH per room, every 50 ticks). Memory.roads.off = true pauses
 // placement (walls stay gated). Memory.roads.skip = true un-gates walls immediately (manual override).
 const ROUTES = require('../layouts/remote_routes');
-const PHASES = ['core', 'home', 'W45N8', 'W45N7', 'done'];
+const PHASES = ['core', 'home', 'W45N8', 'done']; // W45N7 road dropped (Misaki 2026-10-17 17:47)
 const BATCH = 5, HOME = 'W46N8';
 const memo = {};
 // Tiles per phase: { phase: [[room, x, y], ...] } (deduplicated, earlier phase wins)
 function tiles(P) {
   if (memo.t) return memo.t;
-  const seen = new Set(), out = { home: [], W45N8: [], W45N7: [] };
+  const seen = new Set(), out = { home: [], W45N8: [] };
   const busy = (r, x, y) => { if (r !== HOME || !P || !P.any) return false; const w = P.any[x * 50 + y]; return !!(w && w.type !== 'road' && (w.rcl || 0) <= 6); };
   const add = (ph, r, x, y) => { if (busy(r, x, y)) return; const k = r + ':' + x + ':' + y; if (seen.has(k)) return; seen.add(k); out[ph].push([r, x, y]); };
   const d = P && P.raw && P.raw.defense;
   if (d) for (const g in d.trunks) if (d.trunks[g].mode === 'with_gate') for (const [x, y] of d.trunks[g].new_tiles) add('home', HOME, x, y);
-  for (const r of ['W45N8', 'W45N7']) for (const [rm, x, y] of ROUTES[r]) if (rm === HOME) add('home', rm, x, y);
+  for (const [rm, x, y] of ROUTES.W45N8) if (rm === HOME) add('home', rm, x, y); // W45N7-only home leg (46-49,18-21) dropped
   for (const [rm, x, y] of ROUTES.W45N8) if (rm !== HOME) add('W45N8', rm, x, y);
-  for (const [rm, x, y] of ROUTES.W45N7) if (rm !== HOME) add('W45N7', rm, x, y);
   return (memo.t = out);
 }
 function isHomeTile(x, y) { const P = require('../utils/plan').get(HOME); return tiles(P).home.some(([, a, b]) => a === x && b === y); }
-function isRouteTile(r, x, y) { const T = memo.t || tiles(require('../utils/plan').get(HOME)); return [].concat(T.home, T.W45N8, T.W45N7).some(([rm, a, b]) => rm === r && a === x && b === y); }
+function isRouteTile(r, x, y) { const T = memo.t || tiles(require('../utils/plan').get(HOME)); return [].concat(T.home, T.W45N8).some(([rm, a, b]) => rm === r && a === x && b === y); }
 function mem() { return (Memory.roads = Memory.roads || { phase: 'core' }); }
 function M() { return typeof Memory === 'undefined' ? undefined : Memory.roads; }
 function phase() { const m = M(); return m ? m.phase || 'core' : 'core'; }
 // Walls wait for this. Pre-RCL6 it is irrelevant (walls.phase is 'off' anyway).
 function done() { const m = M(); return !!(m && (m.skip || m.phase === 'done')); }
-function paved(r) { const m = M(); if (!m) return false; const i = PHASES.indexOf(m.phase); return m.phase === 'done' || (i > PHASES.indexOf(r) && PHASES.indexOf(r) > 0); }
+function paved(r) { const m = M(); if (!m || PHASES.indexOf(r) < 1) return false; const i = PHASES.indexOf(m.phase); return m.phase === 'done' || (i > PHASES.indexOf(r) && PHASES.indexOf(r) > 0); }
 // Pure: status of a tile list. look(r,x,y) -> 'road' | 'site' | 'blocked' | 'open' | null (no vision)
 function status(list, look) {
   const s = { total: list.length, road: 0, site: 0, blocked: 0, open: [], unseen: 0 };
@@ -86,7 +85,7 @@ function advance(m, from) {
 function repairTarget(minFrac) {
   minFrac = minFrac || 0.5; const R = require('./remote'); let best = null;
   const H = typeof Game !== 'undefined' && Game.rooms && Game.rooms[HOME]; if (!H || !H.controller || H.controller.level < 6) return null; // gated: RCL6+
-  for (const r of ['W45N8', 'W45N7']) {
+  for (const r of ['W45N8']) {
     const room = typeof Game !== 'undefined' && Game.rooms && Game.rooms[r]; if (!room || R.paused(r)) continue;
     for (const s of room.find(FIND_STRUCTURES)) {
       if (s.structureType !== STRUCTURE_ROAD || !isRouteTile(r, s.pos.x, s.pos.y)) continue;

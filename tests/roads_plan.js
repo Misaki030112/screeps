@@ -5,11 +5,10 @@ global.Memory = {};
 const plan = require(src('utils/plan.js')), R = require(src('managers/roads.js'));
 const T = R.tiles(plan.get('W46N8'));
 const cases = [
-  ['phase order', () => assert.deepStrictEqual(R.PHASES, ['core', 'home', 'W45N8', 'W45N7', 'done'])],
-  ['tile counts', () => { assert.strictEqual(T.home.length, 58); assert.strictEqual(T.W45N8.length, 13); assert.strictEqual(T.W45N7.length, 50); }],
+  ['phase order', () => assert.deepStrictEqual(R.PHASES, ['core', 'home', 'W45N8', 'done'])],
+  ['tile counts', () => { assert.strictEqual(T.home.length, 54); assert.strictEqual(T.W45N8.length, 13); assert.ok(!T.W45N7); assert.ok(!T.home.some(([, x, y]) => x >= 46 && y >= 18 && y <= 21)); }],
   ['no home tile on a planned RCL<=6 structure', () => { const P = plan.get('W46N8');
     for (const [, x, y] of T.home) { const w = P.any[x * 50 + y]; assert.ok(!w || w.type === 'road' || w.rcl > 6, `${x},${y}`); } }],
-  ['W45N7 phase does not repeat the shared W45N8 leg', () => { const k = new Set(T.W45N8.map(t => t.join())); assert.ok(T.W45N7.every(t => !k.has(t.join()))); }],
   ['status: complete only when every tile is road/blocked and seen', () => {
     const L = [['A', 1, 1], ['A', 1, 2], ['B', 1, 1]];
     assert.strictEqual(R.status(L, () => 'road').complete, true);
@@ -18,8 +17,8 @@ const cases = [
   ['coreDone', () => { assert.ok(!R.coreDone(30, 40, 3, 3, 0)); assert.ok(!R.coreDone(40, 40, 2, 3, 0)); assert.ok(!R.coreDone(40, 40, 3, 3, 1)); assert.ok(R.coreDone(40, 40, 3, 3, 0)); }],
   ['done/paved', () => {
     Memory.roads = undefined; assert.strictEqual(R.done(), false); assert.strictEqual(R.paved('W45N8'), false);
-    Memory.roads = { phase: 'W45N7' }; assert.strictEqual(R.paved('W45N8'), true); assert.strictEqual(R.paved('W45N7'), false); assert.strictEqual(R.done(), false);
-    Memory.roads = { phase: 'done' }; assert.ok(R.done() && R.paved('W45N7'));
+    Memory.roads = { phase: 'W45N8' }; assert.strictEqual(R.paved('W45N8'), false);
+    Memory.roads = { phase: 'done' }; assert.ok(R.done() && R.paved('W45N8') && !R.paved('W45N7'));
     Memory.roads = { phase: 'home', skip: true }; assert.ok(R.done()); }],
   ['walls.phase returns "roads" at RCL6 until the road plan is done', () => {
     Object.assign(global, { RESOURCE_ENERGY: 'energy', FIND_HOSTILE_CREEPS: 1, FIND_MY_CONSTRUCTION_SITES: 2, Game: { time: 10 } });

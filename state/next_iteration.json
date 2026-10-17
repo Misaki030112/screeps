@@ -1,16 +1,17 @@
 {
   "next_at": "2026-10-17T18:40:00+08:00",
-  "reason": "RCL6 watchpoints (docs/RCL6.md): RCL5 1169.9k/1.215M at 16:55, upg 1h 28.8/t (model expected 26.4, ideal 21.8; storage drawing 3.2k->1.35k floor), ETA RCL6 ~18:45-19:00. At RCL6 check: only 10 ext + link 30,11 sites (RCL6_MINERALS=false), upgrader dip <=~2h, miner A -> link 30,11, links.run A->ctl, queen reaches new ext, home hauler idle (R5), walls banking gate (storage>=20k) then wall phase, errors 0. VERIFY 022aa9f PASS 16:55 (hauler circ 0/h vs 49/h, long legs = sticky fill route / swamp 31-34,35-36 rare, errors 0). | ROADS: after core build, roads phases home->W45N8->W45N7 before walls (docs/ROADS.md); patrol advances/checks per state.road_plan.",
+  "reason": "RCL6 watchpoints (docs/RCL6.md): RCL5 1169.9k/1.215M at 16:55, upg 1h 28.8/t (model expected 26.4, ideal 21.8; storage drawing 3.2k->1.35k floor), ETA RCL6 ~18:45-19:00. At RCL6 check: only 10 ext + link 30,11 sites (RCL6_MINERALS=false), upgrader dip <=~2h, miner A -> link 30,11, links.run A->ctl, queen reaches new ext, home hauler idle (R5), walls banking gate (storage>=20k) then wall phase, errors 0. VERIFY 022aa9f PASS 16:55 (hauler circ 0/h vs 49/h, long legs = sticky fill route / swamp 31-34,35-36 rare, errors 0). | ROADS: after core build, roads phases home->W45N8 (no W45N7) before walls (docs/ROADS.md); patrol advances/checks per state.road_plan.",
   "road_plan": {
     "doc": "docs/ROADS.md",
     "each_patrol": [
       "read Memory.roads (phase, prog, bad, log) via scripts/api.py memory('roads') and room-objects",
       "core: 10 ext + link 30,11 sites progressing; roads.run advances automatically when 40 ext + 3 links and no core sites",
-      "home/W45N8/W45N7: <=5 road sites open in the phase room, builder(s) alive and building, prog.road rising",
+      "home/W45N8: <=5 road sites open in the phase room, builder(s) alive and building, prog.road rising",
       "walls.phase must be 'roads' (no 'bank' upgrader hold, no rampart/wall sites) until phase=done",
-      "after W45N8/W45N7 done: new rhaulers 16C8M, counts 1 / 3; watch remote container energy (overflow -> raise pavedHaulers)",
+      "after W45N8 done: new W45N8 rhaulers 16C8M x1 (W45N7 stays 5x 8C8M, no road); watch remote container energy (overflow -> raise pavedHaulers)",
       "no prog change for 2h -> investigate (bad codes, vision, paused remote); report each phase completion to Misaki"
     ],
-    "switches": "Memory.roads.off / skip / phase (console; verify by reading back)"
+    "switches": "Memory.roads.off / skip / phase (console; verify by reading back)",
+    "phases": "core -> home (54 tiles, 19.5k) -> W45N8 (13 tiles, 6.0k) -> done(walls); W45N7 road dropped (Misaki 17:47)"
   }
 }
