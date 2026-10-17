@@ -253,3 +253,10 @@ The 13 v2 ramparts on filler/manager stand tiles ((34,25) (34,27) (36,25) (36,27
 - **Threat** (remote holding, or a player combat creep in home): repair needs no fund; the storage defender reserve still applies.
 - **Towers** only keep gate ramparts at ≥ 5k (fresh ramparts decay); the hits steps are builder work. Spawn adds one builder while there is a repair job and ≥ 3k fund.
 - Tests: `tests/walls_barriers.js`, `tests/builder_walls.js` (run by `scripts/check.js`).
+
+## v5 (2026-10-18 02:2x, Misaki "先围起来" + "基建效率最大") — commit 4694bbe
+- Order: 6 gate ramparts + ALL 41 walls (own site cap 15, outside layout MAX_SITES; walls cost 1e, built at 1 hit) -> spur roads only after ring closed.
+- Seal proof: tools/ring_check.py (flood fill from exits; all 47 barriers needed, core unreachable). Live map: tools/render_ring.py -> out/walls_ring.png.
+- Tiers RCL6: 10k -> 30k -> 100k -> 300k, lowest band first (+10k chunks), nearest barrier in band per builder, held targets skipped.
+- Gate decay floor 5k / cap 10k unchanged. Upgrade held (noUpgrade) in wall phase until ring closed and all barriers >= 100k; ctl feed -> builders.
+- Builders: 3 at fund&storage >= 8k, 4 at >= 15k (spawn steady busy ~52%).
