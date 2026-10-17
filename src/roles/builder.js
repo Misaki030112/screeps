@@ -209,19 +209,10 @@ module.exports = { remoteRoadSite, pickSource, hop, run(c) {
     }
     const [x, y] = P.pos.controllerDrop; if (move.to(c, x, y, 0)) c.upgradeController(home.controller); return;
   }
-  // cross-room: walk via remote fixed exits when target is in another room
-  if (t.pos.roomName !== c.room.name) {
-    const rName = t.pos.roomName;
-    // walk the remote's fixed exits (W45N7 targets in W45N7: home -> W45N8 -> W45N7); targets in a via room (W45N7 road tiles in
-    // W45N8) use the remote that lists that room: W45N8 itself.
-    const C = remote.CFG[rName], path = C ? remote.route(rName) : null, i = path ? path.indexOf(c.room.name) : -1;
-    if (C && i >= 0 && i < path.length - 1) {
-      const [ex, ey] = remote.exitTile(rName, path[i], path[i + 1]);
-      if (c.pos.x === ex && c.pos.y === ey) { c.move(ex === 49 ? RIGHT : ex === 0 ? LEFT : ey === 49 ? BOTTOM : TOP); return; }
-      move.to(c, ex, ey, 0); return;
-    }
-    if (!(C && c.room.name === rName)) { move.to(c, t.pos.x, t.pos.y, 3); return; }
-  }
+  // cross-room (either direction): walk the remote's fixed exits. The old block only handled home -> remote; a full builder in
+  // W45N8 whose next site was a home trunk tile fell through to the room-local move.to and walked to "22,36" inside W45N8
+  // (live 23:41, builders 5744/6460 heading east in W45N8 carrying 450).
+  if (t.pos.roomName !== c.room.name) { hop(c, t.pos.roomName); return; }
   if (move.to(c, t.pos.x, t.pos.y, 3)) {
     const r = t.progress !== undefined ? c.build(t) : c.repair(t);
     if (r === OK && c.memory.tcap) require('../managers/walls').spend(c.room, Math.min(c.store[RESOURCE_ENERGY], c.getActiveBodyparts(WORK)));

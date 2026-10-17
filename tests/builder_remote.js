@@ -58,9 +58,9 @@ function run(o) {
   return W;
 }
 
-const road = (x, y, hits, max = 5000) => ({ pos: { x, y }, hits, hitsMax: max, structureType: STRUCTURE_ROAD, id: `r${x},${y}` });
+const road = (x, y, hits, max = 5000) => ({ pos: { x, y, roomName: 'W46N8' }, hits, hitsMax: max, structureType: STRUCTURE_ROAD, id: `r${x},${y}` });
 const cont = (x, y, hits, e = 200) => ({
-  pos: { x, y }, hits, hitsMax: 250000, structureType: STRUCTURE_CONTAINER, id: `c${x},${y}`,
+  pos: { x, y, roomName: 'W46N8' }, hits, hitsMax: 250000, structureType: STRUCTURE_CONTAINER, id: `c${x},${y}`,
   store: Object.assign({ energy: e, [RESOURCE_ENERGY]: e }, { getCapacity: () => 2000, getFreeCapacity: () => 2000 - e }),
 });
 
@@ -115,6 +115,25 @@ const cases = [
     assert.notStrictEqual(got, k, 'must leave >=400 for rhaulers');
     // ...and then walks home through the W45N8>W46N8 exit, not to "37,31" inside W45N8 (live 23:11 stall)
     assert.deepStrictEqual(W.moved, [0, 14], 'must head for the home exit tile');
+    c.pos.x = 0; c.pos.y = 14; let dir = null; c.move = d => { dir = d; }; W.moved = null; B.run(c);
+    assert.strictEqual(dir, LEFT, 'on the exit tile: step into W46N8');
+    delete RCFG.W45N8; delete Game.getObjectById;
+  }],
+  ['full builder in W45N8 with a home trunk target walks the home exit, not to the tile inside W45N8', () => {
+    RCFG.W45N8 = { cont: [13, 11], roads: [], live: true };
+    global.LOOK_STRUCTURES = 'structure';
+    const site = { id: 's2', pos: { roomName: 'W46N8', x: 22, y: 36 }, progress: 0, progressTotal: 300, structureType: 'road' };
+    Game.getObjectById = id => (id === 's2' ? site : null);
+    const R = { name: 'W45N8', lookForAt: () => [], find: () => [] };
+    Game.rooms.W45N8 = R;
+    W = { sites: [site], roads: [], containers: [] };
+    Game.rooms.W46N8 = { name: 'W46N8', storage: { pos: { x: 37, y: 31, roomName: 'W46N8' }, store: { [RESOURCE_ENERGY]: 4000 } } };
+    const store = { energy: 450, [RESOURCE_ENERGY]: 450, getCapacity: () => 450, getFreeCapacity: () => 0, getUsedCapacity: () => 450 };
+    const c = { room: R, memory: { role: 'builder', home: 'W46N8', t: 's2', working: true }, store, pos: { x: 22, y: 9, getRangeTo: () => 30 },
+      build: () => { W.built = true; return 0; }, repair: () => 0, getActiveBodyparts: () => 8 };
+    B.run(c);
+    assert.deepStrictEqual(W.moved, [0, 14], 'must head for the W45N8 -> W46N8 exit tile');
+    assert.ok(!W.built);
     c.pos.x = 0; c.pos.y = 14; let dir = null; c.move = d => { dir = d; }; W.moved = null; B.run(c);
     assert.strictEqual(dir, LEFT, 'on the exit tile: step into W46N8');
     delete RCFG.W45N8; delete Game.getObjectById;
