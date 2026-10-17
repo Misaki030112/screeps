@@ -7,7 +7,7 @@ const src = p => path.join(__dirname, '..', 'src', p);
 Object.assign(global, {
   RESOURCE_ENERGY: 'energy', STRUCTURE_ROAD: 'road', STRUCTURE_CONTAINER: 'container',
   STRUCTURE_SPAWN: 'spawn', STRUCTURE_EXTENSION: 'extension', STRUCTURE_TOWER: 'tower',
-  OK: 0, FIND_MY_CONSTRUCTION_SITES: 114, LOOK_CONSTRUCTION_SITES: 'constructionSite',
+  LEFT: 7, RIGHT: 3, TOP: 1, BOTTOM: 5, OK: 0, FIND_MY_CONSTRUCTION_SITES: 114, LOOK_CONSTRUCTION_SITES: 'constructionSite',
   Game: { rooms: {}, time: 1 }, _: { min: (a, f) => a[0], max: (a, f) => a.reduce((b, x) => (f(x) > f(b) ? x : b)) },
 });
 let W;
@@ -27,7 +27,7 @@ stub('utils/roomcache.js', {
 });
 stub('utils/trace.js', { why: (c, k) => { W.why = k; } });
 const RCFG = {};
-stub('managers/remote.js', { CFG: RCFG, paused: r => !(RCFG[r] && RCFG[r].live) });
+stub('managers/remote.js', { CFG: RCFG, paused: r => !(RCFG[r] && RCFG[r].live), route: r => ['W46N8', r], exitTile: (r, a, b) => (a === 'W45N8' ? [0, 14] : [49, 14]) });
 stub('managers/threat.js', { reserve: () => 1300 });
 stub('roles/hauler.js', { pickups: () => [W.srcA].filter(Boolean) });
 const B = require(src('roles/builder.js'));
@@ -108,11 +108,15 @@ const cases = [
     const store = { energy: 0, [RESOURCE_ENERGY]: 0, getCapacity: () => 250, getFreeCapacity: () => 250, getUsedCapacity: () => 0 };
     const c = { room: R, memory: { role: 'builder', home: 'W46N8', t: 's1', working: false }, store, pos: { x: 6, y: 11, getRangeTo: () => 7 },
       withdraw: t => { got = t; } };
-    Game.rooms.W46N8 = { name: 'W46N8', storage: { pos: { x: 37, y: 31 }, store: { [RESOURCE_ENERGY]: 4000 } } };
+    Game.rooms.W46N8 = { name: 'W46N8', storage: { pos: { x: 37, y: 31, roomName: 'W46N8' }, store: { [RESOURCE_ENERGY]: 4000 } } };
     B.run(c);
     assert.strictEqual(got, k);
     k.store[RESOURCE_ENERGY] = 600; got = null; B.run(c);
     assert.notStrictEqual(got, k, 'must leave >=400 for rhaulers');
+    // ...and then walks home through the W45N8>W46N8 exit, not to "37,31" inside W45N8 (live 23:11 stall)
+    assert.deepStrictEqual(W.moved, [0, 14], 'must head for the home exit tile');
+    c.pos.x = 0; c.pos.y = 14; let dir = null; c.move = d => { dir = d; }; W.moved = null; B.run(c);
+    assert.strictEqual(dir, LEFT, 'on the exit tile: step into W46N8');
     delete RCFG.W45N8; delete Game.getObjectById;
   }],
 ];
