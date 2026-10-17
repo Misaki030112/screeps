@@ -18,7 +18,8 @@
    "build hold (walls.noUpgrade): 0 upgraders alive/spawned (old 6W recycles once empty); controller.ticksToDowngrade >= 20000 (else 1 safety upgrader must exist); report if timer < 30000",
    "build rate: construction progress per tick since last patrol (target >= 15/t with the hold; was 13.6/t); builders count 2-3, waiting_feed share",
    "storage trend: value vs last patrol (should not fall below 1300 reserve; rising once builders saturate); ctl container not refilled by haulers",
-   "after roads done: bank phase = 1 normal upgrader, storage must rise toward 20k; if it falls 2 patrols in a row -> investigate"
+   "after roads done: bank phase = 1 normal upgrader, storage must rise toward 20k; if it falls 2 patrols in a row -> investigate",
+   "swamp7 phase: 3 W45N8 sites placed after home; progress Memory.roads.prog"
   ],
   "switches": "Memory.roads.off / skip / phase (console; verify by reading back); Memory.roads.upgrade=1 lifts the build hold (1x700e upgrader)",
   "phases": "core -> home (54 tiles, 19.5k) -> W45N8 (13 tiles, 6.0k) -> done(walls); W45N7 road dropped (Misaki 17:47)",
@@ -50,6 +51,14 @@
    ],
    "each_patrol": "storage falling toward ~3-5k; builders 4-5 while storage>5k; W45N8 sites rising; trunk sites only after econ placed; links 30,11 and 37,29 cycling (hub <=400 between drains)",
    "after_roads": "F: terminal -> extractor+container -> labs -> walls, ask Misaki first (RCL6_MINERALS off, see docs/RCL6.md)"
+  },
+  "swamp7": {
+   "decided": "2026-10-17 23:55 UTC+8 (Misaki delegated)",
+   "phase": "after home(trunks), before done",
+   "tiles": "W45N8 15,39 16,40 25,39",
+   "basis": "creep_ticks 6h: ~155 rhauler visits/6h/tile, 3.0 ticks/visit vs 1.0 on roaded 2,12",
+   "est": "build 4.5k, net ~+600 e/day/tile, payback ~2.5 d",
+   "check": "after done: ticks/visit on these tiles ->1.0; W45N7 trip time down ~6 ticks/round trip"
   }
  },
  "pending_approval": {},

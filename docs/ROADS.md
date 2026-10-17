@@ -87,3 +87,17 @@ energy not starved (storage >= 1300) · errors 0 · CPU · walls.phase === 'road
 - Builders: 2 normally (sites > 3); a 3rd while the hold is on, ≥ 3 sites open and storage ≥ 3000.
 - After `Memory.roads.phase === 'done'`: walls phase `bank` → 1 upgrader at normal size until storage reaches 20k
   (walls start), so storage accumulates; then normal supply-follows-demand upgraders. Tests: `tests/build_hold.js`.
+
+## swamp7 — W45N7 route swamp tiles (2026-10-17 23:55 UTC+8)
+Full W45N7 road stays dropped. Only the swamp tiles the W45N7 rhaulers actually cross in W45N8 (creep_ticks 6h):
+
+| tile | visits/6h | ticks/visit | saved ticks/day | build | decay+wear/day | net/day | payback |
+|---|---|---|---|---|---|---|---|
+| W45N8 15,39 | 156 | 3.1 | ~1300 | 1500 | ~190 | ~+850 | ~1.8 d |
+| W45N8 16,40 | 152 | 3.05 | ~1250 | 1500 | ~190 | ~+810 | ~1.9 d |
+| W45N8 25,39 | 150 | 2.9 | ~1180 | 1500 | ~190 | ~+750 | ~2.0 d |
+| W45N8 26,39 | 15 | 2.0 | ~60 | 1500 | ~110 | <0 | never — skip |
+
+Model as tools/road_justify.py (time value 0.8 e/hauler-tick ×0.8 haircut, decay 5x swamp, wear 1 hit/part/step). Plain tiles on the
+route save no time for 1:1 (8C8M) bodies, so none are added. No swamp crossings recorded inside W45N7 or unroaded at home.
+Phase order: … home → swamp7 → done (walls wait ~3 sites more).

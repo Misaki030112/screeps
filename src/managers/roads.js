@@ -10,31 +10,36 @@ const ROUTES = require('../layouts/remote_routes');
 // v2 (Misaki 2026-10-17 22:20 "先修运输路"): order by hauler traffic (creep_ticks entries/day): haul = storage->W45N8 exit
 // leg + TR tiles shared with it; W45N8 = remote leg (rerouted onto the plain y9-11 band haulers actually walk, no new swamp);
 // home = wall-gate trunks (W, S, TR swamp spur) LAST, then walls.
-const PHASES = ['core', 'haul', 'W45N8', 'econ', 'home', 'done']; // W45N7 road dropped (Misaki 2026-10-17 17:47)
+const PHASES = ['core', 'haul', 'W45N8', 'econ', 'home', 'swamp7', 'done']; // swamp7: W45N7-route swamp tiles only (2026-10-18) // W45N7 road dropped (Misaki 2026-10-17 17:47)
 const BATCH = 15, HOME = 'W46N8'; // 5 left builders no_task 19% (batch done, waiting for the 50t replan)
 // W45N8 remote leg override: plan 4,10 5,9 (swamp) 6,8 7,7 8,7 9,8 10,8 had 0 traffic; haulers walk 4,11 5,11 6,10 7,9 8,9 9,9 10,9 (all plain)
 // econ: unroaded home tiles >=300 hauler/queen entries/day (creep_ticks 24h, 22:18): 35,26 861, 36,25 603, 34,25 409, 35,31 393
 // (48,21 715 is the W45N7 leg, dropped by Misaki). Re-check with the heatmap before adding more.
 const ECON = [[35, 26], [36, 25], [34, 25], [35, 31]];
 const W45N8_LEG = [[0, 14], [1, 13], [2, 12], [3, 11], [4, 11], [5, 11], [6, 10], [7, 9], [8, 9], [9, 9], [10, 9], [11, 9], [12, 10]];
+// swamp7 (Misaki 2026-10-17 23:5x: W45N7 路线沼泽段修路; full W45N7 road stays dropped): W45N8 swamp tiles on the W45N7 rhauler
+// path, creep_ticks 6h: ~155 visits/6h each, 3.0 ticks/visit (unroaded swamp) vs 1.0 on the roaded 2,12. tools/swamp7_justify.py:
+// net ~+600 e/day per tile, payback ~2.5 d. 26,39 (15 visits/6h) and plain tiles (1:1 bodies, 0 time saved) excluded.
+const SWAMP7 = [[15, 39], [16, 40], [25, 39]];
 const memo = {};
 // Tiles per phase: { phase: [[room, x, y], ...] } (deduplicated, earlier phase wins)
 function tiles(P) {
   if (memo.t) return memo.t;
-  const seen = new Set(), out = { haul: [], W45N8: [], econ: [], home: [] };
+  const seen = new Set(), out = { haul: [], W45N8: [], econ: [], home: [], swamp7: [] };
   const busy = (r, x, y) => { if (r !== HOME || !P || !P.any) return false; const w = P.any[x * 50 + y]; return !!(w && w.type !== 'road' && (w.rcl || 0) <= 6); };
   const add = (ph, r, x, y) => { if (busy(r, x, y) || x <= 0 || y <= 0 || x >= 49 || y >= 49) return; // exit tiles: createConstructionSite -> ERR_INVALID_TARGET (-7, live 83705660)
     const k = r + ':' + x + ':' + y; if (seen.has(k)) return; seen.add(k); out[ph].push([r, x, y]); };
   for (const [rm, x, y] of ROUTES.W45N8) if (rm === HOME) add('haul', rm, x, y); // storage 38,30 -> exit 49,14 (W45N7-only leg dropped)
   for (const [x, y] of W45N8_LEG) add('W45N8', 'W45N8', x, y);
   for (const [x, y] of ECON) add('econ', HOME, x, y);
+  for (const [x, y] of SWAMP7) add('swamp7', 'W45N8', x, y);
   const d = P && P.raw && P.raw.defense, order = ['TR', 'S', 'W']; // trunks last; within them short/cheap first
   if (d) for (const g of order.concat(Object.keys(d.trunks).filter(k => order.indexOf(k) < 0)))
     if (d.trunks[g] && d.trunks[g].mode === 'with_gate') for (const [x, y] of d.trunks[g].new_tiles) add('home', HOME, x, y);
   return (memo.t = out);
 }
 function isHomeTile(x, y) { const P = require('../utils/plan').get(HOME); const T = tiles(P); return [].concat(T.haul, T.econ, T.home).some(([, a, b]) => a === x && b === y); }
-function isRouteTile(r, x, y) { const T = memo.t || tiles(require('../utils/plan').get(HOME)); return [].concat(T.haul, T.econ, T.home, T.W45N8).some(([rm, a, b]) => rm === r && a === x && b === y); }
+function isRouteTile(r, x, y) { const T = memo.t || tiles(require('../utils/plan').get(HOME)); return [].concat(T.haul, T.econ, T.home, T.W45N8, T.swamp7).some(([rm, a, b]) => rm === r && a === x && b === y); }
 function mem() { return (Memory.roads = Memory.roads || { phase: 'core' }); }
 function M() { return typeof Memory === 'undefined' ? undefined : Memory.roads; }
 function phase() { const m = M(); return m ? m.phase || 'core' : 'core'; }
@@ -76,7 +81,7 @@ function run() {
   }
   const ph = m.phase; if (ph === 'done') return;
   const R = require('./remote');
-  if (ph === 'W45N8' && R.paused(ph)) { m.note = 'paused ' + ph; return; }
+  if ((ph === 'W45N8' || ph === 'swamp7') && R.paused('W45N8')) { m.note = 'paused ' + ph; return; }
   const s = status(T[ph], look);
   m.prog = { road: s.road, site: s.site, open: s.open.length, unseen: s.unseen, blocked: s.blocked, total: s.total };
   if (s.complete) return advance(m, ph);
