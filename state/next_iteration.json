@@ -1,6 +1,6 @@
 {
- "next_at": "2026-10-18T04:50:00+08:00",
- "reason": "04:30 patrol deployed 0d91278 (tick 83710734, deploy tag f5b5990+dirty = same code): builder body floor 70% of cap with storage. Live 4 builders were 11W/5W/3W/11W (30 of possible 55 WORK) - builder is last in the spawn queue and got its turn right after short spawns (reserver/hauler) before the queen refilled, so bodyEnergy=avail made tiny builders for 1500t; storage still +13 e/t 32.2k->37.5k, fund 19.7k, T.builder=5 (budgetE 32.5k) with only 4 alive. Barriers 51 min 8701 (rampart, eff 13.7k) med 20.4k, step 30k. 3499428 slack: builders now on distinct targets but work share still ~26% (moves ~45%, swamp fatigue ticks counted as no_task 'n'). Next: 5th builder spawns >=8W (ideally 11W), storage flattens/falls, barrier median rising; if work share stays <30% study travel (west ring through central swamp) - body 8W8C16M modelled roughly equal throughput, not worth it yet.",
+ "next_at": "2026-10-18T05:10:00+08:00",
+ "reason": "04:50 patrol deployed 6b939c1 (tick 83711068): storage-era builder floor ignores starving E. After 0d91278, starving=true (lastFull 83710596, 5 builders drain extensions) set E=avail so Math.min(E, 0.7*cap) collapsed the floor — live builders 11W/5W/3W/11W/6W (36 of 55 WORK); storage still +12.2 e/t 37.3k→40.9k; fund 16.8k. Barriers 51 min 18.5k med 23.7k step 30k (up from min 8.7k med 20.4k); work share ~42% (>=30% ok); distinct targets ok. Remotes SAFE, W45N7 cont 48, W45N8 cont 360; flagged core roads present. Errors 0 CPU~7.6 bkt10k. Next: first replacement builder >=8W (ideally 11W; tiny TTLs ~460/620/890); storage flattens/falls; barrier median →30k; if still +e/t after 2×11W replace, consider travel (west ring swamp) not body.",
  "road_plan": {
   "doc": "docs/ROADS.md",
   "each_patrol": [
@@ -63,7 +63,9 @@
   },
   "status": "done 2026-10-18 ~00:36 UTC+8 tick 83707350 (log core..swamp7); swamp7 check pending: ticks/visit on W45N8 15,39 16,40 25,39 -> 1.0"
  },
- "pending_approval": {},
+ "pending_approval": {
+  "RCL6_MINERALS": "After walls ring thicken: terminal -> extractor+container -> labs. Ask Misaki before enabling (docs/RCL6.md)."
+ },
  "w45n7_hauler_trial": {
   "started": "2026-10-17 23:52 UTC+8",
   "tick": 83706676,
@@ -122,9 +124,9 @@
   ]
  },
  "last_deploy": {
-  "commit": "0d91278",
-  "tick": 83710734,
-  "at": "2026-10-18 04:31 UTC+8"
+  "commit": "6b939c1",
+  "tick": 83711068,
+  "at": "2026-10-18 04:53 UTC+8"
  },
  "walls": {
   "started": 83707350,
@@ -132,7 +134,7 @@
   "fund_at_start": 20108,
   "check_each_patrol": "gates 6 ramparts first then with_gate trunks then 41 walls; SITE_CAP 2; no rampart decays at low hits; storage should not fall below ~5k after fund; terminal/extractor/labs stay off (RCL6_MINERALS) until Misaki decides",
   "decay_fix": "434a2c3: gate ramparts <5000 outrank sites (to 10k, 1 builder/gate); check each patrol no gate < 3000",
-  "check_note": "02:12 gates min 6,28=4701; 2nd builder 316636d (fund>=10k); fund 23.3k storage 23.2k"
+  "check_note": "04:50: phase build why=bank fund 16.8k storage ~40.5k; barriers 51 min 18541 med 23701 step 30k; under10k=0 under20k=3 under30k=29; gates lowest ramparts 25,16 / 20,44 / 47,17 ~18.5-19.6k; noUpgrade held; RCL6 minerals still pending approval"
  },
  "w45n8_rhauler": {
   "deployed": "c4a8eb6",
@@ -145,10 +147,13 @@
  },
  "rampart_slack": {
   "deployed": "3499428",
-  "check": "builders on distinct barriers, no lockstep retargets in creep_cpu target keys, w share >=30%; revert = SLACK=0 in managers/walls.js"
+  "check": "builders on distinct barriers, no lockstep retargets in creep_cpu target keys, w share >=30%; revert = SLACK=0 in managers/walls.js",
+  "status_0450": "w share 42% since 0d91278; distinct targets 16; ok"
  },
  "builder_floor": {
   "deployed": "0d91278",
-  "check": "new builders >=8W (body length >=24); storage not rising; revert = Math.max(200, avail) in spawn.js bodyEnergy"
+  "fix": "6b939c1",
+  "check": "new builders >=8W even while starving (lastFull>300t); storage not rising; revert = Math.min(E, ...) in spawn.js bodyEnergy",
+  "live_at_deploy": "11W/5W/3W/11W/6W totalW=36; starving=true lastFull=83710596"
  }
 }
