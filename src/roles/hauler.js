@@ -46,7 +46,7 @@ function legacyPickup(c, room, P) {
 module.exports = { pickups, handoff, ctlLow, run(c) {
   const room = c.room, P = plan.get(room.name);
   if (room.name === c.memory.home && salvage.dump(c)) return; // Invader loot (minerals) -> storage first
-  if (c.memory.working && c.store[RESOURCE_ENERGY] === 0) { c.memory.working = false; delete c.memory.dst; }
+  if (c.memory.working && c.store[RESOURCE_ENERGY] === 0) { c.memory.working = false; delete c.memory.dst; delete c.memory.fl; }
   if (!c.memory.working && c.store.getFreeCapacity() === 0) c.memory.working = true;
   if (c.memory.working && (c.memory.src || c.memory.wt || c.memory.lp)) { delete c.memory.src; delete c.memory.wt; delete c.memory.lp; }
   // old hauler: no new load it can't deliver (2026-10-16: 2 haulers died holding 700/650 on the ctl road); empty -> recycle
@@ -81,7 +81,13 @@ module.exports = { pickups, handoff, ctlLow, run(c) {
   // they only walk the fill route themselves when there is no queen or the room is nearly empty (fallback).
   const hold = require('../managers/threat').holding(room.name); // collecting 1300 for a defender: fill extensions first
   const lowE = room.energyAvailable < room.energyCapacityAvailable * (hold ? 1 : queens ? 0.3 : 0.9);
-  if (lowE && queen.fillRoute(c)) return;
+  // One decision per load (patrol 10-17 15:40): spawn waves swing energyAvailable across the 30% line, so a loaded hauler
+  // flipped ctl -> fill route -> ctl mid-trip (140t for a ~28t leg, ctl container hit 0). With a queen alive a hauler already
+  // heading to a drop-off finishes it; once on the fill route (memory.fl) it stays there until empty or nothing needs energy.
+  if (c.memory.fl || (lowE && !(queens && c.memory.dst))) {
+    if (queen.fillRoute(c)) { c.memory.fl = 1; return; }
+    delete c.memory.fl;
+  }
   let dst = c.memory.dst && Game.getObjectById(c.memory.dst);
   // Re-pick when free <100 (matches selection threshold). Sticky filler A above 400 starved ctl
   // while fc still had room — upgraders idled with ctl empty and fc ~500+.
