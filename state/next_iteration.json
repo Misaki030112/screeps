@@ -1,6 +1,6 @@
 {
- "next_at": "2026-10-17T22:30:00+08:00",
- "reason": "22:05 CHECK PASS (no deploy, live d6b3c56 builder room-wide fetch @21:38): core phase DONE t=83705000 (~21:50 UTC+8), Memory.roads.phase=='home', log [[core,83705000]], prog road 10/54 site 4, bad none; sites W46N8 40,21 (swamp 125/1500) 44,19 45,18 46,17 (TR trunk tiles, not walls); 3 builders working near 37-40,22-24; builder no_task 48/240 in 22:00 bucket = core->home transition; storage 5520 (peak 6692 @21:50, >1300 reserve); 0 upgraders, ctl ttd ~119k ok; 1 home hauler (design, rcl6+3 links); errors []; CPU 5.8-7.8 bkt 10000; remotes SAFE res W45N8 2128 W45N7 2257; alerts exit1 LOW scouts dmg0. Next (22:30): home-phase build rate (prog.road delta, target >=15/t), builder no_task in 22:10/22:20 buckets (if >15% with sites all consumed -> consider roads.js refresh when open road sites < BATCH instead of every 50t; careful review, high-risk code), storage >=1300, bad codes.",
+ "next_at": "2026-10-17T23:00:00+08:00",
+ "reason": "22:39 CHECK PASS (no deploy, live c907aae roads v2 @22:36): Memory.roads v2 phase 'haul' t=83705700, prog road 12/16 site 4 open 0 blocked 0, bad only old W46N8:49:14 -7 (pre-fix, ignore); builders 3 (roleTargets builder 3, 4th needs sites>=6), 0 upgraders (hold); storage 11814 (was 5520 @22:05, rising); errors []; CPU 7.5 bkt 10000; creeps rh8 rm2 res1 b3 h1 m2 q1; alerts exit1 LOW BustJetter scouts ENDED dmg0. Audit 1h builder idle 0.49 is from v1 core->home transition before v2. Next (23:00): haul phase done -> W45N8 phase started (sites in W45N8, none on 0,14 exit), prog.road rising, build rate ~25 e/t, builder no_task <10%, new builders 8W8C8M, storage >=1300, bad not growing.",
  "road_plan": {
   "doc": "docs/ROADS.md",
   "each_patrol": [
