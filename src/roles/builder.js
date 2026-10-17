@@ -153,7 +153,7 @@ module.exports = { remoteRoadSite, pickSource, run(c) {
   let t = c.memory.t && Game.getObjectById(c.memory.t);
   if (t && t.hits !== undefined && t.progress === undefined && t.hits >= (c.memory.tcap || t.hitsMax * 0.9)) t = null;
   if (t && t.pos.roomName !== (c.memory.home || room.name) && remote.CFG[t.pos.roomName] && remote.paused(t.pos.roomName)) t = null; // remote under threat: leave
-  if (t && c.memory.tcap && rc.sites(Game.rooms[c.memory.home] || room).length) t = null; // a new site outranks barrier hits
+  if (t && t.progress === undefined && rc.sites(Game.rooms[c.memory.home] || room).length) t = null; // a new site outranks any repair (barrier hits or road/container <90%: 22:40 v2 deploy, 2 builders sat ~80t on container 35,24 while 4 haul sites stayed 0/300)
   // Stickiness must not skip a higher-priority site (patrol 10-14 22:40: tower 37,33 at 0 while extensions built).
   if (t && t.progress !== undefined) {
     const home = Game.rooms[c.memory.home] || room;
