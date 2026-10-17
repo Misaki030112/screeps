@@ -1,6 +1,6 @@
 {
- "next_at": "2026-10-18T02:40:00+08:00",
- "reason": "02:12 patrol: 2 FIXES. (1) c4a8eb6 t=83708782 W45N8 paved rhauler 16C8M -> 24C12M (remote CFG rhE 1800, roadHauler max param): 16C8M cycle 85-100t = 8-9.4 e/t < 10 e/t source, cont 13,11 at 1891/2000 (R income 6.5 e/t measured); first 24C12M spawns as rhauler83707602 (ttl ~300 at 02:15) is replaced ~t83709050. (2) 316636d t=83708806 walls build phase: 2nd builder while fund>=10k & storage>=10k (1x 5W5C5M builder walking 35,24<->13-18,44, ~3 e/t, idle 87%; fund 23.3k storage 23.2k); builder83708806 11W11C11M spawning. Gate 6,28 at 4701 (<5k floor, >3k). Errors 0, CPU ~7.5 bkt 10k, remotes SAFE, alerts LOW BustJetter scouts only. Next: verify new 24C12M W45N8 rhauler spawned (no gap), cont 13,11 not overflowing; 2 builders active, build rate up, gate 6,28 >=5k; storage/fund trend; 2nd upgrader died (target 1).",
+ "next_at": "2026-10-18T03:55:00+08:00",
+ "reason": "03:30 patrol deployed e2acdb0 (tick 83709899): builders worked only ~25% of ticks (moving 47%, 'n' 28% = mostly fatigue on plain + far target hops) while storage rose 24.2k->30.2k (~+20 e/t) with 4 builders; all 51 barriers now >=10k (min 10001, gates 10.1-10.6k), step target 30k, ring_check sealed. Fix: builder with <25% carry refills before a fresh target >10 tiles away; 5th wall-phase builder at fund+storage>=25k (builder83709900 spawning). errors 0, CPU ~6-8.5, bkt 10k. Next: storage trend should flatten/fall (target slow drain to ~5k), builder working share up from 25%, barrier min rising toward 30k, no flip-flop (working toggling) in creep_cpu codes; consider gate DECAY_CAP -> current step and builder body for off-road wall work if travel still dominates.",
  "road_plan": {
   "doc": "docs/ROADS.md",
   "each_patrol": [
@@ -122,9 +122,9 @@
   ]
  },
  "last_deploy": {
-  "commit": "316636d",
-  "tick": 83708806,
-  "at": "2026-10-18 02:14 UTC+8"
+  "commit": "e2acdb0",
+  "tick": 83709899,
+  "at": "2026-10-18 03:33 UTC+8"
  },
  "walls": {
   "started": 83707350,
@@ -138,5 +138,9 @@
   "deployed": "c4a8eb6",
   "body": "24C12M 1800e (rhE)",
   "check": "cont 13,11 < 1500 steady, R income -> ~10 e/t; revert = remove rhE from remote CFG"
+ },
+ "builder_refill": {
+  "deployed": "e2acdb0",
+  "check": "builder w share >25%, storage not rising, no ping-pong; revert = drop low-carry block in roles/builder.js + 5th builder line in spawn.js"
  }
 }
