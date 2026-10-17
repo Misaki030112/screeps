@@ -51,7 +51,8 @@ function look(r, x, y) {
 function coreDone(nExt, extMax, nLink, linkMax, coreSites) { return coreSites === 0 && nExt >= extMax && nLink >= Math.min(linkMax, 3); }
 function run() {
   const home = Game.rooms[HOME]; if (!home || !home.controller || !home.controller.my || home.controller.level < 6) return;
-  const m = mem(); if (m.off || m.phase === 'done') return;
+  const m = mem(); if (PHASES.indexOf(m.phase) < 0) { console.log(`ROADS bad phase ${m.phase} -> core`); m.phase = 'core'; } // console typo guard
+  if (m.off || m.phase === 'done') return;
   if (Game.time % 50 && m.t) return; // m.t: last run tick (first run immediately)
   m.t = Game.time;
   const P = require('../utils/plan').get(HOME), T = tiles(P);

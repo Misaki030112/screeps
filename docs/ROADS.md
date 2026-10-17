@@ -42,3 +42,14 @@ W45N8 only: when phase W45N8 is complete (`roads.paved('W45N8')`), rhauler body 
 ## Patrol (state/next_iteration.json)
 Each patrol: read `Memory.roads` (phase, prog road/site/open/unseen, bad), confirm sites exist in the current phase room, builder count,
 storage trend, and that `walls.phase` is `roads`. Stuck >2 h in a phase (no prog change) → investigate (`bad` codes, vision, paused).
+
+## Patrol checklist after RCL6 (every 15 min; source: state/next_iteration.json road_plan.each_patrol)
+phase & prog vs last patrol · site count/locations (<=5/room, never W45N7) · builder count/state · queen/miners/haulers/remote creeps alive ·
+energy not starved (storage >= 1300) · errors 0 · CPU · walls.phase === 'roads' until done · stall >2h -> investigate + tell Misaki.
+2-hour briefing: one line with road phase, tiles built/total, sites, builders.
+
+## Review 2026-10-17 (pre-RCL6)
+- Fixed: invalid Memory.roads.phase (console typo) crashed run every 50t -> now reset to 'core' (re-checks, cheap).
+- Changed: walls.phase 'roads' now also holds upgraders at 1 (as 'bank'), so road builders are not starved by upgraders.
+- Added tests/roads_transition.js (RCL5->6 sim: gate, init, core->home->W45N8->done, batch, no vision, paused, off, RCL drop).
+- Residual: home trunk tile 40,23 is under the RCL8 tower plan (road must be removed before that tower, RCL8 only).

@@ -61,7 +61,7 @@ function targets(room, count, backlog, ctlEnergy, sites) {
   const allowExtra = !st || room.storage.store[RESOURCE_ENERGY] >= require('../roles/queen').storageFloor(room) + SURPLUS;
   T.upgrader = rcl >= 8 ? 1 : Math.min(P.pos.upgraders.length, (sites ? 1 : 2) + (allowExtra ? extra : 0));
   // RCL6+ wall banking (managers/walls.js): one upgrader until storage reaches the wall start (20k), then the latch releases it.
-  if (rcl >= 6 && rcl < 8 && require('./walls').phase(room) === 'bank') T.upgrader = Math.min(T.upgrader, 1);
+  if (rcl >= 6 && rcl < 8 && ['bank', 'roads'].includes(require('./walls').phase(room))) T.upgrader = Math.min(T.upgrader, 1);
   // RCL4 extension push: 2 builders need ~40 e/t but net income ~22 -> spawn/ctl starve, builders no_task ~28%,
   // haulers wait on empty pickups (patrol 10-13 18:40). One fed builder finishes sites faster than two hungry ones.
   // Second builder only after cap>=1300 (20 ext, CLAIM2-ready) when the room can afford the extra demand.

@@ -4,14 +4,20 @@
   "road_plan": {
     "doc": "docs/ROADS.md",
     "each_patrol": [
-      "read Memory.roads (phase, prog, bad, log) via scripts/api.py memory('roads') and room-objects",
-      "core: 10 ext + link 30,11 sites progressing; roads.run advances automatically when 40 ext + 3 links and no core sites",
-      "home/W45N8: <=5 road sites open in the phase room, builder(s) alive and building, prog.road rising",
-      "walls.phase must be 'roads' (no 'bank' upgrader hold, no rampart/wall sites) until phase=done",
-      "after W45N8 done: new W45N8 rhaulers 16C8M x1 (W45N7 stays 5x 8C8M, no road); watch remote container energy (overflow -> raise pavedHaulers)",
-      "no prog change for 2h -> investigate (bad codes, vision, paused remote); report each phase completion to Misaki"
+      "phase & progress: Memory.roads (phase, prog{road,site,open,unseen,blocked,total}, log, bad) via scripts/api.py memory('roads'); compare prog.road with last patrol",
+      "sites: count + locations of road sites in W46N8 / W45N8 (<=5 per room from roads.js; none on walls/structures/container 30,30/sources; none in W45N7); m.bad codes",
+      "builders: count (home phase 1-2, W45N8 phase 1-2, 0 before core done is fine), alive and not no_task/starved >50%",
+      "spawn queue health: queen, both miners, home haulers, W45N8 rminer/reserver/rhauler, W45N7 5x rhauler alive or pre-spawned; no role missing >100t",
+      "energy not starved: energyAvailable recovers to capacity between spawns, storage >= 1300 reserve, extensions filled",
+      "errors: 0 new ERR/exception lines (err.wrap 'roads', 'spawn', 'creep builder')",
+      "CPU: avg <= ~8, bucket not falling",
+      "walls.phase == 'roads' (1 upgrader hold, no rampart/wall sites) until Memory.roads.phase == 'done'",
+      "stall: no prog.road change (or core phase not advancing) for >2h -> investigate (bad codes, vision, paused remote, starved builders) and tell Misaki",
+      "after done: W45N8 rhaulers -> 1x 16C8M as old ones die (no gap), W45N8 container not overflowing (else pavedHaulers 2); W45N7 unchanged 5x 8C8M",
+      "report each phase completion to Misaki; include road phase/progress in every 2-hour briefing"
     ],
     "switches": "Memory.roads.off / skip / phase (console; verify by reading back)",
-    "phases": "core -> home (54 tiles, 19.5k) -> W45N8 (13 tiles, 6.0k) -> done(walls); W45N7 road dropped (Misaki 17:47)"
+    "phases": "core -> home (54 tiles, 19.5k) -> W45N8 (13 tiles, 6.0k) -> done(walls); W45N7 road dropped (Misaki 17:47)",
+    "briefing": "2-hour briefing: add one line 'roads: phase X, road a/b tiles, sites n, builders n, est. remaining' (no template file; routine text)"
   }
 }
