@@ -2,6 +2,8 @@
 // Safety: hostile combat creeps (or damage to our creeps) in W45N8 or W46N8 -> Memory.remote[R].pauseUntil = now+1500,
 // remote creeps flee home and remote spawning stops. Logs ALERT lines (picked up by listener -> alerts.py).
 const CFG = { W45N8: { home: 'W46N8', src: [14, 12], cont: [13, 11], ctl: [7, 36], exitHome: [49, 14], exitRemote: [0, 14], pavedHaulers: 1, // pavedHaulers: docs/ROADS.md (16C8M after the W45N8 road phase)
+  // rhE: paved hauler energy. 1x16C8M (800) cycled ~85-100t = 8-9.4 e/t < 10 e/t source -> cont 13,11 hit 1891/2000 (patrol 10-18 02:12); 24C12M (1200 carry) = ~13 e/t
+  rhE: 1800,
   // swamp tiles on the ideal haul route (model.py pave list); home-side swamps live in layout RCL3 roads
   roads: [[2, 12]],
   // where fleeing remote creeps wait at home while paused: plain tiles off every fixed route/plan tile, near the exit route

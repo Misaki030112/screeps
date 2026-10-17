@@ -28,7 +28,7 @@ const B = {
     const m = Math.max(1, Math.min(3, Math.floor((e - w * 100 - c * 50) / 50))); return [].concat(rep(w, WORK), rep(c, CARRY), rep(m, MOVE)); },
   hauler: e => { const n = Math.max(2, Math.min(8, Math.floor(e / 100))); return [].concat(rep(n, CARRY), rep(n, MOVE)); },
   // home hauler with storage: the A->ctl route is fully paved, so 2 CARRY : 1 MOVE still moves 1 tile/tick loaded
-  roadHauler: e => { const n = Math.max(1, Math.min(8, Math.floor(e / 150))); return [].concat(rep(2 * n, CARRY), rep(n, MOVE)); },
+  roadHauler: (e, max = 8) => { const n = Math.max(1, Math.min(max, Math.floor(e / 150))); return [].concat(rep(2 * n, CARRY), rep(n, MOVE)); },
   queen: e => { const n = Math.max(2, Math.min(6, Math.floor(e / 150))); return [].concat(rep(2 * n, CARRY), rep(n, MOVE)); },
   // Upgraders walk once (spawn -> ctl spot, ~6 tiles) then sit, so 1 MOVE is enough. RCL4: 2x10W = 20 WORK was the binding
   // limit (1h upgrade ~19/t, ctl container 1000+ unused, storage parked at the ferry floor so the 3rd-upgrader gate never opened;
@@ -170,7 +170,7 @@ function remoteSpawn(room, go, avail) {
     // rminer 6W: repair (50 hits/t container decay, 1 tick in 10 at 5W) blocks harvest in the same tick, so 5W harvested ~9/t
     // (R income 8.7 measured 10-15); 6W = 250 harvest + ~25 repair ticks per 300-tick regen -> full 10/t, +25t slack for handoffs.
     if (next === 'rminer') { const w = Math.min(6, Math.floor((Math.min(cap, 800) - 200) / 100)); return go('rminer', [].concat(rep(w, WORK), [CARRY], rep(3, MOVE)), { remote: r }); }
-    if (next === 'rhauler') { const rv = go('rhauler', rhPaved(r) && cap >= 1200 ? B.roadHauler(1200) : B.hauler(Math.min(cap, 800)), { remote: r }); if (rv === OK) m.lastRh = Game.time; return rv; }
+    if (next === 'rhauler') { const rv = go('rhauler', rhPaved(r) && cap >= 1200 ? B.roadHauler(Math.min(cap, C.rhE || 1200), 16) : B.hauler(Math.min(cap, 800)), { remote: r }); if (rv === OK) m.lastRh = Game.time; return rv; }
     // vision fallback (P4): no vision for 100+ ticks and no rminer/reserver alive or en route -> one 1-MOVE scout (50e)
     if (C.scout && !Game.rooms[r] && Game.time - (m.seen || 0) > 100 && !rhAll.length && !mineR('rminer').length && !mineR('reserver').length && !mineR('rscout').length)
       return go('rscout', [MOVE], { remote: r });
