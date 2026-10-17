@@ -28,7 +28,7 @@ const cases = [
     const kinds = L.order.map(o => o[1]); assert.deepStrictEqual(kinds.slice(0, 6), Array(6).fill('rampart'));
     assert.strictEqual(kinds.indexOf('road') > kinds.lastIndexOf('constructedWall'), true);
     assert.deepStrictEqual(L.order[0][0], [47, 16]);
-    assert.ok(!L.order.some(([[x, y], t]) => t === 'road' && x === 41 && y === 23), 'on_demand BR trunk not placed');
+    assert.ok(L.order.some(([[x, y], t]) => t === 'road' && x === 43 && y === 26), 'v5: BR trunk placed in wall phase'); assert.ok(L.order.some(([[x, y], t]) => t === 'road' && x === 26 && y === 15), 'v5: TL trunk');
     assert.ok(!L.order.some(([[x, y], t]) => t === 'road' && x === 30 && y === 30), 'no trunk road on the ctl container 30,30 (layout destroys it)');
     assert.ok(L.order.some(([[x, y], t]) => t === 'road' && x === 29 && y === 31), 'rest of W trunk kept');
   }],

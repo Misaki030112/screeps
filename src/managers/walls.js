@@ -56,7 +56,8 @@ function lists(P) {
   // trunk tiles under another planned structure are skipped: W trunk 30,30 is the ctl container; layout.js destroys a road there
   // as a conflict, so the wall phase re-placed it every ~5 min (live 00:44-01:04: built + destroyed 3x, 3 ruins, ~900e).
   const other = ([x, y]) => { const w = P.any && P.any[x * 50 + y]; return !!(w && w.type !== 'road'); };
-  for (const g in d.trunks) if (d.trunks[g].mode === 'with_gate') for (const t of d.trunks[g].new_tiles) if (!other(t)) roads.push(t);
+  for (const g in d.trunks) if (d.trunks[g].mode === 'with_gate' || d.trunks[g].wallPhase) for // v5: BR/TL gate trunks (Misaki 02:38 no road to 44,27) after the ring
+    (const t of d.trunks[g].new_tiles) if (!other(t)) roads.push(t);
   for (const t of d.walls_in_build_order) walls.push(t);
   for (const g in d.repair) { const r = d.repair[g]; if (/wall phase/.test(r.build_with || '')) for (const t of (r.spur || [])) roads.push(t); }
   const k = (x, y) => x * 50 + y, type = {};
