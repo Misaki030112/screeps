@@ -293,6 +293,9 @@ module.exports = { rhTarget, birthDirs, targets, rhaulerNeed, remoteNext, retiri
     // container A pile up to 1771/2000 (patrol 10-14 07:05) while upgraders sat waiting_feed ~50%.
     const buildMode = role === 'upgrader' && rcl >= 6 && rcl < 8 && require('./walls').phase(room) === 'roads';
     const e = bodyEnergy(role, E, cap, avail, !!alive.hauler, !!room.storage, undefined, buildMode);
-    return go(role, role === 'hauler' && room.storage ? B.roadHauler(e) : B[role](e, rcl), mem);
+    // v5 link era (RCL6, 3 links): source A ships via link 30,11, the home hauler only clears container overflow / drops.
+    // 14C7M sat waiting_pickup 66% and moved empty 89% (motion audit 02:50) -> 6C3M (450e, 300 carry).
+    const linkEra = role === 'hauler' && rcl >= 6 && rc.all(room, STRUCTURE_LINK).length >= 3;
+    return go(role, role === 'hauler' && room.storage ? B.roadHauler(linkEra ? Math.min(e, 450) : e) : B[role](e, rcl), mem);
   }
 } };

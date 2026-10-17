@@ -15,7 +15,9 @@ const BATCH = 15, HOME = 'W46N8'; // 5 left builders no_task 19% (batch done, wa
 // W45N8 remote leg override: plan 4,10 5,9 (swamp) 6,8 7,7 8,7 9,8 10,8 had 0 traffic; haulers walk 4,11 5,11 6,10 7,9 8,9 9,9 10,9 (all plain)
 // econ: unroaded home tiles >=300 hauler/queen entries/day (creep_ticks 24h, 22:18): 35,26 861, 36,25 603, 34,25 409, 35,31 393
 // (48,21 715 is the W45N7 leg, dropped by Misaki). Re-check with the heatmap before adding more.
-const ECON = [[35, 26], [36, 25], [34, 25], [35, 31]];
+// v5 02:50: 32,34 = stamp-B hub (swamp) between the 4 B filler stops; queen stood/passed there 57 ticks/h. RCL8 link tile
+// (layout replaces the road then). Placed once by console; listed here so layout keeps the site.
+const ECON = [[35, 26], [36, 25], [34, 25], [35, 31]], KEEP = [[32, 34]];
 const W45N8_LEG = [[0, 14], [1, 13], [2, 12], [3, 11], [4, 11], [5, 11], [6, 10], [7, 9], [8, 9], [9, 9], [10, 9], [11, 9], [12, 10]];
 // swamp7 (Misaki 2026-10-17 23:5x: W45N7 路线沼泽段修路; full W45N7 road stays dropped): W45N8 swamp tiles on the W45N7 rhauler
 // path, creep_ticks 6h: ~155 visits/6h each, 3.0 ticks/visit (unroaded swamp) vs 1.0 on the roaded 2,12. tools/swamp7_justify.py:
@@ -38,7 +40,7 @@ function tiles(P) {
     if (d.trunks[g] && d.trunks[g].mode === 'with_gate') for (const [x, y] of d.trunks[g].new_tiles) add('home', HOME, x, y);
   return (memo.t = out);
 }
-function isHomeTile(x, y) { const P = require('../utils/plan').get(HOME); const T = tiles(P); return [].concat(T.haul, T.econ, T.home).some(([, a, b]) => a === x && b === y); }
+function isHomeTile(x, y) { const P = require('../utils/plan').get(HOME); const T = tiles(P); return KEEP.some(([a, b]) => a === x && b === y) || [].concat(T.haul, T.econ, T.home).some(([, a, b]) => a === x && b === y); }
 function isRouteTile(r, x, y) { const T = memo.t || tiles(require('../utils/plan').get(HOME)); return [].concat(T.haul, T.econ, T.home, T.W45N8, T.swamp7).some(([rm, a, b]) => rm === r && a === x && b === y); }
 function mem() { return (Memory.roads = Memory.roads || { phase: 'core' }); }
 function M() { return typeof Memory === 'undefined' ? undefined : Memory.roads; }
