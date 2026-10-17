@@ -91,7 +91,7 @@ function targets(room, count, backlog, ctlEnergy, sites) {
     if (!T.builder && RD.repairTarget(0.4)) T.builder = 1;
     // walls build phase: 1 builder (sites<=SITE_CAP 2) walking 35,24 -> 13-18,44 with 250 carry built ~3 e/t while the fund sat at
     // ~22k and storage 23k (patrol 10-18 02:12, Misaki: spend build-phase surplus on construction). 2nd builder while fund+storage >= 10k.
-    { const W = require('./walls'), se = room.storage.store[RESOURCE_ENERGY], bp = W.phase(room) === 'build', f = bp ? W.fund(room) : 0;
+    { const W = require('./walls'), se = room.storage.store[RESOURCE_ENERGY], bp = W.phase(room) === 'build', f = bp ? (W.budgetE ? W.budgetE(room) : W.fund(room)) : 0;
       if (T.builder === 1 && bp && f >= 10000 && se >= 10000 && room.energyCapacityAvailable >= 1300) T.builder = 2;
       // v5 infra max (Misaki 02:2x): upgrade held in the wall phase, so its feed + storage down to ~5k go to builders: 3 builders
       // while fund and storage >= 8k, 4 while >= 15k. Spawn steady-state busy ~52% (02:20 live), room for it.

@@ -70,8 +70,9 @@ const cases = [
   }],
   ['no fund, no threat -> no job, no builder; threat lifts the cap', () => {
     OBJ = {}; wall('b', 27, 7, 30000); const m = { walls: { started: 1, fund: 0, ft: Game.time } };
-    assert.strictEqual(W.repairJob(room({ mem: m })), null); assert.strictEqual(W.wantBuilder(room({ mem: m })), false);
-    HOLD = true; assert.ok(W.repairJob(room({ mem: m }))); assert.ok(W.wantBuilder(room({ mem: m }))); HOLD = false;
+    assert.strictEqual(W.repairJob(room({ mem: m, storage: 5000 })), null); assert.strictEqual(W.wantBuilder(room({ mem: m, storage: 5000 })), false);
+    assert.ok(W.repairJob(room({ mem: m, storage: 9000 })), 'v5: storage above 5k floor is wall budget');
+    HOLD = true; assert.ok(W.repairJob(room({ mem: m, storage: 5000 }))); assert.ok(W.wantBuilder(room({ mem: m, storage: 5000 }))); HOLD = false;
   }],
   ['all barriers at last step -> no job', () => { OBJ = {}; wall('a', 26, 7, 300000); assert.strictEqual(W.repairJob(room()), null); }],
 ];

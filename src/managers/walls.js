@@ -101,6 +101,10 @@ function fund(room) {
   if (Game.time > (m.ft || Game.time)) { m.fund = Math.min(FUND_MAX, m.fund + (Game.time - m.ft) * rate(room) * NET); m.ft = Game.time; }
   return m.fund;
 }
+// v5 (Misaki 02:2x "storage can go down to ~5k while the ring closes"): during the wall phase the spendable budget is the fund OR
+// storage above FLOOR, whichever is larger (upgrading is held, so storage surplus is wall energy).
+const FLOOR = 5000;
+function budgetE(room) { const e = room.storage ? room.storage.store[RESOURCE_ENERGY] : 0; return Math.max(fund(room), e - FLOOR); }
 function spend(room, e) { const m = room.memory.walls; if (m && m.fund !== undefined) m.fund = Math.max(0, m.fund - e); }
 function threat(room) { return require('./threat').holding(room.name) || playerCombat(room) || require('./home').alert(room); }
 // Storage energy the ctl ferry / upgrader extras must leave alone.
@@ -112,7 +116,7 @@ const CHUNK = 10000;
 function repairJob(room, pos, taken) {
   const P = plan().get(room.name);
   if (!defense(P) || phase(room) !== 'build') return null;
-  if (!threat(room) && fund(room) < 100) return null;
+  if (!threat(room) && budgetE(room) < 100) return null;
   const B = barriers(room, P), tgt = target(room, B);
   const low = B.filter(s => s.hits < tgt); if (!low.length) return null;
   const m = _.min(low.map(x => x.hits)), band = low.filter(x => x.hits < m + CHUNK);
@@ -131,7 +135,7 @@ function decaying(room, taken) {
   return low.length ? _.min(low, s => s.hits) : null;
 }
 // Spawn: one builder while there is repair work and >= one builder-life of fund (5W x 1500t would spend at most 7.5k).
-function wantBuilder(room) { const j = repairJob(room); return !!j && (threat(room) || fund(room) >= 3000); }
+function wantBuilder(room) { const j = repairJob(room); return !!j && (threat(room) || budgetE(room) >= 3000); }
 // Sites (called by layout.run with its leftover budget).
 function placeSites(room, budget) {
   const P = plan().get(room.name);
@@ -171,4 +175,4 @@ function noUpgrade(room) {
   const B = barriers(room, P); return !ringClosed(room, P) || !B.length || _.min(B.map(s => s.hits)) < HOLD_TO;
 }
 const HOLD_TO = 100000;
-module.exports = { WALL_CAP, ringClosed, UP_SAFE, DECAY_FLOOR, DECAY_CAP, decaying, noUpgrade, START, NOVICE_END, phase, planned, STEPS, target, barriers, fund, spend, reserved, repairJob, wantBuilder, placeSites, lists };
+module.exports = { FLOOR, budgetE, WALL_CAP, ringClosed, UP_SAFE, DECAY_FLOOR, DECAY_CAP, decaying, noUpgrade, START, NOVICE_END, phase, planned, STEPS, target, barriers, fund, spend, reserved, repairJob, wantBuilder, placeSites, lists };

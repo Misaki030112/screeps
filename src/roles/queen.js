@@ -9,7 +9,9 @@ function stops(room) {
   let h = H[room.name];
   if (!h || Game.time - h.t > 50) {
     const P = plan.get(room.name);
-    const tiles = P.pos.fillers.slice(0, 4).concat([P.pos.manager]);
+    // v5 (Misaki 02:29): ALL stamp filler tiles are stops (A 4 + B 4 + C 4 when built). Was A only: the 20 stamp-B extensions
+    // (RCL5/6) were each a direct r:1 visit -> ~20 stops per refill instead of 4; stops without fill neighbours drop out below.
+    const tiles = P.pos.fillers.concat([P.pos.manager]);
     const st = [], covered = new Set(), at = rc.get(room).at;
     const walkable = (x, y) => { const e = at[x * 50 + y]; return !e || Object.keys(e).every(t => t === 'road' || t === 'container' || t === 'rampart'); };
     for (const [x, y] of tiles) {
