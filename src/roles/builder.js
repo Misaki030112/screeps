@@ -95,7 +95,16 @@ function pickSource(c, home, Ph, ctlSrc, fx, fy) {
   if (!cands.length) cands = require('./hauler').pickups(home).filter(s => s.store[RESOURCE_ENERGY] >= c.store.getFreeCapacity() + 200);
   return cands.length ? _.max(cands, score) : null;
 }
-module.exports = { remoteRoadSite, pickSource, run(c) {
+// one step along a remote's fixed exits toward room `dest` (home <-> remote, either direction)
+function hop(c, dest) {
+  const rm = remote.CFG[dest] ? dest : c.room.name, R = remote.CFG[rm] ? remote.route(rm) : null;
+  const i = R ? R.indexOf(c.room.name) : -1, j = R ? R.indexOf(dest) : -1;
+  if (i < 0 || j < 0 || i === j) { c.moveTo(new RoomPosition(25, 25, dest), { range: 20, reusePath: 20 }); return; }
+  const [ex, ey] = remote.exitTile(rm, c.room.name, R[i + Math.sign(j - i)]);
+  if (c.pos.x === ex && c.pos.y === ey) { c.move(ex === 49 ? RIGHT : ex === 0 ? LEFT : ey === 49 ? BOTTOM : TOP); return; }
+  move.to(c, ex, ey, 0);
+}
+module.exports = { remoteRoadSite, pickSource, hop, run(c) {
   const room = c.room, P = plan.get(c.memory.home || room.name) || plan.get(room.name);
   if (!P) return;
   if (c.memory.working && c.store[RESOURCE_ENERGY] === 0) { c.memory.working = false; }
@@ -147,6 +156,10 @@ module.exports = { remoteRoadSite, pickSource, run(c) {
         if (tw) waitNear(c, tw, Ph); trace.why(c, 'u'); return; // no energy anywhere: starved, not no_task
       }
     }
+    // energy in another room (W45N8 road builder, remote container below free+400 -> home storage): walk the remote's fixed
+    // exits home first. move.to is room-local: live 23:11 both builders sat at 36,30/36,31 in W45N8 ("storage 37,31" in the
+    // wrong room), withdraw ERR_NOT_IN_RANGE forever, W45N8 phase 5/12 stalled, storage 11.8k->14.8k.
+    if (src.pos.roomName && src.pos.roomName !== c.room.name) { hop(c, src.pos.roomName); return; }
     if (move.to(c, src.pos.x, src.pos.y, 1)) { (src.store ? c.withdraw(src, RESOURCE_ENERGY) : c.pickup(src)); delete c.memory.src; }
     return;
   }
