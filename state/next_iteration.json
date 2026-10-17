@@ -1,6 +1,6 @@
 {
- "next_at": "2026-10-17T23:00:00+08:00",
- "reason": "22:39 CHECK PASS (no deploy, live c907aae roads v2 @22:36): Memory.roads v2 phase 'haul' t=83705700, prog road 12/16 site 4 open 0 blocked 0, bad only old W46N8:49:14 -7 (pre-fix, ignore); builders 3 (roleTargets builder 3, 4th needs sites>=6), 0 upgraders (hold); storage 11814 (was 5520 @22:05, rising); errors []; CPU 7.5 bkt 10000; creeps rh8 rm2 res1 b3 h1 m2 q1; alerts exit1 LOW BustJetter scouts ENDED dmg0. Audit 1h builder idle 0.49 is from v1 core->home transition before v2. Next (23:00): haul phase done -> W45N8 phase started (sites in W45N8, none on 0,14 exit), prog.road rising, build rate ~25 e/t, builder no_task <10%, new builders 8W8C8M, storage >=1300, bad not growing.",
+ "next_at": "2026-10-17T23:30:00+08:00",
+ "reason": "23:11 STALL FOUND (no deploy, live 70b38d8): roads phase W45N8 prog road 5/12 site 7 since haul done 22:49; both builders (83705744, 83705901) empty and parked at 36,30/36,31 IN W45N8: pickSource returns W46N8 storage, move.to is room-local -> walks to 37,31 of W45N8, withdraw ERR_NOT_IN_RANGE forever. Storage 11.8k->14.8k. Fix ready on branch fix-builder-crossroom-fetch d023aec (builder.hop via remote fixed exits; tests/builder_remote 5/5, old code 4/5; all tests + check/sim pass), NOT deployed, awaiting Misaki approval (parent woken). If approved: git merge fix-builder-crossroom-fetch && deploy.py; then verify builders walk 0,21 exit, refill at storage, W45N8 sites rise, storage falls. Also: road 35,31 (econ tile) sits on planned terminal spot (RCL6_MINERALS off, so no conflict yet); hub link 37,29 799 / source link 30,11 800 still stuck (known, pending approval); builders 2 vs target 4 (spawn busy on rhauler wave).",
  "road_plan": {
   "doc": "docs/ROADS.md",
   "each_patrol": [
@@ -41,5 +41,9 @@
    "known_bug": "hub link 37,29 never drained in build mode -> source link 30,11 stuck full (fix pending approval)",
    "no_further_deploys_without_approval": true
   }
+ },
+ "pending_approval": {
+  "builder_crossroom_fetch": "branch fix-builder-crossroom-fetch d023aec",
+  "hub_link_drain": "v2_1 known_bug"
  }
 }
