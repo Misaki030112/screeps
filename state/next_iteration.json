@@ -38,8 +38,16 @@
    "deployed": "70b38d8 22:47",
    "what": "haul/W45N8/econ sites in parallel (BATCH 15/room), builders up to 5 in build mode (storage>=5k,4 sites ->4; >=8k,8 sites ->5), body cap 11W11C11M",
    "check_each_patrol": "storage trending down toward ~3k, build >=25/t, no builder stuck, W45N8 sites progressing; trunks only after econ",
-   "known_bug": "hub link 37,29 never drained in build mode -> source link 30,11 stuck full (fix pending approval)",
+   "known_bug": "fixed ecde27e",
    "no_further_deploys_without_approval": true
+  },
+  "v2_2": {
+   "deployed": [
+    "6782779 23:33 builder cross-room fetch",
+    "ecde27e 23:35 hub drain + trunk parallel"
+   ],
+   "each_patrol": "storage falling toward ~3-5k; builders 4-5 while storage>5k; W45N8 sites rising; trunk sites only after econ placed; links 30,11 and 37,29 cycling (hub <=400 between drains)",
+   "after_roads": "F: terminal -> extractor+container -> labs -> walls, ask Misaki first (RCL6_MINERALS off, see docs/RCL6.md)"
   }
  },
  "pending_approval": {

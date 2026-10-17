@@ -51,3 +51,9 @@ barrier sites start only after the roads. Emergency wall starts are unchanged. W
 
 **Build hold (2026-10-17 21:00):** during the road plan no upgrader at all (`walls.noUpgrade`, docs/ROADS.md), safety upgrader
 if `ticksToDowngrade < 20000`. After roads the R4 banking rule (1 upgrader until storage 20k) applies unchanged.
+
+## 2026-10-17 23:40 decisions (roads v2.2)
+- Road 35,31 (econ, 393 hauler entries/day) is built on the planned RCL6 terminal tile. Terminal is deferred (RCL6_MINERALS off).
+  Decision: keep the road now; when terminal is approved, remove road 35,31 first (300e loss) or move terminal; decide with Misaki at F.
+- "Road 35,28" is the Spawn1 tile (busy count = creeps spawning there) — no road possible/needed.
+- Post-roads order (F, each needs Misaki's OK, RCL6_MINERALS): terminal -> extractor 40,24 + mineral container 39,24 (container cap 5: drop 34,34) -> 3 labs -> walls.
