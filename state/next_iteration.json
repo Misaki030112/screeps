@@ -1,6 +1,6 @@
 {
- "next_at": "2026-10-18T07:50:00+08:00",
- "reason": "07:14 patrol observe-only (tick 83713078). Storage 50.4k->55.2k (~+8.6 e/t, up from +3.5; below the +10 trigger). Barriers 51 min 62.7k->81.2k med 93.1k max 303k, 46 under 100k; ETA min>=100k ~07:50 -> walls.HOLD_TO lifts noUpgrade: upgraders resume (build phase not bank/roads so T.upgrader up to 2+extra), builder six->5, step 300k. 6 builders 60W (10/8/11/9/11/11), no_task 13-24% = retarget/trip ticks, no hotspot. Home hauler83712556 small (store<=104) 80% waiting_pickup (links feed hub; low cost). CPU ~7.5-8.6 bkt10k errors 0; ctl ttd 115.8k; alerts LOW only (BustJetter 4T4M scouts ended). Next: verify the 100k transition (upgrader spawns + body, builders 5, storage trend should turn flat/down, no gate <3k); if storage still >+10 e/t after, consider keeping 6th builder in build phase.",
+ "next_at": "2026-10-18T08:30:00+08:00",
+ "reason": "07:55 patrol: 100k hold lifted ~07:50 (barriers 51 min 98.0k raw rampart / eff>=100k, med 111k, max 303k; step 300k). Upgraders resumed 2x12W (waiting_feed ~18%, ctlEma 149). But builder tiers 3-6 were gated on noUpgrade, so T.builder fell 6->2 with storage 52.7k / budgetE 47.4k (would sit and rise). Deployed 7ea548d: tiers follow budget for the whole build phase -> T.builder 6, upgrader 2 (verified live tick 83713688). 4 builders alive (TTL 211/415/880/1155, 39W). Next: verify 2 new builders spawn (>=8W), storage trend gently down (expect ~-5..-15 e/t), CPU <=~9.5, barrier min rising toward 300k evenly, no gate <3k, upgraders not starving builders (spawn energy recovers).",
  "road_plan": {
   "doc": "docs/ROADS.md",
   "each_patrol": [
@@ -124,9 +124,9 @@
   ]
  },
  "last_deploy": {
-  "commit": "966c81c",
-  "tick": 83711310,
-  "at": "2026-10-18 05:12 UTC+8"
+  "commit": "7ea548d",
+  "tick": 83713680,
+  "at": "2026-10-18 07:57 UTC+8"
  },
  "walls": {
   "started": 83707350,
@@ -134,7 +134,7 @@
   "fund_at_start": 20108,
   "check_each_patrol": "gates 6 ramparts first then with_gate trunks then 41 walls; SITE_CAP 2; no rampart decays at low hits; storage should not fall below ~5k after fund; terminal/extractor/labs stay off (RCL6_MINERALS) until Misaki decides",
   "decay_fix": "434a2c3: gate ramparts <5000 outrank sites (to 10k, 1 builder/gate); check each patrol no gate < 3000",
-  "check_note": "07:14: barriers 51 min 81.2k med 93.1k max 303k, 46 under 100k; storage 55.2k (+8.6 e/t); noUpgrade held (ttd 115.8k); transition at min 100k ETA ~07:50"
+  "check_note": "07:55: hold lifted; barriers min 98k raw (rampart eff>=100k) med 111k; storage 52.7k (-4.5 e/t since 07:14); step 300k; builder tiers now budget-only (7ea548d)"
  },
  "w45n8_rhauler": {
   "deployed": "c4a8eb6",
@@ -163,5 +163,11 @@
   "check": "storage stops rising (was +12..27 e/t); builder w share >=30%; no congestion at storage/hub; CPU <=~9; spawn util ok",
   "revert": "drop the T.builder===5 -> 6 line in src/managers/spawn.js targets",
   "check_note": "06:06: 6 live, 54 WORK; storage +4 e/t (was +27); CPU ~7.4; converged ok"
+ },
+ "hold_lift_tiers": {
+  "deployed": "7ea548d",
+  "rule": "build-phase builder tiers 3/4/5/6 no longer require walls.noUpgrade",
+  "check": "builders back to 6 while budget>=40k; storage falls gently toward ~5k floor then tiers step down; upgraders 2 fed; CPU <=~9.5",
+  "revert": "re-add W.noUpgrade(room) && to the three tier lines in src/managers/spawn.js targets (and tests/build_hold.js case)"
  }
 }
