@@ -31,7 +31,9 @@ const T = (o) => { hold = o.hold; ph = o.ph || 'roads'; budget = (o.storage || 1
 cases.push(
   ['wall build phase, storage 39999: 5 builders', () => assert.strictEqual(T({ hold: true, ph: 'build', storage: 39999 }).builder, 5)],
   ['wall build phase, storage 45000 (budget 40k): 6 builders', () => assert.strictEqual(T({ hold: true, ph: 'build', storage: 45000 }).builder, 6)],
-  ['wall build phase, no hold: no 6th', () => assert.strictEqual(T({ hold: false, ph: 'build', storage: 45000 }).builder, 2)],
+  ['wall build phase, hold lifted (100k): tiers follow budget, 6 builders', () => assert.strictEqual(T({ hold: false, ph: 'build', storage: 45000 }).builder, 6)],
+  ['wall build phase, hold lifted, storage 16000: 3 builders', () => assert.strictEqual(T({ hold: false, ph: 'build', storage: 16000 }).builder, 3)],
+  ['wall build phase, hold lifted, storage at floor: 1 builder', () => assert.strictEqual(T({ hold: false, ph: 'build', storage: 5000 }).builder, 1)],
   ['v2.1 hold + storage 5000 + 4 sites: 4 builders', () => assert.strictEqual(T({ hold: true, sites: 4, storage: 5000 }).builder, 4)],
   ['v2.1 hold + storage 8000 + 8 sites: 5 builders', () => assert.strictEqual(T({ hold: true, sites: 8, storage: 8000 }).builder, 5)],
   ['v2.1 hold + storage 4999 + 8 sites: 3 builders', () => assert.strictEqual(T({ hold: true, sites: 8, storage: 4999 }).builder, 3)],

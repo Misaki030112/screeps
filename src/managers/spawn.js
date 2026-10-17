@@ -95,11 +95,14 @@ function targets(room, count, backlog, ctlEnergy, sites) {
       if (T.builder === 1 && bp && f >= 10000 && se >= 10000 && room.energyCapacityAvailable >= 1300) T.builder = 2;
       // v5 infra max (Misaki 02:2x): upgrade held in the wall phase, so its feed + storage down to ~5k go to builders: 3 builders
       // while fund and storage >= 8k, 4 while >= 15k. Spawn steady-state busy ~52% (02:20 live), room for it.
-      if (T.builder >= 2 && bp && W.noUpgrade(room) && f >= 8000 && se >= 8000) T.builder = (f >= 15000 && se >= 15000) ? 4 : 3;
+      // After the 100k hold lifts (07:5x 10-18) upgraders resume at 2 (feed-limited ~14-24 e/t) but these tiers were tied to
+      // noUpgrade, so builders fell 6 -> 2 with storage 52k / budget 47k still rising (Misaki 02:21: walls first, spend storage
+      // down to a reserve). Tiers now follow the wall budget alone for the whole build phase.
+      if (T.builder >= 2 && bp && f >= 8000 && se >= 8000) T.builder = (f >= 15000 && se >= 15000) ? 4 : 3;
       // 4x 11W builders still left storage rising 24.2k -> 30.2k in ~300t (03:05-03:28, ~+20 e/t, builders work ~25% of ticks): 5th at >= 25k
-      if (T.builder === 4 && bp && W.noUpgrade(room) && f >= 25000 && se >= 25000) T.builder = 5;
+      if (T.builder === 4 && bp && f >= 25000 && se >= 25000) T.builder = 5;
       // 5 builders (36-55 WORK, ~45% of ticks repairing) still left storage +12..27 e/t, 40.9k -> 46.7k (patrol 05:10); 6th at >= 40k
-      if (T.builder === 5 && bp && W.noUpgrade(room) && f >= 40000 && se >= 40000) T.builder = 6; } }
+      if (T.builder === 5 && bp && f >= 40000 && se >= 40000) T.builder = 6; } }
   return T;
 }
 // Pre-spawn: a dying upgrader / home hauler / queen stops counting once its TTL is under spawn time + walk + margin,
