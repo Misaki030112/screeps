@@ -1,6 +1,6 @@
 {
- "next_at": "2026-10-18T00:05:00+08:00",
- "reason": "23:46 (deployed 0e08aed tick 83706619): W45N8 road phase sites all built ~23:41 (fetch fix 6782779 works). New bug found+fixed: full builders in W45N8 whose next target was a home trunk site walked room-locally to 22,36 INSIDE W45N8 (5744 east along y=9, 6460 dithering); working-branch cross-room walk now uses hop() both directions (tests/builder_remote 6/6, old code 5/6). Verified live: 5744 turned west toward 0,14, 6460 at 1,15 heading to exit. Hub link drain (18aaa13 builder withdraw) works: hub 799->0, source link 30,11 800->50. Storage 20.3k peak 23:33 -> 18.8k, 15 trunk sites W46N8, 5 builders. Next: confirm Memory.roads phase advanced past W45N8 (econ/home), storage falling, trunk prog.road rising, both returning builders arrived home and building.",
+ "next_at": "2026-10-18T00:30:00+08:00",
+ "reason": "00:12 patrol (deployed a3570d8 tick 83707003): verified Memory.roads.phase=swamp7 (log home@83706900), sites placed at W45N8 15,39/16,40/25,39 (a9d7815 live). Found stall: all 5 builders sticky-repairing container 34,34 at 86% hits (clear threshold 90%) while home sites=0 so remote sites never outranked repair; storage rose 18.8k->21.6k, hub stuck 799. Fix: builder sticky clear also checks remoteRoadSite(); spawn bumps builders for swamp7 / all>=3 remote sites (roleTargets.builder 1->3). Verified live: all 5 builders in W45N8 retargeted site 15,39 and walking south (prog still 0/1500 en route). W45N7 trial sample2 tick=83707037 delivered=272842 (baseline 83706672/269064; window 365t Δ3778 => 10.351 e/t). Next: swamp7 prog.road rising, storage falling, hub cycling, trial window continue ~1500t.",
  "road_plan": {
   "doc": "docs/ROADS.md",
   "each_patrol": [
@@ -72,6 +72,22 @@
   ],
   "note": "5 haulers still alive; take a 2nd baseline sample ~300t later before any dies, then compare delivered/tick over the next 1500t window",
   "revert_if": "W45N7 delivered/tick drops >10% vs baseline -> console: delete Memory.remote.W45N7.haulers",
-  "also_watch": "container 21,15 energy (overflow at 2000 = too few haulers)"
+  "also_watch": "container 21,15 energy (overflow at 2000 = too few haulers)",
+  "sample2": [
+   83707037,
+   272842
+  ],
+  "sample2_at": "2026-10-18 00:12 UTC+8",
+  "window_vs_baseline": {
+   "ticks": 365,
+   "delivered_delta": 3778,
+   "e_per_tick": 10.351,
+   "note": "still early (~300t); keep sampling; compare after ~1500t window; 7 rhaulers alive (both remotes)"
+  }
+ },
+ "last_deploy": {
+  "commit": "a3570d8",
+  "tick": 83707003,
+  "at": "2026-10-18 00:10 UTC+8"
  }
 }

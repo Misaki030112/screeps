@@ -10,6 +10,7 @@ const err = require('./utils/errors');
 const remote = require('./managers/remote');
 const trace = require('./utils/trace');
 module.exports.loop = function () {
+  { const t = Game.cpu.getUsed(); void Memory.creeps; err.pre = [t, Game.cpu.getUsed() - t]; } // CPU profile: pre-loop, Memory parse
   trace.wrap();
   const newAlerts = [];
   for (const n in Memory.creeps) if (!Game.creeps[n]) delete Memory.creeps[n];

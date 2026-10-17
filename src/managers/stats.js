@@ -30,4 +30,9 @@ module.exports = { run(errors, alerts = []) {
   s.alerts = (s.alerts || []).concat(alerts).slice(-30);
   if (alerts.length) s.lastAlertTick = Game.time;
   s.cpu = Game.cpu.getUsed();
+  // EMA(1/50) per section; mem = CPU before the loop body (Memory parse + global), set by main.js
+  const err = require('../utils/errors'), P = err.prof, E = s.prof || (s.prof = {});
+  P.total = s.cpu; P.pre = (err.pre || [0])[0]; P.mem = (err.pre || [0, 0])[1];
+  for (const k in P) E[k] = Math.round(((E[k] === undefined ? P[k] : E[k] * 0.98 + P[k] * 0.02)) * 1000) / 1000;
+  err.prof = {};
 } };
