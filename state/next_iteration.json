@@ -1,6 +1,6 @@
 {
-  "next_at": "2026-10-17T19:30:00+08:00",
-  "reason": "19:05 RCL6 TRANSITION VERIFY PASS (no deploy, live 6f2b9de). t83702611: RCL6 1.8k/3.645M, downgrade ok, safeModeAvailable 5; Memory.roads phase 'core'; 5/5 sites = ext 30,35 30,36 31,36 32,26 32,27 (cap 5; other 5 ext + link 30,11 follow as these finish); ext 30/40, links 37,29+30,31; builder83702551 alive (1); walls.phase computed 'roads' -> spawn target 1 upgrader, 3 pre-RCL6 upgraders age out (~83703200-83704070); queen, hauler, miners 2+1 spawning, W45N8 rminer+3 rhauler, W45N7 rminer+3 rhauler home+2; storage 1250 (just under 1300 floor, watch), energy 831/1800, errors [], CPU 6.2 bucket 10000. Next: check ext sites progressing, link 30,11 site placed, storage recovering >=1300, upgraders dropping to 1.",
+  "next_at": "2026-10-17T20:15:00+08:00",
+  "reason": "19:42 DEPLOY 78fd12c (tick 83703200): roads build mode -> held upgrader spawned 6W1C1M (700e) instead of 12W while walls.phase 'roads' (spawn.bodyEnergy buildMode; tests/spawn_upgraders.js). Why: last 550t upgrade 13.9/t vs build 5.9/t, storage -4.2/t (1250->770), builders waiting_feed ~43%. State t83703159: RCL6 9.7k/3.645M, roads phase core, ext 31/40, 5 sites (30,35 30,36 31,36 32,35 at 0, 32,27 1300/3000), link 30,11 not yet placed; upgrader83702073 12W TTL ~380 at deploy (dies ~20:10), builders 2 (5W), errors [], CPU ~7, bucket 10000, remotes SAFE, reservations ok. Next: verify replacement upgrader is 6W1C1M, ctl container filling then hauler spilling to storage, storage recovering >=1300, build rate per tick rising (target >=10/t), core sites progressing; 0 errors.",
   "road_plan": {
     "doc": "docs/ROADS.md",
     "each_patrol": [
