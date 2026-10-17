@@ -64,7 +64,7 @@ module.exports = { obsoleteContainer, run(room) {
   }
   // ---- placement (re-find sites: removals above leave the cached array stale)
   const sitesNow = room.find(FIND_MY_CONSTRUCTION_SITES);
-  let budget = MAX_SITES - sitesNow.length;
+  let budget = MAX_SITES - sitesNow.filter(s => s.structureType !== STRUCTURE_WALL).length; // v5: ring wall sites have their own cap (walls.WALL_CAP)
   const have = new Set(structs.map(s => s.structureType + plan.key(s.pos.x, s.pos.y)).concat(sitesNow.map(s => s.structureType + plan.key(s.pos.x, s.pos.y))));
   const wanted = plan.upTo(room.name, rcl);
   const extSites = sitesNow.some(s => s.structureType === STRUCTURE_EXTENSION);
