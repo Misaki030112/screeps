@@ -1,7 +1,7 @@
 // Builder + v4 barrier job (roles/builder.js <- managers/walls.repairJob/spend). node tests/builder_walls.js -> exit 1 on failure
 const path = require('path'), assert = require('assert');
 const src = p => path.join(__dirname, '..', 'src', p);
-Object.assign(global, { RESOURCE_ENERGY: 'energy', STRUCTURE_ROAD: 'road', STRUCTURE_CONTAINER: 'container', OK: 0, WORK: 'work',
+Object.assign(global, { RESOURCE_ENERGY: 'energy', STRUCTURE_ROAD: 'road', STRUCTURE_WALL: 'constructedWall', STRUCTURE_RAMPART: 'rampart', STRUCTURE_CONTAINER: 'container', OK: 0, WORK: 'work',
   Game: { rooms: {}, creeps: {}, time: 1, getObjectById: id => OBJ[id] }, _: { min: (a, f) => a.reduce((b, x) => (f(x) < f(b) ? x : b)), max: (a, f) => a[0] } });
 let OBJ = {}, JOB = null, SPENT = 0, SITES = [];
 const stub = (p, exp) => { require.cache[require.resolve(src(p))] = { id: p, filename: p, loaded: true, exports: exp }; };
@@ -13,7 +13,8 @@ stub('managers/remote.js', { CFG: {}, paused: () => true });
 stub('managers/threat.js', { reserve: () => 1300 });
 stub('roles/hauler.js', { pickups: () => [] });
 let DK = null;
-stub('managers/walls.js', { DECAY_CAP: 10000, decaying: (r, taken) => (DK && !taken.has(DK.id) ? DK : null), repairJob: () => JOB, spend: (r, e) => { SPENT += e; } });
+let BF = false;
+stub('managers/walls.js', { DECAY_CAP: 10000, decaying: (r, taken) => (DK && !taken.has(DK.id) ? DK : null), repairJob: () => JOB, belowFloor: () => BF, spend: (r, e) => { SPENT += e; } });
 const B = require(src('roles/builder.js'));
 const home = { name: 'W46N8', storage: { pos: { x: 37, y: 31 }, store: { energy: 20000 } }, controller: { id: 'ctl' } };
 Game.rooms.W46N8 = home;
@@ -36,6 +37,10 @@ const cases = [
   ['a new site outranks the barrier chunk', () => {
     OBJ.s1 = { id: 's1', progress: 0, progressTotal: 300, structureType: 'extension', pos: { x: 33, y: 26, roomName: 'W46N8' } }; SITES = [OBJ.s1];
     const c = creep({ t: 'w2', tcap: 10010 }); c.build = t => { c.built = t.id; return 0; }; B.run(c); assert.strictEqual(c.built, 's1'); assert.ok(!c.memory.tcap); SITES = [];
+  }],
+  ['v5: barriers below the 10k floor outrank a road site', () => {
+    const r1 = { id: 'r1', progress: 0, progressTotal: 300, structureType: 'road', pos: { x: 33, y: 20, roomName: 'W46N8' } }; OBJ.r1 = r1; SITES = [r1]; BF = true;
+    const c = creep(); B.run(c); assert.strictEqual(c.memory.t, JOB.id); BF = false; SITES = [];
   }],
   ['a decaying gate outranks a site and stays sticky until DECAY_CAP; a 2nd builder leaves it to the first', () => {
     OBJ.g1 = { id: 'g1', hits: 1, hitsMax: 3e8, structureType: 'rampart', pos: { x: 25, y: 16, roomName: 'W46N8' } }; DK = OBJ.g1; SITES = [OBJ.s1];

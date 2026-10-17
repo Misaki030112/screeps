@@ -178,7 +178,7 @@ module.exports = { remoteRoadSite, pickSource, hop, run(c) {
   if (!c.memory.urgent) {
   // a new site (home OR remote road) outranks any repair. Live 00:05 swamp7: all 5 builders stuck on container 34,34 at 86% hits
   // (sticky clears at 90%, repairables pick at 80%) while W45N8 15,39/16,40/25,39 sat 0/1500 — line only checked home sites.
-  if (t && t.progress === undefined && (rc.sites(Game.rooms[c.memory.home] || room).length || remoteRoadSite())) t = null;
+  if (t && t.progress === undefined && !(c.memory.tcap && W.belowFloor(hm)) && (rc.sites(Game.rooms[c.memory.home] || room).length || remoteRoadSite())) t = null;
   // Stickiness must not skip a higher-priority site (patrol 10-14 22:40: tower 37,33 at 0 while extensions built).
   if (t && t.progress !== undefined) {
     const home = Game.rooms[c.memory.home] || room;
@@ -189,6 +189,10 @@ module.exports = { remoteRoadSite, pickSource, hop, run(c) {
     delete c.memory.tcap;
     const home = Game.rooms[c.memory.home] || room;
     const sites = rc.sites(home);
+    // v5: barriers under the 10k floor outrank sites (walls stood at 1 hit while 5 road sites kept all builders busy, live 02:43)
+    const fj = W.belowFloor(home) && W.repairJob(home, c.pos, new Set(Object.values(Game.creeps).filter(x => x !== c && x.memory.role === 'builder').map(x => x.memory.t)));
+    if (fj && !sites.some(s => s.structureType === STRUCTURE_WALL || s.structureType === STRUCTURE_RAMPART)) { t = Game.getObjectById(fj.id); c.memory.tcap = fj.cap; c.memory.t = t && t.id; }
+    if (!t) {
     // v2.2: trunk road sites (placed in parallel) wait while an economic remote road site is open
     const RDm = require('../managers/roads'), rs = sites.some(s => s.structureType === STRUCTURE_ROAD && RDm.isTrunkTile && RDm.isTrunkTile(s.pos.x, s.pos.y)) && remoteRoadSite();
     const pick = rs ? sites.filter(s => !(s.structureType === STRUCTURE_ROAD && RDm.isTrunkTile(s.pos.x, s.pos.y))) : sites;
@@ -212,6 +216,7 @@ module.exports = { remoteRoadSite, pickSource, hop, run(c) {
       }
     }
     c.memory.t = t ? t.id : undefined;
+    }
   }
   if (!t) {
     const home = Game.rooms[c.memory.home] || room;

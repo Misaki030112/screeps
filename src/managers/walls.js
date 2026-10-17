@@ -106,6 +106,10 @@ function fund(room) {
 // storage above FLOOR, whichever is larger (upgrading is held, so storage surplus is wall energy).
 const FLOOR = 5000;
 function budgetE(room) { const e = room.storage ? room.storage.store[RESOURCE_ENERGY] : 0; return Math.max(fund(room), e - FLOOR); }
+// v5 hit floor (Misaki 02:29 "no red 1-hit walls"): while any barrier is below FLOOR_HITS the repair job outranks road sites.
+const FLOOR_HITS = 10000;
+function belowFloor(room) { const P = plan().get(room.name); if (!defense(P) || phase(room) !== 'build') return false;
+  return barriers(room, P).some(s => s.hits < FLOOR_HITS); }
 function spend(room, e) { const m = room.memory.walls; if (m && m.fund !== undefined) m.fund = Math.max(0, m.fund - e); }
 function threat(room) { return require('./threat').holding(room.name) || playerCombat(room) || require('./home').alert(room); }
 // Storage energy the ctl ferry / upgrader extras must leave alone.
@@ -176,4 +180,4 @@ function noUpgrade(room) {
   const B = barriers(room, P); return !ringClosed(room, P) || !B.length || _.min(B.map(s => s.hits)) < HOLD_TO;
 }
 const HOLD_TO = 100000;
-module.exports = { FLOOR, budgetE, WALL_CAP, ringClosed, UP_SAFE, DECAY_FLOOR, DECAY_CAP, decaying, noUpgrade, START, NOVICE_END, phase, planned, STEPS, target, barriers, fund, spend, reserved, repairJob, wantBuilder, placeSites, lists };
+module.exports = { FLOOR_HITS, belowFloor, FLOOR, budgetE, WALL_CAP, ringClosed, UP_SAFE, DECAY_FLOOR, DECAY_CAP, decaying, noUpgrade, START, NOVICE_END, phase, planned, STEPS, target, barriers, fund, spend, reserved, repairJob, wantBuilder, placeSites, lists };
