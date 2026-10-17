@@ -1,6 +1,6 @@
 {
- "next_at": "2026-10-18T02:10:00+08:00",
- "reason": "01:50 patrol: FIX 9c5d4b3 tick 83708428. Builder body sized to energyAvailable (was full-cap 11W=2200e); after roads→walls lastFull kept resetting so starving never shrank body, sites+gates idle >1k ticks with roleTargets.builder=1 and 0 builders. Post-deploy builder83708401 spawning. W45N7 4-hauler trial FINAL: 9.87 e/t over 1677t (98.7% of 10 e/t source), cont 21,15 no overflow → KEEP Memory.remote.W45N7.haulers=4. swamp7 PASS: ticks/visit on W45N8 15,39/16,40/25,39 = 1.00 (was ~3.0). Gates all >=5k (47,16 at 5001 floor — builder inbound); storage ~24.7k fund ~22.3k; roads done walls build; errors 0 CPU ~5–11 bkt10k; remotes SAFE; alerts LOW BustJetter scouts dmg0 only. Next: verify builder builds trunk sites + lifts gates; 2nd upgrader dies to target 1; storage/fund trend.",
+ "next_at": "2026-10-18T02:40:00+08:00",
+ "reason": "02:12 patrol: 2 FIXES. (1) c4a8eb6 t=83708782 W45N8 paved rhauler 16C8M -> 24C12M (remote CFG rhE 1800, roadHauler max param): 16C8M cycle 85-100t = 8-9.4 e/t < 10 e/t source, cont 13,11 at 1891/2000 (R income 6.5 e/t measured); first 24C12M spawns as rhauler83707602 (ttl ~300 at 02:15) is replaced ~t83709050. (2) 316636d t=83708806 walls build phase: 2nd builder while fund>=10k & storage>=10k (1x 5W5C5M builder walking 35,24<->13-18,44, ~3 e/t, idle 87%; fund 23.3k storage 23.2k); builder83708806 11W11C11M spawning. Gate 6,28 at 4701 (<5k floor, >3k). Errors 0, CPU ~7.5 bkt 10k, remotes SAFE, alerts LOW BustJetter scouts only. Next: verify new 24C12M W45N8 rhauler spawned (no gap), cont 13,11 not overflowing; 2 builders active, build rate up, gate 6,28 >=5k; storage/fund trend; 2nd upgrader died (target 1).",
  "road_plan": {
   "doc": "docs/ROADS.md",
   "each_patrol": [
@@ -122,9 +122,9 @@
   ]
  },
  "last_deploy": {
-  "commit": "9c5d4b3",
-  "tick": 83708428,
-  "at": "2026-10-18 01:50 UTC+8"
+  "commit": "316636d",
+  "tick": 83708806,
+  "at": "2026-10-18 02:14 UTC+8"
  },
  "walls": {
   "started": 83707350,
@@ -132,6 +132,11 @@
   "fund_at_start": 20108,
   "check_each_patrol": "gates 6 ramparts first then with_gate trunks then 41 walls; SITE_CAP 2; no rampart decays at low hits; storage should not fall below ~5k after fund; terminal/extractor/labs stay off (RCL6_MINERALS) until Misaki decides",
   "decay_fix": "434a2c3: gate ramparts <5000 outrank sites (to 10k, 1 builder/gate); check each patrol no gate < 3000",
-  "check_note": "01:50 gates all>=5k (47,16=5001); builder gap fixed 9c5d4b3"
+  "check_note": "02:12 gates min 6,28=4701; 2nd builder 316636d (fund>=10k); fund 23.3k storage 23.2k"
+ },
+ "w45n8_rhauler": {
+  "deployed": "c4a8eb6",
+  "body": "24C12M 1800e (rhE)",
+  "check": "cont 13,11 < 1500 steady, R income -> ~10 e/t; revert = remove rhE from remote CFG"
  }
 }
