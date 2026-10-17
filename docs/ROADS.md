@@ -1,4 +1,26 @@
-# RCL6 road plan (Misaki 2026-10-17 17:40 UTC+8; W45N7 road dropped 17:47)
+# RCL6 road plan v2 (Misaki approved 2026-10-17 22:33 UTC+8; deployed a839e9f + fix c907aae)
+
+**v2 order = economic value** (tools/road_justify.py: Dijkstra on real terrain, 30-day cost = build + decay + wear + hauler time;
+traffic from creep_ticks 24h; maps out/roads_v2_W46N8.png, out/roads_v2_W45N8.png):
+
+| # | Phase | Tiles | Notes |
+|---|---|---|---|
+| 0 | core | 10 ext + link | done 21:50 |
+| 1 | haul: storage 38,30 → 48,15 (W45N8 route home leg) | 16 | 12 already road; new 39,24 40,23 47,16 48,15 (1.2k). 40,23 = RCL8 tower → detour 38,24/37,23 at RCL8 |
+| 2 | W45N8: 1,13 → 12,10 | 12 | rerouted onto the plain y9-11 band haulers walk (4,11 5,11 6,10 7,9 8,9 9,9 10,9); 0 new swamp (v1 had 4,10 5,9). 2,12 swamp already road. ~3.3k |
+| 3 | econ: 35,26 36,25 34,25 35,31 | 4 | unroaded home tiles >=300 hauler/queen steps/day; 35,26 = RCL8 link |
+| 4 | home: wall-gate trunks TR, S, W | 37 | 0 traffic, net negative economically; kept last by Misaki's decision |
+| 5 | done → walls | | |
+
+- Exit tiles (49,14 / W45N8 0,14) are NOT in the plan: createConstructionSite on room edges returns ERR_INVALID_TARGET (-7).
+- No swamp-free path from storage to W45N8 exists (swamp belt ~x33-44,y20-27); all 6 swamps on the route were already road.
+- Sites: BATCH 15 per room; replan every 50t, every 10t while a phase has no open sites. One-shot migrate (Memory.roads.v2):
+  v1 phase 'home' → 'haul', 0-progress trunk sites removed.
+- Builders: body cap 8W8C8M; build hold: 3rd at storage>=3000 & sites>=3, 4th at storage>=6000 & sites>=6.
+- After phase W45N8 completes (paved('W45N8')), W45N8 haulers → 1x 16C8M.
+
+---
+# (v1, superseded) RCL6 road plan (Misaki 2026-10-17 17:40 UTC+8; W45N7 road dropped 17:47)
 
 **17:47 decision:** only the short remote road (W45N8) is built. No W45N7 road phase; the W45N7-only home leg (45,18→49,21)
 is dropped (the shared leg 38,30→45,18 stays as part of the W45N8 route). W45N7 haulers stay 5× 8C8M. After W45N8 → `done` → walls.
