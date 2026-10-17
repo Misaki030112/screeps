@@ -18,8 +18,8 @@ const cases = [
   ['roads done -> bank phase, no hold', () => { roadsDone = true; try { assert.strictEqual(Wl.phase(room()), 'bank'); assert.strictEqual(Wl.noUpgrade(room()), false); } finally { roadsDone = false; } }],
 ];
 // spawn targets with a stubbed walls module
-let hold = true, ph = 'roads';
-stub('managers/walls.js', { noUpgrade: () => hold, phase: () => ph, wantBuilder: () => false, reserved: () => 0 });
+let hold = true, ph = 'roads', budget = 0;
+stub('managers/walls.js', { noUpgrade: () => hold, phase: () => ph, wantBuilder: () => ph === 'build', budgetE: () => budget, reserved: () => 0 });
 const P = { pos: { upgraders: [[29, 30], [30, 31], [31, 30]], controllerContainer: [30, 30], fillerContainerA: [35, 24], fillers: [], miners: [] }, raw: { stamps: {} }, any: {} };
 stub('utils/plan.js', { get: () => P, key: (x, y) => x * 50 + y });
 stub('roles/builder.js', { remoteRoadSite: () => null });
@@ -27,8 +27,11 @@ stub('utils/move.js', { to: () => true });
 stub('utils/roomcache.js', { all: () => [], at: () => null, get: () => ({ at: [] }), sites: () => [] });
 stub('utils/trace.js', { why: () => {} });
 const S = require(src('managers/spawn.js'));
-const T = (o) => { hold = o.hold; ph = o.ph || 'roads'; return S.targets(room({ storage: o.storage }), {}, 0, 900, o.sites); };
+const T = (o) => { hold = o.hold; ph = o.ph || 'roads'; budget = (o.storage || 1000) - 5000; return S.targets(room({ storage: o.storage }), {}, 0, 900, o.sites); };
 cases.push(
+  ['wall build phase, storage 39999: 5 builders', () => assert.strictEqual(T({ hold: true, ph: 'build', storage: 39999 }).builder, 5)],
+  ['wall build phase, storage 45000 (budget 40k): 6 builders', () => assert.strictEqual(T({ hold: true, ph: 'build', storage: 45000 }).builder, 6)],
+  ['wall build phase, no hold: no 6th', () => assert.strictEqual(T({ hold: false, ph: 'build', storage: 45000 }).builder, 2)],
   ['v2.1 hold + storage 5000 + 4 sites: 4 builders', () => assert.strictEqual(T({ hold: true, sites: 4, storage: 5000 }).builder, 4)],
   ['v2.1 hold + storage 8000 + 8 sites: 5 builders', () => assert.strictEqual(T({ hold: true, sites: 8, storage: 8000 }).builder, 5)],
   ['v2.1 hold + storage 4999 + 8 sites: 3 builders', () => assert.strictEqual(T({ hold: true, sites: 8, storage: 4999 }).builder, 3)],

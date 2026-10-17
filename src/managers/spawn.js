@@ -97,7 +97,9 @@ function targets(room, count, backlog, ctlEnergy, sites) {
       // while fund and storage >= 8k, 4 while >= 15k. Spawn steady-state busy ~52% (02:20 live), room for it.
       if (T.builder >= 2 && bp && W.noUpgrade(room) && f >= 8000 && se >= 8000) T.builder = (f >= 15000 && se >= 15000) ? 4 : 3;
       // 4x 11W builders still left storage rising 24.2k -> 30.2k in ~300t (03:05-03:28, ~+20 e/t, builders work ~25% of ticks): 5th at >= 25k
-      if (T.builder === 4 && bp && W.noUpgrade(room) && f >= 25000 && se >= 25000) T.builder = 5; } }
+      if (T.builder === 4 && bp && W.noUpgrade(room) && f >= 25000 && se >= 25000) T.builder = 5;
+      // 5 builders (36-55 WORK, ~45% of ticks repairing) still left storage +12..27 e/t, 40.9k -> 46.7k (patrol 05:10); 6th at >= 40k
+      if (T.builder === 5 && bp && W.noUpgrade(room) && f >= 40000 && se >= 40000) T.builder = 6; } }
   return T;
 }
 // Pre-spawn: a dying upgrader / home hauler / queen stops counting once its TTL is under spawn time + walk + margin,
