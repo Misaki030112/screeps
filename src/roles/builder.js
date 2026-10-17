@@ -76,7 +76,26 @@ function waitNear(c, t, P) {
     c.move(c.pos.getDirectionTo(x, y)); return;
   }
 }
-module.exports = { remoteRoadSite, run(c) {
+// Energy pick across the whole home room (patrol 10-17 21:50: builders only looked 12 tiles out, then waitNear'd the
+// link site at 30,11 while the ctl container held 1000 idle under the build hold; 3 builders crowded source A and
+// starved the home haulers). Hub stores (storage above reserve, ctl container/link in hold, filler A, drops/tombstones)
+// rank first; miner containers only when no hub store has energy, and then must keep >=200 for the haulers.
+function pickSource(c, home, Ph, ctlSrc, fx, fy) {
+  const reserve = require('../managers/threat').reserve(home.name);
+  const amt = s => s.store ? s.store[RESOURCE_ENERGY] : s.amount;
+  const hub = [home.storage, rc.at(home, fx, fy, STRUCTURE_CONTAINER)].concat(ctlSrc)
+    .filter(s => s && s.store[RESOURCE_ENERGY] >= 50 + (s === home.storage ? reserve : 0));
+  let loose = [];
+  if (typeof FIND_DROPPED_RESOURCES !== 'undefined') {
+    loose = home.find(FIND_DROPPED_RESOURCES).filter(r => r.resourceType === RESOURCE_ENERGY && r.amount >= 100)
+      .concat(home.find(FIND_TOMBSTONES).filter(t => t.store[RESOURCE_ENERGY] >= 100));
+  }
+  const score = s => Math.min(amt(s), c.store.getFreeCapacity() || 50) / (c.pos.getRangeTo(s) + 15);
+  let cands = hub.concat(loose);
+  if (!cands.length) cands = require('./hauler').pickups(home).filter(s => s.store[RESOURCE_ENERGY] >= c.store.getFreeCapacity() + 200);
+  return cands.length ? _.max(cands, score) : null;
+}
+module.exports = { remoteRoadSite, pickSource, run(c) {
   const room = c.room, P = plan.get(c.memory.home || room.name) || plan.get(room.name);
   if (!P) return;
   if (c.memory.working && c.store[RESOURCE_ENERGY] === 0) { c.memory.working = false; }
@@ -111,26 +130,24 @@ module.exports = { remoteRoadSite, run(c) {
       if (k && k.store[RESOURCE_ENERGY] >= c.store.getFreeCapacity() + 400) { if (move.to(c, k.pos.x, k.pos.y, 1)) c.withdraw(k, RESOURCE_ENERGY); return; }
     }
     let src = c.memory.src && Game.getObjectById(c.memory.src);
-    if (!src || src.store[RESOURCE_ENERGY] < 50) {
+    if (!src || (src.store ? src.store[RESOURCE_ENERGY] : src.amount) < 50) {
       const home = Game.rooms[c.memory.home] || room;
       const Ph = plan.get(home.name) || P;
-      // Prefer hub stores (storage / filler A); source containers next. NEVER the controller container —
-      // haulers feed ctl for upgraders; builders sipping it kept ctlEma ~150 and pinned us to 1x8W (patrol 10-13 18:40).
+      // Hub stores first (pickSource); ctl container only under the build hold — otherwise haulers feed it for upgraders
+      // (builders sipping it kept ctlEma ~150 and pinned us to 1x8W, patrol 10-13 18:40).
       const [fx, fy] = Ph.pos.fillerContainerA;
       // build hold (walls.noUpgrade): nobody upgrades, so the ctl container / ctl link leftovers are builder energy
       const noUp = require('../managers/walls').noUpgrade(home), Pc = Ph.pos.controllerContainer, Pl = Ph.pos.controllerLink;
       const ctlSrc = noUp ? [rc.at(home, Pc[0], Pc[1], STRUCTURE_CONTAINER), Pl && rc.at(home, Pl[0], Pl[1], STRUCTURE_LINK)] : [];
-      const all = [home.storage, rc.at(home, fx, fy, STRUCTURE_CONTAINER)].concat(ctlSrc, require('./hauler').pickups(home))
-        .filter(s => s && s.store[RESOURCE_ENERGY] >= 50 + (s === home.storage ? require('../managers/threat').reserve(home.name) : 0)); // 50: was 100, left builders no_task while sites existed
-      const tw = c.memory.t && Game.getObjectById(c.memory.t);
-      let cands = all.filter(s => c.pos.getRangeTo(s) <= 12);
-      if (!cands.length && tw) { waitNear(c, tw, Ph); trace.why(c, 'u'); return; } // starved, not no_task
-      if (!cands.length) cands = all;
-      src = cands.length ? _.max(cands, s => s.store[RESOURCE_ENERGY] / (c.pos.getRangeTo(s) + 15)) : null;
+      src = pickSource(c, home, Ph, ctlSrc, fx, fy);
       c.memory.src = src ? src.id : undefined;
-      if (!src) { trace.why(c, 'u'); return; }
+      if (!src) {
+        if (c.store[RESOURCE_ENERGY] > 0) { c.memory.working = true; return; } // build with what we carry
+        const tw = c.memory.t && Game.getObjectById(c.memory.t);
+        if (tw) waitNear(c, tw, Ph); trace.why(c, 'u'); return; // no energy anywhere: starved, not no_task
+      }
     }
-    if (move.to(c, src.pos.x, src.pos.y, 1)) { c.withdraw(src, RESOURCE_ENERGY); delete c.memory.src; }
+    if (move.to(c, src.pos.x, src.pos.y, 1)) { (src.store ? c.withdraw(src, RESOURCE_ENERGY) : c.pickup(src)); delete c.memory.src; }
     return;
   }
   let t = c.memory.t && Game.getObjectById(c.memory.t);
