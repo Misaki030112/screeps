@@ -1,6 +1,6 @@
 {
- "next_at": "2026-10-18T05:10:00+08:00",
- "reason": "04:50 patrol deployed 6b939c1 (tick 83711068): storage-era builder floor ignores starving E. After 0d91278, starving=true (lastFull 83710596, 5 builders drain extensions) set E=avail so Math.min(E, 0.7*cap) collapsed the floor — live builders 11W/5W/3W/11W/6W (36 of 55 WORK); storage still +12.2 e/t 37.3k→40.9k; fund 16.8k. Barriers 51 min 18.5k med 23.7k step 30k (up from min 8.7k med 20.4k); work share ~42% (>=30% ok); distinct targets ok. Remotes SAFE, W45N7 cont 48, W45N8 cont 360; flagged core roads present. Errors 0 CPU~7.6 bkt10k. Next: first replacement builder >=8W (ideally 11W; tiny TTLs ~460/620/890); storage flattens/falls; barrier median →30k; if still +e/t after 2×11W replace, consider travel (west ring swamp) not body.",
+ "next_at": "2026-10-18T05:30:00+08:00",
+ "reason": "05:10 patrol deployed 966c81c (tick 83711310): 6th wall builder while walls budget and storage >= 40k. Storage 40.9k (04:53) -> 46.7k (05:09, tick 83711279), ~+27 e/t over 211t: barriers reached the 30k step (51, min 28.6k med 30.4k, 4 under 30k) so builders went no_task (idle 1h no_task 13-37%) and 5 builders hold only 36 of 55 WORK (11/5/3/11/6W; no replacement spawned yet since 6b939c1). Step moves to 100k next (~35.7k energy for 51 barriers). Errors 0 CPU ~7.6 bkt10k; remotes SAFE; alerts LOW only. Next: 6th builder spawned at >=8W (ideally 11W); replacement builders >=8W; storage flattens/falls; barrier step 100k progress; spawn busy and CPU stay ok with 6 builders.",
  "road_plan": {
   "doc": "docs/ROADS.md",
   "each_patrol": [
@@ -124,9 +124,9 @@
   ]
  },
  "last_deploy": {
-  "commit": "6b939c1",
-  "tick": 83711068,
-  "at": "2026-10-18 04:53 UTC+8"
+  "commit": "966c81c",
+  "tick": 83711310,
+  "at": "2026-10-18 05:12 UTC+8"
  },
  "walls": {
   "started": 83707350,
@@ -134,7 +134,7 @@
   "fund_at_start": 20108,
   "check_each_patrol": "gates 6 ramparts first then with_gate trunks then 41 walls; SITE_CAP 2; no rampart decays at low hits; storage should not fall below ~5k after fund; terminal/extractor/labs stay off (RCL6_MINERALS) until Misaki decides",
   "decay_fix": "434a2c3: gate ramparts <5000 outrank sites (to 10k, 1 builder/gate); check each patrol no gate < 3000",
-  "check_note": "04:50: phase build why=bank fund 16.8k storage ~40.5k; barriers 51 min 18541 med 23701 step 30k; under10k=0 under20k=3 under30k=29; gates lowest ramparts 25,16 / 20,44 / 47,17 ~18.5-19.6k; noUpgrade held; RCL6 minerals still pending approval"
+  "check_note": "05:10: barriers 51 min 28.6k med 30.4k max 302k, 4 under 30k -> step 100k next; storage 46.7k; noUpgrade held (ttd 117.6k); RCL6 minerals still pending approval"
  },
  "w45n8_rhauler": {
   "deployed": "c4a8eb6",
@@ -155,5 +155,11 @@
   "fix": "6b939c1",
   "check": "new builders >=8W even while starving (lastFull>300t); storage not rising; revert = Math.min(E, ...) in spawn.js bodyEnergy",
   "live_at_deploy": "11W/5W/3W/11W/6W totalW=36; starving=true lastFull=83710596"
+ },
+ "builder_six": {
+  "deployed": "966c81c",
+  "rule": "T.builder 5->6 when walls build phase, noUpgrade, budgetE>=40k and storage>=40k",
+  "check": "storage stops rising (was +12..27 e/t); builder w share >=30%; no congestion at storage/hub; CPU <=~9; spawn util ok",
+  "revert": "drop the T.builder===5 -> 6 line in src/managers/spawn.js targets"
  }
 }
