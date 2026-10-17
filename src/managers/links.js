@@ -15,10 +15,11 @@ function roles(room) {
 }
 const e = l => l.store[RESOURCE_ENERGY];
 function ctlLinkLow(room) { const { hub, ctl } = roles(room); return !!(hub && ctl && e(ctl) < CTL_LOW); }
-function target(R) { return (R.ctl && e(R.ctl) < CTL_LOW && R.ctl) || R.fillers.filter(l => e(l) < 400).sort((a, b) => e(a) - e(b))[0] || null; }
+function target(R, room) { const noUp = room && require('./walls').noUpgrade(room);
+  return (!noUp && R.ctl && e(R.ctl) < CTL_LOW && R.ctl) || R.fillers.filter(l => e(l) < 400).sort((a, b) => e(a) - e(b))[0] || null; }
 module.exports = { CTL_LOW, SEND, roles, ctlLinkLow, run(room) {
   if (Game.time % 3) return;
   const R = roles(room); if (R.links.length < 2) return;
-  for (const s of R.sources) { if (s.cooldown || e(s) < SEND) continue; const t = target(R) || R.hub; if (t && t !== s) s.transferEnergy(t); }
-  if (R.hub && !R.hub.cooldown && e(R.hub) >= SEND) { const t = target(R); if (t) R.hub.transferEnergy(t); }
+  for (const s of R.sources) { if (s.cooldown || e(s) < SEND) continue; const t = target(R, room) || R.hub; if (t && t !== s) s.transferEnergy(t); }
+  if (R.hub && !R.hub.cooldown && e(R.hub) >= SEND) { const t = target(R, room); if (t) R.hub.transferEnergy(t); }
 } };

@@ -128,4 +128,14 @@ function placeSites(room, budget) {
   }
   return log;
 }
-module.exports = { START, NOVICE_END, phase, planned, STEPS, target, barriers, fund, spend, reserved, repairJob, wantBuilder, placeSites, lists };
+// Misaki 2026-10-17 21:00 "先停止升级，全力基建": while the road plan runs (phase 'roads') spawn NO upgrader and send no
+// energy to the controller. Safety: ticksToDowngrade < UP_SAFE -> 1 minimal upgrader again. Memory.roads.upgrade=1 overrides.
+const UP_SAFE = 20000;
+function noUpgrade(room) {
+  const c = room && room.controller;
+  if (!c || !c.my || c.level < 6 || c.level >= 8) return false;
+  if ((Memory.roads || {}).upgrade) return false;
+  if ((c.ticksToDowngrade || 0) < UP_SAFE) return false;
+  return phase(room) === 'roads';
+}
+module.exports = { UP_SAFE, noUpgrade, START, NOVICE_END, phase, planned, STEPS, target, barriers, fund, spend, reserved, repairJob, wantBuilder, placeSites, lists };

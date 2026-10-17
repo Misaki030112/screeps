@@ -54,3 +54,14 @@ energy not starved (storage >= 1300) · errors 0 · CPU · walls.phase === 'road
 - Added tests/roads_transition.js (RCL5->6 sim: gate, init, core->home->W45N8->done, batch, no vision, paused, off, RCL drop).
 - Residual: home trunk tile 40,23 is under the RCL8 tower plan (road must be removed before that tower, RCL8 only).
 - Changed (patrol 10-17 19:40): in walls.phase 'roads' the held upgrader is spawned 6W1C1M (700e, ~6/t) instead of 12W (spawn.bodyEnergy buildMode), so builders get the spare ~6/t. Measured before: upgrade 13.9/t, build 5.9/t, storage -4.2/t. Full size returns automatically when roads are done.
+
+## Build hold — no upgrading during the road plan (Misaki 2026-10-17 21:00 "先停止升级，全力基建")
+- `walls.noUpgrade(room)`: true while RCL6–7, `walls.phase === 'roads'` (core → home → W45N8), `ticksToDowngrade >= 20000`
+  (`walls.UP_SAFE`) and `Memory.roads.upgrade` not set. Console override `Memory.roads.upgrade = 1` restores the 1×700e upgrader.
+- While true: spawn target upgrader 0; the live upgrader spends what it carries, then recycles at the spawn; haulers skip the
+  controller container (feed storage); queen does not ferry storage → controller/hub link; links do not send to the controller
+  link; builders may draw from the controller container / link leftovers.
+- Safety: timer < 20000 → hold off automatically → the 1 minimal (700e 6W1C1M) upgrader spawns until the timer is back up.
+- Builders: 2 normally (sites > 3); a 3rd while the hold is on, ≥ 3 sites open and storage ≥ 3000.
+- After `Memory.roads.phase === 'done'`: walls phase `bank` → 1 upgrader at normal size until storage reaches 20k
+  (walls start), so storage accumulates; then normal supply-follows-demand upgraders. Tests: `tests/build_hold.js`.

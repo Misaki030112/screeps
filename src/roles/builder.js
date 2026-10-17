@@ -117,7 +117,10 @@ module.exports = { remoteRoadSite, run(c) {
       // Prefer hub stores (storage / filler A); source containers next. NEVER the controller container —
       // haulers feed ctl for upgraders; builders sipping it kept ctlEma ~150 and pinned us to 1x8W (patrol 10-13 18:40).
       const [fx, fy] = Ph.pos.fillerContainerA;
-      const all = [home.storage, rc.at(home, fx, fy, STRUCTURE_CONTAINER)].concat(require('./hauler').pickups(home))
+      // build hold (walls.noUpgrade): nobody upgrades, so the ctl container / ctl link leftovers are builder energy
+      const noUp = require('../managers/walls').noUpgrade(home), Pc = Ph.pos.controllerContainer, Pl = Ph.pos.controllerLink;
+      const ctlSrc = noUp ? [rc.at(home, Pc[0], Pc[1], STRUCTURE_CONTAINER), Pl && rc.at(home, Pl[0], Pl[1], STRUCTURE_LINK)] : [];
+      const all = [home.storage, rc.at(home, fx, fy, STRUCTURE_CONTAINER)].concat(ctlSrc, require('./hauler').pickups(home))
         .filter(s => s && s.store[RESOURCE_ENERGY] >= 50 + (s === home.storage ? require('../managers/threat').reserve(home.name) : 0)); // 50: was 100, left builders no_task while sites existed
       const tw = c.memory.t && Game.getObjectById(c.memory.t);
       let cands = all.filter(s => c.pos.getRangeTo(s) <= 12);

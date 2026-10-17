@@ -35,7 +35,7 @@ stub('managers/threat.js', {
 });
 stub('managers/home.js', { on: () => false, active: () => false, wantGuards: () => 0 });
 stub('managers/remote.js', { CFG: {}, paused: () => false, mem: () => ({}) });
-stub('managers/walls.js', { phase: () => 'off', reserved: () => 0 });
+stub('managers/walls.js', { phase: () => 'off', noUpgrade: () => false, reserved: () => 0 });
 stub('roles/hauler.js', { pickups: () => [], ctlLow: () => false, handoff: () => false });
 stub('roles/queen.js', { storageFloor: () => 1300, fillRoute: () => false });
 

@@ -63,6 +63,7 @@ function storageFloor(room) {
 // walking to the controller container; links.js forwards hub -> controller link.
 function standby(c, room, P) {
   const H = require('./hauler'), Lk = require('../managers/links');
+  if (require('../managers/walls').noUpgrade(room)) return false; // build hold: no storage -> controller ferry
   const hub = Lk.ctlLinkLow(room) && Lk.roles(room).hub;
   const toHub = hub && hub.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
   if (!toHub && !H.ctlLow(room, P)) return false;

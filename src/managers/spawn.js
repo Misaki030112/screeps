@@ -62,6 +62,9 @@ function targets(room, count, backlog, ctlEnergy, sites) {
   T.upgrader = rcl >= 8 ? 1 : Math.min(P.pos.upgraders.length, (sites ? 1 : 2) + (allowExtra ? extra : 0));
   // RCL6+ wall banking (managers/walls.js): one upgrader until storage reaches the wall start (20k), then the latch releases it.
   if (rcl >= 6 && rcl < 8 && ['bank', 'roads'].includes(require('./walls').phase(room))) T.upgrader = Math.min(T.upgrader, 1);
+  // Build hold (walls.noUpgrade): 0 upgraders during the road plan; falls back to the 1 minimal (700e) upgrader above
+  // when ticksToDowngrade < walls.UP_SAFE. After roads: 'bank' keeps 1 upgrader until storage 20k (storage accumulates).
+  if (require('./walls').noUpgrade(room)) T.upgrader = 0;
   // RCL4 extension push: 2 builders need ~40 e/t but net income ~22 -> spawn/ctl starve, builders no_task ~28%,
   // haulers wait on empty pickups (patrol 10-13 18:40). One fed builder finishes sites faster than two hungry ones.
   // Second builder only after cap>=1300 (20 ext, CLAIM2-ready) when the room can afford the extra demand.
@@ -74,6 +77,8 @@ function targets(room, count, backlog, ctlEnergy, sites) {
   if (!T.builder && st && require('../roles/builder').remoteRoadSite()) T.builder = 1;
   // RCL6 road plan (docs/ROADS.md): remote road phases get a 2nd builder once storage holds a cushion; route roads < 40% get one.
   if (st && rcl >= 6) { const RD = require('./roads');
+    // build hold: the upgrader's ~6/t goes to builders; a 3rd builder once storage holds a cushion and >=3 sites are open
+    if (T.builder === 2 && sites >= 3 && require('./walls').noUpgrade(room) && room.storage.store[RESOURCE_ENERGY] >= 3000) T.builder = 3;
     if (T.builder === 1 && !sites && /^W45N/.test(RD.phase()) && room.storage.store[RESOURCE_ENERGY] >= 5000 && room.energyCapacityAvailable >= 1300) T.builder = 2;
     if (!T.builder && RD.repairTarget(0.4)) T.builder = 1; }
   return T;

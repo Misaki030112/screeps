@@ -100,7 +100,8 @@ module.exports = { pickups, handoff, ctlLow, run(c) {
     if (queens && fc && fc.store[RESOURCE_ENERGY] < 400 && fc.store.getFreeCapacity(RESOURCE_ENERGY) >= 100) opts.push(fc); // queen's fixed refill
     const tw = rc.all(room, STRUCTURE_TOWER).filter(t => t.store[RESOURCE_ENERGY] < 600);
     if (!queens) opts.push(...tw);
-    const cc = rc.at(room, cx, cy, STRUCTURE_CONTAINER); if (cc && cc.store.getFreeCapacity(RESOURCE_ENERGY) >= 100) { if (cc.store[RESOURCE_ENERGY] < CTL_LOW) opts.unshift(cc); else opts.push(cc); }
+    const noUp = require('../managers/walls').noUpgrade(room) && room.storage; // build hold: feed storage, not the controller
+    const cc = !noUp && rc.at(room, cx, cy, STRUCTURE_CONTAINER); if (cc && cc.store.getFreeCapacity(RESOURCE_ENERGY) >= 100) { if (cc.store[RESOURCE_ENERGY] < CTL_LOW) opts.unshift(cc); else opts.push(cc); }
     const st = room.storage; if (st && st.store.getFreeCapacity() > 10000) opts.push(st);
     if (fc && fc.store.getFreeCapacity(RESOURCE_ENERGY) >= 200) opts.push(fc);
     // creeps that need energy: queen first (keeps the fill loop short), then builders. Pre-storage only: with storage both

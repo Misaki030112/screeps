@@ -48,3 +48,6 @@ the code does on the level-up night matters more than another model pass; the RC
 Walls are now LOW priority. After the core build the road plan runs first (docs/ROADS.md: home trunks → W45N8 → done; W45N7 road dropped 17:47);
 `walls.phase()` returns `'roads'` until `Memory.roads.phase === 'done'`, so the R4 banking rule ("one upgrader until storage 20k") and
 barrier sites start only after the roads. Emergency wall starts are unchanged. Watchpoint 5 above now applies after the road plan.
+
+**Build hold (2026-10-17 21:00):** during the road plan no upgrader at all (`walls.noUpgrade`, docs/ROADS.md), safety upgrader
+if `ticksToDowngrade < 20000`. After roads the R4 banking rule (1 upgrader until storage 20k) applies unchanged.

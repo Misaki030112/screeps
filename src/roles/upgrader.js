@@ -13,6 +13,13 @@ module.exports = { run(c) {
     const taken = new Set(_.filter(Game.creeps, x => x.memory.role === 'upgrader' && x.memory.spot).map(x => x.memory.spot.join()));
     c.memory.spot = P.pos.upgraders.find(s => !taken.has(s.join())) || P.pos.upgraders[P.pos.upgraders.length - 1];
   }
+  // build hold (walls.noUpgrade): spend what it carries, then recycle at the spawn (body energy back) instead of eating feed
+  if (require('../managers/walls').noUpgrade(room)) {
+    if (c.store[RESOURCE_ENERGY] > 0 && c.pos.inRangeTo(ctl, 3)) { c.upgradeController(ctl); return; }
+    const sp = _.filter(Game.spawns, s => s.pos.roomName === room.name)[0];
+    if (sp) { if (c.pos.isNearTo(sp)) sp.recycleCreep(c); else move.to(c, sp.pos.x, sp.pos.y, 1); }
+    return;
+  }
   const [x, y] = c.memory.spot;
   if (!move.to(c, x, y, 0)) {
     if (c.store[RESOURCE_ENERGY] > 0 && c.pos.inRangeTo(room.controller, 3)) c.upgradeController(room.controller);
