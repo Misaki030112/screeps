@@ -209,7 +209,7 @@ module.exports = { remoteRoadSite, pickSource, hop, run(c) {
       const remoteSite = remoteRoadSite();
       if (remoteSite) t = remoteSite;
       else {
-        const hurt = repairables(home, P);
+        const hurt = repairables(home, P).filter(s => !held.has(s.id)); // one builder per road/container (live 03:55: all 5 on container 38,32)
         t = hurt.length ? _.min(hurt, s => s.hits / s.hitsMax) : null;
         if (!t) t = require('../managers/roads').repairTarget(); // remote route roads < 50% (docs/ROADS.md)
         const job = !t && require('../managers/walls').repairJob(home, c.pos, new Set(Object.values(Game.creeps).filter(x => x !== c && x.memory.role === 'builder').map(x => x.memory.t))); // v4 barrier hits step (lowest first, +10k chunks)

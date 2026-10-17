@@ -80,10 +80,15 @@ function barriers(room, P) {
   for (const [x, y] of L.walls) { const s = rc.at(room, x, y, STRUCTURE_WALL); if (s) out.push(s); }
   return out;
 }
+// v5 rampart slack: ramparts decay 300/100t, so a gate topped up to exactly the step sank back under it ~100t later and the band
+// pulled every builder across the map to it (live 03:40-03:55: 3 builders 6,28 -> 20,44 -> 26,15 -> 47,17 in lockstep, work 11% of
+// ticks). A rampart counts as at-step within SLACK below it and is topped up to step + SLACK (~3300t of decay between top-ups).
+const SLACK = 5000;
+const eff = s => s.structureType === STRUCTURE_RAMPART ? s.hits + SLACK : s.hits;
 function target(room, B) { // current step: the lowest step not yet reached by every built barrier
   const st = STEPS[Math.min(8, room.controller.level)] || [];
   if (!st.length || !B.length) return 0;
-  const low = _.min(B.map(s => s.hits));
+  const low = _.min(B.map(eff));
   return st.find(h => low < h) || st[st.length - 1];
 }
 // Budget (policy.budget): a fund in room.memory.walls.fund. The 20k bank that latched the phase is the opening fund (supply-follows-
@@ -109,7 +114,7 @@ function budgetE(room) { const e = room.storage ? room.storage.store[RESOURCE_EN
 // v5 hit floor (Misaki 02:29 "no red 1-hit walls"): while any barrier is below FLOOR_HITS the repair job outranks road sites.
 const FLOOR_HITS = 10000;
 function belowFloor(room) { const P = plan().get(room.name); if (!defense(P) || phase(room) !== 'build') return false;
-  return barriers(room, P).some(s => s.hits < FLOOR_HITS); }
+  return barriers(room, P).some(s => eff(s) < FLOOR_HITS); }
 function spend(room, e) { const m = room.memory.walls; if (m && m.fund !== undefined) m.fund = Math.max(0, m.fund - e); }
 function threat(room) { return require('./threat').holding(room.name) || playerCombat(room) || require('./home').alert(room); }
 // Storage energy the ctl ferry / upgrader extras must leave alone.
@@ -123,11 +128,13 @@ function repairJob(room, pos, taken) {
   if (!defense(P) || phase(room) !== 'build') return null;
   if (!threat(room) && budgetE(room) < 100) return null;
   const B = barriers(room, P), tgt = target(room, B);
-  const low = B.filter(s => s.hits < tgt); if (!low.length) return null;
-  const m = _.min(low.map(x => x.hits)), band = low.filter(x => x.hits < m + CHUNK);
-  const free = taken ? band.filter(x => !taken.has(x.id)) : band, pool = free.length ? free : band;
-  const s = pos && pos.getRangeTo ? _.min(pool, x => (x.pos && x.pos.roomName === pos.roomName ? pos.getRangeTo(x) : 99) * 1e7 + x.hits) : _.min(pool, x => x.hits);
-  return { id: s.id, cap: Math.min(tgt, s.hits + CHUNK) };
+  const low = B.filter(s => eff(s) < tgt); if (!low.length) return null;
+  const m = _.min(low.map(eff)), band = low.filter(x => eff(x) < m + CHUNK);
+  // all of the band held -> next free barrier below the step before doubling up (5 builders on one 1-tick top-up walked in a pack)
+  const fr = a => taken ? a.filter(x => !taken.has(x.id)) : a, free = fr(band), pool = free.length ? free : fr(low).length ? fr(low) : band;
+  const s = pos && pos.getRangeTo ? _.min(pool, x => (x.pos && x.pos.roomName === pos.roomName ? pos.getRangeTo(x) : 99) * 1e7 + eff(x)) : _.min(pool, eff);
+  const top = s.structureType === STRUCTURE_RAMPART ? tgt + SLACK : tgt;
+  return { id: s.id, cap: Math.min(top, s.hits + CHUNK) };
 }
 // Ramparts are built at 1 hit and decay 300 / 100t. While barrier sites keep builders busy (sites outrank repair) repairJob never
 // runs, so gates rot: live 00:37-01:09 TL gate 25,16 built + decayed 3x, 47,17 4.2k->3.0k unrepaired. A gate below DECAY_FLOOR
@@ -177,7 +184,7 @@ function noUpgrade(room) {
   // builders) until every barrier stands at >= HOLD_TO hits; then normal upgrading resumes.
   if (ph !== 'build') return false;
   const P = plan().get(room.name); if (!defense(P)) return false;
-  const B = barriers(room, P); return !ringClosed(room, P) || !B.length || _.min(B.map(s => s.hits)) < HOLD_TO;
+  const B = barriers(room, P); return !ringClosed(room, P) || !B.length || _.min(B.map(eff)) < HOLD_TO;
 }
 const HOLD_TO = 100000;
-module.exports = { FLOOR_HITS, belowFloor, FLOOR, budgetE, WALL_CAP, ringClosed, UP_SAFE, DECAY_FLOOR, DECAY_CAP, decaying, noUpgrade, START, NOVICE_END, phase, planned, STEPS, target, barriers, fund, spend, reserved, repairJob, wantBuilder, placeSites, lists };
+module.exports = { SLACK, FLOOR_HITS, belowFloor, FLOOR, budgetE, WALL_CAP, ringClosed, UP_SAFE, DECAY_FLOOR, DECAY_CAP, decaying, noUpgrade, START, NOVICE_END, phase, planned, STEPS, target, barriers, fund, spend, reserved, repairJob, wantBuilder, placeSites, lists };

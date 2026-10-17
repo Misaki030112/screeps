@@ -74,6 +74,16 @@ const cases = [
     assert.ok(W.repairJob(room({ mem: m, storage: 9000 })), 'v5: storage above 5k floor is wall budget');
     HOLD = true; assert.ok(W.repairJob(room({ mem: m, storage: 5000 }))); assert.ok(W.wantBuilder(room({ mem: m, storage: 5000 }))); HOLD = false;
   }],
+  ['v5 rampart slack: decayed gate within SLACK keeps the step; topped to step+SLACK; taken band -> next free low', () => {
+    OBJ = {}; const m = { walls: { started: 1 } }; wall('g', 44, 27, 9741, 'rampart'); wall('a', 26, 7, 12000); wall('b', 27, 7, 25000);
+    const r = room({ mem: m }); assert.strictEqual(W.target(r, W.barriers(r, P)), 30000, 'gate 9741 counts as at the 10k step');
+    assert.strictEqual(W.belowFloor(r), false);
+    OBJ.a.hits = 31000; OBJ.b.hits = 31000; OBJ.g.hits = 26000; assert.strictEqual(W.target(r, W.barriers(r, P)), 100000, 'gate 26k (eff 31k) has reached 30k');
+    OBJ.g.hits = 24000; assert.deepStrictEqual(W.repairJob(r), { id: 'g', cap: 34000 }, 'rampart topped to min(step+SLACK, +CHUNK)');
+    OBJ.a.hits = 20000; OBJ.b.hits = 28500; OBJ.g.hits = 31000;
+    assert.strictEqual(W.repairJob(r, null, new Set(['a'])).id, 'b', 'band (a) held -> next free below step, not a pile-up');
+    assert.strictEqual(W.repairJob(r, null, new Set(['a', 'b'])).id, 'a', 'nothing free -> lowest');
+    OBJ = {}; }],
   ['all barriers at last step -> no job', () => { OBJ = {}; wall('a', 26, 7, 300000); assert.strictEqual(W.repairJob(room()), null); }],
 ];
 let fail = 0; const log = (...a) => process.stdout.write(a.join(' ') + '\n');
