@@ -23,10 +23,10 @@ const cases = [
     assert.strictEqual(W.decaying(r, new Set(['g3', 'g2'])), null); assert.strictEqual(W.decaying(room({ mem: {} })), null, 'off before build phase');
     OBJ = {};
   }],
-  ['plan: 6 gates, 41 walls, order gates -> trunk roads -> walls', () => {
+  ['plan: 6 gates, 41 walls, order gates -> walls -> roads (v5 enclose first)', () => {
     const L = W.lists(P); assert.strictEqual(L.gates.length, 6); assert.strictEqual(L.walls.length, 41);
     const kinds = L.order.map(o => o[1]); assert.deepStrictEqual(kinds.slice(0, 6), Array(6).fill('rampart'));
-    assert.strictEqual(kinds.lastIndexOf('road') < kinds.indexOf('constructedWall'), true);
+    assert.strictEqual(kinds.indexOf('road') > kinds.lastIndexOf('constructedWall'), true);
     assert.deepStrictEqual(L.order[0][0], [47, 16]);
     assert.ok(!L.order.some(([[x, y], t]) => t === 'road' && x === 41 && y === 23), 'on_demand BR trunk not placed');
     assert.ok(!L.order.some(([[x, y], t]) => t === 'road' && x === 30 && y === 30), 'no trunk road on the ctl container 30,30 (layout destroys it)');
@@ -37,11 +37,26 @@ const cases = [
     assert.ok(!W.planned(P, 26, 7, 'road')); assert.ok(!W.planned(P, 35, 28, 'rampart'));
   }],
   ['phase off (RCL5): no sites, no job, no reserve', () => { const r = room({ rcl: 5, mem: {} }); assert.deepStrictEqual(W.placeSites(r, 5), []); assert.strictEqual(W.repairJob(r), null); assert.strictEqual(W.reserved(r), 0); }],
-  ['build: at most 2 barrier sites, gates first', () => { OBJ = {}; SITES = []; const r = room(); W.placeSites(r, 5); assert.deepStrictEqual(r.made, ['rampart 47,16', 'rampart 47,17']); }],
-  ['build: open barrier sites count against the cap', () => { OBJ = {}; SITES = [{ structureType: 'rampart', pos: { x: 47, y: 16 } }]; const r = room(); W.placeSites(r, 5); assert.strictEqual(r.made.length, 1); SITES = []; }],
+  ['build v5: 2 gate sites + 15 wall sites (own cap), no road before ring closed', () => { OBJ = {}; SITES = []; const r = room(); W.placeSites(r, 5);
+    assert.deepStrictEqual(r.made.slice(0, 3), ['rampart 47,16', 'rampart 47,17', 'constructedWall 26,7']); assert.strictEqual(r.made.length, 17); assert.ok(!r.made.some(m => m.startsWith('road')));
+    const r0 = room(); W.placeSites(r0, 0); assert.strictEqual(r0.made.length, 15, 'walls placed even with layout budget 0'); }],
+  ['build: open barrier sites count against the caps', () => { OBJ = {}; SITES = [{ structureType: 'rampart', pos: { x: 47, y: 16 } }, { structureType: 'constructedWall', pos: { x: 26, y: 7 } }]; const r = room(); W.placeSites(r, 5); assert.strictEqual(r.made.length, 1 + 14); SITES = []; }],
+  ['ring closed -> spur roads placed after barriers', () => { OBJ = {}; SITES = []; const L = W.lists(P); let i = 0;
+    for (const [x, y] of L.gates) wall('g' + i++, x, y, 20000, 'rampart'); for (const [x, y] of L.walls) wall('w' + i++, x, y, 1);
+    const r = room(); assert.ok(W.ringClosed(r, P)); W.placeSites(r, 5); assert.ok(r.made.length > 0 && r.made.every(m => m.startsWith('road'))); OBJ = {}; }],
+  ['v5 hold: no upgrading in wall phase until ring closed and all >= 100k', () => { OBJ = {}; global.Memory = global.Memory || {};
+    const r = room(); r.controller = { level: 6, my: true, ticksToDowngrade: 100000 }; assert.strictEqual(W.noUpgrade(r), true, 'ring open');
+    const L = W.lists(P); let i = 0; for (const [x, y] of L.gates) wall('g' + i++, x, y, 100000, 'rampart'); for (const [x, y] of L.walls) wall('w' + i++, x, y, 100000);
+    assert.strictEqual(W.noUpgrade(r), false, 'all 100k -> upgrade'); OBJ.w10.hits = 5; assert.strictEqual(W.noUpgrade(r), true);
+    r.controller.ticksToDowngrade = 10000; assert.strictEqual(W.noUpgrade(r), false, 'downgrade safety'); OBJ = {}; }],
+  ['repair job v5: nearest in lowest band, skips taken', () => { OBJ = {}; const m = { walls: { started: 1 } };
+    const pos = { roomName: 'W46N8', getRangeTo: o => Math.max(Math.abs(o.x - 6), Math.abs(o.y - 28)) };
+    for (const o of [wall('n', 26, 7, 100), wall('w', 6, 24, 500), wall('x', 6, 25, 15000)]) o.pos = { roomName: 'W46N8' };
+    assert.strictEqual(W.repairJob(room({ mem: m }), pos).id, 'w', 'near west wall in band beats far NW lowest');
+    assert.strictEqual(W.repairJob(room({ mem: m }), pos, new Set(['w'])).id, 'n'); assert.strictEqual(W.repairJob(room({ mem: m }), pos).cap, 10000); OBJ = {}; }],
   ['step target: lowest step not reached by all; even rise', () => {
     OBJ = {}; wall('a', 26, 7, 120000); wall('b', 27, 7, 50000); const r = room(); const B = W.barriers(r, P);
-    assert.strictEqual(W.target(r, B), 100000); OBJ.b.hits = 100000; assert.strictEqual(W.target(r, W.barriers(r, P)), 300000);
+    assert.strictEqual(W.target(r, B), 100000); OBJ.b.hits = 100000; assert.strictEqual(W.target(r, W.barriers(r, P)), 300000); OBJ.b.hits = 5; assert.strictEqual(W.target(r, W.barriers(r, P)), 10000);
   }],
   ['fund opens at 20k bank, accrues 10% x 23/t, debits', () => {
     const m = { walls: { started: 1 } }, r = room({ mem: m }); Game.time = 1000; assert.strictEqual(W.fund(r), 20000);

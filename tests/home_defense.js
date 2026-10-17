@@ -19,7 +19,7 @@ assert.strictEqual(W.phase(r), 'off'); assert.ok(!r.memory.walls && !r.memory.de
 Memory.defense = { earlyWalls: true, guards: true };
 r = room({}); assert.strictEqual(W.phase(r), 'off', 'calm RCL5 stays off');
 r = room({ defAlert: 2000 }); assert.strictEqual(W.phase(r), 'build'); assert.strictEqual(r.memory.walls.why, 'threat'); assert.strictEqual(r.memory.walls.fund, 0);
-W.placeSites(r, 5); assert.deepStrictEqual(r.made, ['rampart 6,28', 'constructedWall 6,24'], 'west gate then west wall first');
+W.placeSites(r, 5); assert.deepStrictEqual(r.made.slice(0, 3), ['rampart 6,28', 'constructedWall 6,24', 'constructedWall 6,25'], 'west gate then west wall first'); assert.strictEqual(r.made.filter(m => m.startsWith('constructedWall')).length, 15, 'v5 wall cap');
 const sq = { owner: { username: 'BustJetter' }, pos: { x: 10, y: 25 }, body: Array(8).fill({ type: 'ranged_attack', hits: 100 }) };
 Game.time++; r = room({}, [sq]); assert.strictEqual(W.phase(r), 'build', 'squad inside starts walls'); assert.strictEqual(H.wantGuards(r), 1);
 Game.time++; const r2 = room({}, [sq, Object.assign({}, sq, { body: Array(9).fill({ type: 'ranged_attack', hits: 100 }) })]); assert.strictEqual(H.wantGuards(r2), 2);

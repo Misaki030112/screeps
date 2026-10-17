@@ -98,6 +98,6 @@ module.exports = { obsoleteContainer, run(room) {
     }
   }
   // v4 gates/trunks/walls once the wall phase is 'build' (managers/walls.js; no-op before)
-  if (budget > 0) log.push(...walls.placeSites(room, budget));
+  log.push(...walls.placeSites(room, Math.max(0, budget))); // walls have their own cap (walls.WALL_CAP)
   if (log.length) { console.log('LAYOUT ' + log.join('; ')); move.invalidate(room.name); rc.invalidate(room.name); mem.layoutKick = log.some(l => l.startsWith('destroyed')) ? 1 : undefined; }
 } };

@@ -6,7 +6,7 @@
 // when even that is idle the remapped creep upgrades from fc/source containers (never drains the storage reserve).
 const plan = require('../utils/plan'), move = require('../utils/move'), rc = require('../utils/roomcache');
 const remote = require('../managers/remote'), trace = require('../utils/trace');
-const PRIO = { spawn: 0, tower: 1, extension: 2, container: 3, storage: 4, link: 5, rampart: 6, road: 7 }; // match layout PRIORITY (tower before extension)
+const PRIO = { spawn: 0, tower: 1, extension: 2, container: 3, storage: 4, link: 5, rampart: 6, constructedWall: 6, road: 7 }; // v5: ring walls (1e each) before roads // match layout PRIORITY (tower before extension)
 function remoteRoadSite() {
   for (const r in remote.CFG) {
     if (remote.paused(r) || remote.CFG[r].via) continue; // multi-hop W45N7: no road (docs/ROADS.md)
@@ -192,7 +192,9 @@ module.exports = { remoteRoadSite, pickSource, hop, run(c) {
     // v2.2: trunk road sites (placed in parallel) wait while an economic remote road site is open
     const RDm = require('../managers/roads'), rs = sites.some(s => s.structureType === STRUCTURE_ROAD && RDm.isTrunkTile && RDm.isTrunkTile(s.pos.x, s.pos.y)) && remoteRoadSite();
     const pick = rs ? sites.filter(s => !(s.structureType === STRUCTURE_ROAD && RDm.isTrunkTile(s.pos.x, s.pos.y))) : sites;
-    if (pick.length) t = _.min(pick, s => (PRIO[s.structureType] ?? 9) * 100 + c.pos.getRangeTo(s));
+    // v5: spread builders over far wall sites: a site another builder already holds costs +60 range
+    const held = new Set(Object.values(Game.creeps).filter(x => x !== c && x.memory.role === 'builder').map(x => x.memory.t));
+    if (pick.length) t = _.min(pick, s => (PRIO[s.structureType] ?? 9) * 100 + (s.pos.roomName === c.pos.roomName ? c.pos.getRangeTo(s) : 50) + (held.has(s.id) ? 60 : 0));
     else if (rs) t = rs;
     else {
       const junk = junkContainer(home, P);
@@ -205,7 +207,7 @@ module.exports = { remoteRoadSite, pickSource, hop, run(c) {
         const hurt = repairables(home, P);
         t = hurt.length ? _.min(hurt, s => s.hits / s.hitsMax) : null;
         if (!t) t = require('../managers/roads').repairTarget(); // remote route roads < 50% (docs/ROADS.md)
-        const job = !t && require('../managers/walls').repairJob(home); // v4 barrier hits step (lowest first, +10k chunks)
+        const job = !t && require('../managers/walls').repairJob(home, c.pos, new Set(Object.values(Game.creeps).filter(x => x !== c && x.memory.role === 'builder').map(x => x.memory.t))); // v4 barrier hits step (lowest first, +10k chunks)
         if (job) { t = Game.getObjectById(job.id); c.memory.tcap = job.cap; }
       }
     }

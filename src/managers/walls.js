@@ -43,7 +43,9 @@ function phase(room) {
 // ---- v4 barriers (layout.defense; docs/DEFENSE_PLAN.md). Everything below is inert unless phase()==='build'.
 // Site order (policy.order): 6 gate ramparts -> with_gate trunk roads (TR, W, S) -> walls_in_build_order -> wall-phase repair spurs.
 // At most SITE_CAP barrier-phase sites at once so they never crowd out core RCL sites (layout MAX_SITES 5 is shared).
-const SITE_CAP = 2;
+const SITE_CAP = 2, WALL_CAP = 15; // walls: own cap, outside layout MAX_SITES (1 energy, 1 tick each; never crowd core sites)
+function ringClosed(room, P) { const L = lists(P), rc = require('../utils/roomcache');
+  return L.gates.every(([x, y]) => rc.at(room, x, y, STRUCTURE_RAMPART)) && L.walls.every(([x, y]) => rc.at(room, x, y, STRUCTURE_WALL)); }
 const plan = () => require('../utils/plan');
 function defense(P) { return P && P.raw && P.raw.defense; }
 const memo = {};
@@ -61,13 +63,16 @@ function lists(P) {
   for (const [x, y] of gates) type[k(x, y)] = 'rampart';
   for (const [x, y] of roads) if (!type[k(x, y)]) type[k(x, y)] = 'road';
   for (const [x, y] of walls) type[k(x, y)] = STRUCTURE_WALL;
-  const order = gates.map(t => [t, 'rampart']).concat(roads.filter(([x, y]) => type[k(x, y)] === 'road').map(t => [t, 'road']), walls.map(t => [t, STRUCTURE_WALL]));
+  // v5 (Misaki 2026-10-18 02:3x "光有城门没城墙…优先造城墙围起来"): ENCLOSE FIRST. gates -> all 41 walls (1 energy each, built at 1 hit;
+  // tools/ring_check.py: flood-fill from exits never reaches the core once all 47 stand, every wall necessary) -> spur roads after the ring.
+  const order = gates.map(t => [t, 'rampart']).concat(walls.map(t => [t, STRUCTURE_WALL]), roads.filter(([x, y]) => type[k(x, y)] === 'road').map(t => [t, 'road']));
   return (memo[name] = { gates, walls, order, type });
 }
 // Is (x,y) a barrier-phase tile of this structure type? (layout.js keeps these sites instead of removing them as off-plan)
 function planned(P, x, y, t) { return !!defense(P) && lists(P).type[x * 50 + y] === t; }
 // Hits steps per RCL (policy.hits); stepRule: raise ALL barriers to step k before any to k+1.
-const STEPS = { 6: [100000, 300000], 7: [100000, 300000, 1000000], 8: [100000, 300000, 1000000, 3000000] };
+// v5: low first tiers so the fresh 1-hit ring gets real hits evenly before anything goes deep (10k = 100e per barrier)
+const STEPS = { 6: [10000, 30000, 100000, 300000], 7: [10000, 30000, 100000, 300000, 1000000], 8: [10000, 30000, 100000, 300000, 1000000, 3000000] };
 function barriers(room, P) {
   const L = lists(P), rc = require('../utils/roomcache'), out = [];
   for (const [x, y] of L.gates) { const s = rc.at(room, x, y, STRUCTURE_RAMPART); if (s) out.push(s); }
@@ -102,13 +107,17 @@ function threat(room) { return require('./threat').holding(room.name) || playerC
 function reserved(room) { const m = room.memory && room.memory.walls; return m && m.started && room.storage ? Math.min(fund(room), room.storage.store[RESOURCE_ENERGY]) : 0; }
 // Builder repair job: lowest barrier below the step target, capped at +CHUNK so the set rises evenly. null = no work / no budget.
 const CHUNK = 10000;
-function repairJob(room) {
+// v5 proximity: among barriers in the lowest band (hits < min + CHUNK, so the set still rises evenly) take the one nearest to the
+// builder that no other builder holds (pos/taken optional). The old global-min pick walked builders across the map (NW <-> S <-> E).
+function repairJob(room, pos, taken) {
   const P = plan().get(room.name);
   if (!defense(P) || phase(room) !== 'build') return null;
   if (!threat(room) && fund(room) < 100) return null;
   const B = barriers(room, P), tgt = target(room, B);
   const low = B.filter(s => s.hits < tgt); if (!low.length) return null;
-  const s = _.min(low, x => x.hits);
+  const m = _.min(low.map(x => x.hits)), band = low.filter(x => x.hits < m + CHUNK);
+  const free = taken ? band.filter(x => !taken.has(x.id)) : band, pool = free.length ? free : band;
+  const s = pos && pos.getRangeTo ? _.min(pool, x => (x.pos && x.pos.roomName === pos.roomName ? pos.getRangeTo(x) : 99) * 1e7 + x.hits) : _.min(pool, x => x.hits);
   return { id: s.id, cap: Math.min(tgt, s.hits + CHUNK) };
 }
 // Ramparts are built at 1 hit and decay 300 / 100t. While barrier sites keep builders busy (sites outrank repair) repairJob never
@@ -126,17 +135,21 @@ function wantBuilder(room) { const j = repairJob(room); return !!j && (threat(ro
 // Sites (called by layout.run with its leftover budget).
 function placeSites(room, budget) {
   const P = plan().get(room.name);
-  if (!defense(P) || phase(room) !== 'build' || budget <= 0) return [];
+  if (!defense(P) || phase(room) !== 'build') return [];
   const rc = require('../utils/roomcache'), L = lists(P), log = [];
-  const open = rc.sites(room).filter(s => planned(P, s.pos.x, s.pos.y, s.structureType)).length;
-  let n = Math.min(budget, SITE_CAP - open);
+  const mine = rc.sites(room).filter(s => planned(P, s.pos.x, s.pos.y, s.structureType));
+  let n = Math.min(budget, SITE_CAP - mine.filter(s => s.structureType !== STRUCTURE_WALL).length);
+  let nw = WALL_CAP - mine.filter(s => s.structureType === STRUCTURE_WALL).length;
+  const closed = ringClosed(room, P);
   // threat start: west gate (6,28) + west wall x=6 first (the side the squad faces), then the normal order
   const west = ([[x]]) => x <= 6 ? 0 : 1, order = room.memory.walls.why === 'threat' ? L.order.slice().sort((a, b) => west(a) - west(b)) : L.order;
   for (const [[x, y], t] of order) {
-    if (n <= 0) break;
+    if (n <= 0 && nw <= 0) break;
+    if (t === 'road' && !closed) break; // spur roads only once the ring is sealed
+    if (t === STRUCTURE_WALL ? nw <= 0 : n <= 0) continue;
     if (rc.at(room, x, y, t) || room.lookForAt(LOOK_CONSTRUCTION_SITES, x, y).length) continue;
     const r = room.createConstructionSite(x, y, t);
-    if (r === OK) { n--; log.push(`site ${t} ${x},${y}`); }
+    if (r === OK) { if (t === STRUCTURE_WALL) nw--; else n--; log.push(`site ${t} ${x},${y}`); }
     else if (!(room.memory.walls.bad || (room.memory.walls.bad = {}))[x * 50 + y]) { room.memory.walls.bad[x * 50 + y] = r; log.push(`FAIL ${t} ${x},${y} r=${r}`); }
   }
   return log;
@@ -149,6 +162,13 @@ function noUpgrade(room) {
   if (!c || !c.my || c.level < 6 || c.level >= 8) return false;
   if ((Memory.roads || {}).upgrade) return false;
   if ((c.ticksToDowngrade || 0) < UP_SAFE) return false;
-  return phase(room) === 'roads';
+  const ph = phase(room);
+  if (ph === 'roads') return true;
+  // v5 (Misaki 2026-10-18 02:2x "基建效率最大，升级不是优先"): wall build phase holds upgrading too (ctl container/link feed ->
+  // builders) until every barrier stands at >= HOLD_TO hits; then normal upgrading resumes.
+  if (ph !== 'build') return false;
+  const P = plan().get(room.name); if (!defense(P)) return false;
+  const B = barriers(room, P); return !ringClosed(room, P) || !B.length || _.min(B.map(s => s.hits)) < HOLD_TO;
 }
-module.exports = { UP_SAFE, DECAY_FLOOR, DECAY_CAP, decaying, noUpgrade, START, NOVICE_END, phase, planned, STEPS, target, barriers, fund, spend, reserved, repairJob, wantBuilder, placeSites, lists };
+const HOLD_TO = 100000;
+module.exports = { WALL_CAP, ringClosed, UP_SAFE, DECAY_FLOOR, DECAY_CAP, decaying, noUpgrade, START, NOVICE_END, phase, planned, STEPS, target, barriers, fund, spend, reserved, repairJob, wantBuilder, placeSites, lists };
