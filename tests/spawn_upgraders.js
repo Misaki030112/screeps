@@ -57,9 +57,12 @@ const cases = [
     assert.strictEqual(S.retiring({ memory: { role: 'queen' }, body: Array(12), ticksToLive: 66 }), true);
     assert.strictEqual(S.retiring({ memory: { role: 'queen' }, body: Array(12), ticksToLive: 67 }), false); }],
   ['retiring: remote creeps never use the home pre-spawn rule', () => assert.strictEqual(S.retiring({ memory: { role: 'hauler', remote: 'W45N8' }, body: Array(16), ticksToLive: 5 }), false)],
-  ['starving: upgrader still sized from cap (12W at cap 1650), others from avail', () => {
+  ['starving: upgrader still sized from cap (12W at cap 1650); storage-era builder keeps 70% floor; others from avail', () => {
     assert.strictEqual(S.B.upgrader(S.bodyEnergy('upgrader', 300, 1650, 300, true, true), 5).filter(p => p === 'work').length, 12);
-    assert.strictEqual(S.bodyEnergy('builder', 300, 1650, 300, true, true), 300);
+    // storage era: starving E=avail must not bypass the floor (patrol 04:50 6W 5th builder)
+    assert.strictEqual(S.bodyEnergy('builder', 300, 1650, 300, true, true), Math.floor(0.7 * 1650));
+    assert.strictEqual(S.bodyEnergy('builder', 300, 2300, 600, true, true), 1610);
+    assert.strictEqual(S.bodyEnergy('builder', 300, 1650, 300, true, false), 300); // pre-storage still shrinks
     assert.strictEqual(S.bodyEnergy('hauler', 1650, 1650, 1650, true, true), 1050);
     assert.strictEqual(S.bodyEnergy('queen', 300, 1650, 420, false, true), 420); }],
   ['starving: storage-era home hauler sized from cap (14C7M), pre-storage hauler from avail', () => {
