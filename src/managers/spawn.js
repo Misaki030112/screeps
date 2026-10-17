@@ -88,7 +88,10 @@ function targets(room, count, backlog, ctlEnergy, sites) {
       if (T.builder >= 4 && all >= 8 && e >= 8000) T.builder = 5;
       if (T.builder >= 2 && T.builder < 3 && all >= 3 && e >= 3000) T.builder = 3; }
     if (T.builder === 1 && !sites && (/^W45N/.test(RD.phase()) || RD.phase() === 'swamp7' || remoteSites() > 0) && room.storage.store[RESOURCE_ENERGY] >= 5000 && room.energyCapacityAvailable >= 1300) T.builder = 2;
-    if (!T.builder && RD.repairTarget(0.4)) T.builder = 1; }
+    if (!T.builder && RD.repairTarget(0.4)) T.builder = 1;
+    // walls build phase: 1 builder (sites<=SITE_CAP 2) walking 35,24 -> 13-18,44 with 250 carry built ~3 e/t while the fund sat at
+    // ~22k and storage 23k (patrol 10-18 02:12, Misaki: spend build-phase surplus on construction). 2nd builder while fund+storage >= 10k.
+    { const W = require('./walls'); if (T.builder === 1 && W.phase(room) === 'build' && W.fund(room) >= 10000 && room.storage.store[RESOURCE_ENERGY] >= 10000 && room.energyCapacityAvailable >= 1300) T.builder = 2; } }
   return T;
 }
 // Pre-spawn: a dying upgrader / home hauler / queen stops counting once its TTL is under spawn time + walk + margin,
