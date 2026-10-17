@@ -80,11 +80,15 @@ function run() {
   const s = status(T[ph], look);
   m.prog = { road: s.road, site: s.site, open: s.open.length, unseen: s.unseen, blocked: s.blocked, total: s.total };
   if (s.complete) return advance(m, ph);
-  m.idle = s.site === 0;
-  // batch: at most BATCH open road sites of this phase per room
-  const perRoom = {};
-  for (const t of T[ph]) if (look(t[0], t[1], t[2]) === 'site') perRoom[t[0]] = (perRoom[t[0]] || 0) + 1;
-  for (const [r, x, y] of s.open) {
+  // v2.1 (Misaki 22:45 "存了1w多能量…建造速度好慢"): the economic phases (haul, W45N8, econ) get sites IN PARALLEL so builders
+  // never starve on a 2-4 tile tail (live 22:45: haul 12/16 -> 2 sites, 2 builders, storage 12.3k). Phase still advances in order
+  // (walls gate unchanged); trunks ('home') are only placed once the phase reaches 'home' (Misaki: 主干道保留在最后).
+  const par = PHASES.indexOf(ph) <= PHASES.indexOf('econ') ? PHASES.slice(PHASES.indexOf(ph), PHASES.indexOf('econ') + 1) : [ph];
+  const R2 = require('./remote'), perRoom = {}, open = [];
+  for (const p of par) for (const t of T[p]) { const v = look(t[0], t[1], t[2]); if (v === 'site') perRoom[t[0]] = (perRoom[t[0]] || 0) + 1; else if (v === 'open' && !(t[0] !== HOME && R2.paused(t[0]))) open.push(t); }
+  m.idle = !Object.keys(perRoom).length;
+  m.par = par.join('+');
+  for (const [r, x, y] of open) {
     if ((perRoom[r] || 0) >= BATCH) continue;
     const rv = Game.rooms[r].createConstructionSite(x, y, STRUCTURE_ROAD);
     if (rv === OK) perRoom[r] = (perRoom[r] || 0) + 1; else (m.bad = m.bad || {})[r + ':' + x + ':' + y] = rv;

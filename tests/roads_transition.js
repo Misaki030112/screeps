@@ -29,7 +29,9 @@ const cases = [
     assert.strictEqual(Memory.roads.phase, 'core'); tick(200); assert.strictEqual(Memory.roads.phase, 'core'); assert.strictEqual(home.sites.size, 0); }],
   ['core done -> haul, <=BATCH sites', () => { ext = 40; link = 3; core = []; tick(50); assert.strictEqual(Memory.roads.phase, 'haul'); assert.ok(home.sites.size <= R.BATCH && home.sites.size > 0); tick(50); assert.ok(home.sites.size <= R.BATCH); }],
   ['haul completes -> W45N8 (no early skip, no trunk sites yet)', () => { let g = 0; while (Memory.roads.phase === 'haul' && g++ < 100) { finishSites(home); tick(50); }
-    assert.strictEqual(Memory.roads.phase, 'W45N8'); assert.ok(W8.sites.size <= R.BATCH); assert.strictEqual(home.roads.size, R.tiles().haul.length); }],
+    assert.strictEqual(Memory.roads.phase, 'W45N8'); assert.ok(W8.sites.size <= R.BATCH); assert.ok(home.roads.size >= R.tiles().haul.length && home.roads.size <= R.tiles().haul.length + R.tiles().econ.length); }],
+  ['v2.1 parallel: econ + W45N8 sites placed while haul open, never trunks', () => { const T = R.tiles(), trunk = new Set(T.home.map(t => t[1] + ',' + t[2]));
+    assert.ok(W8.sites.size > 0); for (const k of home.sites.keys()) assert.ok(!trunk.has(k) || T.econ.concat(T.haul).some(t => t[1] + ',' + t[2] === k)); }],
   ['no vision: no progress, no crash', () => { delete Game.rooms.W45N8; tick(200); assert.strictEqual(Memory.roads.phase, 'W45N8'); assert.ok(Memory.roads.prog.unseen > 0); Game.rooms.W45N8 = W8; }],
   ['paused remote: no sites', () => { W8.sites.clear(); paused = true; tick(100); assert.strictEqual(W8.sites.size, 0); paused = false; }],
   ['W45N8 batch then econ -> home(trunks) -> done; walls gated until done', () => { tick(50); assert.ok(W8.sites.size > 0 && W8.sites.size <= R.BATCH); let g = 0;

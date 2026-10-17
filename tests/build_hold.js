@@ -29,6 +29,9 @@ stub('utils/trace.js', { why: () => {} });
 const S = require(src('managers/spawn.js'));
 const T = (o) => { hold = o.hold; ph = o.ph || 'roads'; return S.targets(room({ storage: o.storage }), {}, 0, 900, o.sites); };
 cases.push(
+  ['v2.1 hold + storage 5000 + 4 sites: 4 builders', () => assert.strictEqual(T({ hold: true, sites: 4, storage: 5000 }).builder, 4)],
+  ['v2.1 hold + storage 8000 + 8 sites: 5 builders', () => assert.strictEqual(T({ hold: true, sites: 8, storage: 8000 }).builder, 5)],
+  ['v2.1 hold + storage 4999 + 8 sites: 3 builders', () => assert.strictEqual(T({ hold: true, sites: 8, storage: 4999 }).builder, 3)],
   ['hold: 0 upgraders', () => assert.strictEqual(T({ hold: true, sites: 5, storage: 1000 }).upgrader, 0)],
   ['no hold in roads (timer low): 1 upgrader', () => assert.strictEqual(T({ hold: false, sites: 5, storage: 1000 }).upgrader, 1)],
   ['bank phase after roads: max 1 upgrader even with surplus', () => assert.strictEqual(T({ hold: false, ph: 'bank', sites: 0, storage: 15000 }).upgrader, 1)],

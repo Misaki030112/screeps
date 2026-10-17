@@ -36,10 +36,11 @@ const B = {
   upgrader: (e, rcl) => { const w = Math.max(1, Math.min(rcl >= 8 ? 15 : 12, Math.floor((e - 100) / 100))); return [].concat(rep(w, WORK), [CARRY, MOVE]); },
   guard: e => { const n = Math.max(1, Math.min(6, Math.floor((e - 300) / 200))); return [].concat(rep(n, RANGED_ATTACK), rep(n + 1, MOVE), [HEAL]); },
   // builder cap 8W8C8M (1600e) at RCL6: 400 carry, fewer refill walks (was 5W5C5M)
-  builder: e => { const n = Math.max(1, Math.min(8, Math.floor(e / 200))); return [].concat(rep(n, WORK), rep(n, CARRY), rep(n, MOVE)); },
+  builder: e => { const n = Math.max(1, Math.min(11, Math.floor(e / 200))); return [].concat(rep(n, WORK), rep(n, CARRY), rep(n, MOVE)); },
   filler: e => [CARRY, CARRY, CARRY, MOVE],
   manager: e => [].concat(rep(Math.min(16, Math.floor((e - 50) / 50)), CARRY), [MOVE]),
 };
+function remoteSites() { let n = 0; try { for (const r of ['W45N8']) { const rm = typeof Game !== 'undefined' && Game.rooms && Game.rooms[r]; if (rm) n += rm.find(FIND_MY_CONSTRUCTION_SITES).filter(s => s.structureType === STRUCTURE_ROAD).length; } } catch (e) {} return n; }
 function targets(room, count, backlog, ctlEnergy, sites) {
   const rcl = room.controller.level, P = plan.get(room.name);
   const st = !!room.storage, links = rc.all(room, STRUCTURE_LINK).length;
@@ -80,7 +81,12 @@ function targets(room, count, backlog, ctlEnergy, sites) {
   if (st && rcl >= 6) { const RD = require('./roads');
     // build hold: the upgrader's ~6/t goes to builders; a 3rd builder once storage holds a cushion and >=3 sites are open
     if (T.builder === 2 && sites >= 3 && require('./walls').noUpgrade(room) && room.storage.store[RESOURCE_ENERGY] >= 3000) T.builder = 3;
-    if (T.builder === 3 && sites >= 6 && require('./walls').noUpgrade(room) && room.storage.store[RESOURCE_ENERGY] >= 6000) T.builder = 4; // storage still climbing at 3 builders
+    if (require('./walls').noUpgrade(room)) { // v2.1 build mode: spend storage down toward ~3k (Misaki 22:45); remote road sites count too
+      const all = sites + remoteSites(), e = room.storage.store[RESOURCE_ENERGY];
+      if (all > 3 && T.builder < 2 && room.energyCapacityAvailable >= 1300) T.builder = 2;
+      if (T.builder >= 2 && all >= 4 && e >= 5000) T.builder = 4;
+      if (T.builder >= 4 && all >= 8 && e >= 8000) T.builder = 5;
+      if (T.builder >= 2 && T.builder < 3 && all >= 3 && e >= 3000) T.builder = 3; }
     if (T.builder === 1 && !sites && /^W45N/.test(RD.phase()) && room.storage.store[RESOURCE_ENERGY] >= 5000 && room.energyCapacityAvailable >= 1300) T.builder = 2;
     if (!T.builder && RD.repairTarget(0.4)) T.builder = 1; }
   return T;
