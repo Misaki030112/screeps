@@ -1,4 +1,4 @@
 {
-  "next_at": "2026-10-17T16:45:00+08:00",
-  "reason": "VERIFY 022aa9f (deployed tick 83699680): loaded home haulers make one fill-vs-drop decision per load (no ctl<->fill flip-flop during spawn waves; pre-fix leg 140t vs median 28t, ctl container 0 for ~30t). Check: no hauler circle bursts at 36,23/38,24-29, loaded legs <=~40t, ctl container not hitting 0 in spawn waves, errors 0. Baseline 15:37: RCL5 1138.9k/1.215M, upg 25.8/t (1h 25.2) vs ideal 21.8, ETA RCL6 ~3.4h (~19:00); conts W45N8 268 W45N7 192, res 1967/2150 SAFE armed, delivered 707.2k/193.0k; CPU ~4.5-7 bkt10k errors0. Then RCL6 watchpoints (docs/RCL6.md) from ~18:45."
+  "next_at": "2026-10-17T18:40:00+08:00",
+  "reason": "RCL6 watchpoints (docs/RCL6.md): RCL5 1169.9k/1.215M at 16:55, upg 1h 28.8/t (model expected 26.4, ideal 21.8; storage drawing 3.2k->1.35k floor), ETA RCL6 ~18:45-19:00. At RCL6 check: only 10 ext + link 30,11 sites (RCL6_MINERALS=false), upgrader dip <=~2h, miner A -> link 30,11, links.run A->ctl, queen reaches new ext, home hauler idle (R5), walls banking gate (storage>=20k) then wall phase, errors 0. VERIFY 022aa9f PASS 16:55 (hauler circ 0/h vs 49/h, long legs = sticky fill route / swamp 31-34,35-36 rare, errors 0)."
 }
