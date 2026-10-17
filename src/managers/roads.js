@@ -23,7 +23,8 @@ function tiles(P) {
   if (memo.t) return memo.t;
   const seen = new Set(), out = { haul: [], W45N8: [], econ: [], home: [] };
   const busy = (r, x, y) => { if (r !== HOME || !P || !P.any) return false; const w = P.any[x * 50 + y]; return !!(w && w.type !== 'road' && (w.rcl || 0) <= 6); };
-  const add = (ph, r, x, y) => { if (busy(r, x, y)) return; const k = r + ':' + x + ':' + y; if (seen.has(k)) return; seen.add(k); out[ph].push([r, x, y]); };
+  const add = (ph, r, x, y) => { if (busy(r, x, y) || x <= 0 || y <= 0 || x >= 49 || y >= 49) return; // exit tiles: createConstructionSite -> ERR_INVALID_TARGET (-7, live 83705660)
+    const k = r + ':' + x + ':' + y; if (seen.has(k)) return; seen.add(k); out[ph].push([r, x, y]); };
   for (const [rm, x, y] of ROUTES.W45N8) if (rm === HOME) add('haul', rm, x, y); // storage 38,30 -> exit 49,14 (W45N7-only leg dropped)
   for (const [x, y] of W45N8_LEG) add('W45N8', 'W45N8', x, y);
   for (const [x, y] of ECON) add('econ', HOME, x, y);

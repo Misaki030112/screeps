@@ -6,7 +6,7 @@ const plan = require(src('utils/plan.js')), R = require(src('managers/roads.js')
 const T = R.tiles(plan.get('W46N8'));
 const cases = [
   ['phase order', () => assert.deepStrictEqual(R.PHASES, ['core', 'haul', 'W45N8', 'econ', 'home', 'done'])],
-  ['tile counts', () => { assert.strictEqual(T.haul.length, 17); assert.strictEqual(T.econ.length, 4); assert.strictEqual(T.home.length, 37); assert.ok(T.home.every(([, x, y]) => !T.haul.some(([, a, b]) => a === x && b === y))); assert.strictEqual(T.W45N8.length, 13); assert.ok(!T.W45N7); assert.ok(!T.home.some(([, x, y]) => x >= 46 && y >= 18 && y <= 21)); }],
+  ['tile counts', () => { assert.strictEqual(T.haul.length, 16); assert.strictEqual(T.econ.length, 4); assert.strictEqual(T.home.length, 37); assert.ok(T.home.every(([, x, y]) => !T.haul.some(([, a, b]) => a === x && b === y))); assert.strictEqual(T.W45N8.length, 12); assert.ok(!T.W45N7); assert.ok(!T.home.some(([, x, y]) => x >= 46 && y >= 18 && y <= 21)); }],
   ['no home tile on a planned RCL<=6 structure', () => { const P = plan.get('W46N8');
     for (const [, x, y] of [].concat(T.haul, T.econ, T.home)) { const w = P.any[x * 50 + y]; assert.ok(!w || w.type === 'road' || w.rcl > 6, `${x},${y}`); } }],
   ['status: complete only when every tile is road/blocked and seen', () => {
