@@ -1,6 +1,6 @@
 {
- "next_at": "2026-10-18T04:15:00+08:00",
- "reason": "03:55 patrol deployed 3499428 (tick 83710268): after e2acdb0 builder work share fell 29%->11% (n 34%, m 44%) - root cause: gates decay 300/100t back under the 10k step, so target() flipped 30k->10k and the band (all held -> fallback same gate) sent 3 builders in lockstep 6,28 -> 20,44 -> 26,15 -> 47,17 across the central swamp (x23-31,y25-28, ~8-10 t/tile), never repairing; then all 5 piled onto container 38,32. Fix: rampart SLACK 5k (eff=hits+5k for step/band/floor/hold; ramparts topped to step+5k), held band -> next free barrier below step, repairables one per builder. Next: builder w share >=30%, distinct targets, barrier min (eff) rising toward 30k, storage 32.2k should flatten/fall (5 builders), no gate <5k; if travel 'n' on swamp still dominates consider W-side builder staging or body 1:1 MOVE for wall work.",
+ "next_at": "2026-10-18T04:50:00+08:00",
+ "reason": "04:30 patrol deployed 0d91278 (tick 83710734, deploy tag f5b5990+dirty = same code): builder body floor 70% of cap with storage. Live 4 builders were 11W/5W/3W/11W (30 of possible 55 WORK) - builder is last in the spawn queue and got its turn right after short spawns (reserver/hauler) before the queen refilled, so bodyEnergy=avail made tiny builders for 1500t; storage still +13 e/t 32.2k->37.5k, fund 19.7k, T.builder=5 (budgetE 32.5k) with only 4 alive. Barriers 51 min 8701 (rampart, eff 13.7k) med 20.4k, step 30k. 3499428 slack: builders now on distinct targets but work share still ~26% (moves ~45%, swamp fatigue ticks counted as no_task 'n'). Next: 5th builder spawns >=8W (ideally 11W), storage flattens/falls, barrier median rising; if work share stays <30% study travel (west ring through central swamp) - body 8W8C16M modelled roughly equal throughput, not worth it yet.",
  "road_plan": {
   "doc": "docs/ROADS.md",
   "each_patrol": [
@@ -122,9 +122,9 @@
   ]
  },
  "last_deploy": {
-  "commit": "3499428",
-  "tick": 83710268,
-  "at": "2026-10-18 03:58 UTC+8"
+  "commit": "0d91278",
+  "tick": 83710734,
+  "at": "2026-10-18 04:31 UTC+8"
  },
  "walls": {
   "started": 83707350,
@@ -146,5 +146,9 @@
  "rampart_slack": {
   "deployed": "3499428",
   "check": "builders on distinct barriers, no lockstep retargets in creep_cpu target keys, w share >=30%; revert = SLACK=0 in managers/walls.js"
+ },
+ "builder_floor": {
+  "deployed": "0d91278",
+  "check": "new builders >=8W (body length >=24); storage not rising; revert = Math.max(200, avail) in spawn.js bodyEnergy"
  }
 }
