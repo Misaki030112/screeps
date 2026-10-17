@@ -1,6 +1,6 @@
 {
- "next_at": "2026-10-18T03:55:00+08:00",
- "reason": "03:30 patrol deployed e2acdb0 (tick 83709899): builders worked only ~25% of ticks (moving 47%, 'n' 28% = mostly fatigue on plain + far target hops) while storage rose 24.2k->30.2k (~+20 e/t) with 4 builders; all 51 barriers now >=10k (min 10001, gates 10.1-10.6k), step target 30k, ring_check sealed. Fix: builder with <25% carry refills before a fresh target >10 tiles away; 5th wall-phase builder at fund+storage>=25k (builder83709900 spawning). errors 0, CPU ~6-8.5, bkt 10k. Next: storage trend should flatten/fall (target slow drain to ~5k), builder working share up from 25%, barrier min rising toward 30k, no flip-flop (working toggling) in creep_cpu codes; consider gate DECAY_CAP -> current step and builder body for off-road wall work if travel still dominates.",
+ "next_at": "2026-10-18T04:15:00+08:00",
+ "reason": "03:55 patrol deployed 3499428 (tick 83710268): after e2acdb0 builder work share fell 29%->11% (n 34%, m 44%) - root cause: gates decay 300/100t back under the 10k step, so target() flipped 30k->10k and the band (all held -> fallback same gate) sent 3 builders in lockstep 6,28 -> 20,44 -> 26,15 -> 47,17 across the central swamp (x23-31,y25-28, ~8-10 t/tile), never repairing; then all 5 piled onto container 38,32. Fix: rampart SLACK 5k (eff=hits+5k for step/band/floor/hold; ramparts topped to step+5k), held band -> next free barrier below step, repairables one per builder. Next: builder w share >=30%, distinct targets, barrier min (eff) rising toward 30k, storage 32.2k should flatten/fall (5 builders), no gate <5k; if travel 'n' on swamp still dominates consider W-side builder staging or body 1:1 MOVE for wall work.",
  "road_plan": {
   "doc": "docs/ROADS.md",
   "each_patrol": [
@@ -122,9 +122,9 @@
   ]
  },
  "last_deploy": {
-  "commit": "e2acdb0",
-  "tick": 83709899,
-  "at": "2026-10-18 03:33 UTC+8"
+  "commit": "3499428",
+  "tick": 83710268,
+  "at": "2026-10-18 03:58 UTC+8"
  },
  "walls": {
   "started": 83707350,
@@ -142,5 +142,9 @@
  "builder_refill": {
   "deployed": "e2acdb0",
   "check": "builder w share >25%, storage not rising, no ping-pong; revert = drop low-carry block in roles/builder.js + 5th builder line in spawn.js"
+ },
+ "rampart_slack": {
+  "deployed": "3499428",
+  "check": "builders on distinct barriers, no lockstep retargets in creep_cpu target keys, w share >=30%; revert = SLACK=0 in managers/walls.js"
  }
 }
