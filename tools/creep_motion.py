@@ -21,7 +21,14 @@ def terr(room):
     if room not in TERR:
         f = os.path.join(db.ROOT, 'data', f'terrain_{room}.txt'); TERR[room] = open(f).read().strip() if os.path.exists(f) else ''
     return TERR[room]
-def swamp(room, x, y): t = terr(room); return len(t) >= 2500 and t[y * 50 + x] == '2'
+_ROADS = {}
+def roads(room):  # live road tiles (console); a swamp tile with a road costs no fatigue -> not a swamp loss (v5 fix: was counted)
+    if room not in _ROADS:
+        try:
+            from q import q; _ROADS[room] = {tuple(p) for p in q(f"Game.rooms['{room}']?Game.rooms['{room}'].find(FIND_STRUCTURES).filter(s=>s.structureType=='road').map(s=>[s.pos.x,s.pos.y]):[]")['v']}
+        except Exception: _ROADS[room] = set()
+    return _ROADS[room]
+def swamp(room, x, y): t = terr(room); return len(t) >= 2500 and t[y * 50 + x] == '2' and (x, y) not in roads(room)
 SRC_ROOMS = {'W45N8', 'W45N7'}; HOME = 'W46N8'
 STATIC = {'miner', 'rminer', 'upgrader', 'manager', 'filler'}
 LEGIT = set('wmesr')

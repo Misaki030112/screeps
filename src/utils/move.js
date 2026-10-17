@@ -42,6 +42,9 @@ function matrix(roomName, avoidCreeps) {
     // fixed spots (fillers/miners/upgraders/manager) are expensive so traffic yields to them
     const P = require('./plan').get(roomName);
     if (P) for (const k of P.standing) { const x = Math.floor(k / 50), y = k % 50; if (m.get(x, y) < 255) m.set(x, y, 20); }
+    // v5: exit tiles cost 50 so a ranged goal (repair range 3) never ends ON an exit (live 03:00: builder repairing NE wall 47,11
+    // from 49,14 = W45N8 exit -> gets bounced into W45N8 and back). Range-0 exit walks (hop) still reach them.
+    for (let i = 0; i < 50; i++) for (const [x, y] of [[0, i], [49, i], [i, 0], [i, 49]]) if (m.get(x, y) < 50) m.set(x, y, 50);
     e = CM[roomName] = { v, m };
   }
   if (!avoidCreeps) return e.m;
