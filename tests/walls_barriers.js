@@ -17,12 +17,20 @@ function room(o = {}) {
 }
 const wall = (id, x, y, hits, t = 'constructedWall') => (OBJ[id] = { id, x, y, hits, structureType: t });
 const cases = [
+  ['decaying: lowest gate rampart below the floor, skipping taken ones; walls ignored', () => {
+    OBJ = {}; wall('g1', 47, 16, 6800, 'rampart'); wall('g2', 47, 17, 2961, 'rampart'); wall('g3', 6, 28, 2901, 'rampart'); wall('w1', 26, 7, 1);
+    const r = room(); assert.strictEqual(W.decaying(r).id, 'g3'); assert.strictEqual(W.decaying(r, new Set(['g3'])).id, 'g2');
+    assert.strictEqual(W.decaying(r, new Set(['g3', 'g2'])), null); assert.strictEqual(W.decaying(room({ mem: {} })), null, 'off before build phase');
+    OBJ = {};
+  }],
   ['plan: 6 gates, 41 walls, order gates -> trunk roads -> walls', () => {
     const L = W.lists(P); assert.strictEqual(L.gates.length, 6); assert.strictEqual(L.walls.length, 41);
     const kinds = L.order.map(o => o[1]); assert.deepStrictEqual(kinds.slice(0, 6), Array(6).fill('rampart'));
     assert.strictEqual(kinds.lastIndexOf('road') < kinds.indexOf('constructedWall'), true);
     assert.deepStrictEqual(L.order[0][0], [47, 16]);
     assert.ok(!L.order.some(([[x, y], t]) => t === 'road' && x === 41 && y === 23), 'on_demand BR trunk not placed');
+    assert.ok(!L.order.some(([[x, y], t]) => t === 'road' && x === 30 && y === 30), 'no trunk road on the ctl container 30,30 (layout destroys it)');
+    assert.ok(L.order.some(([[x, y], t]) => t === 'road' && x === 29 && y === 31), 'rest of W trunk kept');
   }],
   ['planned(): gate rampart / wall / trunk road; not other types', () => {
     assert.ok(W.planned(P, 47, 16, 'rampart')); assert.ok(W.planned(P, 26, 7, 'constructedWall')); assert.ok(W.planned(P, 46, 17, 'road'));

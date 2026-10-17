@@ -8,7 +8,7 @@ Object.assign(global, {
   RESOURCE_ENERGY: 'energy', STRUCTURE_ROAD: 'road', STRUCTURE_CONTAINER: 'container',
   STRUCTURE_SPAWN: 'spawn', STRUCTURE_EXTENSION: 'extension', STRUCTURE_TOWER: 'tower',
   LEFT: 7, RIGHT: 3, TOP: 1, BOTTOM: 5, OK: 0, FIND_MY_CONSTRUCTION_SITES: 114, LOOK_CONSTRUCTION_SITES: 'constructionSite',
-  Game: { rooms: {}, time: 1 }, _: { min: (a, f) => a[0], max: (a, f) => a.reduce((b, x) => (f(x) > f(b) ? x : b)) },
+  Game: { rooms: {}, creeps: {}, time: 1 }, _: { min: (a, f) => a[0], max: (a, f) => a.reduce((b, x) => (f(x) > f(b) ? x : b)) },
 });
 let W;
 const stub = (p, exp) => { require.cache[require.resolve(src(p))] = { id: p, filename: p, loaded: true, exports: exp }; };

@@ -51,7 +51,10 @@ function lists(P) {
   const name = P.raw.room; if (memo[name]) return memo[name];
   const d = defense(P), gates = [], walls = [], roads = [];
   for (const g of ['TR', 'TL', 'BR', 'W', 'S']) for (const t of (d.gates[g] || [])) gates.push(t);
-  for (const g in d.trunks) if (d.trunks[g].mode === 'with_gate') for (const t of d.trunks[g].new_tiles) roads.push(t);
+  // trunk tiles under another planned structure are skipped: W trunk 30,30 is the ctl container; layout.js destroys a road there
+  // as a conflict, so the wall phase re-placed it every ~5 min (live 00:44-01:04: built + destroyed 3x, 3 ruins, ~900e).
+  const other = ([x, y]) => { const w = P.any && P.any[x * 50 + y]; return !!(w && w.type !== 'road'); };
+  for (const g in d.trunks) if (d.trunks[g].mode === 'with_gate') for (const t of d.trunks[g].new_tiles) if (!other(t)) roads.push(t);
   for (const t of d.walls_in_build_order) walls.push(t);
   for (const g in d.repair) { const r = d.repair[g]; if (/wall phase/.test(r.build_with || '')) for (const t of (r.spur || [])) roads.push(t); }
   const k = (x, y) => x * 50 + y, type = {};
@@ -108,6 +111,16 @@ function repairJob(room) {
   const s = _.min(low, x => x.hits);
   return { id: s.id, cap: Math.min(tgt, s.hits + CHUNK) };
 }
+// Ramparts are built at 1 hit and decay 300 / 100t. While barrier sites keep builders busy (sites outrank repair) repairJob never
+// runs, so gates rot: live 00:37-01:09 TL gate 25,16 built + decayed 3x, 47,17 4.2k->3.0k unrepaired. A gate below DECAY_FLOOR
+// (~1600t of life) outranks sites; the builder lifts it to DECAY_CAP before going back to sites.
+const DECAY_FLOOR = 5000, DECAY_CAP = 10000;
+function decaying(room, taken) {
+  const P = plan().get(room.name);
+  if (!defense(P) || phase(room) !== 'build') return null;
+  const low = barriers(room, P).filter(s => s.structureType === STRUCTURE_RAMPART && s.hits < DECAY_FLOOR && !(taken && taken.has(s.id)));
+  return low.length ? _.min(low, s => s.hits) : null;
+}
 // Spawn: one builder while there is repair work and >= one builder-life of fund (5W x 1500t would spend at most 7.5k).
 function wantBuilder(room) { const j = repairJob(room); return !!j && (threat(room) || fund(room) >= 3000); }
 // Sites (called by layout.run with its leftover budget).
@@ -138,4 +151,4 @@ function noUpgrade(room) {
   if ((c.ticksToDowngrade || 0) < UP_SAFE) return false;
   return phase(room) === 'roads';
 }
-module.exports = { UP_SAFE, noUpgrade, START, NOVICE_END, phase, planned, STEPS, target, barriers, fund, spend, reserved, repairJob, wantBuilder, placeSites, lists };
+module.exports = { UP_SAFE, DECAY_FLOOR, DECAY_CAP, decaying, noUpgrade, START, NOVICE_END, phase, planned, STEPS, target, barriers, fund, spend, reserved, repairJob, wantBuilder, placeSites, lists };

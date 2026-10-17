@@ -168,6 +168,14 @@ module.exports = { remoteRoadSite, pickSource, hop, run(c) {
   let t = c.memory.t && Game.getObjectById(c.memory.t);
   if (t && t.hits !== undefined && t.progress === undefined && t.hits >= (c.memory.tcap || t.hitsMax * 0.9)) t = null;
   if (t && t.pos.roomName !== (c.memory.home || room.name) && remote.CFG[t.pos.roomName] && remote.paused(t.pos.roomName)) t = null; // remote under threat: leave
+  // decaying gate rampart (walls.decaying) outranks sites; sticky until DECAY_CAP (tcap) so sites don't pull it away mid-repair
+  const W = require('../managers/walls'), hm = Game.rooms[c.memory.home] || room;
+  if (!(c.memory.urgent && t && t.progress === undefined)) {
+    delete c.memory.urgent;
+    const dk = W.decaying(hm, new Set(Object.values(Game.creeps).filter(x => x !== c && x.memory.urgent).map(x => x.memory.t))); // one builder per gate
+    if (dk) { t = dk; c.memory.t = dk.id; c.memory.tcap = W.DECAY_CAP; c.memory.urgent = 1; }
+  }
+  if (!c.memory.urgent) {
   // a new site (home OR remote road) outranks any repair. Live 00:05 swamp7: all 5 builders stuck on container 34,34 at 86% hits
   // (sticky clears at 90%, repairables pick at 80%) while W45N8 15,39/16,40/25,39 sat 0/1500 — line only checked home sites.
   if (t && t.progress === undefined && (rc.sites(Game.rooms[c.memory.home] || room).length || remoteRoadSite())) t = null;
@@ -175,6 +183,7 @@ module.exports = { remoteRoadSite, pickSource, hop, run(c) {
   if (t && t.progress !== undefined) {
     const home = Game.rooms[c.memory.home] || room;
     if (rc.sites(home).some(s => (PRIO[s.structureType] ?? 9) < (PRIO[t.structureType] ?? 9))) t = null;
+  }
   }
   if (!t) {
     delete c.memory.tcap;
