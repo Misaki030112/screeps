@@ -83,7 +83,9 @@ function waitNear(c, t, P) {
 function pickSource(c, home, Ph, ctlSrc, fx, fy) {
   const reserve = require('../managers/threat').reserve(home.name);
   const amt = s => s.store ? s.store[RESOURCE_ENERGY] : s.amount;
-  const hub = [home.storage, rc.at(home, fx, fy, STRUCTURE_CONTAINER)].concat(ctlSrc)
+  // build hold: hub link 37,29 too (queen only drains it when the room is full; live 23:40 hub 799 stuck -> source link 30,11 blocked)
+  let hubLink = null; try { if (require('../managers/walls').noUpgrade(home)) hubLink = require('../managers/links').roles(home).hub; } catch (e) {}
+  const hub = [hubLink, home.storage, rc.at(home, fx, fy, STRUCTURE_CONTAINER)].concat(ctlSrc)
     .filter(s => s && s.store[RESOURCE_ENERGY] >= 50 + (s === home.storage ? reserve : 0));
   let loose = [];
   if (typeof FIND_DROPPED_RESOURCES !== 'undefined') {
@@ -93,7 +95,7 @@ function pickSource(c, home, Ph, ctlSrc, fx, fy) {
   const score = s => Math.min(amt(s), c.store.getFreeCapacity() || 50) / (c.pos.getRangeTo(s) + 15);
   let cands = hub.concat(loose);
   if (!cands.length) cands = require('./hauler').pickups(home).filter(s => s.store[RESOURCE_ENERGY] >= c.store.getFreeCapacity() + 200);
-  return cands.length ? _.max(cands, score) : null;
+  return cands.length ? _.max(cands, s => score(s) * (s === hubLink ? 1.5 : 1)) : null;
 }
 // one step along a remote's fixed exits toward room `dest` (home <-> remote, either direction)
 function hop(c, dest) {
