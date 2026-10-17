@@ -204,7 +204,11 @@ function bodyEnergy(role, E, cap, avail, haulerAlive, hasStorage, minerAlive, bu
   // Builder: size to energyAvailable, not full cap. After roads→walls, lastFull kept resetting so starving never
   // shrank the body; 11W11C11M (2200) waited while avail sat ~1300–1600 and sites/gates sat idle >1k ticks
   // (patrol 2026-10-18 01:40). Spawn now with what we have; full-cap size when the spawn is actually full.
-  if (role === 'builder') return Math.min(E, Math.max(200, avail));
+  // v5 floor (patrol 10-18 04:30): builder is last in the queue, so it often got its turn right after a short spawn (reserver
+  // 12t, hauler 27t) before the queen refilled: live 4 builders were 11W/5W/3W/11W (30 of 55 WORK) while storage rose +13 e/t.
+  // carry/WORK is fixed, so repair per builder scales with WORK at the same CPU and walk. With storage: wait for >= 70% of cap
+  // (8W at 2300); truly starving (E = avail) still spawns what it can.
+  if (role === 'builder') return Math.min(E, Math.max(hasStorage ? Math.floor(0.7 * cap) : 200, avail));
   const fromCap = role === 'upgrader' || (role === 'hauler' && hasStorage) || (role === 'miner' && minerAlive);
   return Math.min(fromCap ? cap : E, role === 'hauler' ? (hasStorage ? 1050 : 800) : role === 'queen' ? 600 : 3000);
 }

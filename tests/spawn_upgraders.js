@@ -34,12 +34,15 @@ const cases = [
     assert.strictEqual(S.bodyEnergy('upgrader', 300, 1850, 300, true, true, undefined, false), 1850);
     assert.strictEqual(S.bodyEnergy('upgrader', 300, 550, 300, true, true, undefined, true), 550);
     assert.strictEqual(S.bodyEnergy('builder', 1850, 1850, 1850, true, true, undefined, true), 1850); }],
-  ['builder sizes to avail (not full cap) so sites spawn under remote drain', () => {
-    assert.strictEqual(S.bodyEnergy('builder', 2300, 2300, 1521, true, true), 1521);
-    const b = S.B.builder(S.bodyEnergy('builder', 2300, 2300, 1521, true, true));
-    assert.strictEqual(b.filter(p => p === 'work').length, 7);
+  ['builder sizes to avail above a 70% cap floor (storage era); no tiny builders after a short spawn', () => {
+    assert.strictEqual(S.bodyEnergy('builder', 2300, 2300, 1821, true, true), 1821);
+    const b = S.B.builder(S.bodyEnergy('builder', 2300, 2300, 1821, true, true));
+    assert.strictEqual(b.filter(p => p === 'work').length, 9);
     const cost = b.reduce((s, p) => s + ({ work: 100, carry: 50, move: 50 }[p]), 0);
-    assert.ok(cost <= 1521, 'cost ' + cost);
+    assert.ok(cost <= 1821, 'cost ' + cost);
+    assert.strictEqual(S.bodyEnergy('builder', 2300, 2300, 600, true, true), 1610); // waits (go() returns ERR_NOT_ENOUGH_ENERGY)
+    assert.strictEqual(S.B.builder(1610).filter(p => p === 'work').length, 8);
+    assert.strictEqual(S.bodyEnergy('builder', 2300, 2300, 600, true, false), 600); // pre-storage: spawn what we have
     assert.strictEqual(S.bodyEnergy('builder', 2300, 2300, 2300, true, true), 2300); }],
   ['RCL4 1300 cap -> 12W1C1M costing exactly 1300', () => { const b = S.B.upgrader(1300, 4); assert.strictEqual(b.filter(p => p === 'work').length, 12); assert.strictEqual(b.length, 14); }],
   ['body shrinks with available energy (800 -> 7W)', () => assert.strictEqual(S.B.upgrader(800, 4).filter(p => p === 'work').length, 7)],
