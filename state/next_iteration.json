@@ -52,5 +52,17 @@
    "after_roads": "F: terminal -> extractor+container -> labs -> walls, ask Misaki first (RCL6_MINERALS off, see docs/RCL6.md)"
   }
  },
- "pending_approval": {}
+ "pending_approval": {},
+ "w45n7_hauler_trial": {
+  "started": "2026-10-17 23:52 UTC+8",
+  "tick": 83706676,
+  "set": "Memory.remote.W45N7.haulers=4 (cde1e9b override; was CFG 5)",
+  "baseline_delivered": [
+   83706672,
+   269064
+  ],
+  "note": "5 haulers still alive; take a 2nd baseline sample ~300t later before any dies, then compare delivered/tick over the next 1500t window",
+  "revert_if": "W45N7 delivered/tick drops >10% vs baseline -> console: delete Memory.remote.W45N7.haulers",
+  "also_watch": "container 21,15 energy (overflow at 2000 = too few haulers)"
+ }
 }
