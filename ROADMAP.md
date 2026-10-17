@@ -3,6 +3,12 @@
 Novice zone ends **2026-10-28 03:33 UTC+8**. Defence timeline: `docs/DEFENSE_NOVICE.md` (2026-10-16); detail `docs/DEFENSE.md` / geometry `docs/DEFENSE_PLAN.md`.
 **Safe mode: NEVER auto-activate** — alert Misaki.
 
+## 2026-10-17 strategy review (neighbours, `docs/NEIGHBORS.md`)
+
+- W48N9 army 4–15 combat creeps all 48 h (median 6), towers unfed, nothing ever staged in W47N8/W47N7 → **watch, not escalation**. `neighbor_scan.py` prints a `trend` line; page on `trend NEW`.
+- W48N8 = Evans_702 RCL6 (no exit into W47N8); spawns defenders nonstop — BustJetter's army may be busy there (hypothesis).
+- **RCL6 ETA today ~18:40–19:20** (98.6k left at 24–28/t). Gates verified (`rcl6_gate`, `walls_bank` pass). Order after RCL6: core sites (~35k) → bank 20k → walls step 1. W47N8 conquest (~11.5k) only on Misaki's start; it competes with the bank for the same energy.
+
 ## Priority now (2026-10-16 strategy review: defence before novice end, `docs/DEFENSE_NOVICE.md`)
 
 - RCL5 ~631k/1.215M (~52%); upgrade ~21–23/t. **RCL6 ETA 10-17 ~21:00 – 10-18 morning.**
@@ -27,6 +33,7 @@ Focus (Misaki 10-14): **W46N8 upgrade speed**; expansion (2nd account W47N8, W45
 7. Later: RCL6 terminal/extractor/labs; 2nd room (**approval required**).
 
 ## Log
+- 2026-10-17 14:40 strategy review: topic **neighbour strength** (`docs/NEIGHBORS.md`). W48N9 count is noise inside its 48h band; added trend line + W48N8/W47N8/W47N7 to neighbor_scan; RCL6 ETA 18:40–19:20.
 - 2026-10-16 14:34 strategy review: topic **defence readiness before novice end** (~11.5 d). Wrote `docs/DEFENSE_NOVICE.md`; refreshed STRATEGY current-state; ROADMAP priority → RCL6→bank→wall step 1 before 10-28, upgrade-first, expansion/minerals parked. 24h: RCL5 361k→631k (~+270k / ~15.5 h DB window ≈20/t avg; recent ctl_ema ~21–23/t); CPU ~4.0–4.5 bucket 10k nerr0; remote SAFE delivered ~506k defender ON; storage max ~2.4k (bank still the gate); walls coded dormant; early walls/guards paused; LOW BustJetter/Fandalah scouts; BustJetter W48N9 ~8 combat (thinned). No code this run.
 - 2026-10-15 14:40 strategy review: topic RCL6 readiness. 24h: RCL5 at ~21:30 10-14; build/fix night 22:00–06:00 at 4–10/t, since 06:00 17–23/t; CPU 3.6–4.3, bucket 10000; 1 HIGH (defender death 04:30, kite fix), BustJetter scouts only. Found RCL6 would sink ~260k into idle terminal/labs and the wall start condition is unreachable (storage max 2.3k). Shipped RCL6_MINERALS gate.
 - 2026-10-14 14:45 strategy review: topic RCL5 transition (RCL5 ETA tonight). Found the as-built RCL5 role switch would drop the queen (only storage→ctl carrier) once 2 links exist → upgrade ~10/t instead of ~20–24; stamp B / tower 2 unserved; tower 2 queued behind 10 extensions; 2 towers would pour ~10.6k into ramparts at 20 e/t. Shipped gate + build order + throttle (tests/rcl5_gate.js); link plan proposal → Misaki.

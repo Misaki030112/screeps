@@ -1,7 +1,7 @@
 # Strategy — W46N8 (home) + W45N8 (remote), 20 CPU, shard3
 
 Sources: Screeps docs (control, defense, invaders, CPU), screepers wiki, Overmind / TooAngel / Hivemind patterns.
-Last full refresh: **2026-10-16 strategy review** (defence before novice end: `docs/DEFENSE_NOVICE.md`); prior: RCL6 readiness `docs/RCL6.md` (10-15), RCL5 `docs/RCL5.md` (10-14). Also `docs/DEFENSE.md`, `docs/DEFENSE_PLAN.md`, `docs/LAYOUT_V2.md`, `docs/REMOTE_W45N8.md`, `docs/MODEL.md`, `docs/DATA.md`.
+Last full refresh: **2026-10-17 strategy review** (neighbours: `docs/NEIGHBORS.md`); before that **2026-10-16 strategy review** (defence before novice end: `docs/DEFENSE_NOVICE.md`); prior: RCL6 readiness `docs/RCL6.md` (10-15), RCL5 `docs/RCL5.md` (10-14). Also `docs/DEFENSE.md`, `docs/DEFENSE_PLAN.md`, `docs/LAYOUT_V2.md`, `docs/REMOTE_W45N8.md`, `docs/MODEL.md`, `docs/DATA.md`.
 
 ## Principles
 
@@ -23,7 +23,7 @@ Last full refresh: **2026-10-16 strategy review** (defence before novice end: `d
 | Defence flags | `remoteDefender` ON; `guards` / `earlyWalls` **OFF** (upgrade-first; Misaki 10-16) |
 | CPU | ~4.0–4.5 avg, bucket 10000, nerr 0 |
 | Novice ends | **2026-10-28 03:33 UTC+8** (~11.5 days) |
-| Neighbours | Council: BustJetter W47N9 RCL6 + W48N9 ~8 combat (watch, thinned); scouts through us 0 dmg. Fandalah W44N8 RCL6 no combat. RCL8 N/S still outside our exits |
+| Neighbours (10-17) | W48N9 army swings 4–15 combat creeps (median 6), towers unfed, never staged in W47N8/W47N7; W48N8 = Evans_702 (no exit to W47N8). See `docs/NEIGHBORS.md`. Earlier: Council: BustJetter W47N9 RCL6 + W48N9 ~8 combat (watch, thinned); scouts through us 0 dmg. Fandalah W44N8 RCL6 no combat. RCL8 N/S still outside our exits |
 
 Ideal vs actual: `tools/model.py` / Grafana. Remaining gap ≈ ctl-feed dead-bands (closing) and remote pauses; more upgrade needs more income (expansion — shelved).
 
