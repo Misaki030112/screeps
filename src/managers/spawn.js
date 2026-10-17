@@ -140,7 +140,7 @@ function remoteNext(s) {
 // Paved remote (docs/ROADS.md): 2C:1M road body (16C8M, 1200e, 800 carry) and C.pavedHaulers instead of C.haulers.
 function rhPaved(r) { return require('./roads').paved(r); }
 function rhTarget(C, m, storageE, paved) {
-  const want = (paved && C.pavedHaulers) || C.haulers || 2; if (!C.via) return want;
+  const want = (m && m.haulers) || (paved && C.pavedHaulers) || C.haulers || 2; if (!C.via) return want; // m.haulers: console trial override (W45N7 5->4, 2026-10-17 23:50)
   if (m.cont) return want;
   if ((m.siteProg || 0) < 3000) return 0;
   return storageE >= 1300 ? Math.min(2, want) : 0;
