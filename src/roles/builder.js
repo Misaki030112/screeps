@@ -176,7 +176,11 @@ module.exports = { remoteRoadSite, pickSource, hop, run(c) {
     delete c.memory.tcap;
     const home = Game.rooms[c.memory.home] || room;
     const sites = rc.sites(home);
-    if (sites.length) t = _.min(sites, s => (PRIO[s.structureType] ?? 9) * 100 + c.pos.getRangeTo(s));
+    // v2.2: trunk road sites (placed in parallel) wait while an economic remote road site is open
+    const RDm = require('../managers/roads'), rs = sites.some(s => s.structureType === STRUCTURE_ROAD && RDm.isTrunkTile && RDm.isTrunkTile(s.pos.x, s.pos.y)) && remoteRoadSite();
+    const pick = rs ? sites.filter(s => !(s.structureType === STRUCTURE_ROAD && RDm.isTrunkTile(s.pos.x, s.pos.y))) : sites;
+    if (pick.length) t = _.min(pick, s => (PRIO[s.structureType] ?? 9) * 100 + c.pos.getRangeTo(s));
+    else if (rs) t = rs;
     else {
       const junk = junkContainer(home, P);
       // containers in our own room can be destroyed instantly (ERR_BUSY while hostiles present -> dismantle fallback)

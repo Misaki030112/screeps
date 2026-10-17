@@ -63,7 +63,11 @@ function storageFloor(room) {
 // walking to the controller container; links.js forwards hub -> controller link.
 function standby(c, room, P) {
   const H = require('./hauler'), Lk = require('../managers/links');
-  if (require('../managers/walls').noUpgrade(room)) return false; // build hold: no storage -> controller ferry
+  if (require('../managers/walls').noUpgrade(room)) { // build hold: no storage -> controller ferry; instead drain the hub link into storage
+    // so source link 30,11 can keep sending (live 22:58: hub 799/800 + source link 800 stuck, miner A spilled to container 31,12)
+    const hb = Lk.roles(room).hub;
+    if (hb && room.storage && c.store[RESOURCE_ENERGY] === 0 && hb.store[RESOURCE_ENERGY] > 400) { if (move.to(c, hb.pos.x, hb.pos.y, 1)) c.withdraw(hb, RESOURCE_ENERGY); return true; }
+    return false; }
   const hub = Lk.ctlLinkLow(room) && Lk.roles(room).hub;
   const toHub = hub && hub.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
   if (!toHub && !H.ctlLow(room, P)) return false;

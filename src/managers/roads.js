@@ -84,6 +84,9 @@ function run() {
   // never starve on a 2-4 tile tail (live 22:45: haul 12/16 -> 2 sites, 2 builders, storage 12.3k). Phase still advances in order
   // (walls gate unchanged); trunks ('home') are only placed once the phase reaches 'home' (Misaki: 主干道保留在最后).
   const par = PHASES.indexOf(ph) <= PHASES.indexOf('econ') ? PHASES.slice(PHASES.indexOf(ph), PHASES.indexOf('econ') + 1) : [ph];
+  // v2.2: once every economic tile already has a site/road, trunk sites ('home') join in parallel; builders still take
+  // economic (remote) road sites first (roles/builder trunkDefer), so the economic order holds.
+  if (par.indexOf('home') < 0 && par.every(p => status(T[p], look).open.length === 0)) par.push('home');
   const R2 = require('./remote'), perRoom = {}, open = [];
   for (const p of par) for (const t of T[p]) { const v = look(t[0], t[1], t[2]); if (v === 'site') perRoom[t[0]] = (perRoom[t[0]] || 0) + 1; else if (v === 'open' && !(t[0] !== HOME && R2.paused(t[0]))) open.push(t); }
   m.idle = !Object.keys(perRoom).length;
@@ -119,4 +122,5 @@ function repairTarget(minFrac) {
   }
   return best ? best.s : null;
 }
-module.exports = { PHASES, BATCH, tiles, status, coreDone, phase, done, paved, run, repairTarget, isHomeTile, isRouteTile, _memo: memo };
+function isTrunkTile(x, y) { const T = memo.t || tiles(require('../utils/plan').get(HOME)); return T.home.some(([, a, b]) => a === x && b === y); }
+module.exports = { isTrunkTile, PHASES, BATCH, tiles, status, coreDone, phase, done, paved, run, repairTarget, isHomeTile, isRouteTile, _memo: memo };

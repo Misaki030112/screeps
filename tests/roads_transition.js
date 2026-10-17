@@ -36,7 +36,7 @@ const cases = [
   ['paused remote: no sites', () => { W8.sites.clear(); paused = true; tick(100); assert.strictEqual(W8.sites.size, 0); paused = false; }],
   ['W45N8 batch then econ -> home(trunks) -> done; walls gated until done', () => { tick(50); assert.ok(W8.sites.size > 0 && W8.sites.size <= R.BATCH); let g = 0;
     while (Memory.roads.phase === 'W45N8' && g++ < 100) { finishSites(W8); tick(50); } assert.strictEqual(W8.roads.size, 12); assert.ok(R.paved('W45N8'));
-    assert.strictEqual(Memory.roads.phase, 'econ'); assert.ok(!R.done());
+    assert.ok(['econ', 'home'].includes(Memory.roads.phase)); assert.ok(!R.done());
     while (Memory.roads.phase === 'econ' && g++ < 200) { finishSites(home); tick(50); } assert.strictEqual(Memory.roads.phase, 'home'); assert.ok(!R.done());
     while (Memory.roads.phase === 'home' && g++ < 300) { finishSites(home); tick(50); } assert.strictEqual(Memory.roads.phase, 'done'); assert.ok(R.done()); }],
   ['v1 migrate: phase home -> haul once', () => { Memory.roads = { phase: 'home', t: 1 }; tick(50); assert.ok(Memory.roads.v2 && Memory.roads.log.some(l => l[0] === 'v2') && Memory.roads.phase !== 'home'); }],
