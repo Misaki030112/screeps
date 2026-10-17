@@ -35,7 +35,8 @@ const B = {
   // patrol 10-14 10:55). Cap 12 -> 12W1C1M = 1300 = RCL4 full cap, 2x12 = 24 WORK ~ model ideal 23.5.
   upgrader: (e, rcl) => { const w = Math.max(1, Math.min(rcl >= 8 ? 15 : 12, Math.floor((e - 100) / 100))); return [].concat(rep(w, WORK), [CARRY, MOVE]); },
   guard: e => { const n = Math.max(1, Math.min(6, Math.floor((e - 300) / 200))); return [].concat(rep(n, RANGED_ATTACK), rep(n + 1, MOVE), [HEAL]); },
-  builder: e => { const n = Math.max(1, Math.min(5, Math.floor(e / 200))); return [].concat(rep(n, WORK), rep(n, CARRY), rep(n, MOVE)); },
+  // builder cap 8W8C8M (1600e) at RCL6: 400 carry, fewer refill walks (was 5W5C5M)
+  builder: e => { const n = Math.max(1, Math.min(8, Math.floor(e / 200))); return [].concat(rep(n, WORK), rep(n, CARRY), rep(n, MOVE)); },
   filler: e => [CARRY, CARRY, CARRY, MOVE],
   manager: e => [].concat(rep(Math.min(16, Math.floor((e - 50) / 50)), CARRY), [MOVE]),
 };
@@ -79,6 +80,7 @@ function targets(room, count, backlog, ctlEnergy, sites) {
   if (st && rcl >= 6) { const RD = require('./roads');
     // build hold: the upgrader's ~6/t goes to builders; a 3rd builder once storage holds a cushion and >=3 sites are open
     if (T.builder === 2 && sites >= 3 && require('./walls').noUpgrade(room) && room.storage.store[RESOURCE_ENERGY] >= 3000) T.builder = 3;
+    if (T.builder === 3 && sites >= 6 && require('./walls').noUpgrade(room) && room.storage.store[RESOURCE_ENERGY] >= 6000) T.builder = 4; // storage still climbing at 3 builders
     if (T.builder === 1 && !sites && /^W45N/.test(RD.phase()) && room.storage.store[RESOURCE_ENERGY] >= 5000 && room.energyCapacityAvailable >= 1300) T.builder = 2;
     if (!T.builder && RD.repairTarget(0.4)) T.builder = 1; }
   return T;

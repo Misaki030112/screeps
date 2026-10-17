@@ -27,15 +27,19 @@ const cases = [
   ['RCL5: no-op, Memory.roads untouched', () => { tick(100); assert.strictEqual(Memory.roads, undefined); }],
   ['RCL6: init core, waits for core build', () => { ctl.level = 6; core = [{ structureType: 'extension' }]; tick(1);
     assert.strictEqual(Memory.roads.phase, 'core'); tick(200); assert.strictEqual(Memory.roads.phase, 'core'); assert.strictEqual(home.sites.size, 0); }],
-  ['core done -> home, <=5 sites', () => { ext = 40; link = 3; core = []; tick(50); assert.strictEqual(Memory.roads.phase, 'home'); assert.ok(home.sites.size <= 5 && home.sites.size > 0); tick(50); assert.ok(home.sites.size <= 5); }],
-  ['home completes -> W45N8 (no early skip)', () => { let g = 0; while (Memory.roads.phase === 'home' && g++ < 100) { finishSites(home); tick(50); }
-    assert.strictEqual(Memory.roads.phase, 'W45N8'); assert.strictEqual(W8.sites.size, 0); }],
+  ['core done -> haul, <=BATCH sites', () => { ext = 40; link = 3; core = []; tick(50); assert.strictEqual(Memory.roads.phase, 'haul'); assert.ok(home.sites.size <= R.BATCH && home.sites.size > 0); tick(50); assert.ok(home.sites.size <= R.BATCH); }],
+  ['haul completes -> W45N8 (no early skip, no trunk sites yet)', () => { let g = 0; while (Memory.roads.phase === 'haul' && g++ < 100) { finishSites(home); tick(50); }
+    assert.strictEqual(Memory.roads.phase, 'W45N8'); assert.ok(W8.sites.size <= R.BATCH); assert.strictEqual(home.roads.size, R.tiles().haul.length); }],
   ['no vision: no progress, no crash', () => { delete Game.rooms.W45N8; tick(200); assert.strictEqual(Memory.roads.phase, 'W45N8'); assert.ok(Memory.roads.prog.unseen > 0); Game.rooms.W45N8 = W8; }],
-  ['paused remote: no sites', () => { paused = true; tick(100); assert.strictEqual(W8.sites.size, 0); paused = false; }],
-  ['W45N8 batch 5 then done; walls un-gated', () => { tick(50); assert.ok(W8.sites.size > 0 && W8.sites.size <= 5); let g = 0;
-    while (Memory.roads.phase === 'W45N8' && g++ < 100) { finishSites(W8); tick(50); } assert.strictEqual(Memory.roads.phase, 'done'); assert.ok(R.done() && R.paved('W45N8')); assert.strictEqual(W8.roads.size, 13); }],
-  ['off pauses; bad phase resets to core; RCL drop no-op', () => { Memory.roads = { phase: 'home', off: true, t: 1 }; const n = home.sites.size; tick(100); assert.strictEqual(home.sites.size, n);
-    Memory.roads = { phase: 'W45N7', t: 1 }; tick(50); assert.notStrictEqual(Memory.roads.phase, 'W45N7');
+  ['paused remote: no sites', () => { W8.sites.clear(); paused = true; tick(100); assert.strictEqual(W8.sites.size, 0); paused = false; }],
+  ['W45N8 batch then econ -> home(trunks) -> done; walls gated until done', () => { tick(50); assert.ok(W8.sites.size > 0 && W8.sites.size <= R.BATCH); let g = 0;
+    while (Memory.roads.phase === 'W45N8' && g++ < 100) { finishSites(W8); tick(50); } assert.strictEqual(W8.roads.size, 13); assert.ok(R.paved('W45N8'));
+    assert.strictEqual(Memory.roads.phase, 'econ'); assert.ok(!R.done());
+    while (Memory.roads.phase === 'econ' && g++ < 200) { finishSites(home); tick(50); } assert.strictEqual(Memory.roads.phase, 'home'); assert.ok(!R.done());
+    while (Memory.roads.phase === 'home' && g++ < 300) { finishSites(home); tick(50); } assert.strictEqual(Memory.roads.phase, 'done'); assert.ok(R.done()); }],
+  ['v1 migrate: phase home -> haul once', () => { Memory.roads = { phase: 'home', t: 1 }; tick(50); assert.ok(Memory.roads.v2 && Memory.roads.log.some(l => l[0] === 'v2') && Memory.roads.phase !== 'home'); }],
+  ['off pauses; bad phase resets to core; RCL drop no-op', () => { Memory.roads = { phase: 'home', off: true, t: 1, v2: true }; const n = home.sites.size; tick(100); assert.strictEqual(home.sites.size, n);
+    Memory.roads = { phase: 'W45N7', t: 1, v2: true }; tick(50); assert.notStrictEqual(Memory.roads.phase, 'W45N7');
     ctl.level = 5; Memory.roads = { phase: 'home', t: 1 }; tick(100); assert.strictEqual(Memory.roads.phase, 'home'); }],
 ];
 let fail = 0;
