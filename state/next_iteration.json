@@ -1,6 +1,6 @@
 {
- "next_at": "2026-10-17T23:30:00+08:00",
- "reason": "23:11 STALL FOUND (no deploy, live 70b38d8): roads phase W45N8 prog road 5/12 site 7 since haul done 22:49; both builders (83705744, 83705901) empty and parked at 36,30/36,31 IN W45N8: pickSource returns W46N8 storage, move.to is room-local -> walks to 37,31 of W45N8, withdraw ERR_NOT_IN_RANGE forever. Storage 11.8k->14.8k. Fix ready on branch fix-builder-crossroom-fetch d023aec (builder.hop via remote fixed exits; tests/builder_remote 5/5, old code 4/5; all tests + check/sim pass), NOT deployed, awaiting Misaki approval (parent woken). If approved: git merge fix-builder-crossroom-fetch && deploy.py; then verify builders walk 0,21 exit, refill at storage, W45N8 sites rise, storage falls. Also: road 35,31 (econ tile) sits on planned terminal spot (RCL6_MINERALS off, so no conflict yet); hub link 37,29 799 / source link 30,11 800 still stuck (known, pending approval); builders 2 vs target 4 (spawn busy on rhauler wave).",
+ "next_at": "2026-10-18T00:05:00+08:00",
+ "reason": "23:46 (deployed 0e08aed tick 83706619): W45N8 road phase sites all built ~23:41 (fetch fix 6782779 works). New bug found+fixed: full builders in W45N8 whose next target was a home trunk site walked room-locally to 22,36 INSIDE W45N8 (5744 east along y=9, 6460 dithering); working-branch cross-room walk now uses hop() both directions (tests/builder_remote 6/6, old code 5/6). Verified live: 5744 turned west toward 0,14, 6460 at 1,15 heading to exit. Hub link drain (18aaa13 builder withdraw) works: hub 799->0, source link 30,11 800->50. Storage 20.3k peak 23:33 -> 18.8k, 15 trunk sites W46N8, 5 builders. Next: confirm Memory.roads phase advanced past W45N8 (econ/home), storage falling, trunk prog.road rising, both returning builders arrived home and building.",
  "road_plan": {
   "doc": "docs/ROADS.md",
   "each_patrol": [
@@ -44,14 +44,13 @@
   "v2_2": {
    "deployed": [
     "6782779 23:33 builder cross-room fetch",
-    "ecde27e 23:35 hub drain + trunk parallel"
+    "ecde27e 23:35 hub drain + trunk parallel",
+    "18aaa13 23:40 builder hub-link withdraw (parent)",
+    "0e08aed 23:43 builder cross-room hop both directions"
    ],
    "each_patrol": "storage falling toward ~3-5k; builders 4-5 while storage>5k; W45N8 sites rising; trunk sites only after econ placed; links 30,11 and 37,29 cycling (hub <=400 between drains)",
    "after_roads": "F: terminal -> extractor+container -> labs -> walls, ask Misaki first (RCL6_MINERALS off, see docs/RCL6.md)"
   }
  },
- "pending_approval": {
-  "builder_crossroom_fetch": "branch fix-builder-crossroom-fetch d023aec",
-  "hub_link_drain": "v2_1 known_bug"
- }
+ "pending_approval": {}
 }
