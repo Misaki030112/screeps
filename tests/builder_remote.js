@@ -138,6 +138,40 @@ const cases = [
     assert.strictEqual(dir, LEFT, 'on the exit tile: step into W46N8');
     delete RCFG.W45N8; delete Game.getObjectById;
   }],
+  ['sticky home repair yields to a remote swamp7 road site (live 00:05)', () => {
+    // container 34,34 at 86% hits (215700/250000) is below sticky-clear 90% but above repairables 80%;
+    // without remoteRoadSite() in the clear line, builders never leave it for W45N8 swamp7 sites.
+    RCFG.W45N8 = { cont: [13, 11], roads: [[15, 39]], live: true };
+    P.any[34 * 50 + 34] = { type: 'container' }; // planned: must not be treated as junk
+    const hurt = cont(34, 34, 215700, 0);
+    hurt.destroy = () => -10;
+    const site = { id: 'sw1', pos: { roomName: 'W45N8', x: 15, y: 39 }, progress: 0, progressTotal: 1500, structureType: STRUCTURE_ROAD };
+    Game.getObjectById = id => (id === hurt.id ? hurt : id === 'sw1' ? site : null);
+    const R = {
+      name: 'W45N8',
+      lookForAt: (t, x, y) => (t === LOOK_CONSTRUCTION_SITES && x === 15 && y === 39 ? [site] : []),
+      find: (t) => (t === FIND_MY_CONSTRUCTION_SITES ? [site] : []),
+    };
+    Game.rooms.W45N8 = R;
+    W = { sites: [], roads: [], containers: [hurt] };
+    Game.rooms.W46N8 = {
+      name: 'W46N8',
+      storage: { pos: { x: 37, y: 31, roomName: 'W46N8' }, store: { [RESOURCE_ENERGY]: 19000 } },
+    };
+    const store = { energy: 400, [RESOURCE_ENERGY]: 400, getCapacity: () => 400, getFreeCapacity: () => 0, getUsedCapacity: () => 400 };
+    const c = {
+      room: Game.rooms.W46N8, memory: { role: 'builder', home: 'W46N8', t: hurt.id, working: true },
+      store, pos: { x: 38, y: 30, roomName: 'W46N8', getRangeTo: () => 2 },
+      build: () => { W.built = true; return 0; }, repair: () => { W.repaired = true; return 0; },
+      getActiveBodyparts: () => 8,
+    };
+    B.run(c);
+    assert.ok(!W.repaired, 'must not keep repairing the sticky home container');
+    assert.strictEqual(c.memory.t, 'sw1', 'must retarget the remote road site');
+    assert.deepStrictEqual(W.moved, [49, 14], 'must hop toward W45N8 exit');
+    delete P.any[34 * 50 + 34];
+    delete RCFG.W45N8; delete Game.getObjectById;
+  }],
 ];
 let fail = 0;
 for (const [n, f] of cases) {

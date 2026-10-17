@@ -83,11 +83,11 @@ function targets(room, count, backlog, ctlEnergy, sites) {
     if (T.builder === 2 && sites >= 3 && require('./walls').noUpgrade(room) && room.storage.store[RESOURCE_ENERGY] >= 3000) T.builder = 3;
     if (require('./walls').noUpgrade(room)) { // v2.1 build mode: spend storage down toward ~3k (Misaki 22:45); remote road sites count too
       const all = sites + remoteSites(), e = room.storage.store[RESOURCE_ENERGY];
-      if (all > 3 && T.builder < 2 && room.energyCapacityAvailable >= 1300) T.builder = 2;
+      if (all >= 3 && T.builder < 2 && room.energyCapacityAvailable >= 1300) T.builder = 2; // >=3 so swamp7's 3 remote sites still bump (was >3 -> stuck at 1)
       if (T.builder >= 2 && all >= 4 && e >= 5000) T.builder = 4;
       if (T.builder >= 4 && all >= 8 && e >= 8000) T.builder = 5;
       if (T.builder >= 2 && T.builder < 3 && all >= 3 && e >= 3000) T.builder = 3; }
-    if (T.builder === 1 && !sites && /^W45N/.test(RD.phase()) && room.storage.store[RESOURCE_ENERGY] >= 5000 && room.energyCapacityAvailable >= 1300) T.builder = 2;
+    if (T.builder === 1 && !sites && (/^W45N/.test(RD.phase()) || RD.phase() === 'swamp7' || remoteSites() > 0) && room.storage.store[RESOURCE_ENERGY] >= 5000 && room.energyCapacityAvailable >= 1300) T.builder = 2;
     if (!T.builder && RD.repairTarget(0.4)) T.builder = 1; }
   return T;
 }
