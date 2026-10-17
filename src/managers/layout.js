@@ -57,7 +57,7 @@ module.exports = { obsoleteContainer, run(room) {
   const hasStorage = structs.some(s => s.structureType === STRUCTURE_STORAGE);
   for (const s of sites) {
     const want = P.any[plan.key(s.pos.x, s.pos.y)];
-    const ok = walls.planned(P, s.pos.x, s.pos.y, s.structureType) || (s.structureType === STRUCTURE_RAMPART
+    const ok = walls.planned(P, s.pos.x, s.pos.y, s.structureType) || (s.structureType === STRUCTURE_ROAD && require('./roads').isHomeTile(s.pos.x, s.pos.y)) || (s.structureType === STRUCTURE_RAMPART
       ? !!(hasStorage && P.ramparts[plan.key(s.pos.x, s.pos.y)])
       : want && want.type === s.structureType);
     if (!ok) { s.remove(); log.push(`removed site ${s.structureType} ${s.pos.x},${s.pos.y}`); }

@@ -29,6 +29,9 @@ function phase(room) {
   if (room.controller.level < 6 || !room.storage) return 'off';
   const calm = !require('./threat').holding(room.name) && !room.find(FIND_HOSTILE_CREEPS).length;
   const early = Date.now() >= NOVICE_END && playerCombat(room);
+  // Misaki 2026-10-17: walls are LOW priority after RCL6 — no banking / barrier sites until the road plan (managers/roads.js,
+  // docs/ROADS.md) is done. Emergency starts (earlyWalls threat above, post-novice player attack) still win.
+  if (!early && !require('./roads').done()) return 'roads';
   if ((room.storage.store[RESOURCE_ENERGY] >= START && calm) || early) {
     room.memory.walls = { started: Game.time, why: early ? 'player' : 'bank' };
     console.log(`WALLS start ${room.name} t=${Game.time} why=${room.memory.walls.why}`);

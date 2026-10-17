@@ -43,3 +43,8 @@ the code does on the level-up night matters more than another model pass; the RC
 ## Decisions for Misaki (proposal)
 - Minerals/market: keep terminal/extractor/labs off until (a) walls step 2 is done and (b) she decides whether to sell O on the market
   (earns credits; any credit *spending* stays her call). Recommended: revisit after 10-28.
+
+## 2026-10-17 update — roads before walls (Misaki 17:40 UTC+8)
+Walls are now LOW priority. After the core build the road plan runs first (docs/ROADS.md: home trunks → W45N8 → W45N7 → done);
+`walls.phase()` returns `'roads'` until `Memory.roads.phase === 'done'`, so the R4 banking rule ("one upgrader until storage 20k") and
+barrier sites start only after the roads. Emergency wall starts are unchanged. Watchpoint 5 above now applies after the road plan.

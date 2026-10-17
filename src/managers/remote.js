@@ -1,7 +1,7 @@
 // Remote mining W45N8 (approved 2026-10-13). One source, reserved. docs/REMOTE_W45N8.md
 // Safety: hostile combat creeps (or damage to our creeps) in W45N8 or W46N8 -> Memory.remote[R].pauseUntil = now+1500,
 // remote creeps flee home and remote spawning stops. Logs ALERT lines (picked up by listener -> alerts.py).
-const CFG = { W45N8: { home: 'W46N8', src: [14, 12], cont: [13, 11], ctl: [7, 36], exitHome: [49, 14], exitRemote: [0, 14],
+const CFG = { W45N8: { home: 'W46N8', src: [14, 12], cont: [13, 11], ctl: [7, 36], exitHome: [49, 14], exitRemote: [0, 14], pavedHaulers: 1, // pavedHaulers: docs/ROADS.md (16C8M after the W45N8 road phase)
   // swamp tiles on the ideal haul route (model.py pave list); home-side swamps live in layout RCL3 roads
   roads: [[2, 12]],
   // where fleeing remote creeps wait at home while paused: plain tiles off every fixed route/plan tile, near the exit route
@@ -14,7 +14,7 @@ const CFG = { W45N8: { home: 'W46N8', src: [14, 12], cont: [13, 11], ctl: [7, 36
   // site (never step on it: foreign sites are 255 in utils/move matrix + `avoid` here). No roads now (P5 after RCL6, ask first).
   W45N7: { home: 'W46N8', via: ['W45N8'], src: [21, 16], cont: [21, 15], ctl: [6, 40], avoid: [[22, 15]],
     exits: { 'W46N8>W45N8': [49, 21], 'W45N8>W45N7': [21, 49], 'W45N7>W45N8': [21, 0], 'W45N8>W46N8': [0, 21] },
-    park: [46, 21], lead: 140, travel: 150, rt: 230, haulers: 5, rhGap: 60, scout: [19, 12], defend: true,
+    park: [46, 21], lead: 140, travel: 150, rt: 230, haulers: 5, pavedHaulers: 3, rhGap: 60, scout: [19, 12], defend: true,
     // haulers 6->5 (patrol 10-16 20:15): 1h audit rhaulers 46-82% waiting_pickup, cont.e=0; ff260a1 W45N8 borrow kept. Revert to 6 if W45N7+W45N8 delivered drops >0.5/t.
     threat: { readyTimeout: 250, defendTimeout: 650 } } }; // ~150t further than W45N8
 // route helpers: rooms home -> via... -> remote; exit tile for leaving `from` towards `to`

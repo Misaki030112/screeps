@@ -1,4 +1,5 @@
 // Wall phase + RCL6 banking (src/managers/walls.js, spawn targets). node tests/walls_bank.js -> exits 1 on failure
+global.Memory = Object.assign(global.Memory || {}, { roads: { phase: 'done' } }); // road plan finished (docs/ROADS.md): wall banking rules apply
 const path = require('path'), assert = require('assert');
 const src = p => path.join(__dirname, '..', 'src', p);
 Object.assign(global, { WORK: 'work', CARRY: 'carry', MOVE: 'move', RESOURCE_ENERGY: 'energy', STRUCTURE_LINK: 'link', STRUCTURE_CONTAINER: 'container', STRUCTURE_SPAWN: 'spawn', STRUCTURE_EXTENSION: 'extension', STRUCTURE_TOWER: 'tower', FIND_HOSTILE_CREEPS: 103, _: { filter: () => [] }, Game: { time: 1000 } });

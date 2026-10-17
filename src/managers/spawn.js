@@ -72,6 +72,10 @@ function targets(room, count, backlog, ctlEnergy, sites) {
   // remote road sites (remote.CFG roads, not multi-hop) only count once nothing at home needs a builder (patrol 10-17 07:25:
   // W45N8 2,12 swamp site 0/1500 for days; loaded W45N8 rhaulers lose ~4t per trip on the 3,12 swamp, container overflows at 2000)
   if (!T.builder && st && require('../roles/builder').remoteRoadSite()) T.builder = 1;
+  // RCL6 road plan (docs/ROADS.md): remote road phases get a 2nd builder once storage holds a cushion; route roads < 40% get one.
+  if (st && rcl >= 6) { const RD = require('./roads');
+    if (T.builder === 1 && !sites && /^W45N/.test(RD.phase()) && room.storage.store[RESOURCE_ENERGY] >= 5000 && room.energyCapacityAvailable >= 1300) T.builder = 2;
+    if (!T.builder && RD.repairTarget(0.4)) T.builder = 1; }
   return T;
 }
 // Pre-spawn: a dying upgrader / home hauler / queen stops counting once its TTL is under spawn time + walk + margin,
@@ -120,8 +124,10 @@ function remoteNext(s) {
 // stay staggered so replacements never bunch), C.travel (rminer default travel). Ramp (multi-hop W45N7): rhaulers only once the
 // container is >=60% built (before that the rminer spends all it mines on the build -> haulers would idle), and while the container
 // is not built yet a new rhauler also needs storage >= the 1300 defender reserve (bootstrap: an Invader is likely, 169k harvested).
-function rhTarget(C, m, storageE) {
-  const want = C.haulers || 2; if (!C.via) return want;
+// Paved remote (docs/ROADS.md): 2C:1M road body (16C8M, 1200e, 800 carry) and C.pavedHaulers instead of C.haulers.
+function rhPaved(r) { return require('./roads').paved(r); }
+function rhTarget(C, m, storageE, paved) {
+  const want = (paved && C.pavedHaulers) || C.haulers || 2; if (!C.via) return want;
   if (m.cont) return want;
   if ((m.siteProg || 0) < 3000) return 0;
   return storageE >= 1300 ? Math.min(2, want) : 0;
@@ -140,7 +146,7 @@ function remoteSpawn(room, go, avail) {
     // rminer lead = measured travel + spawn time + 10 (fixed 120 arrived ~3t after the old one died: born+121 vs ttl 118, 10-15 data)
     const rmLead = c => Math.min(c.memory.travel || C.travel || 110, C.travel ? C.travel + 60 : 160) + c.body.length * 3 + 10;
     const live = role => mineR(role).filter(c => c.spawning || c.ticksToLive > (role === 'reserver' ? resLead : role === 'rminer' ? rmLead(c) : 120 + lead)).length;
-    const rhAll = mineR('rhauler'), target = rhTarget(C, m, room.storage ? room.storage.store[RESOURCE_ENERGY] : 0);
+    const rhAll = mineR('rhauler'), target = rhTarget(C, m, room.storage ? room.storage.store[RESOURCE_ENERGY] : 0, rhPaved(r));
     const gapOk = !C.rhGap || Game.time - (m.lastRh || 0) >= C.rhGap;
     const next = remoteNext({
       nRes: mineR('reserver').filter(c => c.spawning || (c.ticksToLive || 1500) > 30 + lead).length,
@@ -151,7 +157,7 @@ function remoteSpawn(room, go, avail) {
     // rminer 6W: repair (50 hits/t container decay, 1 tick in 10 at 5W) blocks harvest in the same tick, so 5W harvested ~9/t
     // (R income 8.7 measured 10-15); 6W = 250 harvest + ~25 repair ticks per 300-tick regen -> full 10/t, +25t slack for handoffs.
     if (next === 'rminer') { const w = Math.min(6, Math.floor((Math.min(cap, 800) - 200) / 100)); return go('rminer', [].concat(rep(w, WORK), [CARRY], rep(3, MOVE)), { remote: r }); }
-    if (next === 'rhauler') { const rv = go('rhauler', B.hauler(Math.min(cap, 800)), { remote: r }); if (rv === OK) m.lastRh = Game.time; return rv; }
+    if (next === 'rhauler') { const rv = go('rhauler', rhPaved(r) && cap >= 1200 ? B.roadHauler(1200) : B.hauler(Math.min(cap, 800)), { remote: r }); if (rv === OK) m.lastRh = Game.time; return rv; }
     // vision fallback (P4): no vision for 100+ ticks and no rminer/reserver alive or en route -> one 1-MOVE scout (50e)
     if (C.scout && !Game.rooms[r] && Game.time - (m.seen || 0) > 100 && !rhAll.length && !mineR('rminer').length && !mineR('reserver').length && !mineR('rscout').length)
       return go('rscout', [MOVE], { remote: r });

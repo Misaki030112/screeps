@@ -1,6 +1,7 @@
 // RCL5 transition (docs/RCL5.md): with plan.STATIONARY_FILL off the queen regime continues at RCL5 even with 2 links
 // (no fillers / manager), link sites are skipped, tower sites come before extensions, and tower rampart growth is throttled.
 // node tests/rcl5_gate.js -> exits 1 on failure
+global.Memory = Object.assign(global.Memory || {}, { roads: { phase: 'done' } }); // road plan finished (docs/ROADS.md): wall banking rules apply
 const path = require('path'), assert = require('assert'), fs = require('fs');
 const src = p => path.join(__dirname, '..', 'src', p);
 Object.assign(global, { FIND_HOSTILE_CREEPS: 103, WORK: 'work', CARRY: 'carry', MOVE: 'move', RESOURCE_ENERGY: 'energy', STRUCTURE_LINK: 'link', STRUCTURE_CONTAINER: 'container',

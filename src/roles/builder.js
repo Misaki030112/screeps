@@ -9,7 +9,7 @@ const remote = require('../managers/remote'), trace = require('../utils/trace');
 const PRIO = { spawn: 0, tower: 1, extension: 2, container: 3, storage: 4, link: 5, rampart: 6, road: 7 }; // match layout PRIORITY (tower before extension)
 function remoteRoadSite() {
   for (const r in remote.CFG) {
-    if (remote.paused(r) || remote.CFG[r].via) continue; // multi-hop remotes (W45N7): no roads yet (P5)
+    if (remote.paused(r) || (remote.CFG[r].via && require('../managers/roads').phase() !== 'W45N7')) continue; // multi-hop W45N7: only in its road phase (docs/ROADS.md)
     const room = Game.rooms[r]; if (!room) continue;
     const roads = remote.CFG[r].roads || [];
     for (const [x, y] of roads) {
@@ -33,11 +33,12 @@ function repairables(home, P) {
   // Planned roads/containers below 80%. At 60% (patrol 10-14 05:52) containers sat ~60.4% and planned roads
   // were all healthy, so paused rminer→builder still hit 87.6% no_task (idle at storage 38,30).
   return rc.all(home, STRUCTURE_ROAD).concat(rc.all(home, STRUCTURE_CONTAINER))
-    .filter(s => P.any[plan.key(s.pos.x, s.pos.y)] && s.hits < s.hitsMax * 0.8);
+    .filter(s => (P.any[plan.key(s.pos.x, s.pos.y)] || (s.structureType === STRUCTURE_ROAD && require('../managers/roads').isHomeTile(s.pos.x, s.pos.y))) && s.hits < s.hitsMax * 0.8);
 }
 function hasBuildWork(home, P) {
   if (rc.sites(home).length) return true;
   if (remoteRoadSite()) return true;
+  if (require('../managers/roads').repairTarget()) return true;
   return repairables(home, P).length > 0 || !!require('../managers/walls').repairJob(home);
 }
 function dumpToStorage(c, home) {
@@ -153,6 +154,7 @@ module.exports = { remoteRoadSite, run(c) {
       else {
         const hurt = repairables(home, P);
         t = hurt.length ? _.min(hurt, s => s.hits / s.hitsMax) : null;
+        if (!t) t = require('../managers/roads').repairTarget(); // remote route roads < 50% (docs/ROADS.md)
         const job = !t && require('../managers/walls').repairJob(home); // v4 barrier hits step (lowest first, +10k chunks)
         if (job) { t = Game.getObjectById(job.id); c.memory.tcap = job.cap; }
       }
@@ -171,14 +173,15 @@ module.exports = { remoteRoadSite, run(c) {
   // cross-room: walk via remote fixed exits when target is in another room
   if (t.pos.roomName !== c.room.name) {
     const rName = t.pos.roomName;
-    const C = remote.CFG[rName];
-    if (C && c.room.name === C.home) {
-      const [ex, ey] = C.exitHome;
-      if (c.pos.x === ex && c.pos.y === ey) { c.move(RIGHT); return; }
+    // walk the remote's fixed exits (W45N7 targets in W45N7: home -> W45N8 -> W45N7); targets in a via room (W45N7 road tiles in
+    // W45N8) use the remote that lists that room: W45N8 itself.
+    const C = remote.CFG[rName], path = C ? remote.route(rName) : null, i = path ? path.indexOf(c.room.name) : -1;
+    if (C && i >= 0 && i < path.length - 1) {
+      const [ex, ey] = remote.exitTile(rName, path[i], path[i + 1]);
+      if (c.pos.x === ex && c.pos.y === ey) { c.move(ex === 49 ? RIGHT : ex === 0 ? LEFT : ey === 49 ? BOTTOM : TOP); return; }
       move.to(c, ex, ey, 0); return;
     }
-    if (C && c.room.name === rName) { /* fall through to build */ }
-    else { move.to(c, t.pos.x, t.pos.y, 3); return; }
+    if (!(C && c.room.name === rName)) { move.to(c, t.pos.x, t.pos.y, 3); return; }
   }
   if (move.to(c, t.pos.x, t.pos.y, 3)) {
     const r = t.progress !== undefined ? c.build(t) : c.repair(t);
