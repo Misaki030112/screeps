@@ -1,6 +1,6 @@
 {
- "next_at": "2026-10-18T01:00:00+08:00",
- "reason": "00:39 patrol: ROAD PLAN DONE (Memory.roads.phase=done, swamp7 finished tick 83707350). walls.phase latched 'build' same tick (storage 26.4k>=20k, why=bank, fund 20.1k): gate ramparts 47,16 (8.0k) 47,17 (4.2k) 44,27 (1 hit, needs repair before decay) built, site 25,16 open; 4 leftover builders (39W) walking to 25,16 then repairJob; build hold lifted -> upgrader 12W spawned 83707351, roleTargets upgrader 2 builder 1. Errors 0, CPU 5.6 bucket 10000. W45N7 trial sample3 83707417/276726 (10.28 e/t over 745t vs baseline). Next: rampart 44,27 survives (repairJob lowest-first), gates progress, fund spend rate, storage trend, 2nd upgrader, W45N8 rhauler 16C8M switch, W45N7 trial at ~1500t (~tick 83708176).",
+ "next_at": "2026-10-18T01:35:00+08:00",
+ "reason": "01:13 patrol: FIX 434a2c3 tick 83707939. (a) layout destroy loop: wall phase placed W-trunk road on ctl container 30,30, layout.js destroyed it as a conflict -> built+destroyed 3x (3 ruins, ~900e) 00:44-01:04; walls.lists now skips trunk tiles under another planned structure, site removed. (b) gate ramparts rotting: barrier sites always outrank repair so repairJob never ran; TL gate 25,16 built+decayed 3x, 47,17 4.2k->3.0k. walls.decaying(): gate rampart <5k outranks sites, sticky to 10k, one builder per gate. Verified t=83707977: all 6 gates >=5.6k (25,16 8.6k, 47,17 11.2k, 44,27 11.8k, 6,28 6.6k, 20,44 5.6k, 47,16 6.2k). Storage 24.8k (fund 21.2k reserved -> upgraders energy-bound on source-A link, by design), upgrader target 1 (2nd dies off), hauler 100% idle (backup for link overflow, 0.7e/t, kept). Errors 0, CPU 6.2, bucket 10000. Next: W45N7 trial final at ~tick 83708176 (sample now 83707864/280640 = 9.71 e/t over 1192t; container 21,15 34-126, no overflow); gates stay >=5k; 47,16/20,44 urgent repair happens; storage trend.",
  "road_plan": {
   "doc": "docs/ROADS.md",
   "each_patrol": [
@@ -89,17 +89,29 @@
    83707417,
    276726
   ],
-  "sample3_at": "2026-10-18 00:39 UTC+8"
+  "sample3_at": "2026-10-18 00:39 UTC+8",
+  "sample4": [
+   83707864,
+   280640
+  ],
+  "sample4_at": "2026-10-18 01:13 UTC+8",
+  "window_vs_baseline_4": {
+   "ticks": 1192,
+   "delivered_delta": 11576,
+   "e_per_tick": 9.71,
+   "note": "container 21,15 34-126 no overflow; pre-trial 5-hauler rate not recorded here -> compare to W45N7 source max 10 e/t"
+  }
  },
  "last_deploy": {
-  "commit": "a3570d8",
-  "tick": 83707003,
-  "at": "2026-10-18 00:10 UTC+8"
+  "commit": "434a2c3",
+  "tick": 83707939,
+  "at": "2026-10-18 01:16 UTC+8"
  },
  "walls": {
   "started": 83707350,
   "why": "bank",
   "fund_at_start": 20108,
-  "check_each_patrol": "gates 6 ramparts first then with_gate trunks then 41 walls; SITE_CAP 2; no rampart decays at low hits; storage should not fall below ~5k after fund; terminal/extractor/labs stay off (RCL6_MINERALS) until Misaki decides"
+  "check_each_patrol": "gates 6 ramparts first then with_gate trunks then 41 walls; SITE_CAP 2; no rampart decays at low hits; storage should not fall below ~5k after fund; terminal/extractor/labs stay off (RCL6_MINERALS) until Misaki decides",
+  "decay_fix": "434a2c3: gate ramparts <5000 outrank sites (to 10k, 1 builder/gate); check each patrol no gate < 3000"
  }
 }
