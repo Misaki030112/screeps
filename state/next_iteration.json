@@ -1,6 +1,6 @@
 {
- "next_at": "2026-10-18T00:30:00+08:00",
- "reason": "00:12 patrol (deployed a3570d8 tick 83707003): verified Memory.roads.phase=swamp7 (log home@83706900), sites placed at W45N8 15,39/16,40/25,39 (a9d7815 live). Found stall: all 5 builders sticky-repairing container 34,34 at 86% hits (clear threshold 90%) while home sites=0 so remote sites never outranked repair; storage rose 18.8k->21.6k, hub stuck 799. Fix: builder sticky clear also checks remoteRoadSite(); spawn bumps builders for swamp7 / all>=3 remote sites (roleTargets.builder 1->3). Verified live: all 5 builders in W45N8 retargeted site 15,39 and walking south (prog still 0/1500 en route). W45N7 trial sample2 tick=83707037 delivered=272842 (baseline 83706672/269064; window 365t Δ3778 => 10.351 e/t). Next: swamp7 prog.road rising, storage falling, hub cycling, trial window continue ~1500t.",
+ "next_at": "2026-10-18T01:00:00+08:00",
+ "reason": "00:39 patrol: ROAD PLAN DONE (Memory.roads.phase=done, swamp7 finished tick 83707350). walls.phase latched 'build' same tick (storage 26.4k>=20k, why=bank, fund 20.1k): gate ramparts 47,16 (8.0k) 47,17 (4.2k) 44,27 (1 hit, needs repair before decay) built, site 25,16 open; 4 leftover builders (39W) walking to 25,16 then repairJob; build hold lifted -> upgrader 12W spawned 83707351, roleTargets upgrader 2 builder 1. Errors 0, CPU 5.6 bucket 10000. W45N7 trial sample3 83707417/276726 (10.28 e/t over 745t vs baseline). Next: rampart 44,27 survives (repairJob lowest-first), gates progress, fund spend rate, storage trend, 2nd upgrader, W45N8 rhauler 16C8M switch, W45N7 trial at ~1500t (~tick 83708176).",
  "road_plan": {
   "doc": "docs/ROADS.md",
   "each_patrol": [
@@ -59,7 +59,8 @@
    "basis": "creep_ticks 6h: ~155 rhauler visits/6h/tile, 3.0 ticks/visit vs 1.0 on roaded 2,12",
    "est": "build 4.5k, net ~+600 e/day/tile, payback ~2.5 d",
    "check": "after done: ticks/visit on these tiles ->1.0; W45N7 trip time down ~6 ticks/round trip"
-  }
+  },
+  "status": "done 2026-10-18 ~00:36 UTC+8 tick 83707350 (log core..swamp7); swamp7 check pending: ticks/visit on W45N8 15,39 16,40 25,39 -> 1.0"
  },
  "pending_approval": {},
  "w45n7_hauler_trial": {
@@ -79,15 +80,26 @@
   ],
   "sample2_at": "2026-10-18 00:12 UTC+8",
   "window_vs_baseline": {
-   "ticks": 365,
-   "delivered_delta": 3778,
-   "e_per_tick": 10.351,
-   "note": "still early (~300t); keep sampling; compare after ~1500t window; 7 rhaulers alive (both remotes)"
-  }
+   "ticks": 745,
+   "delivered_delta": 7662,
+   "e_per_tick": 10.285,
+   "note": "container 21,15 at 356 (no overflow); continue to ~1500t"
+  },
+  "sample3": [
+   83707417,
+   276726
+  ],
+  "sample3_at": "2026-10-18 00:39 UTC+8"
  },
  "last_deploy": {
   "commit": "a3570d8",
   "tick": 83707003,
   "at": "2026-10-18 00:10 UTC+8"
+ },
+ "walls": {
+  "started": 83707350,
+  "why": "bank",
+  "fund_at_start": 20108,
+  "check_each_patrol": "gates 6 ramparts first then with_gate trunks then 41 walls; SITE_CAP 2; no rampart decays at low hits; storage should not fall below ~5k after fund; terminal/extractor/labs stay off (RCL6_MINERALS) until Misaki decides"
  }
 }
