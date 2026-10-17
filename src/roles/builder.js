@@ -165,6 +165,7 @@ module.exports = { remoteRoadSite, pickSource, hop, run(c) {
     if (move.to(c, src.pos.x, src.pos.y, 1)) { (src.store ? c.withdraw(src, RESOURCE_ENERGY) : c.pickup(src)); delete c.memory.src; }
     return;
   }
+  const t0 = c.memory.t;
   let t = c.memory.t && Game.getObjectById(c.memory.t);
   if (t && t.hits !== undefined && t.progress === undefined && t.hits >= (c.memory.tcap || t.hitsMax * 0.9)) t = null;
   if (t && t.pos.roomName !== (c.memory.home || room.name) && remote.CFG[t.pos.roomName] && remote.paused(t.pos.roomName)) t = null; // remote under threat: leave
@@ -217,6 +218,12 @@ module.exports = { remoteRoadSite, pickSource, hop, run(c) {
     }
     c.memory.t = t ? t.id : undefined;
     }
+  }
+  // v5 low-carry refill: a builder left with a sliver walked to a fresh far wall target and back (live 03:1x builder83709046
+  // 12,45 -> 25,16 with 32 of 550, then 6,28 with ~0). New target >10 tiles away and <25% carry -> refill at the hub first.
+  if (t && t.id !== t0 && room.name === hm.name && t.pos.roomName === hm.name && c.store[RESOURCE_ENERGY] < 0.25 * (c.store[RESOURCE_ENERGY] + c.store.getFreeCapacity()) && c.pos.getRangeTo(t) > 10
+      && hm.storage && hm.storage.store[RESOURCE_ENERGY] >= c.store[RESOURCE_ENERGY] + c.store.getFreeCapacity() + require('../managers/threat').reserve(hm.name)) {
+    c.memory.working = false; delete c.memory.t; delete c.memory.urgent; delete c.memory.tcap; delete c.memory.src; return;
   }
   if (!t) {
     const home = Game.rooms[c.memory.home] || room;

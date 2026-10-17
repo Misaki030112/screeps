@@ -95,7 +95,9 @@ function targets(room, count, backlog, ctlEnergy, sites) {
       if (T.builder === 1 && bp && f >= 10000 && se >= 10000 && room.energyCapacityAvailable >= 1300) T.builder = 2;
       // v5 infra max (Misaki 02:2x): upgrade held in the wall phase, so its feed + storage down to ~5k go to builders: 3 builders
       // while fund and storage >= 8k, 4 while >= 15k. Spawn steady-state busy ~52% (02:20 live), room for it.
-      if (T.builder >= 2 && bp && W.noUpgrade(room) && f >= 8000 && se >= 8000) T.builder = (f >= 15000 && se >= 15000) ? 4 : 3; } }
+      if (T.builder >= 2 && bp && W.noUpgrade(room) && f >= 8000 && se >= 8000) T.builder = (f >= 15000 && se >= 15000) ? 4 : 3;
+      // 4x 11W builders still left storage rising 24.2k -> 30.2k in ~300t (03:05-03:28, ~+20 e/t, builders work ~25% of ticks): 5th at >= 25k
+      if (T.builder === 4 && bp && W.noUpgrade(room) && f >= 25000 && se >= 25000) T.builder = 5; } }
   return T;
 }
 // Pre-spawn: a dying upgrader / home hauler / queen stops counting once its TTL is under spawn time + walk + margin,

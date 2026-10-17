@@ -51,6 +51,13 @@ const cases = [
     OBJ.g1.hits = 10000; c.build = t => { c.built = t.id; return 0; }; B.run(c); assert.strictEqual(c.built, 's1'); assert.ok(!c.memory.urgent);
     delete Game.creeps.a; SITES = [];
   }],
+  ['v5 low carry: a fresh far target sends the builder to refill first; a near one is worked', () => {
+    OBJ = { w9: { id: 'w9', hits: 10000, hitsMax: 3e8, pos: { x: 6, y: 27, roomName: 'W46N8' } } }; JOB = { id: 'w9', cap: 20000 }; SITES = [];
+    const far = creep(); far.store.getFreeCapacity = () => 500; far.pos.getRangeTo = () => 25; B.run(far);
+    assert.ok(!far.rep); assert.strictEqual(far.memory.working, false); assert.ok(!far.memory.t);
+    const near = creep(); near.store.getFreeCapacity = () => 500; near.pos.getRangeTo = () => 3; B.run(near); assert.strictEqual(near.rep, 'w9');
+    const full = creep(); full.pos.getRangeTo = () => 25; B.run(full); assert.strictEqual(full.memory.t, 'w9', 'full carry walks to the far target');
+  }],
   ['no job and nothing else: parks (no barrier repair)', () => { JOB = null; const c = creep(); c.store.energy = 0; c.store[RESOURCE_ENERGY] = 0; c.memory.working = false; B.run(c); assert.ok(!c.rep); }],
 ];
 let fail = 0; for (const [n, f] of cases) { try { f(); console.log('ok  ', n); } catch (e) { fail++; console.log('FAIL', n, e.message.replace(/\n/g, ' ')); } }
