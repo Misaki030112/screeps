@@ -157,10 +157,10 @@ const R = {
     const seal = all.filter(s => s.structureType === STRUCTURE_WALL).sort((a, b) => (a.pos.x <= 11 ? 0 : 1) - (b.pos.x <= 11 ? 0 : 1));
     const site = seal[0] || c.pos.findClosestByRange(all);
     if (site) { if (!c.pos.inRangeTo(site, 3)) go(c, site.pos.x, site.pos.y, 3); else c.build(site); return; }
-    // 19:31: urgent road/container repair (<30%) -> seal walls to WALL_TARGET[rcl], lowest first -> maintenance (<60%).
+    // 19:31: urgent road/container repair (<10%; container 11,43 at 18% = 2k ticks of decay left pulled the builder off the walls) -> seal walls to WALL_TARGET[rcl], lowest first -> maintenance (<60%).
     // With maintenance first the lone 2W builder spent 180 ticks on container 26,11 (87k/250k) + 22 roads and no wall left 1 hit.
     const rr = f => c.pos.findClosestByRange(FIND_STRUCTURES, { filter: s => (s.structureType === STRUCTURE_CONTAINER || s.structureType === STRUCTURE_ROAD) && s.hits < s.hitsMax * f });
-    const rep = rr(0.3) || wallJob(c.room) || rr(0.6);
+    const rep = rr(0.1) || wallJob(c.room) || rr(0.6);
     if (rep) { if (!c.pos.inRangeTo(rep, 3)) go(c, rep.pos.x, rep.pos.y, 3); else c.repair(rep); return; }
     R.w8upgrader(c);
   },
