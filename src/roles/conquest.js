@@ -420,6 +420,15 @@ function run(c) {
 }
 
 // ---- spawn gate (called from managers/spawn.js) ----
+// standing W47N8 melee guard (Misaki 16:06/16:30): always 1 cqatk. Prespawn when the youngest has < spawn(72t) + walk(~130t) + margin
+// so the replacement reaches 24,8 before the old one dies. Called FIRST from managers/spawn.js (ahead of remotes) and in wantSpawn.
+const GUARD_LEAD = 230;
+function guardWant() {
+  if (!(Memory.ops && Memory.ops.cq && Memory.ops.cq.armed === true) || !ours()) return null;
+  const P = M(), gq = P.guard8 == null ? 1 : P.guard8;
+  const gs = _.filter(Game.creeps, c => c.memory.role === 'cqatk' && (c.spawning || (c.ticksToLive || 1500) > GUARD_LEAD));
+  return gs.length < gq ? { role: 'cqatk', body: ATK_BODY(), mem: { role: 'cqatk', g8: 1, v2: 1, home: HOME, born: Game.time } } : null;
+}
 function wantSpawn(room) {
   if (!(Memory.ops && Memory.ops.cq && Memory.ops.cq.armed === true)) return null; // INERT until Misaki's go (Memory.ops.cq.armed)
   const P = M();
@@ -443,12 +452,7 @@ function wantSpawn(room) {
     if ((n('cqbreaker') < bMax || (short && n('cqbreaker') < bMax + 1)) && !ours()) return { role: 'cqbreaker', body: BREAKER_BODY(), mem: { role: 'cqbreaker', home: HOME, born: Game.time } };
     // pioneers before more reinforcements once the claim is near (Misaki 15:06)
     const self8 = require('../rooms/w47n8/index').selfSufficient(); // W47N8 runs itself -> no more pioneers/cqhaulers from home
-    // standing W47N8 guard (Misaki 16:06): always 1 melee cqatk alive (independent of cq.reinf); pre-spawn at ttl<150
-    if (ours()) {
-      const gq = P.guard8 == null ? 1 : P.guard8;
-      const gs = _.filter(Game.creeps, c => c.memory.role === 'cqatk' && (c.spawning || (c.ticksToLive || 1500) > 150));
-      if (gs.length < gq) return { role: 'cqatk', body: ATK_BODY(), mem: { role: 'cqatk', g8: 1, v2: 1, home: HOME, born: Game.time } };
-    }
+    { const g = guardWant(); if (g) return g; }
     if (!self8 && ours()) {
       const ms = _.filter(Game.creeps, c => c.memory.role === 'cqminer');
       for (let i = 0; i < MINER_SPOTS.length; i++) if (!ms.some(c => (c.memory.ms != null ? c.memory.ms : -1) === i && (c.spawning || c.ticksToLive > 80)))
@@ -480,6 +484,6 @@ function wantSpawn(room) {
 function noteSpawned(name, role) { log({ ev: 'spawned', name, role }); }
 
 module.exports = {
-  run, danger, pickTarget, prio, dps, kiteStep, matrixFor, wantSpawn, noteSpawned,
+  run, danger, pickTarget, prio, dps, kiteStep, matrixFor, wantSpawn, guardWant, noteSpawned,
   SQUAD_BODY, BREAKER_BODY, WORKER_BODY, HAULER_BODY, ATK_BODY, RH_BODY, PATROL, FORBID, ROOM, HOME, MIN_Y, STORAGE_FLOOR, ROLES,
 };

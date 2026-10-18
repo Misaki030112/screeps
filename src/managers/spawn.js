@@ -326,6 +326,11 @@ function run1(spawn, onWait) {
     const linkEra = role === 'hauler' && rcl >= 6 && rc.all(room, STRUCTURE_LINK).length >= 3;
     return go(role, role === 'hauler' && room.storage ? B.roadHauler(linkEra ? Math.min(e, 450) : e) : B[role](e, rcl), mem);
   };
+  // 2b9) W47N8 guard strictly first after refill staff (Misaki 16:30 standing order)
+  { const g = require('../roles/conquest').guardWant(); if (g) {
+    if (avail < _.sum(g.body, p => BODYPART_COST[p])) return ERR_NOT_ENOUGH_ENERGY;
+    const name = 'cqatk' + Game.time, rv = spawn.spawnCreep(g.body, name, { memory: g.mem, directions: birthDirs(spawn, 'cqatk') });
+    if (rv === OK) require('../roles/conquest').noteSpawned(name, 'cqatk'); return rv; } }
   // 2c0) home growth vs W47N8 (Misaki 16:18: home resumes normal development). With storage > reserveE+10k home roles below
   // target (hauler/builder/upgrader) and W47N8 bodies take turns (room.memory.cqTurn); the W47N8 guard (cqatk) always goes first.
   if (room.storage && room.storage.store[RESOURCE_ENERGY] > ((Memory.defense && Memory.defense.reserveE) || 0) + 10000) {
