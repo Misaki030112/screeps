@@ -364,8 +364,11 @@ function wantSpawn(room) {
     // continuous solo reinf to post 21,7 (after at least one breaker out or already ours)
     if (P.reinf !== false && (n('cqbreaker') > 0 || ours() || P.forceReinf)) {
       const aMax = P.reinfAtk || 4, rMax = P.reinfRh || 4;
-      if (n('cqatk') < aMax) return { role: 'cqatk', body: ATK_BODY(), mem: { role: 'cqatk', home: HOME, born: Game.time } };
-      if (n('cqrh') < rMax) return { role: 'cqrh', body: RH_BODY(), mem: { role: 'cqrh', home: HOME, born: Game.time } };
+      // strict alternation (Misaki 14:45): fewer alive goes next, tie -> cqatk
+      const na = n('cqatk'), nr = n('cqrh'), atkNext = na <= nr;
+      if (atkNext && na < aMax) return { role: 'cqatk', body: ATK_BODY(), mem: { role: 'cqatk', home: HOME, born: Game.time } };
+      if (nr < rMax) return { role: 'cqrh', body: RH_BODY(), mem: { role: 'cqrh', home: HOME, born: Game.time } };
+      if (na < aMax) return { role: 'cqatk', body: ATK_BODY(), mem: { role: 'cqatk', home: HOME, born: Game.time } };
     }
     const ctl = Game.rooms[ROOM] && Game.rooms[ROOM].controller;
     const almost = ctl && ctl.reservation && ctl.reservation.ticksToEnd < 1200;
