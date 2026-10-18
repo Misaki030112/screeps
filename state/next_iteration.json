@@ -1,6 +1,6 @@
 {
- "next_at": "2026-10-18T17:30:00+08:00",
- "reason": "17:05 patrol: observe-only (w8patrol live, e986036 17:05:43 gated cqhauler home-storage fetch at reserveE+5k=20k; API 429 from concurrent agents). Home tick 83721480: storage 14.5k (54.3k at 16:15 -> drained by cqhaulers), RCL6 89080 moving again (+3.6k since 16:50, 2 upgraders but idle ~40% = energy-starved), builders 2 (gated: storage<reserveE 15k), cpu 15.7 rising (shard3 cap 20), bkt 10k, alerts LOW only, reservers 2 alive, rhauler parked_threat 29% on one. Next: storage must stop falling and rise (target >15k so builders resume); if still falling at 17:30 find the drain in creep_ticks; CPU avg must stay <~17; check rhauler parked_threat is real threat state.",
+ "next_at": "2026-10-18T18:30:00+08:00",
+ "reason": "17:37 patrol: no fix needed. Home tick 83721942: storage 12.8k@17:10 -> 17.5k@17:30 -> 15.3k (hovering at reserveE 15k since W47N8 support ended; builder resumes above 15k), RCL6 99.8k, upgrade 1h 16.9/t energy-bound (2x12W upgraders), 1 builder 11W on RCL6 sites terminal 67.6k/100k + 3 labs 14.7k/32.2k/8.7k of 50k (~127k left), towers 1000/950, ramparts min 124k, cpu ~12 bkt 10k, alerts LOW only, no new errors since 17:03 seg90. Remotes not paused: W45N8 cont 1035 src on pace, W45N7 cont 368 on pace, reservations Misaki 2286/2165; r7 waits for BustJetter W47N7 end 83724034. API user/memory 429 again (use q.py console). Next: storage must hold >=15k and trend up; terminal/labs progress rising; if storage pinned at 15k for 2 patrols with builder starved, consider whether 2 upgraders vs builder split is right (no reserve change: Misaki/parent call).",
  "road_plan": {
   "doc": "docs/ROADS.md",
   "each_patrol": [
