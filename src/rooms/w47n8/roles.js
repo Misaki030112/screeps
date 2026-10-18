@@ -82,8 +82,9 @@ const R = {
     if (c.pos.x !== x || c.pos.y !== y) {
       // stand taken (e.g. a cqminer from home still mining): harvest from any tile next to the source
       if (Game.rooms[C.ROOM].lookForAt(LOOK_CREEPS, x, y).length && src) return c.pos.isNearTo(src) ? c.harvest(src) : go(c, src.pos.x, src.pos.y, 1);
-      return go(c, x, y, 0);
+      c.memory.wk = 1; return go(c, x, y, 0);
     }
+    if (c.memory.wk && !c.memory.arr) { c.memory.arr = Game.time; const o = Memory.ops = Memory.ops || {}; (o.w8lead = o.w8lead || {})[c.memory.si | 0] = Game.time - (c.memory.born || Game.time) - 3 * c.body.length; }
     const cont = c.pos.lookFor(LOOK_STRUCTURES).find(s => s.structureType === STRUCTURE_CONTAINER);
     if (cont && cont.hits < cont.hitsMax * 0.5 && c.store[E] > 0) return c.repair(cont);
     if (src) c.harvest(src);
