@@ -309,7 +309,8 @@ function runReinf(c) {
   if (c.getActiveBodyparts(HEAL) && c.hits < c.hitsMax) c.heal(c);
   // melee chases armed hostiles near the post (leash 10 from 21,7), Misaki 14:56
   if (c.getActiveBodyparts(ATTACK) && !near.length) {
-    const prey = hostiles.filter(h => armed(h) && h.pos.getRangeTo(REINF_POST[0], REINF_POST[1]) <= 10);
+    const inLeash = hostiles.filter(h => h.pos.getRangeTo(REINF_POST[0], REINF_POST[1]) <= 10);
+    const prey = inLeash.filter(armed).length ? inLeash.filter(armed) : inLeash; // armed first, else any enemy
     if (prey.length) { const t = c.pos.findClosestByRange(prey); return travel(c, ROOM, t.pos.x, t.pos.y, 1); }
   }
   if (!c.pos.inRangeTo(REINF_POST[0], REINF_POST[1], 3)) return travel(c, ROOM, REINF_POST[0], REINF_POST[1], 2);
