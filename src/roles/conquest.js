@@ -224,8 +224,11 @@ function runWorker(c) {
     c.upgradeController(ctl); return;
   }
 
-  // downgrade guard (Misaki 15:25): if timer gets low, everyone upgrades first
-  if (ctl.ticksToDowngrade < 4000) {
+  // downgrade guard (Misaki 16:02): one dedicated upgrader (oldest worker) from dg<8000 until dg>=9500 (hysteresis, no flapping);
+  // everyone upgrades only in an emergency (<3000)
+  const ws = _.sortBy(_.filter(Game.creeps, x => x.memory.role === 'cqworker' && x.room.name === ROOM), x => x.memory.born || 0);
+  if (ctl.ticksToDowngrade < 8000) P.dgUp = 1; else if (ctl.ticksToDowngrade >= 9500) P.dgUp = 0;
+  if ((P.dgUp && ws[0] && ws[0].name === c.name) || ctl.ticksToDowngrade < 3000) {
     if (!c.pos.inRangeTo(ctl, 3)) return travel(c, ROOM, ctl.pos.x, ctl.pos.y, 3);
     c.upgradeController(ctl); return;
   }
@@ -323,6 +326,15 @@ function runReinf(c) {
 function runMiner(c) {
   // memory.ms (not 'spot': main.js v2 migration deletes 'spot' on a creep's first tick -> every miner went north, spawn loop)
   const i = c.memory.ms != null ? c.memory.ms : (c.memory.spot || 0), [x, y] = MINER_SPOTS[i];
+  // dedupe: one miner per spot; extras (younger ones, unless already on the tile) walk home and recycle
+  const same = _.filter(Game.creeps, m => m.memory.role === 'cqminer' && (m.memory.ms != null ? m.memory.ms : 0) === i && !m.spawning);
+  const fresh = same.filter(m => (m.ticksToLive || 1500) > 80), keeper = fresh.length ? _.max(fresh, m => m.memory.born || 0) : null; // youngest stays
+  if (keeper && keeper.name !== c.name) {
+    const sp = Game.spawns.Spawn1;
+    if (!sp) return;
+    if (!c.pos.isNearTo(sp)) return travel(c, HOME, sp.pos.x, sp.pos.y, 1);
+    return sp.recycleCreep(c);
+  }
   if (c.room.name !== ROOM) return travel(c, ROOM, x, y, 0);
   const src = c.room.lookForAt(LOOK_SOURCES, MINER_SRC[i][0], MINER_SRC[i][1])[0];
   if (c.pos.x === x && c.pos.y === y) { if (src) c.harvest(src); return; }

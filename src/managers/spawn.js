@@ -298,19 +298,6 @@ function run1(spawn, onWait) {
     const rQ = go('queen', B.queen(bodyEnergy('queen', E, cap, avail, !!alive.hauler, !!room.storage)));
     if (rQ === OK || rQ === ERR_NOT_ENOUGH_ENERGY) return rQ;
   }
-  // 2c) W47N8: quad replacements first; remotes (rminer/reserver) before claim bodies so home/remote economy does not starve
-  const CQ = require('../roles/conquest');
-  { const w = require('../roles/quad').wantSpawn(room); if (w) {
-    if (avail < _.sum(w.body, p => BODYPART_COST[p])) return ERR_NOT_ENOUGH_ENERGY;
-    const name = w.role + Game.time;
-    const rv = spawn.spawnCreep(w.body, name, { memory: w.mem, directions: birthDirs(spawn, w.role) });
-    if (rv === OK) CQ.noteSpawned(name, w.role); return rv; } }
-  { const r = remoteSpawn(room, go, avail); if (r !== undefined) return r; }
-  { const w = CQ.wantSpawn(room); if (w) {
-    if (avail < _.sum(w.body, p => BODYPART_COST[p])) return ERR_NOT_ENOUGH_ENERGY;
-    const name = w.role + Game.time;
-    const rv = spawn.spawnCreep(w.body, name, { memory: w.mem, directions: birthDirs(spawn, w.role) });
-    if (rv === OK) CQ.noteSpawned(name, w.role); return rv; } }
   const hp = require('../roles/hauler');
   const backlog = _.sum(hp.pickups(room), s => s.store[RESOURCE_ENERGY]);
   const [cx, cy] = P.pos.controllerContainer; const cc = rc.at(room, cx, cy, STRUCTURE_CONTAINER);
@@ -326,9 +313,7 @@ function run1(spawn, onWait) {
     if (dr && room.storage && T.builder > 0) { const sur = room.storage.store[RESOURCE_ENERGY] - dr - 2000; T.builder = sur < 0 ? 0 : Math.min(T.builder, 1 + Math.floor(sur / 4000)); } }
   if (require('./walls').defLow && require('./walls').defLow(room)) { T.builder = 0; T.upgrader = (room.controller.ticksToDowngrade || 0) < require('./walls').UP_SAFE ? 1 : 0; }
   room.memory.roleTargets = T;
-  for (const role of spawnOrder(count, T, nSites)) {
-    if (role === 'REMOTE') { const r = remoteSpawn(room, go, avail); if (r !== undefined) return r; continue; }
-    if ((count[role] || 0) >= T[role]) continue;
+  const homeRole = role => {
     const mem = {};
     if (role === 'filler') { const used = new Set(mine.filter(c => c.memory.role === 'filler').map(c => c.memory.spot.join())); mem.spot = P.pos.fillers.slice(0, 4).find(s => !used.has(s.join())); }
     // Home hauler: 8C8M pre-storage. With storage it hauls source A -> ctl container (27 tiles, measured cycle ~57-66t, not the
@@ -340,6 +325,28 @@ function run1(spawn, onWait) {
     // 14C7M sat waiting_pickup 66% and moved empty 89% (motion audit 02:50) -> 6C3M (450e, 300 carry).
     const linkEra = role === 'hauler' && rcl >= 6 && rc.all(room, STRUCTURE_LINK).length >= 3;
     return go(role, role === 'hauler' && room.storage ? B.roadHauler(linkEra ? Math.min(e, 450) : e) : B[role](e, rcl), mem);
+  };
+  // 2c0) home essentials before W47N8/quad/remote bodies (patrol 16:03: 0 builders/upgraders/haulers since the claim, CQ won
+  // every spawn). Only with storage > reserveE+10k: 1 hauler, 1 builder (if sites), 1 upgrader when targeted and missing.
+  if (room.storage && room.storage.store[RESOURCE_ENERGY] > ((Memory.defense && Memory.defense.reserveE) || 0) + 10000)
+    for (const role of ['hauler', 'builder', 'upgrader']) if ((T[role] || 0) >= 1 && !(count[role] || 0) && (role !== 'builder' || nSites)) return homeRole(role);
+  // 2c) W47N8: quad replacements first; remotes (rminer/reserver) before claim bodies so home/remote economy does not starve
+  const CQ = require('../roles/conquest');
+  { const w = require('../roles/quad').wantSpawn(room); if (w) {
+    if (avail < _.sum(w.body, p => BODYPART_COST[p])) return ERR_NOT_ENOUGH_ENERGY;
+    const name = w.role + Game.time;
+    const rv = spawn.spawnCreep(w.body, name, { memory: w.mem, directions: birthDirs(spawn, w.role) });
+    if (rv === OK) CQ.noteSpawned(name, w.role); return rv; } }
+  { const r = remoteSpawn(room, go, avail); if (r !== undefined) return r; }
+  { const w = CQ.wantSpawn(room); if (w) {
+    if (avail < _.sum(w.body, p => BODYPART_COST[p])) return ERR_NOT_ENOUGH_ENERGY;
+    const name = w.role + Game.time;
+    const rv = spawn.spawnCreep(w.body, name, { memory: w.mem, directions: birthDirs(spawn, w.role) });
+    if (rv === OK) CQ.noteSpawned(name, w.role); return rv; } }
+  for (const role of spawnOrder(count, T, nSites)) {
+    if (role === 'REMOTE') { const r = remoteSpawn(room, go, avail); if (r !== undefined) return r; continue; }
+    if ((count[role] || 0) >= T[role]) continue;
+    return homeRole(role);
   }
 }
 
