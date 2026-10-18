@@ -279,7 +279,10 @@ function runWorker(c) {
       }
     }
   }
-  const site = c.pos.findClosestByRange(FIND_MY_CONSTRUCTION_SITES);
+  // spawn site first; never target sites whose build range lies inside the y<MIN_Y no-go rows (north seal walls at y=3:
+  // unreachable for travel(), workers oscillated at y=8 holding energy). Those are left to the w8builders after the spawn.
+  const site = sites.find(s => s.structureType === STRUCTURE_SPAWN)
+    || c.pos.findClosestByRange(FIND_MY_CONSTRUCTION_SITES, { filter: s => s.pos.y + 3 >= MIN_Y });
   if (site) {
     if (!c.pos.inRangeTo(site, 3)) return travel(c, ROOM, site.pos.x, site.pos.y, 3);
     c.build(site); return;
