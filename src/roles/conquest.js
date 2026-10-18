@@ -17,7 +17,7 @@ const SQUAD_BODY = () => [].concat(Array(6).fill(RANGED_ATTACK), Array(2).fill(H
 const BREAKER_BODY = () => [CLAIM, CLAIM, CLAIM, MOVE, MOVE, MOVE];                                       // 1950, 3 reservation ticks/tick (RCL6 cap 2300)
 const WORKER_BODY = () => [].concat(Array(5).fill(WORK), Array(5).fill(CARRY), Array(5).fill(MOVE));     // 1000, carries 250
 const STORAGE_FLOOR = 3100; // keep the 1300 defender reserve (same gate as the probe)
-const ROLES = ['cqsquad', 'cqbreaker', 'cqworker', 'cqhauler'];
+const ROLES = ['cqsquad', 'cqbreaker', 'cqworker', 'cqhauler', 'cqatk', 'cqrh'];
 
 const M = () => (Memory.ops = Memory.ops || {}, Memory.ops.cq = Memory.ops.cq || {});
 function log(ev) { const P = M(); P.log = P.log || []; P.log.push(Object.assign({ t: Game.time }, ev)); if (P.log.length > LOG_CAP) P.log.splice(0, P.log.length - LOG_CAP); }
@@ -258,6 +258,30 @@ function runWorker(c) {
 // Dedicated home->W47N8 energy ferry (fast RCL2). Body 10C10M (1000). Withdraws home storage (>=floor+carry),
 // dumps into W47N8 controller-adjacent container if present else drops next to controller for workers.
 const HAULER_BODY = () => [].concat(Array(10).fill(CARRY), Array(10).fill(MOVE));
+// Continuous solo reinforcements (Misaki 14:35): walk to post 21,7, fight hostiles in range only (CLAIM/armed), no formation.
+const REINF_POST = [21, 7];
+const ATK_BODY = () => [].concat(Array(12).fill(ATTACK), Array(12).fill(MOVE)); // 1560
+const RH_BODY = () => [].concat(Array(4).fill(RANGED_ATTACK), Array(4).fill(HEAL), Array(8).fill(MOVE)); // 2000
+function runReinf(c) {
+  const P = M(), cmd = P.cmd || 'hold';
+  if (FORBID.has(c.room.name)) return travel(c, ROOM, REINF_POST[0], REINF_POST[1], 3);
+  if (cmd === 'retreat') return travel(c, HOME_SAFE.room, HOME_SAFE.x, HOME_SAFE.y, 2);
+  if (cmd === 'hold') return travel(c, HOLD_POS.room, HOLD_POS.x, HOLD_POS.y, 2);
+  if (c.room.name !== ROOM) return travel(c, ROOM, REINF_POST[0], REINF_POST[1], 2);
+  const hostiles = c.room.find(FIND_HOSTILE_CREEPS).filter(enemy);
+  const dangerous = hostiles.filter(h => act(h, CLAIM) || armed(h));
+  const inR = (c.getActiveBodyparts(ATTACK) ? 1 : 3);
+  const near = dangerous.filter(h => c.pos.inRangeTo(h, inR));
+  if (near.length) {
+    const t = pickTarget(c.pos, near);
+    if (c.getActiveBodyparts(ATTACK)) c.attack(t);
+    else { if (near.length >= 3) c.rangedMassAttack(); else c.rangedAttack(t); }
+  }
+  if (c.getActiveBodyparts(HEAL) && c.hits < c.hitsMax) c.heal(c);
+  // sit near post; do not chase harmless / out-of-range creeps
+  if (!c.pos.inRangeTo(REINF_POST[0], REINF_POST[1], 3)) return travel(c, ROOM, REINF_POST[0], REINF_POST[1], 2);
+}
+
 function runHauler(c) {
   const P = M(), cmd = P.cmd || 'hold';
   if (FORBID.has(c.room.name)) return travel(c, ROOM, WAIT_POS[0], WAIT_POS[1], 2);
@@ -290,6 +314,7 @@ function run(c) {
   if (c.memory.role === 'cqbreaker') return runBreaker(c);
   if (c.memory.role === 'cqworker') return runWorker(c);
   if (c.memory.role === 'cqhauler') return runHauler(c);
+  if (c.memory.role === 'cqatk' || c.memory.role === 'cqrh') return runReinf(c);
 }
 
 // ---- spawn gate (called from managers/spawn.js) ----
@@ -308,7 +333,12 @@ function wantSpawn(room) {
   if (P.claim) {
     const bMax = P.breakers || 2, wMax = P.workers || 4;
     if (n('cqbreaker') < bMax && !ours()) return { role: 'cqbreaker', body: BREAKER_BODY(), mem: { role: 'cqbreaker', home: HOME, born: Game.time } };
-    // workers only after claimed OR when reservation nearly gone (<400 ticks) so they arrive with energy
+    // continuous solo reinf to post 21,7 (after at least one breaker out or already ours)
+    if (P.reinf !== false && (n('cqbreaker') > 0 || ours() || P.forceReinf)) {
+      const aMax = P.reinfAtk || 4, rMax = P.reinfRh || 4;
+      if (n('cqatk') < aMax) return { role: 'cqatk', body: ATK_BODY(), mem: { role: 'cqatk', home: HOME, born: Game.time } };
+      if (n('cqrh') < rMax) return { role: 'cqrh', body: RH_BODY(), mem: { role: 'cqrh', home: HOME, born: Game.time } };
+    }
     const ctl = Game.rooms[ROOM] && Game.rooms[ROOM].controller;
     const almost = ctl && ctl.reservation && ctl.reservation.ticksToEnd < 1200;
     if (n('cqworker') < wMax && (ours() || almost || P.forceWorkers)) {
@@ -318,7 +348,6 @@ function wantSpawn(room) {
     if (n('cqhauler') < hMax && (ours() || almost || P.forceWorkers)) {
       return { role: 'cqhauler', body: HAULER_BODY(), mem: { role: 'cqhauler', home: HOME, born: Game.time } };
     }
-    if (ours() && n('cqbreaker') === 0 && n('cqworker') >= wMax && n('cqhauler') >= hMax && !P.respawn) P.claim = false;
   }
   // replacement of dead squad members during an active 'go'
   if (P.respawn && (P.cmd || 'hold') === 'go' && n('cqsquad') < (P.squadMax || 2)) {
@@ -330,5 +359,5 @@ function noteSpawned(name, role) { log({ ev: 'spawned', name, role }); }
 
 module.exports = {
   run, danger, pickTarget, prio, dps, kiteStep, matrixFor, wantSpawn, noteSpawned,
-  SQUAD_BODY, BREAKER_BODY, WORKER_BODY, HAULER_BODY, PATROL, FORBID, ROOM, HOME, MIN_Y, STORAGE_FLOOR, ROLES,
+  SQUAD_BODY, BREAKER_BODY, WORKER_BODY, HAULER_BODY, ATK_BODY, RH_BODY, PATROL, FORBID, ROOM, HOME, MIN_Y, STORAGE_FLOOR, ROLES,
 };
