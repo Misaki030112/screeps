@@ -14,9 +14,15 @@ function spawnRun(spawn) {
   const cap = room.energyCapacityAvailable, avail = room.energyAvailable;
   const sites = room.find(FIND_MY_CONSTRUCTION_SITES).length;
   let want = null, mem = {};
-  // 1) miners per source (replace at TTL<60)
-  for (let i = 0; i < C.SOURCES.length && !want; i++)
-    if (!cs.some(c => c.memory.role === 'w8miner' && (c.memory.si | 0) === i && (c.spawning || c.ticksToLive > 60))) { want = 'w8miner'; mem.si = i; }
+  // 1) miners per source: keep >=5 WORK (10 e/t) on each source. Replace at TTL<60; and since the first w8miners were 2 WORK
+  // (cap 300) and would run at 40% for ~1000 ticks, add a bigger one once cap allows (17:25), counting any cqminer still there.
+  for (let i = 0; i < C.SOURCES.length && !want; i++) {
+    const S = C.SOURCES[i], live = cs.filter(c => c.memory.role === 'w8miner' && (c.memory.si | 0) === i && (c.spawning || c.ticksToLive > 60));
+    const cq = room.find(FIND_MY_CREEPS, { filter: c => c.memory.role === 'cqminer' && c.ticksToLive > 60 && c.pos.inRangeTo(S.src[0], S.src[1], 1) });
+    const works = _.sum(live.concat(cq), c => c.getActiveBodyparts(WORK) || _.filter(c.body, p => p.type === WORK).length);
+    const add = bodyFor('w8miner', cap).length - 1;
+    if (!live.length || (works < 5 && live.length < 2 && add > (live[0] ? live[0].getActiveBodyparts(WORK) : 0))) { want = 'w8miner'; mem.si = i; }
+  }
   // 2) haulers 2, 3) upgraders 2 (3 when no sites), 4) builders while sites
   if (!want && n('w8hauler') < 2) want = 'w8hauler';
   else if (!want && n('w8upgrader') < (sites ? 2 : 3)) want = 'w8upgrader';
