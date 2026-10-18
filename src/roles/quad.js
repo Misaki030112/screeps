@@ -338,6 +338,11 @@ function run(c) {
       if (Q.mode==="combat" && Q.moves[c.name]) return c.move(Q.moves[c.name]);
       if (Q.mode==="combat"||Q.mode==="holdFire") return;
     } else fight(c, mates, {});
+    // waypoint 30,23 for members not yet at the post (Misaki 14:42)
+    if (!c.memory.viaWp) {
+      if (c.pos.roomName===ROOM && (rng(c.pos,{x:30,y:23})<=2 || rng(c.pos,A)<=3)) c.memory.viaWp = 1;
+      else return c.moveTo(new RoomPosition(30,23,ROOM), {range:2, reusePath:5, maxRooms:4, costCallback:matrixLite});
+    }
     const cell = new RoomPosition(A.x+OFF[k][0], A.y+OFF[k][1], ROOM);
     if (c.pos.isEqualTo(cell)) return;
     return c.moveTo(cell, {reusePath:5, maxRooms:4, costCallback:matrixLite});

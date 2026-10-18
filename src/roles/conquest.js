@@ -259,17 +259,16 @@ function runWorker(c) {
 // dumps into W47N8 controller-adjacent container if present else drops next to controller for workers.
 const HAULER_BODY = () => [].concat(Array(10).fill(CARRY), Array(10).fill(MOVE));
 // Continuous solo reinforcements (Misaki 14:35): walk to post 21,7, fight hostiles in range only (CLAIM/armed), no formation.
-const REINF_POST = [21, 7];
+const REINF_POST = [21, 7], WAYPT = [30, 23]; // Misaki 14:42: route via 30,23
 const ATK_BODY = () => [].concat(Array(12).fill(ATTACK), Array(12).fill(MOVE)); // 1560
 const RH_BODY = () => [].concat(Array(4).fill(RANGED_ATTACK), Array(4).fill(HEAL), Array(8).fill(MOVE)); // 2000
 function runReinf(c) {
-  // Route: home -> W47N8 controller (15,25 r2) -> post 21,7. CLAIM hostiles: chase anywhere in room; else ignore harmless unless in range.
+  // Route: home -> W47N8 30,23 (r2) -> post 21,7. CLAIM hostiles: chase anywhere in room; else ignore harmless unless in range.
   const P = M(), cmd = P.cmd || 'hold';
-  if (FORBID.has(c.room.name)) return travel(c, ROOM, CTRL[0], CTRL[1], 3);
+  if (FORBID.has(c.room.name)) return travel(c, ROOM, WAYPT[0], WAYPT[1], 3);
   if (cmd === 'retreat') return travel(c, HOME_SAFE.room, HOME_SAFE.x, HOME_SAFE.y, 2);
   if (cmd === 'hold') return travel(c, HOLD_POS.room, HOLD_POS.x, HOLD_POS.y, 2);
-  // enter room via controller waypoint
-  if (c.room.name !== ROOM) return travel(c, ROOM, CTRL[0], CTRL[1], 2);
+  if (c.room.name !== ROOM) return travel(c, ROOM, WAYPT[0], WAYPT[1], 2);
   const hostiles = c.room.find(FIND_HOSTILE_CREEPS).filter(enemy);
   const claimers = hostiles.filter(h => act(h, CLAIM));
   if (claimers.length) {
@@ -284,8 +283,8 @@ function runReinf(c) {
   }
   // waypoint once per creep
   if (!c.memory.viaCtl) {
-    if (c.pos.inRangeTo(CTRL[0], CTRL[1], 2)) c.memory.viaCtl = 1;
-    else return travel(c, ROOM, CTRL[0], CTRL[1], 2);
+    if (c.pos.inRangeTo(WAYPT[0], WAYPT[1], 2)) c.memory.viaCtl = 1;
+    else return travel(c, ROOM, WAYPT[0], WAYPT[1], 2);
   }
   // in-range only vs armed (not chase); heal self
   const inR = c.getActiveBodyparts(ATTACK) ? 1 : 3;
