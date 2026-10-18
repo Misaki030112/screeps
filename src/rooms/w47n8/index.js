@@ -83,9 +83,8 @@ function spawnRun(spawn) {
       if (!cs.some(c => c.memory.role === 'w8rminer' && (c.memory.si | 0) === i && (c.spawning || c.ticksToLive > 100))) { want = 'w8rminer'; mem.si = i; }
     // 02:16: 3 rhaulers fell behind 2 reserved sources (~20 e/t): W47N7 had 31,34 full 2000 + 5871 dropped, 18,17 at 1138.
     // +1 per 1500 loose above 1500 in W47N7 (max 6), same idea as the local hauler surplus rule
-    // 03:30: count container energy too — full 31,34 (2000) with only ~2k drop looked "fine" (want 3) while south kept overflowing
-    const R7 = Game.rooms[C.REMOTE.room];
-    const lo7 = R7 ? looseE(R7) + _.sum(R7.find(FIND_STRUCTURES, { filter: s => s.structureType === STRUCTURE_CONTAINER }), s => s.store[E] || 0) : 0;
+    // looseE already counts drops + containers (CTL/HUB excludes are W47N8 coords, so both W47N7 conts count)
+    const R7 = Game.rooms[C.REMOTE.room], lo7 = R7 ? looseE(R7) : 0;
     // 02:35: max 6 -> 8: with 5 alive the pile kept growing (6175 -> 6229 dropped + conts 1978/2000 by t83729299); round trips ~90-120 ticks
     // at 400 carry = ~3.6 e/t each, below the 2 sources' ~20 e/t plus decay
     if (!want && n('w8rhauler') < Math.min(8, 3 + Math.floor(Math.max(0, lo7 - 1500) / 1500))) want = 'w8rhauler';
