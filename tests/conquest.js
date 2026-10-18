@@ -15,8 +15,8 @@ const cost = b => b.reduce((a, p) => a + BODYPART_COST[p], 0);
 assert.strictEqual(cost(C.SQUAD_BODY()), 1800, 'squad 1800');
 assert.strictEqual(C.SQUAD_BODY().filter(p => p === 'ranged_attack').length, 6);
 assert.strictEqual(C.SQUAD_BODY().filter(p => p === 'heal').length, 2);
-assert.strictEqual(cost(C.BREAKER_BODY()), 1300, 'breaker 1300');
-assert.strictEqual(C.BREAKER_BODY().filter(p => p === 'claim').length, 2);
+assert.strictEqual(cost(C.BREAKER_BODY()), 1950, 'breaker 1950');
+assert.strictEqual(C.BREAKER_BODY().filter(p => p === 'claim').length, 3);
 assert.strictEqual(cost(C.WORKER_BODY()), 1000, 'worker 1000');
 
 const squad = [{ hits: 1600, hitsMax: 1600, heal: 2 }, { hits: 1600, hitsMax: 1600, heal: 2 }]; // 48 heal
@@ -59,7 +59,8 @@ for (const [x, y] of C.PATROL) assert.ok(y >= 8, 'patrol y>=8');
 global.Memory = {}; global.Game = { creeps: {}, rooms: {}, time: 1 };
 const room = { storage: { store: { energy: 8000 } }, name: 'W46N8' };
 assert.strictEqual(C.wantSpawn(room), null, 'no flags');
-Memory.ops = { cq: { spawn: true, cmd: 'hold' } };
+assert.strictEqual((Memory.ops = { cq: { spawn: true, claim: true, cmd: 'go' } }, C.wantSpawn(room)), null, 'unarmed = inert');
+Memory.ops = { cq: { armed: true, spawn: true, cmd: 'hold' } };
 const w1 = C.wantSpawn(room);
 assert.ok(w1 && w1.role === 'cqsquad', 'spawn squad');
 assert.strictEqual(cost(w1.body), 1800);
@@ -71,7 +72,7 @@ Memory.ops.cq.claim = true; Memory.ops.cq.cmd = 'go';
 Game.creeps = {}; Game.rooms = {};
 const w2 = C.wantSpawn(room);
 assert.ok(w2 && w2.role === 'cqbreaker', 'claim -> breaker');
-assert.strictEqual(cost(w2.body), 1300);
+assert.strictEqual(cost(w2.body), 1950);
 
 Memory.ops.cq.cmd = 'retreat';
 assert.strictEqual(C.wantSpawn(room), null, 'retreat stops spawning');

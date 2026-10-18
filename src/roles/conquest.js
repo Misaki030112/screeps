@@ -15,7 +15,7 @@ const HOLD_POS = { room: HOME, x: 3, y: 20 }, HOME_SAFE = { room: HOME, x: 28, y
 const PATROL = [[22, 10], [32, 10], [36, 12], [28, 14]];     // north side, y>=8
 const CTRL = [15, 25], SPAWN_POS = [12, 26], TOWER_POS = [14, 28], WAIT_POS = [10, 24];
 const SQUAD_BODY = () => [].concat(Array(6).fill(RANGED_ATTACK), Array(2).fill(HEAL), Array(8).fill(MOVE)); // 1800: 60 ranged dmg, 24 heal
-const BREAKER_BODY = () => [CLAIM, CLAIM, MOVE, MOVE];                                                    // 1300, 2 reservation ticks/tick
+const BREAKER_BODY = () => [CLAIM, CLAIM, CLAIM, MOVE, MOVE, MOVE];                                       // 1950, 3 reservation ticks/tick (RCL6 cap 2300)
 const WORKER_BODY = () => [].concat(Array(5).fill(WORK), Array(5).fill(CARRY), Array(5).fill(MOVE));     // 1000, carries 250
 const STORAGE_FLOOR = 3100; // keep the 1300 defender reserve (same gate as the probe)
 const ROLES = ['cqsquad', 'cqbreaker', 'cqworker'];
@@ -264,6 +264,7 @@ function run(c) {
 
 // ---- spawn gate (called from managers/spawn.js) ----
 function wantSpawn(room) {
+  if (!(Memory.ops && Memory.ops.cq && Memory.ops.cq.armed === true)) return null; // INERT until Misaki's go (Memory.ops.cq.armed)
   const P = M();
   if ((P.cmd || 'hold') === 'retreat') return null; // abort: no more conquest spawns
   if (!room.storage || room.storage.store[RESOURCE_ENERGY] < STORAGE_FLOOR) return null;
