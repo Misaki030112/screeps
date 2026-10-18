@@ -225,7 +225,17 @@ function spawnOrder(count, T, nSites) {
     : ['queen', 'hauler', 'REMOTE', 'filler', 'manager', 'upgrader', 'builder'];
 }
 module.exports = { rhTarget, birthDirs, targets, rhaulerNeed, remoteNext, retiring, B, reserverBody, nearFull, bodyEnergy, spawnOrder, run(spawn) {
-  if (spawn.spawning) return;
+  // spawn-wait metric (Misaki 10-18 09:30: zero spawn idle due to refill). Memory.stats.sw[room] cumulative ticks:
+  //   busy = spawning; wait = a creep was wanted, cost <= cap but energyAvailable < cost (refill wait); idle = nothing wanted.
+  //   last = [role, cost, avail] of the latest wait.
+  const SW = ((Memory.stats || (Memory.stats = {})).sw || (Memory.stats.sw = {}));
+  const sw = SW[spawn.room.name] || (SW[spawn.room.name] = { since: Game.time, busy: 0, wait: 0, idle: 0 });
+  if (spawn.spawning) { sw.busy++; return; }
+  let waited = false;
+  try { return run1(spawn, (role, cost, avail) => { if (!waited) { waited = true; sw.wait++; sw.last = [role, cost, avail, Game.time]; } }); }
+  finally { if (!waited && !spawn.spawning) sw.idle++; }
+} };
+function run1(spawn, onWait) {
   const room = spawn.room, cap = room.energyCapacityAvailable, avail = room.energyAvailable, rcl = room.controller.level;
   if (nearFull(avail, cap)) room.memory.lastFull = Game.time; // cap-100: RCL5 build rarely hits exact cap
   const starving = Game.time - (room.memory.lastFull || Game.time) > 300;
@@ -236,7 +246,7 @@ module.exports = { rhTarget, birthDirs, targets, rhaulerNeed, remoteNext, retiri
   const P = plan.get(room.name);
   const go = (role, body, mem = {}) => {
     const cost = _.sum(body, p => BODYPART_COST[p]);
-    if (avail < cost) return ERR_NOT_ENOUGH_ENERGY;
+    if (avail < cost) { if (cost <= cap) onWait(role, cost, avail); return ERR_NOT_ENOUGH_ENERGY; }
     return spawn.spawnCreep(body, role + Game.time, { memory: Object.assign({ role, home: room.name }, mem), directions: birthDirs(spawn, role) });
   };
   // 1) emergency: nothing can refill the spawn
@@ -308,4 +318,5 @@ module.exports = { rhTarget, birthDirs, targets, rhaulerNeed, remoteNext, retiri
     const linkEra = role === 'hauler' && rcl >= 6 && rc.all(room, STRUCTURE_LINK).length >= 3;
     return go(role, role === 'hauler' && room.storage ? B.roadHauler(linkEra ? Math.min(e, 450) : e) : B[role](e, rcl), mem);
   }
-} };
+}
+
