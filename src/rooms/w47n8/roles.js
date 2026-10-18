@@ -218,8 +218,12 @@ const R = {
     if (!c.memory.w) {
       if (c.room.name !== RM.room) return rgo(c, 25, 25, 20);
       const amt = o => (o.amount !== undefined ? o.amount : o.store[E]);
-      const t = c.pos.findClosestByRange(c.room.find(FIND_DROPPED_RESOURCES, { filter: r => r.resourceType === E && r.amount >= 100 })
-        .concat(c.room.find(FIND_STRUCTURES, { filter: s => s.structureType === STRUCTURE_CONTAINER && s.store[E] >= 200 })));
+      // 03:30: closest-first starved the south source (31,34 at 2000+2k drop while north 18,17 had 400-600 and ate every empty rhauler from the N exit)
+      const piles = c.room.find(FIND_DROPPED_RESOURCES, { filter: r => r.resourceType === E && r.amount >= 100 })
+        .concat(c.room.find(FIND_STRUCTURES, { filter: s => s.structureType === STRUCTURE_CONTAINER && s.store[E] >= 200 }));
+      const closest = c.pos.findClosestByRange(piles);
+      const fullest = piles.length ? _.max(piles, amt) : null;
+      const t = (fullest && closest && amt(fullest) >= amt(closest) + 500) ? fullest : closest;
       if (!t) {
         if (c.store[E] > 0) { c.memory.w = true; return; }
         // 21:10: nothing >=200 yet: wait within 2 of the fullest container instead of idling on the north edge (19,0-19,2)
