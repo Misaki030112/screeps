@@ -23,6 +23,7 @@ function bodyFor(role, e) {
 // energy lying on the ground or in source containers (ctl container excluded)
 const looseE = room => _.sum(room.find(FIND_DROPPED_RESOURCES, { filter: r => r.resourceType === RESOURCE_ENERGY }), r => r.amount)
   + _.sum(room.find(FIND_STRUCTURES, { filter: s => s.structureType === STRUCTURE_CONTAINER && !(s.pos.x === C.CTL_CONT[0] && s.pos.y === C.CTL_CONT[1]) && !(s.pos.x === C.HUB_CONT[0] && s.pos.y === C.HUB_CONT[1]) }), s => s.store[RESOURCE_ENERGY]);
+const siteRem = room => _.sum(room.find(FIND_MY_CONSTRUCTION_SITES), s => s.progressTotal - s.progress);
 function spawnRun(spawn) {
   if (spawn.spawning) return;
   const room = spawn.room, cs = mine(), n = r => cs.filter(c => c.memory.role === r).length;
@@ -44,7 +45,9 @@ function spawnRun(spawn) {
   // 2) haulers 2, 3) upgraders 2 (3 when no sites), 4) builders while sites
   if (!want && n('w8hauler') < 2) want = 'w8hauler';
   else if (!want && n('w8upgrader') < (sites ? 2 : 3)) want = 'w8upgrader';
-  else if (!want && sites && n('w8builder') < (sites >= 3 ? 4 : 2)) want = 'w8builder'; // 17:05: Spawn2 sat idle at 300/300 with 5 ext sites
+  // 04:10: size by remaining build work, not site count: 3 cheap road sites (~900 left) brought a 4th builder while the ctl cont sat at 0,
+  // wbuilder idle 0.69 (6h) and 4 upgraders energy-starved
+  else if (!want && sites && n('w8builder') < (siteRem(room) >= 3000 ? 4 : siteRem(room) >= 1200 ? 3 : 2)) want = 'w8builder'; // 17:05: Spawn2 sat idle at 300/300 with 5 ext sites
   // 5) surplus (17:52: 1.8k energy lying on the ground/in source containers, spenders only ~7 WORK of 20 e/t income):
   // +1 hauler above 1200 loose (max 3), +1 upgrader per 600 loose above 600 (max 6)
   if (!want) {
