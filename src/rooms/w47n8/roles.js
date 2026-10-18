@@ -76,11 +76,11 @@ const R = {
       && x.store.getFreeCapacity(E) > 0 }).sort((a, b) => a.store[E] - b.store[E])[0];
     if (!k) return c.pos.inRangeTo(C.CTL[0], C.CTL[1], 4) || go(c, C.CTL[0], C.CTL[1], 4);
     if (k.structureType === STRUCTURE_CONTAINER && k.pos.x === C.CTL_CONT[0] && k.pos.y === C.CTL_CONT[1] && !c.pos.isNearTo(k)) {
-      const i = pickTile(c, C.CTL_HAUL, 'ht'); // unload from a reserved tile, never the 13,25 dead end
-      if (i >= 0) { c.memory.ht = i; go(c, C.CTL_HAUL[i][0], C.CTL_HAUL[i][1], 0); } else go(c, C.CTL_HAUL[0][0], C.CTL_HAUL[0][1], 2);
+      // unload from a reserved tile (never the 13,25 dead end); both taken: wait within 2 (a range-0 path to an occupied tile wandered off)
+      const room = Game.rooms[C.ROOM], f = C.CTL_HAUL.find(([x, y]) => !room.lookForAt(LOOK_CREEPS, x, y).length);
+      if (f) go(c, f[0], f[1], 0); else if (!c.pos.inRangeTo(k, 2)) go(c, k.pos.x, k.pos.y, 2);
       return;
     }
-    delete c.memory.ht;
     if (!c.pos.isNearTo(k)) go(c, k.pos.x, k.pos.y); else c.transfer(k, E);
   },
   w8upgrader(c) {
@@ -99,8 +99,12 @@ const R = {
     }
     toggle(c);
     if (!c.memory.w) getEnergy(c);
-    else if (!c.pos.inRangeTo(ctl, 3)) go(c, ctl.pos.x, ctl.pos.y, 3); else c.upgradeController(ctl);
-    if (onTile(c, C.CTL_HAUL)) go(c, 15, 27, 1); // never park on a hauler unload tile
+    else {
+      if (c.pos.inRangeTo(ctl, 3)) c.upgradeController(ctl);
+      const j = pickTile(c, C.UPG_EXTRA, 'xs'); // park off the hauler tiles and corridors
+      if (j >= 0) { c.memory.xs = j; if (!onTile(c, [C.UPG_EXTRA[j]])) go(c, C.UPG_EXTRA[j][0], C.UPG_EXTRA[j][1], 0); }
+      else if (!c.pos.inRangeTo(ctl, 3)) go(c, ctl.pos.x, ctl.pos.y, 3);
+    }
   },
   w8builder(c) {
     if (!home(c)) return; toggle(c);
