@@ -279,6 +279,14 @@ function runWorker(c) {
       }
     }
   }
+  // north seal (Misaki 17:08): the youngest cqworker builds the y=3 wall sites (x8-11 first) with plain moveTo (travel() blocks y<8)
+  { const ws2 = _.sortBy(_.filter(Game.creeps, x => x.memory.role === 'cqworker' && x.room.name === ROOM), x => -(x.memory.born || 0));
+    const seal = sites.filter(s => s.structureType === STRUCTURE_WALL && s.pos.y === 3).sort((a, b) => (a.pos.x <= 11 ? 0 : 1) - (b.pos.x <= 11 ? 0 : 1) || a.pos.x - b.pos.x);
+    if (seal.length && ws2[0] && ws2[0].name === c.name) {
+      const t = seal[0];
+      if (!c.pos.inRangeTo(t, 3)) return c.moveTo(t, { range: 3, reusePath: 10, maxRooms: 1 });
+      c.build(t); return;
+    } }
   // spawn site first; never target sites whose build range lies inside the y<MIN_Y no-go rows (north seal walls at y=3:
   // unreachable for travel(), workers oscillated at y=8 holding energy). Those are left to the w8builders after the spawn.
   const site = sites.find(s => s.structureType === STRUCTURE_SPAWN)

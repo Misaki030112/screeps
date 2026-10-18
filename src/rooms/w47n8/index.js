@@ -36,17 +36,21 @@ function placeSeal(room) {
     room.createConstructionSite(x, y, STRUCTURE_WALL);
   }
 }
+const L = require('./layout'); // generated plan (tools/w47n8_plan.py), cumulative per RCL
+const PRIO = ['spawn', 'extension', 'tower', 'container', 'storage', 'link', 'terminal', 'extractor', 'lab', 'factory', 'powerSpawn', 'nuker', 'observer', 'road', 'rampart'];
 function layoutRun(room) {
   if (Game.time % 20) return;
   if (room.controller.level >= 2) placeSeal(room); // re-placed if destroyed; nothing in W47N8 code repairs walls
-  const rcl = room.controller.level;
-  if (!room.find(FIND_MY_SPAWNS).length) return; // pioneers (conquest.js) own the spawn site until it is built
-  let placed = 0;
-  for (let r = 2; r <= rcl; r++) for (const t in (C.BUILD[r] || {})) for (const [x, y] of C.BUILD[r][t]) {
-    if (placed >= 5) return;
+  if (!room.find(FIND_MY_SPAWNS).length) return;
+  const rcl = room.controller.level, B = Object.assign({}, L.BUILD[Math.min(8, rcl)] || {});
+  if (rcl >= 4) B.rampart = L.RAMPARTS_RCL4;
+  let sites = room.find(FIND_MY_CONSTRUCTION_SITES).length; if (sites >= 6) return;
+  for (const t of PRIO) for (const [x, y] of (B[t] || [])) {
+    if (sites >= 6) return;
+    if (t === 'road' && sites > 2) return; // roads only when little else is queued
     if (room.lookForAt(LOOK_STRUCTURES, x, y).some(s => s.structureType === t)) continue;
-    if (room.lookForAt(LOOK_CONSTRUCTION_SITES, x, y).length) continue;
-    if (room.createConstructionSite(x, y, t) === OK) placed++;
+    if (room.lookForAt(LOOK_CONSTRUCTION_SITES, x, y).length && t !== 'rampart') continue;
+    if (room.createConstructionSite(x, y, t) === OK) sites++;
   }
 }
 function towerRun(room) {
