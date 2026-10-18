@@ -165,7 +165,13 @@ const R = {
       const amt = o => (o.amount !== undefined ? o.amount : o.store[E]);
       const t = c.pos.findClosestByRange(c.room.find(FIND_DROPPED_RESOURCES, { filter: r => r.resourceType === E && r.amount >= 100 })
         .concat(c.room.find(FIND_STRUCTURES, { filter: s => s.structureType === STRUCTURE_CONTAINER && s.store[E] >= 200 })));
-      if (!t) { if (c.store[E] > 0) c.memory.w = true; return; }
+      if (!t) {
+        if (c.store[E] > 0) { c.memory.w = true; return; }
+        // 21:10: nothing >=200 yet: wait within 2 of the fullest container instead of idling on the north edge (19,0-19,2)
+        const w = _.max(c.room.find(FIND_STRUCTURES, { filter: s => s.structureType === STRUCTURE_CONTAINER }), s => s.store[E]);
+        if (w && w.pos && !c.pos.inRangeTo(w, 2)) rgo(c, w.pos.x, w.pos.y, 2);
+        return;
+      }
       if (!c.pos.isNearTo(t)) return rgo(c, t.pos.x, t.pos.y, 1);
       return t.amount !== undefined ? c.pickup(t) : c.withdraw(t, E);
     }
