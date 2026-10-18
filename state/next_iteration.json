@@ -1,6 +1,6 @@
 {
- "next_at": "2026-10-18T08:30:00+08:00",
- "reason": "07:55 patrol: 100k hold lifted ~07:50 (barriers 51 min 98.0k raw rampart / eff>=100k, med 111k, max 303k; step 300k). Upgraders resumed 2x12W (waiting_feed ~18%, ctlEma 149). But builder tiers 3-6 were gated on noUpgrade, so T.builder fell 6->2 with storage 52.7k / budgetE 47.4k (would sit and rise). Deployed 7ea548d: tiers follow budget for the whole build phase -> T.builder 6, upgrader 2 (verified live tick 83713688). 4 builders alive (TTL 211/415/880/1155, 39W). Next: verify 2 new builders spawn (>=8W), storage trend gently down (expect ~-5..-15 e/t), CPU <=~9.5, barrier min rising toward 300k evenly, no gate <3k, upgraders not starving builders (spawn energy recovers).",
+ "next_at": "2026-10-18T09:15:00+08:00",
+ "reason": "08:40 patrol observe-only: 7ea548d converged (6 builders 54W live, storage 52.7k->45.2k ~-12 e/t, budgetE 40.2k right at the 6-builder tier -> expect T.builder 6->5 now, then 4/3 as storage nears 15k/8k). Barriers 47 min eff 120.7k (raw gate 47,17 115.7k) med 131.7k max 133.5k, step 300k, rising ~+20k/600t evenly; all gates >=115k. Upgraders 2x12W fed in bursts (u ~25-34%, feed-bound by design; withdraw rhythm verified full 12/t). Builder time: m 42% w 28% n 19% (n = fatigue on swamp/plain loaded ~12% + road traffic near 30,29/31,29); body/roads change judged ~energy-neutral, not deployed. Reservations W45N8 2321 / W45N7 2102 ok, 0 hostiles, errors 0, CPU ~7.5 bkt 10k. Next: verify builders step down 6->5 without gap, storage keeps falling gently toward floor, barrier min keeps rising, CPU <=~9.5.",
  "road_plan": {
   "doc": "docs/ROADS.md",
   "each_patrol": [
@@ -134,7 +134,7 @@
   "fund_at_start": 20108,
   "check_each_patrol": "gates 6 ramparts first then with_gate trunks then 41 walls; SITE_CAP 2; no rampart decays at low hits; storage should not fall below ~5k after fund; terminal/extractor/labs stay off (RCL6_MINERALS) until Misaki decides",
   "decay_fix": "434a2c3: gate ramparts <5000 outrank sites (to 10k, 1 builder/gate); check each patrol no gate < 3000",
-  "check_note": "07:55: hold lifted; barriers min 98k raw (rampart eff>=100k) med 111k; storage 52.7k (-4.5 e/t since 07:14); step 300k; builder tiers now budget-only (7ea548d)"
+  "check_note": "08:40: min eff 120.7k med 131.7k step 300k; storage 45.2k (-12 e/t); fund ~0 so budget = storage-5k; T.builder stepping 6->5 at budget<40k"
  },
  "w45n8_rhauler": {
   "deployed": "c4a8eb6",
