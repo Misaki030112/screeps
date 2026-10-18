@@ -43,6 +43,16 @@ function toggle(c) {
 }
 const ctlCont = () => Game.rooms[C.ROOM].lookForAt(LOOK_STRUCTURES, C.CTL_CONT[0], C.CTL_CONT[1]).find(s => s.structureType === STRUCTURE_CONTAINER);
 const hubCont = () => Game.rooms[C.ROOM].lookForAt(LOOK_STRUCTURES, C.HUB_CONT[0], C.HUB_CONT[1]).find(s => s.structureType === STRUCTURE_CONTAINER);
+// 22:50 hub feed: until the hub container (a 5000-energy site itself) stands, haulers hand energy straight to builders working
+// the hub sites (builders were still walking ~25 tiles per 100 energy; ext 31,36 gained 150 in 55 ticks). Cached per tick.
+let feedT = -1, feedOn = false;
+function hubFeed(room) {
+  if (feedT === Game.time) return feedOn; feedT = Game.time;
+  const [hx, hy] = C.HUB_CONT, hub = new RoomPosition(hx, hy, C.ROOM);
+  feedOn = !hubCont() && room.find(FIND_MY_CONSTRUCTION_SITES, { filter: s => s.structureType !== STRUCTURE_WALL && s.pos.inRangeTo(hub, 5) }).length > 0;
+  return feedOn;
+}
+const nearHub = (c, r) => c.pos.inRangeTo(C.HUB_CONT[0], C.HUB_CONT[1], r);
 // container sink after spawn/extensions/tower: while hub sites (non-wall) exist, the emptier of hub/ctl container; else ctl first
 // sticky per load (memory.sk, cleared when empty) so a hauler never flips between the two mid-walk
 function sink(room, c) {
@@ -114,9 +124,12 @@ const R = {
   w8hauler(c) {
     if (!home(c)) return; toggle(c);
     if (!c.memory.w) { if (!haulPick(c) && c.store[E] > 0) c.memory.w = true; return; }
+    const room8 = Game.rooms[C.ROOM];
+    const fed = hubFeed(room8) && room8.find(FIND_MY_CREEPS, { filter: x => x.memory.role === 'w8builder' && x.store.getFreeCapacity(E) >= 50 && nearHub(x, 8) })
+      .sort((a, b) => a.store[E] - b.store[E])[0];
     const t = c.pos.findClosestByRange(FIND_MY_STRUCTURES, { filter: s => (s.structureType === STRUCTURE_SPAWN || s.structureType === STRUCTURE_EXTENSION
       || (s.structureType === STRUCTURE_TOWER && s.store.getFreeCapacity(E) > 200)) && s.store.getFreeCapacity(E) > 0 })
-      || sink(Game.rooms[C.ROOM], c) || Game.rooms[C.ROOM].storage;
+      || fed || sink(room8, c) || room8.storage;
     // nothing to fill: hand it to the emptiest w8upgrader/w8builder; never drop on the ground (Misaki rule), else wait
     const k = t || Game.rooms[C.ROOM].find(FIND_MY_CREEPS, { filter: x => (x.memory.role === 'w8upgrader' || x.memory.role === 'w8builder')
       && x.store.getFreeCapacity(E) > 0 }).sort((a, b) => a.store[E] - b.store[E])[0];
@@ -211,6 +224,12 @@ const R = {
   },
   w8builder(c) {
     if (!home(c)) return; toggle(c);
+    // hub feed: at the hub sites, build with whatever I hold; when empty wait (<=40 ticks) for a hauler instead of walking off
+    if (!c.memory.w && hubFeed(c.room) && nearHub(c, 8)) {
+      if (c.store[E] > 0) c.memory.w = true;
+      else if ((c.memory.fw = (c.memory.fw || 0) + 1) <= 40) return;
+    }
+    if (c.store[E] > 0) delete c.memory.fw;
     if (!c.memory.w) { getEnergy(c); return; }
     const all = c.room.find(FIND_MY_CONSTRUCTION_SITES);
     // north seal walls first (1 energy each, Misaki 17:08), x8-11 before x24-31; then the spawn/extension sites
