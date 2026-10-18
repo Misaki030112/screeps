@@ -74,7 +74,10 @@ function spawnRun(spawn) {
   if (!want && ours7) {
     for (let i = 0; i < C.REMOTE.sources.length && !want; i++)
       if (!cs.some(c => c.memory.role === 'w8rminer' && (c.memory.si | 0) === i && (c.spawning || c.ticksToLive > 100))) { want = 'w8rminer'; mem.si = i; }
-    if (!want && n('w8rhauler') < 3) want = 'w8rhauler';
+    // 02:16: 3 rhaulers fell behind 2 reserved sources (~20 e/t): W47N7 had 31,34 full 2000 + 5871 dropped, 18,17 at 1138.
+    // +1 per 1500 loose above 1500 in W47N7 (max 6), same idea as the local hauler surplus rule
+    const R7 = Game.rooms[C.REMOTE.room], lo7 = R7 ? looseE(R7) : 0;
+    if (!want && n('w8rhauler') < Math.min(6, 3 + Math.floor(Math.max(0, lo7 - 1500) / 1500))) want = 'w8rhauler';
   }
   if (!want) return;
   // emergency: nothing alive that refills -> spawn with what we have
