@@ -13,6 +13,27 @@ function getEnergy(c) {
   if (src && c.getActiveBodyparts(WORK)) { if (!c.pos.isNearTo(src)) go(c, src.pos.x, src.pos.y); else c.harvest(src); return true; }
   return false;
 }
+// hauler pickup (18:05): sticky target scored by usable amount / (range+10), minus what other w8haulers already claimed,
+// so haulers also clear the far south source (11,43: 2k energy piled while all 3 w8haulers circled the north source).
+function haulPick(c) {
+  const room = Game.rooms[C.ROOM], free = c.store.getFreeCapacity(), amt = o => (o.amount !== undefined ? o.amount : o.store[E]);
+  let t = c.memory.pt && Game.getObjectById(c.memory.pt);
+  if (!t || amt(t) < 50) {
+    const claimed = {};
+    for (const h of room.find(FIND_MY_CREEPS, { filter: x => x.memory.role === 'w8hauler' && x.id !== c.id && x.memory.pt && !x.memory.w }))
+      claimed[h.memory.pt] = (claimed[h.memory.pt] || 0) + h.store.getFreeCapacity();
+    const cands = room.find(FIND_DROPPED_RESOURCES, { filter: r => r.resourceType === E && r.amount >= 50 }).concat(room.find(FIND_STRUCTURES,
+      { filter: s => s.structureType === STRUCTURE_CONTAINER && s.store[E] >= 100 && !(s.pos.x === C.CTL_CONT[0] && s.pos.y === C.CTL_CONT[1]) }));
+    let bs = 0; t = null;
+    for (const o of cands) { const got = Math.min(free, amt(o) - (claimed[o.id] || 0)); const sc = got / (c.pos.getRangeTo(o) + 10); if (got >= 50 && sc > bs) { bs = sc; t = o; } }
+    c.memory.pt = t ? t.id : undefined;
+  }
+  if (!t) return false;
+  // Misaki rule: deliver once over half full rather than walking to another pile
+  if (!c.pos.isNearTo(t) && c.store[E] * 2 >= c.store.getCapacity()) { delete c.memory.pt; return false; }
+  if (!c.pos.isNearTo(t)) go(c, t.pos.x, t.pos.y); else { if (t.amount !== undefined) c.pickup(t); else c.withdraw(t, E); delete c.memory.pt; }
+  return true;
+}
 function toggle(c) {
   if (c.memory.w && c.store[E] === 0) c.memory.w = false;
   if (!c.memory.w && c.store.getFreeCapacity() === 0) c.memory.w = true;
@@ -33,7 +54,7 @@ const R = {
   },
   w8hauler(c) {
     if (!home(c)) return; toggle(c);
-    if (!c.memory.w) { if (!getEnergy(c) && c.store[E] > 0) c.memory.w = true; return; }
+    if (!c.memory.w) { if (!haulPick(c) && c.store[E] > 0) c.memory.w = true; return; }
     const t = c.pos.findClosestByRange(FIND_MY_STRUCTURES, { filter: s => (s.structureType === STRUCTURE_SPAWN || s.structureType === STRUCTURE_EXTENSION
       || (s.structureType === STRUCTURE_TOWER && s.store.getFreeCapacity(E) > 200)) && s.store.getFreeCapacity(E) > 0 })
       || (Game.rooms[C.ROOM].lookForAt(LOOK_STRUCTURES, C.CTL_CONT[0], C.CTL_CONT[1]).find(s => s.structureType === STRUCTURE_CONTAINER && s.store.getFreeCapacity(E) > 0))
