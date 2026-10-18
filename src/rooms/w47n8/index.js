@@ -27,7 +27,7 @@ function spawnRun(spawn) {
   const e = starving ? Math.max(200, avail) : cap;
   const body = bodyFor(want, e), cost = _.sum(body, p => BODYPART_COST[p]);
   if (avail < cost) return;
-  spawn.spawnCreep(body, want + Game.time, { memory: Object.assign({ role: want, home: C.ROOM, born: Game.time }, mem) });
+  spawn.spawnCreep(body, want + Game.time, { memory: Object.assign({ role: want, home: C.ROOM, born: Game.time, v2: 1 }, mem) });
 }
 function layoutRun(room) {
   if (Game.time % 20) return;

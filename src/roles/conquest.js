@@ -18,7 +18,7 @@ const BREAKER_BODY = () => [CLAIM, CLAIM, CLAIM, MOVE, MOVE, MOVE];             
 const WORKER_BODY = () => [].concat(Array(8).fill(WORK), Array(8).fill(CARRY), Array(8).fill(MOVE));     // 1600, carries 400 (Misaki 15:25 faster)
 const MINER_BODY = () => [].concat(Array(6).fill(WORK), Array(3).fill(MOVE)); // 750, 12/tick on his containers
 const SITE = [15, 18];
-const MINER_SPOTS = [[26, 11], [11, 43]];
+const MINER_SPOTS = [[26, 11], [11, 43]], MINER_SRC = [[27, 11], [11, 44]];
 const STORAGE_FLOOR = 3100; // keep the 1300 defender reserve (same gate as the probe)
 const ROLES = ['cqsquad', 'cqbreaker', 'cqworker', 'cqhauler', 'cqatk', 'cqrh', 'cqminer'];
 
@@ -321,10 +321,16 @@ function runReinf(c) {
 
 // static miner on his leftover source containers until W47N8 has its own w8miners
 function runMiner(c) {
-  const [x, y] = MINER_SPOTS[c.memory.spot || 0];
-  if (c.room.name !== ROOM || c.pos.x !== x || c.pos.y !== y) return travel(c, ROOM, x, y, 0);
-  const src = c.pos.findClosestByRange(FIND_SOURCES);
-  if (src) c.harvest(src);
+  // memory.ms (not 'spot': main.js v2 migration deletes 'spot' on a creep's first tick -> every miner went north, spawn loop)
+  const i = c.memory.ms != null ? c.memory.ms : (c.memory.spot || 0), [x, y] = MINER_SPOTS[i];
+  if (c.room.name !== ROOM) return travel(c, ROOM, x, y, 0);
+  const src = c.room.lookForAt(LOOK_SOURCES, MINER_SRC[i][0], MINER_SRC[i][1])[0];
+  if (c.pos.x === x && c.pos.y === y) { if (src) c.harvest(src); return; }
+  // container tile taken (his creep / another miner): mine from any tile next to the source
+  const blocked = c.room.lookForAt(LOOK_CREEPS, x, y).length > 0;
+  if (blocked && src && c.pos.isNearTo(src)) return c.harvest(src);
+  if (blocked && src) return travel(c, ROOM, src.pos.x, src.pos.y, 1);
+  return travel(c, ROOM, x, y, 0);
 }
 
 function runHauler(c) {
@@ -397,8 +403,8 @@ function wantSpawn(room) {
     const self8 = require('../rooms/w47n8/index').selfSufficient(); // W47N8 runs itself -> no more pioneers/cqhaulers from home
     if (!self8 && ours()) {
       const ms = _.filter(Game.creeps, c => c.memory.role === 'cqminer');
-      for (let i = 0; i < MINER_SPOTS.length; i++) if (!ms.some(c => (c.memory.spot || 0) === i && (c.spawning || c.ticksToLive > 80)))
-        return { role: 'cqminer', body: MINER_BODY(), mem: { role: 'cqminer', spot: i, home: HOME, born: Game.time } };
+      for (let i = 0; i < MINER_SPOTS.length; i++) if (!ms.some(c => (c.memory.ms != null ? c.memory.ms : -1) === i && (c.spawning || c.ticksToLive > 80)))
+        return { role: 'cqminer', body: MINER_BODY(), mem: { role: 'cqminer', ms: i, v2: 1, home: HOME, born: Game.time } };
     }
     if (!self8 && n('cqworker') < wMax && (ours() || almost || P.forceWorkers)) {
       return { role: 'cqworker', body: WORKER_BODY(), mem: { role: 'cqworker', home: HOME, born: Game.time } };
