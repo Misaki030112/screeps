@@ -1,6 +1,6 @@
 {
- "next_at": "2026-10-18T11:45:00+08:00",
- "reason": "11:11 patrol: be9083d (parent, 10:44) deployed both the defense reserve (Memory.defense.reserveE=15000) and the mineral-hold fix. Verified: 0 upgraders while mineral sites open, ctl downgrade 119k, storage recovered 2.86k->14.3k (~+30 e/t), spawn wait 60/1343 (4.5%), O mining works (storage O 1500, container 84). Builders 4 (38W) all 100% waiting_feed because storage < reserveE 15k (intended by parent); terminal 19.4k/100k and labs 7.9k/10.8k/0.4k of 50k flat since 10:45. Verify next: storage crosses 15k, builders resume and storage hovers ~15k with build rate ~= income; no upgrader; no flip loop.",
+ "next_at": "2026-10-18T12:30:00+08:00",
+ "reason": "11:58 patrol: storage hovers 13.6-15.8k since 11:15 under the 15k defense reserve (builders drain whatever crosses 15k, intended); mineral line build ~28 e/t since 11:11 (terminal 19.4k->26.0k/100k, labs 11.1k/14.7k/4.7k of 50k); spawn wait 60/2036 (2.9%), no new refill wait since t83715814; 0 upgraders, dg 118k; reservations W45N8 2153 W45N7 2294; errors 0, CPU ~6.7, bucket 10k. Deployed 72ab1db (trace: mminer idle = legit extractor cooldown, audit noise only). Verify next: mminer83715582 (ttl 5 at 11:58) replaced and no longer flagged; build progress continues; storage stays ~15k.",
  "road_plan": {
   "doc": "docs/ROADS.md",
   "each_patrol": [
@@ -124,9 +124,9 @@
   ]
  },
  "last_deploy": {
-  "commit": "9edf999",
-  "tick": 83715583,
-  "at": "2026-10-18 10:10 UTC+8"
+  "commit": "72ab1db",
+  "tick": 83717155,
+  "at": "2026-10-18 11:59 UTC+8"
  },
  "walls": {
   "started": 83707350,
