@@ -342,6 +342,10 @@ function run1(spawn, onWait) {
     const cqTurn = room.memory.cqTurn && Game.time - room.memory.cqTurn < 150;
     if (need && !(cw && (cw.role === 'cqatk' || cqTurn))) { const rv = homeRole(need); if (rv === OK) room.memory.cqTurn = Game.time; return rv; }
   }
+  // 2c-) W47N7 reservation (roles/reserve7.js, Memory.ops.r7.on)
+  { const w = require('../roles/reserve7').wantSpawn(); if (w) {
+    if (avail < 1300) return ERR_NOT_ENOUGH_ENERGY;
+    return spawn.spawnCreep(w.body, 'reserve7' + Game.time, { memory: w.mem, directions: birthDirs(spawn, 'reserve7') }); } }
   // 2c) W47N8: quad replacements first; remotes (rminer/reserver) before claim bodies so home/remote economy does not starve
   const CQ = require('../roles/conquest');
   { const w = !indep8 && require('../roles/quad').wantSpawn(room); if (w) {
