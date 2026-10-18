@@ -189,6 +189,17 @@ function runBreaker(c) {
   else if (r !== ERR_GCL_NOT_ENOUGH) log({ ev: 'claim-fail', code: r, by: c.name });
 }
 
+// sticky energy pick (patrol 16:20: re-scoring every tick made fetchers oscillate 11,43 <-> 26,11). Keeps memory.tid until the
+// target is gone/empty; new picks subtract the free capacity of creeps already heading there.
+function stickyPick(c, pool) {
+  const amt = o => o.amount !== undefined ? o.amount : o.store[RESOURCE_ENERGY];
+  const cur = c.memory.tid && Game.getObjectById(c.memory.tid);
+  if (cur && amt(cur) >= 50) return cur;
+  const claimed = {};
+  for (const n in Game.creeps) { const o = Game.creeps[n]; if (o !== c && o.memory.tid) claimed[o.memory.tid] = (claimed[o.memory.tid] || 0) + o.store.getFreeCapacity(); }
+  const best = pool.length ? _.max(pool, o => amt(o) - (claimed[o.id] || 0) - 10 * (o.pos.roomName === c.pos.roomName ? c.pos.getRangeTo(o) : 50)) : null;
+  c.memory.tid = best && best.id; return best;
+}
 function runWorker(c) {
   const P = M(), cmd = P.cmd || 'hold';
   if (FORBID.has(c.room.name)) return travel(c, ROOM, WAIT_POS[0], WAIT_POS[1], 2);
@@ -204,10 +215,10 @@ function runWorker(c) {
     if (wsAll.findIndex(x => x.name === c.name) >= 2) {
       const pool = c.room.find(FIND_DROPPED_RESOURCES, { filter: r => r.resourceType === RESOURCE_ENERGY && r.amount >= 100 })
         .concat(c.room.find(FIND_STRUCTURES, { filter: s => s.structureType === STRUCTURE_CONTAINER && s.store[RESOURCE_ENERGY] >= 100 }));
-      const best = _.max(pool, o => (o.amount || o.store[RESOURCE_ENERGY]) - 10 * c.pos.getRangeTo(o));
+      const best = stickyPick(c, pool);
       if (best && best.pos) {
         if (!c.pos.isNearTo(best)) return travel(c, ROOM, best.pos.x, best.pos.y, 1);
-        if (best.amount !== undefined) c.pickup(best); else c.withdraw(best, RESOURCE_ENERGY); return;
+        if (best.amount !== undefined) c.pickup(best); else c.withdraw(best, RESOURCE_ENERGY); delete c.memory.tid; return;
       }
     }
     const drop = c.pos.findClosestByRange(FIND_DROPPED_RESOURCES, { filter: r => r.resourceType === RESOURCE_ENERGY && r.amount >= 20 && r.pos.inRangeTo(SITE[0], SITE[1], 6) });
@@ -372,10 +383,10 @@ function runHauler(c) {
     const conts = r8 ? r8.find(FIND_STRUCTURES, { filter: s => s.structureType === STRUCTURE_CONTAINER && s.store[RESOURCE_ENERGY] >= 300 && !s.pos.inRangeTo(SITE[0], SITE[1], 6) }) : [];
     const drops = r8 ? r8.find(FIND_DROPPED_RESOURCES, { filter: d => d.resourceType === RESOURCE_ENERGY && d.amount >= 150 && !d.pos.inRangeTo(SITE[0], SITE[1], 6) }) : [];
     if (c.store[RESOURCE_ENERGY] > 0 && !conts.length && !drops.length && c.room.name === ROOM) { c.memory.full = true; return; }
-    const tgt = conts.length ? _.max(conts, s => s.store[RESOURCE_ENERGY] - 20 * (s.pos.roomName === c.pos.roomName ? c.pos.getRangeTo(s) : 50)) : (c.room.name === ROOM ? c.pos.findClosestByRange(drops) : drops[0]); // containers first (16:15: haulers loitered at drops near the north post while 26,11 sat at 1979)
+    const tgt = stickyPick(c, conts.length ? conts : drops); // sticky, containers first
     if (tgt && tgt.pos) {
       if (!c.pos.isNearTo(tgt)) return travel(c, ROOM, tgt.pos.x, tgt.pos.y, 1);
-      if (tgt.amount !== undefined) c.pickup(tgt); else c.withdraw(tgt, RESOURCE_ENERGY); return;
+      if (tgt.amount !== undefined) c.pickup(tgt); else c.withdraw(tgt, RESOURCE_ENERGY); delete c.memory.tid; return;
     }
     const st = Game.rooms[HOME] && Game.rooms[HOME].storage;
     if (!st || st.store[RESOURCE_ENERGY] < STORAGE_FLOOR + 500) return travel(c, ROOM, SITE[0], SITE[1], 3);
