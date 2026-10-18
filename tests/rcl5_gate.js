@@ -20,10 +20,10 @@ const T = (rcl, o = {}) => { FLAG = !!o.flag; LINKS = o.links === undefined ? 2 
   return S.targets({ name: 'W46N8', controller: { level: rcl }, energyCapacityAvailable: 1800, storage: { store: { energy: 2000 } }, memory: {}, find: () => [] }, {}, 0, 500, 0); };
 const ramp = hits => ({ structureType: 'rampart', hits });
 const cases = [
-  ['flag off, RCL5 + 2 links: queen stays, no fillers/manager', () => { const t = T(5); assert.deepStrictEqual([t.queen, t.filler, t.manager], [1, 0, 0]); }],
-  ['flag off, RCL6 + 3 links: still queen, home hauler kept', () => { const t = T(6, { links: 3 }); assert.deepStrictEqual([t.queen, t.filler, t.manager], [1, 0, 0]); assert.ok(t.hauler >= 1); }],
+  ['flag off, RCL5 + 2 links: queen stays, no fillers/manager', () => { const t = T(5); assert.deepStrictEqual([t.queen, t.filler, t.manager], [2, 0, 0]); }],
+  ['flag off, RCL6 + 3 links: still queen, home hauler kept', () => { const t = T(6, { links: 3 }); assert.deepStrictEqual([t.queen, t.filler, t.manager], [2, 0, 0]); assert.ok(t.hauler >= 1); }],
   ['flag on, RCL5 + 2 links: original v2 switch (queen 0, fillers 4, manager 1)', () => { const t = T(5, { flag: true }); assert.deepStrictEqual([t.queen, t.filler, t.manager], [0, 4, 1]); }],
-  ['flag on, RCL5 + 1 link: queen until 2 links', () => { const t = T(5, { flag: true, links: 1 }); assert.deepStrictEqual([t.queen, t.filler], [1, 0]); }],
+  ['flag on, RCL5 + 1 link: queen until 2 links', () => { const t = T(5, { flag: true, links: 1 }); assert.deepStrictEqual([t.queen, t.filler], [2, 0]); }],
   ['layout: tower before extension; link skipped while flag off', () => { const L = fs.readFileSync(src('managers/layout.js'), 'utf8');
     const pr = eval(L.match(/const PRIORITY = (\[[^\]]+\])/)[1]); assert.ok(pr.indexOf('tower') < pr.indexOf('extension'));
     assert.ok(pr.indexOf('extension') < pr.indexOf('link')); }],

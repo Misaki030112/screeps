@@ -4,7 +4,7 @@
 // node tests/queen_standby.js -> exits 1 on failure
 const path = require('path'), assert = require('assert');
 const src = p => path.join(__dirname, '..', 'src', p);
-Object.assign(global, { STRUCTURE_LINK: 'link', RESOURCE_ENERGY: 'energy', STRUCTURE_CONTAINER: 'container', STRUCTURE_SPAWN: 'spawn', STRUCTURE_EXTENSION: 'extension', STRUCTURE_TOWER: 'tower', FIND_MY_CREEPS: 1, Game: { time: 1 } });
+Object.assign(global, { STRUCTURE_LINK: 'link', RESOURCE_ENERGY: 'energy', STRUCTURE_CONTAINER: 'container', STRUCTURE_SPAWN: 'spawn', STRUCTURE_EXTENSION: 'extension', STRUCTURE_TOWER: 'tower', FIND_MY_CREEPS: 1, _: require('lodash'), Game: { time: 1, creeps: {}, getObjectById: () => null } });
 const store = (e, cap) => ({ energy: e, getCapacity: () => cap, getFreeCapacity: () => cap - e });
 const obj = (x, y, e, cap) => ({ pos: { x, y }, store: Object.assign({ [RESOURCE_ENERGY]: e }, store(e, cap)) });
 let W; // world for the current case
@@ -12,7 +12,9 @@ const stub = (p, exp) => { require.cache[require.resolve(src(p))] = { id: p, fil
 const P = { pos: { controllerContainer: [30, 30], fillerContainerA: [35, 24], fillers: [[34, 25]], manager: [36, 30], miners: [] }, any: {} };
 stub('utils/plan.js', { get: () => P, key: (x, y) => x * 50 + y });
 stub('utils/move.js', { to: (c, x, y) => { W.moved = [x, y]; return true; } });
-stub('utils/roomcache.js', { at: (room, x, y) => (x === 30 ? W.cc : x === 35 ? W.fc : null), all: (room, t) => (t === 'tower' ? [] : []), get: () => ({ at: [] }) });
+stub('utils/roomcache.js', { at: (room, x, y) => (x === 30 ? W.cc : x === 35 ? W.fc : null), all: () => [], get: () => ({ at: [] }) });
+stub('managers/home.js', { active: () => false });
+stub('utils/salvage.js', { retire: () => false });
 stub('utils/trace.js', { why: (c, k) => { W.why = k; } });
 stub('managers/threat.js', { reserve: () => W.reserve });
 stub('roles/hauler.js', { ctlLow: () => W.cc.store.energy < 1000, handoff: () => false, pickups: () => [], homeHauler: () => !!W.hauler });

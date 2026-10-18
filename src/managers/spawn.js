@@ -51,11 +51,8 @@ function targets(room, count, backlog, ctlEnergy, sites) {
   // Pre-storage keep 2 so both containers drain. Backlog can still add one extra.
   T.hauler = rcl >= 7 && links >= 4 ? 0 : (rcl >= 6 && links >= 3 ? 1 : (st ? Math.min(2, 1 + Math.floor(backlog / 1500)) : Math.min(4, 2 + Math.floor(backlog / 1500))));
   const fillersOn = plan.STATIONARY_FILL && rcl >= 5 && links >= 2; // off: queen regime at RCL5+ (docs/RCL5.md)
-  T.queen = fillersOn ? 0 : 1;
-  // v6 refill: while only a small (<16 CARRY) queen lives at cap 2300, add the big 16C8M now instead of waiting ~1000t for the old
-  // one to die (live 09:40: spawn waited 22 of 62 ticks for extension refill). Back to 1 once the small one is gone.
-  if (T.queen === 1 && room.energyCapacityAvailable >= 2300) { const qs = _.filter(Game.creeps, c => c.memory.role === 'queen' && c.memory.home === room.name);
-    if (qs.length && qs.every(c => c.getActiveBodyparts ? c.getActiveBodyparts(CARRY) < 16 : true)) T.queen = 2; }
+  // Multi-queen zones (Misaki 13:57): always 2 queens in queen-regime (stamp A vs B+C). Sole survivor covers both.
+  T.queen = fillersOn ? 0 : (room.energyCapacityAvailable >= 1300 ? 2 : 1);
   T.filler = fillersOn ? 4 : 0;
   // RCL6 mineral line: one mineral miner while extractor + container stand, the mineral has amount and the container has room
   { const mm = P.pos.mineralMiner, k = mm && st && rc.at(room, mm[0], mm[1], STRUCTURE_CONTAINER), ex = rcl >= 6 && rc.all(room, 'extractor')[0];
@@ -296,6 +293,11 @@ function run1(spawn, onWait) {
     if (avail < _.sum(b, p => BODYPART_COST[p])) return ERR_NOT_ENOUGH_ENERGY;
     const rv = spawn.spawnCreep(b, name, { memory: { role: 'probe', home: room.name, born: Game.time }, directions: birthDirs(spawn, 'probe') });
     if (rv === OK) PR.noteSpawned(name); return rv; }
+  // 2b2) refill staff before heavy conquest bodies: a 2nd 16C8M queen (1200) cuts the 2300e refill gap roughly in half
+  if ((count.queen || 0) < 2 && !(count.filler || 0) && room.energyCapacityAvailable >= 1300) {
+    const rQ = go('queen', B.queen(bodyEnergy('queen', E, cap, avail, !!alive.hauler, !!room.storage)));
+    if (rQ === OK || rQ === ERR_NOT_ENOUGH_ENERGY) return rQ;
+  }
   // 2c) W47N8 conquest (roles/conquest.js): only when Memory.ops.cq.spawn/claim set; storage floor 3100
   const CQ = require('../roles/conquest');
   { const w = require('../roles/quad').wantSpawn(room) || CQ.wantSpawn(room); if (w) {
