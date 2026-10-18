@@ -1,6 +1,6 @@
 {
- "next_at": "2026-10-18T09:15:00+08:00",
- "reason": "08:40 patrol observe-only: 7ea548d converged (6 builders 54W live, storage 52.7k->45.2k ~-12 e/t, budgetE 40.2k right at the 6-builder tier -> expect T.builder 6->5 now, then 4/3 as storage nears 15k/8k). Barriers 47 min eff 120.7k (raw gate 47,17 115.7k) med 131.7k max 133.5k, step 300k, rising ~+20k/600t evenly; all gates >=115k. Upgraders 2x12W fed in bursts (u ~25-34%, feed-bound by design; withdraw rhythm verified full 12/t). Builder time: m 42% w 28% n 19% (n = fatigue on swamp/plain loaded ~12% + road traffic near 30,29/31,29); body/roads change judged ~energy-neutral, not deployed. Reservations W45N8 2321 / W45N7 2102 ok, 0 hostiles, errors 0, CPU ~7.5 bkt 10k. Next: verify builders step down 6->5 without gap, storage keeps falling gently toward floor, barrier min keeps rising, CPU <=~9.5.",
+ "next_at": "2026-10-18T10:05:00+08:00",
+ "reason": "09:25 patrol observe-only: 7ea548d tiers stepping down as planned (builders 6->5->4 at 08:56/09:16, live 10/8/8/9W=35W; storage 45.2k->36.9k ~-10 e/t, budget ~32k). Barriers 51 min 136.4k med 143.4k (two at ~300k), step 300k, +~15k/45min even; gates min 144k. ctl 81.7k progress +16k/45min with 2x12W. Builder 'n' ~20% = trace default (no act/no move, fatigue/withdraw ticks), unchanged vs 07:00/08:00, judged earlier. Reservations W45N8/W45N7 ~2.2k ok, containers low (no overflow), 0 hostiles, errors 0, CPU ~8.4 bkt 10k. Next: builders should step 4->3 near storage ~25k budget without gaps; storage must not undershoot ~8k; barrier min keeps rising; CPU <=~9.5.",
  "road_plan": {
   "doc": "docs/ROADS.md",
   "each_patrol": [
@@ -134,7 +134,7 @@
   "fund_at_start": 20108,
   "check_each_patrol": "gates 6 ramparts first then with_gate trunks then 41 walls; SITE_CAP 2; no rampart decays at low hits; storage should not fall below ~5k after fund; terminal/extractor/labs stay off (RCL6_MINERALS) until Misaki decides",
   "decay_fix": "434a2c3: gate ramparts <5000 outrank sites (to 10k, 1 builder/gate); check each patrol no gate < 3000",
-  "check_note": "08:40: min eff 120.7k med 131.7k step 300k; storage 45.2k (-12 e/t); fund ~0 so budget = storage-5k; T.builder stepping 6->5 at budget<40k"
+  "check_note": "09:25: min 136.4k med 143.4k step 300k; storage 36.9k (-10 e/t); builders 4 (35W) after tier step-down"
  },
  "w45n8_rhauler": {
   "deployed": "c4a8eb6",
