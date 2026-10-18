@@ -12,7 +12,7 @@ const ROOM = 'W47N8', HOME = 'W46N8', FORBID = new Set(['W47N9', 'W48N9', 'W48N8
 const MIN_Y = 8, LOG_CAP = 200, HEAL_PER = 12, ATK_DMG = 30, RA_DMG = 10;
 const HOLD_POS = { room: HOME, x: 3, y: 20 }, HOME_SAFE = { room: HOME, x: 28, y: 24 };
 const PATROL = [[22, 10], [32, 10], [36, 12], [28, 14]];     // north side, y>=8
-const CTRL = [15, 25], SPAWN_POS = [12, 26], TOWER_POS = [14, 28], WAIT_POS = [10, 24];
+const CTRL = [15, 25], SPAWN_POS = [15, 18], TOWER_POS = [14, 28], WAIT_POS = [10, 24];
 const SQUAD_BODY = () => [].concat(Array(6).fill(RANGED_ATTACK), Array(2).fill(HEAL), Array(8).fill(MOVE)); // 1800: 60 ranged dmg, 24 heal
 const BREAKER_BODY = () => [CLAIM, CLAIM, CLAIM, MOVE, MOVE, MOVE];                                       // 1950, 3 reservation ticks/tick (RCL6 cap 2300)
 const WORKER_BODY = () => [].concat(Array(5).fill(WORK), Array(5).fill(CARRY), Array(5).fill(MOVE));     // 1000, carries 250
@@ -157,6 +157,11 @@ function runSquad(c) {
   travel(c, ROOM, px, py, 2);
 }
 
+function placeSpawn(room) {
+  if (room.find(FIND_MY_SPAWNS).length || room.find(FIND_MY_CONSTRUCTION_SITES, { filter: x => x.structureType === STRUCTURE_SPAWN }).length) return;
+  const r = room.createConstructionSite(SPAWN_POS[0], SPAWN_POS[1], STRUCTURE_SPAWN);
+  const P = M(); if (P.spawnSiteRc !== r) { P.spawnSiteRc = r; log({ ev: 'spawnSite', rc: r, pos: SPAWN_POS }); }
+}
 function runBreaker(c) {
   const P = M(), cmd = P.cmd || 'hold';
   if (FORBID.has(c.room.name)) return travel(c, ROOM, CTRL[0], CTRL[1], 3);
@@ -167,8 +172,8 @@ function runBreaker(c) {
   const ctl = c.room.controller;
   if (!ctl) return;
   if (!c.pos.isNearTo(ctl)) return travel(c, ROOM, ctl.pos.x, ctl.pos.y, 1);
-  if (ctl.my) { // already ours — idle near controller (workers handle upgrade)
-    P.claimed = true; return;
+  if (ctl.my) { // ours: place the spawn site at once (retry each tick until site/spawn exists), then idle
+    P.claimed = true; placeSpawn(c.room); return;
   }
   if (ctl.reservation && ctl.reservation.username && ctl.reservation.username !== (Memory.username || c.owner.username)) {
     const r = c.attackController(ctl);
@@ -215,7 +220,8 @@ function runWorker(c) {
   if (!ctl.sign || ctl.sign.username !== c.owner.username) c.signController(ctl, 'Misaki');
 
   // upgrade to RCL2 (200) then keep upgrading for safe-mode charges
-  if (ctl.level < 2 || (ctl.level === 2 && ctl.progress < 200)) {
+  placeSpawn(c.room);
+  if (ctl.level < 2) { // RCL2 first (200 energy), then everyone builds the spawn
     if (!c.pos.inRangeTo(ctl, 3)) return travel(c, ROOM, ctl.pos.x, ctl.pos.y, 3);
     c.upgradeController(ctl); return;
   }
