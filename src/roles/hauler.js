@@ -60,7 +60,17 @@ function mineralRun(c, room, P) {
   if (move.to(c, mm[0], mm[1], 1)) { c.withdraw(k, r); delete c.memory.mr; }
   return true;
 }
-module.exports = { pickups, handoff, ctlLow, mineralRun, run(c) {
+// Build hold (walls.noUpgrade): hub -> controller link is off, so source A's energy (link 30,11) piles up in the hub link and
+// the source-A container next to the link stays near empty. The home hauler's fixed pickup becomes the hub link, waited on
+// from the manager tile (hub + storage both in range 1), so the queen no longer leaves stamp A to drain it
+// (patrol 10-18 12:38: ~25% of queen windows were hub/storage trips over the x=38 corridor; hauler idle 49% at 31,13).
+function hubPickup(room) {
+  if (!room.storage || !require('../managers/walls').noUpgrade(room)) return null;
+  const R = require('../managers/links').roles(room);
+  return R.hub && R.sources.length ? R.hub : null;
+}
+function homeHauler(room) { return Object.values(Game.creeps || {}).some(x => x.memory.role === 'hauler' && (x.memory.home || x.room.name) === room.name); }
+module.exports = { pickups, handoff, ctlLow, mineralRun, hubPickup, homeHauler, run(c) {
   const room = c.room, P = plan.get(room.name);
   if (mineralRun(c, room, P)) return;
   if (room.name === c.memory.home && salvage.dump(c)) return; // Invader loot (minerals) -> storage first
@@ -76,6 +86,14 @@ module.exports = { pickups, handoff, ctlLow, mineralRun, run(c) {
     // Fixed pickup: each hauler owns one miner container (memory.hp) and waits next to it until it can fill up.
     // No mid-trip switching between sources (that ping-pong cost ~1 PathFinder search per 10 ticks per hauler).
     const a = assignPickup(c, room, P), cont = a && rc.at(room, a[0], a[1], STRUCTURE_CONTAINER);
+    const hb = !c.memory.lp && hubPickup(room);
+    if (hb && !(cont && cont.store[RESOURCE_ENERGY] >= c.store.getCapacity())) { // container only when the link path overflowed
+      const [mx, my] = P.pos.manager; delete c.memory.wt;
+      if (!move.to(c, mx, my, 0)) return;
+      const have = hb.store[RESOURCE_ENERGY];
+      if (have >= Math.min(c.store.getFreeCapacity(), require('../managers/links').SEND)) { c.withdraw(hb, RESOURCE_ENERGY); c.memory.working = true; return; }
+      trace.why(c, 'p'); return;
+    }
     // fallbacks: container missing, or waited > 60 ticks without filling (miner dead/absent) -> one nearest-energy trip
     if (!cont || c.memory.lp) return legacyPickup(c, room, P);
     if (!move.to(c, a[0], a[1], 1)) return;

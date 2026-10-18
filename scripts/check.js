@@ -26,6 +26,7 @@ execSync('node ' + path.join(__dirname, '..', 'tests', 'defender_duel.js'), { st
 execSync('node ' + path.join(__dirname, '..', 'tests', 'kite.js'), { stdio: 'pipe' });
 execSync('node ' + path.join(__dirname, '..', 'tests', 'queen_standby.js'), { stdio: 'pipe' });
 execSync('node ' + path.join(__dirname, '..', 'tests', 'hauler_fill_sticky.js'), { stdio: 'pipe' });
+execSync('node ' + path.join(__dirname, '..', 'tests', 'hauler_hub_pickup.js'), { stdio: 'pipe' });
 execSync('node ' + path.join(__dirname, '..', 'tests', 'salvage.js'), { stdio: 'pipe' });
 execSync('node ' + path.join(__dirname, '..', 'tests', 'roads_plan.js'), { stdio: 'pipe' });
 execSync('node ' + path.join(__dirname, '..', 'tests', 'build_hold.js'), { stdio: 'pipe' });
