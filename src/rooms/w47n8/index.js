@@ -63,6 +63,6 @@ function towerRun(room) {
 // self-sufficient = own spawn + a miner + a hauler alive (conquest.js stops sending cqworkers/cqhaulers)
 function selfSufficient() {
   const r = Game.rooms[C.ROOM]; if (!r || !r.find(FIND_MY_SPAWNS).length) return false;
-  const cs = mine(); return cs.some(c => c.memory.role === 'w8miner') && cs.some(c => c.memory.role === 'w8hauler');
+  return mine().some(c => c.memory.role === 'w8miner'); // Spawn2 + its own miner -> home stops cq pioneers/haulers (guard stays)
 }
 module.exports = { ROOM: C.ROOM, spawnRun, layoutRun, towerRun, selfSufficient, bodyFor };

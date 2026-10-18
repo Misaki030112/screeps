@@ -21,8 +21,12 @@ const R = {
   w8miner(c) {
     if (!home(c)) return;
     const S = C.SOURCES[c.memory.si | 0], [x, y] = S.stand;
-    if (c.pos.x !== x || c.pos.y !== y) return go(c, x, y, 0);
     const src = Game.rooms[C.ROOM].lookForAt(LOOK_SOURCES, S.src[0], S.src[1])[0];
+    if (c.pos.x !== x || c.pos.y !== y) {
+      // stand taken (e.g. a cqminer from home still mining): harvest from any tile next to the source
+      if (Game.rooms[C.ROOM].lookForAt(LOOK_CREEPS, x, y).length && src) return c.pos.isNearTo(src) ? c.harvest(src) : go(c, src.pos.x, src.pos.y, 1);
+      return go(c, x, y, 0);
+    }
     const cont = c.pos.lookFor(LOOK_STRUCTURES).find(s => s.structureType === STRUCTURE_CONTAINER);
     if (cont && cont.hits < cont.hitsMax * 0.5 && c.store[E] > 0) return c.repair(cont);
     if (src) c.harvest(src);

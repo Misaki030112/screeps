@@ -336,7 +336,9 @@ function run1(spawn, onWait) {
   if (room.storage && room.storage.store[RESOURCE_ENERGY] > ((Memory.defense && Memory.defense.reserveE) || 0) + 10000) {
     const need = ['hauler', 'upgrader', 'mminer', 'builder'].find(r => (count[r] || 0) < (T[r] || 0));
     const cw = need && require('../roles/conquest').wantSpawn(room);
-    if (need && !(cw && (cw.role === 'cqatk' || room.memory.cqTurn))) { const rv = homeRole(need); if (rv === OK) room.memory.cqTurn = 1; return rv; }
+    // cqTurn expires after 150t: remotes spawned ahead of CQ kept it set 83720845..83721136 and home got no upgrader for ~300t
+    const cqTurn = room.memory.cqTurn && Game.time - room.memory.cqTurn < 150;
+    if (need && !(cw && (cw.role === 'cqatk' || cqTurn))) { const rv = homeRole(need); if (rv === OK) room.memory.cqTurn = Game.time; return rv; }
   }
   // 2c) W47N8: quad replacements first; remotes (rminer/reserver) before claim bodies so home/remote economy does not starve
   const CQ = require('../roles/conquest');
