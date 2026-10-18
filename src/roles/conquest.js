@@ -15,9 +15,11 @@ const PATROL = [[22, 10], [32, 10], [36, 12], [28, 14]];     // north side, y>=8
 const CTRL = [15, 25], SPAWN_POS = [15, 18], TOWER_POS = [14, 28], WAIT_POS = [10, 24];
 const SQUAD_BODY = () => [].concat(Array(6).fill(RANGED_ATTACK), Array(2).fill(HEAL), Array(8).fill(MOVE)); // 1800: 60 ranged dmg, 24 heal
 const BREAKER_BODY = () => [CLAIM, CLAIM, CLAIM, MOVE, MOVE, MOVE];                                       // 1950, 3 reservation ticks/tick (RCL6 cap 2300)
-const WORKER_BODY = () => [].concat(Array(5).fill(WORK), Array(5).fill(CARRY), Array(5).fill(MOVE));     // 1000, carries 250
+const WORKER_BODY = () => [].concat(Array(8).fill(WORK), Array(8).fill(CARRY), Array(8).fill(MOVE));     // 1600, carries 400 (Misaki 15:25 faster)
+const MINER_BODY = () => [].concat(Array(6).fill(WORK), Array(3).fill(MOVE)); // 750, 12/tick on his containers
+const MINER_SPOTS = [[26, 11], [11, 43]];
 const STORAGE_FLOOR = 3100; // keep the 1300 defender reserve (same gate as the probe)
-const ROLES = ['cqsquad', 'cqbreaker', 'cqworker', 'cqhauler', 'cqatk', 'cqrh'];
+const ROLES = ['cqsquad', 'cqbreaker', 'cqworker', 'cqhauler', 'cqatk', 'cqrh', 'cqminer'];
 
 const M = () => (Memory.ops = Memory.ops || {}, Memory.ops.cq = Memory.ops.cq || {});
 function log(ev) { const P = M(); P.log = P.log || []; P.log.push(Object.assign({ t: Game.time }, ev)); if (P.log.length > LOG_CAP) P.log.splice(0, P.log.length - LOG_CAP); }
@@ -226,6 +228,11 @@ function runWorker(c) {
     c.upgradeController(ctl); return;
   }
 
+  // downgrade guard (Misaki 15:25): if timer gets low, everyone upgrades first
+  if (ctl.ticksToDowngrade < 4000) {
+    if (!c.pos.inRangeTo(ctl, 3)) return travel(c, ROOM, ctl.pos.x, ctl.pos.y, 3);
+    c.upgradeController(ctl); return;
+  }
   // autoSafe (opt-in): activate when available and not currently in SM
   if (P.autoSafe && ctl.safeModeAvailable > 0 && !ctl.safeMode && ctl.level >= 2) {
     const r = ctl.activateSafeMode();
@@ -316,6 +323,14 @@ function runReinf(c) {
   if (!c.pos.inRangeTo(REINF_POST[0], REINF_POST[1], 3)) return travel(c, ROOM, REINF_POST[0], REINF_POST[1], 2);
 }
 
+// static miner on his leftover source containers until W47N8 has its own w8miners
+function runMiner(c) {
+  const [x, y] = MINER_SPOTS[c.memory.spot || 0];
+  if (c.room.name !== ROOM || c.pos.x !== x || c.pos.y !== y) return travel(c, ROOM, x, y, 0);
+  const src = c.pos.findClosestByRange(FIND_SOURCES);
+  if (src) c.harvest(src);
+}
+
 function runHauler(c) {
   const P = M(), cmd = P.cmd || 'hold';
   if (FORBID.has(c.room.name)) return travel(c, ROOM, WAIT_POS[0], WAIT_POS[1], 2);
@@ -346,6 +361,7 @@ function run(c) {
   P.cmd = P.cmd || 'hold';
   if (c.memory.role === 'cqsquad') return runSquad(c);
   if (c.memory.role === 'cqbreaker') return runBreaker(c);
+  if (c.memory.role === 'cqminer') return runMiner(c);
   if (c.memory.role === 'cqworker') return runWorker(c);
   if (c.memory.role === 'cqhauler') return runHauler(c);
   if (c.memory.role === 'cqatk' || c.memory.role === 'cqrh') return runReinf(c);
@@ -375,6 +391,11 @@ function wantSpawn(room) {
     if ((n('cqbreaker') < bMax || (short && n('cqbreaker') < bMax + 1)) && !ours()) return { role: 'cqbreaker', body: BREAKER_BODY(), mem: { role: 'cqbreaker', home: HOME, born: Game.time } };
     // pioneers before more reinforcements once the claim is near (Misaki 15:06)
     const self8 = require('../rooms/w47n8/index').selfSufficient(); // W47N8 runs itself -> no more pioneers/cqhaulers from home
+    if (!self8 && ours()) {
+      const ms = _.filter(Game.creeps, c => c.memory.role === 'cqminer');
+      for (let i = 0; i < MINER_SPOTS.length; i++) if (!ms.some(c => (c.memory.spot || 0) === i && (c.spawning || c.ticksToLive > 80)))
+        return { role: 'cqminer', body: MINER_BODY(), mem: { role: 'cqminer', spot: i, home: HOME, born: Game.time } };
+    }
     if (!self8 && n('cqworker') < wMax && (ours() || almost || P.forceWorkers)) {
       return { role: 'cqworker', body: WORKER_BODY(), mem: { role: 'cqworker', home: HOME, born: Game.time } };
     }
