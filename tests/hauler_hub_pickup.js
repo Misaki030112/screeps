@@ -18,10 +18,10 @@ stub('managers/threat.js', { holding: () => false });
 stub('managers/walls.js', { noUpgrade: () => W.hold });
 stub('managers/links.js', { SEND: 400, roles: () => ({ hub: W.hub, sources: [box('sa', 30, 11, 0, 800)] }) });
 const H = require(src('roles/hauler.js'));
-function run(o) {
+function run(o, mem) {
   W = Object.assign({ hold: true, arrived: true, hub: box('hub', 37, 29, 0, 800), ka: box('ka', 31, 12, 40, 2000) }, o);
   const room = { name: 'W46N8', energyAvailable: 2300, energyCapacityAvailable: 2300, storage: box('st', 37, 31, 9000, 1e6), memory: {} };
-  const c = { name: 'hauler1', room, memory: { home: 'W46N8' }, store: { energy: 0, getFreeCapacity: () => 800, getCapacity: () => 800 }, pos: { findInRange: () => [] },
+  const c = { name: 'hauler1', room, memory: Object.assign({ home: 'W46N8' }, mem), store: { energy: 0, getFreeCapacity: () => 800, getCapacity: () => 800 }, pos: { findInRange: () => [] },
     withdraw: t => { W.took = t.id; return 0; } };
   W.moved = null; H.run(c); return Object.assign({ c }, W);
 }
@@ -30,6 +30,7 @@ const cases = [
   ['hold: hub >= 400 -> withdraws from hub and delivers', () => { const r = run({ hub: box('hub', 37, 29, 450, 800) }); assert.strictEqual(r.took, 'hub'); assert.strictEqual(r.c.memory.working, true); }],
   ['hold: hub < 400 -> waits (p), no intent', () => { const r = run({ hub: box('hub', 37, 29, 300, 800) }); assert.strictEqual(r.took, undefined); assert.strictEqual(r.why, 'p'); }],
   ['hold: container A holds a full load (link stalled) -> back to the container', () => assert.deepStrictEqual(run({ arrived: false, ka: box('ka', 31, 12, 900, 2000) }).moved, [31, 12])],
+  ['hold: stale legacy flag lp=1 -> still the hub (lp cleared)', () => { const r = run({ arrived: false }, { lp: 1 }); assert.deepStrictEqual(r.moved, [36, 30]); assert.strictEqual(r.c.memory.lp, undefined); }],
   ['no hold: fixed miner container as before', () => assert.deepStrictEqual(run({ hold: false, arrived: false }).moved, [31, 12])],
 ];
 let fail = 0; for (const [n, f] of cases) { try { f(); console.log('ok  ', n); } catch (e) { fail++; console.log('FAIL', n, e.message); } }

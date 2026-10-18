@@ -86,9 +86,9 @@ module.exports = { pickups, handoff, ctlLow, mineralRun, hubPickup, homeHauler, 
     // Fixed pickup: each hauler owns one miner container (memory.hp) and waits next to it until it can fill up.
     // No mid-trip switching between sources (that ping-pong cost ~1 PathFinder search per 10 ticks per hauler).
     const a = assignPickup(c, room, P), cont = a && rc.at(room, a[0], a[1], STRUCTURE_CONTAINER);
-    const hb = !c.memory.lp && hubPickup(room);
+    const hb = hubPickup(room); // ignores a stale legacy flag (lp): live 12:47 the hauler idled at the ctl drop with lp=1 and nothing >= 100 to pick
     if (hb && !(cont && cont.store[RESOURCE_ENERGY] >= c.store.getCapacity())) { // container only when the link path overflowed
-      const [mx, my] = P.pos.manager; delete c.memory.wt;
+      const [mx, my] = P.pos.manager; delete c.memory.wt; delete c.memory.lp;
       if (!move.to(c, mx, my, 0)) return;
       const have = hb.store[RESOURCE_ENERGY];
       if (have >= Math.min(c.store.getFreeCapacity(), require('../managers/links').SEND)) { c.withdraw(hb, RESOURCE_ENERGY); c.memory.working = true; return; }
