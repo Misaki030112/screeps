@@ -372,7 +372,7 @@ function runHauler(c) {
     const conts = r8 ? r8.find(FIND_STRUCTURES, { filter: s => s.structureType === STRUCTURE_CONTAINER && s.store[RESOURCE_ENERGY] >= 300 && !s.pos.inRangeTo(SITE[0], SITE[1], 6) }) : [];
     const drops = r8 ? r8.find(FIND_DROPPED_RESOURCES, { filter: d => d.resourceType === RESOURCE_ENERGY && d.amount >= 150 && !d.pos.inRangeTo(SITE[0], SITE[1], 6) }) : [];
     if (c.store[RESOURCE_ENERGY] > 0 && !conts.length && !drops.length && c.room.name === ROOM) { c.memory.full = true; return; }
-    const tgt = c.room.name === ROOM ? (c.pos.findClosestByRange(drops) || c.pos.findClosestByRange(conts)) : (drops[0] || _.max(conts, s => s.store[RESOURCE_ENERGY]));
+    const tgt = conts.length ? _.max(conts, s => s.store[RESOURCE_ENERGY] - 20 * (s.pos.roomName === c.pos.roomName ? c.pos.getRangeTo(s) : 50)) : (c.room.name === ROOM ? c.pos.findClosestByRange(drops) : drops[0]); // containers first (16:15: haulers loitered at drops near the north post while 26,11 sat at 1979)
     if (tgt && tgt.pos) {
       if (!c.pos.isNearTo(tgt)) return travel(c, ROOM, tgt.pos.x, tgt.pos.y, 1);
       if (tgt.amount !== undefined) c.pickup(tgt); else c.withdraw(tgt, RESOURCE_ENERGY); return;
