@@ -317,11 +317,20 @@ function run(c) {
     fight(c, [c], {}); return c.moveTo(new RoomPosition(RALLY.x,RALLY.y,RALLY.room),{reusePath:10,costCallback:matrixLite});
   }
   if (P.simple !== false && (P.cmd||"hold")==="go") {
-    // SIMPLE MODE: each member walks to its own fixed cell of a 2x2 at the post; when an armed
-    // hostile is near and the 2x2 is formed, the formed-quad logic kites/fights as one block.
+    // SIMPLE MODE: 2x2 cells at post. CLAIM in W47N8 -> every member chases/kills it (override post), then returns.
     const mates = allQuads().sort((a,b)=>(a.memory.born||0)-(b.memory.born||0));
     const k = Math.max(0, mates.findIndex(m=>m.name===c.name)) % 4;
     const A = postAnchor();
+    if (c.room.name === ROOM) {
+      const claimers = c.room.find(FIND_HOSTILE_CREEPS).filter(h => h.owner && h.owner.username!=="Source Keeper" && act(h, CLAIM));
+      if (claimers.length) {
+        const t = _.min(claimers, h => rng(c.pos, h.pos));
+        fight(c, mates, { focus: t.id });
+        if (c.getActiveBodyparts(RANGED_ATTACK) && c.pos.inRangeTo(t, 3)) c.rangedAttack(t);
+        if (!c.pos.inRangeTo(t, 1)) return c.moveTo(t, { reusePath: 0, maxRooms: 1, costCallback: matrixLite });
+        return;
+      }
+    }
     const armedNear = c.room.find(FIND_HOSTILE_CREEPS).some(h=>meleeD(h)+rangedD(h)>0 && mates.some(m=>m.pos.roomName===h.pos.roomName && m.pos.inRangeTo(h,6)));
     if (armedNear && mates.length>=2) {
       const team = mates.slice(0,4); team.forEach((m,i)=>{ m.memory.qi=i; m.memory.qid=0; });

@@ -263,22 +263,45 @@ const REINF_POST = [21, 7];
 const ATK_BODY = () => [].concat(Array(12).fill(ATTACK), Array(12).fill(MOVE)); // 1560
 const RH_BODY = () => [].concat(Array(4).fill(RANGED_ATTACK), Array(4).fill(HEAL), Array(8).fill(MOVE)); // 2000
 function runReinf(c) {
+  // Route: home -> W47N8 controller (15,25 r2) -> post 21,7. CLAIM hostiles: chase anywhere in room; else ignore harmless unless in range.
   const P = M(), cmd = P.cmd || 'hold';
-  if (FORBID.has(c.room.name)) return travel(c, ROOM, REINF_POST[0], REINF_POST[1], 3);
+  if (FORBID.has(c.room.name)) return travel(c, ROOM, CTRL[0], CTRL[1], 3);
   if (cmd === 'retreat') return travel(c, HOME_SAFE.room, HOME_SAFE.x, HOME_SAFE.y, 2);
   if (cmd === 'hold') return travel(c, HOLD_POS.room, HOLD_POS.x, HOLD_POS.y, 2);
-  if (c.room.name !== ROOM) return travel(c, ROOM, REINF_POST[0], REINF_POST[1], 2);
+  // enter room via controller waypoint
+  if (c.room.name !== ROOM) return travel(c, ROOM, CTRL[0], CTRL[1], 2);
   const hostiles = c.room.find(FIND_HOSTILE_CREEPS).filter(enemy);
-  const dangerous = hostiles.filter(h => act(h, CLAIM) || armed(h));
-  const inR = (c.getActiveBodyparts(ATTACK) ? 1 : 3);
-  const near = dangerous.filter(h => c.pos.inRangeTo(h, inR));
+  const claimers = hostiles.filter(h => act(h, CLAIM));
+  if (claimers.length) {
+    const t = pickTarget(c.pos, claimers);
+    const inR = c.getActiveBodyparts(ATTACK) ? 1 : 3;
+    if (c.pos.inRangeTo(t, inR)) {
+      if (c.getActiveBodyparts(ATTACK)) c.attack(t); else c.rangedAttack(t);
+    } else if (c.getActiveBodyparts(RANGED_ATTACK) && c.pos.inRangeTo(t, 3)) c.rangedAttack(t);
+    if (c.getActiveBodyparts(HEAL) && c.hits < c.hitsMax) c.heal(c);
+    if (!c.pos.inRangeTo(t, inR)) return travel(c, ROOM, t.pos.x, t.pos.y, inR);
+    return;
+  }
+  // waypoint once per creep
+  if (!c.memory.viaCtl) {
+    if (c.pos.inRangeTo(CTRL[0], CTRL[1], 2)) c.memory.viaCtl = 1;
+    else return travel(c, ROOM, CTRL[0], CTRL[1], 2);
+  }
+  // in-range only vs armed (not chase); heal self
+  const inR = c.getActiveBodyparts(ATTACK) ? 1 : 3;
+  const near = hostiles.filter(h => armed(h) && c.pos.inRangeTo(h, inR));
   if (near.length) {
     const t = pickTarget(c.pos, near);
     if (c.getActiveBodyparts(ATTACK)) c.attack(t);
     else { if (near.length >= 3) c.rangedMassAttack(); else c.rangedAttack(t); }
+  } else {
+    const soft = hostiles.filter(h => c.pos.inRangeTo(h, inR));
+    if (soft.length) {
+      const t = pickTarget(c.pos, soft);
+      if (c.getActiveBodyparts(ATTACK)) c.attack(t); else c.rangedAttack(t);
+    }
   }
   if (c.getActiveBodyparts(HEAL) && c.hits < c.hitsMax) c.heal(c);
-  // sit near post; do not chase harmless / out-of-range creeps
   if (!c.pos.inRangeTo(REINF_POST[0], REINF_POST[1], 3)) return travel(c, ROOM, REINF_POST[0], REINF_POST[1], 2);
 }
 
