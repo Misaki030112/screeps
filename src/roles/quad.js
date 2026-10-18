@@ -246,7 +246,7 @@ function decide(qid, team) {
     Q.rot = rotateAssign(anc, team, f || hostiles[0], sh);
     return Q;
   }
-  if (anc) {
+  if (anc) { Q.rgT = undefined;
     if (anc.roomName===goal.pos.roomName && rng(anc,goal.pos)<=goal.range) { Q.mode="there"; return Q; }
     const r = PathFinder.search(new RoomPosition(anc.x,anc.y,anc.roomName), {pos:goal.pos,range:goal.range},
       {maxRooms:3, maxOps:4000, roomCallback:quadMatrixN(n), plainCost:2, swampCost:10});
@@ -260,8 +260,12 @@ function decide(qid, team) {
     const terr=(x,y)=>{const v=T.get(x,y);return v&TERRAIN_MASK_WALL?"wall":v&TERRAIN_MASK_SWAMP?"swamp":"plain";};
     const allHere = team.every(c=>c.pos.roomName===lead.pos.roomName);
     if (allHere && anchorCost(lead.pos.x,lead.pos.y,terr,undefined,sh)<255) {
-      Q.mode="regroup"; Q.anchor={x:lead.pos.x,y:lead.pos.y,room:lead.pos.roomName}; return Q;
-    }
+      const prevRg = (Q.rgT && Q.rgRoom===lead.pos.roomName) ? Q.rgT : Game.time;
+      if (Game.time - prevRg < 6) { Q.rgT = prevRg; Q.rgRoom = lead.pos.roomName;
+        Q.mode="regroup"; Q.anchor={x:lead.pos.x,y:lead.pos.y,room:lead.pos.roomName}; return Q; }
+      // regroup stalled (cell blocked by wall/rampart/creep): squeeze toward goal instead, retry later
+      if (Game.time - prevRg > 20) Q.rgT = undefined;
+    } else { Q.rgT = undefined; }
     Q.mode="squeeze";
   }
   Q.goal={x:goal.pos.x,y:goal.pos.y,room:goal.pos.roomName,range:goal.range};
