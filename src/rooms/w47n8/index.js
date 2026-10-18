@@ -46,7 +46,9 @@ function spawnRun(spawn) {
   // +1 hauler above 1200 loose (max 3), +1 upgrader per 600 loose above 600 (max 6)
   if (!want) {
     const loose = looseE(room);
-    if (loose > 1200 && n('w8hauler') < (loose > (sites ? 2500 : 3000) ? 6 : loose > 2500 ? 5 : loose > 2000 ? 4 : 3)) want = 'w8hauler'; // 18:20: 4th when >2k piles (far south source)
+    if (loose > 1200 && n('w8hauler') < (sites && loose > 3500 ? 7 : loose > (sites ? 2500 : 3000) ? 6 : loose > 2500 ? 5 : loose > 2000 ? 4 : 3)) want = 'w8hauler'; // 18:20: 4th when >2k piles (far south source)
+    // 23:45: 7th above 3.5k while sites exist: with 6 haulers loose still rose 3.2k -> 3.96k in 146 ticks (~5 e/t), 11,43 full 2000 + 126 dropped,
+    // Spawn2 idle 600/600, 4 builders mostly queue_blocked, builds fell to ~5.5 e/t
     // 23:20: 6th already above 2.5k while sites exist: loose 3048 -> 2736 by t83726755 (just under 3k, so Spawn2 sat idle 600/600) while 4 builders
     // were queue_blocked ~100/113 samples and 5 upgraders ~75/69-tick windows (creep_motion 0.25h); builds ~7.5 e/t + RCL3 ~6 e/t
     // 23:10: 6th above 3k: loose 2763 -> 3048 in ~95t (11,43 at 1690) while hub builders sat queue_blocked ~70% of ticks and the ctl cont ran down to 137 (RCL3 ~4 e/t)
