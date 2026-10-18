@@ -6,6 +6,8 @@ function mine() { return _.filter(Game.creeps, c => c.memory.home === C.ROOM); }
 function bodyFor(role, e) {
   if (role === 'w8miner') { const w = Math.max(2, Math.min(5, Math.floor((e - 50) / 100))); return rep(w, WORK).concat([MOVE]); }
   if (role === 'w8hauler') { const n = Math.max(2, Math.min(10, Math.floor(e / 100))); return rep(n, CARRY).concat(rep(n, MOVE)); }
+  // 18:58: upgraders sit beside the ctl container 13,26 (1750/2000 full, spawn idle at 550/550): WORK-heavy 4W1C2M instead of 2W2C2M
+  if (role === 'w8upgrader' && e >= 550) { const w = Math.min(10, Math.floor((e - 150) / 100)); return rep(w, WORK).concat([CARRY, MOVE, MOVE]); }
   const n = Math.max(1, Math.min(6, Math.floor(e / 200))); return rep(n, WORK).concat(rep(n, CARRY), rep(n, MOVE)); // upgrader/builder
 }
 function spawnRun(spawn) {
@@ -33,7 +35,8 @@ function spawnRun(spawn) {
     const loose = _.sum(room.find(FIND_DROPPED_RESOURCES, { filter: r => r.resourceType === RESOURCE_ENERGY }), r => r.amount)
       + _.sum(room.find(FIND_STRUCTURES, { filter: s => s.structureType === STRUCTURE_CONTAINER && !(s.pos.x === C.CTL_CONT[0] && s.pos.y === C.CTL_CONT[1]) }), s => s.store[RESOURCE_ENERGY]);
     if (loose > 1200 && n('w8hauler') < (loose > 2000 ? 4 : 3)) want = 'w8hauler'; // 18:20: 4th when >2k piles (far south source)
-    else if (n('w8upgrader') < Math.min(6, (sites ? 2 : 3) + Math.floor(Math.max(0, loose - 600) / 600))) want = 'w8upgrader';
+    else if (n('w8upgrader') < Math.min(6, (sites ? 2 : 3) + Math.floor(Math.max(0, loose - 600) / 600))
+      && _.sum(cs.filter(c => c.memory.role === 'w8upgrader'), c => _.filter(c.body, p => p.type === WORK).length) < 16) want = 'w8upgrader'; // ~20 e/t income
   }
   if (!want) return;
   // emergency: nothing alive that refills -> spawn with what we have
