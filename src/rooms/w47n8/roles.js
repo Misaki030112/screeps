@@ -2,11 +2,12 @@
 const C = require('./config');
 const go = (c, x, y, r = 1) => c.moveTo(new RoomPosition(x, y, C.ROOM), { range: r, reusePath: 10, maxRooms: 1 });
 const E = 'energy';
+const isHub = s => s.pos.x === C.HUB_CONT[0] && s.pos.y === C.HUB_CONT[1];
 function home(c) { if (c.room.name !== C.ROOM) { c.moveTo(new RoomPosition(C.SPAWN[0], C.SPAWN[1], C.ROOM), { reusePath: 20 }); return false; } return true; }
 function getEnergy(c) {
   const drop = c.pos.findClosestByRange(FIND_DROPPED_RESOURCES, { filter: r => r.resourceType === E && r.amount >= 50 });
   const cont = c.pos.findClosestByRange(FIND_STRUCTURES, { filter: s => s.structureType === STRUCTURE_CONTAINER && s.store[E] >= 100
-    && !(s.pos.x === C.CTL_CONT[0] && s.pos.y === C.CTL_CONT[1] && c.memory.role === 'w8hauler') });
+    && !((s.pos.x === C.CTL_CONT[0] && s.pos.y === C.CTL_CONT[1] || isHub(s)) && c.memory.role === 'w8hauler') });
   const t = [drop, cont].filter(Boolean).sort((a, b) => c.pos.getRangeTo(a) - c.pos.getRangeTo(b))[0];
   if (t) { if (!c.pos.isNearTo(t)) go(c, t.pos.x, t.pos.y); else if (t.amount !== undefined) c.pickup(t); else c.withdraw(t, E); return true; }
   const src = c.pos.findClosestByRange(FIND_SOURCES_ACTIVE);
@@ -23,7 +24,7 @@ function haulPick(c) {
     for (const h of room.find(FIND_MY_CREEPS, { filter: x => x.memory.role === 'w8hauler' && x.id !== c.id && x.memory.pt && !x.memory.w }))
       claimed[h.memory.pt] = (claimed[h.memory.pt] || 0) + h.store.getFreeCapacity();
     const cands = room.find(FIND_DROPPED_RESOURCES, { filter: r => r.resourceType === E && r.amount >= 50 }).concat(room.find(FIND_STRUCTURES,
-      { filter: s => s.structureType === STRUCTURE_CONTAINER && s.store[E] >= 100 && !(s.pos.x === C.CTL_CONT[0] && s.pos.y === C.CTL_CONT[1]) }));
+      { filter: s => s.structureType === STRUCTURE_CONTAINER && s.store[E] >= 100 && !(s.pos.x === C.CTL_CONT[0] && s.pos.y === C.CTL_CONT[1]) && !isHub(s) }));
     let bs = 0; t = null;
     // 18:20: score by the whole unclaimed pile, not min(free, pile): capped by a 150-250 free store every pile scored the same and
     // the nearest (north, drained by 10 workers) always won, so 10,43 grew 1574->2011 and decayed ~2 e/t
@@ -37,10 +38,20 @@ function haulPick(c) {
   return true;
 }
 function toggle(c) {
-  if (c.memory.w && c.store[E] === 0) c.memory.w = false;
+  if (c.memory.w && c.store[E] === 0) { c.memory.w = false; delete c.memory.sk; }
   if (!c.memory.w && c.store.getFreeCapacity() === 0) c.memory.w = true;
 }
 const ctlCont = () => Game.rooms[C.ROOM].lookForAt(LOOK_STRUCTURES, C.CTL_CONT[0], C.CTL_CONT[1]).find(s => s.structureType === STRUCTURE_CONTAINER);
+const hubCont = () => Game.rooms[C.ROOM].lookForAt(LOOK_STRUCTURES, C.HUB_CONT[0], C.HUB_CONT[1]).find(s => s.structureType === STRUCTURE_CONTAINER);
+// container sink after spawn/extensions/tower: while hub sites (non-wall) exist, the emptier of hub/ctl container; else ctl first
+// sticky per load (memory.sk, cleared when empty) so a hauler never flips between the two mid-walk
+function sink(room, c) {
+  const free = s => (s && s.store.getFreeCapacity(E) > 0 ? s : null), was = free(c.memory.sk && Game.getObjectById(c.memory.sk));
+  if (was) return was;
+  const ctl = free(ctlCont()), hub = free(hubCont());
+  const t = hub && room.find(FIND_MY_CONSTRUCTION_SITES, { filter: s => s.structureType !== STRUCTURE_WALL }).length && (!ctl || hub.store[E] < ctl.store[E]) ? hub : ctl || hub;
+  c.memory.sk = t ? t.id : undefined; return t;
+}
 const onTile = (c, tiles) => tiles.some(([x, y]) => c.pos.x === x && c.pos.y === y);
 // sticky tile claim (memory[key] = index): keep my claim unless another creep claims it; a new claim needs a tile nobody stands on or claims
 function pickTile(c, tiles, key) {
@@ -105,8 +116,7 @@ const R = {
     if (!c.memory.w) { if (!haulPick(c) && c.store[E] > 0) c.memory.w = true; return; }
     const t = c.pos.findClosestByRange(FIND_MY_STRUCTURES, { filter: s => (s.structureType === STRUCTURE_SPAWN || s.structureType === STRUCTURE_EXTENSION
       || (s.structureType === STRUCTURE_TOWER && s.store.getFreeCapacity(E) > 200)) && s.store.getFreeCapacity(E) > 0 })
-      || (Game.rooms[C.ROOM].lookForAt(LOOK_STRUCTURES, C.CTL_CONT[0], C.CTL_CONT[1]).find(s => s.structureType === STRUCTURE_CONTAINER && s.store.getFreeCapacity(E) > 0))
-      || Game.rooms[C.ROOM].storage;
+      || sink(Game.rooms[C.ROOM], c) || Game.rooms[C.ROOM].storage;
     // nothing to fill: hand it to the emptiest w8upgrader/w8builder; never drop on the ground (Misaki rule), else wait
     const k = t || Game.rooms[C.ROOM].find(FIND_MY_CREEPS, { filter: x => (x.memory.role === 'w8upgrader' || x.memory.role === 'w8builder')
       && x.store.getFreeCapacity(E) > 0 }).sort((a, b) => a.store[E] - b.store[E])[0];
@@ -195,7 +205,7 @@ const R = {
     if (!home(c)) return;
     const room = Game.rooms[C.ROOM];
     const t = c.pos.findClosestByRange(FIND_MY_STRUCTURES, { filter: s => (s.structureType === STRUCTURE_SPAWN || s.structureType === STRUCTURE_EXTENSION) && s.store.getFreeCapacity(E) > 0 })
-      || room.lookForAt(LOOK_STRUCTURES, C.CTL_CONT[0], C.CTL_CONT[1]).find(s => s.structureType === STRUCTURE_CONTAINER && s.store.getFreeCapacity(E) > 0) || room.storage;
+      || sink(room, c) || room.storage;
     if (!t) return go(c, C.CTL[0], C.CTL[1], 3);
     if (!c.pos.isNearTo(t)) go(c, t.pos.x, t.pos.y); else c.transfer(t, E);
   },

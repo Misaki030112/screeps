@@ -19,7 +19,7 @@ function bodyFor(role, e) {
 }
 // energy lying on the ground or in source containers (ctl container excluded)
 const looseE = room => _.sum(room.find(FIND_DROPPED_RESOURCES, { filter: r => r.resourceType === RESOURCE_ENERGY }), r => r.amount)
-  + _.sum(room.find(FIND_STRUCTURES, { filter: s => s.structureType === STRUCTURE_CONTAINER && !(s.pos.x === C.CTL_CONT[0] && s.pos.y === C.CTL_CONT[1]) }), s => s.store[RESOURCE_ENERGY]);
+  + _.sum(room.find(FIND_STRUCTURES, { filter: s => s.structureType === STRUCTURE_CONTAINER && !(s.pos.x === C.CTL_CONT[0] && s.pos.y === C.CTL_CONT[1]) && !(s.pos.x === C.HUB_CONT[0] && s.pos.y === C.HUB_CONT[1]) }), s => s.store[RESOURCE_ENERGY]);
 function spawnRun(spawn) {
   if (spawn.spawning) return;
   const room = spawn.room, cs = mine(), n = r => cs.filter(c => c.memory.role === r).length;
@@ -94,6 +94,7 @@ function layoutRun(room) {
   if (room.controller.level >= 2) placeSeal(room);
   if (!room.find(FIND_MY_SPAWNS).length) return;
   const rcl = room.controller.level, ok = Memory.ops && Memory.ops.w8layout === 'approved';
+  if (rcl >= 3) { const [hx, hy] = C.HUB_CONT; if (!room.lookForAt(LOOK_STRUCTURES, hx, hy).some(s => s.structureType === STRUCTURE_CONTAINER) && !room.lookForAt(LOOK_CONSTRUCTION_SITES, hx, hy).length) room.createConstructionSite(hx, hy, STRUCTURE_CONTAINER); }
   // RCL8: the 5 temporary RCL2 extensions near Spawn2 give their slots to the last 5 strip extensions
   if (ok && rcl === 8) {
     const ex = room.find(FIND_MY_STRUCTURES, { filter: s => s.structureType === STRUCTURE_EXTENSION });
