@@ -1,6 +1,6 @@
 {
- "next_at": "2026-10-18T12:30:00+08:00",
- "reason": "11:58 patrol: storage hovers 13.6-15.8k since 11:15 under the 15k defense reserve (builders drain whatever crosses 15k, intended); mineral line build ~28 e/t since 11:11 (terminal 19.4k->26.0k/100k, labs 11.1k/14.7k/4.7k of 50k); spawn wait 60/2036 (2.9%), no new refill wait since t83715814; 0 upgraders, dg 118k; reservations W45N8 2153 W45N7 2294; errors 0, CPU ~6.7, bucket 10k. Deployed 72ab1db (trace: mminer idle = legit extractor cooldown, audit noise only). Verify next: mminer83715582 (ttl 5 at 11:58) replaced and no longer flagged; build progress continues; storage stays ~15k.",
+ "next_at": "2026-10-18T13:20:00+08:00",
+ "reason": "12:50 patrol: deployed 12fe2d8+d98017b (build hold: home hauler drains hub link 37,29 from manager tile 36,30; queen no longer leaves stamp A for hub drains). Baseline 1h before: queen windows 36,30+37,31 = 43/170 (~25%), queen ~520/1700 ticks in x=38 corridor (2h), hauler idle 49% waiting_pickup at 31,13 (lp=1 stale -> idled at ctl drop). Live 12:50: hauler went 36,30 -> hub 541->79 -> fed fcA 35,24 -> mineral run; errors 0. Mineral line 530t since 11:59: terminal 26.0k->30.0k, labs 12.7k/18.6k/6.9k (~22 e/t); storage 13.5-15k at reserve; sw wait 67/2618 (2.6%). Verify next: queen corridor/hub share down, hub stays <800 (source link 30,11 never blocked), container 31,12 not filling, fcA fed, spawn wait share not rising, hauler idle share.",
  "road_plan": {
   "doc": "docs/ROADS.md",
   "each_patrol": [
@@ -124,9 +124,9 @@
   ]
  },
  "last_deploy": {
-  "commit": "72ab1db",
-  "tick": 83717155,
-  "at": "2026-10-18 11:59 UTC+8"
+  "commit": "d98017b",
+  "tick": 83717816,
+  "at": "2026-10-18 12:48 UTC+8"
  },
  "walls": {
   "started": 83707350,
@@ -186,5 +186,11 @@
   "set": "Memory.defense.reserveE=15000 (parent)",
   "effect": "builders draw nothing while storage<15k",
   "check": "builders resume above 15k; mineral sites progress; reserve is the parent/Misaki call, do not change"
+ },
+ "hub_drain_hauler": {
+  "deployed": "12fe2d8 + d98017b",
+  "rule": "walls.noUpgrade && storage && hub+source link -> hauler fixed pickup = hub link from P.pos.manager (36,30), withdraw >= min(free,400); container A only when it holds a full load; queen standby hub drain only when no home hauler",
+  "check": "queen targets 36,30/37,31 share << 25% (1h creep_cpu); queen ticks on x=38 corridor down; hub <800; 31,12 container < 800; sw wait share <= 2.6%",
+  "revert": "git revert d98017b 12fe2d8 (hauler.hubPickup + queen standby !H.homeHauler)"
  }
 }
