@@ -1,6 +1,6 @@
 {
- "next_at": "2026-10-18T10:05:00+08:00",
- "reason": "09:25 patrol observe-only: 7ea548d tiers stepping down as planned (builders 6->5->4 at 08:56/09:16, live 10/8/8/9W=35W; storage 45.2k->36.9k ~-10 e/t, budget ~32k). Barriers 51 min 136.4k med 143.4k (two at ~300k), step 300k, +~15k/45min even; gates min 144k. ctl 81.7k progress +16k/45min with 2x12W. Builder 'n' ~20% = trace default (no act/no move, fatigue/withdraw ticks), unchanged vs 07:00/08:00, judged earlier. Reservations W45N8/W45N7 ~2.2k ok, containers low (no overflow), 0 hostiles, errors 0, CPU ~8.4 bkt 10k. Next: builders should step 4->3 near storage ~25k budget without gaps; storage must not undershoot ~8k; barrier min keeps rising; CPU <=~9.5.",
+ "next_at": "2026-10-18T10:30:00+08:00",
+ "reason": "10:08 patrol: parent's 27ab37b mineral line live (sites terminal 12.1k/100k, labs 4.5k+1.0k+0/50k each, extractor 4.2k/5k; container 41,24 built; upgrade hold on). Storage 36.9k(09:25)->30.6k(09:50)->17.1k(10:07), ~-75 e/t with 3 builders 28W; builders' storage floor was only the 1300 defender reserve, below the queen ferry floor (~2.4k) -> deployed 9edf999: builder storage floor max(reserve, walls.FLOOR 5k) at RCL6+. Verify at 10:30: storage settles >=~5k (not <4.5k), builders wait instead of draining, queen still refills (Memory.stats.sw wait share <=7%, was 31/448), upgraders resume when storage<=5k per noUpgrade, CPU <=~9.5, errors 0.",
  "road_plan": {
   "doc": "docs/ROADS.md",
   "each_patrol": [
@@ -124,9 +124,9 @@
   ]
  },
  "last_deploy": {
-  "commit": "7ea548d",
-  "tick": 83713680,
-  "at": "2026-10-18 07:57 UTC+8"
+  "commit": "9edf999",
+  "tick": 83715583,
+  "at": "2026-10-18 10:10 UTC+8"
  },
  "walls": {
   "started": 83707350,
@@ -169,5 +169,11 @@
   "rule": "build-phase builder tiers 3/4/5/6 no longer require walls.noUpgrade",
   "check": "builders back to 6 while budget>=40k; storage falls gently toward ~5k floor then tiers step down; upgraders 2 fed; CPU <=~9.5",
   "revert": "re-add W.noUpgrade(room) && to the three tier lines in src/managers/spawn.js targets (and tests/build_hold.js case)"
+ },
+ "builder_floor5k": {
+  "deployed": "9edf999",
+  "rule": "builder pickSource + low-carry refill use max(threat.reserve, walls.FLOOR=5000) at RCL6+",
+  "check": "storage holds ~5k while mineral sites open; queen not starved; spawn wait share not rising",
+  "revert": "storeFloor() in src/roles/builder.js -> threat reserve only"
  }
 }
