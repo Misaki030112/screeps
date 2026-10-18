@@ -1,6 +1,6 @@
 {
- "next_at": "2026-10-18T10:30:00+08:00",
- "reason": "10:08 patrol: parent's 27ab37b mineral line live (sites terminal 12.1k/100k, labs 4.5k+1.0k+0/50k each, extractor 4.2k/5k; container 41,24 built; upgrade hold on). Storage 36.9k(09:25)->30.6k(09:50)->17.1k(10:07), ~-75 e/t with 3 builders 28W; builders' storage floor was only the 1300 defender reserve, below the queen ferry floor (~2.4k) -> deployed 9edf999: builder storage floor max(reserve, walls.FLOOR 5k) at RCL6+. Verify at 10:30: storage settles >=~5k (not <4.5k), builders wait instead of draining, queen still refills (Memory.stats.sw wait share <=7%, was 31/448), upgraders resume when storage<=5k per noUpgrade, CPU <=~9.5, errors 0.",
+ "next_at": "2026-10-18T11:45:00+08:00",
+ "reason": "11:11 patrol: be9083d (parent, 10:44) deployed both the defense reserve (Memory.defense.reserveE=15000) and the mineral-hold fix. Verified: 0 upgraders while mineral sites open, ctl downgrade 119k, storage recovered 2.86k->14.3k (~+30 e/t), spawn wait 60/1343 (4.5%), O mining works (storage O 1500, container 84). Builders 4 (38W) all 100% waiting_feed because storage < reserveE 15k (intended by parent); terminal 19.4k/100k and labs 7.9k/10.8k/0.4k of 50k flat since 10:45. Verify next: storage crosses 15k, builders resume and storage hovers ~15k with build rate ~= income; no upgrader; no flip loop.",
  "road_plan": {
   "doc": "docs/ROADS.md",
   "each_patrol": [
@@ -175,5 +175,16 @@
   "rule": "builder pickSource + low-carry refill use max(threat.reserve, walls.FLOOR=5000) at RCL6+",
   "check": "storage holds ~5k while mineral sites open; queen not starved; spawn wait share not rising",
   "revert": "storeFloor() in src/roles/builder.js -> threat reserve only"
+ },
+ "mineral_hold_fix": {
+  "status": "deployed be9083d 10:44 by parent; verified 11:11 (0 upgraders, storage recovered)",
+  "file": "src/managers/walls.js noUpgrade",
+  "revert": "re-add storage > FLOOR condition"
+ },
+ "defense_reserve": {
+  "deployed": "be9083d",
+  "set": "Memory.defense.reserveE=15000 (parent)",
+  "effect": "builders draw nothing while storage<15k",
+  "check": "builders resume above 15k; mineral sites progress; reserve is the parent/Misaki call, do not change"
  }
 }
