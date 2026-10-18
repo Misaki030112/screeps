@@ -1,6 +1,6 @@
 {
- "next_at": "2026-10-19T02:40:00+08:00",
- "reason": "01:38 patrol: observe-only, no fix. Tick 83728627: alerts LOW only (exit 1), 0 new console errors (last 83723313 W47N8, fixed); gate ramparts min 153.0k (up from 151.9k), walls min 142101 (no loss); home storage 15.6k (at 15k reserve floor, builders idle by design); towers 958/930; RCL6 186.6k; bkt 10000 cpu ~10-13; remotes SAFE res W45N8 2063 W45N7 2080, delivered W45N8 977.2k W45N7 475.9k (~10 and ~11 e/t since 00:36); measured upgrade 11.4 vs model 26 (surplus to labs/build), known. Home hauler waiting_pickup 86% and queen target_full 71% (oversized while storage at floor, minor, no cheap fix worth a deploy). Next: storage stays >=~14k, gates keep rising, labs progress.",
+ "next_at": "2026-10-19T05:15:00+08:00",
+ "reason": "04:12 home patrol: observe-only, no fix. Tick 83730685: alerts LOW only (exit 1), 0 new console errors (last 83723314 W47N8, fixed); gate ramparts min 155.1k (up from 154.0k), walls min 142101 (no loss); towers 980/990; storage 14.5k (at 15k reserve floor, builders drawing nothing below it); RCL6 210.7k (+12.2k since 02:59, ~11.7 e/t); bkt 10000 cpu ~13-14 (W47N8 share); remotes SAFE res W45N8 2161 W45N7 2158, delivered W45N8 996.2k W45N7 493.2k (~9.45/~9.4 e/t since 02:59 sample); labs 33,21 31.2k/50k (+14.3k) 35,21 16.7k/50k (flat); model upgrade 26 vs measured 11.6 + build 9.3 (1 upgrader by design, surplus to labs). Next: storage holds ~15k, labs progress, gates keep rising; no deploy.",
  "road_plan": {
   "doc": "docs/ROADS.md",
   "each_patrol": [
@@ -200,9 +200,18 @@
   "revert": "drop the Wb.defLow line in src/roles/builder.js (!src branch)"
  },
  "remote_sample": {
-  "tick": 83726235,
-  "W45N8": 954495,
-  "W45N7": 451596,
-  "at": "2026-10-18 22:40 UTC+8"
+  "tick": 83730685,
+  "W45N8": 996229,
+  "W45N7": 493206,
+  "at": "2026-10-19 04:12 UTC+8"
+ },
+ "last_home_patrol": {
+  "tick": 83730685,
+  "at": "2026-10-19 04:12 UTC+8",
+  "mode": "observe-only",
+  "storage": 14511,
+  "progress": 210722,
+  "gate_min": 155101,
+  "wall_min": 142101
  }
 }
