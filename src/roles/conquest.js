@@ -17,6 +17,7 @@ const SQUAD_BODY = () => [].concat(Array(6).fill(RANGED_ATTACK), Array(2).fill(H
 const BREAKER_BODY = () => [CLAIM, CLAIM, CLAIM, MOVE, MOVE, MOVE];                                       // 1950, 3 reservation ticks/tick (RCL6 cap 2300)
 const WORKER_BODY = () => [].concat(Array(8).fill(WORK), Array(8).fill(CARRY), Array(8).fill(MOVE));     // 1600, carries 400 (Misaki 15:25 faster)
 const MINER_BODY = () => [].concat(Array(6).fill(WORK), Array(3).fill(MOVE)); // 750, 12/tick on his containers
+const SITE = [15, 18];
 const MINER_SPOTS = [[26, 11], [11, 43]];
 const STORAGE_FLOOR = 3100; // keep the 1300 defender reserve (same gate as the probe)
 const ROLES = ['cqsquad', 'cqbreaker', 'cqworker', 'cqhauler', 'cqatk', 'cqrh', 'cqminer'];
@@ -195,20 +196,15 @@ function runWorker(c) {
   if (cmd === 'hold') return travel(c, HOLD_POS.room, HOLD_POS.x, HOLD_POS.y, 2);
 
   // Fast RCL2 energy: prefer W47N8's own sources / his leftover containers, else haul from home storage.
+  // pure builder (Misaki 15:26): never harvest or walk home; take energy dropped/delivered near the spawn site
   if (c.store[RESOURCE_ENERGY] === 0) {
-    if (c.room.name === ROOM) {
-      // dropped / tomb / his containers near sources first (no ownership needed to withdraw from containers)
-      const drop = c.pos.findClosestByRange(FIND_DROPPED_RESOURCES, { filter: r => r.resourceType === RESOURCE_ENERGY && r.amount >= 50 });
-      if (drop) { if (!c.pos.isNearTo(drop)) return travel(c, ROOM, drop.pos.x, drop.pos.y, 1); c.pickup(drop); return; }
-      const cont = c.pos.findClosestByRange(FIND_STRUCTURES, { filter: s => s.structureType === STRUCTURE_CONTAINER && s.store[RESOURCE_ENERGY] >= 50 });
-      if (cont) { if (!c.pos.isNearTo(cont)) return travel(c, ROOM, cont.pos.x, cont.pos.y, 1); c.withdraw(cont, RESOURCE_ENERGY); return; }
-      const src = c.pos.findClosestByRange(FIND_SOURCES_ACTIVE);
-      if (src) { if (!c.pos.isNearTo(src)) return travel(c, ROOM, src.pos.x, src.pos.y, 1); c.harvest(src); return; }
-    }
-    const st = Game.rooms[HOME] && Game.rooms[HOME].storage;
-    if (!st || st.store[RESOURCE_ENERGY] < STORAGE_FLOOR + 250) return travel(c, HOME, HOLD_POS.x, HOLD_POS.y, 2);
-    if (c.room.name !== HOME || !c.pos.isNearTo(st)) return travel(c, HOME, st.pos.x, st.pos.y, 1);
-    c.withdraw(st, RESOURCE_ENERGY); return;
+    if (c.room.name !== ROOM) return travel(c, ROOM, SITE[0], SITE[1], 2);
+    const drop = c.pos.findClosestByRange(FIND_DROPPED_RESOURCES, { filter: r => r.resourceType === RESOURCE_ENERGY && r.amount >= 20 && r.pos.inRangeTo(SITE[0], SITE[1], 6) });
+    if (drop) { if (!c.pos.isNearTo(drop)) return travel(c, ROOM, drop.pos.x, drop.pos.y, 1); c.pickup(drop); return; }
+    const tomb = c.pos.findClosestByRange(FIND_TOMBSTONES, { filter: t => t.store[RESOURCE_ENERGY] > 0 && t.pos.inRangeTo(SITE[0], SITE[1], 8) });
+    if (tomb) { if (!c.pos.isNearTo(tomb)) return travel(c, ROOM, tomb.pos.x, tomb.pos.y, 1); c.withdraw(tomb, RESOURCE_ENERGY); return; }
+    if (!c.pos.inRangeTo(SITE[0], SITE[1], 2)) return travel(c, ROOM, SITE[0], SITE[1], 2);
+    return; // wait for carriers
   }
   // go to W47N8
   if (c.room.name !== ROOM) return travel(c, ROOM, CTRL[0], CTRL[1], 3);
@@ -270,7 +266,7 @@ function runWorker(c) {
 
 // Dedicated home->W47N8 energy ferry (fast RCL2). Body 10C10M (1000). Withdraws home storage (>=floor+carry),
 // dumps into W47N8 controller-adjacent container if present else drops next to controller for workers.
-const HAULER_BODY = () => [].concat(Array(10).fill(CARRY), Array(10).fill(MOVE));
+const HAULER_BODY = () => [].concat(Array(16).fill(CARRY), Array(16).fill(MOVE)); // 1600, 800 cap
 // Continuous solo reinforcements (Misaki 14:35): walk to post 21,7, fight hostiles in range only (CLAIM/armed), no formation.
 const REINF_POST = [21, 7], WAYPT = [30, 23]; // Misaki 14:42: route via 30,23
 const ATK_BODY = () => [].concat(Array(12).fill(ATTACK), Array(12).fill(MOVE)); // 1560
@@ -335,22 +331,30 @@ function runHauler(c) {
   const P = M(), cmd = P.cmd || 'hold';
   if (FORBID.has(c.room.name)) return travel(c, ROOM, WAIT_POS[0], WAIT_POS[1], 2);
   if (cmd === 'retreat') return travel(c, HOME_SAFE.room, HOME_SAFE.x, HOME_SAFE.y, 2);
-  if (cmd === 'hold') return travel(c, HOLD_POS.room, HOLD_POS.x, HOLD_POS.y, 2);
-  if (c.store.getFreeCapacity() > 0 && c.store[RESOURCE_ENERGY] === 0) {
+  if (c.store[RESOURCE_ENERGY] === 0) c.memory.full = false;
+  if (c.store.getFreeCapacity() === 0) c.memory.full = true;
+  if (!c.memory.full) {
+    // pure carrier (Misaki 15:26): W47N8 miner containers / drops first, else home storage
+    const r8 = Game.rooms[ROOM];
+    const conts = r8 ? r8.find(FIND_STRUCTURES, { filter: s => s.structureType === STRUCTURE_CONTAINER && s.store[RESOURCE_ENERGY] >= 300 && !s.pos.inRangeTo(SITE[0], SITE[1], 6) }) : [];
+    const drops = r8 ? r8.find(FIND_DROPPED_RESOURCES, { filter: d => d.resourceType === RESOURCE_ENERGY && d.amount >= 150 && !d.pos.inRangeTo(SITE[0], SITE[1], 6) }) : [];
+    if (c.store[RESOURCE_ENERGY] > 0 && !conts.length && !drops.length && c.room.name === ROOM) { c.memory.full = true; return; }
+    const tgt = c.room.name === ROOM ? (c.pos.findClosestByRange(drops) || c.pos.findClosestByRange(conts)) : (drops[0] || _.max(conts, s => s.store[RESOURCE_ENERGY]));
+    if (tgt && tgt.pos) {
+      if (!c.pos.isNearTo(tgt)) return travel(c, ROOM, tgt.pos.x, tgt.pos.y, 1);
+      if (tgt.amount !== undefined) c.pickup(tgt); else c.withdraw(tgt, RESOURCE_ENERGY); return;
+    }
     const st = Game.rooms[HOME] && Game.rooms[HOME].storage;
-    if (!st || st.store[RESOURCE_ENERGY] < STORAGE_FLOOR + 500) return travel(c, HOME, HOLD_POS.x, HOLD_POS.y, 2);
+    if (!st || st.store[RESOURCE_ENERGY] < STORAGE_FLOOR + 500) return travel(c, ROOM, SITE[0], SITE[1], 3);
     if (c.room.name !== HOME || !c.pos.isNearTo(st)) return travel(c, HOME, st.pos.x, st.pos.y, 1);
     c.withdraw(st, RESOURCE_ENERGY); return;
   }
-  if (c.room.name !== ROOM) return travel(c, ROOM, CTRL[0], CTRL[1], 2);
-  // prefer container into a container near the controller, else drop for workers
-  const cont = c.pos.findClosestByRange(FIND_STRUCTURES, { filter: s => s.structureType === STRUCTURE_CONTAINER && s.store.getFreeCapacity(RESOURCE_ENERGY) > 0 });
-  if (cont && c.pos.getRangeTo(cont) <= 6) {
-    if (!c.pos.isNearTo(cont)) return travel(c, ROOM, cont.pos.x, cont.pos.y, 1);
-    c.transfer(cont, RESOURCE_ENERGY); return;
+  if (c.room.name !== ROOM || !c.pos.inRangeTo(SITE[0], SITE[1], 2)) {
+    // hand off to an empty builder on the way if adjacent
+    return travel(c, ROOM, SITE[0], SITE[1], 2);
   }
-  if (!c.pos.inRangeTo(CTRL[0], CTRL[1], 2)) return travel(c, ROOM, CTRL[0], CTRL[1], 2);
-  c.drop(RESOURCE_ENERGY);
+  const w = c.pos.findInRange(FIND_MY_CREEPS, 1, { filter: x => x.memory.role === 'cqworker' && x.store.getFreeCapacity() > 0 })[0];
+  if (w) c.transfer(w, RESOURCE_ENERGY); else c.drop(RESOURCE_ENERGY);
 }
 
 function run(c) {

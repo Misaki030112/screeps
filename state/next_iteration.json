@@ -1,6 +1,6 @@
 {
- "next_at": "2026-10-18T15:20:00+08:00",
- "reason": "14:54 patrol: observe-only again (parent deploying W47N8 code every few min, last 980f370 14:46; API 429s from heavy use). Home healthy: RCL6 85.4k hold, storage 39.5k (+2k/30min), ea 2300/2300, bkt 10k, no code errors (only a 14:37 console-query SyntaxError), alerts LOW only. 14:20 remote gap resolved: miners 2, rminers 2, reservers 2, rhaulers 5; res W45N8 2137 / W45N7 1976. W47N8: BustJetter res 2370 (2 cqbreakers on it), quad 4 + cqatk 1 alive. Watch next: cq.claim spawns (pioneers/haulers/reinf) vs REMOTE reservers - act only if a reservation < 800; resume normal iterations once W47N8 deploys settle.",
+ "next_at": "2026-10-18T15:50:00+08:00",
+ "reason": "15:20 patrol: observe-only (W47N8 claimed 15:18, parent changed reserveE=15000/cq.workers=6/haulers=3 at 15:19 and is deploying; user/memory quota 429 until ~20:09, use q.py console). Home healthy tick 83719982: RCL6 85.4k, storage 44.6k, ea 1816/2300, bkt 10k, SM 5, no hostiles, alerts LOW only. Remote res W45N8 2088 / W45N7 2343 (1 reserver alive). No home hauler/builder/upgrader alive: builders should respawn now that reserveE=15k (storage 44.6k) - check next patrol that builders return and terminal/labs sites progress; check a home hauler respawns if hub/container overflow. W47N8: RCL1, spawn site 15,18 0/15000, 3 cqworkers, quad 4 + cqatk 1 + cqrh 1. Act only if a remote reservation < 800 or home spawn starves.",
  "road_plan": {
   "doc": "docs/ROADS.md",
   "each_patrol": [
