@@ -1,6 +1,6 @@
 {
- "next_at": "2026-10-18T22:30:00+08:00",
- "reason": "21:34 patrol: observe-only, no fix. Tick 83725301: alerts LOW only; remote since 20:35 (838t) W45N8 +8112=9.7 e/t, W45N7 +7166=8.6 e/t; res W45N8 2143 W45N7 2040 both Misaki; home storage 14.9k (at 15k reserve), terminal site 91.3k/100k, labs 14.7k/32.2k/8.7k of 50k, RCL6 148.2k, bkt 10000 cpu ~11.6; barriers ramparts min 150.8k walls min 142.1k (holding, no loss), towers 810/890; home hauler pre-spawn turnover (83723804 dying, 83725276 new), ctl cont 30,30 full with 1 upgrader (bank). Console ERR 21:18 was a debug eval, not code. Next: barrier min still >=142.1k, storage ~15k, terminal done -> builder moves to labs; queen rp/100 ~11 (path cache only if bucket falls).",
+ "next_at": "2026-10-18T23:30:00+08:00",
+ "reason": "22:40 patrol: observe-only, no fix. Tick 83726254: alerts LOW only, 0 new console errors; remote since 21:34 (934t) W45N8 +7464=8.0 e/t (cont 720, rminers source_empty ~7% = fully harvested), W45N7 +9014=9.65 e/t; res W45N8 2289 W45N7 2125 SAFE; home storage 12958 (below 15k reserve, -2 e/t since 21:34) because towers are raising NEW terminal rampart 35,31 (103.7k->109.3k in 19t, ~295 hits/t) to the 150k high-water floor (fe2026d), ~140t / ~500e left; other ramparts 151.1k-301.9k, walls min 142101 (no loss); builders 0 (bank_recycle), labs 33,21 14721 / 34,22 33415 / 35,21 8724 of 50k stalled until storage >15k; terminal energy 0; upgrader 1 (11.8/t 1h); RCL6 159.2k; bkt 10000 cpu ~12.4. Next: 35,31 >=150k and towers back to idle; storage must recover above 15k (else find the drain); labs resume; home hauler waiting_pickup 61% (oversized for src A, minor).",
  "road_plan": {
   "doc": "docs/ROADS.md",
   "each_patrol": [
@@ -200,9 +200,9 @@
   "revert": "drop the Wb.defLow line in src/roles/builder.js (!src branch)"
  },
  "remote_sample": {
-  "tick": 83725301,
-  "W45N8": 947031,
-  "W45N7": 442582,
-  "at": "2026-10-18 21:34 UTC+8"
+  "tick": 83726235,
+  "W45N8": 954495,
+  "W45N7": 451596,
+  "at": "2026-10-18 22:40 UTC+8"
  }
 }
