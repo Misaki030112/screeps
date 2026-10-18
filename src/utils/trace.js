@@ -40,6 +40,11 @@ module.exports = {
       rows.push([n, Math.round(e.cpu * 100), e.a, e.w, e.rp, e.st, m._m ? m._m.k : '', e.rw, e.sc, e.f, Math.round(e.mx * 100)]); H[n] = { cpu: 0, a: 0, w: 0, rp: 0, st: 0, rw: '', sc: '', ta: 0, f: 0, mx: 0 }; }
     for (const n in H) if (!Game.creeps[n]) { delete H[n]; delete POS[n]; }
     R.s.push([Game.time, rows]); if (R.s.length > 60) R.s.splice(0, R.s.length - 60); if (R.a.length > 100) R.a.splice(0, R.a.length - 100);
-    if (Game.time % 10 === 0) RawMemory.segments[SEG] = JSON.stringify(R);
+    if (Game.time % 10 === 0) { // segment hard limit 100 KB (17:00 notify at ~50 creeps x 60 windows): drop oldest windows until < 90 KB
+      let js = JSON.stringify(R);
+      while (js.length > 90000 && R.s.length > 12) { R.s.splice(0, Math.max(1, Math.ceil(R.s.length / 5))); js = JSON.stringify(R); }
+      if (js.length > 90000) { R.a = R.a.slice(-20); js = JSON.stringify(R); }
+      if (js.length <= 100000) RawMemory.segments[SEG] = js;
+    }
   },
 };

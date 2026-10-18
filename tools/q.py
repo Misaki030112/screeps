@@ -12,7 +12,13 @@ def _tail(n=262144):
         with open(LOG, 'rb') as f:
             f.seek(0, 2); s = f.tell(); f.seek(max(0, s - n)); return f.read().decode('utf-8', 'ignore')
     except OSError: return ''
+def check(expr):
+    # syntax-check locally before sending (17:00: four 'SyntaxError: Unexpected token )' notify mails from malformed exprs)
+    import subprocess
+    r = subprocess.run(['node', '-e', 'new Function("return (" + process.argv[1] + ");")', expr], capture_output=True, text=True)
+    if r.returncode: raise SystemExit('q.py: expression has a syntax error, not sent:\n' + next((l for l in r.stderr.splitlines() if 'Error' in l), r.stderr.strip()[-200:]))
 def q(expr, timeout=40):
+    check(expr)
     tag = 'QQ' + str(time.time()).replace('.', '')
     wrapped = f"(function(){{try{{return ({expr});}}catch(e){{return 'ERR '+e.stack}}}})()"
     api.req('user/console', {'expression': f"'{tag}'+JSON.stringify({{t:Game.time,v:{wrapped}}})", 'shard': api.SHARD})
