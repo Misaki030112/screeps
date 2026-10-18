@@ -7,7 +7,7 @@ const cost = b => b.reduce((s, p) => s + BODYPART_COST[p], 0);
 for (const e of [300, 550, 800, 1300]) for (const r of ['w8miner', 'w8hauler', 'w8upgrader', 'w8builder']) assert.ok(cost(W.bodyFor(r, e)) <= e, r + '@' + e);
 function run(creeps, sites = 0, avail = 300) {
   Game.creeps = creeps; let got = null;
-  const spawn = { spawning: null, room: { energyCapacityAvailable: 300, energyAvailable: avail, find: t => (t === 1 ? Array(sites) : []) },
+  const spawn = { spawning: null, pos: { getRangeTo: () => 10 }, room: { energyCapacityAvailable: 300, energyAvailable: avail, find: t => (t === 1 ? Array(sites) : []) },
     spawnCreep: (b, n, o) => { got = o.memory; return 0; } };
   W.spawnRun(spawn); return got;
 }

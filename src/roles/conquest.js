@@ -9,7 +9,7 @@
 //                     standing rule "never activate safe mode automatically" -> the owner must switch it on explicitly.
 // Retreat ONLY by Misaki's command (cmd='retreat'). danger() is kept as a pure helper for tests / console intel — never auto-fires.
 const ROOM = 'W47N8', HOME = 'W46N8', FORBID = new Set(['W47N9', 'W48N9', 'W48N8']);
-const MIN_Y = 8, LOG_CAP = 200, HEAL_PER = 12, ATK_DMG = 30, RA_DMG = 10;
+const MIN_Y = 8, LOG_CAP = 60, HEAL_PER = 12, ATK_DMG = 30, RA_DMG = 10;
 const HOLD_POS = { room: HOME, x: 3, y: 20 }, HOME_SAFE = { room: HOME, x: 28, y: 24 };
 const PATROL = [[22, 10], [32, 10], [36, 12], [28, 14]];     // north side, y>=8
 const CTRL = [15, 25], SPAWN_POS = [15, 18], TOWER_POS = [14, 28], WAIT_POS = [10, 24];

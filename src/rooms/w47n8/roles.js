@@ -127,7 +127,7 @@ const R = {
         c.memory.st = i; const [x, y] = C.UPG_STAND[i];
         if (c.store[E] && c.pos.inRangeTo(ctl, 3)) c.upgradeController(ctl);
         if (c.pos.x !== x || c.pos.y !== y) { if (c.store[E] || cont.store[E]) return go(c, x, y, 0); }
-        else { if (c.store.getFreeCapacity() && cont.store[E]) c.withdraw(cont, E); if (c.store[E] || cont.store[E]) return; }
+        else { if (c.store[E] < 2 * c.getActiveBodyparts(WORK) && cont.store[E]) c.withdraw(cont, E); /* CPU 21:20: refill only when ~2 ticks left (0.2/intent) */ if (c.store[E] || cont.store[E]) return; }
         // container empty and I'm empty: fall through and fetch from the piles
       } else delete c.memory.st;
     }
