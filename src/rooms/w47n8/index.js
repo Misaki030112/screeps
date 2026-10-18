@@ -43,7 +43,9 @@ function spawnRun(spawn) {
     if (!live.length || (works < 5 && live.length < 2 && add > (live[0] ? live[0].getActiveBodyparts(WORK) : 0))) { want = 'w8miner'; mem.si = i; }
   }
   // 2) haulers 2, 3) upgraders 2 (3 when no sites), 4) builders while sites
-  if (!want && n('w8hauler') < 2) want = 'w8hauler';
+  // 04:47: base 3 (was 2): with 2 haulers and 0 sites RCL3 fell ~22 -> ~7.5 e/t (t83731005..1169), ctl cont 0-114 while source conts
+  // rose to 633/1000; the surplus 3rd only spawned after loose passed 1200, so the ctl ran dry every cycle
+  if (!want && n('w8hauler') < 3) want = 'w8hauler';
   else if (!want && n('w8upgrader') < (sites ? 2 : 3)) want = 'w8upgrader';
   // 04:10: size by remaining build work, not site count: 3 cheap road sites (~900 left) brought a 4th builder while the ctl cont sat at 0,
   // wbuilder idle 0.69 (6h) and 4 upgraders energy-starved
