@@ -399,6 +399,9 @@ function runHauler(c) {
       if (!c.pos.isNearTo(tgt)) return travel(c, ROOM, tgt.pos.x, tgt.pos.y, 1);
       if (tgt.amount !== undefined) c.pickup(tgt); else c.withdraw(tgt, RESOURCE_ENERGY); delete c.memory.tid; return;
     }
+    // Misaki 17:11: never fetch from home storage again; work only inside W47N8 until death
+    if (c.store[RESOURCE_ENERGY] > 0) { c.memory.full = true; return; }
+    if (!Memory.ops.cq.homeFetch) return travel(c, ROOM, SITE[0], SITE[1], 3);
     const st = Game.rooms[HOME] && Game.rooms[HOME].storage;
     // home first (Misaki 16:25: home must not slip): fetch only above reserveE+5k (17:05: storage 25k->15k in 10 min, cqhaulers
     // would have pulled it to 3.6k while home builders/upgraders are gated below reserveE)
