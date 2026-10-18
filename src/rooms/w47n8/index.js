@@ -49,7 +49,7 @@ function spawnRun(spawn) {
     if (loose > 1200 && n('w8hauler') < (loose > 2500 ? 5 : loose > 2000 ? 4 : 3)) want = 'w8hauler'; // 18:20: 4th when >2k piles (far south source)
     // 21:10: 5th above 2.5k: source conts rose 894/820 -> 1194/1320 in 161t while the ctl cont fell 1984 -> 1386 (haul-bound, not WORK-bound)
     else if (n('w8upgrader') < Math.min(6, (sites ? 2 : 3) + Math.floor(Math.max(0, loose - 600) / 600))
-      && _.sum(cs.filter(c => c.memory.role === 'w8upgrader'), c => _.filter(c.body, p => p.type === WORK).length) < 16) want = 'w8upgrader'; // ~20 e/t income
+      && _.sum(cs.filter(c => c.memory.role === 'w8upgrader'), c => _.filter(c.body, p => p.type === WORK).length) < 24) want = 'w8upgrader'; // 21:20: 16->24 WORK; income ~20 local + ~13 W47N7 remote, ctl cont 1984/2000 full with 4x4W upgraders (WORK-bound)
   }
   // 5b) strip fillers (v3b): one per strip with >=4 built extensions, once the hub storage exists
   if (!want && room.storage && room.storage.store[RESOURCE_ENERGY] > 1000) {
