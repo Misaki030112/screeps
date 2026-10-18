@@ -199,6 +199,17 @@ function runWorker(c) {
   // pure builder (Misaki 15:26): never harvest or walk home; take energy dropped/delivered near the spawn site
   if (c.store[RESOURCE_ENERGY] === 0) {
     if (c.room.name !== ROOM) return travel(c, ROOM, SITE[0], SITE[1], 2);
+    // Misaki 16:07: 2 oldest workers stay at the site (fed by haulers); the rest self-fetch anywhere in the room
+    const wsAll = _.sortBy(_.filter(Game.creeps, x => x.memory.role === 'cqworker'), x => x.memory.born || 0);
+    if (wsAll.findIndex(x => x.name === c.name) >= 2) {
+      const pool = c.room.find(FIND_DROPPED_RESOURCES, { filter: r => r.resourceType === RESOURCE_ENERGY && r.amount >= 100 })
+        .concat(c.room.find(FIND_STRUCTURES, { filter: s => s.structureType === STRUCTURE_CONTAINER && s.store[RESOURCE_ENERGY] >= 100 }));
+      const best = _.max(pool, o => (o.amount || o.store[RESOURCE_ENERGY]) - 10 * c.pos.getRangeTo(o));
+      if (best && best.pos) {
+        if (!c.pos.isNearTo(best)) return travel(c, ROOM, best.pos.x, best.pos.y, 1);
+        if (best.amount !== undefined) c.pickup(best); else c.withdraw(best, RESOURCE_ENERGY); return;
+      }
+    }
     const drop = c.pos.findClosestByRange(FIND_DROPPED_RESOURCES, { filter: r => r.resourceType === RESOURCE_ENERGY && r.amount >= 20 && r.pos.inRangeTo(SITE[0], SITE[1], 6) });
     if (drop) { if (!c.pos.isNearTo(drop)) return travel(c, ROOM, drop.pos.x, drop.pos.y, 1); c.pickup(drop); return; }
     const tomb = c.pos.findClosestByRange(FIND_TOMBSTONES, { filter: t => t.store[RESOURCE_ENERGY] > 0 && t.pos.inRangeTo(SITE[0], SITE[1], 8) });
@@ -228,7 +239,8 @@ function runWorker(c) {
   // everyone upgrades only in an emergency (<3000)
   const ws = _.sortBy(_.filter(Game.creeps, x => x.memory.role === 'cqworker' && x.room.name === ROOM), x => x.memory.born || 0);
   if (ctl.ticksToDowngrade < 8000) P.dgUp = 1; else if (ctl.ticksToDowngrade >= 9500) P.dgUp = 0;
-  if ((P.dgUp && ws[0] && ws[0].name === c.name) || ctl.ticksToDowngrade < 3000) {
+  const up = ws[2] || ws[ws.length - 1]; // dedicated upgrader = a self-fetcher, not a site worker
+  if ((P.dgUp && up && up.name === c.name) || ctl.ticksToDowngrade < 3000) {
     if (!c.pos.inRangeTo(ctl, 3)) return travel(c, ROOM, ctl.pos.x, ctl.pos.y, 3);
     c.upgradeController(ctl); return;
   }
