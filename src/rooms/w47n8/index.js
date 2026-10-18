@@ -5,7 +5,11 @@ const rep = (n, p) => Array(n).fill(p);
 function mine() { return _.filter(Game.creeps, c => c.memory.home === C.ROOM); }
 function bodyFor(role, e) {
   if (role === 'w8filler') { const n = Math.max(2, Math.min(8, Math.floor(e / 150))); return rep(n, CARRY).concat(rep(Math.ceil(n / 2), MOVE)); }
-  if (role === 'w8rminer') { const w = Math.max(2, Math.min(5, Math.floor((e - 150) / 100))); return rep(w, WORK).concat([CARRY], rep(Math.ceil((w + 1) / 2), MOVE)); }
+  if (role === 'w8rminer') { // 20:22: old formula priced 4W1C3M=600 at cap 550, so it never spawned; now the biggest that fits, trimming MOVE first
+    for (let w = 5; w >= 2; w--) for (let m = Math.ceil((w + 1) / 2); m >= Math.ceil((w + 1) / 3); m--)
+      if (100 * w + 50 + 50 * m <= e) return rep(w, WORK).concat([CARRY], rep(m, MOVE));
+    return [WORK, WORK, CARRY, MOVE];
+  }
   if (role === 'w8rhauler') { const n = Math.max(2, Math.min(12, Math.floor(e / 100))); return rep(n, CARRY).concat(rep(n, MOVE)); }
   if (role === 'w8miner') { const w = Math.max(2, Math.min(5, Math.floor((e - 50) / 100))); return rep(w, WORK).concat([MOVE]); }
   if (role === 'w8hauler') { const n = Math.max(2, Math.min(10, Math.floor(e / 100))); return rep(n, CARRY).concat(rep(n, MOVE)); }
