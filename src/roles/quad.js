@@ -316,6 +316,23 @@ function run(c) {
   if ((P.cmd||"hold")==="retreat") {
     fight(c, [c], {}); return c.moveTo(new RoomPosition(RALLY.x,RALLY.y,RALLY.room),{reusePath:10,costCallback:matrixLite});
   }
+  if (P.simple !== false && (P.cmd||"hold")==="go") {
+    // SIMPLE MODE: each member walks to its own fixed cell of a 2x2 at the post; when an armed
+    // hostile is near and the 2x2 is formed, the formed-quad logic kites/fights as one block.
+    const mates = allQuads().sort((a,b)=>(a.memory.born||0)-(b.memory.born||0));
+    const k = Math.max(0, mates.findIndex(m=>m.name===c.name)) % 4;
+    const A = postAnchor();
+    const armedNear = c.room.find(FIND_HOSTILE_CREEPS).some(h=>meleeD(h)+rangedD(h)>0 && mates.some(m=>m.pos.roomName===h.pos.roomName && m.pos.inRangeTo(h,6)));
+    if (armedNear && mates.length>=2) {
+      const team = mates.slice(0,4); team.forEach((m,i)=>{ m.memory.qi=i; m.memory.qid=0; });
+      const Q = decide(0, team); fight(c, team, Q);
+      if (Q.mode==="combat" && Q.moves[c.name]) return c.move(Q.moves[c.name]);
+      if (Q.mode==="combat"||Q.mode==="holdFire") return;
+    } else fight(c, mates, {});
+    const cell = new RoomPosition(A.x+OFF[k][0], A.y+OFF[k][1], ROOM);
+    if (c.pos.isEqualTo(cell)) return;
+    return c.moveTo(cell, {reusePath:5, maxRooms:4, costCallback:matrixLite});
+  }
   const creeps = allQuads().filter(x => (x.memory.qid|0)===(c.memory.qid|0) || c.memory.qid===undefined);
   ensureIds(allQuads());
   const qid = c.memory.qid|0;
@@ -359,9 +376,18 @@ function run(c) {
   }
   if (Q.mode==="holdFire"||Q.mode==="there"||Q.mode==="fatigue") return;
 }
+function postAnchor() {
+  const P = M(); if (P.postA && P.postA.k===POSTS[0].x*100+POSTS[0].y) return P.postA;
+  const T = Game.map.getRoomTerrain(ROOM); let best=null;
+  for (let r=0;r<=4&&!best;r++) for (let dx=-r;dx<=r;dx++) for (let dy=-r;dy<=r;dy++) {
+    const x=POSTS[0].x+dx, y=POSTS[0].y+dy; if (x<1||y<1||x>47||y>47) continue;
+    if (OFF.every(([ox,oy])=>!(T.get(x+ox,y+oy)&TERRAIN_MASK_WALL)) && (!best||Math.abs(dx)+Math.abs(dy)<best.d)) best={x,y,d:Math.abs(dx)+Math.abs(dy)};
+  }
+  best = best||{x:POSTS[0].x,y:POSTS[0].y}; return (P.postA={x:best.x,y:best.y,k:POSTS[0].x*100+POSTS[0].y});
+}
 function matrixLite(rn,m) {
   if (FORBID.has(rn)) for (let x=0;x<50;x++) for (let y=0;y<50;y++) m.set(x,y,255);
-  if (rn===ROOM) for (let x=0;x<50;x++) for (let y=0;y<MIN_Y;y++) if (!(y<=6&&(x<=12||(x>=22&&x<=32)))) m.set(x,y,255);
+  if (rn===ROOM) for (let x=0;x<50;x++) for (let y=0;y<MIN_Y;y++) if (!(y<=6&&(x<=12||(x>=22&&x<=32))) && !(Math.abs(x-POSTS[0].x)<=3&&Math.abs(y-POSTS[0].y)<=3)) m.set(x,y,255);
   return m;
 }
 
