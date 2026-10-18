@@ -142,11 +142,8 @@ function withdrawForZone(c, room, P, deficit) {
   if (cap <= 0) return false;
   const need = deficit <= 0 ? 0 : (deficit >= cap * 0.6 ? cap : Math.min(cap, deficit));
   if (need <= 0) return false;
-  const [fx, fy] = P.pos.fillerContainerA;
-  const fcA = rc.at(room, fx, fy, STRUCTURE_CONTAINER);
-  const cands = [room.storage, fcA].filter(s => s && s.store[RESOURCE_ENERGY] >= 50)
-    .sort((a, b) => c.pos.getRangeTo(a) - c.pos.getRangeTo(b));
-  const src = cands[0];
+  // fixed planned source per zone: nearest store to the ZONE (not the creep) among storage / terminal / filler containers / hub link
+  const src = zoneSource(c, room, P, need);
   if (!src) { require('../utils/trace').why(c, 'u'); return true; }
   if (move.to(c, src.pos.x, src.pos.y, 1)) {
     const amt = Math.min(need, src.store[RESOURCE_ENERGY], cap);
@@ -156,6 +153,17 @@ function withdrawForZone(c, room, P, deficit) {
   return true;
 }
 
+const ZC = [[35, 26], [32, 32]]; // zone centres: stamp A / stamp B+C
+function zoneSource(c, room, P, need) {
+  const z = c.memory.zone === 1 ? 1 : 0, solo = _.filter(Game.creeps, x => x.memory.role === 'queen' && x.room.name === room.name && !x.spawning).length <= 1;
+  const [zx, zy] = solo ? [c.pos.x, c.pos.y] : ZC[z];
+  const [fx, fy] = P.pos.fillerContainerA;
+  const hub = require('../managers/links').roles(room).hub;
+  const list = [room.storage, room.terminal, rc.at(room, fx, fy, STRUCTURE_CONTAINER), rc.at(room, 34, 34, STRUCTURE_CONTAINER), hub]
+    .filter(s => s && s.store[RESOURCE_ENERGY] >= Math.min(need, 200));
+  list.sort((a, b) => Math.max(Math.abs(a.pos.x - zx), Math.abs(a.pos.y - zy)) - Math.max(Math.abs(b.pos.x - zx), Math.abs(b.pos.y - zy)));
+  return list[0] || [room.storage].filter(s => s && s.store[RESOURCE_ENERGY] >= 50)[0];
+}
 function parkOrDump(c, room, P, st) {
   const full = room.energyAvailable >= room.energyCapacityAvailable
     && !rc.all(room, STRUCTURE_TOWER).some(t => t.store[RESOURCE_ENERGY] < 900);
