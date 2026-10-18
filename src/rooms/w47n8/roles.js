@@ -16,6 +16,13 @@ function getEnergy(c) {
 }
 // hauler pickup (18:05): sticky target scored by usable amount / (range+10), minus what other w8haulers already claimed,
 // so haulers also clear the far south source (11,43: 2k energy piled while all 3 w8haulers circled the north source).
+// 03:40 hub cont sat full 2000 with no sites near it (b8b6b31 stopped refilling it, but nothing ever drained it) while the ctl cont was
+// at 737 and the upgrader surplus rule counted that hub energy: w8haulers may pick from the hub (half score) only while no hub sites
+// need it and the ctl cont has >= 400 free, so a hub load always has somewhere else to go (sink() falls back to ctl first)
+function hubSpare(room) {
+  if (hubSites(room)) return false;
+  const k = ctlCont(); return !!k && k.store.getFreeCapacity(E) >= 400;
+}
 function haulPick(c) {
   const room = Game.rooms[C.ROOM], free = c.store.getFreeCapacity(), amt = o => (o.amount !== undefined ? o.amount : o.store[E]);
   let t = c.memory.pt && Game.getObjectById(c.memory.pt);
@@ -24,11 +31,11 @@ function haulPick(c) {
     for (const h of room.find(FIND_MY_CREEPS, { filter: x => x.memory.role === 'w8hauler' && x.id !== c.id && x.memory.pt && !x.memory.w }))
       claimed[h.memory.pt] = (claimed[h.memory.pt] || 0) + h.store.getFreeCapacity();
     const cands = room.find(FIND_DROPPED_RESOURCES, { filter: r => r.resourceType === E && r.amount >= 50 }).concat(room.find(FIND_STRUCTURES,
-      { filter: s => s.structureType === STRUCTURE_CONTAINER && s.store[E] >= 100 && !(s.pos.x === C.CTL_CONT[0] && s.pos.y === C.CTL_CONT[1]) && !isHub(s) }));
+      { filter: s => s.structureType === STRUCTURE_CONTAINER && s.store[E] >= 100 && !(s.pos.x === C.CTL_CONT[0] && s.pos.y === C.CTL_CONT[1]) && (!isHub(s) || hubSpare(room)) }));
     let bs = 0; t = null;
     // 18:20: score by the whole unclaimed pile, not min(free, pile): capped by a 150-250 free store every pile scored the same and
     // the nearest (north, drained by 10 workers) always won, so 10,43 grew 1574->2011 and decayed ~2 e/t
-    for (const o of cands) { const left = amt(o) - (claimed[o.id] || 0), sc = left / (c.pos.getRangeTo(o) + 10); if (Math.min(free, left) >= 50 && sc > bs) { bs = sc; t = o; } }
+    for (const o of cands) { const left = amt(o) - (claimed[o.id] || 0), sc = (o.structureType && isHub(o) ? 0.5 : 1) * left / (c.pos.getRangeTo(o) + 10); if (Math.min(free, left) >= 50 && sc > bs) { bs = sc; t = o; } }
     c.memory.pt = t ? t.id : undefined;
   }
   if (!t) return false;
