@@ -1,6 +1,6 @@
 {
- "next_at": "2026-10-18T19:20:00+08:00",
- "reason": "18:38 patrol: no fix needed. Home tick 83722789: storage 15.5k@18:24 -> 17.6k rising (above reserveE 15k +2k hysteresis -> builder target 1, Spawn1 busy on rhauler then builder), RCL6 119.4k (113.7k@18:24), 2 upgraders, 0 builders right now, terminal 69.3k/100k + labs 14.7k/32.2k/8.7k (stalled during bank; resumes with builder), ea 1767/2300, cpu ~9 bkt 10k, alerts LOW only (BustJetter W47N8 non-combat), no new errors since 17:03 seg90. Remotes: W45N8 cont 180 res 2383, W45N7 cont 60 res 2188, 0 hostiles. API user/memory still 429 (use q.py console). Next: confirm a builder spawned and terminal progress resumes; storage holds >=15k.",
+ "next_at": "2026-10-18T19:50:00+08:00",
+ "reason": "19:21 patrol: observe-only, no fix. Home tick 83723406: storage 14.3k oscillating 14.8-17k around reserveE 15k for 2h (builder works terminal only above 15k: terminal 69.3k->78.1k/100k since 18:38, labs unchanged 14.7k/32.2k/8.7k); bank phase 1 upgrader (ctl ~11-15 e/t), RCL6 126.6k; ea 1400/2300 spawning queen replacement (old queen ttl 60); cpu ~10-12.6 bkt 10k; 0 hostiles home/remotes; remotes ok, reservations W45N8 1920 W45N7 1973, containers 216/12; no new errors since 19:15 w8hauler fix (6e01204); parent deployed d4b0ea6 19:19 (W47N8 seal walls + W47N7 remote). W47N7: Memory.ops.r7 on, BustJetter reservation ends tick 83724034, reserve7 (2C2M 1300e) should spawn ~83723774 (LEAD 260). Next: verify reserve7 spawned and walking to W47N7 38,26 and reserves when BJ's ends; remote delivered sample W45N8 928551 / W45N7 424640 @83723406 -> compute e/t (model 6h said R only 4.2 e/t vs ~10 target; check if real).",
  "road_plan": {
   "doc": "docs/ROADS.md",
   "each_patrol": [
@@ -198,5 +198,11 @@
   "rule": "builder empty + walls.defLow(home) + not remote -> salvage.retire after 50t (memory.nb)",
   "check": "builders 0 during bank, none respawned; respawn via surplus hysteresis when reserveE lifts",
   "revert": "drop the Wb.defLow line in src/roles/builder.js (!src branch)"
+ },
+ "remote_sample": {
+  "tick": 83723406,
+  "W45N8": 928551,
+  "W45N7": 424640,
+  "at": "2026-10-18 19:21 UTC+8"
  }
 }
