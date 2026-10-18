@@ -386,8 +386,12 @@ function runHauler(c) {
     // hand off to an empty builder on the way if adjacent
     return travel(c, ROOM, SITE[0], SITE[1], 2);
   }
-  const w = c.pos.findInRange(FIND_MY_CREEPS, 1, { filter: x => x.memory.role === 'cqworker' && x.store.getFreeCapacity() > 0 })[0];
-  if (w) c.transfer(w, RESOURCE_ENERGY); else c.drop(RESOURCE_ENERGY);
+  // never drop energy (Misaki 16:16): hand it to the hungriest builder near the site, walking to it; else wait
+  const ws = c.room.find(FIND_MY_CREEPS, { filter: x => x.memory.role === 'cqworker' && x.store.getFreeCapacity(RESOURCE_ENERGY) > 0 && x.pos.inRangeTo(SITE[0], SITE[1], 6) });
+  if (!ws.length) return;
+  const w = _.max(ws, x => x.store.getFreeCapacity(RESOURCE_ENERGY) * 10 - c.pos.getRangeTo(x));
+  if (!c.pos.isNearTo(w)) { travel(c, ROOM, w.pos.x, w.pos.y, 1); const n = c.pos.findInRange(ws, 1)[0]; if (n) c.transfer(n, RESOURCE_ENERGY); return; }
+  c.transfer(w, RESOURCE_ENERGY);
 }
 
 function run(c) {
