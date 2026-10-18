@@ -396,6 +396,10 @@ function runHauler(c) {
     if (c.room.name !== HOME || !c.pos.isNearTo(st)) return travel(c, HOME, st.pos.x, st.pos.y, 1);
     c.withdraw(st, RESOURCE_ENERGY); return;
   }
+  // spawn built: fill Spawn2 / extensions first so the room can spawn its own w8 creeps (takeover), then feed builders
+  const fill = c.room.name === ROOM && c.pos.findClosestByRange(FIND_MY_STRUCTURES, { filter: s => (s.structureType === STRUCTURE_SPAWN
+    || s.structureType === STRUCTURE_EXTENSION) && s.store.getFreeCapacity(RESOURCE_ENERGY) > 0 });
+  if (fill) { if (!c.pos.isNearTo(fill)) return travel(c, ROOM, fill.pos.x, fill.pos.y, 1); c.transfer(fill, RESOURCE_ENERGY); return; }
   if (c.room.name !== ROOM || !c.pos.inRangeTo(SITE[0], SITE[1], 2)) {
     // hand off to an empty builder on the way if adjacent
     return travel(c, ROOM, SITE[0], SITE[1], 2);
