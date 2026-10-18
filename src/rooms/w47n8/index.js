@@ -29,8 +29,16 @@ function spawnRun(spawn) {
   if (avail < cost) return;
   spawn.spawnCreep(body, want + Game.time, { memory: Object.assign({ role: want, home: C.ROOM, born: Game.time, v2: 1 }, mem) });
 }
+function placeSeal(room) {
+  for (const [x, y] of C.SEAL) {
+    if (room.lookForAt(LOOK_STRUCTURES, x, y).some(s => s.structureType === STRUCTURE_WALL)) continue;
+    if (room.lookForAt(LOOK_CONSTRUCTION_SITES, x, y).length) continue;
+    room.createConstructionSite(x, y, STRUCTURE_WALL);
+  }
+}
 function layoutRun(room) {
   if (Game.time % 20) return;
+  if (room.controller.level >= 2) placeSeal(room); // re-placed if destroyed; nothing in W47N8 code repairs walls
   const rcl = room.controller.level;
   if (!room.find(FIND_MY_SPAWNS).length) return; // pioneers (conquest.js) own the spawn site until it is built
   let placed = 0;

@@ -4,6 +4,9 @@ module.exports = {
   SPAWN: [15, 18],
   // sources -> miner stand tile (his old containers at 26,11 and 11,43 are reused)
   SOURCES: [{ src: [27, 11], stand: [26, 11] }, { src: [11, 44], stand: [11, 43] }],
+  // north seal (Misaki 16:24): 1-hit constructedWalls vs BustJetter's non-combat creeps. Never repaired. Closes y=3 fully
+  // (terrain-checked: north edge reaches only y<=2 with these 12 tiles).
+  SEAL: [24, 25, 26, 27, 28, 29, 30, 31, 8, 9, 10, 11].map(x => [x, 3]),
   CTL: [15, 25], CTL_CONT: [13, 26],
   // structures by RCL (cumulative). Compact block around spawn 15,18 on row 15-16 (open plain).
   BUILD: {
