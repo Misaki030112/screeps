@@ -158,8 +158,14 @@ module.exports = { remoteRoadSite, pickSource, hop, run(c) {
       const ctlSrc = noUp ? [rc.at(home, Pc[0], Pc[1], STRUCTURE_CONTAINER), Pl && rc.at(home, Pl[0], Pl[1], STRUCTURE_LINK)] : [];
       src = pickSource(c, home, Ph, ctlSrc, fx, fy);
       c.memory.src = src ? src.id : undefined;
+      if (src) delete c.memory.nb;
       if (!src) {
         if (c.store[RESOURCE_ENERGY] > 0) { c.memory.working = true; return; } // build with what we carry
+        // defense bank (walls.defLow, e.g. reserveE=1e6 for W47N8): builders get nothing and spawn.js targets 0, so an empty
+        // builder would sit at waiting_feed for its whole life (live 13:26 10-18: 4 builders 84% waiting_feed). Recycle after
+        // 50t grace: energy back into the bank; the surplus hysteresis respawns builders once the bank lifts.
+        const Wb = require('../managers/walls');
+        if (!c.memory.remote && Wb.defLow && Wb.defLow(home) && (c.memory.nb = (c.memory.nb || 0) + 1) > 50 && require('../utils/salvage').retire(c, 1500)) return;
         const tw = c.memory.t && Game.getObjectById(c.memory.t);
         if (tw) waitNear(c, tw, Ph); trace.why(c, 'u'); return; // no energy anywhere: starved, not no_task
       }
