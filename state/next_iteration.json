@@ -1,6 +1,6 @@
 {
- "next_at": "2026-10-18T15:50:00+08:00",
- "reason": "15:20 patrol: observe-only (W47N8 claimed 15:18, parent changed reserveE=15000/cq.workers=6/haulers=3 at 15:19 and is deploying; user/memory quota 429 until ~20:09, use q.py console). Home healthy tick 83719982: RCL6 85.4k, storage 44.6k, ea 1816/2300, bkt 10k, SM 5, no hostiles, alerts LOW only. Remote res W45N8 2088 / W45N7 2343 (1 reserver alive). No home hauler/builder/upgrader alive: builders should respawn now that reserveE=15k (storage 44.6k) - check next patrol that builders return and terminal/labs sites progress; check a home hauler respawns if hub/container overflow. W47N8: RCL1, spawn site 15,18 0/15000, 3 cqworkers, quad 4 + cqatk 1 + cqrh 1. Act only if a remote reservation < 800 or home spawn starves.",
+ "next_at": "2026-10-18T16:20:00+08:00",
+ "reason": "15:58 patrol: observe-only (parent live on W47N8, commit e89b147 15:57 cqminer spot fix; memory API 429 till ~20:09, long q.py exprs time out, keep queries short). Home tick 83720539: RCL6 85.4k, storage 50.8k (>15k reserveE), ea 2300/2300, bkt 10k, 0 hostiles, 4 home sites (terminal/lab line), res W45N8 2283 / W45N7 1876. GAP: 0 builders / 0 upgraders / 0 home hauler since claim: run1 returns at CQ.wantSpawn (spawn.js 2c, before targets()) every tick, so home roles never reach the queue and room.memory.roleTargets is stale (shows builder 0). cqminer 5 alive for 2 sources (bug fixed e89b147) wasted spawn time. W47N8 RCL2, ttd 4585 (guard <4000). Next: verify cqminer stops at 2 and that home builders get a slot once W47N8 quotas fill; if still 0 builders, propose to parent a home-builder slot (e.g. 1 builder before CQ when storage > reserve+10k).",
  "road_plan": {
   "doc": "docs/ROADS.md",
   "each_patrol": [
