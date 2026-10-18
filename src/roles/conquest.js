@@ -7,8 +7,7 @@
 //                     then workers (5W5C5M, carry 250 from home, upgrade to RCL2, build spawn/ramparts/tower; cq.workers, default 4)
 //   cq.autoSafe true -> workers activate safe mode in W47N8 when available (and re-activate when it ends). Default OFF:
 //                     standing rule "never activate safe mode automatically" -> the owner must switch it on explicitly.
-// Auto-retreat (before W47N8 is ours & in safe mode): any squad member < 70% hits, a hostile tower with energy,
-// or armed hostile dps in the squad's room > total squad heal -> cmd 'retreat' (stays until a human sets a new cmd).
+// Retreat ONLY by Misaki's command (cmd='retreat'). danger() is kept as a pure helper for tests / console intel — never auto-fires.
 const ROOM = 'W47N8', HOME = 'W46N8', FORBID = new Set(['W47N9', 'W48N9', 'W48N8']);
 const MIN_Y = 8, LOG_CAP = 200, HEAL_PER = 12, ATK_DMG = 30, RA_DMG = 10;
 const HOLD_POS = { room: HOME, x: 3, y: 20 }, HOME_SAFE = { room: HOME, x: 28, y: 24 };
@@ -18,7 +17,7 @@ const SQUAD_BODY = () => [].concat(Array(6).fill(RANGED_ATTACK), Array(2).fill(H
 const BREAKER_BODY = () => [CLAIM, CLAIM, CLAIM, MOVE, MOVE, MOVE];                                       // 1950, 3 reservation ticks/tick (RCL6 cap 2300)
 const WORKER_BODY = () => [].concat(Array(5).fill(WORK), Array(5).fill(CARRY), Array(5).fill(MOVE));     // 1000, carries 250
 const STORAGE_FLOOR = 3100; // keep the 1300 defender reserve (same gate as the probe)
-const ROLES = ['cqsquad', 'cqbreaker', 'cqworker'];
+const ROLES = ['cqsquad', 'cqbreaker', 'cqworker', 'cqhauler'];
 
 const M = () => (Memory.ops = Memory.ops || {}, Memory.ops.cq = Memory.ops.cq || {});
 function log(ev) { const P = M(); P.log = P.log || []; P.log.push(Object.assign({ t: Game.time }, ev)); if (P.log.length > LOG_CAP) P.log.splice(0, P.log.length - LOG_CAP); }
@@ -119,12 +118,7 @@ function runSquad(c) {
   if (P.tg && P.tg[c.name]) { const t = Game.getObjectById(P.tg[c.name].id); if (!t && P.tg[c.name].t === Game.time - 1 && P.tg[c.name].hits <= 60) log({ ev: 'kill', name: P.tg[c.name].name, body: P.tg[c.name].body }); if (!t) delete P.tg[c.name]; }
 
   const squad = list('cqsquad');
-  // auto-retreat only before we own the room under safe mode (once ours+safe, stay and fight under SM)
-  if (!inSafe() && cmd !== 'retreat') {
-    const snap = squad.map(s => ({ hits: s.hits, hitsMax: s.hitsMax, heal: act(s, HEAL) }));
-    const why = danger(snap, hostiles, towers);
-    if (why) { log({ ev: 'auto-retreat', why, room: c.room.name, pos: [c.pos.x, c.pos.y] }); P.auto = { why, t: Game.time }; setCmd('retreat', why); }
-  }
+  // Retreat ONLY by Misaki's command (cmd='retreat'). No automatic retreat triggers (2026-10-18).
   const buddy = _.min(squad.filter(s => s.name !== c.name), s => rng(c.pos, s.pos));
   const bud = (buddy && buddy !== Infinity) ? buddy : null;
 
@@ -193,8 +187,17 @@ function runWorker(c) {
   if (cmd === 'retreat') return travel(c, HOME_SAFE.room, HOME_SAFE.x, HOME_SAFE.y, 2);
   if (cmd === 'hold') return travel(c, HOLD_POS.room, HOLD_POS.x, HOLD_POS.y, 2);
 
-  // fill at home storage first
+  // Fast RCL2 energy: prefer W47N8's own sources / his leftover containers, else haul from home storage.
   if (c.store[RESOURCE_ENERGY] === 0) {
+    if (c.room.name === ROOM) {
+      // dropped / tomb / his containers near sources first (no ownership needed to withdraw from containers)
+      const drop = c.pos.findClosestByRange(FIND_DROPPED_RESOURCES, { filter: r => r.resourceType === RESOURCE_ENERGY && r.amount >= 50 });
+      if (drop) { if (!c.pos.isNearTo(drop)) return travel(c, ROOM, drop.pos.x, drop.pos.y, 1); c.pickup(drop); return; }
+      const cont = c.pos.findClosestByRange(FIND_STRUCTURES, { filter: s => s.structureType === STRUCTURE_CONTAINER && s.store[RESOURCE_ENERGY] >= 50 });
+      if (cont) { if (!c.pos.isNearTo(cont)) return travel(c, ROOM, cont.pos.x, cont.pos.y, 1); c.withdraw(cont, RESOURCE_ENERGY); return; }
+      const src = c.pos.findClosestByRange(FIND_SOURCES_ACTIVE);
+      if (src) { if (!c.pos.isNearTo(src)) return travel(c, ROOM, src.pos.x, src.pos.y, 1); c.harvest(src); return; }
+    }
     const st = Game.rooms[HOME] && Game.rooms[HOME].storage;
     if (!st || st.store[RESOURCE_ENERGY] < STORAGE_FLOOR + 250) return travel(c, HOME, HOLD_POS.x, HOLD_POS.y, 2);
     if (c.room.name !== HOME || !c.pos.isNearTo(st)) return travel(c, HOME, st.pos.x, st.pos.y, 1);
@@ -251,6 +254,32 @@ function runWorker(c) {
   c.upgradeController(ctl);
 }
 
+
+// Dedicated home->W47N8 energy ferry (fast RCL2). Body 10C10M (1000). Withdraws home storage (>=floor+carry),
+// dumps into W47N8 controller-adjacent container if present else drops next to controller for workers.
+const HAULER_BODY = () => [].concat(Array(10).fill(CARRY), Array(10).fill(MOVE));
+function runHauler(c) {
+  const P = M(), cmd = P.cmd || 'hold';
+  if (FORBID.has(c.room.name)) return travel(c, ROOM, WAIT_POS[0], WAIT_POS[1], 2);
+  if (cmd === 'retreat') return travel(c, HOME_SAFE.room, HOME_SAFE.x, HOME_SAFE.y, 2);
+  if (cmd === 'hold') return travel(c, HOLD_POS.room, HOLD_POS.x, HOLD_POS.y, 2);
+  if (c.store.getFreeCapacity() > 0 && c.store[RESOURCE_ENERGY] === 0) {
+    const st = Game.rooms[HOME] && Game.rooms[HOME].storage;
+    if (!st || st.store[RESOURCE_ENERGY] < STORAGE_FLOOR + 500) return travel(c, HOME, HOLD_POS.x, HOLD_POS.y, 2);
+    if (c.room.name !== HOME || !c.pos.isNearTo(st)) return travel(c, HOME, st.pos.x, st.pos.y, 1);
+    c.withdraw(st, RESOURCE_ENERGY); return;
+  }
+  if (c.room.name !== ROOM) return travel(c, ROOM, CTRL[0], CTRL[1], 2);
+  // prefer container into a container near the controller, else drop for workers
+  const cont = c.pos.findClosestByRange(FIND_STRUCTURES, { filter: s => s.structureType === STRUCTURE_CONTAINER && s.store.getFreeCapacity(RESOURCE_ENERGY) > 0 });
+  if (cont && c.pos.getRangeTo(cont) <= 6) {
+    if (!c.pos.isNearTo(cont)) return travel(c, ROOM, cont.pos.x, cont.pos.y, 1);
+    c.transfer(cont, RESOURCE_ENERGY); return;
+  }
+  if (!c.pos.inRangeTo(CTRL[0], CTRL[1], 2)) return travel(c, ROOM, CTRL[0], CTRL[1], 2);
+  c.drop(RESOURCE_ENERGY);
+}
+
 function run(c) {
   const P = M();
   P.status = P.status || {};
@@ -260,6 +289,7 @@ function run(c) {
   if (c.memory.role === 'cqsquad') return runSquad(c);
   if (c.memory.role === 'cqbreaker') return runBreaker(c);
   if (c.memory.role === 'cqworker') return runWorker(c);
+  if (c.memory.role === 'cqhauler') return runHauler(c);
 }
 
 // ---- spawn gate (called from managers/spawn.js) ----
@@ -284,7 +314,11 @@ function wantSpawn(room) {
     if (n('cqworker') < wMax && (ours() || almost || P.forceWorkers)) {
       return { role: 'cqworker', body: WORKER_BODY(), mem: { role: 'cqworker', home: HOME, born: Game.time } };
     }
-    if (ours() && n('cqbreaker') === 0 && n('cqworker') >= wMax && !P.respawn) P.claim = false;
+    const hMax = P.haulers || 2;
+    if (n('cqhauler') < hMax && (ours() || almost || P.forceWorkers)) {
+      return { role: 'cqhauler', body: HAULER_BODY(), mem: { role: 'cqhauler', home: HOME, born: Game.time } };
+    }
+    if (ours() && n('cqbreaker') === 0 && n('cqworker') >= wMax && n('cqhauler') >= hMax && !P.respawn) P.claim = false;
   }
   // replacement of dead squad members during an active 'go'
   if (P.respawn && (P.cmd || 'hold') === 'go' && n('cqsquad') < (P.squadMax || 2)) {
@@ -296,5 +330,5 @@ function noteSpawned(name, role) { log({ ev: 'spawned', name, role }); }
 
 module.exports = {
   run, danger, pickTarget, prio, dps, kiteStep, matrixFor, wantSpawn, noteSpawned,
-  SQUAD_BODY, BREAKER_BODY, WORKER_BODY, PATROL, FORBID, ROOM, HOME, MIN_Y, STORAGE_FLOOR, ROLES,
+  SQUAD_BODY, BREAKER_BODY, WORKER_BODY, HAULER_BODY, PATROL, FORBID, ROOM, HOME, MIN_Y, STORAGE_FLOOR, ROLES,
 };

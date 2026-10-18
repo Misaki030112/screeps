@@ -16,3 +16,35 @@ Spawn time ~300 t (+refill waits) ~ 30-40 min.
 Code status: 96cbda0 pair squad (cqsquad 6R2H8M, cqbreaker, cqworker, tools/conquest.py, inert behind Memory.ops.cq) is deployed-inert.
 Missing: quad formation movement (2x2 anchor, move only when all 4 fatigue 0, swamp-aware, rotate/squeeze at chokepoints,
 retreat as a block, shared focus target, heal lowest). ~200 lines + tests + sim, est. 1.5-2 h.
+
+
+## Implementation status (2026-10-18 ~13:30 UTC+8) — INERT
+
+Code lives in `src/roles/quad.js` (+ `cqhauler` in `src/roles/conquest.js`). Deployed behind `Memory.ops.cq.armed` (must stay unset until Misaki's go).
+
+### Combat sources adopted
+| Pattern | From | Where we use it |
+|---|---|---|
+| 2×2 swarm clearance matrix (anchor cost = worst of 4 cells); move only when all fatigue 0; regroup before advance; single-file squeeze | Overmind `Pathing.findSwarmPath` / Swarm | `anchorCost`, `quadMatrix`, modes `advance`/`fatigue`/`regroup`/`squeeze` |
+| Tower falloff 600@≤5 … 150@≥20; maxDamageAtPos; maxHostileHealingTo; RMA 10/4/1 | Overmind `CombatIntel` | `towerDmg`, `dmgAt`, `hostileHealTo`, `useMass` |
+| Target score = our focused dmg − their max heal; CLAIM first | Overmind `CombatTargeting` / TooAngel | `scoreTarget` (CLAIM +1e6) |
+| Kiting: keep range ≥3 from ATTACK; step-back-then-shoot | Overmind `Movement.combatMove` + wiki "kiting" | `combatStep` maximises min-melee-range |
+| Rotate so healthiest face the threat | Overmind Swarm rotate | `rotateAssign` |
+| **No automatic retreat** — retreat only on `cmd='retreat'` | Misaki 13:17 | auto-retreat removed from `conquest.js` and never present in `quad.js` |
+
+### North entrance defence (terrain verified)
+`tools/w47n8_access.py` Dijkstra over shard terrain: from W47N9 / W48N9 avoiding W46N8, the only short entry into W47N8 is the **NORTH** (cost 50 / 278). South entry needs a ~430-tile detour via W47N7 (his remote). Posts: quad0 at (26,4) covers x32–38 corridor; quad1 at (8,4) covers x9–24; further quads hold near controller (16,22).
+
+### Activation (Misaki personal command only)
+```
+Memory.ops.cq.armed = true          // master switch; without it NOTHING spawns
+Memory.ops.cq.quadSpawn = true      // first 4 (one quad)
+Memory.ops.cq.reinforce = 4         // optional: +N members (fill short quads first = merge, else new qid)
+Memory.ops.cq.cmd = 'go'            // enter W47N8, kill reserver, hold north
+Memory.ops.cq.claim = true          // breakers (3CLAIM3M) then workers + cqhaulers
+Memory.ops.cq.cmd = 'retreat'       // ONLY way to retreat; also stops spawning
+```
+Fast RCL2: `cqworker` harvests W47N8 sources / his containers / drops first, else hauls from home; `cqhauler` (10C10M) ferries home storage → drop/container near controller.
+
+### Banking
+Construction paused (`reserveE=1e6`). Storage dips during pause were spawn refill (queen filling extensions for replacement rhaulers 16C8M/24C12M), not builder drain — builders get `pickSource=null` under `defLow`. Live rate ~25 e/t once spawn waves settle.
