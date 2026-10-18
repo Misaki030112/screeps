@@ -102,6 +102,7 @@ function placeSeal(room) {
 const L = require('./layout'); // v3b (approved 20:11): ORDER per type nearest-core first; STRIPS with filler stand
 const PRIO = ['spawn', 'extension', 'tower', 'container', 'storage', 'link', 'terminal', 'extractor', 'lab', 'factory', 'powerSpawn', 'nuker', 'observer', 'road', 'rampart'];
 const isTemp = s => L.TEMP_EXT.some(([x, y]) => s.pos.x === x && s.pos.y === y);
+const LINK_ROADS = [[16, 33], [17, 33], [18, 33], [19, 33], [20, 33], [21, 33], [22, 34], [23, 35]];
 function layoutRun(room) {
   if (Game.time % 20) return;
   if (room.controller.level >= 2) placeSeal(room);
@@ -115,7 +116,9 @@ function layoutRun(room) {
     if (temp.length && ex.length - temp.length >= 55) temp[0].destroy();
   }
   let sites = room.find(FIND_MY_CONSTRUCTION_SITES).length; if (sites >= 6) return;
-  const O = ok ? L.ORDER : { extension: L.TEMP_EXT, container: L.ORDER.container };
+  // 03:05 west<->hub link road (missing from v3b plan): loaded 10C5M rhaulers sat 7-10 ticks on unroaded swamp 22,34 (fatigue 70)
+  // between road 15,33 and strip road 24,35; queued ahead of the plan roads since every hub trip crosses it
+  const O = ok ? Object.assign({}, L.ORDER, { road: LINK_ROADS.concat(L.ORDER.road) }) : { extension: L.TEMP_EXT, container: L.ORDER.container };
   for (const t of PRIO) {
     if (t === 'road' && rcl < 3) continue;
     if (t === 'rampart' && rcl < 4) continue;
