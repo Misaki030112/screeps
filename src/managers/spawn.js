@@ -329,7 +329,7 @@ function run1(spawn, onWait) {
   // 2c0) home growth vs W47N8 (Misaki 16:18: home resumes normal development). With storage > reserveE+10k home roles below
   // target (hauler/builder/upgrader) and W47N8 bodies take turns (room.memory.cqTurn); the W47N8 guard (cqatk) always goes first.
   if (room.storage && room.storage.store[RESOURCE_ENERGY] > ((Memory.defense && Memory.defense.reserveE) || 0) + 10000) {
-    const need = ['hauler', 'builder', 'upgrader'].find(r => (count[r] || 0) < (T[r] || 0));
+    const need = ['hauler', 'upgrader', 'mminer', 'builder'].find(r => (count[r] || 0) < (T[r] || 0));
     const cw = need && require('../roles/conquest').wantSpawn(room);
     if (need && !(cw && (cw.role === 'cqatk' || room.memory.cqTurn))) { const rv = homeRole(need); if (rv === OK) room.memory.cqTurn = 1; return rv; }
   }
