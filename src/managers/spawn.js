@@ -298,9 +298,15 @@ function run1(spawn, onWait) {
     const rQ = go('queen', B.queen(bodyEnergy('queen', E, cap, avail, !!alive.hauler, !!room.storage)));
     if (rQ === OK || rQ === ERR_NOT_ENOUGH_ENERGY) return rQ;
   }
-  // 2c) W47N8 conquest (roles/conquest.js): only when Memory.ops.cq.spawn/claim set; storage floor 3100
+  // 2c) W47N8: quad replacements first; remotes (rminer/reserver) before claim bodies so home/remote economy does not starve
   const CQ = require('../roles/conquest');
-  { const w = require('../roles/quad').wantSpawn(room) || CQ.wantSpawn(room); if (w) {
+  { const w = require('../roles/quad').wantSpawn(room); if (w) {
+    if (avail < _.sum(w.body, p => BODYPART_COST[p])) return ERR_NOT_ENOUGH_ENERGY;
+    const name = w.role + Game.time;
+    const rv = spawn.spawnCreep(w.body, name, { memory: w.mem, directions: birthDirs(spawn, w.role) });
+    if (rv === OK) CQ.noteSpawned(name, w.role); return rv; } }
+  { const r = remoteSpawn(room, go, avail); if (r !== undefined) return r; }
+  { const w = CQ.wantSpawn(room); if (w) {
     if (avail < _.sum(w.body, p => BODYPART_COST[p])) return ERR_NOT_ENOUGH_ENERGY;
     const name = w.role + Game.time;
     const rv = spawn.spawnCreep(w.body, name, { memory: w.mem, directions: birthDirs(spawn, w.role) });

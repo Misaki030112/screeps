@@ -3,7 +3,7 @@
 //            'go'      squad enters W47N8: kill CLAIM creeps (reserver) first, then healers / armed, then the rest; patrols the north side
 //            'retreat' everyone (squad, breakers, workers) home on the safe path; all conquest spawning stops (abort)
 //   cq.spawn  true -> spawn the squad (cq.squadMax total, default 2)
-//   cq.claim  true -> spawn breakers (2CLAIM2M: attackController on his reservation, claimController once it is gone; cq.breakers, default 3)
+//   cq.claim  true -> spawn breakers (3CLAIM3M: attackController then claimController; cq.breakers default 2) then workers+cqhaulers
 //                     then workers (5W5C5M, carry 250 from home, upgrade to RCL2, build spawn/ramparts/tower; cq.workers, default 4)
 //   cq.autoSafe true -> workers activate safe mode in W47N8 when available (and re-activate when it ends). Default OFF:
 //                     standing rule "never activate safe mode automatically" -> the owner must switch it on explicitly.
@@ -306,11 +306,11 @@ function wantSpawn(room) {
     if (!P.respawn) P.spawn = false;
   }
   if (P.claim) {
-    const bMax = P.breakers || 3, wMax = P.workers || 4;
+    const bMax = P.breakers || 2, wMax = P.workers || 4;
     if (n('cqbreaker') < bMax && !ours()) return { role: 'cqbreaker', body: BREAKER_BODY(), mem: { role: 'cqbreaker', home: HOME, born: Game.time } };
     // workers only after claimed OR when reservation nearly gone (<400 ticks) so they arrive with energy
     const ctl = Game.rooms[ROOM] && Game.rooms[ROOM].controller;
-    const almost = ctl && ctl.reservation && ctl.reservation.ticksToEnd < 400;
+    const almost = ctl && ctl.reservation && ctl.reservation.ticksToEnd < 1200;
     if (n('cqworker') < wMax && (ours() || almost || P.forceWorkers)) {
       return { role: 'cqworker', body: WORKER_BODY(), mem: { role: 'cqworker', home: HOME, born: Game.time } };
     }
