@@ -40,6 +40,16 @@ function toggle(c) {
   if (c.memory.w && c.store[E] === 0) c.memory.w = false;
   if (!c.memory.w && c.store.getFreeCapacity() === 0) c.memory.w = true;
 }
+const ctlCont = () => Game.rooms[C.ROOM].lookForAt(LOOK_STRUCTURES, C.CTL_CONT[0], C.CTL_CONT[1]).find(s => s.structureType === STRUCTURE_CONTAINER);
+const onTile = (c, tiles) => tiles.some(([x, y]) => c.pos.x === x && c.pos.y === y);
+// sticky tile claim (memory[key] = index): keep my claim unless another creep claims it; a new claim needs a tile nobody stands on or claims
+function pickTile(c, tiles, key) {
+  const claimed = new Set(), stood = new Set();
+  for (const o of Game.rooms[C.ROOM].find(FIND_MY_CREEPS)) if (o.id !== c.id) { stood.add(o.pos.x + ',' + o.pos.y); if (o.memory[key] !== undefined && tiles[o.memory[key]]) claimed.add(String(tiles[o.memory[key]])); }
+  const me = c.memory[key];
+  if (me !== undefined && tiles[me] && !claimed.has(String(tiles[me]))) return me;
+  return tiles.findIndex(t => !claimed.has(String(t)) && !stood.has(String(t)));
+}
 const R = {
   w8miner(c) {
     if (!home(c)) return;
@@ -65,13 +75,32 @@ const R = {
     const k = t || Game.rooms[C.ROOM].find(FIND_MY_CREEPS, { filter: x => (x.memory.role === 'w8upgrader' || x.memory.role === 'w8builder')
       && x.store.getFreeCapacity(E) > 0 }).sort((a, b) => a.store[E] - b.store[E])[0];
     if (!k) return c.pos.inRangeTo(C.CTL[0], C.CTL[1], 4) || go(c, C.CTL[0], C.CTL[1], 4);
+    if (k.structureType === STRUCTURE_CONTAINER && k.pos.x === C.CTL_CONT[0] && k.pos.y === C.CTL_CONT[1] && !c.pos.isNearTo(k)) {
+      const i = pickTile(c, C.CTL_HAUL, 'ht'); // unload from a reserved tile, never the 13,25 dead end
+      if (i >= 0) { c.memory.ht = i; go(c, C.CTL_HAUL[i][0], C.CTL_HAUL[i][1], 0); } else go(c, C.CTL_HAUL[0][0], C.CTL_HAUL[0][1], 2);
+      return;
+    }
+    delete c.memory.ht;
     if (!c.pos.isNearTo(k)) go(c, k.pos.x, k.pos.y); else c.transfer(k, E);
   },
   w8upgrader(c) {
-    if (!home(c)) return; toggle(c);
-    if (!c.memory.w) { getEnergy(c); return; }
-    const ctl = Game.rooms[C.ROOM].controller;
-    if (!c.pos.inRangeTo(ctl, 3)) go(c, ctl.pos.x, ctl.pos.y, 3); else c.upgradeController(ctl);
+    if (!home(c)) return;
+    const ctl = Game.rooms[C.ROOM].controller, cont = ctlCont();
+    // stand beside the ctl container: upgrade and refill in the same tick, never leave (19:08 jam fix)
+    if (cont && c.memory.role === 'w8upgrader') {
+      const i = pickTile(c, C.UPG_STAND, 'st');
+      if (i >= 0) {
+        c.memory.st = i; const [x, y] = C.UPG_STAND[i];
+        if (c.store[E] && c.pos.inRangeTo(ctl, 3)) c.upgradeController(ctl);
+        if (c.pos.x !== x || c.pos.y !== y) { if (c.store[E] || cont.store[E]) return go(c, x, y, 0); }
+        else { if (c.store.getFreeCapacity() && cont.store[E]) c.withdraw(cont, E); if (c.store[E] || cont.store[E]) return; }
+        // container empty and I'm empty: fall through and fetch from the piles
+      } else delete c.memory.st;
+    }
+    toggle(c);
+    if (!c.memory.w) getEnergy(c);
+    else if (!c.pos.inRangeTo(ctl, 3)) go(c, ctl.pos.x, ctl.pos.y, 3); else c.upgradeController(ctl);
+    if (onTile(c, C.CTL_HAUL)) go(c, 15, 27, 1); // never park on a hauler unload tile
   },
   w8builder(c) {
     if (!home(c)) return; toggle(c);
