@@ -12,7 +12,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(
 from api import TOKEN, ROOT, req
 ROOM, SHARD = 'W46N8', 'shard3'
 WATCH = 'W45N8'  # remote: watch events + creep trail
-TRAIL = ('W45N7',)  # other remotes: creep trail only (creep_ticks), not mixed into live.json
+TRAIL = ('W45N7', 'W47N8')  # other remotes: creep trail only (creep_ticks), not mixed into live.json
 # The server delivers at most 2 room subscriptions per user per tick: with 3 it answers 'err@room:… subscribe limit reached'
 # in rotation and every room loses ~25-60% of ticks (test 10-17 01:35: 2 rooms 10/10 ticks, 3 rooms 7-8/10 each; home coverage
 # fell ~95% -> 35-70% after W45N7 was added 16:25). So: ROOM always, plus ONE remote slot rotating WATCH / TRAIL rooms.

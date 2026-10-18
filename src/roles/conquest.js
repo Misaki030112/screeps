@@ -342,10 +342,8 @@ function runMiner(c) {
   const same = _.filter(Game.creeps, m => m.memory.role === 'cqminer' && (m.memory.ms != null ? m.memory.ms : 0) === i && !m.spawning);
   const fresh = same.filter(m => (m.ticksToLive || 1500) > 80), keeper = fresh.length ? _.max(fresh, m => m.memory.born || 0) : null; // youngest stays
   if (keeper && keeper.name !== c.name) {
-    const sp = Game.spawns.Spawn1;
-    if (!sp) return;
-    if (!c.pos.isNearTo(sp)) return travel(c, HOME, sp.pos.x, sp.pos.y, 1);
-    return sp.recycleCreep(c);
+    // surplus (Misaki 16:09): never walk home. One 6W miner already exceeds a source's 10/t, so an extra adds no income -> suicide.
+    return c.suicide();
   }
   if (c.room.name !== ROOM) return travel(c, ROOM, x, y, 0);
   const src = c.room.lookForAt(LOOK_SOURCES, MINER_SRC[i][0], MINER_SRC[i][1])[0];
@@ -357,12 +355,17 @@ function runMiner(c) {
   return travel(c, ROOM, x, y, 0);
 }
 
+// W47N8 ENERGY FLOW (Misaki 16:09):
+//   cqminers on 26,11 / 11,43 -> containers -> cqhaulers -> site 15,18 (2 stationary cqworkers) ; self-fetch cqworkers take
+//   containers/drops directly ; dg upgrader (a fetcher) upgrades 15,25 when dg<8000.
+//   Home storage is a FALLBACK only: an EMPTY-ish (<50%) hauler with no in-room container>=300/drop>=150 fetches from W46N8.
+//   No W47N8 role ever returns to W46N8 except that hauler case.
 function runHauler(c) {
   const P = M(), cmd = P.cmd || 'hold';
   if (FORBID.has(c.room.name)) return travel(c, ROOM, WAIT_POS[0], WAIT_POS[1], 2);
   if (cmd === 'retreat') return travel(c, HOME_SAFE.room, HOME_SAFE.x, HOME_SAFE.y, 2);
   if (c.store[RESOURCE_ENERGY] === 0) c.memory.full = false;
-  if (c.store.getFreeCapacity() === 0) c.memory.full = true;
+  if (c.store[RESOURCE_ENERGY] >= c.store.getCapacity() / 2) c.memory.full = true; // >=50% -> deliver, never fetch more from home
   if (!c.memory.full) {
     // pure carrier (Misaki 15:26): W47N8 miner containers / drops first, else home storage
     const r8 = Game.rooms[ROOM];
