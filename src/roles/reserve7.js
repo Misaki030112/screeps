@@ -22,5 +22,6 @@ function run(c) {
   const ctl = c.room.controller, res = ctl.reservation;
   if (res && res.username !== c.owner.username) return; // wait: foreign reservation still active (no attackController)
   c.reserveController(ctl);
+  { const S = require('../utils/sign'); if (S.needs(ctl, c.owner.username) && c.pos.isNearTo(ctl)) c.signController(ctl, S.SIGN); } // same sign as home (22:19)
 }
 module.exports = { run, wantSpawn, ROOM };

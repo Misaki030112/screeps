@@ -122,6 +122,12 @@ const R = {
   w8upgrader(c) {
     if (!home(c)) return;
     const ctl = Game.rooms[C.ROOM].controller, cont = ctlCont();
+    // sign like home (22:19): one upgrader walks over only while the sign differs; cheap string compare otherwise
+    const SG = require('../../utils/sign');
+    if (SG.needs(ctl, c.owner.username) && !_.some(Game.creeps, x => x.memory.signer && x.name !== c.name)) {
+      c.memory.signer = 1;
+      if (c.pos.isNearTo(ctl)) c.signController(ctl, SG.SIGN); else return go(c, ctl.pos.x, ctl.pos.y, 1);
+    } else if (c.memory.signer) delete c.memory.signer;
     // stand beside the ctl container: upgrade and refill in the same tick, never leave (19:08 jam fix)
     if (cont && c.memory.role === 'w8upgrader') {
       const i = pickTile(c, C.UPG_STAND, 'st');
