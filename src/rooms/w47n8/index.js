@@ -27,6 +27,14 @@ function spawnRun(spawn) {
   if (!want && n('w8hauler') < 2) want = 'w8hauler';
   else if (!want && n('w8upgrader') < (sites ? 2 : 3)) want = 'w8upgrader';
   else if (!want && sites && n('w8builder') < (sites >= 3 ? 4 : 2)) want = 'w8builder'; // 17:05: Spawn2 sat idle at 300/300 with 5 ext sites
+  // 5) surplus (17:52: 1.8k energy lying on the ground/in source containers, spenders only ~7 WORK of 20 e/t income):
+  // +1 hauler above 1200 loose (max 3), +1 upgrader per 600 loose above 600 (max 6)
+  if (!want) {
+    const loose = _.sum(room.find(FIND_DROPPED_RESOURCES, { filter: r => r.resourceType === RESOURCE_ENERGY }), r => r.amount)
+      + _.sum(room.find(FIND_STRUCTURES, { filter: s => s.structureType === STRUCTURE_CONTAINER && !(s.pos.x === C.CTL_CONT[0] && s.pos.y === C.CTL_CONT[1]) }), s => s.store[RESOURCE_ENERGY]);
+    if (loose > 1200 && n('w8hauler') < 3) want = 'w8hauler';
+    else if (n('w8upgrader') < Math.min(6, (sites ? 2 : 3) + Math.floor(Math.max(0, loose - 600) / 600))) want = 'w8upgrader';
+  }
   if (!want) return;
   // emergency: nothing alive that refills -> spawn with what we have
   const starving = !n('w8hauler') || !n('w8miner');
