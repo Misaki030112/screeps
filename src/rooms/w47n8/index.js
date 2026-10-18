@@ -4,6 +4,7 @@ const C = require('./config');
 const rep = (n, p) => Array(n).fill(p);
 function mine() { return _.filter(Game.creeps, c => c.memory.home === C.ROOM); }
 function bodyFor(role, e) {
+  if (role === 'w8filler') { const n = Math.max(2, Math.min(8, Math.floor(e / 150))); return rep(n, CARRY).concat(rep(Math.ceil(n / 2), MOVE)); }
   if (role === 'w8rminer') { const w = Math.max(2, Math.min(5, Math.floor((e - 150) / 100))); return rep(w, WORK).concat([CARRY], rep(Math.ceil((w + 1) / 2), MOVE)); }
   if (role === 'w8rhauler') { const n = Math.max(2, Math.min(12, Math.floor(e / 100))); return rep(n, CARRY).concat(rep(n, MOVE)); }
   if (role === 'w8miner') { const w = Math.max(2, Math.min(5, Math.floor((e - 50) / 100))); return rep(w, WORK).concat([MOVE]); }
@@ -42,6 +43,13 @@ function spawnRun(spawn) {
     else if (n('w8upgrader') < Math.min(6, (sites ? 2 : 3) + Math.floor(Math.max(0, loose - 600) / 600))
       && _.sum(cs.filter(c => c.memory.role === 'w8upgrader'), c => _.filter(c.body, p => p.type === WORK).length) < 16) want = 'w8upgrader'; // ~20 e/t income
   }
+  // 5b) strip fillers (v3b): one per strip with >=4 built extensions, once the hub storage exists
+  if (!want && room.storage && room.storage.store[RESOURCE_ENERGY] > 1000) {
+    for (let i = 0; i < L.STRIPS.length && !want; i++) {
+      const built = L.STRIPS[i].ext.filter(([x, y]) => room.lookForAt(LOOK_STRUCTURES, x, y).some(s => s.structureType === STRUCTURE_EXTENSION)).length;
+      if (built >= 4 && !cs.some(c => c.memory.role === 'w8filler' && c.memory.si === i && (c.spawning || c.ticksToLive > 50))) { want = 'w8filler'; mem.si = i; }
+    }
+  }
   // 6) wall builder from surplus (19:18): 1 builder while a seal wall is below target and spawn is full
   // 19:31: 2 while >1500 loose energy piles (2.8k at 19:30 with the ctl container full and upgraders at the WORK cap)
   if (!want && room.energyAvailable === cap && n('w8builder') < (looseE(room) > 1500 ? 2 : 1)) {
@@ -70,23 +78,33 @@ function placeSeal(room) {
     room.createConstructionSite(x, y, STRUCTURE_WALL);
   }
 }
-const L = require('./layout'); // generated plan (tools/w47n8_plan.py), cumulative per RCL
+const L = require('./layout'); // v3b (approved 20:11): ORDER per type nearest-core first; STRIPS with filler stand
 const PRIO = ['spawn', 'extension', 'tower', 'container', 'storage', 'link', 'terminal', 'extractor', 'lab', 'factory', 'powerSpawn', 'nuker', 'observer', 'road', 'rampart'];
+const isTemp = s => L.TEMP_EXT.some(([x, y]) => s.pos.x === x && s.pos.y === y);
 function layoutRun(room) {
   if (Game.time % 20) return;
-  if (room.controller.level >= 2) placeSeal(room); // re-placed if destroyed; reinforced to C.WALL_TARGET by w8builders
+  if (room.controller.level >= 2) placeSeal(room);
   if (!room.find(FIND_MY_SPAWNS).length) return;
-  // Misaki 17:21 rejected the fde2d58 plan: only the RCL2 set (5 extensions near Spawn2 + ctl container) until a new plan is approved
-  const rcl = room.controller.level, B = Object.assign({}, L.BUILD[(Memory.ops && Memory.ops.w8layout === 'approved') ? Math.min(8, rcl) : 2] || {});
-  if (!(Memory.ops && Memory.ops.w8layout === 'approved')) delete B.road;
-  if (rcl >= 4) B.rampart = L.RAMPARTS_RCL4;
+  const rcl = room.controller.level, ok = Memory.ops && Memory.ops.w8layout === 'approved';
+  // RCL8: the 5 temporary RCL2 extensions near Spawn2 give their slots to the last 5 strip extensions
+  if (ok && rcl === 8) {
+    const ex = room.find(FIND_MY_STRUCTURES, { filter: s => s.structureType === STRUCTURE_EXTENSION });
+    const temp = ex.filter(isTemp);
+    if (temp.length && ex.length - temp.length >= 55) temp[0].destroy();
+  }
   let sites = room.find(FIND_MY_CONSTRUCTION_SITES).length; if (sites >= 6) return;
-  for (const t of PRIO) for (const [x, y] of (B[t] || [])) {
-    if (sites >= 6) return;
-    if (t === 'road' && sites > 2) return; // roads only when little else is queued
-    if (room.lookForAt(LOOK_STRUCTURES, x, y).some(s => s.structureType === t)) continue;
-    if (room.lookForAt(LOOK_CONSTRUCTION_SITES, x, y).length && t !== 'rampart') continue;
-    if (room.createConstructionSite(x, y, t) === OK) sites++;
+  const O = ok ? L.ORDER : { extension: L.TEMP_EXT, container: L.ORDER.container };
+  for (const t of PRIO) {
+    if (t === 'road' && rcl < 3) continue;
+    if (t === 'rampart' && rcl < 4) continue;
+    for (const [x, y] of (O[t] || [])) {
+      if (sites >= 6) return;
+      if (t === 'road' && sites > 2) return; // roads only when little else is queued
+      if (room.lookForAt(LOOK_STRUCTURES, x, y).some(s => s.structureType === t)) continue;
+      if (room.lookForAt(LOOK_CONSTRUCTION_SITES, x, y).length) continue;
+      const r = room.createConstructionSite(x, y, t);
+      if (r === OK) sites++; else if (r === ERR_RCL_NOT_ENOUGH) break; // next type
+    }
   }
 }
 function towerRun(room) {

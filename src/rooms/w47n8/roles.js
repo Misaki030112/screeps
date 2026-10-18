@@ -57,6 +57,22 @@ function wallJob(room) {
 }
 // ---- W47N7 remote (only while reserved by us) ----
 const RM = C.REMOTE;
+const LAY = require('./layout');
+// w8filler: owns one v3b strip; refills from hub storage, walks its 1-tile-wide strip road, parks at the strip's filler stand
+function fillerRun(c) {
+  if (!home(c)) return;
+  const S = LAY.STRIPS[c.memory.si | 0], st = c.room.storage;
+  if (!S) return;
+  if (c.store[E] === 0) { if (st) { if (!c.pos.isNearTo(st)) go(c, st.pos.x, st.pos.y); else c.withdraw(st, E); } return; }
+  let t = c.memory.ft && Game.getObjectById(c.memory.ft);
+  if (!t || t.store.getFreeCapacity(E) === 0) {
+    const need = [];
+    for (const [x, y] of S.ext) { const e = c.room.lookForAt(LOOK_STRUCTURES, x, y).find(s => s.structureType === STRUCTURE_EXTENSION); if (e && e.store.getFreeCapacity(E) > 0) need.push(e); }
+    t = c.pos.findClosestByRange(need); c.memory.ft = t ? t.id : undefined;
+  }
+  if (!t) { if (c.store.getFreeCapacity(E) > 0 && st) { if (!c.pos.isNearTo(st)) go(c, st.pos.x, st.pos.y); else c.withdraw(st, E); return; } return go(c, S.fill[0], S.fill[1], 0); }
+  if (!c.pos.isNearTo(t)) go(c, t.pos.x, t.pos.y); else { c.transfer(t, E); c.memory.ft = undefined; }
+}
 function rgo(c, x, y, r) { return c.moveTo(new RoomPosition(x, y, RM.room), { range: r, reusePath: 20 }); }
 const R = {
   w8miner(c) {
@@ -114,6 +130,7 @@ const R = {
       else if (!c.pos.inRangeTo(ctl, 3)) go(c, ctl.pos.x, ctl.pos.y, 3);
     }
   },
+  w8filler(c) { fillerRun(c); },
   w8rminer(c) {
     const S = RM.sources[c.memory.si | 0], [x, y] = S.stand;
     if (c.room.name !== RM.room) return rgo(c, x, y, 0);
