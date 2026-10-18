@@ -93,4 +93,12 @@ for (let i=0;i<4;i++) Game.creeps['q'+i] = {memory:{role:'cqquad',qid:0,qi:i}};
 assert.strictEqual(Q.wantSpawn(room).role, 'cqquad');
 // danger helper still exists but is NOT wired to auto-retreat (manual check)
 assert.strictEqual(typeof CQ.danger, 'function');
+
+// dynamic shapes
+assert.deepStrictEqual(Q.shapeOf(2), [[0,0],[1,0]]);
+assert.deepStrictEqual(Q.formedAnchor({0:P(5,5),1:P(6,5)}, 2), {x:5,y:5,roomName:'R'});
+assert.strictEqual(Q.formedAnchor({0:P(5,5),1:P(6,6)}, 2), null);
+assert.deepStrictEqual(Q.formedAnchor({0:P(5,5),1:P(6,5),2:P(5,6)}, 3), {x:5,y:5,roomName:'R'});
+assert.strictEqual(Q.anchorCost(10,10,T(),undefined,Q.shapeOf(2)), 2);
 console.log('quad ok');
+

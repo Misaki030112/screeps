@@ -10,6 +10,8 @@
 //  Overmind Movement.combatMove + wiki kiting: vs ATTACK keep range>=3 (step-back-then-shoot; dumb melee AI never lands),
 //    vs ranged/healers close to 3; pick the formation step that minimises predicted damage.
 const OFF = [[0,0],[1,0],[0,1],[1,1]];
+const SHAPES = {1:[[0,0]], 2:[[0,0],[1,0]], 3:[[0,0],[1,0],[0,1]], 4:OFF};
+const shapeOf = n => SHAPES[Math.max(1, Math.min(4, n))];
 const RALLY = {room:"W46N8",x:9,y:26}, ROOM = "W47N8", HOME = "W46N8", MIN_Y = 8;
 const FORBID = new Set(["W47N9","W48N9","W48N8"]);
 // North defence posts: tools/w47n8_access.py — from W47N9/W48N9 the only short entry into W47N8 is the NORTH (cost 50/278).
@@ -55,9 +57,9 @@ function useMass(me, hostiles) {
   for (const h of hostiles) { const r = rng(me.pos,h.pos); mass += r<=1?10:r===2?4:r===3?1:0; }
   return mass > 10;
 }
-function anchorCost(x,y,terrain,extra) {
+function anchorCost(x,y,terrain,extra,shape=OFF) {
   let worst = 0;
-  for (const [dx,dy] of OFF) {
+  for (const [dx,dy] of shape) {
     const cx=x+dx, cy=y+dy;
     if (cx<1||cy<1||cx>48||cy>48) return 255;
     const e = extra?extra(cx,cy):undefined, t = terrain(cx,cy);
@@ -66,21 +68,21 @@ function anchorCost(x,y,terrain,extra) {
   }
   return worst;
 }
-function formedAnchor(pos) {
-  const a = pos[0]; if (!a) return null;
-  for (let k=1;k<4;k++){ const p=pos[k]; if(!p||p.roomName!==a.roomName||p.x!==a.x+OFF[k][0]||p.y!==a.y+OFF[k][1]) return null; }
+function formedAnchor(pos, n=4) {
+  const a = pos[0], sh = shapeOf(n); if (!a) return null;
+  for (let k=1;k<n;k++){ const p=pos[k]; if(!p||p.roomName!==a.roomName||p.x!==a.x+sh[k][0]||p.y!==a.y+sh[k][1]) return null; }
   return {x:a.x,y:a.y,roomName:a.roomName};
 }
 // combat step for formed quad: score stay+8 dirs. Avoid melee range (<3), keep focus<=3, minimise predicted dmg.
 // valid(x,y)->anchor walkable. Returns 0 (stay) or dir 1..8.
-function combatStep(anc, hostiles, towers, focus, valid) {
+function combatStep(anc, hostiles, towers, focus, valid, shape=OFF) {
   let best=0, bestS=-1e12;
   for (let d=0; d<=8; d++) {
     const dx = d?DIRS[d-1][0]:0, dy = d?DIRS[d-1][1]:0;
     const ax = anc.x+dx, ay = anc.y+dy;
     if (d && !valid(ax,ay)) continue;
     let dmg=0, minMelee=99, nearFocus=99;
-    for (const [ox,oy] of OFF) {
+    for (const [ox,oy] of shape) {
       const p = {x:ax+ox,y:ay+oy};
       dmg += dmgAt(p, hostiles, towers);
       for (const h of hostiles) if (act(h,ATTACK)) minMelee = Math.min(minMelee, rng(p,h.pos));
@@ -104,9 +106,9 @@ function healPick(me, team) {
   return null;
 }
 // rotate: assign each member a cell so the healthiest occupy the side facing the threat (Overmind rotate)
-function rotateAssign(anc, members, threat) {
+function rotateAssign(anc, members, threat, shape=OFF) {
   // members sorted by hits DESC; cells sorted by distance to threat ASC (front) / DESC (back)
-  const cells = OFF.map(([dx,dy],i)=>({i,x:anc.x+dx,y:anc.y+dy,d:threat?rng({x:anc.x+dx,y:anc.y+dy},threat.pos):0}));
+  const cells = shape.map(([dx,dy],i)=>({i,x:anc.x+dx,y:anc.y+dy,d:threat?rng({x:anc.x+dx,y:anc.y+dy},threat.pos):0}));
   cells.sort((a,b)=>b.d-a.d); // back first (safer) for the hurt ones
   const byHits = members.slice().sort((a,b)=>a.hits-b.hits); // hurt first -> back
   const map = {};
@@ -140,8 +142,10 @@ function ensureIds(creeps) {
   return groupByQid(creeps);
 }
 
+
 // ---- pathfinding ----
-function quadMatrix(rn) {
+const quadMatrixN = n => rn => quadMatrix(rn, shapeOf(n));
+function quadMatrix(rn, shape=OFF) {
   const room = Game.rooms[rn], T = Game.map.getRoomTerrain(rn), m = new PathFinder.CostMatrix();
   if (FORBID.has(rn)) { for (let x=0;x<50;x++) for (let y=0;y<50;y++) m.set(x,y,255); return m; }
   const blk={}, road={};
@@ -151,12 +155,11 @@ function quadMatrix(rn) {
   }
   const terr = (x,y)=>{ const v=T.get(x,y); return v&TERRAIN_MASK_WALL?"wall":v&TERRAIN_MASK_SWAMP?"swamp":"plain"; };
   const extra = (x,y)=> blk[x*50+y]?255 : (rn===ROOM && y<MIN_Y && !(y<=6 && (x<=12||(x>=22&&x<=32))))?255 : road[x*50+y]?1 : undefined;
-  // allow north corridor (y<=6 at posts) so the defence posts at y=4 are reachable; still block y=0-1 except exits
-  for (let x=0;x<50;x++) for (let y=0;y<50;y++) m.set(x,y,anchorCost(x,y,terr,extra));
+  for (let x=0;x<50;x++) for (let y=0;y<50;y++) m.set(x,y,anchorCost(x,y,terr,extra,shape));
   return m;
 }
 function goalFor(cmd, qid, focus) {
-  if (cmd==="go") {
+  if (cmd==="go" || cmd==="advance") {
     if (focus) return {pos:focus.pos, range:3};
     const post = POSTS[qid % POSTS.length];
     return {pos:new RoomPosition(post.x, post.y, ROOM), range:1};
@@ -164,47 +167,84 @@ function goalFor(cmd, qid, focus) {
   return {pos:new RoomPosition(RALLY.x+(qid%2)*3, RALLY.y+Math.floor(qid/2)*3, RALLY.room), range:1};
 }
 
-// ---- per-quad decide (once per tick) ----
+// Dynamic squad: members who have "joined". First joins at rally; later join when within range 2 of the squad.
+function joinedTeam(qid, all) {
+  const P = M(), key = "j"+qid, J = P.joined = P.joined || {};
+  if (J[key] && J[key].t === Game.time) return J[key].list.map(n => Game.creeps[n]).filter(Boolean);
+  const names = new Set(J[key] && J[key].list || []);
+  // drop dead
+  for (const n of [...names]) if (!Game.creeps[n]) names.delete(n);
+  const sorted = all.slice().sort((a,b)=>(a.memory.born||0)-(b.memory.born||0) || (a.name<b.name?-1:1));
+  if (!names.size && sorted.length) {
+    // seed: first at/near rally joins
+    const first = sorted[0];
+    if (first.pos.roomName===RALLY.room && rng(first.pos,RALLY)<=3) names.add(first.name);
+  }
+  const core = [...names].map(n=>Game.creeps[n]).filter(Boolean);
+  if (core.length) {
+    const cx = Math.round(core.reduce((s,c)=>s+c.pos.x,0)/core.length);
+    const cy = Math.round(core.reduce((s,c)=>s+c.pos.y,0)/core.length);
+    const cr = core[0].pos.roomName;
+    for (const c of sorted) {
+      if (names.has(c.name)) continue;
+      if (c.pos.roomName===cr && rng(c.pos,{x:cx,y:cy})<=2) names.add(c.name);
+      // also join at rally if squad still assembling there
+      else if (cr===RALLY.room && c.pos.roomName===RALLY.room && rng(c.pos,RALLY)<=3 && rng({x:cx,y:cy},RALLY)<=4) names.add(c.name);
+    }
+  }
+  const list = sorted.filter(c => names.has(c.name));
+  // reindex qi 0..n-1 for formation slots
+  list.forEach((c,i)=>{ c.memory.qi = i; c.memory.qid = qid; });
+  J[key] = { t: Game.time, list: list.map(c=>c.name) };
+  // publish squad tip for joiners
+  if (list.length) {
+    P.tip = P.tip || {};
+    P.tip[qid] = { x: list[0].pos.x, y: list[0].pos.y, room: list[0].pos.roomName, n: list.length, t: Game.time };
+  }
+  return list;
+}
+
 function decide(qid, team) {
   const P = M(), Qs = P.quads = P.quads || {}, Q = Qs[qid] = Qs[qid] || {};
   if (Q.t === Game.time) return Q; Q.t = Game.time;
-  const cmd = P.cmd || "hold", lead = team[0];
+  // Advance once >= minSquad (default 2) have joined: cmd==="go", or earlyGo (default on) while not retreating.
+  const cmd = P.cmd || "hold";
+  const goNow = cmd==="go" || (cmd!=="retreat" && P.earlyGo!==false && team.length >= (P.minSquad||2));
+  const lead = team[0];
   const hostiles = lead.room.find(FIND_HOSTILE_CREEPS).filter(h => h.owner && h.owner.username!=="Source Keeper");
   const towers = lead.room.find(FIND_HOSTILE_STRUCTURES).filter(s => s.structureType===STRUCTURE_TOWER);
   const owner = P.owner || "BustJetter";
   const targets = hostiles.filter(h => h.owner.username===owner || meleeD(h)+rangedD(h)>0);
   const snap = team.map(c=>({pos:c.pos, ra:act(c,RANGED_ATTACK)}));
   let f = null;
-  if (cmd==="go" && targets.length) {
+  if (goNow && targets.length) {
     f = _.max(targets, h => scoreTarget(h, snap, hostiles));
     if (f===-Infinity) f = null;
   }
   Q.focus = f ? f.id : undefined;
-  if (team.length>=4) Q.assembled = 1;
-  // movement
-  const goal = goalFor(cmd, qid, f);
+  const n = Math.min(4, team.length), sh = shapeOf(n); Q.n = n;
+  if (n>=4) Q.assembled = 1;
+  const goal = goalFor(goNow ? "go" : "hold", qid, f);
   const pos = {}; for (const c of team) pos[c.memory.qi] = c.pos;
-  const anc = team.length===4 ? formedAnchor(pos) : null;
-  Q.moves = {}; Q.mode = "wait"; Q.rot = null;
-  if (team.length<4 && cmd!=="retreat") { Q.mode="assemble"; return Q; }
+  const anc = formedAnchor(pos, n);
+  Q.moves = {}; Q.mode = "wait"; Q.rot = null; Q.go = goNow;
+  if (!goNow) { Q.mode="assemble"; return Q; }
   if (team.some(c => c.fatigue>0)) { Q.mode="fatigue"; return Q; }
 
-  // in combat range under "go": formation combat step (kite) instead of pathfinder
-  if (cmd==="go" && anc && (f || hostiles.some(h=>rng(anc,h.pos)<=5))) {
+  if (anc && (f || hostiles.some(h=>rng(anc,h.pos)<=5))) {
     const T = Game.map.getRoomTerrain(anc.roomName);
     const terr=(x,y)=>{const v=T.get(x,y);return v&TERRAIN_MASK_WALL?"wall":v&TERRAIN_MASK_SWAMP?"swamp":"plain";};
-    const valid = (x,y)=>anchorCost(x,y,terr)<255 && !(anc.roomName===ROOM && y<1);
-    const d = combatStep(anc, hostiles, towers, f, valid);
+    const valid = (x,y)=>anchorCost(x,y,terr,undefined,sh)<255 && !(anc.roomName===ROOM && y<1);
+    const d = combatStep(anc, hostiles, towers, f, valid, sh);
     if (d) for (const c of team) Q.moves[c.name]=d;
     Q.mode = d ? "combat" : "holdFire";
-    Q.rot = rotateAssign(anc, team, f || hostiles[0]);
+    Q.rot = rotateAssign(anc, team, f || hostiles[0], sh);
     return Q;
   }
-
   if (anc) {
     if (anc.roomName===goal.pos.roomName && rng(anc,goal.pos)<=goal.range) { Q.mode="there"; return Q; }
     const r = PathFinder.search(new RoomPosition(anc.x,anc.y,anc.roomName), {pos:goal.pos,range:goal.range},
-      {maxRooms:3, maxOps:4000, roomCallback:quadMatrix, plainCost:2, swampCost:10});
+      {maxRooms:3, maxOps:4000, roomCallback:quadMatrixN(n), plainCost:2, swampCost:10});
     if (!r.incomplete && r.path.length && r.path[0].roomName===anc.roomName) {
       const d = new RoomPosition(anc.x,anc.y,anc.roomName).getDirectionTo(r.path[0]);
       for (const c of team) Q.moves[c.name]=d; Q.mode="advance"; return Q;
@@ -214,7 +254,7 @@ function decide(qid, team) {
     const T = Game.map.getRoomTerrain(lead.pos.roomName);
     const terr=(x,y)=>{const v=T.get(x,y);return v&TERRAIN_MASK_WALL?"wall":v&TERRAIN_MASK_SWAMP?"swamp":"plain";};
     const allHere = team.every(c=>c.pos.roomName===lead.pos.roomName);
-    if (allHere && anchorCost(lead.pos.x,lead.pos.y,terr)<255) {
+    if (allHere && anchorCost(lead.pos.x,lead.pos.y,terr,undefined,sh)<255) {
       Q.mode="regroup"; Q.anchor={x:lead.pos.x,y:lead.pos.y,room:lead.pos.roomName}; return Q;
     }
     Q.mode="squeeze";
@@ -235,30 +275,42 @@ function fight(c, team, Q) {
       c.rangedAttack(_.max(inR, h=>scoreTarget(h,snap,hostiles)));
     }
   }
-  // rotate cells: if assigned a different cell and formed, step toward it (heal-facing)
-  if (Q.rot && Q.rot[c.name]!==undefined && Q.mode==="holdFire") {
-    // stay put for fire; rotation applied during regroup/advance next opportunity
-  }
   const h = healPick(c, team);
   if (h) c[h[1]](h[0]);
   else if (hostiles.some(x=>c.pos.inRangeTo(x,5))) c.heal(c);
 }
 
 function run(c) {
-  const P = M(), creeps = allQuads(), groups = ensureIds(creeps);
-  const qid = c.memory.qid|0, team = groups[qid] || [c];
+  const P = M();
+  if ((P.cmd||"hold")==="retreat") {
+    fight(c, [c], {}); return c.moveTo(new RoomPosition(RALLY.x,RALLY.y,RALLY.room),{reusePath:10,costCallback:matrixLite});
+  }
+  const creeps = allQuads().filter(x => (x.memory.qid|0)===(c.memory.qid|0) || c.memory.qid===undefined);
+  ensureIds(allQuads());
+  const qid = c.memory.qid|0;
+  const all = allQuads().filter(x => (x.memory.qid|0)===qid);
+  const team = joinedTeam(qid, all);
+  const joined = team.some(m => m.name===c.name);
+
+  if (!joined) {
+    // joiner: walk alone to squad tip (or rally if none yet); path around forbidden rooms
+    const tip = P.tip && P.tip[qid];
+    const tx = tip ? tip.x : RALLY.x, ty = tip ? tip.y : RALLY.y, tr = tip ? tip.room : RALLY.room;
+    fight(c, [c], {focus: undefined});
+    return c.moveTo(new RoomPosition(tx,ty,tr), {range:1, reusePath:5, maxRooms:4, costCallback:matrixLite});
+  }
+
   const Q = decide(qid, team);
   fight(c, team, Q);
-  const k = c.memory.qi|0;
+  const k = c.memory.qi|0, sh = shapeOf(team.length);
   if (Q.mode==="assemble") {
-    const [dx,dy]=OFF[k]||[0,0];
-    return c.moveTo(new RoomPosition(RALLY.x+dx+(qid%2)*3, RALLY.y+dy+Math.floor(qid/2)*3, RALLY.room), {reusePath:10});
+    const [dx,dy]=sh[k]||[0,0];
+    return c.moveTo(new RoomPosition(RALLY.x+dx, RALLY.y+dy, RALLY.room), {reusePath:10});
   }
   if (Q.mode==="advance"||Q.mode==="combat") return Q.moves[c.name] ? c.move(Q.moves[c.name]) : undefined;
   if (Q.mode==="regroup" && Q.anchor) {
-    // prefer rotated cell if we have a threat assignment
     const cell = (Q.rot && Q.rot[c.name]!==undefined) ? Q.rot[c.name] : k;
-    const [dx,dy]=OFF[cell];
+    const [dx,dy]=sh[cell]||sh[k]||[0,0];
     return c.moveTo(new RoomPosition(Q.anchor.x+dx,Q.anchor.y+dy,Q.anchor.room),{reusePath:0});
   }
   if (Q.mode==="squeeze" && Q.goal) {
@@ -266,6 +318,7 @@ function run(c) {
     if (!ahead) return c.moveTo(new RoomPosition(Q.goal.x,Q.goal.y,Q.goal.room),{range:Q.goal.range,reusePath:5,costCallback:matrixLite});
     if (!c.pos.isNearTo(ahead)) return c.moveTo(ahead,{reusePath:0,costCallback:matrixLite});
   }
+  if (Q.mode==="holdFire"||Q.mode==="there"||Q.mode==="fatigue") return;
 }
 function matrixLite(rn,m) {
   if (FORBID.has(rn)) for (let x=0;x<50;x++) for (let y=0;y<50;y++) m.set(x,y,255);
@@ -273,22 +326,19 @@ function matrixLite(rn,m) {
   return m;
 }
 
-// spawn: armed + (quadSpawn or reinforce>0); fill short quads first; never during retreat
 function wantSpawn(room) {
   const P = Memory.ops && Memory.ops.cq; if (!P || P.armed!==true) return null;
   if ((P.cmd||"hold")==="retreat") return null;
   if (!room.storage || room.storage.store[RESOURCE_ENERGY] < (P.floor||8000)) return null;
   const creeps = allQuads(), n = creeps.length;
   const want = (P.quadSpawn?4:0) + (P.reinforce|0);
-  // once first 4 out, clear the one-shot flag (reinforce stays as a count of extras wanted)
   if (P.quadSpawn && n>=4 && !P.quadRespawn) P.quadSpawn = false;
   if (n < want) return {role:"cqquad", body:BODY(), mem:{role:"cqquad", home:HOME, born:Game.time}};
-  // replacement during go
   if (P.quadRespawn && (P.cmd||"hold")==="go" && n < want) return {role:"cqquad", body:BODY(), mem:{role:"cqquad", home:HOME, born:Game.time}};
   return null;
 }
 
 module.exports = {
   run, wantSpawn, anchorCost, formedAnchor, healPick, combatStep, scoreTarget, towerDmg, dmgAt, hostileHealTo, useMass, rotateAssign,
-  BODY, OFF, RALLY, POSTS, ROOM, FORBID, MIN_Y,
+  joinedTeam, shapeOf, BODY, OFF, SHAPES, RALLY, POSTS, ROOM, FORBID, MIN_Y,
 };
