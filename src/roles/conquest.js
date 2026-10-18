@@ -392,7 +392,10 @@ function runHauler(c) {
       if (tgt.amount !== undefined) c.pickup(tgt); else c.withdraw(tgt, RESOURCE_ENERGY); delete c.memory.tid; return;
     }
     const st = Game.rooms[HOME] && Game.rooms[HOME].storage;
-    if (!st || st.store[RESOURCE_ENERGY] < STORAGE_FLOOR + 500) return travel(c, ROOM, SITE[0], SITE[1], 3);
+    // home first (Misaki 16:25: home must not slip): fetch only above reserveE+5k (17:05: storage 25k->15k in 10 min, cqhaulers
+    // would have pulled it to 3.6k while home builders/upgraders are gated below reserveE)
+    const homeFloor = Math.max(STORAGE_FLOOR + 500, ((Memory.defense && Memory.defense.reserveE) || 0) + 5000);
+    if (!st || st.store[RESOURCE_ENERGY] < homeFloor) return travel(c, ROOM, SITE[0], SITE[1], 3);
     if (c.room.name !== HOME || !c.pos.isNearTo(st)) return travel(c, HOME, st.pos.x, st.pos.y, 1);
     c.withdraw(st, RESOURCE_ENERGY); return;
   }
@@ -404,8 +407,8 @@ function runHauler(c) {
     // hand off to an empty builder on the way if adjacent
     return travel(c, ROOM, SITE[0], SITE[1], 2);
   }
-  // never drop energy (Misaki 16:16): hand it to the hungriest builder near the site, walking to it; else wait
-  const ws = c.room.find(FIND_MY_CREEPS, { filter: x => x.memory.role === 'cqworker' && x.store.getFreeCapacity(RESOURCE_ENERGY) > 0 && x.pos.inRangeTo(SITE[0], SITE[1], 6) });
+  // never drop energy (Misaki 16:16): hand it to the hungriest builder (cqworker or w8builder: cqworkers die out after Spawn2) near the site; else wait
+  const ws = c.room.find(FIND_MY_CREEPS, { filter: x => (x.memory.role === 'cqworker' || x.memory.role === 'w8builder') && x.store.getFreeCapacity(RESOURCE_ENERGY) > 0 && x.pos.inRangeTo(SITE[0], SITE[1], 6) });
   if (!ws.length) return;
   const w = _.max(ws, x => x.store.getFreeCapacity(RESOURCE_ENERGY) * 10 - c.pos.getRangeTo(x));
   if (!c.pos.isNearTo(w)) { travel(c, ROOM, w.pos.x, w.pos.y, 1); const n = c.pos.findInRange(ws, 1)[0]; if (n) c.transfer(n, RESOURCE_ENERGY); return; }

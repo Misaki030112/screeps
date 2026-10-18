@@ -20,7 +20,7 @@ function spawnRun(spawn) {
   // 2) haulers 2, 3) upgraders 2 (3 when no sites), 4) builders while sites
   if (!want && n('w8hauler') < 2) want = 'w8hauler';
   else if (!want && n('w8upgrader') < (sites ? 2 : 3)) want = 'w8upgrader';
-  else if (!want && sites && n('w8builder') < 2) want = 'w8builder';
+  else if (!want && sites && n('w8builder') < (sites >= 3 ? 4 : 2)) want = 'w8builder'; // 17:05: Spawn2 sat idle at 300/300 with 5 ext sites
   if (!want) return;
   // emergency: nothing alive that refills -> spawn with what we have
   const starving = !n('w8hauler') || !n('w8miner');
