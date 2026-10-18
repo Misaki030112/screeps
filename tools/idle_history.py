@@ -12,7 +12,7 @@ LEGIT = {'source_empty', 'spawning', 'renewing'}
 near = lambda a, b, r=1: abs(a[0]-b[0]) <= r and abs(a[1]-b[1]) <= r
 def reason(role, room, xy, store, cap_full, room_full):
     if room == 'W46N8' and role in ('rminer', 'rhauler', 'reserver', 'defender') and near(xy, PARK, 3): return 'parked_threat'
-    if role in ('miner', 'rminer'): return 'source_empty'
+    if role in ('miner', 'rminer', 'mminer'): return 'source_empty'
     if role == 'hauler':
         if any(near(xy, m) for m in MINERS): return 'waiting_pickup'
         if near(xy, DROP, 1): return 'waiting_fill_target_full'

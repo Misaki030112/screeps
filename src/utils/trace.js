@@ -9,7 +9,7 @@ const SEG = 90;
 let ring = null;
 const H = {}; let wrapped = false;
 const h = n => H[n] || (H[n] = { cpu: 0, a: 0, w: 0, rp: 0, st: 0, rw: '', sc: '', ta: 0, f: 0, mx: 0 });
-const DEF = { miner: 'e', rminer: 'e', hauler: 'p', rhauler: 'p', upgrader: 'u', builder: 'n', queen: 'f', filler: 'f', manager: 'f' };
+const DEF = { miner: 'e', rminer: 'e', mminer: 'e', hauler: 'p', rhauler: 'p', upgrader: 'u', builder: 'n', queen: 'f', filler: 'f', manager: 'f' };
 const WHY = {}, POS = {};
 const WORKF = { harvest: c => 2 * c.getActiveBodyparts(WORK), upgradeController: c => c.getActiveBodyparts(WORK), build: c => 5 * c.getActiveBodyparts(WORK),
   repair: c => c.getActiveBodyparts(WORK), transfer: c => c.store.getUsedCapacity(), withdraw: c => c.store.getFreeCapacity(), pickup: c => c.store.getFreeCapacity(),
