@@ -4,6 +4,8 @@ const C = require('./config');
 const rep = (n, p) => Array(n).fill(p);
 function mine() { return _.filter(Game.creeps, c => c.memory.home === C.ROOM); }
 function bodyFor(role, e) {
+  if (role === 'w8rminer') { const w = Math.max(2, Math.min(5, Math.floor((e - 150) / 100))); return rep(w, WORK).concat([CARRY], rep(Math.ceil((w + 1) / 2), MOVE)); }
+  if (role === 'w8rhauler') { const n = Math.max(2, Math.min(12, Math.floor(e / 100))); return rep(n, CARRY).concat(rep(n, MOVE)); }
   if (role === 'w8miner') { const w = Math.max(2, Math.min(5, Math.floor((e - 50) / 100))); return rep(w, WORK).concat([MOVE]); }
   if (role === 'w8hauler') { const n = Math.max(2, Math.min(10, Math.floor(e / 100))); return rep(n, CARRY).concat(rep(n, MOVE)); }
   // 18:58: upgraders sit beside the ctl container 13,26 (1750/2000 full, spawn idle at 550/550): WORK-heavy 4W1C2M instead of 2W2C2M
@@ -38,6 +40,18 @@ function spawnRun(spawn) {
     else if (n('w8upgrader') < Math.min(6, (sites ? 2 : 3) + Math.floor(Math.max(0, loose - 600) / 600))
       && _.sum(cs.filter(c => c.memory.role === 'w8upgrader'), c => _.filter(c.body, p => p.type === WORK).length) < 16) want = 'w8upgrader'; // ~20 e/t income
   }
+  // 6) wall builder from surplus (19:18): 1 builder while a seal wall is below target and spawn is full
+  if (!want && room.energyAvailable === cap && n('w8builder') < 1) {
+    const tgt = C.WALL_TARGET[room.controller.level] || 0;
+    if (room.find(FIND_STRUCTURES, { filter: s => s.structureType === STRUCTURE_WALL && s.hits < tgt && C.SEAL.some(([x, y]) => s.pos.x === x && s.pos.y === y) }).length) want = 'w8builder';
+  }
+  // 7) W47N7 remote (after all local roles): only while home's reserve7 holds the reservation for us
+  const r7 = Memory.ops && Memory.ops.r7, ours7 = r7 && r7.by === 'Misaki' && (r7.endTime || 0) > Game.time + 200;
+  if (!want && ours7) {
+    for (let i = 0; i < C.REMOTE.sources.length && !want; i++)
+      if (!cs.some(c => c.memory.role === 'w8rminer' && (c.memory.si | 0) === i && (c.spawning || c.ticksToLive > 100))) { want = 'w8rminer'; mem.si = i; }
+    if (!want && n('w8rhauler') < 3) want = 'w8rhauler';
+  }
   if (!want) return;
   // emergency: nothing alive that refills -> spawn with what we have
   const starving = !n('w8hauler') || !n('w8miner');
@@ -57,7 +71,7 @@ const L = require('./layout'); // generated plan (tools/w47n8_plan.py), cumulati
 const PRIO = ['spawn', 'extension', 'tower', 'container', 'storage', 'link', 'terminal', 'extractor', 'lab', 'factory', 'powerSpawn', 'nuker', 'observer', 'road', 'rampart'];
 function layoutRun(room) {
   if (Game.time % 20) return;
-  if (room.controller.level >= 2) placeSeal(room); // re-placed if destroyed; nothing in W47N8 code repairs walls
+  if (room.controller.level >= 2) placeSeal(room); // re-placed if destroyed; reinforced to C.WALL_TARGET by w8builders
   if (!room.find(FIND_MY_SPAWNS).length) return;
   // Misaki 17:21 rejected the fde2d58 plan: only the RCL2 set (5 extensions near Spawn2 + ctl container) until a new plan is approved
   const rcl = room.controller.level, B = Object.assign({}, L.BUILD[(Memory.ops && Memory.ops.w8layout === 'approved') ? Math.min(8, rcl) : 2] || {});

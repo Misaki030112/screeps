@@ -50,6 +50,14 @@ function pickTile(c, tiles, key) {
   if (me !== undefined && tiles[me] && !claimed.has(String(tiles[me]))) return me;
   return tiles.findIndex(t => !claimed.has(String(t)) && !stood.has(String(t)));
 }
+function wallJob(room) {
+  const tgt = C.WALL_TARGET[room.controller.level] || 0;
+  const ws = room.find(FIND_STRUCTURES, { filter: s => s.structureType === STRUCTURE_WALL && s.hits < tgt && C.SEAL.some(([x, y]) => s.pos.x === x && s.pos.y === y) });
+  return ws.length ? _.min(ws, s => s.hits) : null;
+}
+// ---- W47N7 remote (only while reserved by us) ----
+const RM = C.REMOTE;
+function rgo(c, x, y, r) { return c.moveTo(new RoomPosition(x, y, RM.room), { range: r, reusePath: 20 }); }
 const R = {
   w8miner(c) {
     if (!home(c)) return;
@@ -106,6 +114,41 @@ const R = {
       else if (!c.pos.inRangeTo(ctl, 3)) go(c, ctl.pos.x, ctl.pos.y, 3);
     }
   },
+  w8rminer(c) {
+    const S = RM.sources[c.memory.si | 0], [x, y] = S.stand;
+    if (c.room.name !== RM.room) return rgo(c, x, y, 0);
+    const src = c.room.lookForAt(LOOK_SOURCES, S.src[0], S.src[1])[0];
+    if (c.pos.x !== x || c.pos.y !== y) {
+      // stand taken (e.g. a BustJetter creep; passive, never attack): mine from any tile next to the source
+      if (c.room.lookForAt(LOOK_CREEPS, x, y).length && src) return c.pos.isNearTo(src) ? c.harvest(src) : rgo(c, src.pos.x, src.pos.y, 1);
+      return rgo(c, x, y, 0);
+    }
+    const cont = c.pos.lookFor(LOOK_STRUCTURES).find(s => s.structureType === STRUCTURE_CONTAINER);
+    if (!cont) {
+      const site = c.pos.lookFor(LOOK_CONSTRUCTION_SITES)[0];
+      if (!site) c.room.createConstructionSite(x, y, STRUCTURE_CONTAINER);
+      else if (c.store[E] >= c.getActiveBodyparts(WORK) * 5) return c.build(site);
+    } else if (cont.hits < cont.hitsMax * 0.5 && c.store[E] > 0) return c.repair(cont);
+    if (src) c.harvest(src);
+  },
+  w8rhauler(c) {
+    toggle(c);
+    if (!c.memory.w) {
+      if (c.room.name !== RM.room) return rgo(c, 25, 25, 20);
+      const amt = o => (o.amount !== undefined ? o.amount : o.store[E]);
+      const t = c.pos.findClosestByRange(c.room.find(FIND_DROPPED_RESOURCES, { filter: r => r.resourceType === E && r.amount >= 100 })
+        .concat(c.room.find(FIND_STRUCTURES, { filter: s => s.structureType === STRUCTURE_CONTAINER && s.store[E] >= 200 })));
+      if (!t) { if (c.store[E] > 0) c.memory.w = true; return; }
+      if (!c.pos.isNearTo(t)) return rgo(c, t.pos.x, t.pos.y, 1);
+      return t.amount !== undefined ? c.pickup(t) : c.withdraw(t, E);
+    }
+    if (!home(c)) return;
+    const room = Game.rooms[C.ROOM];
+    const t = c.pos.findClosestByRange(FIND_MY_STRUCTURES, { filter: s => (s.structureType === STRUCTURE_SPAWN || s.structureType === STRUCTURE_EXTENSION) && s.store.getFreeCapacity(E) > 0 })
+      || room.lookForAt(LOOK_STRUCTURES, C.CTL_CONT[0], C.CTL_CONT[1]).find(s => s.structureType === STRUCTURE_CONTAINER && s.store.getFreeCapacity(E) > 0) || room.storage;
+    if (!t) return go(c, C.CTL[0], C.CTL[1], 3);
+    if (!c.pos.isNearTo(t)) go(c, t.pos.x, t.pos.y); else c.transfer(t, E);
+  },
   w8builder(c) {
     if (!home(c)) return; toggle(c);
     if (!c.memory.w) { getEnergy(c); return; }
@@ -114,7 +157,8 @@ const R = {
     const seal = all.filter(s => s.structureType === STRUCTURE_WALL).sort((a, b) => (a.pos.x <= 11 ? 0 : 1) - (b.pos.x <= 11 ? 0 : 1));
     const site = seal[0] || c.pos.findClosestByRange(all);
     if (site) { if (!c.pos.inRangeTo(site, 3)) go(c, site.pos.x, site.pos.y, 3); else c.build(site); return; }
-    const rep = c.pos.findClosestByRange(FIND_STRUCTURES, { filter: s => (s.structureType === STRUCTURE_CONTAINER || s.structureType === STRUCTURE_ROAD) && s.hits < s.hitsMax * 0.6 });
+    const rep = c.pos.findClosestByRange(FIND_STRUCTURES, { filter: s => (s.structureType === STRUCTURE_CONTAINER || s.structureType === STRUCTURE_ROAD) && s.hits < s.hitsMax * 0.6 })
+      || wallJob(c.room); // seal walls up to WALL_TARGET[rcl] (19:18), lowest first
     if (rep) { if (!c.pos.inRangeTo(rep, 3)) go(c, rep.pos.x, rep.pos.y, 3); else c.repair(rep); return; }
     R.w8upgrader(c);
   },

@@ -8,6 +8,10 @@ module.exports = {
   // (terrain-checked: north edge reaches only y<=2 with these 12 tiles).
   SEAL: [24, 25, 26, 27, 28, 29, 30, 31, 8, 9, 10, 11].map(x => [x, 3]),
   CTL: [15, 25], CTL_CONT: [13, 26],
+  // seal walls reinforced (Misaki 19:18 reverses the 1-hit rule): hits target per RCL, only from surplus energy
+  WALL_TARGET: [0, 0, 10000, 10000, 50000, 100000, 300000, 1000000, 3000000],
+  // W47N7 remote (Misaki 19:18): mined only while WE hold the reservation (home reserve7 role). Stand = container tile.
+  REMOTE: { room: 'W47N7', sources: [{ src: [17, 17], stand: [18, 17] }, { src: [30, 35], stand: [31, 34] }] },
   // 19:08 jam fix: ctl container 13,26 has 7 open neighbours (14,25 wall). Upgraders hold UPG_STAND; CTL_HAUL stays free for
   // unloading haulers, who exit south via row 28 (13,25 is a dead end whose only exit is the container tile).
   // 13,25 dropped from the stands (19:12): an upgrader walking in and the trapped hauler walking out swap-deadlocked on 13,26
