@@ -414,15 +414,23 @@ function runHauler(c) {
   const fill = c.room.name === ROOM && c.pos.findClosestByRange(FIND_MY_STRUCTURES, { filter: s => (s.structureType === STRUCTURE_SPAWN
     || s.structureType === STRUCTURE_EXTENSION) && s.store.getFreeCapacity(RESOURCE_ENERGY) > 0 });
   if (fill) { if (!c.pos.isNearTo(fill)) return travel(c, ROOM, fill.pos.x, fill.pos.y, 1); c.transfer(fill, RESOURCE_ENERGY); return; }
-  if (c.room.name !== ROOM || !c.pos.inRangeTo(SITE[0], SITE[1], 2)) {
-    // hand off to an empty builder on the way if adjacent
-    return travel(c, ROOM, SITE[0], SITE[1], 2);
+  if (c.room.name !== ROOM) return travel(c, ROOM, SITE[0], SITE[1], 2);
+  // never drop energy (Misaki 16:16): hand it to a hungry builder anywhere in W47N8 (upgraders if no builder needs it), sticky
+  // per target. 17:35 fix: the old inRange(SITE,2) gate + chasing a builder 3 tiles out bounced cqhaulers 17,17<->18,16 for 40+ ticks.
+  const want = x => x.store.getFreeCapacity(RESOURCE_ENERGY) >= 10;
+  let w = c.memory.bid && Game.getObjectById(c.memory.bid);
+  if (!w || !want(w) || w.room.name !== ROOM) {
+    const pick = roles => c.room.find(FIND_MY_CREEPS, { filter: x => roles.includes(x.memory.role) && want(x) });
+    let ws = pick(['cqworker', 'w8builder']); if (!ws.length) ws = pick(['w8upgrader']);
+    w = ws.length ? _.max(ws, x => x.store.getFreeCapacity(RESOURCE_ENERGY) - 5 * c.pos.getRangeTo(x)) : null;
+    c.memory.bid = w && w.id;
   }
-  // never drop energy (Misaki 16:16): hand it to the hungriest builder (cqworker or w8builder: cqworkers die out after Spawn2) near the site; else wait
-  const ws = c.room.find(FIND_MY_CREEPS, { filter: x => (x.memory.role === 'cqworker' || x.memory.role === 'w8builder') && x.store.getFreeCapacity(RESOURCE_ENERGY) > 0 && x.pos.inRangeTo(SITE[0], SITE[1], 6) });
-  if (!ws.length) return;
-  const w = _.max(ws, x => x.store.getFreeCapacity(RESOURCE_ENERGY) * 10 - c.pos.getRangeTo(x));
-  if (!c.pos.isNearTo(w)) { travel(c, ROOM, w.pos.x, w.pos.y, 1); const n = c.pos.findInRange(ws, 1)[0]; if (n) c.transfer(n, RESOURCE_ENERGY); return; }
+  if (!w) return travel(c, ROOM, SITE[0], SITE[1], 3);
+  if (!c.pos.isNearTo(w)) {
+    travel(c, ROOM, w.pos.x, w.pos.y, 1);
+    const n = c.pos.findInRange(FIND_MY_CREEPS, 1, { filter: x => (x.memory.role === 'cqworker' || x.memory.role === 'w8builder') && want(x) })[0];
+    if (n) c.transfer(n, RESOURCE_ENERGY); return;
+  }
   c.transfer(w, RESOURCE_ENERGY);
 }
 
