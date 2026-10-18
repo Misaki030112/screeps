@@ -86,7 +86,8 @@ function waitNear(c, t, P) {
 function storeFloor(home) { const r = require('../managers/threat').reserve(home.name);
   return home.controller && home.controller.level >= 6 ? Math.max(r, require('../managers/walls').FLOOR) : r; }
 function pickSource(c, home, Ph, ctlSrc, fx, fy) {
-  const reserve = storeFloor(home);
+  const Wd = require('../managers/walls'); if (Wd.defLow && Wd.defLow(home)) return null; // defense reserve banking: builders take nothing
+  const reserve = Math.max(storeFloor(home), Wd.defReserve ? Wd.defReserve() : 0);
   const amt = s => s.store ? s.store[RESOURCE_ENERGY] : s.amount;
   // build hold: hub link 37,29 too (queen only drains it when the room is full; live 23:40 hub 799 stuck -> source link 30,11 blocked)
   let hubLink = null; try { if (require('../managers/walls').noUpgrade(home)) hubLink = require('../managers/links').roles(home).hub; } catch (e) {}

@@ -16,6 +16,11 @@ const cases = [
   ['RCL5 / RCL8 -> no hold', () => { assert.strictEqual(Wl.noUpgrade(room({ level: 5 })), false); assert.strictEqual(Wl.noUpgrade(room({ level: 8 })), false); }],
   ['Memory.roads.upgrade override -> no hold', () => { Memory.roads = { upgrade: 1 }; try { assert.strictEqual(Wl.noUpgrade(room()), false); } finally { Memory.roads = {}; } }],
   ['roads done -> bank phase, no hold', () => { roadsDone = true; try { assert.strictEqual(Wl.phase(room()), 'bank'); assert.strictEqual(Wl.noUpgrade(room()), false); } finally { roadsDone = false; } }],
+  ['mineral sites open, storage below 5k floor -> still hold (no ferry/upgrader flip at the floor)', () => {
+    const RC = require(src('utils/roomcache.js')), _s = RC.sites; RC.sites = () => [{ structureType: 'terminal' }]; roadsDone = true;
+    try { assert.strictEqual(Wl.noUpgrade(room({ storage: 2900 })), true); assert.strictEqual(Wl.noUpgrade(room({ storage: 6000 })), true);
+      RC.sites = () => [{ structureType: 'road' }]; assert.strictEqual(Wl.noUpgrade(room({ storage: 2900 })), false);
+      assert.strictEqual(Wl.noUpgrade(room({ storage: 2900, ttd: 19999 })), false); } finally { RC.sites = _s; roadsDone = false; } }],
 ];
 // spawn targets with a stubbed walls module
 let hold = true, ph = 'roads', budget = 0;

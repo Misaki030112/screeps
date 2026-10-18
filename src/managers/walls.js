@@ -110,11 +110,16 @@ function fund(room) {
 // v5 (Misaki 02:2x "storage can go down to ~5k while the ring closes"): during the wall phase the spendable budget is the fund OR
 // storage above FLOOR, whichever is larger (upgrading is held, so storage surplus is wall energy).
 const FLOOR = 5000;
-function budgetE(room) { const e = room.storage ? room.storage.store[RESOURCE_ENERGY] : 0; return Math.max(fund(room), e - FLOOR); }
+function budgetE(room) { const e = room.storage ? room.storage.store[RESOURCE_ENERGY] : 0; if (defLow(room)) return 0; return Math.max(fund(room), e - Math.max(FLOOR, defReserve())); }
 // v5 hit floor (Misaki 02:29 "no red 1-hit walls"): while any barrier is below FLOOR_HITS the repair job outranks road sites.
 const FLOOR_HITS = 10000;
 function belowFloor(room) { const P = plan().get(room.name); if (!defense(P) || phase(room) !== 'build') return false;
   return barriers(room, P).some(s => eff(s) < FLOOR_HITS); }
+// Defense energy reserve (10-18 10:41, BustJetter 18 combat creeps massed in W48N9): console switch Memory.defense.reserveE.
+// While storage < reserveE: no builders, no upgraders (downgrade safety excepted), builders never draw hub/storage, so all income
+// banks into storage for towers. Remove the key (or 0) to lift. defLow(room) = switch on and storage below it.
+function defReserve() { return (typeof Memory !== 'undefined' && Memory.defense && Memory.defense.reserveE) || 0; }
+function defLow(room) { const d = defReserve(); return !!d && (!room.storage || room.storage.store[RESOURCE_ENERGY] < d); }
 function spend(room, e) { const m = room.memory.walls; if (m && m.fund !== undefined) m.fund = Math.max(0, m.fund - e); }
 function threat(room) { return require('./threat').holding(room.name) || playerCombat(room) || require('./home').alert(room); }
 // Storage energy the ctl ferry / upgrader extras must leave alone.
@@ -180,9 +185,11 @@ function noUpgrade(room) {
   if ((c.ticksToDowngrade || 0) < UP_SAFE) return false;
   const ph = phase(room);
   if (ph === 'roads') return true;
-  // Misaki 10-18 09:30 mineral line "spend storage on infrastructure fast, keep ~5k": while terminal/lab/extractor sites are open and
-  // storage > FLOOR, upgrading is held and the ctl feed goes to builders (downgrade safety above still wins).
-  if (room.storage && room.storage.store[RESOURCE_ENERGY] > FLOOR && require('../utils/roomcache').sites(room).some(s => s.structureType === 'terminal' || s.structureType === 'lab' || s.structureType === 'extractor')) return true;
+  // Misaki 10-18 09:30 mineral line "spend storage on infrastructure fast, keep ~5k": while terminal/lab/extractor sites are open,
+  // upgrading is held and the ctl feed goes to builders (downgrade safety above still wins). The ~5k is kept by the builder storage
+  // floor (9edf999), not here: releasing the hold at storage <= FLOOR (27ab37b) let the queen ferry storage to the controller down
+  // to 2.3k and spawn an upgrader that recycles once storage passes 5k again (live 10:39: 4.3k -> 2.9k, builders starved at the floor).
+  if (room.storage && require('../utils/roomcache').sites(room).some(s => s.structureType === 'terminal' || s.structureType === 'lab' || s.structureType === 'extractor')) return true;
   // v5 (Misaki 2026-10-18 02:2x "基建效率最大，升级不是优先"): wall build phase holds upgrading too (ctl container/link feed ->
   // builders) until every barrier stands at >= HOLD_TO hits; then normal upgrading resumes.
   if (ph !== 'build') return false;
@@ -190,4 +197,4 @@ function noUpgrade(room) {
   const B = barriers(room, P); return !ringClosed(room, P) || !B.length || _.min(B.map(eff)) < HOLD_TO;
 }
 const HOLD_TO = 100000;
-module.exports = { SLACK, FLOOR_HITS, belowFloor, FLOOR, budgetE, WALL_CAP, ringClosed, UP_SAFE, DECAY_FLOOR, DECAY_CAP, decaying, noUpgrade, START, NOVICE_END, phase, planned, STEPS, target, barriers, fund, spend, reserved, repairJob, wantBuilder, placeSites, lists };
+module.exports = { defReserve, defLow, SLACK, FLOOR_HITS, belowFloor, FLOOR, budgetE, WALL_CAP, ringClosed, UP_SAFE, DECAY_FLOOR, DECAY_CAP, decaying, noUpgrade, START, NOVICE_END, phase, planned, STEPS, target, barriers, fund, spend, reserved, repairJob, wantBuilder, placeSites, lists };

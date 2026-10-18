@@ -311,6 +311,8 @@ function run1(spawn, onWait) {
   m.ctlEma = Math.round(m.ctlEma); m.ctlEmaT = Game.time;
   const nSites = rc.sites(room).length;
   const T = targets(room, count, backlog, m.ctlEma, nSites);
+  // defense reserve banking (walls.defLow): no builders/upgraders until storage reaches Memory.defense.reserveE
+  if (require('./walls').defLow && require('./walls').defLow(room)) { T.builder = 0; T.upgrader = (room.controller.ticksToDowngrade || 0) < require('./walls').UP_SAFE ? 1 : 0; }
   room.memory.roleTargets = T;
   for (const role of spawnOrder(count, T, nSites)) {
     if (role === 'REMOTE') { const r = remoteSpawn(room, go, avail); if (r !== undefined) return r; continue; }
