@@ -16,7 +16,7 @@ const RALLY = {room:"W46N8",x:9,y:26}, ROOM = "W47N8", HOME = "W46N8", MIN_Y = 8
 const FORBID = new Set(["W47N9","W48N9","W48N8"]);
 // North defence posts: tools/w47n8_access.py — from W47N9/W48N9 the only short entry into W47N8 is the NORTH (cost 50/278).
 // South needs a ~430-tile detour via W47N7. Openings x9-24 and x32-38 feed corridors at y2-5.
-const POSTS = [{x:26,y:4},{x:8,y:4},{x:12,y:26}];
+const POSTS = [{x:21,y:7},{x:8,y:4},{x:12,y:26}];
 const BODY = () => [].concat(Array(4).fill(RANGED_ATTACK),Array(9).fill(MOVE),Array(5).fill(HEAL)); // 2300
 const M = () => (Memory.ops = Memory.ops || {}, Memory.ops.cq = Memory.ops.cq || {});
 const rng = (a,b) => Math.max(Math.abs(a.x-b.x), Math.abs(a.y-b.y));
@@ -124,6 +124,13 @@ function groupByQid(creeps) {
   return g;
 }
 function ensureIds(creeps) {
+  // Assault-sized force (≤4): always one qid=0. Prevents orphan qid=1 idling at rally
+  // while the real squad (n=3) fights in W47N8 (live 2026-10-18 14:23).
+  if (creeps.length <= 4) {
+    const sorted = creeps.slice().sort((a,b)=>(a.memory.born||0)-(b.memory.born||0) || (a.name<b.name?-1:1));
+    sorted.forEach((c,i)=>{ c.memory.qid = 0; c.memory.qi = i; });
+    return groupByQid(creeps);
+  }
   // assign qid/qi: fill incomplete quads (size<4) first, else next free qid
   const g = groupByQid(creeps);
   for (const c of creeps) if (c.memory.qid===undefined || c.memory.qi===undefined) {
@@ -137,6 +144,21 @@ function ensureIds(creeps) {
     if (!placed) {
       const next = Object.keys(g).length ? Math.max(...Object.keys(g).map(Number))+1 : 0;
       c.memory.qid = next; c.memory.qi = 0; g[next] = [c];
+    }
+  }
+  // collapse undersized orphans into the fullest incomplete quad
+  const g2 = groupByQid(creeps);
+  const ids = Object.keys(g2).map(Number).sort((a,b)=>a-b);
+  const home = ids.find(id => g2[id].length < 4) ;
+  if (home!==undefined) {
+    for (const id of ids) {
+      if (id===home || g2[id].length>=2) continue; // keep real multi-member quads
+      for (const c of g2[id].slice()) {
+        if (g2[home].length>=4) break;
+        const used = new Set(g2[home].map(m=>m.memory.qi));
+        const qi = [0,1,2,3].find(i=>!used.has(i));
+        c.memory.qid = home; c.memory.qi = qi; g2[home].push(c);
+      }
     }
   }
   return groupByQid(creeps);
@@ -236,7 +258,7 @@ function decide(qid, team) {
   if (!goNow) { Q.mode="assemble"; return Q; }
   if (team.some(c => c.fatigue>0)) { Q.mode="fatigue"; return Q; }
 
-  if (anc && (f || hostiles.some(h=>rng(anc,h.pos)<=5))) {
+  if (anc && ((f && rng(anc,f.pos)<=6) || hostiles.some(h=>rng(anc,h.pos)<=5 && meleeD(h)+rangedD(h)>0))) {
     const T = Game.map.getRoomTerrain(anc.roomName);
     const terr=(x,y)=>{const v=T.get(x,y);return v&TERRAIN_MASK_WALL?"wall":v&TERRAIN_MASK_SWAMP?"swamp":"plain";};
     const valid = (x,y)=>anchorCost(x,y,terr,undefined,sh)<255 && !(anc.roomName===ROOM && y<1);
@@ -302,10 +324,17 @@ function run(c) {
   const joined = team.some(m => m.name===c.name);
 
   if (!joined) {
-    // joiner: follow tip only when a real squad (>=minSquad) exists; else rally.
-    const tip = P.tip && P.tip[qid];
-    const useTip = tip && tip.n >= (P.minSquad||2);
-    const tx = useTip ? tip.x : RALLY.x, ty = useTip ? tip.y : RALLY.y, tr = useTip ? tip.room : RALLY.room;
+    // joiner: follow best tip with n>=minSquad (any qid), else rally.
+    const minN = P.minSquad||2;
+    let tip = P.tip && P.tip[qid];
+    if (!tip || tip.n < minN) {
+      tip = null;
+      for (const k of Object.keys(P.tip||{})) {
+        const t = P.tip[k];
+        if (t && t.n >= minN && (!tip || t.n > tip.n)) tip = t;
+      }
+    }
+    const tx = tip ? tip.x : RALLY.x, ty = tip ? tip.y : RALLY.y, tr = tip ? tip.room : RALLY.room;
     fight(c, [c], {focus: undefined});
     return c.moveTo(new RoomPosition(tx,ty,tr), {range:1, reusePath:5, maxRooms:4, costCallback:matrixLite});
   }
@@ -350,5 +379,5 @@ function wantSpawn(room) {
 
 module.exports = {
   run, wantSpawn, anchorCost, formedAnchor, healPick, combatStep, scoreTarget, towerDmg, dmgAt, hostileHealTo, useMass, rotateAssign,
-  joinedTeam, shapeOf, shouldGo, BODY, OFF, SHAPES, RALLY, POSTS, ROOM, FORBID, MIN_Y,
+  ensureIds, joinedTeam, shapeOf, shouldGo, BODY, OFF, SHAPES, RALLY, POSTS, ROOM, FORBID, MIN_Y,
 };

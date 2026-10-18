@@ -105,6 +105,19 @@ assert.strictEqual(Q.shouldGo("go", true, 2, 2), true);
 assert.strictEqual(Q.shouldGo("hold", true, 2, 2), true, "earlyGo duo");
 assert.strictEqual(Q.shouldGo("hold", false, 2, 2), false);
 assert.strictEqual(Q.shouldGo("retreat", true, 4, 2), false);
+
+// ensureIds: ≤4 members always collapse onto qid 0 (orphan qid=1 must not idle at rally)
+Game.creeps = {
+  a: {name:'a', memory:{role:'cqquad',born:1,qid:0,qi:0}},
+  b: {name:'b', memory:{role:'cqquad',born:2,qid:0,qi:1}},
+  c: {name:'c', memory:{role:'cqquad',born:3,qid:0,qi:2}},
+  d: {name:'d', memory:{role:'cqquad',born:4,qid:1,qi:0}},
+};
+const g = Q.ensureIds(Object.values(Game.creeps));
+assert.strictEqual(Object.keys(g).join(','), '0');
+assert.strictEqual(g[0].length, 4);
+assert.ok(Object.values(Game.creeps).every(c => c.memory.qid===0), 'all qid 0');
+
 console.log("quad ok");
 
 
