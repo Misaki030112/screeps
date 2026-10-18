@@ -14,7 +14,7 @@ const RALLY = {room:"W46N8",x:9,y:26}, ROOM = "W47N8", HOME = "W46N8", MIN_Y = 8
 const FORBID = new Set(["W47N9","W48N9","W48N8"]);
 // North defence posts: tools/w47n8_access.py — from W47N9/W48N9 the only short entry into W47N8 is the NORTH (cost 50/278).
 // South needs a ~430-tile detour via W47N7. Openings x9-24 and x32-38 feed corridors at y2-5.
-const POSTS = [{x:26,y:4},{x:8,y:4},{x:16,y:22}];
+const POSTS = [{x:26,y:4},{x:8,y:4},{x:12,y:26}];
 const BODY = () => [].concat(Array(4).fill(RANGED_ATTACK),Array(9).fill(MOVE),Array(5).fill(HEAL)); // 2300
 const M = () => (Memory.ops = Memory.ops || {}, Memory.ops.cq = Memory.ops.cq || {});
 const rng = (a,b) => Math.max(Math.abs(a.x-b.x), Math.abs(a.y-b.y));
