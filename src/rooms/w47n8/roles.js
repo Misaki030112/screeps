@@ -53,13 +53,16 @@ function hubFeed(room) {
   return feedOn;
 }
 const nearHub = (c, r) => c.pos.inRangeTo(C.HUB_CONT[0], C.HUB_CONT[1], r);
+const hubSites = room => room.find(FIND_MY_CONSTRUCTION_SITES, { filter: s => s.structureType !== STRUCTURE_WALL && s.pos.inRangeTo(C.HUB_CONT[0], C.HUB_CONT[1], 5) }).length > 0;
 // container sink after spawn/extensions/tower: while hub sites (non-wall) exist, the emptier of hub/ctl container; else ctl first
 // sticky per load (memory.sk, cleared when empty) so a hauler never flips between the two mid-walk
 function sink(room, c) {
   const free = s => (s && s.store.getFreeCapacity(E) > 0 ? s : null), was = free(c.memory.sk && Game.getObjectById(c.memory.sk));
   if (was) return was;
   const ctl = free(ctlCont()), hub = free(hubCont());
-  const t = hub && room.find(FIND_MY_CONSTRUCTION_SITES, { filter: s => s.structureType !== STRUCTURE_WALL }).length && (!ctl || hub.store[E] < ctl.store[E]) ? hub : ctl || hub;
+  // 03:20 hub only while sites near the hub need it: any road site anywhere sent rhaulers to the hub (864 -> 2000 full in ~290t)
+  // while the ctl cont fell 1024 -> 652 and the upgraders starved
+  const t = hub && hubSites(room) && (!ctl || hub.store[E] < ctl.store[E]) ? hub : ctl || hub;
   c.memory.sk = t ? t.id : undefined; return t;
 }
 // 02:45 fill target sticky per trip (memory.ft) and one creep per extension: with a fresh closest-free pick every tick, Spawn2
