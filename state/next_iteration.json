@@ -1,6 +1,6 @@
 {
- "next_at": "2026-10-18T19:50:00+08:00",
- "reason": "19:21 patrol: observe-only, no fix. Home tick 83723406: storage 14.3k oscillating 14.8-17k around reserveE 15k for 2h (builder works terminal only above 15k: terminal 69.3k->78.1k/100k since 18:38, labs unchanged 14.7k/32.2k/8.7k); bank phase 1 upgrader (ctl ~11-15 e/t), RCL6 126.6k; ea 1400/2300 spawning queen replacement (old queen ttl 60); cpu ~10-12.6 bkt 10k; 0 hostiles home/remotes; remotes ok, reservations W45N8 1920 W45N7 1973, containers 216/12; no new errors since 19:15 w8hauler fix (6e01204); parent deployed d4b0ea6 19:19 (W47N8 seal walls + W47N7 remote). W47N7: Memory.ops.r7 on, BustJetter reservation ends tick 83724034, reserve7 (2C2M 1300e) should spawn ~83723774 (LEAD 260). Next: verify reserve7 spawned and walking to W47N7 38,26 and reserves when BJ's ends; remote delivered sample W45N8 928551 / W45N7 424640 @83723406 -> compute e/t (model 6h said R only 4.2 e/t vs ~10 target; check if real).",
+ "next_at": "2026-10-18T21:30:00+08:00",
+ "reason": "20:35 patrol: observe-only, no fix. Tick 83724471: alerts exit 1 LOW only; remote since 19:57 (547t) W45N8 +4944=9.0 e/t, W45N7 +6696=12.2 e/t (bursty, ~source max); reservations W45N8 1917 W45N7 1886 both Misaki; home storage 14.4k (at 15k reserve), ea 1359/2300 refilling, RCL6 138.5k, 4 sites, bkt 10000 cpu ~10-11; barriers 51 min 142.1k med 151.5k (no decay, tower floor fe2026d holding); W45N8 rhauler turnover (83722905 ttl41 + new 83724433), W45N7 haulers=4; errors only old w8hauler 83723313 (fixed). Paused-remote home work already in remote.js. Next: check barrier min still >=142k and rising, storage back >=15k, queen rp/100 ~10 (path cache idea only if CPU bucket falls).",
  "road_plan": {
   "doc": "docs/ROADS.md",
   "each_patrol": [
@@ -200,9 +200,9 @@
   "revert": "drop the Wb.defLow line in src/roles/builder.js (!src branch)"
  },
  "remote_sample": {
-  "tick": 83723406,
-  "W45N8": 928551,
-  "W45N7": 424640,
-  "at": "2026-10-18 19:21 UTC+8"
+  "tick": 83724463,
+  "W45N8": 938919,
+  "W45N7": 435416,
+  "at": "2026-10-18 20:35 UTC+8"
  }
 }
