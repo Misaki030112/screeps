@@ -366,7 +366,21 @@ function wantSpawn(room) {
   }
   if (P.claim) {
     const bMax = P.breakers || 2, wMax = P.workers || 4;
-    if (n('cqbreaker') < bMax && !ours()) return { role: 'cqbreaker', body: BREAKER_BODY(), mem: { role: 'cqbreaker', home: HOME, born: Game.time } };
+    const ctl = Game.rooms[ROOM] && Game.rooms[ROOM].controller;
+    const almost = ctl && ctl.reservation && ctl.reservation.ticksToEnd < 1200;
+    // backup breaker if the living ones may expire before the reservation hits 0 (~7/tick)
+    const brs = _.filter(Game.creeps, c => c.memory.role === 'cqbreaker');
+    const need = ctl && ctl.reservation ? ctl.reservation.ticksToEnd / 7 + 40 : 0;
+    const short = brs.length && _.max(brs.map(c => c.ticksToLive || 1500)) < need;
+    if ((n('cqbreaker') < bMax || (short && n('cqbreaker') < bMax + 1)) && !ours()) return { role: 'cqbreaker', body: BREAKER_BODY(), mem: { role: 'cqbreaker', home: HOME, born: Game.time } };
+    // pioneers before more reinforcements once the claim is near (Misaki 15:06)
+    if (n('cqworker') < wMax && (ours() || almost || P.forceWorkers)) {
+      return { role: 'cqworker', body: WORKER_BODY(), mem: { role: 'cqworker', home: HOME, born: Game.time } };
+    }
+    const hMax = P.haulers || 2;
+    if (n('cqhauler') < hMax && (ours() || almost || P.forceWorkers)) {
+      return { role: 'cqhauler', body: HAULER_BODY(), mem: { role: 'cqhauler', home: HOME, born: Game.time } };
+    }
     // continuous solo reinf to post 21,7 (after at least one breaker out or already ours)
     if (P.reinf !== false && (n('cqbreaker') > 0 || ours() || P.forceReinf)) {
       const aMax = P.reinfAtk || 4, rMax = P.reinfRh || 4;
@@ -375,15 +389,6 @@ function wantSpawn(room) {
       if (atkNext && na < aMax) return { role: 'cqatk', body: ATK_BODY(), mem: { role: 'cqatk', home: HOME, born: Game.time } };
       if (nr < rMax) return { role: 'cqrh', body: RH_BODY(), mem: { role: 'cqrh', home: HOME, born: Game.time } };
       if (na < aMax) return { role: 'cqatk', body: ATK_BODY(), mem: { role: 'cqatk', home: HOME, born: Game.time } };
-    }
-    const ctl = Game.rooms[ROOM] && Game.rooms[ROOM].controller;
-    const almost = ctl && ctl.reservation && ctl.reservation.ticksToEnd < 1200;
-    if (n('cqworker') < wMax && (ours() || almost || P.forceWorkers)) {
-      return { role: 'cqworker', body: WORKER_BODY(), mem: { role: 'cqworker', home: HOME, born: Game.time } };
-    }
-    const hMax = P.haulers || 2;
-    if (n('cqhauler') < hMax && (ours() || almost || P.forceWorkers)) {
-      return { role: 'cqhauler', body: HAULER_BODY(), mem: { role: 'cqhauler', home: HOME, born: Game.time } };
     }
   }
   // replacement of dead squad members during an active 'go'
