@@ -38,8 +38,11 @@ const R = {
       || (s.structureType === STRUCTURE_TOWER && s.store.getFreeCapacity(E) > 200)) && s.store.getFreeCapacity(E) > 0 })
       || (Game.rooms[C.ROOM].lookForAt(LOOK_STRUCTURES, C.CTL_CONT[0], C.CTL_CONT[1]).find(s => s.structureType === STRUCTURE_CONTAINER && s.store.getFreeCapacity(E) > 0))
       || Game.rooms[C.ROOM].storage;
-    if (!t) return go(c, C.CTL[0], C.CTL[1], 2) && c.pos.inRangeTo(C.CTL[0], C.CTL[1], 2) && c.drop(E);
-    if (!c.pos.isNearTo(t)) go(c, t.pos.x, t.pos.y); else c.transfer(t, E);
+    // nothing to fill: hand it to the emptiest w8upgrader/w8builder; never drop on the ground (Misaki rule), else wait
+    const k = t || Game.rooms[C.ROOM].find(FIND_MY_CREEPS, { filter: x => (x.memory.role === 'w8upgrader' || x.memory.role === 'w8builder')
+      && x.store.getFreeCapacity(E) > 0 }).sort((a, b) => a.store[E] - b.store[E])[0];
+    if (!k) return c.pos.inRangeTo(C.CTL[0], C.CTL[1], 4) || go(c, C.CTL[0], C.CTL[1], 4);
+    if (!c.pos.isNearTo(k)) go(c, k.pos.x, k.pos.y); else c.transfer(k, E);
   },
   w8upgrader(c) {
     if (!home(c)) return; toggle(c);
@@ -57,4 +60,5 @@ const R = {
     R.w8upgrader(c);
   },
 };
-module.exports = R;
+// main.js dispatches roles[role].run(c): wrap (bare functions crashed every w8 creep with 'run is not a function')
+module.exports = Object.fromEntries(Object.entries(R).map(([k, f]) => [k, { run: f }]));
