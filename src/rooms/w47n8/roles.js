@@ -168,6 +168,15 @@ const R = {
   },
   w8rhauler(c) {
     toggle(c);
+    // one-off sign of W47N7 with home's text (22:21): only while it differs, one hauler at a time, then back to work
+    if (c.room.name === RM.room && c.room.controller) {
+      const SG = require('../../utils/sign'), ct = c.room.controller;
+      if (SG.needs(ct, c.owner.username) && (c.memory.signer || !_.some(Game.creeps, x => x.memory.signer && x.memory.role === 'w8rhauler'))) {
+        c.memory.signer = 1;
+        if (c.pos.isNearTo(ct)) c.signController(ct, SG.SIGN); else return rgo(c, ct.pos.x, ct.pos.y, 1);
+        return;
+      } else if (c.memory.signer) delete c.memory.signer;
+    }
     if (!c.memory.w) {
       if (c.room.name !== RM.room) return rgo(c, 25, 25, 20);
       const amt = o => (o.amount !== undefined ? o.amount : o.store[E]);
