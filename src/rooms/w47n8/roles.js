@@ -69,7 +69,10 @@ function fillTarget(c, tower) {
   if (t0 && t0.store && t0.store.getFreeCapacity(E) > 0) return t0;
   const taken = new Set();
   for (const o of c.room.find(FIND_MY_CREEPS)) if (o.id !== c.id && o.memory.ft) taken.add(o.memory.ft);
-  const t = c.pos.findClosestByRange(FIND_MY_STRUCTURES, { filter: s => s.store && s.store.getFreeCapacity(E) > 0 && (s.structureType === STRUCTURE_SPAWN
+  // 03:00 once a trip has committed to a container sink (memory.sk), only divert to a fill target within 5 tiles: a loaded
+  // w8hauler flipped 4x in 60 ticks between ctl cont 13,26 and hub ext 32,36 as Spawn2 drained/others refilled extensions
+  const lim = c.memory.sk ? 5 : 99;
+  const t = c.pos.findClosestByRange(FIND_MY_STRUCTURES, { filter: s => s.store && s.store.getFreeCapacity(E) > 0 && c.pos.inRangeTo(s, lim) && (s.structureType === STRUCTURE_SPAWN
     || (s.structureType === STRUCTURE_EXTENSION && !taken.has(s.id)) || (tower && s.structureType === STRUCTURE_TOWER && s.store.getFreeCapacity(E) > 200)) });
   c.memory.ft = t ? t.id : undefined; return t;
 }
