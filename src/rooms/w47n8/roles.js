@@ -38,7 +38,7 @@ function haulPick(c) {
   return true;
 }
 function toggle(c) {
-  if (c.memory.w && c.store[E] === 0) { c.memory.w = false; delete c.memory.sk; }
+  if (c.memory.w && c.store[E] === 0) { c.memory.w = false; delete c.memory.sk; delete c.memory.ft; }
   if (!c.memory.w && c.store.getFreeCapacity() === 0) c.memory.w = true;
 }
 const ctlCont = () => Game.rooms[C.ROOM].lookForAt(LOOK_STRUCTURES, C.CTL_CONT[0], C.CTL_CONT[1]).find(s => s.structureType === STRUCTURE_CONTAINER);
@@ -61,6 +61,17 @@ function sink(room, c) {
   const ctl = free(ctlCont()), hub = free(hubCont());
   const t = hub && room.find(FIND_MY_CONSTRUCTION_SITES, { filter: s => s.structureType !== STRUCTURE_WALL }).length && (!ctl || hub.store[E] < ctl.store[E]) ? hub : ctl || hub;
   c.memory.sk = t ? t.id : undefined; return t;
+}
+// 02:45 fill target sticky per trip (memory.ft) and one creep per extension: with a fresh closest-free pick every tick, Spawn2
+// draining the TEMP_EXT ring by the spawn turned loaded w8hauler/w8rhauler around mid-walk to the hub strips (22,11 -> 16,10).
+function fillTarget(c, tower) {
+  const t0 = c.memory.ft && Game.getObjectById(c.memory.ft);
+  if (t0 && t0.store && t0.store.getFreeCapacity(E) > 0) return t0;
+  const taken = new Set();
+  for (const o of c.room.find(FIND_MY_CREEPS)) if (o.id !== c.id && o.memory.ft) taken.add(o.memory.ft);
+  const t = c.pos.findClosestByRange(FIND_MY_STRUCTURES, { filter: s => s.store && s.store.getFreeCapacity(E) > 0 && (s.structureType === STRUCTURE_SPAWN
+    || (s.structureType === STRUCTURE_EXTENSION && !taken.has(s.id)) || (tower && s.structureType === STRUCTURE_TOWER && s.store.getFreeCapacity(E) > 200)) });
+  c.memory.ft = t ? t.id : undefined; return t;
 }
 const onTile = (c, tiles) => tiles.some(([x, y]) => c.pos.x === x && c.pos.y === y);
 // sticky tile claim (memory[key] = index): keep my claim unless another creep claims it; a new claim needs a tile nobody stands on or claims
@@ -127,9 +138,7 @@ const R = {
     const room8 = Game.rooms[C.ROOM];
     const fed = hubFeed(room8) && room8.find(FIND_MY_CREEPS, { filter: x => x.memory.role === 'w8builder' && x.store.getFreeCapacity(E) >= 50 && nearHub(x, 8) })
       .sort((a, b) => a.store[E] - b.store[E])[0];
-    const t = c.pos.findClosestByRange(FIND_MY_STRUCTURES, { filter: s => (s.structureType === STRUCTURE_SPAWN || s.structureType === STRUCTURE_EXTENSION
-      || (s.structureType === STRUCTURE_TOWER && s.store.getFreeCapacity(E) > 200)) && s.store.getFreeCapacity(E) > 0 })
-      || fed || sink(room8, c) || room8.storage;
+    const t = fillTarget(c, true) || fed || sink(room8, c) || room8.storage;
     // nothing to fill: hand it to the emptiest w8upgrader/w8builder; never drop on the ground (Misaki rule), else wait
     const k = t || Game.rooms[C.ROOM].find(FIND_MY_CREEPS, { filter: x => (x.memory.role === 'w8upgrader' || x.memory.role === 'w8builder')
       && x.store.getFreeCapacity(E) > 0 }).sort((a, b) => a.store[E] - b.store[E])[0];
@@ -140,7 +149,7 @@ const R = {
       if (f) go(c, f[0], f[1], 0); else if (!c.pos.inRangeTo(k, 2)) go(c, k.pos.x, k.pos.y, 2);
       return;
     }
-    if (!c.pos.isNearTo(k)) go(c, k.pos.x, k.pos.y); else c.transfer(k, E);
+    if (!c.pos.isNearTo(k)) go(c, k.pos.x, k.pos.y); else { c.transfer(k, E); delete c.memory.ft; }
   },
   w8upgrader(c) {
     if (!home(c)) return;
@@ -217,10 +226,9 @@ const R = {
     }
     if (!home(c)) return;
     const room = Game.rooms[C.ROOM];
-    const t = c.pos.findClosestByRange(FIND_MY_STRUCTURES, { filter: s => (s.structureType === STRUCTURE_SPAWN || s.structureType === STRUCTURE_EXTENSION) && s.store.getFreeCapacity(E) > 0 })
-      || sink(room, c) || room.storage;
+    const t = fillTarget(c, false) || sink(room, c) || room.storage;
     if (!t) return go(c, C.CTL[0], C.CTL[1], 3);
-    if (!c.pos.isNearTo(t)) go(c, t.pos.x, t.pos.y); else c.transfer(t, E);
+    if (!c.pos.isNearTo(t)) go(c, t.pos.x, t.pos.y); else { c.transfer(t, E); delete c.memory.ft; }
   },
   w8builder(c) {
     if (!home(c)) return; toggle(c);
