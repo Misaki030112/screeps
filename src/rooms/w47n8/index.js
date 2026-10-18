@@ -42,7 +42,9 @@ function layoutRun(room) {
   if (Game.time % 20) return;
   if (room.controller.level >= 2) placeSeal(room); // re-placed if destroyed; nothing in W47N8 code repairs walls
   if (!room.find(FIND_MY_SPAWNS).length) return;
-  const rcl = room.controller.level, B = Object.assign({}, L.BUILD[Math.min(8, rcl)] || {});
+  // Misaki 17:21 rejected the fde2d58 plan: only the RCL2 set (5 extensions near Spawn2 + ctl container) until a new plan is approved
+  const rcl = room.controller.level, B = Object.assign({}, L.BUILD[(Memory.ops && Memory.ops.w8layout === 'approved') ? Math.min(8, rcl) : 2] || {});
+  delete B.road;
   if (rcl >= 4) B.rampart = L.RAMPARTS_RCL4;
   let sites = room.find(FIND_MY_CONSTRUCTION_SITES).length; if (sites >= 6) return;
   for (const t of PRIO) for (const [x, y] of (B[t] || [])) {
