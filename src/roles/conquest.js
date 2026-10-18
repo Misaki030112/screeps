@@ -413,6 +413,12 @@ function wantSpawn(room) {
     if ((n('cqbreaker') < bMax || (short && n('cqbreaker') < bMax + 1)) && !ours()) return { role: 'cqbreaker', body: BREAKER_BODY(), mem: { role: 'cqbreaker', home: HOME, born: Game.time } };
     // pioneers before more reinforcements once the claim is near (Misaki 15:06)
     const self8 = require('../rooms/w47n8/index').selfSufficient(); // W47N8 runs itself -> no more pioneers/cqhaulers from home
+    // standing W47N8 guard (Misaki 16:06): always 1 melee cqatk alive (independent of cq.reinf); pre-spawn at ttl<150
+    if (ours()) {
+      const gq = P.guard8 == null ? 1 : P.guard8;
+      const gs = _.filter(Game.creeps, c => c.memory.role === 'cqatk' && (c.spawning || (c.ticksToLive || 1500) > 150));
+      if (gs.length < gq) return { role: 'cqatk', body: ATK_BODY(), mem: { role: 'cqatk', g8: 1, v2: 1, home: HOME, born: Game.time } };
+    }
     if (!self8 && ours()) {
       const ms = _.filter(Game.creeps, c => c.memory.role === 'cqminer');
       for (let i = 0; i < MINER_SPOTS.length; i++) if (!ms.some(c => (c.memory.ms != null ? c.memory.ms : -1) === i && (c.spawning || c.ticksToLive > 80)))
