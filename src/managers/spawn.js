@@ -326,8 +326,10 @@ function run1(spawn, onWait) {
     const linkEra = role === 'hauler' && rcl >= 6 && rc.all(room, STRUCTURE_LINK).length >= 3;
     return go(role, role === 'hauler' && room.storage ? B.roadHauler(linkEra ? Math.min(e, 450) : e) : B[role](e, rcl), mem);
   };
+  // Misaki 17:11: rooms develop independently; once W47N8 has its own spawn home spawns NOTHING for it (no cq/quad bodies)
+  const indep8 = !!(Game.rooms.W47N8 && Game.rooms.W47N8.find(FIND_MY_SPAWNS).length);
   // 2b9) W47N8 guard strictly first after refill staff (Misaki 16:30 standing order)
-  { const g = require('../roles/conquest').guardWant(); if (g) {
+  { const g = !indep8 && require('../roles/conquest').guardWant(); if (g) {
     if (avail < _.sum(g.body, p => BODYPART_COST[p])) return ERR_NOT_ENOUGH_ENERGY;
     const name = 'cqatk' + Game.time, rv = spawn.spawnCreep(g.body, name, { memory: g.mem, directions: birthDirs(spawn, 'cqatk') });
     if (rv === OK) require('../roles/conquest').noteSpawned(name, 'cqatk'); return rv; } }
@@ -335,20 +337,20 @@ function run1(spawn, onWait) {
   // target (hauler/builder/upgrader) and W47N8 bodies take turns (room.memory.cqTurn); the W47N8 guard (cqatk) always goes first.
   if (room.storage && room.storage.store[RESOURCE_ENERGY] > ((Memory.defense && Memory.defense.reserveE) || 0) + 10000) {
     const need = ['hauler', 'upgrader', 'mminer', 'builder'].find(r => (count[r] || 0) < (T[r] || 0));
-    const cw = need && require('../roles/conquest').wantSpawn(room);
+    const cw = need && !indep8 && require('../roles/conquest').wantSpawn(room);
     // cqTurn expires after 150t: remotes spawned ahead of CQ kept it set 83720845..83721136 and home got no upgrader for ~300t
     const cqTurn = room.memory.cqTurn && Game.time - room.memory.cqTurn < 150;
     if (need && !(cw && (cw.role === 'cqatk' || cqTurn))) { const rv = homeRole(need); if (rv === OK) room.memory.cqTurn = Game.time; return rv; }
   }
   // 2c) W47N8: quad replacements first; remotes (rminer/reserver) before claim bodies so home/remote economy does not starve
   const CQ = require('../roles/conquest');
-  { const w = require('../roles/quad').wantSpawn(room); if (w) {
+  { const w = !indep8 && require('../roles/quad').wantSpawn(room); if (w) {
     if (avail < _.sum(w.body, p => BODYPART_COST[p])) return ERR_NOT_ENOUGH_ENERGY;
     const name = w.role + Game.time;
     const rv = spawn.spawnCreep(w.body, name, { memory: w.mem, directions: birthDirs(spawn, w.role) });
     if (rv === OK) CQ.noteSpawned(name, w.role); return rv; } }
   { const r = remoteSpawn(room, go, avail); if (r !== undefined) return r; }
-  { const w = CQ.wantSpawn(room); if (w) {
+  { const w = !indep8 && CQ.wantSpawn(room); if (w) {
     if (avail < _.sum(w.body, p => BODYPART_COST[p])) return ERR_NOT_ENOUGH_ENERGY;
     const name = w.role + Game.time;
     const rv = spawn.spawnCreep(w.body, name, { memory: w.mem, directions: birthDirs(spawn, w.role) });
