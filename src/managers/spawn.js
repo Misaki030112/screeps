@@ -326,10 +326,13 @@ function run1(spawn, onWait) {
     const linkEra = role === 'hauler' && rcl >= 6 && rc.all(room, STRUCTURE_LINK).length >= 3;
     return go(role, role === 'hauler' && room.storage ? B.roadHauler(linkEra ? Math.min(e, 450) : e) : B[role](e, rcl), mem);
   };
-  // 2c0) home essentials before W47N8/quad/remote bodies (patrol 16:03: 0 builders/upgraders/haulers since the claim, CQ won
-  // every spawn). Only with storage > reserveE+10k: 1 hauler, 1 builder (if sites), 1 upgrader when targeted and missing.
-  if (room.storage && room.storage.store[RESOURCE_ENERGY] > ((Memory.defense && Memory.defense.reserveE) || 0) + 10000)
-    for (const role of ['hauler', 'builder', 'upgrader']) if ((T[role] || 0) >= 1 && !(count[role] || 0) && (role !== 'builder' || nSites)) return homeRole(role);
+  // 2c0) home growth vs W47N8 (Misaki 16:18: home resumes normal development). With storage > reserveE+10k home roles below
+  // target (hauler/builder/upgrader) and W47N8 bodies take turns (room.memory.cqTurn); the W47N8 guard (cqatk) always goes first.
+  if (room.storage && room.storage.store[RESOURCE_ENERGY] > ((Memory.defense && Memory.defense.reserveE) || 0) + 10000) {
+    const need = ['hauler', 'builder', 'upgrader'].find(r => (count[r] || 0) < (T[r] || 0));
+    const cw = need && require('../roles/conquest').wantSpawn(room);
+    if (need && !(cw && (cw.role === 'cqatk' || room.memory.cqTurn))) { const rv = homeRole(need); if (rv === OK) room.memory.cqTurn = 1; return rv; }
+  }
   // 2c) W47N8: quad replacements first; remotes (rminer/reserver) before claim bodies so home/remote economy does not starve
   const CQ = require('../roles/conquest');
   { const w = require('../roles/quad').wantSpawn(room); if (w) {
@@ -342,7 +345,7 @@ function run1(spawn, onWait) {
     if (avail < _.sum(w.body, p => BODYPART_COST[p])) return ERR_NOT_ENOUGH_ENERGY;
     const name = w.role + Game.time;
     const rv = spawn.spawnCreep(w.body, name, { memory: w.mem, directions: birthDirs(spawn, w.role) });
-    if (rv === OK) CQ.noteSpawned(name, w.role); return rv; } }
+    if (rv === OK) { CQ.noteSpawned(name, w.role); room.memory.cqTurn = 0; } return rv; } }
   for (const role of spawnOrder(count, T, nSites)) {
     if (role === 'REMOTE') { const r = remoteSpawn(room, go, avail); if (r !== undefined) return r; continue; }
     if ((count[role] || 0) >= T[role]) continue;
