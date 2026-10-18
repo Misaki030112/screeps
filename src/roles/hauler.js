@@ -43,8 +43,26 @@ function legacyPickup(c, room, P) {
   }
   if (move.to(c, src.pos.x, src.pos.y, 1)) { (src.store ? c.withdraw(src, RESOURCE_ENERGY) : c.pickup(src)); delete c.memory.src; }
 }
-module.exports = { pickups, handoff, ctlLow, run(c) {
+// Mineral run (RCL6 mineral line): an empty home hauler takes the mineral container (>= MIN_RUN or full) to terminal/storage.
+// Sticky in memory.mr until delivered. Returns true while busy with it.
+const MIN_RUN = 1000;
+function mineralRun(c, room, P) {
+  const mm = P.pos.mineralMiner; if (!mm || room.name !== c.memory.home) return false;
+  const dst = room.terminal || room.storage; if (!dst) return false;
+  const held = Object.keys(c.store).find(r => r !== RESOURCE_ENERGY && c.store[r] > 0);
+  if (held) { if (move.to(c, dst.pos.x, dst.pos.y, 1)) c.transfer(dst, held); return true; }
+  if (c.store[RESOURCE_ENERGY] > 0 || c.memory.working) return false;
+  const k = rc.at(room, mm[0], mm[1], STRUCTURE_CONTAINER); if (!k) { delete c.memory.mr; return false; }
+  const r = Object.keys(k.store).find(t => t !== RESOURCE_ENERGY && k.store[t] > 0);
+  if (!r) { delete c.memory.mr; return false; }
+  if (!c.memory.mr && k.store[r] < Math.min(MIN_RUN, c.store.getCapacity()) && k.store.getFreeCapacity() > 200) return false;
+  c.memory.mr = 1;
+  if (move.to(c, mm[0], mm[1], 1)) { c.withdraw(k, r); delete c.memory.mr; }
+  return true;
+}
+module.exports = { pickups, handoff, ctlLow, mineralRun, run(c) {
   const room = c.room, P = plan.get(room.name);
+  if (mineralRun(c, room, P)) return;
   if (room.name === c.memory.home && salvage.dump(c)) return; // Invader loot (minerals) -> storage first
   if (c.memory.working && c.store[RESOURCE_ENERGY] === 0) { c.memory.working = false; delete c.memory.dst; delete c.memory.fl; }
   if (!c.memory.working && c.store.getFreeCapacity() === 0) c.memory.working = true;

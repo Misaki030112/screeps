@@ -180,6 +180,9 @@ function noUpgrade(room) {
   if ((c.ticksToDowngrade || 0) < UP_SAFE) return false;
   const ph = phase(room);
   if (ph === 'roads') return true;
+  // Misaki 10-18 09:30 mineral line "spend storage on infrastructure fast, keep ~5k": while terminal/lab/extractor sites are open and
+  // storage > FLOOR, upgrading is held and the ctl feed goes to builders (downgrade safety above still wins).
+  if (room.storage && room.storage.store[RESOURCE_ENERGY] > FLOOR && require('../utils/roomcache').sites(room).some(s => s.structureType === 'terminal' || s.structureType === 'lab' || s.structureType === 'extractor')) return true;
   // v5 (Misaki 2026-10-18 02:2x "基建效率最大，升级不是优先"): wall build phase holds upgrading too (ctl container/link feed ->
   // builders) until every barrier stands at >= HOLD_TO hits; then normal upgrading resumes.
   if (ph !== 'build') return false;

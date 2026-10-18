@@ -39,7 +39,8 @@ function fillRoute(c) {
   if (!cur || !cur.ids.some(needy)) {
     let best = -1, bd = 1e9;
     const war = require('../managers/home').active(c.room), tw = s => war && s.ids.some(id => { const o = Game.getObjectById(id); return o && o.structureType === STRUCTURE_TOWER && o.store.getFreeCapacity(RESOURCE_ENERGY) > 100; });
-    st.forEach((s, i) => { if (s.ids.some(needy)) { const d = c.pos.getRangeTo(s.x, s.y) - (tw(s) ? 100 : 0); if (d < bd) { bd = d; best = i; } } });
+    const others = new Set(_.filter(Game.creeps, x => x !== c && x.memory.role === 'queen' && x.room.name === c.room.name && x.memory.stop !== undefined).map(x => x.memory.stop)); // 2 queens: split stops
+    st.forEach((s, i) => { if (s.ids.some(needy) && !(others.has(i) && st.filter((z, j) => !others.has(j) && z.ids.some(needy)).length)) { const d = c.pos.getRangeTo(s.x, s.y) - (tw(s) ? 100 : 0); if (d < bd) { bd = d; best = i; } } });
     if (best < 0) { delete c.memory.stop; return false; }
     c.memory.stop = best; cur = st[best];
   }
@@ -115,7 +116,10 @@ module.exports = { fillRoute, storageFloor, run(c) {
   if (!src || src.store[RESOURCE_ENERGY] < 50) {
     const [fx, fy] = P.pos.fillerContainerA;
     const near = require('./hauler').pickups(room).filter(s => s.store[RESOURCE_ENERGY] >= 50).sort((a, b) => c.pos.getRangeTo(a) - c.pos.getRangeTo(b));
-    const cands = [room.storage, rc.at(room, fx, fy, STRUCTURE_CONTAINER)].filter(s => s && s.store[RESOURCE_ENERGY] >= 50).concat(near);
+    // v6: nearest of storage / filler container A (was storage always first: a queen at stamp A walked ~8 tiles to storage
+    // past the full 35,24 container). Container needs >= half a load so it is not a wasted stop.
+    const half = Math.min(400, c.store.getFreeCapacity() / 2), fcA = rc.at(room, fx, fy, STRUCTURE_CONTAINER);
+    const cands = [room.storage, fcA].filter(s => s && s.store[RESOURCE_ENERGY] >= (s === fcA ? half : 50)).sort((a, b) => c.pos.getRangeTo(a) - c.pos.getRangeTo(b)).concat(near);
     src = cands[0] || null; c.memory.src = src ? src.id : undefined;
     if (!src) { if (c.store[RESOURCE_ENERGY] > 0) c.memory.working = true; else require('../utils/trace').why(c, 'u'); return; } // starved (was mislabelled target_full)
   }

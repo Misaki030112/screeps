@@ -29,7 +29,8 @@ const B = {
   hauler: e => { const n = Math.max(2, Math.min(8, Math.floor(e / 100))); return [].concat(rep(n, CARRY), rep(n, MOVE)); },
   // home hauler with storage: the A->ctl route is fully paved, so 2 CARRY : 1 MOVE still moves 1 tile/tick loaded
   roadHauler: (e, max = 8) => { const n = Math.max(1, Math.min(max, Math.floor(e / 150))); return [].concat(rep(2 * n, CARRY), rep(n, MOVE)); },
-  queen: e => { const n = Math.max(2, Math.min(6, Math.floor(e / 150))); return [].concat(rep(2 * n, CARRY), rep(n, MOVE)); },
+  // v6: queen up to 16C8M (800 carry): full 2300 refill in 3 trips (8C4M needed 6)
+  queen: e => { const n = Math.max(2, Math.min(8, Math.floor(e / 150))); return [].concat(rep(2 * n, CARRY), rep(n, MOVE)); },
   // Upgraders walk once (spawn -> ctl spot, ~6 tiles) then sit, so 1 MOVE is enough. RCL4: 2x10W = 20 WORK was the binding
   // limit (1h upgrade ~19/t, ctl container 1000+ unused, storage parked at the ferry floor so the 3rd-upgrader gate never opened;
   // patrol 10-14 10:55). Cap 12 -> 12W1C1M = 1300 = RCL4 full cap, 2x12 = 24 WORK ~ model ideal 23.5.
@@ -38,6 +39,7 @@ const B = {
   // builder cap 8W8C8M (1600e) at RCL6: 400 carry, fewer refill walks (was 5W5C5M)
   builder: e => { const n = Math.max(1, Math.min(11, Math.floor(e / 200))); return [].concat(rep(n, WORK), rep(n, CARRY), rep(n, MOVE)); },
   filler: e => [CARRY, CARRY, CARRY, MOVE],
+  mminer: e => { const n = Math.max(2, Math.min(12, Math.floor((e - 150) / 100))); return [].concat(rep(n, WORK), rep(3, MOVE)); },
   manager: e => [].concat(rep(Math.min(16, Math.floor((e - 50) / 50)), CARRY), [MOVE]),
 };
 function remoteSites() { let n = 0; try { for (const r of ['W45N8']) { const rm = typeof Game !== 'undefined' && Game.rooms && Game.rooms[r]; if (rm) n += rm.find(FIND_MY_CONSTRUCTION_SITES).filter(s => s.structureType === STRUCTURE_ROAD).length; } } catch (e) {} return n; }
@@ -50,7 +52,14 @@ function targets(room, count, backlog, ctlEnergy, sites) {
   T.hauler = rcl >= 7 && links >= 4 ? 0 : (rcl >= 6 && links >= 3 ? 1 : (st ? Math.min(2, 1 + Math.floor(backlog / 1500)) : Math.min(4, 2 + Math.floor(backlog / 1500))));
   const fillersOn = plan.STATIONARY_FILL && rcl >= 5 && links >= 2; // off: queen regime at RCL5+ (docs/RCL5.md)
   T.queen = fillersOn ? 0 : 1;
+  // v6 refill: while only a small (<16 CARRY) queen lives at cap 2300, add the big 16C8M now instead of waiting ~1000t for the old
+  // one to die (live 09:40: spawn waited 22 of 62 ticks for extension refill). Back to 1 once the small one is gone.
+  if (T.queen === 1 && room.energyCapacityAvailable >= 2300) { const qs = _.filter(Game.creeps, c => c.memory.role === 'queen' && c.memory.home === room.name);
+    if (qs.length && qs.every(c => c.getActiveBodyparts ? c.getActiveBodyparts(CARRY) < 16 : true)) T.queen = 2; }
   T.filler = fillersOn ? 4 : 0;
+  // RCL6 mineral line: one mineral miner while extractor + container stand, the mineral has amount and the container has room
+  { const mm = P.pos.mineralMiner, k = mm && st && rc.at(room, mm[0], mm[1], STRUCTURE_CONTAINER), ex = rcl >= 6 && rc.all(room, 'extractor')[0];
+    const m = ex && room.find(FIND_MINERALS)[0]; T.mminer = k && m && m.mineralAmount > 0 && k.store.getFreeCapacity() > 400 ? 1 : 0; }
   T.manager = plan.STATIONARY_FILL && st && rcl >= 5 ? 1 : 0; // manager tile 36,30 is also a queen stop
   // Supply-follows-demand on the smoothed ctl container level (ctlEnergy = ~300-tick EMA): an empty container means upgraders
   // outnumber the feed. A snapshot rule (3 + level/700) spawned 4x7 WORK for ~11/t feed -> upgraders idle 55% waiting_feed (10-13 17:30).
@@ -214,15 +223,15 @@ function bodyEnergy(role, E, cap, avail, haulerAlive, hasStorage, minerAlive, bu
   // spawned 6W. Storage era ignores starving E (use cap); go() waits until avail >= floor. Pre-storage still uses E.
   if (role === 'builder') return Math.min(hasStorage ? cap : E, Math.max(hasStorage ? Math.floor(0.7 * cap) : 200, avail));
   const fromCap = role === 'upgrader' || (role === 'hauler' && hasStorage) || (role === 'miner' && minerAlive);
-  return Math.min(fromCap ? cap : E, role === 'hauler' ? (hasStorage ? 1050 : 800) : role === 'queen' ? 600 : 3000);
+  return Math.min(fromCap ? cap : E, role === 'hauler' ? (hasStorage ? 1050 : 800) : role === 'queen' ? (cap >= 2300 ? 1200 : 600) : 3000);
 }
 // Spawn queue order. Base upgrader quota (1 with sites, else 2) jumps ahead of REMOTE so a remote
 // rhauler wave cannot leave the room on a single 12W for hundreds of ticks (patrol 2026-10-16 16:42).
 function spawnOrder(count, T, nSites) {
   const baseUp = Math.min(nSites ? 1 : 2, T.upgrader || 0);
   return (count.upgrader || 0) < baseUp
-    ? ['queen', 'hauler', 'upgrader', 'REMOTE', 'filler', 'manager', 'builder']
-    : ['queen', 'hauler', 'REMOTE', 'filler', 'manager', 'upgrader', 'builder'];
+    ? ['queen', 'hauler', 'upgrader', 'REMOTE', 'filler', 'manager', 'builder', 'mminer']
+    : ['queen', 'hauler', 'REMOTE', 'filler', 'manager', 'upgrader', 'builder', 'mminer'];
 }
 module.exports = { rhTarget, birthDirs, targets, rhaulerNeed, remoteNext, retiring, B, reserverBody, nearFull, bodyEnergy, spawnOrder, run(spawn) {
   // spawn-wait metric (Misaki 10-18 09:30: zero spawn idle due to refill). Memory.stats.sw[room] cumulative ticks:

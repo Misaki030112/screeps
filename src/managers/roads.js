@@ -17,7 +17,7 @@ const BATCH = 15, HOME = 'W46N8'; // 5 left builders no_task 19% (batch done, wa
 // (48,21 715 is the W45N7 leg, dropped by Misaki). Re-check with the heatmap before adding more.
 // v5 02:50: 32,34 = stamp-B hub (swamp) between the 4 B filler stops; queen stood/passed there 57 ticks/h. RCL8 link tile
 // (layout replaces the road then). Placed once by console; listed here so layout keeps the site.
-const ECON = [[35, 26], [36, 25], [34, 25], [35, 31]], KEEP = [[32, 34]];
+const ECON = [[35, 26], [36, 25], [34, 25], [35, 31]], KEEP = [[32, 34], [35, 29]]; // 35,29: 256 creep-passes/24h beside the spawn (RCL8 spawn tile; replaced then)
 const W45N8_LEG = [[0, 14], [1, 13], [2, 12], [3, 11], [4, 11], [5, 11], [6, 10], [7, 9], [8, 9], [9, 9], [10, 9], [11, 9], [12, 10]];
 // swamp7 (Misaki 2026-10-17 23:5x: W45N7 路线沼泽段修路; full W45N7 road stays dropped): W45N8 swamp tiles on the W45N7 rhauler
 // path, creep_ticks 6h: ~155 visits/6h each, 3.0 ticks/visit (unroaded swamp) vs 1.0 on the roaded 2,12. tools/swamp7_justify.py:

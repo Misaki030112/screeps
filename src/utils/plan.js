@@ -55,7 +55,7 @@ function rampartWanted(P, room, x, y) {
 // mineral container (5k) are not placed. As planned they would take ~260k of RCL6's ~295k build energy (~12k ticks of upgrading,
 // RCL7 ~14 h later) and sit idle: no mineral-miner role, no lab/boost code, and selling O needs Misaki's market decision.
 // RCL6 then builds only the source-A link + 10 extensions (~35k). Turn on after Misaki approves minerals/market.
-const RCL6_MINERALS = false;
+const RCL6_MINERALS = true; // Misaki 2026-10-18 09:30: approved now (terminal, extractor + container 39,23, 3 labs)
 const DEFERRED = new Set(['terminal', 'extractor', 'lab']);
 module.exports = {
   key, STATIONARY_FILL, rampartWanted, LINK_PLAN, RCL6_MINERALS,

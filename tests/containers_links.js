@@ -7,7 +7,7 @@ for (let r = 1; r <= 8; r++) {
   const c = plan.upTo('W46N8', r).filter(s => s.type === 'container' && !(s.removeAt && r >= s.removeAt));
   assert(c.length <= 5, `RCL${r}: ${c.length} containers`);
 }
-assert(!P.any[plan.key(30, 27)], 'filler container 30,27 not planned');
+assert(!P.any[plan.key(30, 27)] || P.any[plan.key(30, 27)].type === 'road', 'filler container 30,27 not planned (v5: road to stamp-C stop 31,26)');
 assert.strictEqual(plan.upTo('W46N8', 8).filter(s => s.type === 'link').length, 6);
 assert.strictEqual(plan.upTo('W46N8', 6).filter(s => s.type === 'link').length, 3);
 assert.strictEqual(P.any[plan.key(38, 32)].removeAt, 4); assert.strictEqual(P.any[plan.key(31, 12)].removeAt, 6);
