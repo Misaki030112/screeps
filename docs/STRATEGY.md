@@ -1,7 +1,7 @@
 # Strategy — W46N8 (home) + W45N8 (remote), 20 CPU, shard3
 
 Sources: Screeps docs (control, defense, invaders, CPU), screepers wiki, Overmind / TooAngel / Hivemind patterns.
-Last full refresh: **2026-10-17 strategy review** (neighbours: `docs/NEIGHBORS.md`); before that **2026-10-16 strategy review** (defence before novice end: `docs/DEFENSE_NOVICE.md`); prior: RCL6 readiness `docs/RCL6.md` (10-15), RCL5 `docs/RCL5.md` (10-14). Also `docs/DEFENSE.md`, `docs/DEFENSE_PLAN.md`, `docs/LAYOUT_V2.md`, `docs/REMOTE_W45N8.md`, `docs/MODEL.md`, `docs/DATA.md`.
+Last full refresh: **2026-10-18 strategy review** (W47N8 hold / safe-mode mechanics: `docs/W47N8_HOLD.md`); before that **2026-10-17 strategy review** (neighbours: `docs/NEIGHBORS.md`); before that **2026-10-16 strategy review** (defence before novice end: `docs/DEFENSE_NOVICE.md`); prior: RCL6 readiness `docs/RCL6.md` (10-15), RCL5 `docs/RCL5.md` (10-14). Also `docs/DEFENSE.md`, `docs/DEFENSE_PLAN.md`, `docs/LAYOUT_V2.md`, `docs/REMOTE_W45N8.md`, `docs/MODEL.md`, `docs/DATA.md`.
 
 ## Principles
 
@@ -12,18 +12,18 @@ Last full refresh: **2026-10-17 strategy review** (neighbours: `docs/NEIGHBORS.m
 5. **Growth after RCL4:** remote mining (W45N8 approved and live), then links; a 2nd room only with explicit Misaki approval (GCL 2 already allows a claim).
 6. **Major decisions need approval:** claim/expand, attack or provoke player neighbours, spend credits/pixels, activate safe mode, respawn.
 
-## Current state (2026-10-16 ~14:35 UTC+8)
+## Current state (2026-10-18 ~14:40 UTC+8)
 
 | | |
 |---|---|
-| Home | W46N8 RCL5 **~631k/1.215M** (~52%), cap 1800, storage ~2.0–2.4k, **2 towers** (~970e), critical ramparts ≥100k (filler stand-tiles decaying by design), safe mode **4 available** |
-| Upgrade | ctl_ema ≈21–23/t (energy-bound; model ideal ~21.8–23.5); ~+270k progress in ~15.5 h DB window |
-| RCL6 ETA | **~10-17 21:00 – 10-18 morning** — then bank 20k → outer walls (`docs/DEFENSE_NOVICE.md`) |
-| Remote | W45N8 SAFE, CLAIM2, reservation ~1.9k, delivered **~506k**, container 100k hits; **remoteDefender ON** |
-| Defence flags | `remoteDefender` ON; `guards` / `earlyWalls` **OFF** (upgrade-first; Misaki 10-16) |
-| CPU | ~4.0–4.5 avg, bucket 10000, nerr 0 |
-| Novice ends | **2026-10-28 03:33 UTC+8** (~11.5 days) |
-| Neighbours (10-17) | W48N9 army swings 4–15 combat creeps (median 6), towers unfed, never staged in W47N8/W47N7; W48N8 = Evans_702 (no exit to W47N8). See `docs/NEIGHBORS.md`. Earlier: Council: BustJetter W47N9 RCL6 + W48N9 ~8 combat (watch, thinned); scouts through us 0 dmg. Fandalah W44N8 RCL6 no combat. RCL8 N/S still outside our exits |
+| Home | W46N8 **RCL6** (since 10-17 ~19:00) 85.4k/3.645M, cap 2300, storage ~39k, 2 towers ~970e, **51 barriers all ≥131k** (wall step 1 done), SM 5 available |
+| Upgrade/build | **paused** (`defense.reserveE=1e6`) for the W47N8 op until W47N8 RCL2 (Misaki 10-18) |
+| W47N8 op | Misaki-ordered conquest live: 4-creep quad in W47N8, `cq.claim` on, breaker breaking BustJetter's reservation (~3.3k t left @ 14:37). Plan `docs/CONQUEST_QUAD.md`; post-claim mechanics `docs/W47N8_HOLD.md` |
+| Remote | W45N8 + W45N7 reserved; remote spawns queue behind conquest spawns (patrol watches reservation > 800) |
+| CPU | ~6.6–8.7 avg, bucket ~10000, errors 0 |
+| GCL | 3 (claim allowed) |
+| Novice ends | **2026-10-28 03:33 UTC+8** (~9.5 days) |
+| Safe mode | one room per shard at a time: while W47N8 is in SM, home cannot SM. No cooldown while novice |
 
 Ideal vs actual: `tools/model.py` / Grafana. Remaining gap ≈ ctl-feed dead-bands (closing) and remote pauses; more upgrade needs more income (expansion — shelved).
 

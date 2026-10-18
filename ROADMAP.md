@@ -3,6 +3,13 @@
 Novice zone ends **2026-10-28 03:33 UTC+8**. Defence timeline: `docs/DEFENSE_NOVICE.md` (2026-10-16); detail `docs/DEFENSE.md` / geometry `docs/DEFENSE_PLAN.md`.
 **Safe mode: NEVER auto-activate** — alert Misaki.
 
+## 2026-10-18 strategy review (W47N8 hold, `docs/W47N8_HOLD.md`)
+
+- Engine-verified: RCL2 gives W47N8 its first SM charge; enemy `attackController` between claim and SM = 1000 t upgradeBlock (no upgrade, no SM); one SM at a time across our rooms; no cooldown while novice.
+- **Decision for Misaki:** SM policy for W47N8 — A one-shot auto at RCL2 (recommended) / B auto-chain (home SM locked) / C manual. `cq.autoSafe` currently unset.
+- Next after SM1: W47N8 spawn → RCL3 (45k) → tower → ramparts inside the 23 h window; resume home upgrade when the W47N8 spawn is built; keep storage ≥ 20k.
+- Home wall step 1 ✅ (51 barriers ≥131k). Step 2 (300k) after the op.
+
 ## 2026-10-17 strategy review (neighbours, `docs/NEIGHBORS.md`)
 
 - W48N9 army 4–15 combat creeps all 48 h (median 6), towers unfed, nothing ever staged in W47N8/W47N7 → **watch, not escalation**. `neighbor_scan.py` prints a `trend` line; page on `trend NEW`.
@@ -33,6 +40,7 @@ Focus (Misaki 10-14): **W46N8 upgrade speed**; expansion (2nd account W47N8, W45
 7. Later: RCL6 terminal/extractor/labs; 2nd room (**approval required**).
 
 ## Log
+- 2026-10-18 14:40 strategy review: topic **W47N8 after the claim** (engine source: claim/upgrade/attackController/safe mode). 24h: RCL6 at 10-17 ~19:00; walls step 1 done (all ≥131k); storage peak 57.8k (06:00) → walls → 15.8k (11:00) → 39k banked for the op; CPU 6.6–8.7, bucket ~10k; LOW scouts only. Docs only, no deploy (op code edited live).
 - 2026-10-17 14:40 strategy review: topic **neighbour strength** (`docs/NEIGHBORS.md`). W48N9 count is noise inside its 48h band; added trend line + W48N8/W47N8/W47N7 to neighbor_scan; RCL6 ETA 18:40–19:20.
 - 2026-10-16 14:34 strategy review: topic **defence readiness before novice end** (~11.5 d). Wrote `docs/DEFENSE_NOVICE.md`; refreshed STRATEGY current-state; ROADMAP priority → RCL6→bank→wall step 1 before 10-28, upgrade-first, expansion/minerals parked. 24h: RCL5 361k→631k (~+270k / ~15.5 h DB window ≈20/t avg; recent ctl_ema ~21–23/t); CPU ~4.0–4.5 bucket 10k nerr0; remote SAFE delivered ~506k defender ON; storage max ~2.4k (bank still the gate); walls coded dormant; early walls/guards paused; LOW BustJetter/Fandalah scouts; BustJetter W48N9 ~8 combat (thinned). No code this run.
 - 2026-10-15 14:40 strategy review: topic RCL6 readiness. 24h: RCL5 at ~21:30 10-14; build/fix night 22:00–06:00 at 4–10/t, since 06:00 17–23/t; CPU 3.6–4.3, bucket 10000; 1 HIGH (defender death 04:30, kite fix), BustJetter scouts only. Found RCL6 would sink ~260k into idle terminal/labs and the wall start condition is unreachable (storage max 2.3k). Shipped RCL6_MINERALS gate.
