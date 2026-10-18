@@ -10,7 +10,10 @@ function bodyFor(role, e) {
       if (100 * w + 50 + 50 * m <= e) return rep(w, WORK).concat([CARRY], rep(m, MOVE));
     return [WORK, WORK, CARRY, MOVE];
   }
-  if (role === 'w8rhauler') { const n = Math.max(2, Math.min(12, Math.floor(e / 100))); return rep(n, CARRY).concat(rep(n, MOVE)); }
+  // 02:35: W47N7 routes are road almost end to end (18,17->ctl 45 tiles/43 road, 31,34->59/56), so 2C:1M keeps full speed loaded:
+  // 10C5M=750 carries 500 vs 8C8M=800 carrying 400 at cap 800
+  if (role === 'w8rhauler') { if (e < 450) { const n = Math.max(2, Math.floor(e / 100)); return rep(n, CARRY).concat(rep(n, MOVE)); }
+    const k = Math.min(8, Math.floor(e / 150)); return rep(2 * k, CARRY).concat(rep(k, MOVE)); }
   if (role === 'w8miner') { const w = Math.max(2, Math.min(5, Math.floor((e - 50) / 100))); return rep(w, WORK).concat([MOVE]); }
   if (role === 'w8hauler') { const n = Math.max(2, Math.min(10, Math.floor(e / 100))); return rep(n, CARRY).concat(rep(n, MOVE)); }
   // 18:58: upgraders sit beside the ctl container 13,26 (1750/2000 full, spawn idle at 550/550): WORK-heavy 4W1C2M instead of 2W2C2M
@@ -77,7 +80,9 @@ function spawnRun(spawn) {
     // 02:16: 3 rhaulers fell behind 2 reserved sources (~20 e/t): W47N7 had 31,34 full 2000 + 5871 dropped, 18,17 at 1138.
     // +1 per 1500 loose above 1500 in W47N7 (max 6), same idea as the local hauler surplus rule
     const R7 = Game.rooms[C.REMOTE.room], lo7 = R7 ? looseE(R7) : 0;
-    if (!want && n('w8rhauler') < Math.min(6, 3 + Math.floor(Math.max(0, lo7 - 1500) / 1500))) want = 'w8rhauler';
+    // 02:35: max 6 -> 8: with 5 alive the pile kept growing (6175 -> 6229 dropped + conts 1978/2000 by t83729299); round trips ~90-120 ticks
+    // at 400 carry = ~3.6 e/t each, below the 2 sources' ~20 e/t plus decay
+    if (!want && n('w8rhauler') < Math.min(8, 3 + Math.floor(Math.max(0, lo7 - 1500) / 1500))) want = 'w8rhauler';
   }
   if (!want) return;
   // emergency: nothing alive that refills -> spawn with what we have
