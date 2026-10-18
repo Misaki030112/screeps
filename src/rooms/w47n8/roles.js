@@ -50,10 +50,19 @@ function pickTile(c, tiles, key) {
   if (me !== undefined && tiles[me] && !claimed.has(String(tiles[me]))) return me;
   return tiles.findIndex(t => !claimed.has(String(t)) && !stood.has(String(t)));
 }
-function wallJob(room) {
+// 20:55: plain 'lowest first' made both builders ping-pong between the x8-11 and x24-31 groups (16+ tiles) every time one
+// repair lifted a wall past the others (walls within 200 hits), even walking over with 2 energy left. Now: sticky per-creep
+// target kept until it is 500 above the weakest; new picks are the closest wall within 500 of the weakest.
+function wallJob(room, c) {
   const tgt = C.WALL_TARGET[room.controller.level] || 0;
   const ws = room.find(FIND_STRUCTURES, { filter: s => s.structureType === STRUCTURE_WALL && s.hits < tgt && C.SEAL.some(([x, y]) => s.pos.x === x && s.pos.y === y) });
-  return ws.length ? _.min(ws, s => s.hits) : null;
+  if (!ws.length) { if (c) delete c.memory.wt; return null; }
+  const lo = _.min(ws, s => s.hits).hits;
+  if (!c) return ws.find(s => s.hits === lo);
+  const cur = c.memory.wt && ws.find(s => s.id === c.memory.wt);
+  if (cur && cur.hits < lo + 500) return cur;
+  const t = c.pos.findClosestByRange(ws.filter(s => s.hits < lo + 300));
+  c.memory.wt = t.id; return t;
 }
 // ---- W47N7 remote (only while reserved by us) ----
 const RM = C.REMOTE;
@@ -178,8 +187,12 @@ const R = {
     // 19:31: urgent road/container repair (<10%; container 11,43 at 18% = 2k ticks of decay left pulled the builder off the walls) -> seal walls to WALL_TARGET[rcl], lowest first -> maintenance (<60%).
     // With maintenance first the lone 2W builder spent 180 ticks on container 26,11 (87k/250k) + 22 roads and no wall left 1 hit.
     const rr = f => c.pos.findClosestByRange(FIND_STRUCTURES, { filter: s => (s.structureType === STRUCTURE_CONTAINER || s.structureType === STRUCTURE_ROAD) && s.hits < s.hitsMax * f });
-    const rep = rr(0.1) || wallJob(c.room) || rr(0.6);
-    if (rep) { if (!c.pos.inRangeTo(rep, 3)) go(c, rep.pos.x, rep.pos.y, 3); else c.repair(rep); return; }
+    const rep = rr(0.1) || wallJob(c.room, c) || rr(0.6);
+    if (rep) {
+      if (c.pos.inRangeTo(rep, 3)) { c.repair(rep); return; }
+      if (c.store[E] < 20 && c.pos.getRangeTo(rep) > 6) { c.memory.w = false; getEnergy(c); return; } // don't walk a near-empty load across the room
+      go(c, rep.pos.x, rep.pos.y, 3); return;
+    }
     R.w8upgrader(c);
   },
 };
