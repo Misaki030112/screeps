@@ -25,7 +25,9 @@ function haulPick(c) {
     const cands = room.find(FIND_DROPPED_RESOURCES, { filter: r => r.resourceType === E && r.amount >= 50 }).concat(room.find(FIND_STRUCTURES,
       { filter: s => s.structureType === STRUCTURE_CONTAINER && s.store[E] >= 100 && !(s.pos.x === C.CTL_CONT[0] && s.pos.y === C.CTL_CONT[1]) }));
     let bs = 0; t = null;
-    for (const o of cands) { const got = Math.min(free, amt(o) - (claimed[o.id] || 0)); const sc = got / (c.pos.getRangeTo(o) + 10); if (got >= 50 && sc > bs) { bs = sc; t = o; } }
+    // 18:20: score by the whole unclaimed pile, not min(free, pile): capped by a 150-250 free store every pile scored the same and
+    // the nearest (north, drained by 10 workers) always won, so 10,43 grew 1574->2011 and decayed ~2 e/t
+    for (const o of cands) { const left = amt(o) - (claimed[o.id] || 0), sc = left / (c.pos.getRangeTo(o) + 10); if (Math.min(free, left) >= 50 && sc > bs) { bs = sc; t = o; } }
     c.memory.pt = t ? t.id : undefined;
   }
   if (!t) return false;

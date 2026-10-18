@@ -32,7 +32,7 @@ function spawnRun(spawn) {
   if (!want) {
     const loose = _.sum(room.find(FIND_DROPPED_RESOURCES, { filter: r => r.resourceType === RESOURCE_ENERGY }), r => r.amount)
       + _.sum(room.find(FIND_STRUCTURES, { filter: s => s.structureType === STRUCTURE_CONTAINER && !(s.pos.x === C.CTL_CONT[0] && s.pos.y === C.CTL_CONT[1]) }), s => s.store[RESOURCE_ENERGY]);
-    if (loose > 1200 && n('w8hauler') < 3) want = 'w8hauler';
+    if (loose > 1200 && n('w8hauler') < (loose > 2000 ? 4 : 3)) want = 'w8hauler'; // 18:20: 4th when >2k piles (far south source)
     else if (n('w8upgrader') < Math.min(6, (sites ? 2 : 3) + Math.floor(Math.max(0, loose - 600) / 600))) want = 'w8upgrader';
   }
   if (!want) return;
