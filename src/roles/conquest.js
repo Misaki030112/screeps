@@ -374,11 +374,12 @@ function wantSpawn(room) {
     const short = brs.length && _.max(brs.map(c => c.ticksToLive || 1500)) < need;
     if ((n('cqbreaker') < bMax || (short && n('cqbreaker') < bMax + 1)) && !ours()) return { role: 'cqbreaker', body: BREAKER_BODY(), mem: { role: 'cqbreaker', home: HOME, born: Game.time } };
     // pioneers before more reinforcements once the claim is near (Misaki 15:06)
-    if (n('cqworker') < wMax && (ours() || almost || P.forceWorkers)) {
+    const self8 = require('../rooms/w47n8/index').selfSufficient(); // W47N8 runs itself -> no more pioneers/cqhaulers from home
+    if (!self8 && n('cqworker') < wMax && (ours() || almost || P.forceWorkers)) {
       return { role: 'cqworker', body: WORKER_BODY(), mem: { role: 'cqworker', home: HOME, born: Game.time } };
     }
     const hMax = P.haulers || 2;
-    if (n('cqhauler') < hMax && (ours() || almost || P.forceWorkers)) {
+    if (!self8 && n('cqhauler') < hMax && (ours() || almost || P.forceWorkers)) {
       return { role: 'cqhauler', body: HAULER_BODY(), mem: { role: 'cqhauler', home: HOME, born: Game.time } };
     }
     // continuous solo reinf to post 21,7 (after at least one breaker out or already ours)
