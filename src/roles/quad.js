@@ -204,12 +204,17 @@ function joinedTeam(qid, all) {
   return list;
 }
 
+function shouldGo(cmd, earlyGo, n, minSquad=2) {
+  // pure: advance only with n >= minSquad; cmd==="go" alone is not enough
+  return cmd!=="retreat" && n >= minSquad && (cmd==="go" || earlyGo!==false);
+}
 function decide(qid, team) {
   const P = M(), Qs = P.quads = P.quads || {}, Q = Qs[qid] = Qs[qid] || {};
   if (Q.t === Game.time) return Q; Q.t = Game.time;
-  // Advance once >= minSquad (default 2) have joined: cmd==="go", or earlyGo (default on) while not retreating.
+  // HARD GATE: never advance with fewer than minSquad (default 2). cmd==="go" alone must NOT send a solo creep.
   const cmd = P.cmd || "hold";
-  const goNow = cmd==="go" || (cmd!=="retreat" && P.earlyGo!==false && team.length >= (P.minSquad||2));
+  const minN = P.minSquad || 2;
+  const goNow = shouldGo(cmd, P.earlyGo, team.length, minN);
   const lead = team[0];
   const hostiles = lead.room.find(FIND_HOSTILE_CREEPS).filter(h => h.owner && h.owner.username!=="Source Keeper");
   const towers = lead.room.find(FIND_HOSTILE_STRUCTURES).filter(s => s.structureType===STRUCTURE_TOWER);
@@ -293,9 +298,10 @@ function run(c) {
   const joined = team.some(m => m.name===c.name);
 
   if (!joined) {
-    // joiner: walk alone to squad tip (or rally if none yet); path around forbidden rooms
+    // joiner: follow tip only when a real squad (>=minSquad) exists; else rally.
     const tip = P.tip && P.tip[qid];
-    const tx = tip ? tip.x : RALLY.x, ty = tip ? tip.y : RALLY.y, tr = tip ? tip.room : RALLY.room;
+    const useTip = tip && tip.n >= (P.minSquad||2);
+    const tx = useTip ? tip.x : RALLY.x, ty = useTip ? tip.y : RALLY.y, tr = useTip ? tip.room : RALLY.room;
     fight(c, [c], {focus: undefined});
     return c.moveTo(new RoomPosition(tx,ty,tr), {range:1, reusePath:5, maxRooms:4, costCallback:matrixLite});
   }
@@ -340,5 +346,5 @@ function wantSpawn(room) {
 
 module.exports = {
   run, wantSpawn, anchorCost, formedAnchor, healPick, combatStep, scoreTarget, towerDmg, dmgAt, hostileHealTo, useMass, rotateAssign,
-  joinedTeam, shapeOf, BODY, OFF, SHAPES, RALLY, POSTS, ROOM, FORBID, MIN_Y,
+  joinedTeam, shapeOf, shouldGo, BODY, OFF, SHAPES, RALLY, POSTS, ROOM, FORBID, MIN_Y,
 };

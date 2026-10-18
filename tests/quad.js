@@ -100,5 +100,11 @@ assert.deepStrictEqual(Q.formedAnchor({0:P(5,5),1:P(6,5)}, 2), {x:5,y:5,roomName
 assert.strictEqual(Q.formedAnchor({0:P(5,5),1:P(6,6)}, 2), null);
 assert.deepStrictEqual(Q.formedAnchor({0:P(5,5),1:P(6,5),2:P(5,6)}, 3), {x:5,y:5,roomName:'R'});
 assert.strictEqual(Q.anchorCost(10,10,T(),undefined,Q.shapeOf(2)), 2);
-console.log('quad ok');
+assert.strictEqual(Q.shouldGo("go", true, 1, 2), false, "cmd=go alone must not advance size 1");
+assert.strictEqual(Q.shouldGo("go", true, 2, 2), true);
+assert.strictEqual(Q.shouldGo("hold", true, 2, 2), true, "earlyGo duo");
+assert.strictEqual(Q.shouldGo("hold", false, 2, 2), false);
+assert.strictEqual(Q.shouldGo("retreat", true, 4, 2), false);
+console.log("quad ok");
+
 
