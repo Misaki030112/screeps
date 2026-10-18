@@ -13,10 +13,11 @@ stub('utils/roomcache.js', { at: (r, x, y) => W[`${x},${y}`] || null, all: () =>
 stub('utils/trace.js', { why: () => {} });
 stub('managers/remote.js', { CFG: {} });
 stub('managers/threat.js', { reserve: () => 1300 });
+stub('managers/walls.js', { FLOOR: 5000, noUpgrade: () => false });
 let srcA; stub('roles/hauler.js', { pickups: () => [srcA] });
 const B = require(src('roles/builder.js'));
 const c = { pos: pos(30, 12), store: { getFreeCapacity: () => 250 } };
-const home = (st, drops = []) => ({ name: 'W46N8', storage: st, find: t => t === 1 ? drops : [] });
+const home = (st, drops = [], level) => ({ name: 'W46N8', storage: st, controller: level ? { level } : undefined, find: t => t === 1 ? drops : [] });
 const cases = [
   ['far ctl container (1000) beats waiting; source A ignored', () => {
     W = {}; srcA = box('A', 31, 10, 1200); const ctl = box('ctl', 30, 30, 1000);
@@ -24,6 +25,10 @@ const cases = [
   ['storage above reserve picked', () => {
     W = {}; srcA = box('A', 31, 10, 1200);
     assert.strictEqual(B.pickSource(c, home(box('st', 38, 30, 3000)), {}, [], 35, 24).id, 'st'); }],
+  ['RCL6: storage kept at walls.FLOOR 5k (live 10:07 builders drained 30k->17k toward 1300)', () => {
+    W = {}; srcA = box('A', 31, 10, 0);
+    assert.strictEqual(B.pickSource(c, home(box('st', 38, 30, 4000), [], 6), {}, [], 35, 24), null);
+    assert.strictEqual(B.pickSource(c, home(box('st', 38, 30, 6000), [], 6), {}, [], 35, 24).id, 'st'); }],
   ['nothing hub -> source A only if keeps hauler load', () => {
     W = {}; srcA = box('A', 31, 10, 400);
     assert.strictEqual(B.pickSource(c, home(box('st', 38, 30, 500)), {}, [], 35, 24), null);

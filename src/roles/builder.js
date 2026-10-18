@@ -80,8 +80,13 @@ function waitNear(c, t, P) {
 // link site at 30,11 while the ctl container held 1000 idle under the build hold; 3 builders crowded source A and
 // starved the home haulers). Hub stores (storage above reserve, ctl container/link in hold, filler A, drops/tombstones)
 // rank first; miner containers only when no hub store has energy, and then must keep >=200 for the haulers.
+// Storage floor for builders: the defender reserve, and at RCL6+ also walls.FLOOR (Misaki 10-18 09:30 "spend storage on
+// infrastructure fast, keep ~5k"). Live 10:07: 3 builders on terminal/lab sites drained storage ~75 e/t (30.6k -> 17.1k in
+// ~25 min) toward the 1300 defender reserve, below the queen's ferry floor (reserve + wall fund ~2.4k) -> refill would starve.
+function storeFloor(home) { const r = require('../managers/threat').reserve(home.name);
+  return home.controller && home.controller.level >= 6 ? Math.max(r, require('../managers/walls').FLOOR) : r; }
 function pickSource(c, home, Ph, ctlSrc, fx, fy) {
-  const reserve = require('../managers/threat').reserve(home.name);
+  const reserve = storeFloor(home);
   const amt = s => s.store ? s.store[RESOURCE_ENERGY] : s.amount;
   // build hold: hub link 37,29 too (queen only drains it when the room is full; live 23:40 hub 799 stuck -> source link 30,11 blocked)
   let hubLink = null; try { if (require('../managers/walls').noUpgrade(home)) hubLink = require('../managers/links').roles(home).hub; } catch (e) {}
@@ -222,7 +227,7 @@ module.exports = { remoteRoadSite, pickSource, hop, run(c) {
   // v5 low-carry refill: a builder left with a sliver walked to a fresh far wall target and back (live 03:1x builder83709046
   // 12,45 -> 25,16 with 32 of 550, then 6,28 with ~0). New target >10 tiles away and <25% carry -> refill at the hub first.
   if (t && t.id !== t0 && room.name === hm.name && t.pos.roomName === hm.name && c.store[RESOURCE_ENERGY] < 0.25 * (c.store[RESOURCE_ENERGY] + c.store.getFreeCapacity()) && c.pos.getRangeTo(t) > 10
-      && hm.storage && hm.storage.store[RESOURCE_ENERGY] >= c.store[RESOURCE_ENERGY] + c.store.getFreeCapacity() + require('../managers/threat').reserve(hm.name)) {
+      && hm.storage && hm.storage.store[RESOURCE_ENERGY] >= c.store[RESOURCE_ENERGY] + c.store.getFreeCapacity() + storeFloor(hm)) {
     c.memory.working = false; delete c.memory.t; delete c.memory.urgent; delete c.memory.tcap; delete c.memory.src; return;
   }
   if (!t) {
