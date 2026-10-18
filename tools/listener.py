@@ -16,7 +16,9 @@ TRAIL = ('W45N7', 'W47N8')  # other remotes: creep trail only (creep_ticks), not
 # The server delivers at most 2 room subscriptions per user per tick: with 3 it answers 'err@room:… subscribe limit reached'
 # in rotation and every room loses ~25-60% of ticks (test 10-17 01:35: 2 rooms 10/10 ticks, 3 rooms 7-8/10 each; home coverage
 # fell ~95% -> 35-70% after W45N7 was added 16:25). So: ROOM always, plus ONE remote slot rotating WATCH / TRAIL rooms.
-ROT = ((WATCH, 600), ('W45N7', 300))  # (room, seconds held)
+# W47N8 (claimed 10-18 15:18, developing) gets the longest slot: Misaki diagnoses its creeps from DB trajectory history,
+# and it was missing from ROT (0 creep_ticks rows for W47N8 until 10-18 16:2x).
+ROT = (('W47N8', 600), (WATCH, 300), ('W45N7', 150))  # (room, seconds held)
 rot = {'i': 0}
 watch = {'objects': {}, 'last': None}
 M = os.path.join(ROOT, 'metrics'); os.makedirs(M, exist_ok=True)
