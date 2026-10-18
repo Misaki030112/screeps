@@ -46,12 +46,22 @@ module.exports = { growthPaused, run(room) {
     const cand = rc.all(room, STRUCTURE_RAMPART).filter(s => s.hits < (W.planned(P, s.pos.x, s.pos.y, STRUCTURE_RAMPART) ? Math.min(RAMPART_FLOOR, target) : target) && plan.rampartWanted(P, room, s.pos.x, s.pos.y))
       .concat(rc.all(room, STRUCTURE_ROAD).concat(rc.all(room, STRUCTURE_CONTAINER))
         .filter(s => P.any[plan.key(s.pos.x, s.pos.y)] && s.hits < s.hitsMax * 0.6));
+    // Misaki 20:12: ramparts must never decay, independent of the storage reserve. Ratchet a high-water floor (>=150k, capped at
+    // the RCL target) and let towers (energy > 600) top up any rampart below it; decay costs ~3 hits/t per rampart (tiny).
+    const rs = rc.all(room, STRUCTURE_RAMPART);
+    if (rs.length) {
+      const mn = Math.min(...rs.map(s => s.hits));
+      mem.rampHW = Math.min(RAMPART_TARGET[room.controller.level], Math.max(mem.rampHW || 0, 150000, mn));
+      mem.rampFloorRep = cand.length ? undefined : (rs.filter(s => s.hits < mem.rampHW).sort((a, b) => a.hits - b.hits)[0] || {}).id;
+    }
     mem.towerRep = cand.length ? _.min(cand, s => s.hits / (s.structureType === STRUCTURE_RAMPART ? target : s.hitsMax)).id : undefined;
   }
   const heal = mem.towerHeal && Game.getObjectById(mem.towerHeal);
   const rep = mem.towerRep && Game.getObjectById(mem.towerRep);
+  const fl = mem.rampFloorRep && Game.getObjectById(mem.rampFloorRep);
   for (const t of towers) {
     if (heal && heal.hits < heal.hitsMax) t.heal(heal);
+    else if (!rep && fl && fl.hits < (mem.rampHW || 0) && t.store[RESOURCE_ENERGY] > 600) t.repair(fl);
     else if (rep && t.store[RESOURCE_ENERGY] > 800 && !growthPaused(rep, room.controller.level, Game.time)) t.repair(rep); // keep ≥800 for combat (novice ends 2026-10-28)
   }
 } };
