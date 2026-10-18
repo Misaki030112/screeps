@@ -53,7 +53,10 @@ const R = {
   w8builder(c) {
     if (!home(c)) return; toggle(c);
     if (!c.memory.w) { getEnergy(c); return; }
-    const site = c.pos.findClosestByRange(FIND_MY_CONSTRUCTION_SITES);
+    const all = c.room.find(FIND_MY_CONSTRUCTION_SITES);
+    // north seal walls first (1 energy each, Misaki 17:08), x8-11 before x24-31; then the spawn/extension sites
+    const seal = all.filter(s => s.structureType === STRUCTURE_WALL).sort((a, b) => (a.pos.x <= 11 ? 0 : 1) - (b.pos.x <= 11 ? 0 : 1));
+    const site = seal[0] || c.pos.findClosestByRange(all);
     if (site) { if (!c.pos.inRangeTo(site, 3)) go(c, site.pos.x, site.pos.y, 3); else c.build(site); return; }
     const rep = c.pos.findClosestByRange(FIND_STRUCTURES, { filter: s => (s.structureType === STRUCTURE_CONTAINER || s.structureType === STRUCTURE_ROAD) && s.hits < s.hitsMax * 0.6 });
     if (rep) { if (!c.pos.inRangeTo(rep, 3)) go(c, rep.pos.x, rep.pos.y, 3); else c.repair(rep); return; }

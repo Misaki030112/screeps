@@ -1,6 +1,6 @@
 {
- "next_at": "2026-10-18T16:20:00+08:00",
- "reason": "15:58 patrol: observe-only (parent live on W47N8, commit e89b147 15:57 cqminer spot fix; memory API 429 till ~20:09, long q.py exprs time out, keep queries short). Home tick 83720539: RCL6 85.4k, storage 50.8k (>15k reserveE), ea 2300/2300, bkt 10k, 0 hostiles, 4 home sites (terminal/lab line), res W45N8 2283 / W45N7 1876. GAP: 0 builders / 0 upgraders / 0 home hauler since claim: run1 returns at CQ.wantSpawn (spawn.js 2c, before targets()) every tick, so home roles never reach the queue and room.memory.roleTargets is stale (shows builder 0). cqminer 5 alive for 2 sources (bug fixed e89b147) wasted spawn time. W47N8 RCL2, ttd 4585 (guard <4000). Next: verify cqminer stops at 2 and that home builders get a slot once W47N8 quotas fill; if still 0 builders, propose to parent a home-builder slot (e.g. 1 builder before CQ when storage > reserve+10k).",
+ "next_at": "2026-10-18T17:30:00+08:00",
+ "reason": "17:05 patrol: observe-only (w8patrol live, e986036 17:05:43 gated cqhauler home-storage fetch at reserveE+5k=20k; API 429 from concurrent agents). Home tick 83721480: storage 14.5k (54.3k at 16:15 -> drained by cqhaulers), RCL6 89080 moving again (+3.6k since 16:50, 2 upgraders but idle ~40% = energy-starved), builders 2 (gated: storage<reserveE 15k), cpu 15.7 rising (shard3 cap 20), bkt 10k, alerts LOW only, reservers 2 alive, rhauler parked_threat 29% on one. Next: storage must stop falling and rise (target >15k so builders resume); if still falling at 17:30 find the drain in creep_ticks; CPU avg must stay <~17; check rhauler parked_threat is real threat state.",
  "road_plan": {
   "doc": "docs/ROADS.md",
   "each_patrol": [
