@@ -16,7 +16,7 @@ Last full refresh: **2026-10-20 00:0x strategy review** (remote posture after no
 
 | | |
 |---|---|
-| Home | W46N8 **RCL6** ~509k/3.645M at ~22–23 e/t → **RCL7 ~10-26 evening**; cap 2300, storage ~15k (reserve floor), gates min ~172k, walls 142.1k (step 2 post-RCL7), SM 5 available |
+| Home | W46N8 **RCL6** ~596k/3.645M at ~22 e/t (realistic ceiling ~23, docs/MODEL.md 04:4x) → **RCL7 ~10-27 01:00 (10-26 late with reserve7 moved to W47N8)**; cap 2300, storage ~15k (reserve floor), gates min ~172k, walls 142.1k (step 2 post-RCL7), SM 5 available |
 | W47N8 | claimed 10-18; **RCL4** ~219k/405k at ~30 e/t live → **RCL5 ~10-20 07:30**; 20/20 ext, storage 35,32, tower 33,35 (RCL5 #2 at 24,8), seal walls 50k; Spawn2; SM 3 available; rooms independent |
 | Remote | W45N8 + W45N7 (home, SAFE; player = flee+pause 1500 t, NPC defender ON); W47N7 reserved, mined by W47N8 |
 | CPU | **~12–14 avg of 20**, bucket ~10000 — see `docs/CPU.md` |

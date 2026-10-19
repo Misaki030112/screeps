@@ -62,3 +62,23 @@ Open question from the 23:5x evaluation: the home hauler (link era, 6C3M, 450 e,
 - **Saving if removed:** ~0.3 e/t (about 1.1% of the 26 e/t upgrade), so RCL7 lands ~1.5 h earlier out of ~5.5 days. Small.
 - **Why not remove it now:** (1) `bodyEnergy('queen')` sizes a queen to `energyAvailable` when no hauler is alive, so hauler 0 would quietly shrink queen bodies; (2) the hauler is the only creep that empties the mineral container 41,24 during an O cycle (next regen ~10-21 20:30) and clears source A overflow if link 30,11 stalls; (3) the 2-creep emergency path (`!alive.hauler && !alive.queen ...`) assumes it. Taking it out means decoupling all three for 0.3 e/t.
 - **Decision:** keep 1x 6C3M through RCL6. At RCL7 sizing, if Misaki pauses the O cycle (`Memory.ops.mineralCap`, still awaiting her answer since 22:4x), revisit as spawn-on-demand (hauler only while container 31,12 > 1000, mineral container > 400, or drops > 300) after decoupling the queen sizing from `alive.hauler`.
+
+## 2026-10-20 04:4x strategy review: home realistic upgrade ceiling, RCL7 ETA, reserve7 owner
+
+Question: home "ideal" is 26.0 e/t but hours rarely exceed ~25 and the 24 h average is 18.7. Is energy being lost, and when does RCL7 really land?
+
+- Measured (room_stats, RCL6): 24 h 18.69 e/t (4.25 s/t; includes the 10-19 W47N8 fight and the wall builder before the 00:3x step-2 hold),
+  6 h 21.86 e/t (+ build 1.71 + storage +0.19 = **23.75 e/t to sinks**). Hourly 10-20: 00h 25.4, 01h 24.8, 02h 26.3, 03h 13.8, 04h 18.8.
+- Conservation holds: 03h upgrade+Δstorage = 16.0 vs ~24.4 the hours before; the ~8.4 e/t x ~850 t ≈ 7.1k gap matches the home-funded joint
+  defence (2x 11RA11M 2200 + w8healer 11H11M 3300 ≈ 7.7k). The bank-first rule (0ff7935) only changes *when* storage is refilled; it loses nothing
+  while upgraders are not WORK-capped (28 WORK vs ~24 e/t). Closes the 03:5x ROADMAP watch on the "hard 15k switch".
+- Why ~23.75 and not 26.0: the flow ideal (net 28.09) omits upgrader bodies (2x 14W1C2M = 2.07 e/t), the 2nd queen (Misaki's refill-speed
+  sizing, 16C8M + 22C11M = 1.9 vs 0.43 modelled) and **reserve7** (W47N7, W47N8's remote, paid by home ≈ 1.3 e/t). 28.09 - 2.07 - 1.47 - 1.3 ≈ 23.3
+  → home runs at its realistic ceiling. Use **~22-23 e/t** (not 26) for home ETAs.
+- **RCL7 ETA:** 3.049M left at t83751450. 6 h rate 21.9 → ~139k t → **~10-27 01:00 UTC+8**; 24 h rate 18.7 → ~10-28 04:40 (after novice end 10-28 03:33).
+  Each home-funded defence episode like 03h costs ~7k ≈ 20 min. Wall step 2 (300k, ~69k e) waits for RCL7 (Misaki 10-19 20:51), so it starts ~10-27.
+- **Lever shipped bd442b2 (deployed t83751519, dormant until W47N8 cap ≥ 1800 = RCL5 ~08:50):** reserve7 is spawned by W47N8 Spawn2; home is the
+  fallback only when our W47N7 reservation is < 1000 (or W47N8 can't). PathFinder: Spawn1 → W47N7 ctl 102 tiles, Spawn2 73 tiles, so the colony saving
+  is small (~0.1 e/t); the point is moving ~1.3 e/t off home (≈ 8k t ≈ 9-10 h earlier RCL7) onto W47N8 (≈ 2-3 h later RCL6 ~10-22, which adds no tower).
+  tests/reserve7_owner.js. Revert = one commit if Misaki prefers W47N8 RCL6 first.
+- Not changed: queen pair (Misaki's call), rhaulers (64 CARRY vs need ~65; idle 84% waiting_pickup is remote containers near-empty, not overcapacity of note).
