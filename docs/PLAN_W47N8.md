@@ -23,9 +23,9 @@ Theoretical limit: 4 sources × 10 = 40 e/t; minimum upkeep at these distances i
 Extension cost note: RCL5 extensions cost 3k each regardless (10 → 30k), RCL7 ext 200 cap still 3k each. Build order: closest to hub/haul
 path first (hub ring, then link-road side), never near Spawn2.
 
-ETAs (net upgrade 26 e/t at RCL4, ~28 at RCL5 with link, ~30 at RCL6): RCL5 ≈ 10-20 06:00–10:00; RCL6 (1.215M) ≈ +12–13 h of upgrade
-plus build pauses ≈ 10-21 evening–10-22; RCL7 (3.645M) ≈ +35 h ≈ 10-24; RCL8 (10.935M) ≈ +100 h ≈ 10-29. (Faster than the earlier
-estimate because the earlier estimate assumed 10–14 e/t upgrade.) The cap after RCL6 is income, not logistics: 40 e/t gross.
+ETAs (net upgrade 26 e/t at RCL4, ~28 at RCL5 with link, ~30 at RCL6+; tick 4.2 s): RCL5 (317k left / 26) ≈ 12.2k t ≈ 10-20 07:00;
+RCL6 (1.215M / 28 ≈ 43k t ≈ 50 h) ≈ 10-22 09:00; RCL7 (3.645M / 30 ≈ 121k t ≈ 142 h) ≈ 10-28; RCL8 (10.935M / 30 ≈ 365k t ≈ 425 h) ≈ 11-14.
+After RCL6 the limit is income (40 e/t gross), not logistics; only more remotes move RCL7/8 noticeably (+8 e/t net ≈ -25% time).
 
 ## Spawn relocation (decision: (a) keep Spawn2 until RCL7)
 Facts: at RCL4–6 only ONE spawn is allowed, so moving means destroy Spawn2 then build 32,32 (15k). No home support (directive).
