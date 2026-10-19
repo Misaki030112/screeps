@@ -25,9 +25,14 @@ try:
     mods = {f[:-3]: open('dist/' + f).read() for f in os.listdir('dist')}
     print(api.req('user/code', {'branch': 'default', 'modules': mods}))
     h = subprocess.run(['git', 'rev-parse', '--short', 'HEAD'], capture_output=True, text=True).stdout.strip()
-    if subprocess.run(['git', 'status', '--porcelain', 'src'], capture_output=True, text=True).stdout.strip(): h += '+dirty'
+    dirty = subprocess.run(['git', 'status', '--porcelain', 'src'], capture_output=True, text=True).stdout.split('\n')
+    dirty = [l[3:].strip() for l in dirty if l.strip()]
+    note = ' '.join(sys.argv[1:])
+    if dirty:   # name the uncommitted files that went live (17:32/17:44 '+dirty' deploys carried other agents' edits untraced)
+        h += '+dirty'; note = (note + ' ' if note else '') + '[dirty: ' + ', '.join(dirty) + ']'
+        print('WARNING: deploying uncommitted src edits:', ', '.join(dirty))
     t = api.req('game/time?shard=shard3')['time']
-    with db.connect() as c: c.execute('INSERT INTO deploys VALUES (now(),%s,%s,%s)', (t, h, ' '.join(sys.argv[1:])))
+    with db.connect() as c: c.execute('INSERT INTO deploys VALUES (now(),%s,%s,%s)', (t, h, note))
     print('deployed', h, 'tick', t)
 finally:
     os.remove(LOCK)

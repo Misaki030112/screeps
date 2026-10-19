@@ -3,6 +3,15 @@
 Novice zone ends **2026-10-28 03:33 UTC+8**. Defence timeline: `docs/DEFENSE_NOVICE.md` (2026-10-16); detail `docs/DEFENSE.md` / geometry `docs/DEFENSE_PLAN.md`.
 **Safe mode: NEVER auto-activate** — alert Misaki.
 
+## 2026-10-19 18:10 two-room evaluation (45-min window 17:21-18:06 vs 16:36-17:21)
+
+- Home W46N8: upgrade 12.4 e/t (prev 22.4), storage +4.6k (prev -3.9k) = energy rerouted to storage by the 15k reserve hold after joint-defence spent ~4.4k on 2 home w8defenders; recovered by 18:06 (storage 17.4k, 2 upgraders). Walls 142101 no loss, gates rising.
+- W47N8: upgrade 16.1 e/t (prev 13.4), still ~half of ideal 29.6; ctl container 13,26 repeatedly empty because 6 threat-mode defenders (spawn + 6.2 e/t upkeep) drained every store. RCL4 100.5k/405k.
+- CPU avg 14.1 (prev 12.4), one 44.9 spike at the 17:41 joint-defence deploy, bucket >= 9958. Deploy churn: 21 deploys in 70 min, two tagged +dirty carried other agents' uncommitted edits; deploy.py now lists dirty files in the deploys note.
+- **W47N8 patrol, verify after ead1e7f (18:08):** no new w8defender once the north squad is gone (cleared after 60 t); a w8healer only while threat is active and the roster is >= 4 combat; then ctl container refills and live upgrade climbs back to >= 25 e/t within ~2 patrols, else investigate hauler routing to 13,26.
+- **Home patrol, watch:** the reserve hold (T.upgrader=0 under 15k) fires after every spawn cohort and every joint-defence send because the ferry floor sits only ~1k above the reserve. Energy is deferred, not lost. If it holds > 30 min twice more today, propose to Misaki: keep 1 upgrader while ctl container >= 1500 (that energy is already parked at the controller), or a lower reserve during peacetime.
+- **Proposal (parent/Misaki):** deploy.py refuses +dirty src unless `--allow-dirty`; not switched on mid-incident because it could block an urgent defence deploy.
+
 ## 2026-10-19 strategy review (CPU budget, `docs/CPU.md`)
 
 - 24 h: W47N8 RCL2→3 (10-18 22:00) →4 (10-19 ~10:00), now 48.6k/405k at ~10 e/t → **RCL5 (tower 2) ETA ~10-21 07:00**. Its 3 SM charges are unused (the 10-18 autoSafe question is moot).
