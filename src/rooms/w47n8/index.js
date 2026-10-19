@@ -16,7 +16,8 @@ function bodyFor(role, e) {
   // 02:35: W47N7 routes are road almost end to end (18,17->ctl 45 tiles/43 road, 31,34->59/56), so 2C:1M keeps full speed loaded:
   // 10C5M=750 carries 500 vs 8C8M=800 carrying 400 at cap 800
   if (role === 'w8rhauler') { if (e < 450) { const n = Math.max(2, Math.floor(e / 100)); return rep(n, CARRY).concat(rep(n, MOVE)); }
-    const k = Math.min(8, Math.floor(e / 150)); return rep(2 * k, CARRY).concat(rep(k, MOVE)); }
+    // 15:55: 1 WORK (replaces 1 CARRY, still 2 heavy:1 MOVE) so loaded rhaulers build/repair the W47N7 road in passing
+    const k = Math.min(8, Math.floor((e - 50) / 150)); return rep(2 * k - 1, CARRY).concat([WORK], rep(k, MOVE)); }
   if (role === 'w8miner') { const w = Math.max(2, Math.min(5, Math.floor((e - 50) / 100))); return rep(w, WORK).concat([MOVE]); }
   // 15:10 model: local routes are paved end to end (A->ctl 25/25 road, B->ctl 16/16, hub legs 1 unpaved tile), so 2C:1M keeps full
   // speed loaded on road: 10C5M = 750 carries the same 500 as 10C10M = 1000 (-0.5 e/t upkeep over 3 haulers). Below 450: 1:1.

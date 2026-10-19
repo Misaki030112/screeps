@@ -144,6 +144,26 @@ function fillerRun(c) {
   if (!t) { if (c.store.getFreeCapacity(E) > 0 && st) { if (!c.pos.isNearTo(st)) go(c, st.pos.x, st.pos.y); else c.withdraw(st, E); return; } return go(c, S.fill[0], S.fill[1], 0); }
   if (!c.pos.isNearTo(t)) go(c, t.pos.x, t.pos.y); else { c.transfer(t, E); c.memory.ft = undefined; }
 }
+// 15:55 (Misaki "路断了"): W47N7 haul roads were never in any plan/repair list (laid by the old conquest builders), so 20 of ~39
+// decayed to 30-570 hits and the rest vanished. remote_roads.js = shortest path cont -> N exit (tools/w47n7_roads.py).
+// rminer places missing sites (<=3 open, every 50t); loaded rhaulers with a WORK part build/repair in passing (no detour).
+const RROADS = require('./remote_roads').ROADS;
+function rroadSites(room) {
+  if (Game.time % 50 || !room) return;
+  let open = room.find(FIND_MY_CONSTRUCTION_SITES).length;
+  for (const [x, y] of RROADS) {
+    if (open >= 3) return;
+    if (room.lookForAt(LOOK_STRUCTURES, x, y).some(s => s.structureType === STRUCTURE_ROAD) || room.lookForAt(LOOK_CONSTRUCTION_SITES, x, y).length) continue;
+    if (room.createConstructionSite(x, y, STRUCTURE_ROAD) === OK) open++;
+  }
+}
+function rroadWork(c) {
+  if (c.room.name !== RM.room || !c.store[E] || !c.getActiveBodyparts(WORK)) return;
+  const site = c.pos.findInRange(FIND_MY_CONSTRUCTION_SITES, 3, { filter: s => s.structureType === STRUCTURE_ROAD })[0];
+  if (site) return c.build(site);
+  const r = c.pos.lookFor(LOOK_STRUCTURES).find(s => s.structureType === STRUCTURE_ROAD && s.hits < s.hitsMax * 0.8);
+  if (r) c.repair(r);
+}
 function rgo(c, x, y, r) { return c.moveTo(new RoomPosition(x, y, RM.room), { range: r, reusePath: 20 }); }
 const R = {
   w8miner(c) {
@@ -241,6 +261,7 @@ const R = {
     }
     const S = RM.sources[c.memory.si | 0], [x, y] = S.stand;
     if (c.room.name !== RM.room) return rgo(c, x, y, 0);
+    if ((c.memory.si | 0) === 0) rroadSites(c.room);
     const src = c.room.lookForAt(LOOK_SOURCES, S.src[0], S.src[1])[0];
     if (c.pos.x !== x || c.pos.y !== y) {
       // stand taken (e.g. a BustJetter creep; passive, never attack): mine from any tile next to the source
@@ -293,6 +314,7 @@ const R = {
       if (!c.pos.isNearTo(t)) return rgo(c, t.pos.x, t.pos.y, 1);
       return t.amount !== undefined ? c.pickup(t) : c.withdraw(t, E);
     }
+    rroadWork(c);
     if (!home(c)) return;
     const room = Game.rooms[C.ROOM];
     // 15:10 model: 700-carry rhaulers spent 24-143 ticks per trip inside W47N8 filling single 50-energy extensions across the hub and
