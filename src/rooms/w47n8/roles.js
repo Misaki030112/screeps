@@ -224,6 +224,9 @@ const R = {
         return;
       } else if (c.memory.signer) delete c.memory.signer;
     }
+    // 10:15: w8rhauler ttl15 sat loaded at W47N7 23,15 (picked 500 at 18,17 with ~20 ttl left, dies before the hub ~50 tiles away).
+    // Under 90 ttl: carry what I have home, never start a new pickup (energy stays in the container for the next hauler).
+    if (!c.memory.w && c.ticksToLive < 90) { if (c.store[E] > 0) c.memory.w = true; else { c.suicide(); return; } }
     if (!c.memory.w) {
       if (c.room.name !== RM.room) return rgo(c, 25, 25, 20);
       const amt = o => (o.amount !== undefined ? o.amount : o.store[E]);
