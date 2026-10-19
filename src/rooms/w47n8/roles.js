@@ -34,7 +34,8 @@ function haulPick(c) {
     for (const h of room.find(FIND_MY_CREEPS, { filter: x => x.memory.role === 'w8hauler' && x.id !== c.id && x.memory.pt && !x.memory.w }))
       claimed[h.memory.pt] = (claimed[h.memory.pt] || 0) + h.store.getFreeCapacity();
     const cands = room.find(FIND_DROPPED_RESOURCES, { filter: r => r.resourceType === E && r.amount >= 50 }).concat(room.find(FIND_STRUCTURES,
-      { filter: s => s.structureType === STRUCTURE_CONTAINER && s.store[E] >= 100 && !(s.pos.x === C.CTL_CONT[0] && s.pos.y === C.CTL_CONT[1]) && (!isHub(s) || hubSpare(room)) }));
+      { filter: s => s.structureType === STRUCTURE_CONTAINER && s.store[E] >= 100 && !(s.pos.x === C.CTL_CONT[0] && s.pos.y === C.CTL_CONT[1]) && (!isHub(s) || hubSpare(room))
+      && !(TH.on() && (s.pos.x === C.SOURCES[0].stand[0] && s.pos.y === C.SOURCES[0].stand[1] ? s.store[E] < 1500 : C.DROP_CONT && s.pos.x === C.DROP_CONT[0] && s.pos.y === C.DROP_CONT[1])) }));
     let bs = 0; t = null;
     // 04:05: ground piles score x2 (they decay 1+/tick): 241 sat on road 29,35 losing 1/t while haulers chose 780-1110 source conts
     // 18:20: score by the whole unclaimed pile, not min(free, pile): capped by a 150-250 free store every pile scored the same and
@@ -120,6 +121,44 @@ function wallJob(room, c) {
   const t = c.pos.findClosestByRange(ws.filter(s => s.hits < lo + band * 0.6));
   c.memory.wt = t.id; return t;
 }
+// 14:38 threat-mode zones. Traces t83739330-459: 4 builders (5-6W, 300 carry) walked loaded 24,8 -> 13,8 together (east->west seal
+// ping-pong on the global 'lowest first') and refilled at ctl cont 13,26 / hub 33,33 (~23 tiles from y3), ~170 hits/t vs ~2.2k capacity.
+// Now each builder owns a zone (W seal x<=11 / E seal x>=24 / R core ramparts), keeps working whatever is in range 3 (within 5k of
+// the zone low), and refills next to it: E from north source cont 26,11 (haulers leave it to them), W from the drop cont 9,5
+// (haulers fill it), R from the nearest container/storage.
+const zoneOf = s => (s.structureType === STRUCTURE_RAMPART ? 'R' : s.pos.x <= 11 ? 'W' : 'E');
+const srcN = () => Game.rooms[C.ROOM].lookForAt(LOOK_STRUCTURES, C.SOURCES[0].stand[0], C.SOURCES[0].stand[1]).find(s => s.structureType === STRUCTURE_CONTAINER);
+const dropCont = () => C.DROP_CONT && Game.rooms[C.ROOM].lookForAt(LOOK_STRUCTURES, C.DROP_CONT[0], C.DROP_CONT[1]).find(s => s.structureType === STRUCTURE_CONTAINER);
+const dropSite = () => C.DROP_CONT && Game.rooms[C.ROOM].lookForAt(LOOK_CONSTRUCTION_SITES, C.DROP_CONT[0], C.DROP_CONT[1])[0];
+function zoneJob(room, c) {
+  const tgt = TH.wallTarget(C.WALL_TARGET[room.controller.level] || 0);
+  const ws = room.find(FIND_STRUCTURES, { filter: s => (s.structureType === STRUCTURE_WALL && s.hits < tgt && C.SEAL.some(([x, y]) => s.pos.x === x && s.pos.y === y))
+    || (s.structureType === STRUCTURE_RAMPART && s.my && s.hits < tgt) });
+  if (!ws.length) { delete c.memory.tz; return null; }
+  const by = { W: [], E: [], R: [] }; for (const s of ws) by[zoneOf(s)].push(s);
+  let z = c.memory.tz;
+  if (!z || !by[z] || !by[z].length) {
+    const n = { W: 0, E: 0, R: 0 };
+    for (const o of room.find(FIND_MY_CREEPS, { filter: x => x.memory.role === 'w8builder' && x.id !== c.id && x.memory.tz })) n[o.memory.tz] = (n[o.memory.tz] || 0) + 1;
+    let bs = -1; z = null;
+    for (const k of ['E', 'W', 'R']) { if (!by[k].length) continue; const d = by[k].reduce((a, s) => a + tgt - s.hits, 0) / (n[k] + 1); if (d > bs) { bs = d; z = k; } }
+    c.memory.tz = z;
+  }
+  const zs = by[z], fresh = zs.filter(s => s.structureType === STRUCTURE_RAMPART && s.hits < 5000);
+  if (fresh.length) return _.min(fresh, s => s.hits);
+  const lo = _.min(zs, s => s.hits).hits, near = zs.filter(s => s.hits < lo + 5000 && c.pos.inRangeTo(s, 3));
+  if (near.length) return _.min(near, s => s.hits);
+  return c.pos.findClosestByRange(zs.filter(s => s.hits < lo + 300)) || _.min(zs, s => s.hits);
+}
+// zone refill (threat mode, E/W only): the zone's container; wait <=40 ticks for it when empty-handed
+function zoneRefill(c) {
+  const k = c.memory.tz === 'E' ? srcN() : c.memory.tz === 'W' ? dropCont() : null;
+  if (!k) return false;
+  if (k.store[E] < 50 && c.store[E] > 0) { c.memory.w = true; return false; } // container dry: work what I hold
+  if (k.store[E] < 50 && (c.memory.fw = (c.memory.fw || 0) + 1) > 40) return false;
+  if (!c.pos.isNearTo(k)) go(c, k.pos.x, k.pos.y); else if (k.store[E]) { c.withdraw(k, E); c.memory.fw = 0; }
+  return true;
+}
 // ---- W47N7 remote (only while reserved by us) ----
 const RM = C.REMOTE;
 const LAY = require('./layout');
@@ -165,7 +204,9 @@ const R = {
     // CPU 13:10: the builder scan only runs when no fill target (same result as before, evaluated lazily)
     const fed = () => hubFeed(room8) && room8.find(FIND_MY_CREEPS, { filter: x => x.memory.role === 'w8builder' && x.store.getFreeCapacity(E) >= 50 && nearHub(x, 8) })
       .sort((a, b) => a.store[E] - b.store[E])[0];
-    const t = fillTarget(c, true) || fed() || sink(room8, c) || room8.storage;
+    // 14:38 threat mode: after spawn/extensions/tower, keep the west-seal drop cont stocked (<1500) before the ctl/hub sinks
+    const dk = () => { if (!TH.on()) return null; const d = dropCont(); return d && d.store[E] < 1500 ? d : null; };
+    const t = fillTarget(c, true) || fed() || dk() || sink(room8, c) || room8.storage;
     // nothing to fill: hand it to the emptiest w8upgrader/w8builder; never drop on the ground (Misaki rule), else wait
     const k = t || Game.rooms[C.ROOM].find(FIND_MY_CREEPS, { filter: x => (x.memory.role === 'w8upgrader' || x.memory.role === 'w8builder')
       && x.store.getFreeCapacity(E) > 0 }).sort((a, b) => a.store[E] - b.store[E])[0];
@@ -297,12 +338,15 @@ const R = {
       else if ((c.memory.fw = (c.memory.fw || 0) + 1) <= 40) return;
     }
     if (c.store[E] > 0) delete c.memory.fw;
+    if (!c.memory.w && TH.on() && c.memory.tz && zoneRefill(c)) return;
     if (!c.memory.w) { getEnergy(c); return; }
     const all = c.room.find(FIND_MY_CONSTRUCTION_SITES);
     // north seal walls first (1 energy each, Misaki 17:08), x8-11 before x24-31; then the spawn/extension sites
     const seal = all.filter(s => s.structureType === STRUCTURE_WALL).sort((a, b) => (a.pos.x <= 11 ? 0 : 1) - (b.pos.x <= 11 ? 0 : 1));
     // 14:23 threat mode: seal walls + core ramparts to 50k before other sites (seal wall sites still first)
-    const tj = !seal[0] && TH.on() && wallJob(c.room, c);
+    const tj = !seal[0] && TH.on() && zoneJob(c.room, c);
+    const ds = tj && c.memory.tz === 'W' && dropSite();
+    if (ds) { if (!c.pos.inRangeTo(ds, 3)) go(c, ds.pos.x, ds.pos.y, 3); else c.build(ds); return; }
     if (tj) { if (!c.pos.inRangeTo(tj, 3)) go(c, tj.pos.x, tj.pos.y, 3); else c.repair(tj); return; }
     const site = seal[0] || c.pos.findClosestByRange(all);
     if (site) { if (!c.pos.inRangeTo(site, 3)) go(c, site.pos.x, site.pos.y, 3); else c.build(site); return; }
@@ -324,3 +368,4 @@ const R = {
 };
 // main.js dispatches roles[role].run(c): wrap (bare functions crashed every w8 creep with 'run is not a function')
 module.exports = Object.fromEntries(Object.entries(R).map(([k, f]) => [k, { run: f }]));
+Object.defineProperty(module.exports, '_t', { value: { zoneJob, zoneOf }, enumerable: false }); // tests only

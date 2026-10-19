@@ -54,7 +54,7 @@ function spawnRun(spawn) {
   const thr = TH.on(), wtgt = TH.wallTarget(C.WALL_TARGET[(room.controller || {}).level] || 0);
   const wallsLow = thr && room.find(FIND_STRUCTURES, { filter: s => ((s.structureType === STRUCTURE_WALL && C.SEAL.some(([x, y]) => s.pos.x === x && s.pos.y === y)) || (s.structureType === STRUCTURE_RAMPART && s.my)) && s.hits < wtgt }).length > 0;
   if (!want && wallsLow && n('w8upgrader') < (room.controller.ticksToDowngrade < 10000 ? 2 : 1)) want = 'w8upgrader';
-  else if (!want && wallsLow && n('w8builder') < 3) want = 'w8builder';
+  else if (!want && wallsLow && n('w8builder') < (avail === cap ? 4 : 3)) want = 'w8builder'; // 14:38: 4th while spawn energy idles
   else if (!want && !wallsLow && n('w8upgrader') < (sites ? 2 : 3)) want = 'w8upgrader';
   // 10:40: rhaulers sat last in the queue, so with 4 builders + 6 sites on the single Spawn2 all 6 (spawned in one burst at RCL3) aged out
   // together: 0 alive t~83735970-6045 while W47N7 conts hit 2000/2000 + ~1.2k dropped. Keep a floor of 2 ahead of builders/surplus.
@@ -181,6 +181,12 @@ const PARTS = (c, t) => c.body.reduce((n, p) => n + (p.type === t && p.hits > 0 
 const tdmg = r => (r <= 5 ? 600 : r >= 20 ? 150 : 600 - (r - 5) * 30);
 function towerRun(room) {
   TH.mark(room); TH.mark(Game.rooms[C.REMOTE.room]);
+  // 14:38 threat mode: drop container by the west seal (haulers fill it; never energy on the ground). Kept after the threat (reusable, 5-container cap respected)
+  if (Game.time % 25 === 3 && TH.on() && C.DROP_CONT && room.controller && room.controller.my) {
+    const [dx, dy] = C.DROP_CONT, at = room.lookForAt(LOOK_STRUCTURES, dx, dy).concat(room.lookForAt(LOOK_CONSTRUCTION_SITES, dx, dy));
+    const nc = room.find(FIND_STRUCTURES, { filter: s => s.structureType === STRUCTURE_CONTAINER }).length + room.find(FIND_MY_CONSTRUCTION_SITES, { filter: s => s.structureType === STRUCTURE_CONTAINER }).length;
+    if (!at.some(s => s.structureType === STRUCTURE_CONTAINER) && nc < 5) room.createConstructionSite(dx, dy, STRUCTURE_CONTAINER);
+  }
   const towers = room.find(FIND_MY_STRUCTURES, { filter: s => s.structureType === STRUCTURE_TOWER });
   if (!towers.length) return;
   const h = room.find(FIND_HOSTILE_CREEPS);
