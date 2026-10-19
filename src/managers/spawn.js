@@ -127,6 +127,12 @@ function targets(room, count, backlog, ctlEnergy, sites) {
       if (T.builder === 5 && bp && f >= 40000 && se >= 40000) T.builder = 6; } }
   return T;
 }
+// Upgraders under defLow (storage < Memory.defense.reserveE). While the wall step is held the queen's ferry floor IS reserveE, so
+// storage sits right at it and every spawn/tower refill dips it below: roleTargets.upgrader went 0 at storage 14.4-14.75k and a
+// 45-TTL upgrader went unreplaced (patrol 10-20 01:0x). Upgraders draw only the ctl container (the ferry stops at the floor), so
+// within UP_DIP of the reserve the held room keeps its normal upgraders; a real deficit (or no hold) still banks everything.
+const UP_DIP = 2000;
+function defLowUpgraders(t, e, reserve, held, downgradeRisk) { return held && e >= reserve - UP_DIP ? t : (downgradeRisk ? 1 : 0); }
 // Pre-spawn: a dying upgrader / home hauler / queen stops counting once its TTL is under spawn time + walk + margin,
 // so the replacement is queued while the room is still full. Counting it to death let upgrader83631342 (died 83632876) go
 // unreplaced 276 ticks: a remote reserver/rhauler/rminer wave took the 1300 first, 1x10W upgraded ~10/t (patrol 10-14 11:43).
@@ -259,7 +265,7 @@ function spawnOrder(count, T, nSites) {
     ? ['queen', 'hauler', 'upgrader', 'REMOTE', 'filler', 'manager', 'builder', 'mminer']
     : ['queen', 'hauler', 'REMOTE', 'filler', 'manager', 'upgrader', 'builder', 'mminer'];
 }
-module.exports = { rhTarget, birthDirs, targets, mineralCapped, rhaulerNeed, remoteNext, retiring, B, reserverBody, nearFull, bodyEnergy, spawnOrder, run(spawn) {
+module.exports = { defLowUpgraders, rhTarget, birthDirs, targets, mineralCapped, rhaulerNeed, remoteNext, retiring, B, reserverBody, nearFull, bodyEnergy, spawnOrder, run(spawn) {
   // spawn-wait metric (Misaki 10-18 09:30: zero spawn idle due to refill). Memory.stats.sw[room] cumulative ticks:
   //   busy = spawning; wait = a creep was wanted, cost <= cap but energyAvailable < cost (refill wait); idle = nothing wanted.
   //   last = [role, cost, avail] of the latest wait.
@@ -352,7 +358,8 @@ function run1(spawn, onWait) {
   { const Wr = require('./walls'), dr = Wr.defReserve ? Wr.defReserve() : 0, war = Wr.siege(room);
     if (dr && room.storage && T.builder > 0 && !war) { const sur = room.storage.store[RESOURCE_ENERGY] - dr - 2000; T.builder = sur < 0 ? 0 : Math.min(T.builder, 1 + Math.floor(sur / 4000)); }
     if (war) T.builder = Math.min(T.builder, 1);
-    if (Wr.defLow && Wr.defLow(room)) { if (!war) T.builder = 0; T.upgrader = (room.controller.ticksToDowngrade || 0) < Wr.UP_SAFE ? 1 : 0; } }
+    if (Wr.defLow && Wr.defLow(room)) { if (!war) T.builder = 0;
+      T.upgrader = defLowUpgraders(T.upgrader, room.storage ? room.storage.store[RESOURCE_ENERGY] : 0, dr, !!(Wr.stepHeld && Wr.stepHeld(room)), (room.controller.ticksToDowngrade || 0) < Wr.UP_SAFE); } }
   room.memory.roleTargets = T;
   const homeRole = role => {
     const mem = {};

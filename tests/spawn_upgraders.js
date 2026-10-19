@@ -26,6 +26,11 @@ const cases = [
   ['storage surplus but ctl EMA low -> 2', () => assert.strictEqual(up({ storage: 5000, ema: 300 }), 2)],
   ['higher defender reserve raises the floor', () => { assert.strictEqual(up({ storage: 2300, reserve: 2000 }), 2); assert.strictEqual(up({ storage: 3000, reserve: 2000 }), 3); }],
   ['no storage: EMA only (pre-storage behaviour)', () => assert.strictEqual(up({ hasStorage: false, ema: 1400 }), 3)],
+  ['defLow: held step within 2k of reserve keeps upgraders; deeper dip or no hold -> 0 (1 on downgrade risk)', () => {
+    assert.strictEqual(S.defLowUpgraders(2, 14400, 15000, true, false), 2);
+    assert.strictEqual(S.defLowUpgraders(2, 12999, 15000, true, false), 0);
+    assert.strictEqual(S.defLowUpgraders(2, 14400, 15000, false, false), 0);
+    assert.strictEqual(S.defLowUpgraders(2, 5000, 15000, false, true), 1); }],
   ['capped by upgrader spots', () => assert.strictEqual(up({ storage: 9000, ema: 5000 }), 3)],
   ['sites: base 1', () => assert.strictEqual(up({ sites: 2, storage: 0 }), 1)],
   ['road/build mode: upgrader body 700e (6W1C1M), normal mode cap; other roles unaffected', () => {
