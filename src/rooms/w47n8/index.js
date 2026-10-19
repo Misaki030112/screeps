@@ -47,6 +47,11 @@ function spawnRun(spawn) {
   // rose to 633/1000; the surplus 3rd only spawned after loose passed 1200, so the ctl ran dry every cycle
   if (!want && n('w8hauler') < 3) want = 'w8hauler';
   else if (!want && n('w8upgrader') < (sites ? 2 : 3)) want = 'w8upgrader';
+  // 10:40: rhaulers sat last in the queue, so with 4 builders + 6 sites on the single Spawn2 all 6 (spawned in one burst at RCL3) aged out
+  // together: 0 alive t~83735970-6045 while W47N7 conts hit 2000/2000 + ~1.2k dropped. Keep a floor of 2 ahead of builders/surplus.
+  const r7m = Memory.ops && Memory.ops.r7, ours7 = r7m && r7m.by === 'Misaki' && (r7m.endTime || 0) > Game.time + 200;
+  const R7 = Game.rooms[C.REMOTE.room], lo7 = R7 ? looseE(R7) : 0;
+  if (!want && ours7 && lo7 > 1000 && n('w8rminer') && cs.filter(c => c.memory.role === 'w8rhauler' && (c.spawning || c.ticksToLive > 150)).length < 2) want = 'w8rhauler';
   // 04:10: size by remaining build work, not site count: 3 cheap road sites (~900 left) brought a 4th builder while the ctl cont sat at 0,
   // wbuilder idle 0.69 (6h) and 4 upgraders energy-starved
   else if (!want && sites && n('w8builder') < (siteRem(room) >= 3000 ? 4 : siteRem(room) >= 1200 ? 3 : 2)) want = 'w8builder'; // 17:05: Spawn2 sat idle at 300/300 with 5 ext sites
@@ -82,14 +87,12 @@ function spawnRun(spawn) {
     if (room.find(FIND_STRUCTURES, { filter: s => s.structureType === STRUCTURE_WALL && s.hits < tgt && C.SEAL.some(([x, y]) => s.pos.x === x && s.pos.y === y) }).length) want = 'w8builder';
   }
   // 7) W47N7 remote (after all local roles): only while home's reserve7 holds the reservation for us
-  const r7 = Memory.ops && Memory.ops.r7, ours7 = r7 && r7.by === 'Misaki' && (r7.endTime || 0) > Game.time + 200;
   if (!want && ours7) {
     for (let i = 0; i < C.REMOTE.sources.length && !want; i++)
       if (!cs.some(c => c.memory.role === 'w8rminer' && (c.memory.si | 0) === i && (c.spawning || c.ticksToLive > 100))) { want = 'w8rminer'; mem.si = i; }
     // 02:16: 3 rhaulers fell behind 2 reserved sources (~20 e/t): W47N7 had 31,34 full 2000 + 5871 dropped, 18,17 at 1138.
     // +1 per 1500 loose above 1500 in W47N7 (max 6), same idea as the local hauler surplus rule
     // looseE already counts drops + containers (CTL/HUB excludes are W47N8 coords, so both W47N7 conts count)
-    const R7 = Game.rooms[C.REMOTE.room], lo7 = R7 ? looseE(R7) : 0;
     // 02:35: max 6 -> 8: with 5 alive the pile kept growing (6175 -> 6229 dropped + conts 1978/2000 by t83729299); round trips ~90-120 ticks
     // at 400 carry = ~3.6 e/t each, below the 2 sources' ~20 e/t plus decay
     if (!want && n('w8rhauler') < Math.min(8, 3 + Math.floor(Math.max(0, lo7 - 1500) / 1500))) want = 'w8rhauler';
