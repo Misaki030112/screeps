@@ -75,7 +75,7 @@ p = D.defPlan(me(29, 4, 1300), [c('r', 29, 1, { ranged_attack: 8, move: 8 })], {
 p = D.defPlan(Object.assign(me(30, 20, 1900), { hurt: true }), [c('r', 29, 1, { ranged_attack: 8, move: 8 })], { towers: tw }); assert.ok(p.hurt, '86%: still retreating');
 p = D.defPlan(Object.assign(me(30, 20, 1980), { hurt: true }), [c('r', 29, 1, { ranged_attack: 8, move: 8 })], { towers: tw }); assert.ok(!p.hurt && p.move === 'post' && p.goal.y === 4, '>=90%: back to the wall post');
 // posts: right behind the seal (y=4) on the segment nearest the enemy, spread by idx, never the 27,4 swamp
-assert.deepStrictEqual(D.postTile(31, 0), { x: 31, y: 4 }); assert.deepStrictEqual(D.postTile(31, 1), { x: 29, y: 4 }, 'second defender spread 2 tiles');
+assert.deepStrictEqual(D.postTile(31, 0), { x: 31, y: 4 }); assert.deepStrictEqual(D.postTile(31, 1), { x: 30, y: 4 }, 'second defender on the adjacent tile');
 assert.deepStrictEqual(D.postTile(9, 0), { x: 9, y: 4 }, 'west seal segment'); assert.ok([0, 1, 2, 3].every(i => D.postTile(27, i).x !== 27), 'no swamp post');
 p = D.defPlan(me(25, 8), [c('r', 31, 1, { ranged_attack: 8, move: 8 })], { towers: tw }); assert.deepStrictEqual([p.move, p.goal], ['post', { x: 31, y: 4 }], 'enemy at x31 north: go to 31,4');
 p = D.defPlan(me(25, 8), [], { towers: tw, enemyX: 31, quiet: 10 }); assert.deepStrictEqual(p.goal, { x: 31, y: 4 }, 'alert from W47N9 (x31): pre-stage at 31,4');
@@ -83,6 +83,16 @@ p = D.defPlan(me(27, 6), [c('m', 27, 7, { attack: 10, move: 10 })], { towers: tw
 p = D.defPlan(me(27, 6), [c('d', 27, 2, { tough: 14, move: 14 })], { towers: tw }); assert.ok(!p.shoot, 'drain tank north of seal: ignored');
 p = D.defPlan(me(27, 6), [], { towers: tw, quiet: 150 }); assert.strictEqual(p.move, 'recycle', 'quiet 100+ ticks: recycle');
 p = D.defPlan(me(27, 6), [c('a', 26, 7, { ranged_attack: 2, move: 2 }), c('b', 27, 8, { ranged_attack: 2, move: 2 }), c('e', 28, 7, { ranged_attack: 2, move: 2 })], { towers: tw }); assert.ok(p.mass, '3 within 2: rangedMassAttack');
+// ---- dynamic station (Misaki 17:53): shadow the enemy along the inner wall
+{ const st = [];
+  for (const ex of [24, 26, 28, 31]) { const q = D.defPlan(me(24, 4), [c('r', ex, 1, { ranged_attack: 8, move: 8 })], { towers: tw }); st.push(q.move === 'hold' ? 24 : q.goal.x); }
+  assert.ok(st.every((x, i) => !i || x >= st[i - 1]) && st[3] > st[0], 'enemy moves east -> station shifts east ' + st);
+  for (let ex = 0; ex < 50; ex++) for (let i = 0; i < 4; i++) { const t = D.postTile(ex, i); assert.ok(t.y === 4 && t.y > D.SEAL_Y && !(t.x === 27), 'never outside the seal / never swamp ' + JSON.stringify(t)); }
+  const a0 = D.postTile(29, 0), a1 = D.postTile(29, 1); assert.ok(a0.x !== a1.x, 'two defenders never stack');
+  assert.notDeepStrictEqual(D.postTile(29, 0, [{ x: 29, y: 4 }]), { x: 29, y: 4 }, 'builder tile avoided');
+  let q = D.defPlan(me(20, 10), [c('h', 25, 1, { heal: 6, move: 6 }), c('r', 31, 1, { ranged_attack: 8, move: 8 })], { towers: tw, focus: 'r' }); assert.strictEqual(q.goal.x, 31, 'follows the focus target, not the centroid');
+  q = D.defPlan(me(20, 10), [], { towers: tw, quiet: 5 }); assert.deepStrictEqual(q.goal, { x: 28, y: 5 }, 'no hostiles: idle near the wall middle, off road');
+  q = D.defPlan(me(20, 10, 1300), [c('r', 31, 1, { ranged_attack: 8, move: 8 })], { towers: tw }); assert.strictEqual(q.move, 'retreat', 'HP rule kept'); }
 // ---- joint planner (one place for W46N8 + W47N8; Misaki 17:45: baseline 1 home defender, extra only if it turns a loss into a win)
 const P = f => D.plan(Object.assign({ towerR: [32], homeOk: true, homeCap: 2300, w8Cap: 1300 }, f));
 const B9 = a => a.map(fc), RA = (k) => ({ ranged_attack: k, move: k }), HL = k => ({ heal: k, move: k });

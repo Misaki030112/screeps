@@ -249,7 +249,8 @@ const R = {
     const towers = room.find(FIND_MY_STRUCTURES, { filter: s => s.structureType === STRUCTURE_TOWER }).map(t => t.pos);
     const th = room.memory.threat8, idx = _.filter(Game.creeps, x => x.memory.role === 'w8defender').map(x => x.name).sort().indexOf(c.name);
     const p = D.defPlan({ pos: c.pos, hits: c.hits, hitsMax: c.hitsMax, hurt: mem.hurt }, hs,
-      { focus: th && th.id, towers, quiet: Game.time - (mem.seen || mem.born || Game.time), enemyX: Memory.ops && Memory.ops.w8invNx, idx: Math.max(0, idx) });
+      { focus: th && th.id, towers, quiet: Game.time - (mem.seen || mem.born || Game.time), enemyX: hs.length ? undefined : TH.invasion() ? Memory.ops && Memory.ops.w8invNx : undefined, idx: Math.max(0, idx),
+        avoid: room.find(FIND_MY_CREEPS, { filter: x => x.memory.role === 'w8builder' && x.pos.y <= 6 }).map(x => x.pos) });
     mem.hurt = p.hurt;
     if (p.mass) c.rangedMassAttack(); else if (p.shoot) c.rangedAttack(p.shoot);
     if (p.move === 'flee') { const away = PathFinder.search(c.pos, { pos: new RoomPosition(p.from.x, p.from.y, C.ROOM), range: 4 }, { flee: true, maxRooms: 1, roomCallback: rn => cb(rn, new PathFinder.CostMatrix()) }).path[0]; if (away) c.move(c.pos.getDirectionTo(away)); return; }

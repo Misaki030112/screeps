@@ -70,15 +70,18 @@ function assess(force, towerR, def, o = {}) {
 // o: {focus, towers:[pos], quiet, enemyX, idx}  -> { hurt, shoot, mass, move: 'flee'|'retreat'|'approach'|'post'|'recycle'|'hold', goal }
 //  - HP rule: fight while >= 60%; below 60% retreat toward the nearest tower (towers heal); back to the wall at >= 90%
 //  - target: the towers' focus when in range 3, else healer > ranged > melee, lowest hp; rangedMassAttack when >= 3 hostiles within 2
-//  - station: the tile right behind the seal (y=4) of the segment nearest the enemy, spread by idx (POSTS); melee north of the seal
+//  - station (17:53): dynamic wall-back tile (y=4) nearest the focus target / enemy centroid, spread by idx, builders avoided; melee north of the seal
 //    cannot reach y=4, so only melee INSIDE the seal makes us kite away; never shoots unarmed drain tanks north of the seal
 //  - nothing hostile and no alert for RECYCLE ticks -> recycle
 const COVER = 8, RECYCLE = 100;
-const POSTS = { west: [[8, 4], [9, 4], [10, 4], [11, 4]], east: [[24, 4], [25, 4], [26, 4], [28, 4], [29, 4], [30, 4], [31, 4]] }; // y=4 open tiles (27,4 swamp)
-function postTile(enemyX, idx = 0) {
-  const ex = enemyX === undefined ? 29 : enemyX, seg = ex < 18 ? POSTS.west : POSTS.east;
-  const t = seg.slice().sort((a, b) => Math.abs(a[0] - ex) - Math.abs(b[0] - ex));
-  const [x, y] = t[Math.min(t.length - 1, idx * 2)]; return { x, y };
+const POSTS = { west: [[8, 4], [9, 4], [10, 4], [11, 4]], east: [[24, 4], [25, 4], [26, 4], [28, 4], [29, 4], [30, 4], [31, 4]] }; // cached wall-back tiles (y=4, inside the seal; 27,4 swamp)
+const IDLE = [[28, 5], [29, 5], [25, 5], [30, 5]]; // 17:53: no hostiles -> near the east wall middle, plain, off roads
+// dynamic station (Misaki 17:53): the wall-back tile nearest target x, defender idx takes the idx-th nearest (adjacent tiles, no
+// stacking); tiles in `avoid` (builders repairing, other creeps) are skipped. Always y=4, i.e. inside the seal.
+function postTile(tx, idx = 0, avoid = []) {
+  const ex = tx === undefined ? 29 : tx, seg = ex < 18 ? POSTS.west : POSTS.east;
+  const t = seg.filter(([x, y]) => !avoid.some(a => a.x === x && a.y === y)).sort((a, b) => Math.abs(a[0] - ex) - Math.abs(b[0] - ex) || a[0] - b[0]);
+  const [x, y] = t.length ? t[Math.min(t.length - 1, idx)] : seg[0]; return { x, y };
 }
 const dcls = cls;
 function defPlan(me, hs, o = {}) {
@@ -93,11 +96,15 @@ function defPlan(me, hs, o = {}) {
   const melee = hs.find(h => inBase(h) && live(h, 'attack') && rng(h.pos, me.pos) <= 2);
   if (melee) return Object.assign(r('flee', null), { from: melee.pos });
   if (hurt && nearT) return r('retreat', nearT);
-  if (!elig.length) return (o.quiet || 0) >= RECYCLE ? r('recycle', null) : r('post', postTile(o.enemyX, o.idx));
+  if (!elig.length) { if ((o.quiet || 0) >= RECYCLE) return r('recycle', null);
+    if (o.enemyX === undefined) { const [x, y] = IDLE[Math.min(IDLE.length - 1, o.idx || 0)]; return me.pos.x === x && me.pos.y === y ? r('hold', null) : r('post', { x, y }); }
+    const p = postTile(o.enemyX, o.idx, o.avoid); return me.pos.x === p.x && me.pos.y === p.y ? r('hold', null) : r('post', p); }
   const inside = elig.filter(h => inBase(h) && armed(h));
   if (inside.length) { const g = inside.sort((a, b) => dcls(a) - dcls(b) || a.hits - b.hits)[0]; return rng(g.pos, me.pos) > 3 ? r('approach', g.pos) : r('hold', null); }
   // enemy north of the seal: stand on the post behind the wall nearest them (shoots at range 3 from y=4)
-  const ex = Math.round(elig.reduce((s, h) => s + h.pos.x, 0) / elig.length), p = postTile(ex, o.idx);
+  // shadow the enemy along the inner wall: focus target x (else the group centroid), re-picked every tick (11 cached tiles: cheap)
+  const ft = o.focus && elig.find(h => h.id === o.focus), ex = ft ? ft.pos.x : Math.round(elig.reduce((s, h) => s + h.pos.x, 0) / elig.length);
+  const p = postTile(ex, o.idx, o.avoid);
   return me.pos.x === p.x && me.pos.y === p.y ? r('hold', null) : r('post', p);
 }
 // ---- joint defence (Misaki 17:34): ONE planner for the W46N8 + W47N8 roster. Bodies: RA+MOVE only (towers heal on our ground).
@@ -130,4 +137,4 @@ function repairStand(wall, hs, open = () => true) {
 }
 // body summary {attack:n,...} (tools/north_watch.py) -> body list in the worst-case order (tough, move, work parts last)
 function fromCounts(b) { const out = []; for (const t of ['tough', 'move', 'attack', 'ranged_attack', 'heal', 'work', 'claim', 'carry']) for (let i = 0; i < (b[t] | 0); i++) out.push({ type: t, hits: 100 }); return { body: out, hits: out.length * 100 }; }
-module.exports = { towerPick, sim, assess, defPlan, postTile, POSTS, plan, raBody, repairPick, repairStand, COVER, RECYCLE, fromCounts, cls, armed, inBase, FLOOR, SEAL_Y };
+module.exports = { towerPick, sim, assess, defPlan, postTile, POSTS, IDLE, plan, raBody, repairPick, repairStand, COVER, RECYCLE, fromCounts, cls, armed, inBase, FLOOR, SEAL_Y };
