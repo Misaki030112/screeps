@@ -1,6 +1,6 @@
 {
- "next_at": "2026-10-19T16:50:00+08:00",
- "reason": "15:52 home patrol: observe-only, no fix. Tick 83740516: alerts exit 2 only from MEDIUM north-W48N9-group (BustJetter 4 armed creeps in his own room W48N9, dmg0; attack-alert routine owns notification; north_watch UH 97 in W48N9 labs), no new game errors (last 83723316 w8hauler); gates min 165.0k (14:42 164.0k, rising), walls min 142101 (no loss), towers 920/950; storage 14.5k (at 15k reserveE floor); RCL6 357.5k (+19.7k/1005t ~19.6 e/t vs ideal 21.8, 1h 19.1); bkt 9980 cpu ~12; remotes SAFE res W45N8 2033 W45N7 2198; delivered W45N8 1089.0k (~9.0 e/t) W45N7 577.1k (~8.4 e/t). Model gap: home hauler carry 46 vs need 24.6 (hauler 97% waiting_pickup, energy-bound at floor, benign); idle builder83738920 already retired by bank_recycle. Deploy blocked anyway: uncommitted src/rooms/w47n8/index.js (HMAX hauler cap) by W47N8 routine. Next: hourly gates/walls, upgrade rate holds ~19+.",
+ "next_at": "2026-10-19T17:50:00+08:00",
+ "reason": "16:52 home patrol: fix deployed e9cf7a3 tick 83741447: rhauler replacement lead = body*3+72+C.lead (16-part 8C8M unchanged at 120; lone W45N8 24C12M 120->180). Cause: rhauler83739541 died ~83741149, replacement rhauler83741255 out at 83741363 (~214t gap, queued behind reserver/miner/queen/rminer on the single RCL6 spawn) -> cont 13,11 hit 2000 (~1.7k overflow); same pattern at 83738176 (1842). Health: gates min 165.9k (rising), walls 142101 no loss; storage 13.9k (15k reserveE floor); RCL6 377.3k (+19.8k/881t ~22.4 e/t vs ideal 21.8); bkt 10000; no new errors; remotes SAFE res W45N8 2256 W45N7 2075; delivered W45N8 1094.7k (+5.7k/859t 6.6 e/t, gap) W45N7 586.7k (~11.2 e/t). Next: hourly gates/walls; verify W45N8 rhauler83741255 replacement queues at ttl<=180 (~tick 83742683, ~18:20) and cont 13,11 stays <1800 through the handover.",
  "road_plan": {
   "doc": "docs/ROADS.md",
   "each_patrol": [
@@ -124,9 +124,9 @@
   ]
  },
  "last_deploy": {
-  "commit": "3dc461c",
-  "tick": 83718412,
-  "at": "2026-10-18 13:31 UTC+8"
+  "commit": "e9cf7a3",
+  "tick": 83741447,
+  "at": "2026-10-19 16:57 UTC+8"
  },
  "walls": {
   "started": 83707350,
@@ -200,18 +200,24 @@
   "revert": "drop the Wb.defLow line in src/roles/builder.js (!src branch)"
  },
  "remote_sample": {
-  "tick": 83740509,
-  "W45N8": 1088995,
-  "W45N7": 577080,
-  "at": "2026-10-19 15:52 UTC+8"
+  "tick": 83741370,
+  "W45N8": 1094695,
+  "W45N7": 586670,
+  "at": "2026-10-19 16:53 UTC+8"
  },
  "last_home_patrol": {
-  "tick": 83740516,
-  "at": "2026-10-19 15:52 UTC+8",
-  "mode": "observe-only",
-  "storage": 14512,
-  "progress": 357518,
-  "gate_min": 165001,
+  "tick": 83741397,
+  "at": "2026-10-19 16:53 UTC+8",
+  "mode": "fix",
+  "storage": 13872,
+  "progress": 377274,
+  "gate_min": 165901,
   "wall_min": 142101
+ },
+ "rhauler_lead": {
+  "deployed": "e9cf7a3",
+  "rule": "remote rhauler counts live only while ttl > body.length*3 + 72 + C.lead",
+  "check": "W45N8 replacement born when old ttl ~180 (old rhauler83741255 out 83741363, dies ~83742863); watch events / Memory.remote.W45N8.cont.e < 1800 at handover; W45N8 delivered back to ~9.5-10 e/t",
+  "revert": "restore 120 + lead in remoteSpawn live() in src/managers/spawn.js"
  }
 }
