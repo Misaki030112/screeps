@@ -281,7 +281,7 @@ function run1(spawn, onWait) {
   // 1b2) joint defence (Misaki 17:34, explicit exception to 'rooms independent', defence only): ONE RA+MOVE defender for W47N8 when
   // the joint planner (src/rooms/w47n8/defense.js plan -> Memory.ops.w8roster) wants it and home has no player combat creeps.
   // Overrides the storage floor; queen first so home refill never stops.
-  { const J = (alive.queen || alive.filler) && require('../rooms/w47n8/index').homeWant(room); if (J) return go('w8defender', J.body, J.mem); }
+  { const J = (alive.queen || alive.filler) && require('../rooms/w47n8/index').homeWant(room); if (J) return go(J.role || 'w8defender', J.body, J.mem); }
   // 1c) home guards while player combat creeps are in the room (managers/home); queen first so towers stay fed
   const H = require('./home'), homeThreat = H.on('guards') && H.active(room); // guards + spawn hold behind Memory.defense.guards
   if (homeThreat) {

@@ -238,7 +238,7 @@ const R = {
   // kites melee, self/ally heal when it has HEAL. Spawned only on an invasion move (TH.invasion) or an armed hostile in the base.
   w8defender(c) {
     // doctrine (src/rooms/w47n8/defense.js defPlan, docs/DEFENSE_W47N8.md): station right behind the seal nearest the enemy, shoot the
-    // towers' focus (healer > ranged > melee), retreat to a tower below 60% hp, back at 90%, recycle after 100 quiet ticks.
+    // towers' focus (healer > ranged > melee), retreat to a tower below 60% hp, back at 90%; quiet: idle, no recycle (18:04).
     // memory.jd 'W46N8' = joint-defence creep sent by home (same role, counted in the joint roster)
     if (!home(c)) return;
     const D = require('./defense');
@@ -260,7 +260,23 @@ const R = {
     if (p.move === 'retreat') return c.pos.inRangeTo(p.goal.x, p.goal.y, 2) || mv(p.goal, 2);
     if (p.move === 'approach') return mv(p.goal, 3);
     if (p.move === 'post') return mv(p.goal, 0);
-    if (p.move === 'recycle') { const sp = room.find(FIND_MY_SPAWNS)[0]; if (sp) return c.pos.isNearTo(sp) ? sp.recycleCreep(c) : mv(sp.pos, 1); }
+  },
+  // 18:04 (Misaki) dedicated healer (HEAL+MOVE) in a joint roster of >= 4 defenders: behind the defenders, heals the most-hurt (heal at 1,
+  // rangedHeal at 3), HP rule 60/90 like defenders, never crosses the seal; quiet -> idles off-road by the wall, lives out its TTL.
+  w8healer(c) {
+    if (!home(c)) return;
+    const D = require('./defense'), room = c.room, hs = room.find(FIND_HOSTILE_CREEPS).filter(x => !x.my), mem = c.memory;
+    const cb = (rn, m) => { if (rn !== C.ROOM) return false; for (let i = 0; i < 50; i++) { for (let y = 0; y <= 4; y++) m.set(i, y, 255); m.set(0, i, 255); m.set(49, i, 255); m.set(i, 49, 255); } return m; };
+    const mv = (pos, r) => c.moveTo(pos.x, pos.y, { range: r, maxRooms: 1, reusePath: 3, costCallback: cb });
+    const defs = room.find(FIND_MY_CREEPS, { filter: x => x.memory.role === 'w8defender' });
+    const towers = room.find(FIND_MY_STRUCTURES, { filter: s => s.structureType === STRUCTURE_TOWER }).map(t => t.pos);
+    const idx = _.filter(Game.creeps, x => x.memory.role === 'w8healer').map(x => x.name).sort().indexOf(c.name);
+    const p = D.healPlan({ id: c.id, pos: c.pos, hits: c.hits, hitsMax: c.hitsMax, hurt: mem.hurt }, defs, hs, { towers, idx: Math.max(0, idx) });
+    mem.hurt = p.hurt;
+    if (p.heal) { const t = Game.getObjectById(p.heal.id); if (t) p.heal.act === 'heal' ? c.heal(t) : c.rangedHeal(t); }
+    if (p.move === 'flee') { const away = PathFinder.search(c.pos, { pos: new RoomPosition(p.from.x, p.from.y, C.ROOM), range: 4 }, { flee: true, maxRooms: 1, roomCallback: rn => cb(rn, new PathFinder.CostMatrix()) }).path[0]; if (away) c.move(c.pos.getDirectionTo(away)); return; }
+    if (p.move === 'retreat') return c.pos.inRangeTo(p.goal.x, p.goal.y, 2) || mv(p.goal, 2);
+    if (p.move === 'post') return mv(p.goal, 0);
   },
   w8rminer(c) {
     // 14:23: armed hostiles in W47N7 / W47N8 north -> hold inside the W47N8 base (loaded haulers still unload there), resume when clear

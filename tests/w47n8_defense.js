@@ -81,7 +81,7 @@ p = D.defPlan(me(25, 8), [c('r', 31, 1, { ranged_attack: 8, move: 8 })], { tower
 p = D.defPlan(me(25, 8), [], { towers: tw, enemyX: 31, quiet: 10 }); assert.deepStrictEqual(p.goal, { x: 31, y: 4 }, 'alert from W47N9 (x31): pre-stage at 31,4');
 p = D.defPlan(me(27, 6), [c('m', 27, 7, { attack: 10, move: 10 })], { towers: tw }); assert.strictEqual(p.move, 'flee', 'melee inside the seal within 2 -> kite');
 p = D.defPlan(me(27, 6), [c('d', 27, 2, { tough: 14, move: 14 })], { towers: tw }); assert.ok(!p.shoot, 'drain tank north of seal: ignored');
-p = D.defPlan(me(27, 6), [], { towers: tw, quiet: 150 }); assert.strictEqual(p.move, 'recycle', 'quiet 100+ ticks: recycle');
+p = D.defPlan(me(27, 6), [], { towers: tw, quiet: 5000 }); assert.ok(p.move !== 'recycle' && p.goal && p.goal.y === 5, 'quiet: never recycle, idle at the wall (18:04)');
 p = D.defPlan(me(27, 6), [c('a', 26, 7, { ranged_attack: 2, move: 2 }), c('b', 27, 8, { ranged_attack: 2, move: 2 }), c('e', 28, 7, { ranged_attack: 2, move: 2 })], { towers: tw }); assert.ok(p.mass, '3 within 2: rangedMassAttack');
 // ---- dynamic station (Misaki 17:53): shadow the enemy along the inner wall
 { const st = [];
@@ -105,7 +105,8 @@ pl = P({ force: SQ() }); assert.ok(pl.win && pl.home >= 1 && pl.home <= 4 && pl.
 { const big = SQ().concat(SQ(), SQ()); pl = P({ force: big }); assert.deepStrictEqual([pl.home, pl.w8, pl.win], [1, 0, false], '3 full squads: no combo up to 4+4 wins -> baseline only, nothing else fed');
   pl = P({ force: big, inside: true }); assert.strictEqual(pl.advise, 'safemode', 'inside: advise safe mode'); }
 { const t0 = Date.now(); for (let i = 0; i < 5; i++) P({ force: SQ().concat(SQ(), SQ()) }); assert.ok((Date.now() - t0) / 5 < 50, 'worst-case plan (25 sims) < 50 ms in node: ' + (Date.now() - t0) / 5); }
-pl = P({ force: SQ(), towerR: [19], inside: true, homeOk: false }); assert.strictEqual(pl.advise, 'safemode', 'inside + unwinnable (home busy): advise safe mode');
+pl = P({ force: SQ().concat(SQ()), towerR: [19], inside: true, homeOk: false }); assert.strictEqual(pl.advise, 'safemode', 'inside + unwinnable (home busy): advise safe mode');
+pl = P({ force: SQ(), towerR: [19], inside: true, homeOk: false }); assert.ok(!pl.win || pl.w8 < 4 || pl.hl === 'w8', '18:04: home busy, 4 local -> local healer ' + JSON.stringify(pl));
 pl = P({ force: B9([RA(6), RA(8)]), homeOk: false }); assert.strictEqual(pl.home, 0, 'home threatened: no support');
 assert.strictEqual(P({ force: B9([{ tough: 14, move: 14 }, HL(7)]) }).home, 0, 'drain group (unarmed): no support');
 for (const f of [[RA(6), RA(8), HL(7), HL(7), HL(7)], [RA(11), HL(6), HL(6)], [RA(11), RA(7), HL(7), HL(7), HL(6)]]) { const r = P({ force: B9(f) });
@@ -163,4 +164,41 @@ console.log('w47n8 defense ok');
   A.strictEqual(F2.healPick([c('a', 800, 1), c('b', 950)], true).id, 'b', 'peace: non-healers first');
   A.ok(!F2.hostileArmed([{ body: [{ type: 'move', hits: 100 }, { type: 'claim', hits: 100 }] }]) && F2.hostileArmed([hl]));
   console.log('w47n8 17:58 fixes ok');
+}
+// ---- 18:04 healer + no recycle
+{
+  const D3 = require('../src/rooms/w47n8/defense'), A = require('assert');
+  const bp = (o) => { const b = []; for (const t in o) for (let i = 0; i < o[t]; i++) b.push({ type: t, hits: 100 }); return b; };
+  A.deepStrictEqual(D3.healBody(1800, 12).filter(x => x === 'heal').length, 6); A.strictEqual(D3.healBody(10000, 25).length, 50);
+  for (let i = 0; i < 8; i++) { const q = D3.defPlan({ pos: { x: 20, y: 10 }, hits: 1, hitsMax: 1 }, [], { towers: [{ x: 33, y: 35 }], quiet: 1e6, idx: i });
+    A.ok(q.goal && q.goal.y === 5 && q.move === 'post', 'idle tile y=5 idx ' + i); }
+  // roster >= 4 -> healer included, counted in the sim
+  const squad = [bp({ ranged_attack: 2, move: 2 }), bp({ ranged_attack: 2, move: 2 }), bp({ attack: 10, move: 10 }), bp({ attack: 10, move: 10 })].map(b => ({ body: b }))
+    .concat(Array.from({ length: 4 }, () => ({ body: bp({ heal: 5, move: 5 }) })));
+  const pl = D3.plan({ force: squad, towerR: [32], inside: false, homeOk: true, homeCap: 2300, w8Cap: 1800 });
+  if (pl.win) A.strictEqual(pl.hl, pl.home + pl.w8 >= 4 ? 'home' : '', 'healer iff >=4 combat: ' + JSON.stringify(pl));
+  const big = Array.from({ length: 3 }, () => ({ body: bp({ ranged_attack: 10, heal: 10, move: 20 }) }));
+  const pb = D3.plan({ force: big, towerR: [32], inside: false, homeOk: true, homeCap: 2300, w8Cap: 1800 });
+  A.ok(!pb.win ? pb.hl === '' : (pb.home + pb.w8 >= 4) === (pb.hl === 'home'), 'big: ' + JSON.stringify(pb));
+  const pn = D3.plan({ force: big, towerR: [32], inside: false, homeOk: false, homeCap: 2300, w8Cap: 1800 });
+  A.ok(!pn.win || pn.w8 < 4 || pn.hl === 'w8', 'home unsafe -> local healer: ' + JSON.stringify(pn));
+  // healer heal is counted: one hurt defender survives longer with a healer
+  const en = [{ body: bp({ ranged_attack: 6, move: 6 }) }], ra = D3.raBody(1200, 12);
+  const a = D3.sim(en, [32], [ra], 0), b = D3.sim(en, [32], [ra, D3.healBody(1800, 12)], 0);
+  A.ok(!(a.result === 'win' && b.result !== 'win'), 'healer never hurts: ' + a.result + '/' + b.result);
+  // healPlan
+  const h = { id: 'h', pos: { x: 28, y: 6 }, hits: 1200, hitsMax: 1200 };
+  const d1 = { id: 'd1', pos: { x: 28, y: 4 }, hits: 500, hitsMax: 1200 }, d2 = { id: 'd2', pos: { x: 29, y: 5 }, hits: 1100, hitsMax: 1200 };
+  const e = { id: 'e', pos: { x: 28, y: 1 }, hits: 1000, body: bp({ ranged_attack: 5, move: 5 }) };
+  let q = D3.healPlan(h, [d1, d2], [e], { towers: [{ x: 33, y: 35 }] });
+  A.deepStrictEqual(q.heal, { act: 'heal', id: 'd2' }, 'adjacent first (heal at 1)');
+  A.ok(q.goal && q.goal.x === 28 && q.goal.y === 5, 'moves behind the most-hurt defender, y>=5: ' + JSON.stringify(q.goal));
+  q = D3.healPlan({ ...h, pos: { x: 28, y: 5 } }, [d1], [e], { towers: [{ x: 33, y: 35 }] });
+  A.deepStrictEqual(q.heal, { act: 'heal', id: 'd1' }); A.strictEqual(q.move, 'hold');
+  q = D3.healPlan({ ...h, pos: { x: 26, y: 7 } }, [{ ...d1, pos: { x: 28, y: 5 } }], [e], { towers: [{ x: 33, y: 35 }] });
+  A.deepStrictEqual(q.heal, { act: 'rangedHeal', id: 'd1' }, 'rangedHeal at 2-3');
+  q = D3.healPlan({ ...h, hits: 600 }, [d1], [e], { towers: [{ x: 33, y: 35 }] }); A.strictEqual(q.move, 'retreat', 'HP rule 60%');
+  q = D3.healPlan({ ...h, hits: 1000, hurt: true }, [d1], [e], { towers: [{ x: 33, y: 35 }] }); A.strictEqual(q.move, 'retreat', 'back only at 90%');
+  q = D3.healPlan(h, [], [], { towers: [{ x: 33, y: 35 }] }); A.ok(q.move === 'post' && q.goal.y >= 5, 'quiet: idle, no recycle');
+  console.log('w47n8 18:04 healer ok');
 }

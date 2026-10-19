@@ -8,6 +8,7 @@ function mine() { return _.filter(Game.creeps, c => c.memory.home === C.ROOM); }
 function bodyFor(role, e) {
   // 17:34 (Misaki joint defence): RA+MOVE only, no HEAL (towers heal on our ground; HP rule 60%/90% in defense.defPlan)
   if (role === 'w8defender') return require('./defense').raBody(e, 12);
+  if (role === 'w8healer') return require('./defense').healBody(e, 12); // 18:04 local healer (joint roster >= 4)
   if (role === 'w8filler') return FL.body(e, Game.rooms[C.ROOM]); // 17:4x 2C:1M, carry ~75% of the hub spawn energy (fill.js)
   if (role === 'w8rminer') { // 20:22: old formula priced 4W1C3M=600 at cap 550, so it never spawned; now the biggest that fits, trimming MOVE first
     for (let w = 5; w >= 2; w--) for (let m = Math.ceil((w + 1) / 2); m >= Math.ceil((w + 1) / 3); m--)
@@ -62,6 +63,8 @@ function spawnRun(spawn) {
   const local = cs.filter(c => c.memory.role === 'w8defender' && !c.memory.jd).length;
   const dGo = dOld ? ((th && th.inBase && Game.time - th.t < 5) || TH.invasion()) && local < 2 : !!(fresh && local < Math.min(D.MAXL, ro.w8)); // 17:56: up to 4 local
   if (dGo) { want = 'w8defender'; }
+  // 18:04: roster >= 4 combat defenders -> one dedicated healer; local only when home can't send it (ro.hl 'w8')
+  if (!want && !dOld && fresh && ro.hl === 'w8' && !_.some(Game.creeps, c => c.memory.role === 'w8healer')) want = 'w8healer';
   // 1) miners per source: keep >=5 WORK (10 e/t) on each source. Replace at TTL<60; and since the first w8miners were 2 WORK
   // (cap 300) and would run at 40% for ~1000 ticks, add a bigger one once cap allows (17:25), counting any cqminer still there.
   for (let i = 0; i < C.SOURCES.length && !want; i++) {
@@ -280,7 +283,7 @@ function assessRun(room, towers, hs) {
   const hr = Game.rooms[HOME], homeOk = !!hr && !require('../../managers/home').active(hr);
   const r = D.plan({ force, towerR: tr, inside, homeOk, homeCap: hr ? hr.energyCapacityAvailable : 0, w8Cap: room.energyCapacityAvailable || 300,
     towerE: Math.min(...towers.map(t => t.store[RESOURCE_ENERGY])), atkBoost: o.w8uh > 0 ? 'UH' : '', meleeUptime: inside ? 1 : 0 }); // 17:58: UH stock north -> boosted melee; melee only reaches us inside the seal
-  o.w8roster = { t: Game.time, home: r.home, w8: r.w8, why: r.why };
+  o.w8roster = { t: Game.time, home: r.home, w8: r.w8, hl: r.hl || '', why: r.why };
   m.w8assess = { t: Game.time, spawn: r.w8 > 0, why: r.why, at: [at.x, at.y] };
   if (r.advise) o.w8adv = { t: Game.time, advise: r.advise, why: r.why, n: force.length }; // safe mode is Misaki's call (alerts relay it)
 }
@@ -314,15 +317,18 @@ function towerRun(room) {
 }
 // 17:34 joint defence, home side: W46N8 spawn asks this. One RA+MOVE defender (max that fits home cap, no HEAL) for W47N8 when the
 // planner wants it, home has no player combat creeps, and fewer home-sent defenders (memory.jd W46N8; not 'src', which main.js strips from creeps without v2) are alive/spawning.
-// Overrides the home storage floor (defence). The creep runs the w8defender role (home: W47N8) and recycles there after 100 quiet t.
+// Overrides the home storage floor (defence). The creep runs the w8defender role (home: W47N8) and idles by the north wall until its TTL ends (18:04: no recycle).
 const HOME = 'W46N8';
 function homeWant(room) {
   const ro = Memory.ops && Memory.ops.w8roster;
   if (room.name !== HOME || !ro || !ro.home || Game.time - ro.t > 20) return null;
   if (require('../../managers/home').active(room)) return null;
   const sent = _.filter(Game.creeps, c => c.memory.role === 'w8defender' && c.memory.jd === HOME).length;
-  if (sent >= ro.home) return null;
-  return { body: require('./defense').raBody(room.energyCapacityAvailable, 25), mem: { home: C.ROOM, jd: HOME, born: Game.time, v2: 1 } };
+  const mem = { home: C.ROOM, jd: HOME, born: Game.time, v2: 1 };
+  if (sent < ro.home) return { role: 'w8defender', body: require('./defense').raBody(room.energyCapacityAvailable, 25), mem };
+  // 18:04: roster >= 4 -> one dedicated healer from home at max cap (HEAL+MOVE)
+  if (ro.hl === 'home' && !_.some(Game.creeps, c => c.memory.role === 'w8healer')) return { role: 'w8healer', body: require('./defense').healBody(room.energyCapacityAvailable, 25), mem };
+  return null;
 }
 // self-sufficient = own spawn + a miner + a hauler alive (conquest.js stops sending cqworkers/cqhaulers)
 function selfSufficient() {
