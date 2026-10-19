@@ -309,10 +309,6 @@ function run1(spawn, onWait) {
     if (!(alive.queen || 0) && !(alive.filler || 0)) return go('queen', B.queen(Math.max(300, avail)));
     return ERR_BUSY; // reserve energyAvailable for the defender; home guards (off) never reach here while want is set
   }
-  // 1b2) joint defence (Misaki 17:34, explicit exception to 'rooms independent', defence only): ONE RA+MOVE defender for W47N8 when
-  // the joint planner (src/rooms/w47n8/defense.js plan -> Memory.ops.w8roster) wants it and home has no player combat creeps.
-  // Overrides the storage floor; queen first so home refill never stops.
-  { const J = (alive.queen || alive.filler) && require('../rooms/w47n8/index').homeWant(room); if (J) return go(J.role || 'w8defender', J.body, J.mem); }
   // 1c) home guards while player combat creeps are in the room (managers/home); queen first so towers stay fed
   const H = require('./home'), homeThreat = H.on('guards') && H.active(room); // guards + spawn hold behind Memory.defense.guards
   if (homeThreat) {
@@ -331,6 +327,12 @@ function run1(spawn, onWait) {
       return go('miner', B.miner(Math.min(bodyEnergy('miner', E, cap, avail, !!alive.hauler, !!room.storage, !!alive.miner), carry ? 800 : 650), carry), { sourceId: s.id });
     }
   }
+  // 2a) joint defence, after miners: source B's miner died twice behind w8defender/w8healer spawns (patrols 10-20 03:47, 05:40;
+  // ~100-150 ticks unmined = ~1-1.5k energy each). A miner is 9 parts/27 ticks and its income funds the defence.
+  // Joint defence (Misaki 17:34, explicit exception to 'rooms independent', defence only): ONE RA+MOVE defender for W47N8 when
+  // the joint planner (src/rooms/w47n8/defense.js plan -> Memory.ops.w8roster) wants it and home has no player combat creeps.
+  // Overrides the storage floor; queen first so home refill never stops.
+  { const J = (alive.queen || alive.filler) && require('../rooms/w47n8/index').homeWant(room); if (J) return go(J.role || 'w8defender', J.body, J.mem); }
   if (hold) { if (!(count.queen || 0) && !(count.filler || 0)) return go('queen', B.queen(Math.max(300, avail))); return ERR_BUSY; }
   // 2b) one-off manual probe (roles/probe.js): only when Memory.ops.probe.spawn === true and storage >= 3100 (1300 defender reserve kept)
   const PR = require('../roles/probe');
