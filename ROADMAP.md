@@ -3,6 +3,15 @@
 Novice zone ends **2026-10-28 03:33 UTC+8**. Defence timeline: `docs/DEFENSE_NOVICE.md` (2026-10-16); detail `docs/DEFENSE.md` / geometry `docs/DEFENSE_PLAN.md`.
 **Safe mode: NEVER auto-activate** — alert Misaki.
 
+## 2026-10-19 22:4x two-room evaluation (45-min window 21:58-22:43 vs 21:13-21:58)
+
+- Home W46N8: controller progress **23.3 e/t** (prev 21.8; model 1h 23.4 vs ideal 21.8, util 107%). Storage 16.5k -> 13.6k (−4.5 e/t) **below 15k floor** after the known remote spawn cohort (~9k in ~320 t); queen ferry paused / defLow holding new upgraders — recovering (13.0k@22:22 -> 13.6k@22:43). RCL6 484k/3.645M; RCL7 ETA still ~10-26 at this rate. Walls 142101 no loss, ramparts min 170.9k, 0 sites, sm 0 / sma 5.
+- W47N8: controller progress **19.9 e/t** (prev 24.7; model 1h 21.7 / 6h 20.2 vs ideal 29.8, util 73%/68%). Dip = W47N7 source 18,17 unmined ~85 t on the first 6W rminer handoff (ordered at old TTL 43 behind hauler-floor queue). Storage 1.8k -> 3.0k. RCL4 185.4k/405k; RCL5 ETA ~13 h window / 11.9 h (1h) vs 8.6 h ideal (~10-20 10:00–11:30 UTC+8). Walls min 50.0k, **10 ramparts** (hub rampHold ~5.1k), 0 sites, 0 hostiles.
+- Cross-room: CPU avg 12.5 (prev 14.1), max 18.3 (no deploy spike this window; 57.9 was prior 3ce6174), bucket 10000. Top creep CPU: builder, wbuilder, queen, upgrader, wrhauler. Memory ~33k. DB lag ~21 s. Listener/postgres/grafana up. Tests all pass. **src dirty** (strategy mineralCap on `spawn.js` + untracked `tests/mineral_cap.js` / `tools/market.py`) — this eval did not deploy.
+- **Already live (patrol, not this eval):** Memory.remote.W45N7.haulers=5 (CFG default already 5; prior Memory override was 4). Cont 2000@22:35 -> **1704** with 5×8C live; waiting_pickup low — keep 5, revert to 4 only if waiting_pickup >40% and cont <200. Deploy **58110f2** (22:39): w8rminer lead default 140→200 (+60 queue margin).
+- **Home patrol:** watch storage reclaim ≥15k; leave W45N7 haulers=5; do not touch strategy's mineralCap edit. Wall step 2 still post-RCL7.
+- **W47N8 patrol:** verify next rminer handoffs order with lead ≥200 (no ≥50 t unmined); then hauler sizing note (remote 13C / local 2×11) still deferred to RCL5. At RCL5: tower 24,8 only site first.
+
 ## 2026-10-19 21:5x two-room evaluation (45-min window 21:12-21:57 vs 20:27-21:12)
 
 - Home W46N8: controller progress 21.9 e/t (prev 23.2; model 1h 22.2 vs ideal 21.8). Storage 16.1k -> 17.1k (+1.5 e/t), above the 15k floor. RCL6 468.7k/3.645M. Walls 41 min 142101 (no loss), ramparts 11 min 170.3k, 0 hostiles, no safe mode. Spawn utilisation 58% (2 rminer replacements in flight).
