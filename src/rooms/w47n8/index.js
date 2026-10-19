@@ -56,6 +56,10 @@ function spawnRun(spawn) {
   // 11:12: lo7 kept rising 6.9k -> 7.3k (conts 2000/2000 + 3292 dropped) while 3 builders and 2 upgraders sat queue_blocked (energy-starved,
   // local conts 140/530): remote haul is the income bottleneck, so floor 6 above 5k (each 14C7M rhauler ~6 e/t over a ~110t round trip)
   if (!want && ours7 && lo7 > 1000 && n('w8rminer') && cs.filter(c => c.memory.role === 'w8rhauler' && (c.spawning || c.ticksToLive > 150)).length < (lo7 > 5000 ? 6 : lo7 > 3000 ? 4 : 2)) want = 'w8rhauler';
+  // 12:00: local loose ~2.9k (source conts 1090/2000) with hub 0 while spawn waited on a 1000-cost 4th builder (have 3). Surplus
+  // haulers sit behind builders in the queue (same trap as the rhauler floor): floor up to 5 haulers ahead of the 4th builder
+  // while piles > 2500 so energy reaches hub/builders before more WORK.
+  if (!want && sites && looseE(room) > 2500 && n('w8hauler') < 5) want = 'w8hauler';
   // 04:10: size by remaining build work, not site count: 3 cheap road sites (~900 left) brought a 4th builder while the ctl cont sat at 0,
   // wbuilder idle 0.69 (6h) and 4 upgraders energy-starved
   else if (!want && sites && n('w8builder') < (siteRem(room) >= 3000 ? 4 : siteRem(room) >= 1200 ? 3 : 2)) want = 'w8builder'; // 17:05: Spawn2 sat idle at 300/300 with 5 ext sites
