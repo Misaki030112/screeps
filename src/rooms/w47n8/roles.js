@@ -104,7 +104,11 @@ function pickTile(c, tiles, key) {
 // target kept until it is 500 above the weakest; new picks are the closest wall within 500 of the weakest.
 function wallJob(room, c) {
   const tgt = C.WALL_TARGET[room.controller.level] || 0;
-  const ws = room.find(FIND_STRUCTURES, { filter: s => s.structureType === STRUCTURE_WALL && s.hits < tgt && C.SEAL.some(([x, y]) => s.pos.x === x && s.pos.y === y) });
+  // 14:09: core ramparts (spawn/tower/storage) share the seal target; a fresh rampart (<5k) is lifted first
+  const ws = room.find(FIND_STRUCTURES, { filter: s => (s.structureType === STRUCTURE_WALL && s.hits < tgt && C.SEAL.some(([x, y]) => s.pos.x === x && s.pos.y === y))
+    || (s.structureType === STRUCTURE_RAMPART && s.my && s.hits < tgt) });
+  const fresh = ws.filter(s => s.structureType === STRUCTURE_RAMPART && s.hits < 5000);
+  if (fresh.length) return _.min(fresh, s => s.hits);
   if (!ws.length) { if (c) delete c.memory.wt; return null; }
   const lo = _.min(ws, s => s.hits).hits;
   if (!c) return ws.find(s => s.hits === lo);

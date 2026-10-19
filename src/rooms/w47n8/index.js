@@ -146,6 +146,14 @@ function layoutRun(room) {
   // between road 15,33 and strip road 24,35; queued ahead of the plan roads since every hub trip crosses it
   // 09:13 road audit: only the target network (roads.js: v3b spines + shared trunks + busy live roads) is placed
   const O = ok ? Object.assign({}, L.ORDER, { road: (rcl >= 6 ? require('./roads').ROADS : require('./roads').ROADS.filter(([x, y]) => !require('./roads').MINERAL.some(([a, b]) => a === x && b === y))).concat(require('../../layouts/w8link').W47N8) }) : { extension: L.TEMP_EXT, container: L.ORDER.container };
+  // 14:09 (north threat): ramparts over built spawn/tower/storage go first, ahead of the road budget
+  if (ok && rcl >= 4) for (const [x, y] of L.ORDER.rampart) {
+    if (sites >= 6) return;
+    const st = room.lookForAt(LOOK_STRUCTURES, x, y);
+    if (!st.some(s => s.structureType === STRUCTURE_SPAWN || s.structureType === STRUCTURE_TOWER || s.structureType === STRUCTURE_STORAGE)) continue;
+    if (st.some(s => s.structureType === STRUCTURE_RAMPART) || room.lookForAt(LOOK_CONSTRUCTION_SITES, x, y).length) continue;
+    if (room.createConstructionSite(x, y, STRUCTURE_RAMPART) === OK) sites++;
+  }
   for (const t of PRIO) {
     if (t === 'road' && rcl < 3) continue;
     if (t === 'rampart' && rcl < 4) continue;
