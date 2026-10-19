@@ -112,9 +112,12 @@ function wallJob(room, c) {
   if (!ws.length) { if (c) delete c.memory.wt; return null; }
   const lo = _.min(ws, s => s.hits).hits;
   if (!c) return ws.find(s => s.hits === lo);
+  // 14:42 (2026-10-19): a fixed 500-hit band made 5-6 WORK builders (500-600 hits/tick) switch walls every tick: 4 builders (22 WORK,
+  // ~2200 hits/t possible) raised the 15 seal walls/core ramparts only ~140 hits/t (t83739446..479) while walking. Band scales with target.
+  const band = Math.max(500, Math.floor(tgt / 10));
   const cur = c.memory.wt && ws.find(s => s.id === c.memory.wt);
-  if (cur && cur.hits < lo + 500) return cur;
-  const t = c.pos.findClosestByRange(ws.filter(s => s.hits < lo + 300));
+  if (cur && cur.hits < lo + band) return cur;
+  const t = c.pos.findClosestByRange(ws.filter(s => s.hits < lo + band * 0.6));
   c.memory.wt = t.id; return t;
 }
 // ---- W47N7 remote (only while reserved by us) ----
