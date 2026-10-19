@@ -19,6 +19,8 @@ assert.strictEqual(run({ a: mk('w8miner', 'W47N8', { si: 0 }), b: mk('w8miner', 
 // home creeps (home W46N8) are not counted
 assert.strictEqual(run({ a: mk('miner', 'W46N8'), b: mk('w8miner', 'W46N8', { si: 0 }) }).role, 'w8miner');
 const full = { a: mk('w8miner', 'W47N8', { si: 0 }), b: mk('w8miner', 'W47N8', { si: 1 }), c: mk('w8hauler', 'W47N8'), d: mk('w8hauler', 'W47N8') };
+assert.strictEqual(run(full).role, 'w8hauler', 'base hauler quota is 3');
+full.g = mk('w8hauler', 'W47N8');
 assert.strictEqual(run(full).role, 'w8upgrader');
 Object.assign(full, { e: mk('w8upgrader', 'W47N8'), f: mk('w8upgrader', 'W47N8') });
 assert.strictEqual(run(full, 3).role, 'w8builder');

@@ -128,7 +128,7 @@ function layoutRun(room) {
   // 03:05 west<->hub link road (missing from v3b plan): loaded 10C5M rhaulers sat 7-10 ticks on unroaded swamp 22,34 (fatigue 70)
   // between road 15,33 and strip road 24,35; queued ahead of the plan roads since every hub trip crosses it
   // 09:13 road audit: only the target network (roads.js: v3b spines + shared trunks + busy live roads) is placed
-  const O = ok ? Object.assign({}, L.ORDER, { road: require('./roads').ROADS }) : { extension: L.TEMP_EXT, container: L.ORDER.container };
+  const O = ok ? Object.assign({}, L.ORDER, { road: (rcl >= 6 ? require('./roads').ROADS : require('./roads').ROADS.filter(([x, y]) => !require('./roads').MINERAL.some(([a, b]) => a === x && b === y))) }) : { extension: L.TEMP_EXT, container: L.ORDER.container };
   for (const t of PRIO) {
     if (t === 'road' && rcl < 3) continue;
     if (t === 'rampart' && rcl < 4) continue;
