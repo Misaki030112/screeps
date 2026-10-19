@@ -80,14 +80,14 @@ function sink(room, c) {
 // draining the TEMP_EXT ring by the spawn turned loaded w8hauler/w8rhauler around mid-walk to the hub strips (22,11 -> 16,10).
 const lastE = s => (s.structureType === STRUCTURE_SPAWN && s.pos.x === C.SPAWN[0] && s.pos.y === C.SPAWN[1]) || (s.structureType === STRUCTURE_EXTENSION && LAYT.some(([x, y]) => s.pos.x === x && s.pos.y === y));
 const LAYT = require('./layout').TEMP_EXT;
-function fillTarget(c, tower) {
+function fillTarget(c, tower, rng = 99) {
   const t0 = c.memory.ft && Game.getObjectById(c.memory.ft);
   if (t0 && t0.store && t0.store.getFreeCapacity(E) > 0) return t0;
   const taken = new Set();
   for (const o of c.room.find(FIND_MY_CREEPS)) if (o.id !== c.id && o.memory.ft) taken.add(o.memory.ft);
   // 03:00 once a trip has committed to a container sink (memory.sk), only divert to a fill target within 5 tiles: a loaded
   // w8hauler flipped 4x in 60 ticks between ctl cont 13,26 and hub ext 32,36 as Spawn2 drained/others refilled extensions
-  const lim = c.memory.sk ? 5 : 99;
+  const lim = Math.min(rng, c.memory.sk ? 5 : 99);
   const cand = c.room.find(FIND_MY_STRUCTURES, { filter: s => s.store && s.store.getFreeCapacity(E) > 0 && c.pos.inRangeTo(s, lim) && (s.structureType === STRUCTURE_SPAWN
     || (s.structureType === STRUCTURE_EXTENSION && !taken.has(s.id)) || (tower && s.structureType === STRUCTURE_TOWER && s.store.getFreeCapacity(E) > 200)) });
   // 14:57 (Misaki): hub extensions/spawns/tower first, Spawn2 + its 5 temp extensions last (spawning drains them last too)
@@ -295,7 +295,12 @@ const R = {
     }
     if (!home(c)) return;
     const room = Game.rooms[C.ROOM];
-    const t = fillTarget(c, false) || sink(room, c) || room.storage;
+    // 15:10 model: 700-carry rhaulers spent 24-143 ticks per trip inside W47N8 filling single 50-energy extensions across the hub
+    // (w8rhauler83738293 t8492-8568: ctl 13,27 -> hub strips -> back), so they fill only on the way (range 3) unless spawn energy
+    // is below half; extensions are the local w8haulers' job. Full ctl/hub conts -> storage (buffer, counted as upgrade stock).
+    const low = room.energyAvailable < room.energyCapacityAvailable / 2 || !room.find(FIND_MY_CREEPS, { filter: x => x.memory.role === 'w8hauler' }).length;
+    const f = fillTarget(c, false, low ? 99 : 3);
+    const t = f || sink(room, c) || room.storage;
     if (!t) return go(c, C.CTL[0], C.CTL[1], 3);
     if (!c.pos.isNearTo(t)) go(c, t.pos.x, t.pos.y); else { c.transfer(t, E); delete c.memory.ft; }
   },

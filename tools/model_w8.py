@@ -206,5 +206,13 @@ def main():
     for k, s in F4['sources'].items(): print(f" {k}: rt {s['rt']}t carry {s['carry']} hauler {s['hauler_e']} miner {s['miner_e']} loss {s['loss']} net {s['net']}  routes {M['routes'][k]}")
     print(' shared', F4['shared'], ' upkeep_live', M['upkeep_live'])
     print(' rcl5', best5['links'], best5['upgrade'], ' stores', st)
+    if A:  # 15:10 (Misaki): balanced allocation of harvested energy, not only upgrade
+        I = A.get('idle', {}); wk = lambda r: (I.get(r) or {}).get('working', 0)
+        harv = 2 * 10 * wk('wminer') + 2 * 10 * wk('wrminer')
+        up = sum(v for k, v in M['upkeep_live'].items() if k != 'reserve')
+        al = dict(harvest=round(harv, 1), upgrade=A.get('upgrade'), build_repair=A.get('spent', {}).get('wbuilder'), storage=A.get('storage_delta'), upkeep=round(up, 1))
+        al['waste_other'] = round(harv - sum(v or 0 for k, v in al.items() if k != 'harvest'), 1)
+        M['alloc'] = al; json.dump(M, open(os.path.join(ROOT, 'metrics', 'model_w47n8.json'), 'w'), indent=1, default=str)
+        print(' alloc e/t', al, ' (waste_other = decay + container/stock change + tower + unmeasured)')
     if A: print(' delivered', A.get('delivered'), ' spent', A.get('spent'), ' storage_delta', A.get('storage_delta')); print(' idle', A.get('idle'))
 if __name__ == '__main__': main()
