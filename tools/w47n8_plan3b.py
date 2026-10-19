@@ -133,10 +133,10 @@ if len(sys.argv) > 7:
     order = lambda t: [list(p) for p in sorted([p for p, u in used.items() if u == t], key=lambda p: (D.get(p, 999), p))]
     out = {t: order(t) for t in ['spawn', 'extension', 'tower', 'storage', 'link', 'terminal', 'lab', 'factory', 'powerSpawn', 'nuker', 'observer', 'road']}
     out['extractor'] = [list(MIN)]; out['container'] = [list(CTLC)]
-    # 17:52 (Misaki): north tower slots first (tools/w47n8_tower_plan.py): 27,6 east seal (540-600 on the east approach, 5 steps from the
+    # 17:52 (Misaki): north tower slots first (tools/w47n8_tower_plan.py): 24,8 (Misaki 18:06; was 27,6) east seal (540-600 on the east approach, 5 steps from the
     # source A container, outside enemy RA reach), then the built core tower 33,35 (kept, never destroyed), 22,7 (covers both seal
     # segments, RCL7), then 3 core slots for RCL8
-    out['tower'] = [[27, 6], [33, 35], [22, 7], [34, 31], [36, 31], [36, 33]]
+    out['tower'] = [[24, 8], [33, 35], [22, 7], [34, 31], [36, 31], [36, 33]]
     out['rampart'] = [list(p) for p, u in used.items() if u in ('spawn', 'storage', 'terminal', 'tower')] + [list(SPAWN)]
     J = {'CORE': list(CORE), 'TEMP_EXT': [[13, 16], [14, 15], [16, 15], [17, 16], [12, 16]], 'ORDER': out,
          'STRIPS': [{'fill': list(f), 'road': [list(p) for p, t in z[6].items() if t == 'road'], 'ext': [list(p) for p, t in z[6].items() if used.get(p) == 'extension']} for z, f in zip(STRIPS, FILL)]}

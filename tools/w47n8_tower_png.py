@@ -4,9 +4,9 @@ damage heat on the north approach (y<=2). usage: .venv/bin/python tools/w47n8_to
 import sys, os; sys.argv = sys.argv[:1]; H = os.path.dirname(os.path.abspath(__file__)); sys.path.insert(0, H)
 import w47n8_tower_plan as P
 import matplotlib; matplotlib.use('Agg'); import matplotlib.pyplot as plt, numpy as np
-OLD, NEW = [(33, 35), (34, 31)], [(27, 6), (22, 7)]
+OLD, NEW = [(33, 35), (34, 31)], [(24, 8), (22, 7)]
 fig, axs = plt.subplots(1, 2, figsize=(16, 8.6))
-for ax, tw, ttl in ((axs[0], [(33, 35)], 'NOW (RCL4): 33,35 only'), (axs[1], [(33, 35), (27, 6)], 'RCL5 plan: 33,35 + 27,6 (22,7 at RCL7)')):
+for ax, tw, ttl in ((axs[0], [(33, 35)], 'NOW (RCL4): 33,35 only'), (axs[1], [(33, 35), (24, 8)], 'RCL5 plan (Misaki 18:06): 33,35 + 24,8 (22,7 at RCL7)')):
     img = np.ones((50, 50, 3))
     for y in range(50):
         for x in range(50):

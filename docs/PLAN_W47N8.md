@@ -14,7 +14,7 @@ Theoretical limit: 4 sources × 10 = 40 e/t; minimum upkeep at these distances i
 | RCL4→5 | Upgrade-max: 30 WORK, build only roads | — | upgrade 14→26–29 e/t; RCL5 ETA ~12.5 h (ideal) vs 26 h (current rate) | — |
 | RCL5 | 10 ext (cap 1300→1800) | 30k | bigger bodies, fewer creeps, ~-1 e/t upkeep | ~30k t; required for RCL5 bodies |
 | RCL5 | link A 26,12 → ctl 13,25 (pending OK) | 2×5k = 10k | -A hauler (0.6 e/t), -0.1 decay, +1 e/t to ctl | ~12k t (~14 h) |
-| RCL5 | 2nd tower at **27,6** (north, 17:52) | 5k | east approach 540-600 dmg (was 150) | — |
+| RCL5 | 2nd tower at **24,8** (north, Misaki 18:06) | 5k | with 33,35: east 600 min / 681 avg, west 420 / 510 (was 150) | — |
 | RCL6 | 10 ext, link hub, terminal, extractor, mineral trunk | ~10k ext + 5k link + 100k terminal | storage-centric logistics; ~-1 e/t haul | terminal no direct e/t payback; build after storage >30k |
 | RCL7 | spawn 32,32 + 10 ext (200 cap each) | 15k + 20k | 2nd spawn, no queue blocking (38% upgrader queue_blocked now) | — |
 | RCL7 | swap 5 temp ext near Spawn2 → v3b slots | 5×3k | haul -0.1 e/t | long; low priority, storage >50k |
@@ -61,13 +61,14 @@ North approach = tiles y<=2 from which an enemy can hit a seal wall (east segmen
 |---|---|---|---|---|---|
 | 33,35 (built) | RCL3-4 | 150 / 150 | 150 / 150 | 3 steps storage | core tower; kept, never destroyed (covers breaches into the hub) |
 | 34,31 (old RCL5 plan) | — | 150 / 150 | 150 / 150 | beside storage | moved to RCL8 |
-| **27,6** | **RCL5 (tower 2)** | **540 / 588** | 180 / 270 | 5 steps from source A container 26,11 (27 from storage) | swamp tile, off every road/post; r>=4 from all y<=2 tiles (enemy RA outside the seal cannot hit it) |
+| **24,8** | **RCL5 (tower 2, Misaki 18:06)** | **450 / 531** | 270 / 360 | 3 steps from source A container 26,11 (25 from storage) | plain, no road/post/ext/link conflict, r=6 from every y<=2 tile, connectivity ok |
+| 27,6 | (17:52 proposal, replaced) | **540 / 588** | 180 / 270 | 5 steps from source A container 26,11 (27 from storage) | swamp tile, off every road/post; r>=4 from all y<=2 tiles (enemy RA outside the seal cannot hit it) |
 | **22,7** | RCL7 (tower 3) | 390 / 526 | 330 / 420 | 4 from 26,11 | covers both seal segments |
 | 34,31, 36,31, 36,33 | RCL8 | core | | hub | |
-ORDER.tower = 27,6 / 33,35 / 22,7 / 34,31 / 36,31 / 36,33 (layout.js + w47n8_plan3b.py). At RCL5: 33,35 + 27,6 -> east 690 min vs the
+ORDER.tower = 24,8 / 33,35 / 22,7 / 34,31 / 36,31 / 36,33 (layout.js + w47n8_plan3b.py). At RCL5: 33,35 + 24,8 -> east 600 min, west 420 min vs the
 squad's 228 heal. Haulers refill towers via fillTarget (tower > 200 free); source A container 26,11 is the nearest stock.
 Relocation of 33,35 at RCL4 is NOT planned: RCL4 allows 1 tower, so moving means destroying the only tower (5k rebuild, 0 towers
-for ~300-500 ticks) under an active threat. RCL5 (ETA 10-20 ~07:00) adds 27,6 with zero gap.
+for ~300-500 ticks) under an active threat. RCL5 (ETA 10-20 ~07:00) adds 24,8 with zero gap. Misaki 18:06: 33,35 is NOT relocated.
 17:58 hand-calc: a tower within 5 of y=3 near x28 (= 27,6) gives 600/t; focused with the defenders (~1050/t) vs both enemy groups' 396
 heal/t turns scenario B from stalemate into a win. Today 33,35 adds only 150 at the wall; towerPick now counts tower + defender RA
 together (3bdaefe), so it fires whenever the combined focus beats the heal. Render: tools/w47n8_tower_png.py -> /workspace/w47n8_tower_plan.png.

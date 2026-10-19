@@ -27,11 +27,11 @@ const base = [].concat(C.SEAL.map(([x, y]) => [x, y, 'wall']), [[15, 18, 'spawn'
 // RCL5 just reached: only the tower site goes up
 let room = mkRoom(5, base); W.layoutRun(room);
 assert.deepStrictEqual(room.sites.map(s => s.structureType), ['tower'], 'RCL5: tower 2 alone first, got ' + room.sites.map(s => s.structureType));
-assert.deepStrictEqual([room.sites[0].pos.x, room.sites[0].pos.y], [27, 6], 'RCL5 tower 2 goes to the north slot 27,6 (17:52)');
+assert.deepStrictEqual([room.sites[0].pos.x, room.sites[0].pos.y], [24, 8], 'RCL5 tower 2 goes to the north slot 24,8 (Misaki 18:06)');
 { const r4 = mkRoom(4, base); W.layoutRun(r4); assert.ok(!r4.sites.some(s => s.structureType === 'tower'), 'RCL4: no 2nd tower site (33,35 stays, nothing destroyed)'); }
 W.layoutRun(room); assert.strictEqual(room.sites.length, 1, 'nothing new while the tower site stands');
 // tower 2 built -> extensions (and the rest) resume
-room = mkRoom(5, base.concat([[27, 6, 'tower']])); W.layoutRun(room);
+room = mkRoom(5, base.concat([[24, 8, 'tower']])); W.layoutRun(room);
 assert.ok(room.sites.filter(s => s.structureType === 'extension').length >= 5, 'extensions after tower: ' + room.sites.map(s => s.structureType));
 // RCL4 (tower cap reached): unchanged behaviour, no tower site, extensions not blocked
 room = mkRoom(4, base.filter(b => b[2] !== 'extension' || L.ORDER.extension.slice(0, 18).some(([x, y]) => x === b[0] && y === b[1]))); W.layoutRun(room);
