@@ -3,6 +3,12 @@
 Novice zone ends **2026-10-28 03:33 UTC+8**. Defence timeline: `docs/DEFENSE_NOVICE.md` (2026-10-16); detail `docs/DEFENSE.md` / geometry `docs/DEFENSE_PLAN.md`.
 **Safe mode: NEVER auto-activate** — alert Misaki.
 
+## 2026-10-20 03:1x two-room evaluation (45-min window 02:23-03:08 vs 01:38-02:23)
+- **Home W46N8:** upgrade 25.9 e/t (prev 25.2) vs ideal 26.0, at ideal. **Storage 13.9k -> 9.95k** (prev 13.3k -> 15.05k): every hauler/rhauler load went to the always-hungry ctl container (28 upgrader WORK vs ~26 e/t net) while spawn refills (two 36-part rhaulers) drew storage; ctl container then sat at 0 for ~70t (t83750030-100). The home patrol shipped **0ff7935** at t83750131 (bank to storage first while under reserveE 15k); storage 9952 -> 10352 by t83750150 with upgrade still ~28 e/t from the ctl buffer. **Home patrol, watch:** (1) upgrade dips toward link-only (~10 e/t) until storage is back at 15k (~300-500t), expected; (2) below 13k (reserveE - UP_DIP) the upgrader target is 0, current upgraders TTL 958/1259 so no gap if storage clears 13k within ~800t; (3) flip-flop at the 15k line (bank vs ctl per load) - fine unless ctl container repeatedly hits 0 with storage >= 15k.
+- **W47N8:** upgrade 25.9 e/t over the window (prev 19.4); since the 2c34346 filler-buffer fix 28.8 e/t vs ideal 29.84. Storage 3252 peak -> 893 (spawn draw; buffer reserve 950 now pulls hauler loads, by design). RCL4 285.6k/405k, RCL5 ETA ~08:00-08:30. Tower 870, 0 hostiles, ramparts unchanged (min 4901, 0 sites).
+- **Cross-room:** CPU ~12-13 avg (bucket 10000), Memory 33.3k, DB lag ~25 s, all tests pass. Rules OK (home walls 142101 no loss, no SM, W47N8 builds no ramparts, floors: home dip below 15k now being banked back).
+- **Observability fix (tools only):** patrol console queries used guessed module names (`managers_walls`, `roles_queen`) and logged `Unknown module` runtime error events (t83749965, t83750089). `tools/q.py` now checks `require()` names against `src/` and suggests the dotted name (`managers.walls`, `rooms.w47n8.roles`) without sending.
+
 ## 2026-10-20 02:4x strategy review: home hauler at RCL6, console query size (`docs/MODEL.md` "02:4x")
 
 - **Home hauler: keep it.** 6 h data: it moved ~0.18 e/t (storage side to ctl container), 0 from source A (link 30,11 takes all). Removing it saves only ~0.3 e/t (~1.5 h off a ~5.5-day RCL7) and needs queen sizing, the mineral run and the emergency path decoupled first. Revisit at RCL7 sizing only if the O cycle is paused. The 23:5x open question is closed.
