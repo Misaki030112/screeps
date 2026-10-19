@@ -3,6 +3,13 @@
 Novice zone ends **2026-10-28 03:33 UTC+8**. Defence timeline: `docs/DEFENSE_NOVICE.md` (2026-10-16); detail `docs/DEFENSE.md` / geometry `docs/DEFENSE_PLAN.md`.
 **Safe mode: NEVER auto-activate** — alert Misaki.
 
+## 2026-10-20 06:3x strategy review: threat-mode wall cap before RCL5 (`docs/PLAN_W47N8.md` "Threat-mode wall cap")
+
+- **Found before it bit:** under threat mode (always on while the W47N9 camp lasts) the seal-wall raise ahead of sites and upgrading used the full per-RCL target. At RCL5 that is 100k, so the moment W47N8 levelled up, upgraders would drop to 1-2 and builders would repair ~600k hits (~6k energy, ~400 t) before touching tower 24,8; at RCL6 (300k) ~30k energy and hours of 1-2 upgraders.
+- **Shipped bc7bf57 (deployed t83753035):** threat priority stops at the 50k floor (`TH.urgentTarget`); 100k/300k stays a surplus job, as Misaki set on 10-19. Test `tests/w47n8_threat_wall_cap.js` fails on the old code; all tests pass; live errors 0, bucket 10000.
+- **W47N8 patrol at RCL5 (~08:45):** tower 24,8 is the only site and gets built while the camp persists; upgraders stay at 2 while sites exist (not 1); no wall mode. Then confirm `w8roster` home 1 / w8 0.
+- Plan check: W47N8 RCL4 354.8k/405k, RCL5 ~08:45 UTC+8; home RCL6 ~624k/3.645M, RCL7 ~10-27 01:00 unchanged (before novice end 10-28 03:33). CPU ~13-14, bucket 10000.
+
 ## 2026-10-20 05:4x strategy review: W47N9 border camp vs tower 2 (`docs/DEFENSE_W47N8.md` "05:4x")
 
 - **BustJetter camp at our north exit:** 8RA + 9RA with 2 escort healers (7H, 5H) at W47N9 (31-34,47), inside their own RCL6 room, 0 damage. It keeps `w8invN` fresh, so the joint roster refills every life: waves 03:32-03:52 and 05:23-05:38, ~6-9k energy each (~4-6 e/t combined). By doctrine (enemy has not withdrawn), so no change.

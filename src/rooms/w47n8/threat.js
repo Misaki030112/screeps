@@ -26,6 +26,7 @@ function flee() { const t = M().w8flee || 0; return t > 0 && Game.time - t < FLE
 function wallTarget(base) { return on() ? Math.max(base, FLOOR) : base; }
 // 10-20 06:3x strategy review: the part of the seal-wall raise that goes AHEAD of upgrading and construction sites. Only the threat
 // floor (Misaki 14:23); the per-RCL target above it (100k at RCL5, 300k RCL6...) stays a surplus job (Misaki 19:18). Without this cap,
-// RCL5 under the W47N9 camp would have queued ~60k of wall repair (12 seal walls 50k -> 100k) before tower 24,8 with 1-2 upgraders.
+// RCL5 under the W47N9 camp would have queued ~600k hits (~6k energy, ~400 t) of wall repair before tower 24,8 with 1-2 upgraders,
+// and RCL6 (300k) ~3M hits (~30k energy, hours of 1-2 upgraders) while the camp keeps threat mode on.
 function urgentTarget() { return on() ? FLOOR : 0; }
 module.exports = { mark, on, flee, invasion, wallTarget, urgentTarget, WINDOW, FLOOR };

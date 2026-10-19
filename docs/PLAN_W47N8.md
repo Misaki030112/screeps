@@ -112,6 +112,21 @@ Revisit only if 13,26 empties again while storage > 3k (patrol watch, unchanged)
 3. Tower 24,8 rises to >= 600 within ~100 t of completion via 26,11 (Memory: none; watch container 26,11 and tower energy).
 4. Filler stays in the hub when only 24,8 is low.
 
+## Threat-mode wall cap at RCL5+ (2026-10-20 06:3x strategy review, tick 83753035, deployed bc7bf57)
+Question: with BustJetter camping W47N9 (north_watch keeps `w8threatN` fresh, threat mode effectively always on), what happens the
+moment W47N8 reaches RCL5 (live t83753006: RCL4 354.8k/405k, seal walls 12/12 at 50.0-50.5k, ETA ~08:45 UTC+8)?
+Finding: `TH.wallTarget(WALL_TARGET[rcl])` = max(rcl target, 50k) under threat, and both the spawn wall mode (`wallsLow`: 1-2 upgraders,
+up to 3 builders) and the builder's threat job (`tj`, ahead of every construction site) used that full value. At RCL4 it is 50k (= floor),
+so nothing showed. At RCL5 the target jumps to 100k: every seal wall would read "low" (< 90k), upgraders drop to 1-2 and builders repair
+~600k hits (~6k energy, ~400 t) **before tower 24,8**; at RCL6 (300k) ~3M hits (~30k energy, hours on 1-2 upgraders), RCL7 1M worse.
+That contradicts Misaki's rules: tower 24,8 first at RCL5 (18:06), threat floor 50k ahead of upgrading (14:23), per-RCL seal target only
+from surplus (19:18).
+Shipped bc7bf57: `TH.urgentTarget()` = 50k while threat is on, 0 otherwise. `wallsLow` and the builder `tj` cap at it; the per-RCL target
+is unchanged for the surplus wall builder (spawn step 6) and the builder's after-sites repair path. RCL2-4 behaviour unchanged.
+Siege repair of attacked walls (repairPick) is unaffected. tests/w47n8_threat_wall_cap.js fails on the old code (builder walks to the walls
+instead of building 24,8). Live: errors 0, bucket 10000, urgentTarget 50000.
+Patrol check at RCL5: the tower 24,8 site gets built while the camp persists, upgraders stay at 2 (sites) not 1, no wall mode.
+
 ## RCL6 gate (2026-10-20 03:4x strategy review, tick 83750598, deployed 7b0b0b4)
 Question: what does layoutRun place the moment W47N8 hits RCL6 (ETA ~10-22 08:00-10:00: 1.215M at ~28-30 e/t)?
 Finding (tests/w47n8_rcl6_gate.js on the old code): 10 ext (30k), hub link 33,34 (5k), **terminal 33,32 (100k), extractor 37,45 (5k),

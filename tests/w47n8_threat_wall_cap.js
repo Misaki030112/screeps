@@ -1,5 +1,5 @@
 // 2026-10-20 06:3x strategy review: under threat mode (W47N9 camp keeps w8threatN fresh) the seal walls go ahead of sites and
-// upgrading only up to the 50k threat floor. At RCL5 WALL_TARGET is 100k; the old code put that whole raise (~60k energy) ahead of
+// upgrading only up to the 50k threat floor. At RCL5 WALL_TARGET is 100k; the old code put that whole raise (~600k hits, ~6k energy; 300k at RCL6 = ~30k energy) ahead of
 // tower 24,8 and capped upgraders at 1-2. The per-RCL target above 50k stays a surplus job.
 const assert = require('assert'), path = require('path');
 const d = path.join(__dirname, '..', 'src', 'rooms', 'w47n8');
