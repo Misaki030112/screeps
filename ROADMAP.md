@@ -3,6 +3,15 @@
 Novice zone ends **2026-10-28 03:33 UTC+8**. Defence timeline: `docs/DEFENSE_NOVICE.md` (2026-10-16); detail `docs/DEFENSE.md` / geometry `docs/DEFENSE_PLAN.md`.
 **Safe mode: NEVER auto-activate** — alert Misaki.
 
+## 2026-10-19 23:5x two-room evaluation (45-min window 23:05-23:50 vs 22:20-23:05)
+
+- Home W46N8: controller progress **20.5 e/t** (prev 23.3; ideal 21.8). Dip is one bucket, 23:09-23:18 at 13.8 e/t: upgrader turnover. New upgrader 83746723 (12W1C1M) got spot 29,30 while both old ones lived; the idle home hauler parked on **30,29** (2210 of 5100 t in 6h) so its path went through swamp 30,28 (~65 t at 1 MOVE). Walk-in 100 t vs 10-34 t usual, ctl container full (2000) meanwhile. Other buckets 23.0. Storage 15.9k -> 15.1k (14.7k live, spawn draw, known benign). RCL6 504.5k/3.645M, RCL7 ~10-26. Walls 142101 no loss, ramparts min 172.0k, 11 ramparts, sm 0.
+- W47N8: controller progress **30.0 e/t** (prev 22.5; ideal 29.84, util ~100%). Every 9-min bucket since 23:09 is 30.0 (rminer lead fix 58110f2 + si1 6W). Storage 0.8k -> 1.2k. RCL4 213k/405k; **RCL5 ETA ~7.5 h, about 10-20 07:30 UTC+8** (was ~13 h). Walls min 50.0k, 10 ramparts, 0 sites.
+- Cross-room: CPU avg 12.7 (prev 13.2), max 17.8, bucket 10000. Memory 32.9k. DB lag ~37 s. Tests pass. **Data gap:** a second listener.py ran 23:05-23:35 and doubled creep_ticks/creep_cpu rows (ratio 1.5-2.0); per-role CPU and model idle/spent for that half hour are inflated. Not deduped.
+- **Shipped 7d64257 (deployed t83747391):** home hauler `idlePark`: with nothing to pick it waits on a free plain non-road tile within 3 of the ctl drop and not next to an upgrader spot (live: 32,28). `tests/hauler_idle_park.js`. **Listener single-instance:** listener.py takes `metrics/listener.lock`, run_listener.sh takes `metrics/listener.loop.lock`. **To restart a stalled listener, kill only listener.py**; the loop relaunches it in 10 s. Starting a second copy now exits.
+- **Home patrol:** confirm next upgrader walk-in under 40 t. Open question (not done): the home hauler is ~97-100% waiting_pickup (link-fed ctl); consider whether home still needs it at RCL6 (upkeep ~0.5 e/t) before RCL7 sizing.
+- **W47N8 patrol:** at ideal; nothing to change before RCL5. At RCL5: tower 24,8 site first.
+
 ## 2026-10-19 22:4x two-room evaluation (45-min window 21:58-22:43 vs 21:13-21:58)
 
 - Home W46N8: controller progress **23.3 e/t** (prev 21.8; model 1h 23.4 vs ideal 21.8, util 107%). Storage 16.5k -> 13.6k (−4.5 e/t) **below 15k floor** after the known remote spawn cohort (~9k in ~320 t); queen ferry paused / defLow holding new upgraders — recovering (13.0k@22:22 -> 13.6k@22:43). RCL6 484k/3.645M; RCL7 ETA still ~10-26 at this rate. Walls 142101 no loss, ramparts min 170.9k, 0 sites, sm 0 / sma 5.
