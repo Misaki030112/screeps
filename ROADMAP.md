@@ -3,6 +3,14 @@
 Novice zone ends **2026-10-28 03:33 UTC+8**. Defence timeline: `docs/DEFENSE_NOVICE.md` (2026-10-16); detail `docs/DEFENSE.md` / geometry `docs/DEFENSE_PLAN.md`.
 **Safe mode: NEVER auto-activate** — alert Misaki.
 
+## 2026-10-19 19:42 two-room evaluation (45-min window 18:56-19:41 vs 18:11-18:56)
+
+- Home W46N8: controller progress 23.3 e/t (prev 23.4; model 1h 23.4, 6h 20.9 vs ideal 21.8). Storage 12.2k -> 16.2k (+6.4 e/t; prev -8.8 e/t): back above the 15k reserve since ~19:29, so a1d78b3 (rminers first across remotes) is verified. RCL6 425.1k/3.645M, RCL7 ETA ~10-26 afternoon at this rate. Walls 142101 no loss, ramparts min 168.3k, 0 sites, no safe mode.
+- W47N8: controller progress 24.0 e/t (prev 19.5; live ~30 after 19:37, model 1h 20.8, 6h 17.4 vs ideal 29.8). RCL4 128.4k/405k, RCL5 ETA ~13.5 h at the window rate (model 15.6 h 1h / 18.6 h 6h, ideal 10.9 h). Threat-mode defenders 6 -> 2 and expiring with none added (ead1e7f withdraw rule working). 0 sites, rampart count 10, no new ramparts, no safe mode.
+- CPU avg 13.5 (prev 13.1), one 22.5 tick at 19:15 (t83743400, no deploy; coincides with the large q.py query that timed out), bucket 10000. Memory 33.8k (prev 34.7k). Tests: scripts/test_all.sh all pass. src clean. DB lag < 30 s.
+- **W47N8 patrol, watch:** at 19:37 the ctl container 13,26 ran dry for ~80 t during a replacement spawn burst while storage was < 100 (upgraders 4 = 40 WORK during overlap vs upw 30). With defenders gone storage should build; if the container empties again once storage is > 3k, look at whauler priority between extensions and 13,26 before anything else.
+- **Home patrol, watch:** hauler 54 CARRY live vs 24.6 needed, idle/waiting 95%; cheap (0.7 e/t) but when it is next replaced, check the body is sized from the model need.
+
 ## 2026-10-19 18:58 two-room evaluation (45-min window 18:11-18:56 vs 17:26-18:11)
 
 - Home W46N8: controller progress 23.4 e/t (prev 12.8; model 1h 22.5 vs ideal 21.8), but storage 18.9k -> 12.5k (1h delta -5.0 e/t), below the 15k reserve again since ~18:47: spawn burst (W45N8 + W45N7 rminer/reserver/rhaulers ~6k) plus W45N7 unmined ~160 t per cycle. Patrol fix a1d78b3 (rminers of all remotes first) live 18:51. Walls 142101 no loss, gates 167.5k rising, sites 0, safe mode untouched.
