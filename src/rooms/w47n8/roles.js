@@ -8,7 +8,10 @@ function getEnergy(c) {
   const drop = c.pos.findClosestByRange(FIND_DROPPED_RESOURCES, { filter: r => r.resourceType === E && r.amount >= 50 });
   const cont = c.pos.findClosestByRange(FIND_STRUCTURES, { filter: s => s.structureType === STRUCTURE_CONTAINER && s.store[E] >= 100
     && !((s.pos.x === C.CTL_CONT[0] && s.pos.y === C.CTL_CONT[1] || isHub(s)) && c.memory.role === 'w8hauler') });
-  const t = [drop, cont].filter(Boolean).sort((a, b) => c.pos.getRangeTo(a) - c.pos.getRangeTo(b))[0];
+  // 13:00 storage 35,32 finished (2026-10-19): haulers only top it up once ctl/hub conts are full, so builders/upgraders may draw
+  // from it (>= 300) instead of letting the surplus sit while they walk to source containers
+  const st = c.room.storage && c.memory.role !== 'w8hauler' && c.room.storage.store[E] >= 300 ? c.room.storage : null;
+  const t = [drop, cont, st].filter(Boolean).sort((a, b) => c.pos.getRangeTo(a) - c.pos.getRangeTo(b))[0];
   if (t) { if (!c.pos.isNearTo(t)) go(c, t.pos.x, t.pos.y); else if (t.amount !== undefined) c.pickup(t); else c.withdraw(t, E); return true; }
   const src = c.pos.findClosestByRange(FIND_SOURCES_ACTIVE);
   if (src && c.getActiveBodyparts(WORK)) { if (!c.pos.isNearTo(src)) go(c, src.pos.x, src.pos.y); else c.harvest(src); return true; }
