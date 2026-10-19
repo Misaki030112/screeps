@@ -244,6 +244,9 @@ def main():
     import flow
     n_ramp = len(O(HOME, 'rampart'))
     M['flow'] = flow.steady(M, n_ramp)
+    # 21:5x 2room-eval: carry need must include the extra remotes (W45N7, 4x8C8M live) that hauler_carry_live already counts;
+    # before this the patrol compared 54-86 live CARRY with a 24.6 need that covered only A + W45N8.
+    M['hauler_carry_need'] = round(M['hauler_carry_need'] + sum(v['carry'] for k, v in M['flow']['sources'].items() if k not in M['sources']), 1)
     if not a.no_db:
         c = db.connect(); eps, span, nd = flow.events(c, q)
         M['flow']['stochastic'] = st = flow.stochastic(eps, span, nd, M['actual'].get('tick_s') or 4.08)

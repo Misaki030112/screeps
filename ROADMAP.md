@@ -3,6 +3,15 @@
 Novice zone ends **2026-10-28 03:33 UTC+8**. Defence timeline: `docs/DEFENSE_NOVICE.md` (2026-10-16); detail `docs/DEFENSE.md` / geometry `docs/DEFENSE_PLAN.md`.
 **Safe mode: NEVER auto-activate** — alert Misaki.
 
+## 2026-10-19 21:5x two-room evaluation (45-min window 21:12-21:57 vs 20:27-21:12)
+
+- Home W46N8: controller progress 21.9 e/t (prev 23.2; model 1h 22.2 vs ideal 21.8). Storage 16.1k -> 17.1k (+1.5 e/t), above the 15k floor. RCL6 468.7k/3.645M. Walls 41 min 142101 (no loss), ramparts 11 min 170.3k, 0 hostiles, no safe mode. Spawn utilisation 58% (2 rminer replacements in flight).
+- W47N8: controller progress 25.1 e/t (prev 17.6; model 1h 25.5 vs ideal 29.8). Window-to-window swing (19.5/24.0/26.0/20.2/25.1 over the evening), not yet a trend; W47N7 road sites down to 2, storage 1.8k -> 1.5k. RCL4 172.8k/405k; RCL5 ETA ~10.8 h at the window rate (~10-20 08:45 UTC+8), ideal 9.1 h. Walls min 50.0k, ramparts 10 (8 at ~44-50k, hub 36,31/36,33 held at 5.3k by rampHold, by design).
+- Cross-room: CPU avg 14.1 (prev 12.1), max 57.9 = 3ce6174 deploy reset; bucket 10000. Memory 33.2k. DB lag ~41 s. Tests all pass, src clean.
+- **Fixed (tools only, no deploy): `tools/model.py` hauler_carry_need omitted W45N7.** It compared all live hauler+rhauler CARRY (incl. W45N7's 4x8C8M) with a need for source A + W45N8 only (24.6). With W45N7 (flow.py 48) the need is **72.6 vs 70 live**: home hauling is right-sized. The 21:2x note "home hauler 54 CARRY vs 24.6, size down" is withdrawn.
+- **Home patrol:** do not shrink home haulers/rhaulers on the old 24.6 figure. Compare against the new need (~72.6). Watch W45N7 container (1.3-1.6k of 2k): if it reaches 2k, W45N7 is under-hauled, not over.
+- **W47N8 patrol:** unchanged (rminer replacements ~22:35 / ~23:05, then hauler sizing note).
+
 ## 2026-10-19 21:4x strategy review: W47N8 upgrade at 2/3 of ideal (`docs/MODEL_W47N8.md` "21:4x")
 
 - Gap 29.8 ideal vs 21.1 actual (6 h) fully decomposed: upkeep +2.7 (hauler sizing, known), W47N7 road building 2.5 (temporary), **remote harvest −1.8**, tower/decay/stock 1.3. The ctl container empties because 30 WORK > ~21 e/t delivered (symptom, not a routing fault).
