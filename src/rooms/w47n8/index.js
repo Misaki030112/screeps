@@ -53,7 +53,9 @@ function spawnRun(spawn) {
   const R7 = Game.rooms[C.REMOTE.room], lo7 = R7 ? looseE(R7) : 0;
   // 10:57: floor 2 still left W47N7 at 2000/2000 conts + 2936 dropped (lo7 ~6.9k, ~3 e/t decaying) behind 4 builders; 2 sources ~20 e/t need
   // ~3-4 x 700-carry rhaulers (round trip ~100-120t), so floor 4 while lo7 > 3000
-  if (!want && ours7 && lo7 > 1000 && n('w8rminer') && cs.filter(c => c.memory.role === 'w8rhauler' && (c.spawning || c.ticksToLive > 150)).length < (lo7 > 3000 ? 4 : 2)) want = 'w8rhauler';
+  // 11:12: lo7 kept rising 6.9k -> 7.3k (conts 2000/2000 + 3292 dropped) while 3 builders and 2 upgraders sat queue_blocked (energy-starved,
+  // local conts 140/530): remote haul is the income bottleneck, so floor 6 above 5k (each 14C7M rhauler ~6 e/t over a ~110t round trip)
+  if (!want && ours7 && lo7 > 1000 && n('w8rminer') && cs.filter(c => c.memory.role === 'w8rhauler' && (c.spawning || c.ticksToLive > 150)).length < (lo7 > 5000 ? 6 : lo7 > 3000 ? 4 : 2)) want = 'w8rhauler';
   // 04:10: size by remaining build work, not site count: 3 cheap road sites (~900 left) brought a 4th builder while the ctl cont sat at 0,
   // wbuilder idle 0.69 (6h) and 4 upgraders energy-starved
   else if (!want && sites && n('w8builder') < (siteRem(room) >= 3000 ? 4 : siteRem(room) >= 1200 ? 3 : 2)) want = 'w8builder'; // 17:05: Spawn2 sat idle at 300/300 with 5 ext sites
