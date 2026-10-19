@@ -83,14 +83,20 @@ p = D.defPlan(me(27, 6), [c('m', 27, 7, { attack: 10, move: 10 })], { towers: tw
 p = D.defPlan(me(27, 6), [c('d', 27, 2, { tough: 14, move: 14 })], { towers: tw }); assert.ok(!p.shoot, 'drain tank north of seal: ignored');
 p = D.defPlan(me(27, 6), [], { towers: tw, quiet: 150 }); assert.strictEqual(p.move, 'recycle', 'quiet 100+ ticks: recycle');
 p = D.defPlan(me(27, 6), [c('a', 26, 7, { ranged_attack: 2, move: 2 }), c('b', 27, 8, { ranged_attack: 2, move: 2 }), c('e', 28, 7, { ranged_attack: 2, move: 2 })], { towers: tw }); assert.ok(p.mass, '3 within 2: rangedMassAttack');
-// ---- joint planner (one place for W46N8 + W47N8)
-const pair = () => [fc({ ranged_attack: 8, move: 8 }), fc({ ranged_attack: 6, move: 6 })];
-let pl = D.plan({ force: pair(), towerR: [32], homeOk: true, homeCap: 2300, w8Cap: 1300 }); assert.strictEqual(pl.home, 1, 'threat active + home safe: home sends one');
-assert.ok(pl.w8 <= 2 && pl.healer === undefined, 'no healer role');
-pl = D.plan({ force: pair(), towerR: [32], homeOk: false, homeCap: 2300, w8Cap: 1300 }); assert.strictEqual(pl.home, 0, 'home threatened: home keeps its spawn');
-pl = D.plan({ force: SQ(), towerR: [32], homeOk: true, homeCap: 2300, w8Cap: 1300 }); assert.ok(!pl.win && pl.w8 === 0, 'full squad at RCL4: no local defenders fed');
-pl = D.plan({ force: SQ(), towerR: [19], homeOk: true, homeCap: 2300, w8Cap: 1300, inside: true }); assert.strictEqual(pl.advise, 'safemode', 'inside + unwinnable: advise safe mode');
-assert.strictEqual(D.plan({ force: [fc({ tough: 14, move: 14 })], towerR: [32], homeOk: true, homeCap: 2300 }).home, 0, 'drain tanks: nobody');
+// ---- joint planner (one place for W46N8 + W47N8; Misaki 17:45: baseline 1 home defender, extra only if it turns a loss into a win)
+const P = f => D.plan(Object.assign({ towerR: [32], homeOk: true, homeCap: 2300, w8Cap: 1300 }, f));
+const B9 = a => a.map(fc), RA = (k) => ({ ranged_attack: k, move: k }), HL = k => ({ heal: k, move: k });
+let pl = P({ force: B9([RA(6), RA(8)]) }); assert.deepStrictEqual([pl.home, pl.w8, pl.win], [1, 0, true], 'pair: baseline home 1 even though towers win');
+pl = P({ force: B9([RA(6), RA(8), HL(7), HL(7)]) }); assert.deepStrictEqual([pl.home, pl.w8], [1, 1], 'pair + 2 healers: baseline + fewest local that win');
+pl = P({ force: B9([RA(6), RA(8), HL(7), HL(7), HL(7)]) }); assert.ok(pl.home >= 1 && pl.home <= 2, 'pair + 3 healers: baseline, a 2nd only if it wins');
+if (pl.home === 2) assert.ok(pl.win, '2nd home defender only when it turns it into a win'); else assert.ok(!pl.win && pl.w8 === 0, 'unwinnable: baseline only, no local fed');
+pl = P({ force: SQ() }); assert.deepStrictEqual([pl.home, pl.w8, pl.win], [2, 2, true], 'full squad RCL4: only 2 home + 2 local (all four 11RA/6RA) win in the model');
+pl = P({ force: SQ(), homeCap: 1300 }); assert.deepStrictEqual([pl.home, pl.w8, pl.win], [1, 0, false], 'full squad, small home bodies: unwinnable -> baseline only, nothing else fed');
+pl = P({ force: SQ(), towerR: [19], inside: true, homeOk: false }); assert.strictEqual(pl.advise, 'safemode', 'inside + unwinnable (home busy): advise safe mode');
+pl = P({ force: B9([RA(6), RA(8)]), homeOk: false }); assert.strictEqual(pl.home, 0, 'home threatened: no support');
+assert.strictEqual(P({ force: B9([{ tough: 14, move: 14 }, HL(7)]) }).home, 0, 'drain group (unarmed): no support');
+for (const f of [[RA(6), RA(8), HL(7), HL(7), HL(7)], [RA(11), HL(6), HL(6)], [RA(11), RA(7), HL(7), HL(7), HL(6)]]) { const r = P({ force: B9(f) });
+  assert.ok(r.home <= 2 && r.w8 <= 2 && (r.home < 2 || r.win), 'support capped; 2nd home only on a win ' + JSON.stringify(r)); }
 // ---- seal repair under fire
 const wl = (x, hits) => ({ pos: { x, y: 3 }, hits });
 const ws = [wl(24, 50000), wl(29, 42000), wl(30, 30000), wl(10, 1000)];

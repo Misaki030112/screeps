@@ -103,17 +103,17 @@ function defPlan(me, hs, o = {}) {
 // ---- joint defence (Misaki 17:34): ONE planner for the W46N8 + W47N8 roster. Bodies: RA+MOVE only (towers heal on our ground).
 const raBody = (e, max = 25) => { const k = Math.max(1, Math.min(max, Math.floor(e / 200))); return Array(k).fill('ranged_attack').concat(Array(k).fill('move')); };
 // o: {force, towerR (ranges tower -> fight), homeOk, homeCap, w8Cap, inside}
-// home: 1 whenever an armed threat is active and home itself is safe (Misaki: send one now); w8: fewest local defenders (0-2) that
-// make towers + home + local win with no losses, else 0 (never feed a lost fight). No healers (Misaki 17:38: HP rule, towers heal).
+// Misaki 17:45: home ALWAYS sends a baseline of 1 defender while a real (armed) threat is active and home itself is safe, win or lose.
+// Local W47N8 defenders = fewest (0-2) that win (no losses) together with the baseline. A 2nd home defender only if the sim says it
+// turns a loss into a win. Still unwinnable -> baseline only, no local spawns (never feed a lost fight); inside the seal -> advise safe mode.
 function plan(o) {
   const fighters = o.force.filter(c => live(c, 'attack') + live(c, 'ranged_attack') > 0);
-  if (!fighters.length) return { home: 0, w8: 0, healer: 0, why: 'unarmed' };
-  const home = o.homeOk ? 1 : 0, hb = raBody(o.homeCap || 0), wb = raBody(o.w8Cap || 0, 12);
-  let w8 = -1, res = null;
-  for (let n = 0; n <= 2 && w8 < 0; n++) { const defs = Array(home).fill(hb).concat(Array(n).fill(wb));
-    res = defs.length ? sim(o.force, o.towerR, defs, 0, o) : sim(o.force, o.towerR, wb, 0, o); if (res.result === 'win' && !res.lost) w8 = n; }
-  const win = w8 >= 0; if (!win) w8 = 0;
-  return { home, w8, win, why: win ? 'win' : 'unwinnable', advise: !win && o.inside ? 'safemode' : '' };
+  if (!fighters.length) return { home: 0, w8: 0, win: true, why: 'unarmed', advise: '' };
+  const hb = raBody(o.homeCap || 0), wb = raBody(o.w8Cap || 0, 12), base = o.homeOk ? 1 : 0;
+  const wins = defs => { const r = defs.length ? sim(o.force, o.towerR, defs, 0, o) : sim(o.force, o.towerR, wb, 0, o); return r.result === 'win' && !r.lost; };
+  for (let h = base; h <= (o.homeOk ? 2 : 0); h++)
+    for (let n = 0; n <= 2; n++) if (wins(Array(h).fill(hb).concat(Array(n).fill(wb)))) return { home: h, w8: n, win: true, why: h > base ? 'extra home' : 'win', advise: '' };
+  return { home: base, w8: 0, win: false, why: 'unwinnable', advise: o.inside ? 'safemode' : '' };
 }
 // ---- seal repair under fire (Misaki 17:36): walls an armed hostile can reach (RA 3 / ATTACK, WORK 1); lowest first
 function repairPick(walls, hs) {

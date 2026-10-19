@@ -277,7 +277,7 @@ function assessRun(room, towers, hs) {
   const r = D.plan({ force, towerR: tr, inside, homeOk, homeCap: hr ? hr.energyCapacityAvailable : 0, w8Cap: room.energyCapacityAvailable || 300,
     towerE: Math.min(...towers.map(t => t.store[RESOURCE_ENERGY])) });
   o.w8roster = { t: Game.time, home: r.home, w8: r.w8, why: r.why };
-  m.w8assess = { t: Game.time, spawn: r.w8 > 0, why: r.why === 'win' ? 'winnable' : r.why, at: [at.x, at.y] };
+  m.w8assess = { t: Game.time, spawn: r.w8 > 0, why: r.why, at: [at.x, at.y] };
   if (r.advise) o.w8adv = { t: Game.time, advise: r.advise, why: r.why, n: force.length }; // safe mode is Misaki's call (alerts relay it)
 }
 function towerRun(room) {

@@ -64,3 +64,9 @@ and heads to Spawn2. From RCL5 (2nd tower 34,31) towers alone are expected to ho
   tower 2 (5k) built ~0.5-1 h later. Until then the joint-defence roster (W47N8 + home 11RA11M) carries the 4-creep case.
 - Boost watch: north_watch sees UH (ATTACK x2) in W48N9 labs (97) and W47N9 (20). UH only helps the melee pair (10A/8A): 18A boosted
   = 1080 dmg/t on a seal wall, 50k wall in ~46 t without repair. Ranged/heal parts are unaffected, so the tower verdicts stand.
+
+## 17:45 roster rule (Misaki, supersedes the joint-defence bullet above)
+Home always sends a baseline of 1 defender while an armed threat is active and W46N8 is safe (below the storage floor is OK).
+Local W47N8 defenders = fewest 0-2 that win together with the baseline. A 2nd home defender only if the sim says it turns a loss into a win.
+Still unwinnable: baseline only, no local spawns; inside the seal -> `Memory.ops.w8adv` advises safe mode.
+Model examples (RCL4, tower r32): pair 8RA+6RA -> home 1, local 0; pair + 2x7H -> home 1, local 1; full W48N9 squad -> home 2 + local 2 win.
