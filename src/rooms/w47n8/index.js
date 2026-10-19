@@ -47,7 +47,9 @@ function energyOrder(room) {
   const d = s => Math.max(Math.abs(s.pos.x - cx), Math.abs(s.pos.y - cy));
   return all.filter(s => !last(s)).sort((a, b) => d(a) - d(b)).concat(all.filter(last).sort((a, b) => (a.structureType === STRUCTURE_SPAWN ? 0 : 1) - (b.structureType === STRUCTURE_SPAWN ? 0 : 1)));
 }
-const rmLead8 = (i, c) => Math.min(180, Math.max(40, (Memory.ops && Memory.ops.w8rlead && Memory.ops.w8rlead[i]) || 90)) + 3 * ((c && c.body) || []).length + 20;
+// 10-19 22:4x patrol: + 60 queue margin. First live replacement at 18,17 was ordered at old TTL 43 (lead 140): Spawn2 was busy with
+// 2 hauler-floor spawns (45t each) + a local miner from TTL 140 on, so the source sat unmined ~77 ticks. Overlap costs ~0.5 e/t-tick.
+const rmLead8 = (i, c) => Math.min(180, Math.max(40, (Memory.ops && Memory.ops.w8rlead && Memory.ops.w8rlead[i]) || 90)) + 3 * ((c && c.body) || []).length + 20 + 60;
 function spawnRun(spawn) {
   FM.tick(spawn); // 17:3x spawn-energy meter (Memory.ops.w8fm)
   if (spawn.spawning) return;

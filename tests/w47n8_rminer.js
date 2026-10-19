@@ -14,9 +14,9 @@ const b55 = W.bodyFor('w8rminer', 550); assert.ok(cost(b55) <= 550 && cnt(b55, '
 for (const e of [300, 400, 550, 700, 800, 1300, 5600]) assert.ok(cost(W.bodyFor('w8rminer', e)) <= Math.max(e, 300), 'fits ' + e);
 // lead: learned walk + spawn + 20, default walk 90, clamp 40..180
 const c = { body: b13 };
-assert.strictEqual(W.rmLead8(1, c), 90 + 30 + 20, 'default');
+assert.strictEqual(W.rmLead8(1, c), 90 + 30 + 20 + 60, 'default');
 Memory.ops.w8rlead = { 0: 48, 1: 70 };
-assert.strictEqual(W.rmLead8(0, c), 48 + 30 + 20); assert.strictEqual(W.rmLead8(1, c), 70 + 30 + 20);
+assert.strictEqual(W.rmLead8(0, c), 48 + 30 + 80); assert.strictEqual(W.rmLead8(1, c), 70 + 30 + 80);
 Memory.ops.w8rlead = { 0: 5, 1: 900 };
-assert.strictEqual(W.rmLead8(0, c), 40 + 50); assert.strictEqual(W.rmLead8(1, c), 180 + 50, 'clamped');
+assert.strictEqual(W.rmLead8(0, c), 40 + 110); assert.strictEqual(W.rmLead8(1, c), 180 + 110, 'clamped');
 console.log('w47n8 rminer ok');
