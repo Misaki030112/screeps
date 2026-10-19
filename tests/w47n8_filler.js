@@ -133,7 +133,10 @@ const t1 = RL._fill(hc(), false);
 assert.ok(t1 && !F.isDuty(room, t1), 'filler active: hauler picks the Spawn2 cluster, not hub ' + JSON.stringify(t1 && t1.pos));
 Game.time++; ff.store.energy = 0; room.storage.store.energy = 0;
 const t2 = RL._fill(hc(), false);
-assert.ok(t2 && F.isDuty(room, t2), 'filler starved: hauler fills the hub again');
+assert.ok(t2 && !F.isDuty(room, t2), 'filler starved but alive: haulers still leave the hub to it (they feed storage instead)');
+Game.time++; creeps = creeps.filter(x => x !== ff);
+const t3 = RL._fill(hc(), false);
+assert.ok(t3 && F.isDuty(room, t3), 'no filler: hauler fills the hub again');
 // ---------- (D) spawn rule
 creeps = []; DUTY_RESET();
 assert.ok(F.want(room, []), 'want a filler (15 hub ext, storage built)');

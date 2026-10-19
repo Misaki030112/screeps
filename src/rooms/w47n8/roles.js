@@ -95,7 +95,7 @@ function fillTarget(c, tower, rng = 99) {
   for (const o of c.room.find(FIND_MY_CREEPS)) if (o.id !== c.id && o.memory.ft) taken.add(o.memory.ft);
   // 03:00 once a trip has committed to a container sink (memory.sk), only divert to a fill target within 5 tiles: a loaded
   // w8hauler flipped 4x in 60 ticks between ctl cont 13,26 and hub ext 32,36 as Spawn2 drained/others refilled extensions
-  const lim = Math.min(rng, c.memory.sk ? 5 : 99), fa = F.active(c.room);
+  const lim = Math.min(rng, c.memory.sk ? 5 : 99), fa = F.alive(c.room); // 17:5x alive, not active: a starved filler is fed via storage (haulers filling the hub themselves kept storage at 0 and the filler empty)
   const cand = c.room.find(FIND_MY_STRUCTURES, { filter: s => s.store && s.store.getFreeCapacity(E) > 0 && c.pos.inRangeTo(s, lim) && (s.structureType === STRUCTURE_SPAWN
     || (s.structureType === STRUCTURE_EXTENSION && !taken.has(s.id)) || (tower && s.structureType === STRUCTURE_TOWER && s.store.getFreeCapacity(E) > 200))
     && !(fa && F.isDuty(c.room, s)) }); // 17:4x: hub extensions/spawns are the w8filler's while it works (haulers: Spawn2 cluster + tower)
