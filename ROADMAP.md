@@ -3,6 +3,15 @@
 Novice zone ends **2026-10-28 03:33 UTC+8**. Defence timeline: `docs/DEFENSE_NOVICE.md` (2026-10-16); detail `docs/DEFENSE.md` / geometry `docs/DEFENSE_PLAN.md`.
 **Safe mode: NEVER auto-activate** — alert Misaki.
 
+## 2026-10-19 18:58 two-room evaluation (45-min window 18:11-18:56 vs 17:26-18:11)
+
+- Home W46N8: controller progress 23.4 e/t (prev 12.8; model 1h 22.5 vs ideal 21.8), but storage 18.9k -> 12.5k (1h delta -5.0 e/t), below the 15k reserve again since ~18:47: spawn burst (W45N8 + W45N7 rminer/reserver/rhaulers ~6k) plus W45N7 unmined ~160 t per cycle. Patrol fix a1d78b3 (rminers of all remotes first) live 18:51. Walls 142101 no loss, gates 167.5k rising, sites 0, safe mode untouched.
+- W47N8: controller progress 19.5 e/t (prev 13.5; model 1h 18.5 vs ideal 29.7), RCL4 113.6k/405k, RCL5 ETA 18.5 h (1h rate) / 22.3 h (6h) vs 11.6 h ideal. The gap is still the 6 threat-mode w8defenders (6.2 e/t upkeep) while BustJetter stays north; ead1e7f cleared-threat path has not triggered yet because the threat never cleared. 0 sites, no new ramparts.
+- CPU avg 13.1 (prev 14.8), max 15.7 (prev 63.0 deploy spike), bucket >= 9973; Memory 34.7k; top creep CPU = rhaulers in both rooms (wrhauler, rhauler), then whauler, queen. DB lag < 1 min, listener healthy.
+- Code health: tests/conquest.js and tests/quad.js had been failing on stale body costs (worker/hauler 1000 vs live 1600 since Misaki's 15:25 "faster" change); asserts updated. New `scripts/test_all.sh` runs every test — use it for the "tests pass" check instead of a subset.
+- **Home patrol, verify a1d78b3 by ~19:40:** the next W45N7 rminer replacement must finish spawning before its predecessor dies; storage should climb back above 15k once the burst ends. If storage is still < 15k at 19:40 with no spawn burst, look at remote delivery (model remote net ~11.4 e/t vs measured) before anything else.
+- **W47N8 patrol:** keep watching; defender upkeep is by design while the threat stands. Once north_watch clears, confirm no replacements and the ctl feed back to >= 25 e/t within 2 patrols.
+
 ## 2026-10-19 18:4x strategy review (home RCL7 readiness, `docs/RCL7.md`)
 
 - Home RCL7 ETA **~10-26 afternoon to 10-27 evening** (401k/3.645M at 20-24 e/t), 0.5-1.5 d before novice end 10-28 03:33.

@@ -17,7 +17,7 @@ assert.strictEqual(C.SQUAD_BODY().filter(p => p === 'ranged_attack').length, 6);
 assert.strictEqual(C.SQUAD_BODY().filter(p => p === 'heal').length, 2);
 assert.strictEqual(cost(C.BREAKER_BODY()), 1950, 'breaker 1950');
 assert.strictEqual(C.BREAKER_BODY().filter(p => p === 'claim').length, 3);
-assert.strictEqual(cost(C.WORKER_BODY()), 1000, 'worker 1000');
+assert.strictEqual(cost(C.WORKER_BODY()), 1600, 'worker 1600 (8W8C8M, Misaki 15:25 faster)');
 
 const squad = [{ hits: 1600, hitsMax: 1600, heal: 2 }, { hits: 1600, hitsMax: 1600, heal: 2 }]; // 48 heal
 assert.strictEqual(C.danger(squad, [cr(['work', 'carry', 'move'])], []), null, 'economy safe');

@@ -73,7 +73,7 @@ assert.ok([2,3].includes(rot.hurt), 'hurt assigned to back: '+rot.hurt);
 // bodies
 assert.strictEqual(Q.BODY().reduce((s,p)=>s+BODYPART_COST[p],0), 2300);
 assert.strictEqual(CQ.BREAKER_BODY().reduce((s,p)=>s+BODYPART_COST[p],0), 1950);
-assert.strictEqual(CQ.HAULER_BODY().reduce((s,p)=>s+BODYPART_COST[p],0), 1000);
+assert.strictEqual(CQ.HAULER_BODY().reduce((s,p)=>s+BODYPART_COST[p],0), 1600); // 16C16M
 
 // INERT gate
 const room = {storage:{store:{energy:50000}}};
