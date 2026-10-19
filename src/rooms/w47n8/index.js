@@ -108,6 +108,9 @@ function spawnRun(spawn) {
   // 30 spawn + queue behind upgraders/filler at the single Spawn2; overlap is free: the newcomer mines from a tile beside the stand)
   for (let i = 0; ours7 && i < C.REMOTE.sources.length && !want; i++)
     if (!cs.some(c => c.memory.role === 'w8rminer' && (c.memory.si | 0) === i && (c.spawning || c.ticksToLive > rmLead8(i, c)))) { want = 'w8rminer'; mem.si = i; }
+  // 10-20 04:4x: W47N7 reservation from Spawn2 once cap >= 1800 (roles/reserve7.js: ~60 t walk vs ~200 from home; home is the fallback)
+  let body7 = null;
+  if (!want) { const w7 = require('../../roles/reserve7').wantSpawn(C.ROOM); if (w7) { want = 'reserve7'; body7 = w7.body; mem = w7.mem; } }
   // 14:23 threat mode: seal walls to 50k ahead of upgrading; 1 upgrader keeps the controller safe (2 if downgrade < 10k)
   const thr = TH.on(), wtgt = TH.wallTarget(C.WALL_TARGET[(room.controller || {}).level] || 0);
   // 15:45 hysteresis: core ramparts decay 300/100t, so a strict '< 50k' gate re-entered wall mode (1-2 upgraders, +builders) ~100 ticks
@@ -179,7 +182,7 @@ function spawnRun(spawn) {
   // emergency: nothing alive that refills -> spawn with what we have
   const starving = !n('w8hauler') || !n('w8miner');
   const e = starving ? Math.max(200, avail) : cap;
-  const body = bodyFor(want, e), cost = _.sum(body, p => BODYPART_COST[p]);
+  const body = body7 || bodyFor(want, e), cost = _.sum(body, p => BODYPART_COST[p]);
   if (avail < cost) { FM.wait(want, cost, avail); return; }
   if (spawn.spawnCreep(body, want + Game.time, { memory: Object.assign({ role: want, home: C.ROOM, born: Game.time, v2: 1 }, mem), energyStructures: energyOrder(room) }) === 0) FM.spent(cost);
 }

@@ -8,13 +8,21 @@ function seen() {
   const res = r.controller.reservation;
   M().endTime = res ? Game.time + res.ticksToEnd : Game.time; M().by = res ? res.username : null;
 }
-function wantSpawn() {
+// 10-20 04:4x strategy review (docs/MODEL.md "04:4x reserve7 owner"): holding W47N7 costs ~1.3 e/t (2C2M 1300 e per 600 t, minus a
+// ~100-120 t walk from Spawn1 (PathFinder 102 tiles) vs ~75-80 t from Spawn2 (73 tiles)). Home was paying it for W47N8's remote while
+// home RCL7 (3rd tower, wall step 2) lands ~10-27, right before novice end. Once W47N8 can pay it without draining its whole spawn
+// energy (cap >= 1800, RCL5) Spawn2 spawns it; home stays the fallback when our reservation is under FALLBACK (Spawn2 busy/lost).
+const W8 = 'W47N8', W8_CAP = 1800, FALLBACK = 1000;
+function w8Ready() { const r = Game.rooms[W8]; return !!(r && r.controller && r.controller.my && r.energyCapacityAvailable >= W8_CAP && r.find(FIND_MY_SPAWNS).length); }
+function wantSpawn(from = 'W46N8') {
   const P = M(); if (!P.on) return null; seen();
   if (_.some(Game.creeps, c => c.memory.role === 'reserve7' && (c.spawning || c.ticksToLive > LEAD))) return null;
   const left = (P.endTime || 0) - Game.time;
   const ours = P.by === 'Misaki';
-  if (ours ? left < 2500 : left < LEAD) return { role: 'reserve7', body: [CLAIM, CLAIM, MOVE, MOVE], mem: { role: 'reserve7', home: 'W46N8', v2: 1, born: Game.time } };
-  return null;
+  if (!(ours ? left < 2500 : left < LEAD)) return null;
+  const w8 = w8Ready();
+  if (from === W8 ? !w8 : w8 && !(ours && left < FALLBACK)) return null;
+  return { role: 'reserve7', body: [CLAIM, CLAIM, MOVE, MOVE], mem: { role: 'reserve7', home: from, v2: 1, born: Game.time } };
 }
 function run(c) {
   seen();
@@ -24,4 +32,4 @@ function run(c) {
   c.reserveController(ctl);
   { const S = require('../utils/sign'); if (S.needs(ctl, c.owner.username) && c.pos.isNearTo(ctl)) c.signController(ctl, S.SIGN); } // same sign as home (22:19)
 }
-module.exports = { run, wantSpawn, ROOM };
+module.exports = { run, wantSpawn, w8Ready, ROOM, W8_CAP, FALLBACK };
