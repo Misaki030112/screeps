@@ -212,16 +212,22 @@ const R = {
   },
   w8filler(c) { fillerRun(c); },
   // in-room defender (14:09): ranged-only, never leaves W47N8, never goes north of the seal (y<5); idles beside Spawn2.
+  // 14:46 (Misaki): border ranged defender. Attacks intruders inside W47N8 only (never leaves: home() + no exit/seal-north tiles),
+  // kites melee, self/ally heal when it has HEAL. Spawned only on an invasion move (TH.invasion) or an armed hostile in the base.
   w8defender(c) {
     if (!home(c)) return;
-    const hs = c.room.find(FIND_HOSTILE_CREEPS, { filter: x => x.pos.y >= 4 });
-    const t = c.pos.findClosestByRange(hs);
-    if (!t) return c.pos.inRangeTo(C.SPAWN[0], C.SPAWN[1], 3) || go(c, C.SPAWN[0], C.SPAWN[1], 3);
+    const cb = (rn, m) => { if (rn !== C.ROOM) return false; for (let i = 0; i < 50; i++) { for (let y = 0; y <= 3; y++) m.set(i, y, 255); m.set(0, i, 255); m.set(49, i, 255); m.set(i, 49, 255); } return m; };
+    const mv = (pos, r) => c.moveTo(pos, { range: r, maxRooms: 1, reusePath: 5, costCallback: cb });
+    const hs = c.room.find(FIND_HOSTILE_CREEPS), armed = hs.filter(x => x.body.some(p => (p.type === ATTACK || p.type === RANGED_ATTACK) && p.hits > 0));
+    const t = c.pos.findClosestByRange(armed.length ? armed : hs);
+    if (c.getActiveBodyparts(HEAL)) { const hurt = c.hits < c.hitsMax ? c : c.pos.findClosestByRange(FIND_MY_CREEPS, { filter: x => x.hits < x.hitsMax && c.pos.inRangeTo(x, 3) }); if (hurt) (c.pos.isNearTo(hurt) ? c.heal(hurt) : c.rangedHeal(hurt)); }
+    // idle: wait at the north seal (inside), between the two wall groups' approaches
+    if (!t) return c.pos.inRangeTo(C.BORDER_POST[0], C.BORDER_POST[1], 2) || mv(new RoomPosition(C.BORDER_POST[0], C.BORDER_POST[1], C.ROOM), 2);
     const r = c.pos.getRangeTo(t);
     if (r <= 3) c.rangedAttack(t);
     const melee = t.body.some(p => p.type === ATTACK && p.hits > 0);
-    if (melee && r <= 2) { const away = PathFinder.search(c.pos, { pos: t.pos, range: 4 }, { flee: true, maxRooms: 1 }).path[0]; if (away && away.y >= 5) c.move(c.pos.getDirectionTo(away)); }
-    else if (r > 3 && t.pos.y >= 5) go(c, t.pos.x, t.pos.y, 3);
+    if (melee && r <= 2) { const away = PathFinder.search(c.pos, { pos: t.pos, range: 4 }, { flee: true, maxRooms: 1, roomCallback: rn => cb(rn, new PathFinder.CostMatrix()) }).path[0]; if (away) c.move(c.pos.getDirectionTo(away)); }
+    else if (r > 3) mv(t.pos, 3);
   },
   w8rminer(c) {
     // 14:23: armed hostiles in W47N7 / W47N8 north -> hold inside the W47N8 base (loaded haulers still unload there), resume when clear

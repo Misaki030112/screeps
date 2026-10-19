@@ -11,6 +11,7 @@ module.exports = {
   // 22:40 hub container on the v3b road tile 33,33 (range <=3 of 5 of the 6 RCL3 sites): 2W2C2M builders spent ~75 of every
   // ~85 ticks walking 100 energy from the source/ctl containers (~25 tiles, swamp 23,34-24,35) -> ~5 e/t into 18k of hub sites
   HUB_CONT: [33, 33],
+  BORDER_POST: [27, 6], // 14:46 w8defender idle post inside the east seal (row 4-5 pocket, x23-31)
   // seal walls reinforced (Misaki 19:18 reverses the 1-hit rule): hits target per RCL, only from surplus energy
   WALL_TARGET: [0, 0, 10000, 10000, 50000, 100000, 300000, 1000000, 3000000],
   // W47N7 remote (Misaki 19:18): mined only while WE hold the reservation (home reserve7 role). Stand = container tile.

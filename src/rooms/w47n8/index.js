@@ -4,7 +4,9 @@ const C = require('./config');
 const rep = (n, p) => Array(n).fill(p);
 function mine() { return _.filter(Game.creeps, c => c.memory.home === C.ROOM); }
 function bodyFor(role, e) {
-  if (role === 'w8defender') { const k = Math.max(1, Math.min(10, Math.floor(e / 200))); return rep(k, RANGED_ATTACK).concat(rep(k, MOVE)); }
+  // 14:46 kite body: RA+MOVE pairs, plus 1 HEAL(+MOVE) once energy allows (>=1100)
+  if (role === 'w8defender') { const h = e >= 1100 ? 1 : 0, k = Math.max(1, Math.min(9, Math.floor((e - 300 * h) / 200)));
+    return rep(k, RANGED_ATTACK).concat(rep(k + h, MOVE), rep(h, HEAL)); }
   if (role === 'w8filler') { const n = Math.max(2, Math.min(8, Math.floor(e / 150))); return rep(n, CARRY).concat(rep(Math.ceil(n / 2), MOVE)); }
   if (role === 'w8rminer') { // 20:22: old formula priced 4W1C3M=600 at cap 550, so it never spawned; now the biggest that fits, trimming MOVE first
     for (let w = 5; w >= 2; w--) for (let m = Math.ceil((w + 1) / 2); m >= Math.ceil((w + 1) / 3); m--)
@@ -33,7 +35,8 @@ function spawnRun(spawn) {
   let want = null, mem = {};
   // 0) defender (Misaki 14:09): only when an armed hostile is inside the sealed base (towerRun sets threat8.inBase); max 2
   const th = room.memory && room.memory.threat8;
-  if (th && th.inBase && Game.time - th.t < 5 && n('w8defender') < 2) { want = 'w8defender'; }
+  // 14:46 (Misaki): also on an invasion move (armed hostiles entering W47N8, or an armed group at the W47N9 border); max 2, stays in W47N8
+  if (((th && th.inBase && Game.time - th.t < 5) || TH.invasion()) && n('w8defender') < 2) { want = 'w8defender'; }
   // 1) miners per source: keep >=5 WORK (10 e/t) on each source. Replace at TTL<60; and since the first w8miners were 2 WORK
   // (cap 300) and would run at 40% for ~1000 ticks, add a bigger one once cap allows (17:25), counting any cqminer still there.
   for (let i = 0; i < C.SOURCES.length && !want; i++) {

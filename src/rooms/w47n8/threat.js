@@ -13,11 +13,15 @@ function mark(room) {
   const armed = hs.filter(c => has(c, [ATTACK, RANGED_ATTACK, WORK]));
   const drain = hs.filter(c => has(c, [HEAL]) || c.body.filter(p => p.type === TOUGH).length >= 5);
   if (armed.length || drain.length) M().w8threat = Game.time;
+  // 14:46 invasion move (Misaki): ATTACK/RANGED hostiles inside W47N8 -> w8inv (border ranged defenders spawn; see invasion())
+  if (room.name === 'W47N8' && hs.some(c => has(c, [ATTACK, RANGED_ATTACK]))) M().w8inv = Game.time;
   const fl = hs.filter(c => has(c, [ATTACK, RANGED_ATTACK]) && (room.name !== 'W47N8' || c.pos.y <= 10));
   if (fl.length) M().w8flee = Game.time;
 }
 function on() { const o = M(), t = Math.max(o.w8threat || 0, o.w8threatN || 0); return t > 0 && Game.time - t < WINDOW; }
+// invasion(): armed hostiles in W47N8 within 50 ticks, or north_watch saw >=2 armed in W47N9 (border room) within 300 ticks
+function invasion() { const o = M(); return (o.w8inv > 0 && Game.time - o.w8inv < 50) || (o.w8invN > 0 && Game.time - o.w8invN < 300); }
 function flee() { const t = M().w8flee || 0; return t > 0 && Game.time - t < FLEE_QUIET; }
 // effective wall/rampart target: plan target, raised to 50k while threatened
 function wallTarget(base) { return on() ? Math.max(base, FLOOR) : base; }
-module.exports = { mark, on, flee, wallTarget, WINDOW, FLOOR };
+module.exports = { mark, on, flee, invasion, wallTarget, WINDOW, FLOOR };

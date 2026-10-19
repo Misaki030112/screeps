@@ -16,10 +16,10 @@ def hostile_creeps(objs, U):
     return [x for x in objs if x['type'] == 'creep' and U.get(x.get('user')) != ME]
 def triggers(room, armed, drain): return (room == 'W47N9' and bool(armed or drain)) or (room == 'W48N9' and len(armed) >= 2)
 def main():
-    global st
+    global st, invN
     st = json.load(open(STATE)) if os.path.exists(STATE) else {}
     tick = api.req('game/time?shard=' + api.SHARD).get('time', 0)
-    alerts, summary, threatN = [], {}, False
+    alerts, summary, threatN, invN = [], {}, False, False
     for r in ROOMS:
         o = api.req(f'game/room-objects?room={r}&shard={api.SHARD}'); U = {k: v.get('username') for k, v in o.get('users', {}).items()}
         cs = hostile_creeps(o['objects'], U)
@@ -49,10 +49,12 @@ def main():
         rise = {k: v - prev.get(k, 0) for k, v in stock.items() if v - prev.get(k, 0) >= 300}
         if prev and rise: add('boost', [], {'owner': (U.get(next((x.get('user') for x in o['objects'] if x['type'] == 'controller' and x.get('user')), None)) or '?'), 'rise': rise})
         if triggers(r, armed, drain): threatN = True  # W47N9 armed/drain, or W48N9 >=2 armed (Misaki 14:27)
+        if r == 'W47N9' and len(armed) >= 2: invN = True  # 14:46 armed group at the W47N9 border -> border defenders
         st[r] = {'tick': tick, 'boost': dict(stock)}
     json.dump(st, open(STATE, 'w'))
     if threatN:
-        subprocess.run([sys.executable, os.path.join(H, 'q.py'), '(Memory.ops.w8threatN=Game.time,"ok")'], capture_output=True, timeout=60)
+        expr = '(Memory.ops.w8threatN=Game.time,' + ('Memory.ops.w8invN=Game.time,' if invN else '') + '"ok")'  # w8invN: armed group at the W47N9 border -> W47N8 border defenders
+        subprocess.run([sys.executable, os.path.join(H, 'q.py'), expr], capture_output=True, timeout=60)
     if '--quiet' not in sys.argv:
         print(json.dumps({'tick': tick, 'rooms': summary, 'threatN': threatN, 'alerts': [(a['episode'], s) for a, s in alerts]}))
 
