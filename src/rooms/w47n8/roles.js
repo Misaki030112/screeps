@@ -2,6 +2,9 @@
 const C = require('./config');
 const go = (c, x, y, r = 1) => c.moveTo(new RoomPosition(x, y, C.ROOM), { range: r, reusePath: 10, maxRooms: 1 });
 const E = 'energy';
+const FM = require('./fillmeter');
+const isFill = s => s && (s.structureType === STRUCTURE_EXTENSION || s.structureType === STRUCTURE_SPAWN);
+const fillXfer = (c, s) => { const a = Math.min(c.store[E], s.store.getFreeCapacity(E)); if (c.transfer(s, E) === 0) FM.xfer(c, a); };
 const isHub = s => s.pos.x === C.HUB_CONT[0] && s.pos.y === C.HUB_CONT[1];
 function home(c) { if (c.room.name !== C.ROOM) { c.moveTo(new RoomPosition(C.SPAWN[0], C.SPAWN[1], C.ROOM), { reusePath: 20 }); return false; } return true; }
 function getEnergy(c) {
@@ -49,7 +52,7 @@ function haulPick(c) {
   return true;
 }
 function toggle(c) {
-  if (c.memory.w && c.store[E] === 0) { c.memory.w = false; delete c.memory.sk; delete c.memory.ft; }
+  if (c.memory.w && c.store[E] === 0) { c.memory.w = false; delete c.memory.sk; delete c.memory.ft; delete c.memory.fm; }
   if (!c.memory.w && c.store.getFreeCapacity() === 0) c.memory.w = true;
 }
 const ctlCont = () => Game.rooms[C.ROOM].lookForAt(LOOK_STRUCTURES, C.CTL_CONT[0], C.CTL_CONT[1]).find(s => s.structureType === STRUCTURE_CONTAINER);
@@ -203,7 +206,7 @@ const R = {
       if (f) go(c, f[0], f[1], 0); else if (!c.pos.inRangeTo(k, 2)) go(c, k.pos.x, k.pos.y, 2);
       return;
     }
-    if (!c.pos.isNearTo(k)) go(c, k.pos.x, k.pos.y); else { c.transfer(k, E); delete c.memory.ft; }
+    if (!c.pos.isNearTo(k)) { if (isFill(k)) FM.walk(c); go(c, k.pos.x, k.pos.y); } else { if (isFill(k)) fillXfer(c, k); else c.transfer(k, E); delete c.memory.ft; }
   },
   w8upgrader(c) {
     if (!home(c)) return;
@@ -330,10 +333,10 @@ const R = {
     const t = (low && fillTarget(c, false)) || sink(room, c) || room.storage;
     if (t && !low && !c.pos.isNearTo(t)) {
       const adj = c.pos.findInRange(FIND_MY_STRUCTURES, 1, { filter: s => (s.structureType === STRUCTURE_EXTENSION || s.structureType === STRUCTURE_SPAWN) && s.store.getFreeCapacity(E) > 0 })[0];
-      if (adj) c.transfer(adj, E);
+      if (adj) fillXfer(c, adj);
     }
     if (!t) return go(c, C.CTL[0], C.CTL[1], 3);
-    if (!c.pos.isNearTo(t)) go(c, t.pos.x, t.pos.y); else { c.transfer(t, E); delete c.memory.ft; }
+    if (!c.pos.isNearTo(t)) { if (isFill(t)) FM.walk(c); go(c, t.pos.x, t.pos.y); } else { if (isFill(t)) fillXfer(c, t); else c.transfer(t, E); delete c.memory.ft; }
   },
   w8builder(c) {
     if (!home(c)) return; toggle(c);

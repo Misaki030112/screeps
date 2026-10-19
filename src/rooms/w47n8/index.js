@@ -2,6 +2,7 @@
 // Never activates safe mode (Misaki does it manually).
 const C = require('./config');
 const rep = (n, p) => Array(n).fill(p);
+const FM = require('./fillmeter');
 function mine() { return _.filter(Game.creeps, c => c.memory.home === C.ROOM); }
 function bodyFor(role, e) {
   // 14:46 kite body: RA+MOVE pairs, plus 1 HEAL(+MOVE) once energy allows (>=1100)
@@ -42,6 +43,7 @@ function energyOrder(room) {
   return all.filter(s => !last(s)).sort((a, b) => d(a) - d(b)).concat(all.filter(last).sort((a, b) => (a.structureType === STRUCTURE_SPAWN ? 0 : 1) - (b.structureType === STRUCTURE_SPAWN ? 0 : 1)));
 }
 function spawnRun(spawn) {
+  FM.tick(spawn); // 17:3x spawn-energy meter (Memory.ops.w8fm)
   if (spawn.spawning) return;
   const room = spawn.room, cs = mine(), n = r => cs.filter(c => c.memory.role === r).length;
   const cap = room.energyCapacityAvailable, avail = room.energyAvailable;
@@ -154,13 +156,13 @@ function spawnRun(spawn) {
     // at 400 carry = ~3.6 e/t each, below the 2 sources' ~20 e/t plus decay
     if (!want && n('w8rhauler') < 8 && rCarry(100) < rNeed * 1.1 + 16 * Math.floor(Math.max(0, lo7 - 3000) / 2000)) want = 'w8rhauler';
   }
-  if (!want) return;
+  if (!want) { FM.idle(); return; }
   // emergency: nothing alive that refills -> spawn with what we have
   const starving = !n('w8hauler') || !n('w8miner');
   const e = starving ? Math.max(200, avail) : cap;
   const body = bodyFor(want, e), cost = _.sum(body, p => BODYPART_COST[p]);
-  if (avail < cost) return;
-  spawn.spawnCreep(body, want + Game.time, { memory: Object.assign({ role: want, home: C.ROOM, born: Game.time, v2: 1 }, mem), energyStructures: energyOrder(room) });
+  if (avail < cost) { FM.wait(want, cost, avail); return; }
+  if (spawn.spawnCreep(body, want + Game.time, { memory: Object.assign({ role: want, home: C.ROOM, born: Game.time, v2: 1 }, mem), energyStructures: energyOrder(room) }) === 0) FM.spent(cost);
 }
 function placeSeal(room) {
   for (const [x, y] of C.SEAL) {
