@@ -3,7 +3,7 @@ MEDIUM alert episodes (alert_state) for:
   - any non-our creep with ATTACK/RANGED_ATTACK/WORK or boosted parts inside W47N8
   - a combat group >= 2 armed (ATTACK/RANGED_ATTACK) creeps in W47N9 or W48N9
   - boost stock rise (UH/KO/LO + their T2/T3 compounds, storage+terminal+labs) >= 300 since the last scan
-Also sets Memory.ops.w8threatN = Game.time (console) when W47N9 holds an armed or drain (TOUGH>=5 / HEAL) group or W48N9 holds >=2 armed, which keeps W47N8
+Also sets Memory.ops.w8threatN = Game.time (console) when W47N9 holds an armed or HEAL group (TOUGH-only decoys ignored) or W48N9 holds >=2 armed, which keeps W47N8
 in wall threat mode (src/rooms/w47n8/threat.js). Never attacks, never touches safe mode.
 usage: north_watch.py [--quiet]"""
 import sys, os, json, subprocess, collections
@@ -48,7 +48,7 @@ def main():
             b = collections.Counter(p['type'] for p in x['body']); boosted = any(p.get('boost') for p in x['body'])
             info = {'owner': U.get(x['user']), 'pos': [x['x'], x['y']], 'body': dict(b), 'boosted': boosted}
             if b['attack'] or b['ranged_attack']: armed.append(info)
-            if b['heal'] or b['tough'] >= 5: drain.append(info)
+            if b['heal']: drain.append(info)  # 10-20 06:2x: TOUGH-only decoys ignored (Misaki: no influence on threat/roster sim)
             if b['heal']: heal.append(info)
             if r == 'W47N8' and (b['attack'] or b['ranged_attack'] or b['work'] or boosted): intr.append(info)
         summary[r] = {'creeps': len(cs), 'armed': len(armed), 'drain': len(drain), 'boost': dict(stock)}
