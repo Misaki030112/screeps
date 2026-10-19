@@ -113,6 +113,7 @@ function wallJob(room, c) {
 // ---- W47N7 remote (only while reserved by us) ----
 const RM = C.REMOTE;
 const LAY = require('./layout');
+const ROADSET = new Set(require('./roads').ROADS.map(([x, y]) => x * 50 + y)); // deprecated roads are never repaired (09:13)
 // w8filler: owns one v3b strip; refills from hub storage, walks its 1-tile-wide strip road, parks at the strip's filler stand
 function fillerRun(c) {
   if (!home(c)) return;
@@ -264,7 +265,7 @@ const R = {
     if (site) { if (!c.pos.inRangeTo(site, 3)) go(c, site.pos.x, site.pos.y, 3); else c.build(site); return; }
     // 19:31: urgent road/container repair (<10%; container 11,43 at 18% = 2k ticks of decay left pulled the builder off the walls) -> seal walls to WALL_TARGET[rcl], lowest first -> maintenance (<60%).
     // With maintenance first the lone 2W builder spent 180 ticks on container 26,11 (87k/250k) + 22 roads and no wall left 1 hit.
-    const rr = f => c.pos.findClosestByRange(FIND_STRUCTURES, { filter: s => (s.structureType === STRUCTURE_CONTAINER || s.structureType === STRUCTURE_ROAD) && s.hits < s.hitsMax * f });
+    const rr = f => c.pos.findClosestByRange(FIND_STRUCTURES, { filter: s => (s.structureType === STRUCTURE_CONTAINER || (s.structureType === STRUCTURE_ROAD && ROADSET.has(s.pos.x * 50 + s.pos.y))) && s.hits < s.hitsMax * f });
     const rep = rr(0.1) || wallJob(c.room, c) || rr(0.6);
     if (rep) {
       if (c.pos.inRangeTo(rep, 3)) { c.repair(rep); return; }
