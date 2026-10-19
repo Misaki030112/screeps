@@ -105,3 +105,6 @@ assert.strictEqual(D.repairPick(ws, [c('d', 29, 1, { tough: 8, move: 8 })]), nul
 const st = D.repairStand(wl(30, 1), [c('r', 30, 1, { ranged_attack: 8, move: 8 })]);
 assert.ok(st.y > 3 && Math.max(Math.abs(st.x - 30), st.y - 3) <= 3 && Math.max(Math.abs(st.x - 30), st.y - 1) >= 4, 'repair stand in range 3 of the wall, out of enemy range 3: ' + JSON.stringify(st));
 console.log('w47n8 defense ok');
+// home-sent marker must survive main.js's first-tick memory cleanup (it deletes 'src' on creeps without v2)
+{ const s = require('fs').readFileSync(path.join(__dirname, '..', 'src', 'rooms', 'w47n8', 'index.js'), 'utf8');
+  assert.ok(/jd: HOME, born: Game\.time, v2: 1/.test(s) && !/src: HOME/.test(s), 'home defender marked jd + v2'); console.log('w47n8 jd marker ok'); }

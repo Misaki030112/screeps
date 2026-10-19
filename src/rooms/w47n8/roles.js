@@ -239,7 +239,7 @@ const R = {
   w8defender(c) {
     // doctrine (src/rooms/w47n8/defense.js defPlan, docs/DEFENSE_W47N8.md): station right behind the seal nearest the enemy, shoot the
     // towers' focus (healer > ranged > melee), retreat to a tower below 60% hp, back at 90%, recycle after 100 quiet ticks.
-    // memory.src 'W46N8' = joint-defence creep sent by home (same role, counted in the joint roster)
+    // memory.jd 'W46N8' = joint-defence creep sent by home (same role, counted in the joint roster)
     if (!home(c)) return;
     const D = require('./defense');
     const cb = (rn, m) => { if (rn !== C.ROOM) return false; for (let i = 0; i < 50; i++) { for (let y = 0; y <= 3; y++) m.set(i, y, 255); m.set(0, i, 255); m.set(49, i, 255); m.set(i, 49, 255); } return m; };

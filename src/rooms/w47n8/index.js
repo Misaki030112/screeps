@@ -56,7 +56,7 @@ function spawnRun(spawn) {
   // never feed an unwinnable fight (Memory.ops.w8adv advises safe mode instead). Memory.ops.w8defOld = 1 restores the old trigger.
   // 17:34 joint defence: Memory.ops.w8roster (assessRun -> defense.plan) = local defenders + 1 home defender (src W46N8, spawned by home)
   const ro = Memory.ops && Memory.ops.w8roster, dOld = Memory.ops && Memory.ops.w8defOld, fresh = ro && Game.time - ro.t < 20;
-  const local = cs.filter(c => c.memory.role === 'w8defender' && !c.memory.src).length;
+  const local = cs.filter(c => c.memory.role === 'w8defender' && !c.memory.jd).length;
   const dGo = dOld ? ((th && th.inBase && Game.time - th.t < 5) || TH.invasion()) && local < 2 : !!(fresh && local < Math.min(2, ro.w8));
   if (dGo) { want = 'w8defender'; }
   // 1) miners per source: keep >=5 WORK (10 e/t) on each source. Replace at TTL<60; and since the first w8miners were 2 WORK
@@ -306,16 +306,16 @@ function towerRun(room) {
   }
 }
 // 17:34 joint defence, home side: W46N8 spawn asks this. One RA+MOVE defender (max that fits home cap, no HEAL) for W47N8 when the
-// planner wants it, home has no player combat creeps, and fewer home-sent defenders (memory.src W46N8) are alive/spawning.
+// planner wants it, home has no player combat creeps, and fewer home-sent defenders (memory.jd W46N8; not 'src', which main.js strips from creeps without v2) are alive/spawning.
 // Overrides the home storage floor (defence). The creep runs the w8defender role (home: W47N8) and recycles there after 100 quiet t.
 const HOME = 'W46N8';
 function homeWant(room) {
   const ro = Memory.ops && Memory.ops.w8roster;
   if (room.name !== HOME || !ro || !ro.home || Game.time - ro.t > 20) return null;
   if (require('../../managers/home').active(room)) return null;
-  const sent = _.filter(Game.creeps, c => c.memory.role === 'w8defender' && c.memory.src === HOME).length;
+  const sent = _.filter(Game.creeps, c => c.memory.role === 'w8defender' && c.memory.jd === HOME).length;
   if (sent >= ro.home) return null;
-  return { body: require('./defense').raBody(room.energyCapacityAvailable, 25), mem: { home: C.ROOM, src: HOME, born: Game.time } };
+  return { body: require('./defense').raBody(room.energyCapacityAvailable, 25), mem: { home: C.ROOM, jd: HOME, born: Game.time, v2: 1 } };
 }
 // self-sufficient = own spawn + a miner + a hauler alive (conquest.js stops sending cqworkers/cqhaulers)
 function selfSufficient() {

@@ -43,7 +43,7 @@ and heads to Spawn2. From RCL5 (2nd tower 34,31) towers alone are expected to ho
 ## 17:34-17:40 updates (Misaki)
 - **Joint defence** (`defense.plan`, the one planner; `index.js assessRun` writes `Memory.ops.w8roster = {home, w8}`): whenever an armed
   threat is active (armed in W47N8, or north_watch W47N9 group) and W46N8 has no player combat creeps, home spawns ONE `w8defender`
-  (`memory.src = 'W46N8'`, home W47N8, RA+MOVE max fit: 11RA11M at cap 2300) via `managers/spawn.js` 1b2 (overrides the storage floor,
+  (`memory.jd = 'W46N8'`, home W47N8, RA+MOVE max fit: 11RA11M at cap 2300) via `managers/spawn.js` 1b2 (overrides the storage floor,
   queen first). Local W47N8 defenders = fewest (0-2) that make towers + home + local win with no losses in the sim, else 0.
 - **Bodies**: RA+MOVE only, no HEAL; no healer role (HP rule instead of damage prediction).
 - **HP rule**: fight while >= 60%; < 60% retreat to the nearest tower (towers heal); back to the wall at >= 90%.
