@@ -179,7 +179,11 @@ function zoneSource(c, room, P, need) {
   const hub = require('../managers/links').roles(room).hub;
   const list = [room.storage, room.terminal, rc.at(room, fx, fy, STRUCTURE_CONTAINER), rc.at(room, 34, 34, STRUCTURE_CONTAINER), hub]
     .filter(s => s && s.store[RESOURCE_ENERGY] >= Math.min(need, 200));
-  list.sort((a, b) => Math.max(Math.abs(a.pos.x - zx), Math.abs(a.pos.y - zy)) - Math.max(Math.abs(b.pos.x - zx), Math.abs(b.pos.y - zy)));
+  // 17:5x: cost = walk me -> source + source -> nearest needy stop of my zone (live 17:58: the zone-A queen emptied at 37,32 beside
+  // storage, then walked 6 tiles to container A 35,24 — nearest to the zone centre — for a 44-energy top-up of 36,31 by the storage)
+  const needyStops = myStops(c, room).filter(stopNeedy), d = (p, x, y) => Math.max(Math.abs(p.x - x), Math.abs(p.y - y));
+  const cost = s => d(c.pos, s.pos.x, s.pos.y) + (needyStops.length ? Math.min(...needyStops.map(t => d(s.pos, t.x, t.y))) : d(s.pos, zx, zy));
+  list.sort((a, b) => cost(a) - cost(b));
   return list[0] || [room.storage].filter(s => s && s.store[RESOURCE_ENERGY] >= 50)[0];
 }
 function parkOrDump(c, room, P, st) {
