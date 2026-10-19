@@ -84,6 +84,20 @@ const cases = [
     assert.strictEqual(W.repairJob(r, null, new Set(['a'])).id, 'b', 'band (a) held -> next free below step, not a pile-up');
     assert.strictEqual(W.repairJob(r, null, new Set(['a', 'b'])).id, 'a', 'nothing free -> lowest');
     OBJ = {}; }],
+  ['step hold (Misaki 10-19 20:51): RCL6 past 100k -> no job / no builder unless threat; RCL7 resumes; storage floor = reserveE', () => {
+    OBJ = {}; const m = { walls: { started: 1 } }; wall('a', 26, 7, 142101); wall('b', 27, 7, 154000); wall('g', 47, 16, 172000, 'rampart');
+    const r = room({ mem: m, storage: 30000 }); assert.strictEqual(W.target(r, W.barriers(r, P)), 300000);
+    assert.strictEqual(W.repairJob(r), null, 'step 2 held at RCL6'); assert.strictEqual(W.wantBuilder(r), false);
+    Game.time++; assert.strictEqual(W.stepHeld(r), true);
+    HOLD = true; Game.time++; assert.ok(W.repairJob(r), 'threat: attacked walls still repaired'); assert.strictEqual(W.stepHeld(r), false); HOLD = false;
+    const r7 = room({ mem: m, rcl: 7, storage: 30000 }); Game.time++; assert.strictEqual(W.repairJob(r7).id, 'a', 'RCL7: step 2 resumes'); assert.strictEqual(W.stepHeld(r7), false);
+    OBJ.a.hits = 60000; Game.time++; assert.strictEqual(W.repairJob(r).id, 'a', 'below 100k still repaired at RCL6'); assert.strictEqual(W.stepHeld(r), false);
+    OBJ.a.hits = 142101; Game.time++; global.Memory = global.Memory || {}; Memory.defense = { reserveE: 15000 };
+    Object.assign(global, { STRUCTURE_SPAWN: 'spawn', STRUCTURE_EXTENSION: 'extension', STRUCTURE_CONTAINER: 'container', STRUCTURE_TOWER: 'tower', STRUCTURE_STORAGE: 'storage', STRUCTURE_LINK: 'link', STRUCTURE_LAB: 'lab', STRUCTURE_TERMINAL: 'terminal', FIND_MY_CREEPS: 102, FIND_STRUCTURES: 107 });
+    const Q = require(src('roles/queen.js')); r.energyCapacityAvailable = 2300;
+    assert.strictEqual(Q.storageFloor(r), 15000, 'held: fund not reserved, floor = reserveE');
+    Game.time++; HOLD = true; assert.strictEqual(Q.storageFloor(r), 1300 + W.reserved(r), 'threat: fund reserved again'); assert.ok(W.reserved(r) > 20000); HOLD = false;
+    delete Memory.defense; OBJ = {}; }],
   ['all barriers at last step -> no job', () => { OBJ = {}; wall('a', 26, 7, 300000); assert.strictEqual(W.repairJob(room()), null); }],
 ];
 let fail = 0; const log = (...a) => process.stdout.write(a.join(' ') + '\n');

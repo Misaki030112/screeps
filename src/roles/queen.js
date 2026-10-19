@@ -125,8 +125,11 @@ function fillRoute(c) {
 }
 
 function storageFloor(room) {
-  const r = require('../managers/threat').reserve(room.name);
-  return (r || room.energyCapacityAvailable) + require('../managers/walls').reserved(room);
+  const r = require('../managers/threat').reserve(room.name), W = require('../managers/walls'), base = r || room.energyCapacityAvailable;
+  // wall step held (walls.stepHeld, home RCL6): no builder spends the fund, so it is not reserved in storage; the ferry keeps the
+  // defense reserve (Memory.defense.reserveE) and storage above it goes to the controller (Misaki 10-19 20:51 "keep upgrading first").
+  if (W.stepHeld && W.stepHeld(room)) return Math.max(base, W.defReserve());
+  return base + W.reserved(room);
 }
 
 function standby(c, room, P) {

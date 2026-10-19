@@ -129,6 +129,24 @@ function siege(room) { return !!room && typeof FIND_HOSTILE_CREEPS !== 'undefine
 function threat(room) { return require('./threat').holding(room.name) || playerCombat(room) || require('./home').alert(room); }
 // Storage energy the ctl ferry / upgrader extras must leave alone.
 function reserved(room) { const m = room.memory && room.memory.walls; return m && m.started && room.storage ? Math.min(fund(room), room.storage.store[RESOURCE_ENERGY]) : 0; }
+// Step hold (Misaki 2026-10-19 20:51: home wall step 2 (300k) waits until after RCL7, upgrade first; siege-time repair of attacked
+// walls still applies). At RCL < 7 with no threat, barriers are not raised past HOLD_STEP: no repair job, so no wall builder spawns.
+// Before this (2room eval 10-20 00:3x) every storage pop above reserveE+2k spawned a 33-part wall builder (~10 e/t, 1h window) that
+// lifted walls 142k -> 152-162k. Ramparts still never decay: towers ratchet rampHW (managers/tower.js). The fund keeps accruing.
+const HOLD_STEP = 100000, HOLD_BELOW_RCL = 7;
+let heldT = -1, heldV = false;
+function stepHeld(room, tgt) {
+  if (!room || !room.controller || room.controller.level >= HOLD_BELOW_RCL) return false;
+  if (tgt === undefined) {
+    if (typeof Game !== 'undefined' && heldT === Game.time) return heldV;
+    const P = plan().get(room.name);
+    tgt = defense(P) && phase(room) === 'build' ? target(room, barriers(room, P)) : 0;
+    const v = tgt > HOLD_STEP && !threat(room);
+    if (typeof Game !== 'undefined') { heldT = Game.time; heldV = v; }
+    return v;
+  }
+  return tgt > HOLD_STEP && !threat(room);
+}
 // Builder repair job: lowest barrier below the step target, capped at +CHUNK so the set rises evenly. null = no work / no budget.
 const CHUNK = 10000;
 // v5 proximity: among barriers in the lowest band (hits < min + CHUNK, so the set still rises evenly) take the one nearest to the
@@ -139,6 +157,7 @@ function repairJob(room, pos, taken) {
   if (!threat(room) && budgetE(room) < 100) return null;
   const B = barriers(room, P), tgt = target(room, B);
   const low = B.filter(s => eff(s) < tgt); if (!low.length) return null;
+  if (stepHeld(room, tgt)) return null;
   const m = _.min(low.map(eff)), band = low.filter(x => eff(x) < m + CHUNK);
   // all of the band held -> next free barrier below the step before doubling up (5 builders on one 1-tick top-up walked in a pack)
   const fr = a => taken ? a.filter(x => !taken.has(x.id)) : a, free = fr(band), pool = free.length ? free : fr(low).length ? fr(low) : band;
@@ -202,4 +221,4 @@ function noUpgrade(room) {
   const B = barriers(room, P); return !ringClosed(room, P) || !B.length || _.min(B.map(eff)) < HOLD_TO;
 }
 const HOLD_TO = 100000;
-module.exports = { siege, defReserve, defLow, SLACK, FLOOR_HITS, belowFloor, FLOOR, budgetE, WALL_CAP, ringClosed, UP_SAFE, DECAY_FLOOR, DECAY_CAP, decaying, noUpgrade, START, NOVICE_END, phase, planned, STEPS, target, barriers, fund, spend, reserved, repairJob, wantBuilder, placeSites, lists };
+module.exports = { stepHeld, HOLD_STEP, siege, defReserve, defLow, SLACK, FLOOR_HITS, belowFloor, FLOOR, budgetE, WALL_CAP, ringClosed, UP_SAFE, DECAY_FLOOR, DECAY_CAP, decaying, noUpgrade, START, NOVICE_END, phase, planned, STEPS, target, barriers, fund, spend, reserved, repairJob, wantBuilder, placeSites, lists };
