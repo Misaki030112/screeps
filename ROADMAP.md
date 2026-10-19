@@ -3,6 +3,13 @@
 Novice zone ends **2026-10-28 03:33 UTC+8**. Defence timeline: `docs/DEFENSE_NOVICE.md` (2026-10-16); detail `docs/DEFENSE.md` / geometry `docs/DEFENSE_PLAN.md`.
 **Safe mode: NEVER auto-activate** — alert Misaki.
 
+## 2026-10-19 18:4x strategy review (home RCL7 readiness, `docs/RCL7.md`)
+
+- Home RCL7 ETA **~10-26 afternoon to 10-27 evening** (401k/3.645M at 20-24 e/t), 0.5-1.5 d before novice end 10-28 03:33.
+- As planned, RCL7 cost 305k, of which factory 100k + labs 4-6 150k had no code to use them. Shipped `plan.RCL7_INDUSTRY=false` (RCL7 = spawn 2 + tower 3 + 10 ext + link, ~55k) and kept the home hauler at RCL7 (it was set to 0 at 4 links, which would have stopped the mineral run). Dormant until RCL7; `tests/rcl7_gate.js`.
+- **Patrol at RCL7:** no duplicate same-role spawns from two spawns; refill time at cap 5600; first sites = spawn 30,34 / tower 39,23.
+- **For Misaki (before ~10-26):** keep factory/labs off until code exists (recommended); link 4 at 32,34 is idle without stationary fillers.
+
 ## 2026-10-19 18:10 two-room evaluation (45-min window 17:21-18:06 vs 16:36-17:21)
 
 - Home W46N8: upgrade 12.4 e/t (prev 22.4), storage +4.6k (prev -3.9k) = energy rerouted to storage by the 15k reserve hold after joint-defence spent ~4.4k on 2 home w8defenders; recovered by 18:06 (storage 17.4k, 2 upgraders). Walls 142101 no loss, gates rising.
@@ -57,6 +64,7 @@ Focus (Misaki 10-14): **W46N8 upgrade speed**; expansion (2nd account W47N8, W45
 7. Later: RCL6 terminal/extractor/labs; 2nd room (**approval required**).
 
 ## Log
+- 2026-10-19 18:4x strategy review: topic **home RCL7 readiness** (`docs/RCL7.md`). 250k of the 305k RCL7 bill was idle (factory + 3 labs, no code); gated by plan.RCL7_INDUSTRY=false; home hauler kept at RCL7 for the mineral run. RCL7 ETA ~10-26/27, W47N8 RCL5 ETA ~10-20 evening (live ~16 e/t, 104.6k/405k).
 - 2026-10-19 17:5x strategy review: topic **W47N8 2nd-tower timing** (`docs/DEFENSE_W47N8.md`). Sim: 2 towers alone beat the full BustJetter squad; the RCL5 build order put tower 2 behind 10 extensions (~2-3 h). Deployed c7357bc tower-first (+ test). RCL5 ETA 10-20 05:45 (ideal) – 09:00 (live 23 e/t); home RCL7 ETA ~10-26 (390.8k/3.645M at ~22 e/t), before novice end. UH boosts seen in W48N9/W47N9 labs only speed the enemy melee on walls.
 - 2026-10-19 14:40 strategy review: topic **CPU budget for two rooms** (`docs/CPU.md`). Live prof: total 12.0, creeps 9.1, home spawn 0.91 (run1 ≈2.4 ms, idle 36% of ticks), w8spawn 0.49, mem 0.34. Deployed fbe8a00 spawn idle throttle. RCL7 ETA ~10-28, W47N8 RCL5 ETA ~10-21.
 - 2026-10-18 14:40 strategy review: topic **W47N8 after the claim** (engine source: claim/upgrade/attackController/safe mode). 24h: RCL6 at 10-17 ~19:00; walls step 1 done (all ≥131k); storage peak 57.8k (06:00) → walls → 15.8k (11:00) → 39k banked for the op; CPU 6.6–8.7, bucket ~10k; LOW scouts only. Docs only, no deploy (op code edited live).

@@ -51,7 +51,8 @@ function targets(room, count, backlog, ctlEnergy, sites) {
   const T = {};
   // With storage, miner B dumps adjacent (38,32→37,31) so only source A needs a hauler: 1×14C7M road hauler (see body note below).
   // Pre-storage keep 2 so both containers drain. Backlog can still add one extra.
-  T.hauler = rcl >= 7 && links >= 4 ? 0 : (rcl >= 6 && links >= 3 ? 1 : (st ? Math.min(2, 1 + Math.floor(backlog / 1500)) : Math.min(4, 2 + Math.floor(backlog / 1500))));
+  // RCL7 4th link (32,34) is a stamp filler link, only fed with STATIONARY_FILL on; queen regime: keep the 1 hauler (mineral run 41,24 -> terminal)
+  T.hauler = rcl >= 7 && links >= 4 && plan.STATIONARY_FILL ? 0 : (rcl >= 6 && links >= 3 ? 1 : (st ? Math.min(2, 1 + Math.floor(backlog / 1500)) : Math.min(4, 2 + Math.floor(backlog / 1500))));
   const fillersOn = plan.STATIONARY_FILL && rcl >= 5 && links >= 2; // off: queen regime at RCL5+ (docs/RCL5.md)
   // Multi-queen zones (Misaki 13:57): always 2 queens in queen-regime (stamp A vs B+C). Sole survivor covers both.
   T.queen = fillersOn ? 0 : (room.energyCapacityAvailable >= 1300 ? 2 : 1);

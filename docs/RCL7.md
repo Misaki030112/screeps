@@ -1,0 +1,39 @@
+# Home W46N8 RCL7 readiness (strategy review 2026-10-19 18:4x UTC+8)
+
+## Timing
+- 10-19 18:29: RCL6 401.4k / 3.645M. Tick ~4.3 s (83742481 at 18:11 -> 83742731 at 18:29).
+- Remaining 3.24M: at 23.6 e/t (live since 18:11) ~137k ticks ~6.9 d -> **~10-26 afternoon**; at the 6 h average ~19-20 e/t -> **~10-27 evening**.
+- Novice protection ends **10-28 03:33**. RCL7 lands 0.5-1.5 days before it, so whatever RCL7 builds competes with the last wall/defence push.
+
+## What RCL7 would build as the plan stood (plan.upTo(7), rcl === 7)
+| item | cost | used by code? |
+|---|---|---|
+| spawn 2 at 30,34 | 15k | yes (main.js runs spawnMgr per spawn) |
+| tower 3 at 39,23 | 5k | yes |
+| 10 extensions (stamp C) | 30k | yes; all 50 ext hold 100 at RCL7 -> cap 2300 -> 5600 |
+| link 4 at 32,34 (stamp B 'L') | 5k | **no**: filler link, only fed with STATIONARY_FILL on |
+| 3 labs 33,22 / 34,20 / 34,23 | 150k | **no**: no lab code; the 3 RCL6 labs are empty |
+| factory 35,30 | 100k | **no**: no factory code |
+| **total** | **305k** | 250k (82%) idle |
+
+250k idle = ~12k ticks of upgrading at ~21 e/t (~14 h of RCL8 delay), and builders + spawn time pulled away right at novice end.
+
+## Second problem found
+`spawn.targets`: `T.hauler = 0` at RCL7 once 4 links exist. With STATIONARY_FILL off the 4th link (32,34) is never fed, so this only
+removed the one home hauler, and the hauler is the only carrier of the mineral run (container 41,24 -> terminal, roles/hauler.js
+mineralRun). Mineral mining would have stopped silently at RCL7 (mminer spawns only while the container has room).
+
+## Shipped (dormant until RCL7)
+- `plan.RCL7_INDUSTRY = false`: factory and labs 4-6 are not planned. RCL7 = spawn 2 + tower 3 + 10 ext + link (~55k).
+- Home hauler stays 1 at RCL7 unless STATIONARY_FILL is on.
+- `tests/rcl7_gate.js` (in scripts/check.js); fails on the old hauler rule.
+
+## Watch at RCL7 (patrol)
+- Spawn 2 at 30,34: two spawns run spawnMgr in the same tick. Confirm no duplicate spawns of the same role (the engine adds the new creep to Game.creeps as spawning, but verify live).
+- Capacity 5600: bodies are capped (builder 11 sets = 2200, upgrader 12W, queen 1200), so the spawn does not wait for 5600, but the 2 queens (800 carry each) need ~7 trips to refill 5000 extension energy. Check refill time with fillmeter (Misaki: refill speed = reaction speed).
+- Wall step 1M opens at RCL7 (walls.STEPS[7]); budget rules unchanged.
+- Upgrader cap: RCL7 has no 15 e/t limit; 12W bodies x spots is still the limit.
+
+## For Misaki (not urgent, before ~10-26)
+- Keep factory/labs 4-6 off until there is code for them (recommended), or turn them on at RCL7 anyway.
+- Link 4 (32,34) costs 5k and does nothing without stationary fillers; build it anyway (plan approved 10-15) or defer it with the industry block.

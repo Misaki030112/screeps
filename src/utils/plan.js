@@ -20,6 +20,9 @@ function build(name) {
     const mm = p.positions.mineralMiner;
     for (const k in any) if (DEFERRED.has(any[k].type) || (mm && any[k].type === 'container' && any[k].x === mm[0] && any[k].y === mm[1])) delete any[k];
   }
+  if (!RCL7_INDUSTRY) { // RCL7 factory (100k) + labs 4-6 (150k): no factory/lab code yet -> not planned (strategy review 10-19 18:4x, docs/RCL7.md)
+    for (const k in any) if (any[k].type === 'factory' || (any[k].type === 'lab' && any[k].rcl >= 7)) delete any[k];
+  }
   if (!STATIONARY_FILL) {
     for (const k in any) if (any[k].type === 'link') delete any[k];
     for (const n in LINK_PLAN) { const [x, y, r] = LINK_PLAN[n]; any[key(x, y)] = { type: 'link', rcl: r, x, y }; }
@@ -57,8 +60,13 @@ function rampartWanted(P, room, x, y) {
 // RCL6 then builds only the source-A link + 10 extensions (~35k). Turn on after Misaki approves minerals/market.
 const RCL6_MINERALS = true; // Misaki 2026-10-18 09:30: approved now (terminal, extractor + container 39,23, 3 labs)
 const DEFERRED = new Set(['terminal', 'extractor', 'lab']);
+// RCL7 industry block (strategy review 2026-10-19, docs/RCL7.md). OFF: the RCL7 factory (100k) and the 3 RCL7 labs (150k) are not
+// placed: 250k of RCL7's 305k bill (~12k ticks / ~14 h of upgrading at ~21 e/t, right at novice end 10-28) with no factory or lab
+// code to use them (the 3 RCL6 labs are still empty). RCL7 then builds spawn 2 + tower 3 + 10 extensions + link (~55k).
+// Turn on once lab/factory code exists and Misaki approves.
+const RCL7_INDUSTRY = false;
 module.exports = {
-  key, STATIONARY_FILL, rampartWanted, LINK_PLAN, RCL6_MINERALS,
+  key, STATIONARY_FILL, rampartWanted, LINK_PLAN, RCL6_MINERALS, RCL7_INDUSTRY,
   get(name) { if (!(name in cache)) cache[name] = build(name); return cache[name]; },
   // wanted structures up to rcl: [{type,x,y,rcl}]
   upTo(name, rcl) { const P = this.get(name); return P ? Object.values(P.any).filter(s => s.rcl <= rcl) : []; },
