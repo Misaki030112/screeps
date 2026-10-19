@@ -3,6 +3,14 @@
 Novice zone ends **2026-10-28 03:33 UTC+8**. Defence timeline: `docs/DEFENSE_NOVICE.md` (2026-10-16); detail `docs/DEFENSE.md` / geometry `docs/DEFENSE_PLAN.md`.
 **Safe mode: NEVER auto-activate** — alert Misaki.
 
+## 2026-10-20 01:4x two-room evaluation (45-min window 00:53-01:38 vs 00:08-00:53)
+
+- Home W46N8: controller progress **25.2 e/t** (prev 24.8; ideal 26.0, 97%). Buckets 31.2 / 21.4 / 26.0 / 26.0. Upgraders 14W1C2M + 14W (26 WORK, TTL 764/1072). Storage **15.0k -> 12.8k (-3.5 e/t; prev +0.7)**: spawn cohort (W45N7 rhaulers TTL 64/124/184/272 + 36-part W45N8 rhauler + queen/miner replacements); ferry holds at floor. Now just under the reserveE-2k (13k) upgrader cutoff, but no upgrader is due for ~760 t, so nothing stalls. RCL6 542k/3.645M, RCL7 ~10-26 03:00. Walls min 142101 (no loss), gates 173.1k (repair sawtooth), 0 hostiles, no safe mode.
+- W47N8: controller progress **29.6 e/t** (prev 25.7; ideal 29.84, 99%). RCL4 255.5k/405k, **RCL5 ~10-20 07:35**. Storage 1.8k -> 1.4k. 10 ramparts (unchanged), 1 road site 18,48.
+- Cross-room: CPU avg 12.9, max 16.6, bucket min 9977; Memory 33.6k; tests pass; src clean; DB lag ~35 s.
+- **W47N8 patrol, watch now (01:4x-02:10):** a w8builder (18 parts, ~1.3k e) spawned at t83748801 for road repair (roads 1.0-2.3k/5k hits, not urgent) right before the cohort: upgrader TTL 104, miner 125, hauler 170, rminer 200, hauler 245, miner 266, hauler 311 at t83748852 = ~250 spawn-ticks and ~7k e in ~300 t on one spawn with 1.3k storage. If a miner or the upgrader dies before its replacement, or the ctl container runs dry > 50 t: (a) gate W47N8 builder spawns for road-only repair behind pending replacements (roads above 20% can wait), and (b) pre-spawn part of the cohort 50-100 t earlier.
+- **Home patrol:** storage should bottom out ~10-11k after the 4 W45N7 rhauler replacements and the W45N7 reserver, then recover. If it is still < 13k when the next upgrader is due (~t83749600), check that the reserveE-2k cutoff is not dropping upgraders to 1.
+
 ## 2026-10-20 00:5x two-room evaluation (45-min window 00:09-00:53 vs 23:23-00:08)
 
 - Home W46N8: controller progress **24.7 e/t** (prev 23.1; ideal now 26.0 incl W45N7). 15-min buckets 23.5 / 23.5 / 23.8 / **30.0** (00:45, 3 upgraders = 36 WORK during an overlap, drawing the ctl container 2000 -> 367). Storage 14.6k -> 15.1k (held floor 15k). RCL6 527k/3.645M, RCL7 ~10-26 01:00. **Step-2 hold verified:** walls min 142.1k / med 153.4k / max 162.5k, unchanged since 00:41; 0 builders; ramps min 172.8k.
