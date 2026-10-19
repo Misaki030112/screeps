@@ -191,6 +191,12 @@ def watchdog(ws):
 def on_open(ws): ws.send('auth ' + TOKEN)
 def on_error(ws, e): append('errors.log', f'{stamp()} [listener] ws error {e}')
 if __name__ == '__main__':
+    # One listener only (10-19 23:05-23:35 a second listener.py doubled creep_ticks/creep_cpu rows and raced live.json).
+    # To restart, kill the running listener.py; tools/run_listener.sh relaunches it within 10 s.
+    import fcntl
+    _single = open(os.path.join(M, 'listener.lock'), 'w')
+    try: fcntl.flock(_single, fcntl.LOCK_EX | fcntl.LOCK_NB)
+    except OSError: print(f'{stamp()} another listener.py holds metrics/listener.lock; exiting', flush=True); sys.exit(0)
     ws = websocket.WebSocketApp('wss://screeps.com/socket/websocket', on_open=on_open, on_message=on_message, on_error=on_error)
     threading.Thread(target=watchdog, args=(ws,), daemon=True).start()
     threading.Thread(target=rotator, args=(ws,), daemon=True).start()

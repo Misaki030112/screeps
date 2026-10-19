@@ -31,6 +31,27 @@ function assignPickup(c, room, P) {
   const a = e.m[c.name] || P.pos.miners[0];
   c.memory.hp = a; return a;
 }
+// Idle with nothing to pick: wait within 3 of the ctl drop, but on a free plain tile that is not a road and not next to an
+// upgrader spot. 10-19 23:13: the idle home hauler parked on 30,29 (2210 of 5100 t) made a new 1-MOVE upgrader detour
+// through swamp 30,28 to spot 29,30 (walk-in 100 t vs 10-34 t usual, ctl container full meanwhile).
+function idlePark(c, room, P) {
+  const [dx, dy] = P.pos.controllerDrop, ups = P.pos.upgraders || [];
+  const ok = (x, y) => Math.max(Math.abs(x - dx), Math.abs(y - dy)) <= 3 && !ups.some(([ux, uy]) => Math.max(Math.abs(ux - x), Math.abs(uy - y)) <= 1);
+  let pk = c.memory.pk;
+  if (!pk || !ok(pk[0], pk[1])) {
+    const t = room.getTerrain(), cands = [];
+    for (let x = dx - 3; x <= dx + 3; x++) for (let y = dy - 3; y <= dy + 3; y++) {
+      if (x < 1 || x > 48 || y < 1 || y > 48 || t.get(x, y) !== 0 || !ok(x, y)) continue;
+      if (room.lookForAt(LOOK_STRUCTURES, x, y).length || room.lookForAt(LOOK_CONSTRUCTION_SITES, x, y).length) continue;
+      const o = room.lookForAt(LOOK_CREEPS, x, y)[0]; if (o && o !== c) continue;
+      cands.push([x, y]);
+    }
+    pk = cands.length ? _.min(cands, ([x, y]) => c.pos.getRangeTo(x, y)) : null;
+    if (!pk) { move.to(c, dx, dy, 3); return; } // no free tile: old behaviour
+    c.memory.pk = pk;
+  }
+  move.to(c, pk[0], pk[1], 0);
+}
 function legacyPickup(c, room, P) {
   let src = c.memory.src && Game.getObjectById(c.memory.src);
   if (!src || (src.store ? src.store[RESOURCE_ENERGY] : src.amount) < 50) {
@@ -39,7 +60,7 @@ function legacyPickup(c, room, P) {
     for (const [x, y] of P.pos.miners) for (const r of room.lookForAtArea(LOOK_RESOURCES, y - 1, x - 1, y + 1, x + 1, true)) if (r.resource.amount >= 50) cands.push(r.resource);
     src = cands.length ? _.max(cands, o => Math.min(o.store ? o.store[RESOURCE_ENERGY] : o.amount, free) / (c.pos.getRangeTo(o) + 10)) : null;
     c.memory.src = src ? src.id : undefined;
-    if (!src) { if (c.store[RESOURCE_ENERGY] > 0) c.memory.working = true; else { const [x, y] = P.pos.controllerDrop; move.to(c, x, y, 3); } return; }
+    if (!src) { if (c.store[RESOURCE_ENERGY] > 0) c.memory.working = true; else idlePark(c, room, P); return; }
   }
   if (move.to(c, src.pos.x, src.pos.y, 1)) { (src.store ? c.withdraw(src, RESOURCE_ENERGY) : c.pickup(src)); delete c.memory.src; }
 }
@@ -70,13 +91,13 @@ function hubPickup(room) {
   return R.hub && R.sources.length ? R.hub : null;
 }
 function homeHauler(room) { return Object.values(Game.creeps || {}).some(x => x.memory.role === 'hauler' && (x.memory.home || x.room.name) === room.name); }
-module.exports = { pickups, handoff, ctlLow, mineralRun, hubPickup, homeHauler, run(c) {
+module.exports = { pickups, handoff, ctlLow, mineralRun, hubPickup, homeHauler, idlePark, run(c) {
   const room = c.room, P = plan.get(room.name);
   if (mineralRun(c, room, P)) return;
   if (room.name === c.memory.home && salvage.dump(c)) return; // Invader loot (minerals) -> storage first
   if (c.memory.working && c.store[RESOURCE_ENERGY] === 0) { c.memory.working = false; delete c.memory.dst; delete c.memory.fl; }
   if (!c.memory.working && c.store.getFreeCapacity() === 0) c.memory.working = true;
-  if (c.memory.working && (c.memory.src || c.memory.wt || c.memory.lp)) { delete c.memory.src; delete c.memory.wt; delete c.memory.lp; }
+  if (c.memory.working && (c.memory.src || c.memory.wt || c.memory.lp || c.memory.pk)) { delete c.memory.src; delete c.memory.wt; delete c.memory.lp; delete c.memory.pk; }
   // old hauler: no new load it can't deliver (2026-10-16: 2 haulers died holding 700/650 on the ctl road); empty -> recycle
   if (!c.memory.working && salvage.retire(c, 50)) return;
   if (!c.memory.working) {
