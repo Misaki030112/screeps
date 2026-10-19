@@ -66,7 +66,10 @@ function spawnRun(spawn) {
   // 14:23 threat mode: walls/core ramparts to 50k ahead of upgrading; 1 upgrader keeps the controller safe (2 if downgrade < 10k)
   const thr = TH.on(), wtgt = TH.wallTarget(C.WALL_TARGET[(room.controller || {}).level] || 0);
   const wallsLow = thr && room.find(FIND_STRUCTURES, { filter: s => ((s.structureType === STRUCTURE_WALL && C.SEAL.some(([x, y]) => s.pos.x === x && s.pos.y === y)) || (s.structureType === STRUCTURE_RAMPART && s.my)) && s.hits < wtgt }).length > 0;
-  if (!want && wallsLow && n('w8upgrader') < (room.controller.ticksToDowngrade < 10000 ? 2 : 1)) want = 'w8upgrader';
+  // 15:10 model: under the wall raise 1 upgrader (10 WORK of ~30 e/t net) left ~8k idle in containers (ctl/hub 1.5k+1.6k, W47N8 sources
+  // 2.3k, W47N7 2.8k) while builders spent ~13 e/t; a 2nd upgrader while >3000 sits in local piles + ctl/hub conts (stock covers the gap)
+  const stock8 = () => looseE(room) + _.sum([C.CTL_CONT, C.HUB_CONT], ([x, y]) => _.sum(room.lookForAt(LOOK_STRUCTURES, x, y).filter(s => s.structureType === STRUCTURE_CONTAINER), s => s.store[RESOURCE_ENERGY]));
+  if (!want && wallsLow && n('w8upgrader') < (room.controller.ticksToDowngrade < 10000 || stock8() > 3000 ? 2 : 1)) want = 'w8upgrader';
   else if (!want && wallsLow && n('w8builder') < 3) want = 'w8builder';
   else if (!want && !wallsLow && n('w8upgrader') < (sites ? 2 : 3)) want = 'w8upgrader';
   // 10:40: rhaulers sat last in the queue, so with 4 builders + 6 sites on the single Spawn2 all 6 (spawned in one burst at RCL3) aged out
