@@ -30,3 +30,17 @@ oversized remote haulers (sized by loose-pile thresholds).
 Fixes (0c590f1): remote haul fleet sized from model CARRY need (floor 60% ahead of builders, 110% + backlog term in step 7, max 8)
 instead of loose thresholds; upgrader WORK cap = model `upw` (~30) instead of fixed 24 (applies when not in threat wall mode).
 Next: local hauler 2C1M body on the fully paved local routes (−25% hauler upkeep); storage buffer once walls are done; RCL5 link A→ctl.
+
+## 2026-10-19 15:10 bottleneck pass (allocation, not just upgrade)
+6 h allocation (model `alloc` line, e/t): harvest 37.4 (miners 94%, rminers 93% working) = upgrade 9.9 + build/repair 13.1 + storage 0
++ upkeep 11.3 (excl. home-paid reserve7) + decay/stock/tower 3.2. Containers held ~9.6k idle stock (all 1.2-1.8k / 2000, W47N7 31,34 at 1790).
+Findings:
+- Sinks, not supply, bind: 1 upgrader (threat rule, walls < 50k) + 4 builders 64% walking. Walls 401k/750k hits at 15:05 -> done ~15:35.
+- Remote haulers lost most of each trip inside W47N8: 24-143 ticks/trip filling single 50-energy extensions across the hub and
+  flipping ctl <-> hub (w8rhauler83738293). Fix: rhaulers fill only within range 3 unless spawn energy < 50% -> ctl/hub cont -> storage.
+- Local hauler 10C10M on fully paved routes -> 10C5M (same 500 carry, -0.5 e/t upkeep).
+- Upgrader count base was "2 while any site" (3 road sites ~700 left) and storage stock was invisible to it: base now by build backlog
+  (>= 3000 -> 2, else 3), storage above 2k counts as stock, WORK cap = upw + 5 per 5k stored (max 40 = 4 stands x 10W).
+Projected after walls: upkeep ~9.5, build ~1-2, upgrade ~24 e/t (30 with stock) -> RCL5 ~17-18 h (≈ 10-20 09:00-10:00 UTC+8).
+RCL5 link proposal (needs approval, adds 2 tiles to v3b): ctl link 13,25 (dead-end tile beside stands 12,25/12,26/14,26) + source-A
+link 26,12 (beside stand 26,11) -> model 30.3 e/t; v3b hub link 33,34 at RCL6.

@@ -295,12 +295,17 @@ const R = {
     }
     if (!home(c)) return;
     const room = Game.rooms[C.ROOM];
-    // 15:10 model: 700-carry rhaulers spent 24-143 ticks per trip inside W47N8 filling single 50-energy extensions across the hub
-    // (w8rhauler83738293 t8492-8568: ctl 13,27 -> hub strips -> back), so they fill only on the way (range 3) unless spawn energy
-    // is below half; extensions are the local w8haulers' job. Full ctl/hub conts -> storage (buffer, counted as upgrade stock).
-    const low = room.energyAvailable < room.energyCapacityAvailable / 2 || !room.find(FIND_MY_CREEPS, { filter: x => x.memory.role === 'w8hauler' }).length;
-    const f = fillTarget(c, false, low ? 99 : 3);
-    const t = f || sink(room, c) || room.storage;
+    // 15:10 model: 700-carry rhaulers spent 24-143 ticks per trip inside W47N8 filling single 50-energy extensions across the hub and
+    // flipping ctl <-> hub (w8rhauler83738293 t8492-8568), and a range-3 limit still chained strip to strip (t83739964-40016). Now they
+    // never detour for extensions: top up one adjacent extension/spawn in passing (transfer + move same tick) and walk on to ctl/hub
+    // cont -> storage. Full fill duty only when spawn energy < 300 or no local w8hauler (extensions are the w8haulers' job).
+    const low = room.energyAvailable < 300 || !room.find(FIND_MY_CREEPS, { filter: x => x.memory.role === 'w8hauler' }).length;
+    if (!low) delete c.memory.ft;
+    const t = (low && fillTarget(c, false)) || sink(room, c) || room.storage;
+    if (t && !low && !c.pos.isNearTo(t)) {
+      const adj = c.pos.findInRange(FIND_MY_STRUCTURES, 1, { filter: s => (s.structureType === STRUCTURE_EXTENSION || s.structureType === STRUCTURE_SPAWN) && s.store.getFreeCapacity(E) > 0 })[0];
+      if (adj) c.transfer(adj, E);
+    }
     if (!t) return go(c, C.CTL[0], C.CTL[1], 3);
     if (!c.pos.isNearTo(t)) go(c, t.pos.x, t.pos.y); else { c.transfer(t, E); delete c.memory.ft; }
   },
