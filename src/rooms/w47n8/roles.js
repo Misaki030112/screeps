@@ -148,8 +148,9 @@ function fillerRun(c) {
 // decayed to 30-570 hits and the rest vanished. remote_roads.js = shortest path cont -> N exit (tools/w47n7_roads.py).
 // rminer places missing sites (<=3 open, every 50t); loaded rhaulers with a WORK part build/repair in passing (no detour).
 const RROADS = require('./remote_roads').ROADS;
+let rrT = 0;
 function rroadSites(room) {
-  if (Game.time % 50 || !room) return;
+  if (Game.time % 50 || !room || rrT === Game.time) return; rrT = Game.time; // any rminer in W47N7, once per tick
   let open = room.find(FIND_MY_CONSTRUCTION_SITES).length;
   for (const [x, y] of RROADS) {
     if (open >= 3) return;
@@ -261,7 +262,7 @@ const R = {
     }
     const S = RM.sources[c.memory.si | 0], [x, y] = S.stand;
     if (c.room.name !== RM.room) return rgo(c, x, y, 0);
-    if ((c.memory.si | 0) === 0) rroadSites(c.room);
+    rroadSites(c.room);
     const src = c.room.lookForAt(LOOK_SOURCES, S.src[0], S.src[1])[0];
     if (c.pos.x !== x || c.pos.y !== y) {
       // stand taken (e.g. a BustJetter creep; passive, never attack): mine from any tile next to the source
