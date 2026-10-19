@@ -1,6 +1,6 @@
 {
- "next_at": "2026-10-19T13:40:00+08:00",
- "reason": "12:50 home patrol: observe-only, no fix. Tick 83737911: alerts LOW only (exit 1), errs only old 83723314 w8hauler lines; gates min 162.1k (+0.6k since 11:51), walls min 142101 (no loss); storage 16987 (above 15k reserveE floor); RCL6 306.9k (+19.2k/839t ~22.9 e/t, model ideal 21.8 = at ideal); bkt 10000; remotes SAFE res W45N8 2457 W45N7 2248; delivered W45N8 1064.3k (~8.8 e/t) W45N7 556.4k (~9.5 e/t, recovered after rminer replacement). Gap: home hauler carry 54 vs need 24.6 (1 hauler 98% waiting_pickup) costs ~1.1 e/t only, not worth a deploy. Next: hourly gates/walls; no deploy.",
+ "next_at": "2026-10-19T14:40:00+08:00",
+ "reason": "13:51 home patrol: observe-only, no fix. Tick 83738777: alerts LOW only (exit 1), no new game errors (last 83723316 w8hauler); gates min 162.9k (12:50 162.1k, sawtooth up), walls min 142101 (no loss); storage 15.8k (at 15k reserveE floor, -1.2k since 12:50); RCL6 320.1k (+13.2k/849t ~15.6 e/t vs ideal 21.8, energy-bound at floor); bkt 10000, cpu ~12 (W47N8 load); remotes SAFE res W45N8 2259 W45N7 2140; delivered W45N8 1073.4k (~10.3 e/t) W45N7 561.9k (~6.2 e/t, dip from rhauler replacement: 4 haulers, 2 on first trips, cont 518 no overflow). Paused-remote home work already in remote.js flee() (rhauler->hauler, rminer->builder via remote.paused). Next: check W45N7 back to ~9.5 e/t and upgrade rate recovering; hourly gates/walls.",
  "road_plan": {
   "doc": "docs/ROADS.md",
   "each_patrol": [
@@ -200,18 +200,18 @@
   "revert": "drop the Wb.defLow line in src/roles/builder.js (!src branch)"
  },
  "remote_sample": {
-  "tick": 83737889,
-  "W45N8": 1064253,
-  "W45N7": 556350,
-  "at": "2026-10-19 12:50 UTC+8"
+  "tick": 83738777,
+  "W45N8": 1073389,
+  "W45N7": 561880,
+  "at": "2026-10-19 13:51 UTC+8"
  },
  "last_home_patrol": {
-  "tick": 83737911,
-  "at": "2026-10-19 12:50 UTC+8",
+  "tick": 83738777,
+  "at": "2026-10-19 13:51 UTC+8",
   "mode": "observe-only",
-  "storage": 16987,
-  "progress": 306909,
-  "gate_min": 162121,
+  "storage": 15774,
+  "progress": 320139,
+  "gate_min": 162901,
   "wall_min": 142101
  }
 }
