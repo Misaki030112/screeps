@@ -111,3 +111,17 @@ Revisit only if 13,26 empties again while storage > 3k (patrol watch, unchanged)
 2. After link 26,12: w8miner si0 gets 1 CARRY (bodyFor); link transfers 400 at a time (linkRun); ctl link drained by upgraders on 12,25/12,26/14,26.
 3. Tower 24,8 rises to >= 600 within ~100 t of completion via 26,11 (Memory: none; watch container 26,11 and tower energy).
 4. Filler stays in the hub when only 24,8 is low.
+
+## RCL6 gate (2026-10-20 03:4x strategy review, tick 83750598, deployed 7b0b0b4)
+Question: what does layoutRun place the moment W47N8 hits RCL6 (ETA ~10-22 08:00-10:00: 1.215M at ~28-30 e/t)?
+Finding (tests/w47n8_rcl6_gate.js on the old code): 10 ext (30k), hub link 33,34 (5k), **terminal 33,32 (100k), extractor 37,45 (5k),
+3 labs 33,29-35,29 (150k)** and the extractor trunk roads. No W47N8 code uses the terminal, extractor, labs or hub link (no mineral
+miner, no lab/terminal logic, linkRun only moves A -> ctl), and `siteRem >= 3000` would also hold upgraders at 2 + 4 builders through the
+whole bill. That is ~260k idle energy, ~8.7k t (~10 h) of upgrade, ~20% of the RCL6->7 time lost. Same trap home hit on 10-15
+(plan.RCL6_MINERALS).
+Shipped: `config.RCL6_MINERALS=false` (terminal/extractor/labs + MINERAL roads not placed) and `config.HUB_LINK=false` (hub link 33,34
+not placed). RCL6 still places the 10 extensions; RCL5 still places links 13,25 + 26,12 (asserted). Dormant until RCL6.
+**Proposal for Misaki (not urgent, before ~10-22):** keep both off until there is a use. Options to revisit then:
+(a) hub link 33,34 -> ctl link 13,25 fed from storage (needs a hub manager; worth it only if haulers can't keep the ctl container fed);
+(b) terminal at W47N8 so home can `terminal.send` energy (cost ~3% at range 1) or minerals: only useful with a market/boost plan;
+(c) extractor + labs: needs mineral miner + lab code, and only matters for boosts after novice end.

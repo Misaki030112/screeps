@@ -3,6 +3,13 @@
 Novice zone ends **2026-10-28 03:33 UTC+8**. Defence timeline: `docs/DEFENSE_NOVICE.md` (2026-10-16); detail `docs/DEFENSE.md` / geometry `docs/DEFENSE_PLAN.md`.
 **Safe mode: NEVER auto-activate** — alert Misaki.
 
+## 2026-10-20 03:4x strategy review: W47N8 RCL6 build bill (`docs/PLAN_W47N8.md` "RCL6 gate")
+
+- **Finding:** at RCL6 (ETA ~10-22 08:00-10:00) W47N8's layoutRun would have queued terminal (100k), extractor (5k), 3 labs (150k), the extractor trunk and the hub link 33,34 (5k) right after the 10 extensions. No W47N8 code uses any of them, so ~260k energy (~10 h of upgrade, ~20% of the RCL6->7 time) would have gone into idle structures, with upgraders held at 2 by the big-build rule meanwhile. Same trap home had on 10-15.
+- **Shipped 7b0b0b4 (deployed t83750598, dormant until RCL6):** `rooms/w47n8/config` `RCL6_MINERALS=false`, `HUB_LINK=false`. RCL6 still places the 10 extensions; RCL5 still places links 13,25 + 26,12. `tests/w47n8_rcl6_gate.js` fails on the old code; all tests pass; live bucket 10000, 0 sites, no new errors.
+- **Misaki (FYI, decide before ~10-22):** keep the W47N8 terminal/labs/extractor/hub link off until there is a use for them.
+- Plan check: W47N8 RCL4 299.5k/405k at ~29 e/t, **RCL5 ~08:00 UTC+8** (tower 24,8 first). Home RCL7 ~10-25 late/10-26, before novice end 10-28 03:33. BustJetter's 2 unboosted ranged (11RA/8RA) at the W47N9 edge (03:31 MEDIUM, sim: towers win); no change to defence or CPU budget.
+
 ## 2026-10-20 03:1x two-room evaluation (45-min window 02:23-03:08 vs 01:38-02:23)
 - **Home W46N8:** upgrade 25.9 e/t (prev 25.2) vs ideal 26.0, at ideal. **Storage 13.9k -> 9.95k** (prev 13.3k -> 15.05k): every hauler/rhauler load went to the always-hungry ctl container (28 upgrader WORK vs ~26 e/t net) while spawn refills (two 36-part rhaulers) drew storage; ctl container then sat at 0 for ~70t (t83750030-100). The home patrol shipped **0ff7935** at t83750131 (bank to storage first while under reserveE 15k); storage 9952 -> 10352 by t83750150 with upgrade still ~28 e/t from the ctl buffer. **Home patrol, watch:** (1) upgrade dips toward link-only (~10 e/t) until storage is back at 15k (~300-500t), expected; (2) below 13k (reserveE - UP_DIP) the upgrader target is 0, current upgraders TTL 958/1259 so no gap if storage clears 13k within ~800t; (3) flip-flop at the 15k line (bank vs ctl per load) - fine unless ctl container repeatedly hits 0 with storage >= 15k.
 - **W47N8:** upgrade 25.9 e/t over the window (prev 19.4); since the 2c34346 filler-buffer fix 28.8 e/t vs ideal 29.84. Storage 3252 peak -> 893 (spawn draw; buffer reserve 950 now pulls hauler loads, by design). RCL4 285.6k/405k, RCL5 ETA ~08:00-08:30. Tower 870, 0 hostiles, ramparts unchanged (min 4901, 0 sites).
@@ -229,6 +236,7 @@ Focus (Misaki 10-14): **W46N8 upgrade speed**; expansion (2nd account W47N8, W45
 7. Later: RCL6 terminal/extractor/labs; 2nd room (**approval required**).
 
 ## Log
+- 2026-10-20 03:4x strategy review: topic **W47N8 RCL6 build bill** (`docs/PLAN_W47N8.md`). ~260k of idle terminal/labs/extractor/hub link would have been placed at RCL6; gated (7b0b0b4, dormant). RCL5 ~08:00, RCL6 ~10-22.
 - 2026-10-20 00:0x strategy review: topic **remote posture after novice end** (`docs/DEFENSE_NOVICE.md`). Overmind fights outposts; we keep flee+pause (EV+). Shipped stats.remote snapshot. RCL5 ETA ~07:30, RCL7 ~10-26 evening.
 - 2026-10-19 21:4x strategy review: topic **W47N8 upgrade gap** (`docs/MODEL_W47N8.md`). 8.7 e/t gap decomposed; new cause = 5W remote rminers lose ~10% to container repair (repair blocks harvest); deployed 751c6e7/3ce6174 (6W + learned lead). RCL5 ETA 10-20 ~09:30-10:30, RCL7 ETA ~10-26 late.
 - 2026-10-19 19:5x strategy review: topic **W47N8 RCL5 transition** (`docs/PLAN_W47N8.md`). Tower 2 = 24,8 verified in code/test/doc/live; deployed 75f8265 (north tower fed from source A 26,11, filler core towers only; dormant until RCL5); link timing and hauler priority unchanged (reasoned); RCL5 ETA 10-20 ~06:30-09:15.
