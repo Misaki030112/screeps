@@ -12,7 +12,7 @@ Theoretical limit: 4 sources × 10 = 40 e/t; minimum upkeep at these distances i
 | RCL4 now | Trim surplus haulers/builders (other worker) | 0 (recycle refunds) | +2–3 e/t to upgrade | immediate |
 | RCL4 now | Stop extra ramparts (other worker) | saves ~0.5–1k | +sites energy to upgrade | immediate |
 | RCL4→5 | Upgrade-max: 30 WORK, build only roads | — | upgrade 14→26–29 e/t; RCL5 ETA ~12.5 h (ideal) vs 26 h (current rate) | — |
-| RCL5 | 10 ext (+10×? 50→ RCL5 cap 1800) | 30k cap ext 3k×... see note | bigger bodies → fewer creeps, ~-1 e/t upkeep | ~ |
+| RCL5 | 10 ext (cap 1300→1800) | 30k | bigger bodies, fewer creeps, ~-1 e/t upkeep | ~30k t; required for RCL5 bodies |
 | RCL5 | link A 26,12 → ctl 13,25 (pending OK) | 2×5k = 10k | -A hauler (0.6 e/t), -0.1 decay, +1 e/t to ctl | ~12k t (~14 h) |
 | RCL5 | 2nd tower | 5k | defense only | — |
 | RCL6 | 10 ext, link hub, terminal, extractor, mineral trunk | ~10k ext + 5k link + 100k terminal | storage-centric logistics; ~-1 e/t haul | terminal no direct e/t payback; build after storage >30k |
