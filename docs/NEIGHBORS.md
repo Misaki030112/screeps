@@ -13,6 +13,8 @@ Strategy review **2026-10-17 ~14:40 UTC+8**. Raw data: hourly `tools/neighbor_sc
 | W48N8 | **Evans_702** (GCL ~1.96M, 1 room) RCL6 | 1 tower (empty), 20 walls up to 2.39M, spawns a 2RA2M `Defender<tick>` every ~50 ticks (6 alive, parked at 38–40,22–24) | **no east exit** (terrain) — cannot walk into W47N8 |
 | W47N6 | yousukeman3 (GCL ~56k) RCL3, safe mode | economy only | not adjacent |
 | W46N7 | FungousCoast245 (GCL ~26.5B, 67 rooms) RCL8, 6 towers | 2 workers | no N/E exits; outside novice zone until 10-28 |
+| W44N7 | **Cody132** (GCL ~3) RCL7, 2 towers, 92 walls | 0 combat (10-19) | **from 10-28**: novice wall W45N7 x=49 (44 tiles) and W44N8 y=49 (18) drop -> our remotes |
+| W46N9 | **drtk712** (GCL ~14.5) RCL8, 6 towers, nuker | 0 combat (10-19) | 0 exits to home; **from 10-28** via W47N9 x=49 (20 tiles) -> W47N8 north |
 | W44N8 / W47N5 | Fandalah RCL6 | no combat creeps, towers full | east of remote |
 
 ## Reading the W48N9 army

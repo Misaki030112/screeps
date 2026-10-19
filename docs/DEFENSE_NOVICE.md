@@ -19,6 +19,40 @@ Strategy review **2026-10-16 ~14:34 UTC+8**. Geometry and wall budget live in `d
 | Safe mode | **4 available**, none active |
 | Neighbours | BustJetter (Council) W48N9 ~8 combat (≈26 ATTACK + ≈26 RA + ≈16 HEAL parts, unboosted mix) — thinned from 13 at midday; W47N9 economy only (no claimer visible now). Fandalah W44N8 RCL6, no combat creeps. RCL8 rooms N/S of us still outside our novice exits. |
 
+## 2026-10-19 20:5x refresh: what actually opens at 10-28 03:33 (live API, tick ~83744650)
+
+The 10-16 plan assumed the RCL8 rooms north and south of home (W46N9 drtk712, W46N7 FungousCoast245) are the post-novice risk.
+Terrain says otherwise: **W46N8 has 0 exit tiles north and south**, W47N8 has 0 to the west (W48N8), W47N7 has 0 to W48N7/W46N7,
+W45N7 has 0 to W46N7, W45N8 has 0 to W45N9. Home is reachable only through W47N8 (west) and W45N8 (east).
+
+Novice walls (constructedWall, `decayTime` 1793129589429 = 10-28 03:33) that drop near us, and who is behind them:
+
+| Opening | Tiles | Behind it | Path to us |
+|---|---|---|---|
+| **W45N7 x=49** (our remote) | 44 | **W44N7 Cody132** RCL7 (GCL ~3), 2 towers full, 92 walls, 0 combat creeps now; beyond: Solstice W43N7/W43N6 RCL7 (GCL ~4) | straight into W45N7 -> W45N8 -> home east (22 tiles, outer ring 142k+) |
+| **W44N8 y=49** (Fandalah) | 18 | W44N7 Cody132 | W44N8 -> W45N8 east edge (7 tiles) -> home |
+| **W47N9 x=49** (BustJetter) | 20 | **W46N9 drtk712** RCL8 (GCL ~14.5), 6 towers, nuker, observer, 0 combat creeps now | W47N9 -> W47N8 north (23 tiles, 12 seal walls 50k) |
+| W45N6 / W47N6 west sides | - | W46N6 = SK room with an Invader stronghold (lvl 5); FungousCoast245 (GCL ~70) only via SK rooms | W45N6 -> W45N7, W47N6 -> W47N7 (long way round) |
+
+So after 10-28 the **remotes W45N7/W45N8 become the first rooms an outsider walks into**, and W47N8's north gets a second
+possible visitor (drtk712) through BustJetter's room. Our existing posture fits: remotes flee + pause on player combat,
+home outer ring (41 walls min 142.1k, 11 gates min 168.8k = step 1 done), W47N8 seal walls 50k + tower 2 at RCL5 (~10-20).
+After 10-28 we are also inside drtk712's nuker range; nothing to do about that except not provoking him.
+
+**Status vs section A:** items 1-6, 8, 9 live; item 7 (wall step 1, 100k) **done** (min 142.1k). Step 2 (300k, ~69k energy) is
+not moving: the 50k wall fund is fully accrued but the `reserveE=15000` builder gate needs storage > 17k and storage sits at
+15-17k (upgraders take the surplus), so 0 home builders. Step 2 therefore starts only if Misaki trades upgrade for it
+(about 2.3 e/t = ~10% of upgrade, RCL7 slips ~0.8 day) or after RCL7. Recommendation: keep upgrade-first; RCL7 (3rd tower +
+2nd spawn, ETA ~10-26 late) is worth more in a fight than +158k per wall.
+
+**Gap fixed (b62f49f):** with a hostile *player* combat creep inside home, the reserveE gates also blocked any builder, so
+nobody would repair an attacked wall while storage was under ~17k. `walls.siege(room)` now allows one builder that may
+draw storage to 5k (tower cushion) - Misaki's doctrine "builders repair attacked walls" and "reserve floors may be spent for
+defense". Dormant until a player attacks home. `tests/defense_reserve.js`.
+
+**Watch:** `tools/neighbor_scan.py` now also scans W44N7 (Cody132), W46N9 (drtk712) and counts any player combat creep in
+W45N7/W45N8 as NEW. The 10-25 deadline review stays; add "who came through the three openings in the first 24 h".
+
 ## A. Must be LIVE by 2026-10-28 03:33
 
 These are the minimum that should already be working when the novice walls drop:
@@ -108,6 +142,6 @@ Assumptions: upgrade stays ~21–23 e/t until RCL6; model net ~23 e/t after; wal
 - [x] Alerts include safeMode fields; never auto SM
 - [x] Remote Invader defender ON
 - [x] Outer wall geometry + v4 policy coded (dormant)
-- [ ] RCL6 core + **bank 20k** + wall step 1 (100k) before 10-28
+- [x] RCL6 core + bank + wall step 1 (100k) before 10-28 (min 142.1k on 10-19)
 - [ ] 10-25 defence deadline review with Misaki (SM tree, guards, minerals, W45N7)
 - [ ] Wall step 2 (300k) — may finish after 10-28

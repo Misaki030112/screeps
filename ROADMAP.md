@@ -3,6 +3,14 @@
 Novice zone ends **2026-10-28 03:33 UTC+8**. Defence timeline: `docs/DEFENSE_NOVICE.md` (2026-10-16); detail `docs/DEFENSE.md` / geometry `docs/DEFENSE_PLAN.md`.
 **Safe mode: NEVER auto-activate** — alert Misaki.
 
+## 2026-10-19 20:5x strategy review: what opens at novice end (`docs/DEFENSE_NOVICE.md` "20:5x refresh")
+
+- Home N/S are terrain-closed (0 exits); the 10-28 risk is three novice-wall openings: **W45N7 x=49 (44 tiles) and W44N8 y=49 (18) <- W44N7 Cody132 RCL7**, and **W47N9 x=49 (20) <- W46N9 drtk712 RCL8** (then W47N8 north). Remotes W45N7/W45N8 become the first rooms outsiders reach.
+- Wall step 1 done (min 142.1k). Step 2 (300k, ~69k e) is stalled by design: fund 50k accrued, but builders need storage > reserveE+2k = 17k. Recommendation: keep upgrade-first; RCL7 tower 3 + spawn 2 (~10-26 late) first, step 2 after.
+- **Deployed b62f49f (t83744693, dormant):** player combat inside home lifts the reserveE builder gates for 1 wall-repair builder (storage floor 5k). Before this, an attack with storage < 17k meant no wall repair at all.
+- neighbor_scan.py also scans W44N7/W46N9 and flags combat creeps in W45N7/W45N8 as NEW.
+- 10-25 deadline review: add remote posture after 10-28 (W45N7 is the border remote) for Misaki.
+
 ## 2026-10-19 19:5x strategy review: W47N8 RCL5 transition (`docs/PLAN_W47N8.md` "RCL5 transition")
 
 - **Tower 2 slot verified: 24,8** (Misaki 18:06) in layout.js ORDER.tower[0], PLAN_W47N8.md and tests/w47n8_tower_first.js; live since 108baf0 (18:09). The 17:55 note "34,31" is superseded.
