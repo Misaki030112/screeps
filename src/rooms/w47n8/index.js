@@ -18,7 +18,10 @@ function bodyFor(role, e) {
   if (role === 'w8rhauler') { if (e < 450) { const n = Math.max(2, Math.floor(e / 100)); return rep(n, CARRY).concat(rep(n, MOVE)); }
     // 15:55: 1 WORK (replaces 1 CARRY, still 2 heavy:1 MOVE) so loaded rhaulers build/repair the W47N7 road in passing
     const k = Math.min(8, Math.floor((e - 50) / 150)); return rep(2 * k - 1, CARRY).concat([WORK], rep(k, MOVE)); }
-  if (role === 'w8miner') { const w = Math.max(2, Math.min(5, Math.floor((e - 50) / 100))); return rep(w, WORK).concat([MOVE]); }
+  // 17:20: 6W (12/t vs regen 10/t): a 5W miner needs every tick of the 300-tick regen, so walk-in, container repair and replacement gaps
+  // were lost for good (local miners 85% working, 1 h). 6W catches up; +0.07 e/t upkeep. +1 CARRY at RCL5 to feed the source link.
+  if (role === 'w8miner') { const w = Math.max(2, Math.min(6, Math.floor((e - 50) / 100))), cy = linkAt(C.SOURCES[0].link) && e >= 750 ? 1 : 0;
+    return rep(Math.min(w, Math.floor((e - 50 - 50 * cy) / 100)), WORK).concat(rep(cy, CARRY), [MOVE]); }
   // 15:10 model: local routes are paved end to end (A->ctl 25/25 road, B->ctl 16/16, hub legs 1 unpaved tile), so 2C:1M keeps full
   // speed loaded on road: 10C5M = 750 carries the same 500 as 10C10M = 1000 (-0.5 e/t upkeep over 3 haulers). Below 450: 1:1.
   if (role === 'w8hauler') { if (e < 450) { const n = Math.max(2, Math.floor(e / 100)); return rep(n, CARRY).concat(rep(n, MOVE)); }
@@ -57,7 +60,7 @@ function spawnRun(spawn) {
     const live = cs.filter(c => c.memory.role === 'w8miner' && (c.memory.si | 0) === i && (c.spawning || c.ticksToLive > lead));
     const cq = room.find(FIND_MY_CREEPS, { filter: c => c.memory.role === 'cqminer' && c.ticksToLive > 60 && c.pos.inRangeTo(S.src[0], S.src[1], 1) });
     const works = _.sum(live.concat(cq), c => c.getActiveBodyparts(WORK) || _.filter(c.body, p => p.type === WORK).length);
-    const add = bodyFor('w8miner', cap).length - 1;
+    const add = bodyFor('w8miner', cap).filter(p => p === WORK).length;
     if (!live.length || (works < 5 && live.length < 2 && add > (live[0] ? live[0].getActiveBodyparts(WORK) : 0))) { want = 'w8miner'; mem.si = i; }
   }
   // 2) haulers 2, 3) upgraders 2 (3 when no sites), 4) builders while sites
@@ -106,7 +109,7 @@ function spawnRun(spawn) {
   if (!want && sites && looseE(room) > 2500 && n('w8hauler') < HMAX) want = 'w8hauler';
   // 04:10: size by remaining build work, not site count: 3 cheap road sites (~900 left) brought a 4th builder while the ctl cont sat at 0,
   // wbuilder idle 0.69 (6h) and 4 upgraders energy-starved
-  else if (!want && sites && n('w8builder') < (siteRem(room) >= 3000 ? 4 : siteRem(room) >= 1200 ? 3 : 2)) want = 'w8builder'; // 17:05: Spawn2 sat idle at 300/300 with 5 ext sites
+  else if (!want && sites && n('w8builder') < (siteRem(room) >= 3000 ? 4 : siteRem(room) >= 1200 ? 2 : 1)) want = 'w8builder'; // 17:20: 1 for a small backlog (2 road sites ~480 kept 3x 6W builders, 2.4 e/t upkeep) // 17:05: Spawn2 sat idle at 300/300 with 5 ext sites
   // 5) surplus (17:52: 1.8k energy lying on the ground/in source containers, spenders only ~7 WORK of 20 e/t income):
   // +1 hauler above 1200 loose (max 3), +1 upgrader per 600 loose above 600 (max 6)
   if (!want) {
@@ -198,7 +201,7 @@ function layoutRun(room) {
   // 03:05 west<->hub link road (missing from v3b plan): loaded 10C5M rhaulers sat 7-10 ticks on unroaded swamp 22,34 (fatigue 70)
   // between road 15,33 and strip road 24,35; queued ahead of the plan roads since every hub trip crosses it
   // 09:13 road audit: only the target network (roads.js: v3b spines + shared trunks + busy live roads) is placed
-  const O = ok ? Object.assign({}, L.ORDER, { road: (rcl >= 6 ? require('./roads').ROADS : require('./roads').ROADS.filter(([x, y]) => !require('./roads').MINERAL.some(([a, b]) => a === x && b === y))).concat(require('../../layouts/w8link').W47N8) }) : { extension: L.TEMP_EXT, container: L.ORDER.container };
+  const O = ok ? Object.assign({}, L.ORDER, { link: [C.CTL_LINK, C.SOURCES[0].link].concat(L.ORDER.link), road: (rcl >= 6 ? require('./roads').ROADS : require('./roads').ROADS.filter(([x, y]) => !require('./roads').MINERAL.some(([a, b]) => a === x && b === y))).concat(require('../../layouts/w8link').W47N8) }) : { extension: L.TEMP_EXT, container: L.ORDER.container };
   // 17:15 (Misaki "急着早 rampart 是为了什么" / "看看主房间"): no rampart placement here. The PRIO loop placed every v3b ORDER.rampart
   // tile at RCL4, incl. empty future spawn/terminal/tower slots (32,32 32,33 33,32 33,30 built; 34,31 36,31 36,33 sites), and
   // builders raised them to the 50k seal target. Home only rampart-covers real structures and deferred even those behind storage
@@ -232,8 +235,14 @@ function rampHold(room) {
   o.w8hold = live;
   return rs.find(r => r.hits < live[r.id] - HOLD_SLACK) || null;
 }
+// 17:20 RCL5 links (parent-approved plan): source A link 26,12 -> ctl link 13,25 (3% loss) replaces ~25-tile hauling of source A.
+function linkAt(p) { const r = Game.rooms[C.ROOM]; return p && r && r.lookForAt(LOOK_STRUCTURES, p[0], p[1]).find(s => s.structureType === STRUCTURE_LINK); }
+function linkRun() {
+  const a = linkAt(C.SOURCES[0].link), k = linkAt(C.CTL_LINK);
+  if (a && k && !a.cooldown && a.store[RESOURCE_ENERGY] >= 400 && k.store.getFreeCapacity(RESOURCE_ENERGY) >= 400) a.transferEnergy(k);
+}
 function towerRun(room) {
-  TH.mark(room); TH.mark(Game.rooms[C.REMOTE.room]);
+  TH.mark(room); TH.mark(Game.rooms[C.REMOTE.room]); linkRun();
   const towers = room.find(FIND_MY_STRUCTURES, { filter: s => s.structureType === STRUCTURE_TOWER });
   if (!towers.length) return;
   const h = room.find(FIND_HOSTILE_CREEPS);
@@ -265,4 +274,4 @@ function selfSufficient() {
   const r = Game.rooms[C.ROOM]; if (!r || !r.find(FIND_MY_SPAWNS).length) return false;
   return mine().some(c => c.memory.role === 'w8miner'); // Spawn2 + its own miner -> home stops cq pioneers/haulers (guard stays)
 }
-module.exports = { rampHold, swapTemp, energyOrder, ROOM: C.ROOM, spawnRun, layoutRun, towerRun, selfSufficient, bodyFor };
+module.exports = { linkAt, linkRun, rampHold, swapTemp, energyOrder, ROOM: C.ROOM, spawnRun, layoutRun, towerRun, selfSufficient, bodyFor };

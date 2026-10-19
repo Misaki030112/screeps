@@ -33,7 +33,7 @@ function haulPick(c) {
     const claimed = {};
     for (const h of room.find(FIND_MY_CREEPS, { filter: x => x.memory.role === 'w8hauler' && x.id !== c.id && x.memory.pt && !x.memory.w }))
       claimed[h.memory.pt] = (claimed[h.memory.pt] || 0) + h.store.getFreeCapacity();
-    const cands = room.find(FIND_DROPPED_RESOURCES, { filter: r => r.resourceType === E && r.amount >= 50 }).concat(room.find(FIND_STRUCTURES,
+    const cands = room.find(FIND_DROPPED_RESOURCES, { filter: r => r.resourceType === E && r.amount >= 50 }).concat(room.find(FIND_TOMBSTONES, { filter: t => t.store[E] >= 50 }), room.find(FIND_RUINS, { filter: t => t.store[E] >= 50 }), room.find(FIND_STRUCTURES,
       { filter: s => s.structureType === STRUCTURE_CONTAINER && s.store[E] >= 100 && !(s.pos.x === C.CTL_CONT[0] && s.pos.y === C.CTL_CONT[1]) && (!isHub(s) || hubSpare(room)) }));
     let bs = 0; t = null;
     // 04:05: ground piles score x2 (they decay 1+/tick): 241 sat on road 29,35 losing 1/t while haulers chose 780-1110 source conts
@@ -178,6 +178,11 @@ const R = {
     }
     const cont = c.pos.lookFor(LOOK_STRUCTURES).find(s => s.structureType === STRUCTURE_CONTAINER);
     if (cont && cont.hits < cont.hitsMax * 0.5 && c.store[E] > 0) return c.repair(cont);
+    // RCL5: source link beside the stand; harvest overflow lands in the container under me
+    if (S.link && c.store.getCapacity() && c.store.getFreeCapacity() <= 2 * c.getActiveBodyparts(WORK)) {
+      const lk = c.room.lookForAt(LOOK_STRUCTURES, S.link[0], S.link[1]).find(s => s.structureType === STRUCTURE_LINK);
+      if (lk && lk.store.getFreeCapacity(E) > 0) c.transfer(lk, E);
+    }
     if (src) c.harvest(src);
   },
   w8hauler(c) {
@@ -219,7 +224,8 @@ const R = {
         // 50 energy, missing the refill by ~30 ticks; a 1-CARRY upgrader waits at its stand instead
         const stay = c.store.getCapacity() <= 50;
         if (c.pos.x !== x || c.pos.y !== y) { if (c.store[E] || cont.store[E] || stay) return go(c, x, y, 0); }
-        else { if (c.store[E] < 2 * c.getActiveBodyparts(WORK) && cont.store[E]) c.withdraw(cont, E); /* CPU 21:20: refill only when ~2 ticks left (0.2/intent) */ if (c.store[E] || cont.store[E] || stay) return; }
+        else { const lk = c.room.lookForAt(LOOK_STRUCTURES, C.CTL_LINK[0], C.CTL_LINK[1]).find(s => s.structureType === STRUCTURE_LINK && s.store[E] > 0 && c.pos.isNearTo(s));
+          if (c.store[E] < 2 * c.getActiveBodyparts(WORK) && (lk || cont.store[E])) c.withdraw(lk || cont, E); /* CPU 21:20: refill only when ~2 ticks left (0.2/intent) */ if (c.store[E] || cont.store[E] || stay) return; }
         // container empty and I'm empty: fall through and fetch from the piles
       } else delete c.memory.st;
     }
@@ -363,5 +369,14 @@ const R = {
   },
 };
 // main.js dispatches roles[role].run(c): wrap (bare functions crashed every w8 creep with 'run is not a function')
-module.exports = Object.fromEntries(Object.entries(R).map(([k, f]) => [k, { run: f }]));
+// 17:20 retire surplus creeps now instead of waiting out their TTL: Memory.ops.w8recycle = [names] -> walk to Spawn2 and recycle
+// (returns up to body cost x ttl/1500 as a tombstone, which w8haulers collect)
+function recycled(c) {
+  const L = Memory.ops && Memory.ops.w8recycle; if (!L || !L.includes(c.name)) return false;
+  const sp = Game.spawns.Spawn2; if (!sp) return false;
+  if (c.store[E] && c.room.name === C.ROOM) { const cc = ctlCont(); if (cc && c.pos.isNearTo(cc)) { c.transfer(cc, E); return true; } }
+  if (c.pos.isNearTo(sp)) { sp.recycleCreep(c); Memory.ops.w8recycle = L.filter(n => n !== c.name && Game.creeps[n]); } else c.moveTo(sp, { range: 1, reusePath: 10 });
+  return true;
+}
+module.exports = Object.fromEntries(Object.entries(R).map(([k, f]) => [k, { run: c => recycled(c) || f(c) }]));
 Object.defineProperty(module.exports, '_fill', { value: fillTarget, enumerable: false }); // tests only

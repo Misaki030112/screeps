@@ -38,3 +38,19 @@ console.log('w47n8 flow ok');
   assert.ok(log[0].startsWith('tr ') || log[0] === 'mv 20,33' || log[0] === 'mv 36,31', 'low spawn energy -> fill duty: ' + log);
   console.log('w47n8 rhauler delivery ok');
 }
+// 17:20 miner 6W (+1 CARRY only once the source link exists) and RCL5 link transfer
+{
+  Object.assign(global, { STRUCTURE_LINK: 'link' });
+  const cnt = (b, p) => b.filter(x => x === p).length;
+  Game.rooms.W47N8 = { lookForAt: () => [] };
+  let b = W.bodyFor('w8miner', 1300); assert.deepStrictEqual([cnt(b, 'work'), cnt(b, 'carry'), cnt(b, 'move')], [6, 0, 1], '6W1M without link');
+  b = W.bodyFor('w8miner', 550); assert.strictEqual(cnt(b, 'work'), 5, '5W at 550');
+  let sent = 0;
+  const la = { structureType: 'link', cooldown: 0, store: { energy: 800, getFreeCapacity: () => 0 }, transferEnergy: () => { sent++; return 0; } };
+  const lk = { structureType: 'link', store: { energy: 0, getFreeCapacity: () => 800 } };
+  Game.rooms.W47N8 = { lookForAt: (k, x, y) => (x === 26 && y === 12 ? [la] : x === 13 && y === 25 ? [lk] : []) };
+  b = W.bodyFor('w8miner', 1300); assert.deepStrictEqual([cnt(b, 'work'), cnt(b, 'carry')], [6, 1], '6W1C1M with link');
+  W.linkRun(); assert.strictEqual(sent, 1, 'source link -> ctl link');
+  la.cooldown = 3; W.linkRun(); assert.strictEqual(sent, 1, 'cooldown respected');
+  console.log('w47n8 miner/link ok');
+}
