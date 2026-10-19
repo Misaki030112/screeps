@@ -64,11 +64,12 @@ function spawnRun(spawn) {
   // 04:47: base 3 (was 2): with 2 haulers and 0 sites RCL3 fell ~22 -> ~7.5 e/t (t83731005..1169), ctl cont 0-114 while source conts
   // rose to 633/1000; the surplus 3rd only spawned after loose passed 1200, so the ctl ran dry every cycle
   if (!want && n('w8hauler') < 3) want = 'w8hauler';
-  // 14:23 threat mode: walls/core ramparts to 50k ahead of upgrading; 1 upgrader keeps the controller safe (2 if downgrade < 10k)
+  // 14:23 threat mode: seal walls to 50k ahead of upgrading; 1 upgrader keeps the controller safe (2 if downgrade < 10k)
   const thr = TH.on(), wtgt = TH.wallTarget(C.WALL_TARGET[(room.controller || {}).level] || 0);
   // 15:45 hysteresis: core ramparts decay 300/100t, so a strict '< 50k' gate re-entered wall mode (1-2 upgraders, +builders) ~100 ticks
   // after every top-up. Wall mode starts below 90% of target; builders still repair to the full target (wallJob).
-  const wallsLow = thr && room.find(FIND_STRUCTURES, { filter: s => ((s.structureType === STRUCTURE_WALL && C.SEAL.some(([x, y]) => s.pos.x === x && s.pos.y === y)) || (s.structureType === STRUCTURE_RAMPART && s.my)) && s.hits < wtgt * 0.9 }).length > 0;
+  // 17:15: seal walls only (ramparts no longer part of the wall raise)
+  const wallsLow = thr && room.find(FIND_STRUCTURES, { filter: s => s.structureType === STRUCTURE_WALL && C.SEAL.some(([x, y]) => s.pos.x === x && s.pos.y === y) && s.hits < wtgt * 0.9 }).length > 0;
   // 15:10 model: under the wall raise 1 upgrader (10 WORK of ~30 e/t net) left ~8k idle in containers (ctl/hub 1.5k+1.6k, W47N8 sources
   // 2.3k, W47N7 2.8k) while builders spent ~13 e/t; a 2nd upgrader while >3000 sits in local piles + ctl/hub conts (stock covers the gap)
   const stock8 = () => looseE(room) + _.sum([C.CTL_CONT, C.HUB_CONT], ([x, y]) => _.sum(room.lookForAt(LOOK_STRUCTURES, x, y).filter(s => s.structureType === STRUCTURE_CONTAINER), s => s.store[RESOURCE_ENERGY]));
@@ -165,7 +166,7 @@ function placeSeal(room) {
 }
 const L = require('./layout');
 const TH = require('./threat'); // v3b (approved 20:11): ORDER per type nearest-core first; STRIPS with filler stand
-const PRIO = ['spawn', 'extension', 'tower', 'container', 'storage', 'link', 'terminal', 'extractor', 'lab', 'factory', 'powerSpawn', 'nuker', 'observer', 'road', 'rampart'];
+const PRIO = ['spawn', 'extension', 'tower', 'container', 'storage', 'link', 'terminal', 'extractor', 'lab', 'factory', 'powerSpawn', 'nuker', 'observer', 'road']; // no 'rampart' (17:15, see layoutRun)
 const isTemp = s => L.TEMP_EXT.some(([x, y]) => s.pos.x === x && s.pos.y === y);
 function swapTemp(room) {
   const hub = room.lookForAt(LOOK_STRUCTURES, L.ORDER.spawn[0][0], L.ORDER.spawn[0][1]).some(s => s.structureType === STRUCTURE_SPAWN && s.my);
@@ -190,22 +191,18 @@ function layoutRun(room) {
   // (previous swap done), the replacement tile is clear and the site budget has room (this run's PRIO loop / the next places it).
   // Spawn2 is kept.
   if (ok && rcl >= 7) swapTemp(room);
-  let sites = room.find(FIND_MY_CONSTRUCTION_SITES).length; if (sites >= 6) return;
+  for (const s of room.find(FIND_MY_CONSTRUCTION_SITES, { filter: s => s.structureType === STRUCTURE_RAMPART })) s.remove(); // 17:15, see below
+  let sites = room.find(FIND_MY_CONSTRUCTION_SITES, { filter: s => s.structureType !== STRUCTURE_RAMPART }).length; if (sites >= 6) return;
   // 03:05 west<->hub link road (missing from v3b plan): loaded 10C5M rhaulers sat 7-10 ticks on unroaded swamp 22,34 (fatigue 70)
   // between road 15,33 and strip road 24,35; queued ahead of the plan roads since every hub trip crosses it
   // 09:13 road audit: only the target network (roads.js: v3b spines + shared trunks + busy live roads) is placed
   const O = ok ? Object.assign({}, L.ORDER, { road: (rcl >= 6 ? require('./roads').ROADS : require('./roads').ROADS.filter(([x, y]) => !require('./roads').MINERAL.some(([a, b]) => a === x && b === y))).concat(require('../../layouts/w8link').W47N8) }) : { extension: L.TEMP_EXT, container: L.ORDER.container };
-  // 14:09 (north threat): ramparts over built spawn/tower/storage go first, ahead of the road budget
-  if (ok && rcl >= 4) for (const [x, y] of L.ORDER.rampart) {
-    if (sites >= 6) return;
-    const st = room.lookForAt(LOOK_STRUCTURES, x, y);
-    if (!st.some(s => s.structureType === STRUCTURE_SPAWN || s.structureType === STRUCTURE_TOWER || s.structureType === STRUCTURE_STORAGE)) continue;
-    if (st.some(s => s.structureType === STRUCTURE_RAMPART) || room.lookForAt(LOOK_CONSTRUCTION_SITES, x, y).length) continue;
-    if (room.createConstructionSite(x, y, STRUCTURE_RAMPART) === OK) sites++;
-  }
+  // 17:15 (Misaki "急着早 rampart 是为了什么" / "看看主房间"): no rampart placement here. The PRIO loop placed every v3b ORDER.rampart
+  // tile at RCL4, incl. empty future spawn/terminal/tower slots (32,32 32,33 33,32 33,30 built; 34,31 36,31 36,33 sites), and
+  // builders raised them to the 50k seal target. Home only rampart-covers real structures and deferred even those behind storage
+  // (6957a9a). Unbuilt rampart sites are dropped (top of layoutRun); built ones are left as-is (tower keeps them above 5k, ~0.2 e/t once they get there).
   for (const t of PRIO) {
     if (t === 'road' && rcl < 3) continue;
-    if (t === 'rampart' && rcl < 4) continue;
     for (const [x, y] of (O[t] || [])) {
       if (sites >= 6) return;
       if (t === 'road' && sites > 2) return; // roads only when little else is queued
@@ -244,7 +241,7 @@ function towerRun(room) {
   for (const t of towers) {
     if (best && (t.store[RESOURCE_ENERGY] > 300 || inBaseThreat || PARTS(best, CLAIM))) t.attack(best);
     else if (hurt && t.store[RESOURCE_ENERGY] > 500) t.heal(hurt);
-    else if (t.store[RESOURCE_ENERGY] > 600) { // 14:09: keep fresh core ramparts alive (<5k; builders lift them further)
+    else if (t.store[RESOURCE_ENERGY] > 600) { // keep built ramparts above 5k (17:15: builders no longer raise them; no new rampart sites)
       const r = room.find(FIND_MY_STRUCTURES, { filter: s => s.structureType === STRUCTURE_RAMPART && s.hits < 5000 })[0];
       if (r) t.repair(r);
     }

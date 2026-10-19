@@ -108,11 +108,8 @@ function pickTile(c, tiles, key) {
 // target kept until it is 500 above the weakest; new picks are the closest wall within 500 of the weakest.
 function wallJob(room, c) {
   const tgt = TH.wallTarget(C.WALL_TARGET[room.controller.level] || 0);
-  // 14:09: core ramparts (spawn/tower/storage) share the seal target; a fresh rampart (<5k) is lifted first
-  const ws = room.find(FIND_STRUCTURES, { filter: s => (s.structureType === STRUCTURE_WALL && s.hits < tgt && C.SEAL.some(([x, y]) => s.pos.x === x && s.pos.y === y))
-    || (s.structureType === STRUCTURE_RAMPART && s.my && s.hits < tgt) });
-  const fresh = ws.filter(s => s.structureType === STRUCTURE_RAMPART && s.hits < 5000);
-  if (fresh.length) return _.min(fresh, s => s.hits);
+  // 17:15: seal walls only. Core ramparts (14:09) are no longer raised by builders (Misaki: development first, as in home).
+  const ws = room.find(FIND_STRUCTURES, { filter: s => s.structureType === STRUCTURE_WALL && s.hits < tgt && C.SEAL.some(([x, y]) => s.pos.x === x && s.pos.y === y) });
   if (!ws.length) { if (c) delete c.memory.wt; return null; }
   const lo = _.min(ws, s => s.hits).hits;
   if (!c) return ws.find(s => s.hits === lo);
@@ -344,7 +341,7 @@ const R = {
     const all = c.room.find(FIND_MY_CONSTRUCTION_SITES);
     // north seal walls first (1 energy each, Misaki 17:08), x8-11 before x24-31; then the spawn/extension sites
     const seal = all.filter(s => s.structureType === STRUCTURE_WALL).sort((a, b) => (a.pos.x <= 11 ? 0 : 1) - (b.pos.x <= 11 ? 0 : 1));
-    // 14:23 threat mode: seal walls + core ramparts to 50k before other sites (seal wall sites still first)
+    // 14:23 threat mode: seal walls to 50k before other sites (seal wall sites still first)
     const tj = !seal[0] && TH.on() && wallJob(c.room, c);
     if (tj) { if (!c.pos.inRangeTo(tj, 3)) go(c, tj.pos.x, tj.pos.y, 3); else c.repair(tj); return; }
     const site = seal[0] || c.pos.findClosestByRange(all);
@@ -354,7 +351,7 @@ const R = {
     const rr = f => c.pos.findClosestByRange(FIND_STRUCTURES, { filter: s => (s.structureType === STRUCTURE_CONTAINER || (s.structureType === STRUCTURE_ROAD && ROADSET.has(s.pos.x * 50 + s.pos.y))) && s.hits < s.hitsMax * f });
     // CPU 13:10: sticky repair target, rescanned every 15 ticks or when done (was 2-3 FIND_STRUCTURES scans per builder per tick)
     let rep = c.memory.rj && Game.getObjectById(c.memory.rj);
-    if (!rep || Game.time >= (c.memory.rjt || 0) || rep.hits >= (rep.structureType === STRUCTURE_WALL || rep.structureType === STRUCTURE_RAMPART ? TH.wallTarget(C.WALL_TARGET[c.room.controller.level] || 0) : rep.hitsMax * 0.95)) {
+    if (!rep || Game.time >= (c.memory.rjt || 0) || rep.hits >= (rep.structureType === STRUCTURE_WALL ? TH.wallTarget(C.WALL_TARGET[c.room.controller.level] || 0) : rep.hitsMax * 0.95)) {
       rep = rr(0.1) || wallJob(c.room, c) || rr(0.6); c.memory.rj = rep ? rep.id : undefined; c.memory.rjt = Game.time + 15;
     }
     if (rep) {

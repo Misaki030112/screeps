@@ -2,7 +2,7 @@
 //   mark(): every tick from W47N8 (+ W47N7 when visible). Armed (ATTACK/RANGED_ATTACK/WORK) or drain-pattern (TOUGH/HEAL) hostiles
 //           -> Memory.ops.w8threat = tick. Armed hostiles in W47N7 or W47N8 north (y<=10) -> Memory.ops.w8flee = tick.
 //   tools/north_watch.py also sets Memory.ops.w8threatN when W47N9 holds an armed/drain group or W48N9 (BustJetter army room) >=2 armed (no in-game vision there).
-//   on(): any of those within the last 1500 ticks -> walls/core ramparts to >=50k ahead of upgrading (auto-reverts when quiet).
+//   on(): any of those within the last 1500 ticks -> seal walls to >=50k ahead of upgrading (ramparts excluded 17:15) (auto-reverts when quiet).
 //   flee(): armed hostiles seen in the last 20 ticks -> W47N7 remote creeps hold inside the W47N8 base.
 const WINDOW = 1500, FLEE_QUIET = 20, FLOOR = 50000;
 const has = (c, ts) => c.body.some(p => ts.includes(p.type) && p.hits > 0);
@@ -22,6 +22,6 @@ function on() { const o = M(), t = Math.max(o.w8threat || 0, o.w8threatN || 0); 
 // invasion(): armed hostiles in W47N8 within 50 ticks, or north_watch saw >=2 armed in W47N9 (border room) within 300 ticks
 function invasion() { const o = M(); return (o.w8inv > 0 && Game.time - o.w8inv < 50) || (o.w8invN > 0 && Game.time - o.w8invN < 300); }
 function flee() { const t = M().w8flee || 0; return t > 0 && Game.time - t < FLEE_QUIET; }
-// effective wall/rampart target: plan target, raised to 50k while threatened
+// effective seal wall target: plan target, raised to 50k while threatened
 function wallTarget(base) { return on() ? Math.max(base, FLOOR) : base; }
 module.exports = { mark, on, flee, invasion, wallTarget, WINDOW, FLOOR };
