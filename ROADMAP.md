@@ -3,6 +3,16 @@
 Novice zone ends **2026-10-28 03:33 UTC+8**. Defence timeline: `docs/DEFENSE_NOVICE.md` (2026-10-16); detail `docs/DEFENSE.md` / geometry `docs/DEFENSE_PLAN.md`.
 **Safe mode: NEVER auto-activate** — alert Misaki.
 
+## 2026-10-20 00:3x two-room evaluation (45-min window 23:50-00:35 vs 23:05-23:50)
+
+- Home W46N8: controller progress **23.4 e/t** (prev 20.5; ideal 21.8). Storage 14.8k -> 14.5k (15.2k live at t83748018), RCL6 519k/3.645M, RCL7 ~10-26 evening. Walls min 142.1k, gates 172.5k.
+- **Finding: wall step 2 was not actually held.** `walls.repairJob` targeted the 300k step whenever storage cleared the builder gate, so each storage pop above ~17k spawned a 33-part wall builder (~10 e/t in the last hour). Walls went from step-1 done (min 142.1k) to 152-162k on most tiles. The "walls 142101 no loss" patrol line only tracked the minimum.
+- **Shipped 70e0877 + da5a3d3 (deployed t83748000/83748016):** `walls.stepHeld(room)`: at RCL < 7 with no threat, no repair past 100k, so no repair job and no wall builder. Threat or siege lifts the hold (attacked walls still repaired). Ramparts keep the tower rampHW ratchet. While held, `queen.storageFloor` = max(base, `Memory.defense.reserveE`) (15k), so the 50k fund is not reserved in storage and the surplus above 15k goes to the controller. The fund keeps accruing for step 2 at RCL7. Live check: home held=true, floor 15000; W47N8 held=false, floor 1300. The first deploy shared one tick cache across rooms (W47N8 read true); fixed in da5a3d3 with a per-room cache and a test. W47N8 does not call `storageFloor`, so this had no effect there.
+- W47N8: controller progress **26.2 e/t** (prev 29.5; ideal 29.84). The cause is the known 00:0x cohort turnover: the ctl container ran dry ~70 t. Back at 30 e/t. Storage 1.2k -> 0.8k. RCL4 229k/405k, **RCL5 ~10-20 07:30-08:20**.
+- Cross-room: CPU avg 13.1, max 17.5, bucket 10000 (9973 right after the deploy). Tests pass. **Data gap 00:26-00:32:** the box itself paused. Grafana logged nothing in that window either, then the listener watchdog reconnected after 435 s. Not a listener bug.
+- **Home patrol:** watch for (a) no wall builder spawning while held, (b) the queen ferrying storage only above 15k, and (c) allowExtra adding an upgrader once storage stays at or above 16k with ctl EMA at or above 700. If an extra upgrader oscillates (spawn then starve), report it; don't revert the hold. Report walls with min **and** median from now on.
+- **W47N8 patrol:** no change. At RCL5, place the tower 24,8 site first.
+
 ## 2026-10-20 00:0x strategy review: remote posture after novice end (`docs/DEFENSE_NOVICE.md`)
 
 - **Live:** home W46N8 RCL6 ~509k/3.645M, model upgrade 22.7 e/t (1h 21.1) vs ideal 21.8 → **RCL7 ~10-26 evening** (~163 h). Storage ~15k floor; walls 142101 (step 2 still post-RCL7); gates rising. W47N8 RCL4 ~219k/405k, live upgrade ~30 e/t (6h model 23.2) vs ideal 29.84 → **RCL5 ~10-20 07:30 UTC+8** (ideal 7.3 h / model 9.4 h). Tower 33,35; second at 24,8 on RCL5. Neighbors sev low (BustJetter 0 combat in W48N9; Evans 2×2RA2M). CPU ~13.2 avg, bucket 10000. Novice ends **10-28 03:33** (~8.1 d).
