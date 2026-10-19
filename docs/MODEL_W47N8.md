@@ -70,3 +70,32 @@ link 26,12 (beside stand 26,11) -> model 30.3 e/t; v3b hub link 33,34 at RCL6.
 | upgrade | 20.3 | 10.5 | ~27 |
 W47N7 road: 25 tiles missing = 6.9k energy for ~0.3 e/t (6 CARRY fewer) -> ~27 h payback; left to in-passing rhauler WORK, not accelerated.
 Reserver (home-paid 2.17 e/t) doubles both W47N7 sources (+10 e/t): keep.
+
+## 2026-10-19 21:4x strategy review: why upgrade is ~2/3 of ideal and the ctl container keeps emptying
+6 h window to t83745409 (RCL4 165.2k/405k), model ideal 29.8 e/t, actual 21.1 e/t. Gap 8.7 e/t, all accounted for:
+| item | ideal | actual | gap e/t | note |
+|---|---|---|---|---|
+| harvest (4 sources) | 40 | 38.2 | 1.8 | local A/B full (A 0 left at ttr 48); **W47N7 5W rminers lose ~10%** (below) |
+| upkeep (excl. home-paid reserve7) | 8.5 | 11.2 | 2.7 | wrhauler 4.17 vs 2.7 (60 vs 48 CARRY), whauler 1.5 vs 1.0, wfiller 0.6 unmodelled (known, roadmap watch) |
+| build (W47N7 roads by rhauler WORK) | 0 | 2.5 | 2.5 | temporary: 3 sites left at 21:13 |
+| decay/tower/stock (waste_other) | 1.7 | 3.0 | 1.3 | tower heal/rampHold repair, container stock swings |
+| storage | 0 | +0.4 | 0.4 | |
+**Ctl container 13,26:** 30 WORK upgraders can burn 30 e/t; ~21 e/t reaches it, so it drains to 0 and refills in cycles (upgraders
+queue_blocked 29%). That is the symptom of the energy gap above, not a routing fault — no hauler-priority change (as at 19:5x).
+
+**Root cause found (new): remote container repair blocks harvest.** Reserved (unowned) room containers decay 5000 hits / 100 t = 50 hits/t
+(CONTAINER_DECAY / CONTAINER_DECAY_TIME; owned room 500 t). `repair` and `harvest` share one action pipeline (docs.screeps.com
+simultaneous-actions: the right-most wins, harvest is blocked). The w8rminer body was 5W1C3M = exactly 10/t with no slack, repairing
+whenever the container is < 50% (both W47N7 containers sat at exactly 125,000/250,000 at t83745439), i.e. 1 tick in 10 → ~9 e/t per
+source, plus every replacement gap lost for good. Live: R2 30,35 had 900 energy left at ttr 32 (t83745419). Home solved the same issue on
+10-15 (`rmBody` 6W, measured 8.7 → 10 e/t); W47N8's module never got the port. The replacement lead was a fixed TTL 100 vs ~70 t walk
+(R2) + 30 t spawn + queue behind upgraders/filler on the single Spawn2.
+**Fix (751c6e7 t83745490 + guard 3ce6174 t83745499):** w8rminer 6W1C3M (800; empty CARRY weighs nothing → 1 tile/t on road;
+250 harvest + ~25 repair ticks per 300 → full 10/t, +25 t slack), replacement lead = learned walk (`Memory.ops.w8rlead[si]`, set on first
+reaching the source, only 1–300 t) + 3×parts + 20, default walk 90 → 140 t for the 10-part body. Upkeep +0.13 e/t. Expected +1.5–2 e/t
+to upgrading once both rminers are replaced (current ttl 735 / 1150 at t83745493 → ~22:35 and ~23:05 UTC+8). `tests/w47n8_rminer.js`.
+Model: remote miner cost 800; the `alloc` harvest proxy is now 2 × WORK × working per source capped at 10 (it was 10 × working, which
+read 6W miners waiting for regen as lost harvest: 35.2 → 38.2 for the same window).
+**Verify (w8patrol):** after each replacement, W47N7 source energy at ttr < 30 should be ~0; `Memory.ops.w8rlead` ~45–75; no rminer gap.
+Remaining levers in order: (1) roads finish → build 2.5 → ~0.5 by itself; (2) hauler sizing at natural replacement (~+1.3, roadmap);
+(3) RCL5 links (non-divertible ctl feed). With (1)+fix: ~24–25 e/t → RCL5 ~10-20 09:30–10:30 UTC+8 (ideal 9.3 h).

@@ -3,6 +3,13 @@
 Novice zone ends **2026-10-28 03:33 UTC+8**. Defence timeline: `docs/DEFENSE_NOVICE.md` (2026-10-16); detail `docs/DEFENSE.md` / geometry `docs/DEFENSE_PLAN.md`.
 **Safe mode: NEVER auto-activate** — alert Misaki.
 
+## 2026-10-19 21:4x strategy review: W47N8 upgrade at 2/3 of ideal (`docs/MODEL_W47N8.md` "21:4x")
+
+- Gap 29.8 ideal vs 21.1 actual (6 h) fully decomposed: upkeep +2.7 (hauler sizing, known), W47N7 road building 2.5 (temporary), **remote harvest −1.8**, tower/decay/stock 1.3. The ctl container empties because 30 WORK > ~21 e/t delivered (symptom, not a routing fault).
+- **New root cause:** W47N7 container repair (50 hits/t decay in reserved rooms) blocks harvest; 5W rminers (exactly 10/t) lost ~1 tick in 10 plus every handoff gap. Home fixed this 10-15 with 6W; W47N8 had not.
+- **Deployed 751c6e7 (t83745490) + 3ce6174 (t83745499):** w8rminer 6W1C3M + learned replacement lead (`Memory.ops.w8rlead`, default 140 t). Takes effect at the next replacements (~22:35 / ~23:05 UTC+8). Model: remote miner 800, harvest proxy per WORK.
+- **W47N8 patrol:** after each rminer replacement check W47N7 source energy ~0 at ttr < 30 and w8rlead 45-75. Then hauler sizing (unchanged note below). RCL5 ETA ~10-20 09:30-10:30 UTC+8.
+
 ## 2026-10-19 21:2x two-room evaluation (45-min window 20:39-21:24 vs 19:54-20:39)
 
 - Home W46N8: controller progress 23.2 e/t (prev 23.3; model 1h 23.2, 6h 20.9 vs ideal 21.8). Storage 16.2k -> 15.9k (flat, -0.4 e/t), above the 15k floor. RCL6 458.8k/3.645M; RCL7 ETA still ~10-26 afternoon at this rate. Walls 142101 no loss, ramparts min 169.8k rising, towers 930/910, 0 sites, no safe mode. Spawn utilisation 48%. Memory 32.9k.
@@ -113,6 +120,7 @@ Focus (Misaki 10-14): **W46N8 upgrade speed**; expansion (2nd account W47N8, W45
 7. Later: RCL6 terminal/extractor/labs; 2nd room (**approval required**).
 
 ## Log
+- 2026-10-19 21:4x strategy review: topic **W47N8 upgrade gap** (`docs/MODEL_W47N8.md`). 8.7 e/t gap decomposed; new cause = 5W remote rminers lose ~10% to container repair (repair blocks harvest); deployed 751c6e7/3ce6174 (6W + learned lead). RCL5 ETA 10-20 ~09:30-10:30, RCL7 ETA ~10-26 late.
 - 2026-10-19 19:5x strategy review: topic **W47N8 RCL5 transition** (`docs/PLAN_W47N8.md`). Tower 2 = 24,8 verified in code/test/doc/live; deployed 75f8265 (north tower fed from source A 26,11, filler core towers only; dormant until RCL5); link timing and hauler priority unchanged (reasoned); RCL5 ETA 10-20 ~06:30-09:15.
 - 2026-10-19 18:4x strategy review: topic **home RCL7 readiness** (`docs/RCL7.md`). 250k of the 305k RCL7 bill was idle (factory + 3 labs, no code); gated by plan.RCL7_INDUSTRY=false; home hauler kept at RCL7 for the mineral run. RCL7 ETA ~10-26/27, W47N8 RCL5 ETA ~10-20 evening (live ~16 e/t, 104.6k/405k).
 - 2026-10-19 17:5x strategy review: topic **W47N8 2nd-tower timing** (`docs/DEFENSE_W47N8.md`). Sim: 2 towers alone beat the full BustJetter squad; the RCL5 build order put tower 2 behind 10 extensions (~2-3 h). Deployed c7357bc tower-first (+ test). RCL5 ETA 10-20 05:45 (ideal) – 09:00 (live 23 e/t); home RCL7 ETA ~10-26 (390.8k/3.645M at ~22 e/t), before novice end. UH boosts seen in W48N9/W47N9 labs only speed the enemy melee on walls.
