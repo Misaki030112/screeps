@@ -333,9 +333,11 @@ function run1(spawn, onWait) {
   // defense reserve banking (walls.defLow): no builders/upgraders until storage reaches Memory.defense.reserveE
   // reserve hysteresis (13:06 trace: storage hovered at 15k; each crossing spawned up to 4 builders x 1600e which then starved at the
   // reserve, waiting_feed ~90%). Above the reserve, builders are sized to the SURPLUS: 1 per 4k over reserve+2k, none below +2k.
-  { const Wr = require('./walls'), dr = Wr.defReserve ? Wr.defReserve() : 0;
-    if (dr && room.storage && T.builder > 0) { const sur = room.storage.store[RESOURCE_ENERGY] - dr - 2000; T.builder = sur < 0 ? 0 : Math.min(T.builder, 1 + Math.floor(sur / 4000)); } }
-  if (require('./walls').defLow && require('./walls').defLow(room)) { T.builder = 0; T.upgrader = (room.controller.ticksToDowngrade || 0) < require('./walls').UP_SAFE ? 1 : 0; }
+  // walls.siege (player combat inside home): one builder anyway, to repair the attacked barriers.
+  { const Wr = require('./walls'), dr = Wr.defReserve ? Wr.defReserve() : 0, war = Wr.siege(room);
+    if (dr && room.storage && T.builder > 0 && !war) { const sur = room.storage.store[RESOURCE_ENERGY] - dr - 2000; T.builder = sur < 0 ? 0 : Math.min(T.builder, 1 + Math.floor(sur / 4000)); }
+    if (war) T.builder = Math.min(T.builder, 1);
+    if (Wr.defLow && Wr.defLow(room)) { if (!war) T.builder = 0; T.upgrader = (room.controller.ticksToDowngrade || 0) < Wr.UP_SAFE ? 1 : 0; } }
   room.memory.roleTargets = T;
   const homeRole = role => {
     const mem = {};

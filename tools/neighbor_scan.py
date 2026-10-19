@@ -2,7 +2,7 @@
 Writes one events row (kind='neighbor', severity low/medium/high) and prints a summary. Run hourly from a routine.
 high: any creep with >=5 ATTACK/RANGED_ATTACK/WORK+TOUGH-heavy, or >=3 combat creeps in one room, or towers refilled >500 in BJ W47N9/W48N9.
 Line 2 ("trend ...") compares each room's combat-creep count with its own last-48h band from earlier scans and flags
-what is actually new: above the 48h max, combat creeps in the approach rooms next to us (W47N8/W47N7), or boosted parts.
+what is actually new: above the 48h max, combat creeps in the approach rooms next to us (W47N8/W47N7/W45N7/W45N8), or boosted parts.
 W48N9 has swung 4-15 combat creeps all of 10-16/10-17 with towers unfed (~0), so "high" alone is its normal state
 (strategy review 10-17). Owner None = any player except us (W48N8 Evans_702, approach rooms).
 """
@@ -10,8 +10,11 @@ import sys, os, json, collections
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'scripts')); sys.path.insert(0, os.path.dirname(__file__))
 import api, db
 ROOMS = {'W47N9': 'BustJetter', 'W48N9': 'BustJetter', 'W49N9': 'BustJetter', 'W44N8': 'Fandalah', 'W47N5': 'Fandalah',
-         'W48N8': None, 'W47N8': None, 'W47N7': None}
-APPROACH = ('W47N8', 'W47N7')
+         'W48N8': None, 'W47N8': None, 'W47N7': None,
+         # strategy review 10-19 20:5x: novice walls drop 10-28 03:33 on W45N7 x=49 (44 tiles <- W44N7), W44N8 y=49 (18 <- W44N7)
+         # and W47N9 x=49 (20 <- W46N9). These are the post-novice entry rooms; W45N7/W45N8 are our remotes on that path.
+         'W44N7': 'Cody132', 'W46N9': 'drtk712', 'W45N7': None, 'W45N8': None}
+APPROACH = ('W47N8', 'W47N7', 'W45N7', 'W45N8')
 ME = 'Misaki'
 COMBAT = ('attack', 'ranged_attack', 'heal', 'claim')
 out, sev = {}, 'low'

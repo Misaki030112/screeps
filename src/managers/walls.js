@@ -121,6 +121,11 @@ function belowFloor(room) { const P = plan().get(room.name); if (!defense(P) || 
 function defReserve() { return (typeof Memory !== 'undefined' && Memory.defense && Memory.defense.reserveE) || 0; }
 function defLow(room) { const d = defReserve(); return !!d && (!room.storage || room.storage.store[RESOURCE_ENERGY] < d); }
 function spend(room, e) { const m = room.memory.walls; if (m && m.fund !== undefined) m.fund = Math.max(0, m.fund - e); }
+// Siege exemption (strategy review 2026-10-19 20:5x; Misaki doctrine "builders repair attacked walls" + "reserve floors may be
+// spent for defense"): with a hostile PLAYER combat creep inside the home room the reserveE gates (no builders under reserve+2k,
+// builders take nothing under reserveE) are lifted for ONE builder, which may draw storage down to storeFloor (5k, tower cushion).
+// Without this, storage hovering at 15-17k (normal under supply-follows-demand) meant no builder at all during an attack.
+function siege(room) { return !!room && typeof FIND_HOSTILE_CREEPS !== 'undefined' && playerCombat(room); }
 function threat(room) { return require('./threat').holding(room.name) || playerCombat(room) || require('./home').alert(room); }
 // Storage energy the ctl ferry / upgrader extras must leave alone.
 function reserved(room) { const m = room.memory && room.memory.walls; return m && m.started && room.storage ? Math.min(fund(room), room.storage.store[RESOURCE_ENERGY]) : 0; }
@@ -197,4 +202,4 @@ function noUpgrade(room) {
   const B = barriers(room, P); return !ringClosed(room, P) || !B.length || _.min(B.map(eff)) < HOLD_TO;
 }
 const HOLD_TO = 100000;
-module.exports = { defReserve, defLow, SLACK, FLOOR_HITS, belowFloor, FLOOR, budgetE, WALL_CAP, ringClosed, UP_SAFE, DECAY_FLOOR, DECAY_CAP, decaying, noUpgrade, START, NOVICE_END, phase, planned, STEPS, target, barriers, fund, spend, reserved, repairJob, wantBuilder, placeSites, lists };
+module.exports = { siege, defReserve, defLow, SLACK, FLOOR_HITS, belowFloor, FLOOR, budgetE, WALL_CAP, ringClosed, UP_SAFE, DECAY_FLOOR, DECAY_CAP, decaying, noUpgrade, START, NOVICE_END, phase, planned, STEPS, target, barriers, fund, spend, reserved, repairJob, wantBuilder, placeSites, lists };

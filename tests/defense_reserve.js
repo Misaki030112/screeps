@@ -10,3 +10,15 @@ assert.ok(require('fs').readFileSync(path.join(__dirname, '..', 'src', 'managers
 // bank recycle (13:26 10-18): empty builders recycle under defLow instead of idling at waiting_feed
 assert.ok(require('fs').readFileSync(path.join(__dirname, '..', 'src', 'roles', 'builder.js'), 'utf8').includes("Wb.defLow(home) && (c.memory.nb"));
 console.log('builder bank recycle present');
+// siege exemption (strategy review 10-19 20:5x): player combat creep inside home -> one builder may repair below reserveE
+global.FIND_HOSTILE_CREEPS = 103;
+const hostile = (u, parts) => ({ owner: { username: u }, body: parts.map(t => ({ type: t, hits: 100 })) });
+const roomWith = hs => ({ find: k => (k === 103 ? hs : []) });
+assert.strictEqual(W.siege(roomWith([hostile('BustJetter', ['ranged_attack', 'move'])])), true);
+assert.strictEqual(W.siege(roomWith([hostile('Invader', ['attack'])])), false);
+assert.strictEqual(W.siege(roomWith([hostile('BustJetter', ['tough', 'move'])])), false);
+assert.strictEqual(W.siege(roomWith([])), false);
+const sp = require('fs').readFileSync(path.join(__dirname, '..', 'src', 'managers', 'spawn.js'), 'utf8');
+assert.ok(sp.includes('T.builder > 0 && !war') && sp.includes('if (!war) T.builder = 0'));
+assert.ok(require('fs').readFileSync(path.join(__dirname, '..', 'src', 'roles', 'builder.js'), 'utf8').includes('war ? storeFloor(home)'));
+console.log('siege exemption ok');
