@@ -51,7 +51,9 @@ function spawnRun(spawn) {
   // together: 0 alive t~83735970-6045 while W47N7 conts hit 2000/2000 + ~1.2k dropped. Keep a floor of 2 ahead of builders/surplus.
   const r7m = Memory.ops && Memory.ops.r7, ours7 = r7m && r7m.by === 'Misaki' && (r7m.endTime || 0) > Game.time + 200;
   const R7 = Game.rooms[C.REMOTE.room], lo7 = R7 ? looseE(R7) : 0;
-  if (!want && ours7 && lo7 > 1000 && n('w8rminer') && cs.filter(c => c.memory.role === 'w8rhauler' && (c.spawning || c.ticksToLive > 150)).length < 2) want = 'w8rhauler';
+  // 10:57: floor 2 still left W47N7 at 2000/2000 conts + 2936 dropped (lo7 ~6.9k, ~3 e/t decaying) behind 4 builders; 2 sources ~20 e/t need
+  // ~3-4 x 700-carry rhaulers (round trip ~100-120t), so floor 4 while lo7 > 3000
+  if (!want && ours7 && lo7 > 1000 && n('w8rminer') && cs.filter(c => c.memory.role === 'w8rhauler' && (c.spawning || c.ticksToLive > 150)).length < (lo7 > 3000 ? 4 : 2)) want = 'w8rhauler';
   // 04:10: size by remaining build work, not site count: 3 cheap road sites (~900 left) brought a 4th builder while the ctl cont sat at 0,
   // wbuilder idle 0.69 (6h) and 4 upgraders energy-starved
   else if (!want && sites && n('w8builder') < (siteRem(room) >= 3000 ? 4 : siteRem(room) >= 1200 ? 3 : 2)) want = 'w8builder'; // 17:05: Spawn2 sat idle at 300/300 with 5 ext sites
