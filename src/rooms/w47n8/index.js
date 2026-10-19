@@ -174,7 +174,7 @@ function placeSeal(room) {
 }
 const L = require('./layout');
 const TH = require('./threat'); // v3b (approved 20:11): ORDER per type nearest-core first; STRIPS with filler stand
-const PRIO = ['spawn', 'extension', 'tower', 'container', 'storage', 'link', 'terminal', 'extractor', 'lab', 'factory', 'powerSpawn', 'nuker', 'observer', 'road']; // no 'rampart' (17:15, see layoutRun)
+const PRIO = ['spawn', 'tower', 'extension', 'container', 'storage', 'link', 'terminal', 'extractor', 'lab', 'factory', 'powerSpawn', 'nuker', 'observer', 'road']; // no 'rampart' (17:15, see layoutRun)
 const isTemp = s => L.TEMP_EXT.some(([x, y]) => s.pos.x === x && s.pos.y === y);
 function swapTemp(room) {
   const hub = room.lookForAt(LOOK_STRUCTURES, L.ORDER.spawn[0][0], L.ORDER.spawn[0][1]).some(s => s.structureType === STRUCTURE_SPAWN && s.my);
@@ -209,7 +209,12 @@ function layoutRun(room) {
   // tile at RCL4, incl. empty future spawn/terminal/tower slots (32,32 32,33 33,32 33,30 built; 34,31 36,31 36,33 sites), and
   // builders raised them to the 50k seal target. Home only rampart-covers real structures and deferred even those behind storage
   // (6957a9a). Unbuilt rampart sites are dropped (top of layoutRun); built ones hold their current hits via the tower (rampHold, ~0.2 e/t for 7).
+  // 17:5x strategy review: tower before everything except spawn, and nothing new is queued while a tower site stands. At RCL5 the
+  // old order put 10 extensions (30k, ~2-3 h at W47N8's ~10-15 e/t build) ahead of tower 2 (5k); combat_sim F2/F3 (DEFENSE_W47N8.md)
+  // says 2 towers alone beat the full BustJetter squad while 1 tower loses without defenders, so tower 2 is the defence step to rush.
+  let towerSite = room.find(FIND_MY_CONSTRUCTION_SITES, { filter: s => s.structureType === STRUCTURE_TOWER }).length > 0;
   for (const t of PRIO) {
+    if (t === 'extension' && towerSite) return;
     if (t === 'road' && rcl < 3) continue;
     for (const [x, y] of (O[t] || [])) {
       if (sites >= 6) return;
@@ -217,7 +222,7 @@ function layoutRun(room) {
       if (room.lookForAt(LOOK_STRUCTURES, x, y).some(s => s.structureType === t)) continue;
       if (room.lookForAt(LOOK_CONSTRUCTION_SITES, x, y).length) continue;
       const r = room.createConstructionSite(x, y, t);
-      if (r === OK) sites++; else if (r === ERR_RCL_NOT_ENOUGH) break; // next type
+      if (r === OK) { sites++; if (t === 'tower') towerSite = true; } else if (r === ERR_RCL_NOT_ENOUGH) break; // next type
     }
   }
 }
