@@ -52,3 +52,21 @@ link 26,12 (beside stand 26,11) -> model 30.3 e/t; v3b hub link 33,34 at RCL6.
   stock is gone (4th upgrader not replaced unless storage >= 5k). 200-tick avg 24.4 (still part 2-upgrader).
 - Upkeep live 12.0 (transitional: 4 upgraders, 5 haulers -> max 4, 2 leftover 6W builders) -> ~10 steady.
 - RCL5 at ~25.5 e/t: 332k left -> ~15 h (10-20 ~06:00-09:00 UTC+8), was 42 h.
+
+### 18:05 loss pass (a2523dd, cefd388, 233b0b8)
+| e/t | 17:10 (1 h) | 18:00 (290 t, threat + filler buffer) | steady target (no threat) |
+|---|---|---|---|
+| harvest (40 max) | ~37 (local miners 85%) | ~31 (1 rminer holding in base on flee) | ~39 (6W miners) |
+| rhaulers | 4.2 (75 CARRY) | 4.2 | 3.1 (56 CARRY) |
+| upgraders | 2.3 | 2.3 | 2.3 |
+| local haulers | 1.0-2.5 | 2.0 | 1.5 (3x10C5M) |
+| builders | 2.4 (3x6W) | 0 | 0-0.6 |
+| miners + rminers | 1.7 | 1.7 | 1.8 |
+| filler | - | 0.6 | 0.6 |
+| local defenders | - | 2.5 (home-sent 2.9 paid by home) | 0 |
+| decay (conts 1.4, roads 0.2, ramparts 0.3) | 1.8 | 1.9 | 1.9 |
+| build (rhauler WORK roads) | ~4 (builders' non-upgrade share) | 0.5 | 0.5 |
+| storage | 0 | +3.6 (filler reserve fill, one-off) | 0 |
+| upgrade | 20.3 | 10.5 | ~27 |
+W47N7 road: 25 tiles missing = 6.9k energy for ~0.3 e/t (6 CARRY fewer) -> ~27 h payback; left to in-passing rhauler WORK, not accelerated.
+Reserver (home-paid 2.17 e/t) doubles both W47N7 sources (+10 e/t): keep.
