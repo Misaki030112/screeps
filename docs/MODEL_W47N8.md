@@ -37,10 +37,18 @@ Next: local hauler 2C1M body on the fully paved local routes (−25% hauler upke
 Findings:
 - Sinks, not supply, bind: 1 upgrader (threat rule, walls < 50k) + 4 builders 64% walking. Walls 401k/750k hits at 15:05 -> done ~15:35.
 - Remote haulers lost most of each trip inside W47N8: 24-143 ticks/trip filling single 50-energy extensions across the hub and
-  flipping ctl <-> hub (w8rhauler83738293). Fix: rhaulers fill only within range 3 unless spawn energy < 50% -> ctl/hub cont -> storage.
+  flipping ctl <-> hub (w8rhauler83738293). Fix (0772f8b): no extension detours; one adjacent top-up in passing, fill duty only when spawn energy < 300 or no w8hauler -> ctl/hub cont -> storage.
+  Measured after: in-room time per trip ~40-45 t (was 24-143, median ~70).
 - Local hauler 10C10M on fully paved routes -> 10C5M (same 500 carry, -0.5 e/t upkeep).
 - Upgrader count base was "2 while any site" (3 road sites ~700 left) and storage stock was invisible to it: base now by build backlog
   (>= 3000 -> 2, else 3), storage above 2k counts as stock, WORK cap = upw + 5 per 5k stored (max 40 = 4 stands x 10W).
 Projected after walls: upkeep ~9.5, build ~1-2, upgrade ~24 e/t (30 with stock) -> RCL5 ~17-18 h (≈ 10-20 09:00-10:00 UTC+8).
 RCL5 link proposal (needs approval, adds 2 tiles to v3b): ctl link 13,25 (dead-end tile beside stands 12,25/12,26/14,26) + source-A
 link 26,12 (beside stand 26,11) -> model 30.3 e/t; v3b hub link 33,34 at RCL6.
+
+### 16:15 after (18f621f, 0772f8b, 9c3162c, ab1a912)
+- Walls/core ramparts reached 50k ~15:47; wall-mode gate now enters below 45k (rampart decay no longer flips it back).
+- Upgrade: 20 e/t (2 upgraders) -> 40 e/t from t83740650 (4x10W) while the ~8k container stock drains; sustained ~25-27 e/t once
+  stock is gone (4th upgrader not replaced unless storage >= 5k). 200-tick avg 24.4 (still part 2-upgrader).
+- Upkeep live 12.0 (transitional: 4 upgraders, 5 haulers -> max 4, 2 leftover 6W builders) -> ~10 steady.
+- RCL5 at ~25.5 e/t: 332k left -> ~15 h (10-20 ~06:00-09:00 UTC+8), was 42 h.
