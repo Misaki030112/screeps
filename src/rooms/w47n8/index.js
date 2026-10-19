@@ -69,7 +69,12 @@ function spawnRun(spawn) {
   const ro = Memory.ops && Memory.ops.w8roster, dOld = Memory.ops && Memory.ops.w8defOld, fresh = ro && Game.time - ro.t < 20;
   const local = cs.filter(c => c.memory.role === 'w8defender' && !c.memory.jd).length;
   const dGo = dOld ? ((th && th.inBase && Game.time - th.t < 5) || TH.invasion()) && local < 2 : !!(fresh && local < Math.min(D.MAXL, ro.w8)); // 17:56: up to 4 local
-  if (dGo) { want = 'w8defender'; }
+  // 10-20 07:4x (2room eval): the hub filler died while Spawn2 made 2 local defenders (threat outside the room) and its replacement
+  // waited ~70 t behind them. Refill speed is defence reaction speed (Misaki 10-19), so a due filler goes first unless armed hostiles
+  // are inside the base (same idea as home 'queen first' before joint defence).
+  const inBase = !!(th && th.inBase && Game.time - th.t < 5);
+  if (!inBase && FL.want(room, cs)) want = 'w8filler';
+  if (!want && dGo) { want = 'w8defender'; }
   // 18:04: roster >= 4 combat defenders -> one dedicated healer; local only when home can't send it (ro.hl 'w8')
   if (!want && !dOld && fresh && ro.hl === 'w8' && !_.some(Game.creeps, c => c.memory.role === 'w8healer')) want = 'w8healer';
   // 1) miners per source: keep >=5 WORK (10 e/t) on each source. Replace at TTL<60; and since the first w8miners were 2 WORK
