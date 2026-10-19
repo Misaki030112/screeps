@@ -270,7 +270,7 @@ function hurtingSet(room, hs) {
 // every 5 ticks while an armed force is in W47N8 or announced at the W47N9 border: can towers / towers + 2 defenders win?
 function assessRun(room, towers, hs) {
   const m = room.memory, o = (Memory.ops = Memory.ops || {});
-  const inRoom = hs.filter(h => PARTS(h, ATTACK) + PARTS(h, RANGED_ATTACK) > 0), north = o.w8invN > 0 && Game.time - o.w8invN < 300;
+  const inRoom = hs.filter(h => PARTS(h, ATTACK) + PARTS(h, RANGED_ATTACK) > 0), north = o.w8invN > 0 && Game.time - o.w8invN < 60; // 18:06: threat cleared = no armed hostile in W47N8 and no border signal for 60 t (~4 north_watch scans) -> roster dropped, no spawns/replacements (was 300: kept 5 defenders spawning after withdrawal)
   if (!inRoom.length && !north) { if (m.w8assess) delete m.w8assess; if (o.w8roster) delete o.w8roster; return; }
   if (m.w8assess && Game.time - m.w8assess.t < 10) return; // up to 5x5 sims (<=600 t each): cached 10 ticks
   let force, at;

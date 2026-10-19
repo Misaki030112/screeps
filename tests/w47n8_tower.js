@@ -38,3 +38,7 @@ Game.time += 1500; assert.strictEqual(TH.on(), false, 'threat reverts after 1500
 Memory.ops = {}; TH.mark(R([{ my: true, owner: { username: 'Misaki' }, pos: { y: 5 }, body: body({ attack: 10, ranged_attack: 5, work: 5, heal: 5, tough: 10, move: 10 }) }]));
 assert.strictEqual(TH.on(), false, 'own armed creep -> no threat'); assert.strictEqual(TH.flee(), false, 'own armed creep -> no flee');
 console.log('w47n8 threat ok');
+// 18:06 cleared-threat rule: roster written while the border signal is fresh, dropped 60 t after it (no hostiles in room) -> no spawns
+{ mine = []; Memory.ops = { w8invN: Game.time }; Game.time += 20; go([]); assert.ok(Memory.ops.w8roster, 'fresh border signal: roster');
+  Game.time += 61; go([]); assert.strictEqual(Memory.ops.w8roster, undefined, 'signal > 60 t old, nothing in room: roster dropped');
+  assert.strictEqual(room.memory.w8assess, undefined); console.log('w47n8 cleared threat ok'); }
