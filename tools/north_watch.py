@@ -15,14 +15,20 @@ def hostile_creeps(objs, U):
     """creeps not owned by ME (our own never count as armed/drain/intrusion)"""
     return [x for x in objs if x['type'] == 'creep' and U.get(x.get('user')) != ME]
 def triggers(room, armed, drain): return (room == 'W47N9' and bool(armed or drain)) or (room == 'W48N9' and len(armed) >= 2)
-def verdict(bodies, inside=False):
-    """towers-only / towers + 2 defenders outcome at the seal (RCL4: 1 tower r32; inside: at Spawn2, r19). Advice only, never acts."""
+SEAL_FIGHT = (27, 3)  # centre of the east seal (src/rooms/w47n8/index.js SEAL_FIGHT)
+def seal_ranges(objs, U):
+    """ranges from our live W47N8 towers to the seal fight point (RCL5 adds 24,8 -> r5); [] when none seen"""
+    return [max(abs(x['x'] - SEAL_FIGHT[0]), abs(x['y'] - SEAL_FIGHT[1])) for x in objs if x['type'] == 'tower' and U.get(x.get('user')) == ME]
+def verdict(bodies, inside=False, tr=None):
+    """towers-only / towers + 2 defenders outcome at the seal (tr = live tower ranges, RCL4 fallback 1 tower r32; inside: at Spawn2, r19).
+    bodies must include the group's healers (05:4x: healers were left out, so 2RA+2H read 'towers win' while the sim says towers lose). Advice only."""
     import combat_sim as S
     mk = lambda: [S.Cr(str(i), S.body(**{k: v for k, v in b.items() if k in ('tough', 'move', 'attack', 'ranged_attack', 'heal')})) for i, b in enumerate(bodies)]
-    tr = [19] if inside else [32]
+    tr = [19] if inside else (tr or [32])
     a, d = S.fight(mk(), tr, 0), S.fight(mk(), tr, 2)
     v = 'towers win' if a['result'] == 'win' else 'towers+2 defenders win' if d['result'] == 'win' else 'unwinnable' + (' -> recommend safe mode to Misaki if it pushes past the seal' if not inside else ' inside -> recommend safe mode to Misaki')
     return f"{v} (towers {a['result']}, +2def {d['result']})"
+TR = []  # live W47N8 tower ranges to SEAL_FIGHT, filled from the W47N8 scan (first in ROOMS)
 def main():
     global st, invN
     st = json.load(open(STATE)) if os.path.exists(STATE) else {}
@@ -36,12 +42,14 @@ def main():
             if x['type'] in ('storage', 'terminal', 'lab') and U.get(x.get('user')) != ME:
                 for k, v in (x.get('store') or {}).items():
                     if k in BOOST and v: stock[k] += v
-        armed, drain, intr = [], [], []
+        armed, drain, intr, heal = [], [], [], []
+        if r == 'W47N8': TR[:] = seal_ranges(o['objects'], U)
         for x in cs:
             b = collections.Counter(p['type'] for p in x['body']); boosted = any(p.get('boost') for p in x['body'])
             info = {'owner': U.get(x['user']), 'pos': [x['x'], x['y']], 'body': dict(b), 'boosted': boosted}
             if b['attack'] or b['ranged_attack']: armed.append(info)
             if b['heal'] or b['tough'] >= 5: drain.append(info)
+            if b['heal']: heal.append(info)
             if r == 'W47N8' and (b['attack'] or b['ranged_attack'] or b['work'] or boosted): intr.append(info)
         summary[r] = {'creeps': len(cs), 'armed': len(armed), 'drain': len(drain), 'boost': dict(stock)}
         def add(kind, cre, extra=None):
@@ -50,8 +58,10 @@ def main():
             a = {'episode': ep, 'severity': 'medium', 'room': r, 'owner': own, 'tick': tick, 'creeps': len(cre), 'kind': kind,
                  'body': [c['body'] for c in cre][:6], 'positions': [c['pos'] for c in cre][:6], 'totalDamage': 0, 'structureHitLoss': 0, 'damaged': []}
             if extra: a.update(extra)
-            if cre and kind in ('intrusion', 'group'):  # 17:3x: combat-model verdict for Misaki (tools/combat_sim.py)
-                try: a['verdict'] = verdict([c['body'] for c in cre], inside=(kind == 'intrusion'))
+            if cre and kind in ('intrusion', 'group'):  # 17:3x: combat-model verdict for Misaki (tools/combat_sim.py); 05:4x: + same-room healers, live tower ranges
+                sup = [c for c in heal if c not in cre and any(max(abs(c['pos'][0] - g['pos'][0]), abs(c['pos'][1] - g['pos'][1])) <= 3 for g in cre)]  # healers escorting the group (<=3 tiles), not the room's own
+                if sup: a['support'] = len(sup)
+                try: a['verdict'] = verdict([c['body'] for c in cre + sup], inside=(kind == 'intrusion'), tr=TR)
                 except Exception as ex: a['verdict'] = 'sim error ' + str(ex)[:60]
             alerts.append((a, ingest.alert_state(a, None)))
         if intr: add('intrusion', intr)

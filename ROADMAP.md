@@ -3,6 +3,13 @@
 Novice zone ends **2026-10-28 03:33 UTC+8**. Defence timeline: `docs/DEFENSE_NOVICE.md` (2026-10-16); detail `docs/DEFENSE.md` / geometry `docs/DEFENSE_PLAN.md`.
 **Safe mode: NEVER auto-activate** — alert Misaki.
 
+## 2026-10-20 05:4x strategy review: W47N9 border camp vs tower 2 (`docs/DEFENSE_W47N8.md` "05:4x")
+
+- **BustJetter camp at our north exit:** 8RA + 9RA with 2 escort healers (7H, 5H) at W47N9 (31-34,47), inside their own RCL6 room, 0 damage. It keeps `w8invN` fresh, so the joint roster refills every life: waves 03:32-03:52 and 05:23-05:38, ~6-9k energy each (~4-6 e/t combined). By doctrine (enemy has not withdrawn), so no change.
+- **Fixed (tools only, no deploy):** the alert verdict ignored healers and said "towers win"; with them 1 tower loses and towers + 2 defenders win. `tools/north_watch.py` now counts escort healers (<= 3 tiles) and live tower ranges; tests pass. The in-game planner was already right.
+- **Priority confirmed: tower 24,8 first at RCL5.** Towers [32, 5] win alone against 2RA+2H and 2RA+3H, so after it is built the roster drops to the baseline home defender (~1.5 e/t) and the camp stops costing W47N8 its upgrade energy.
+- **W47N8 patrol after tower 24,8 is built:** with the camp still there, confirm `Memory.ops.w8roster` reads home 1 / w8 0 and that no new local w8defender spawns.
+
 ## 2026-10-20 04:4x two-room evaluation (45-min window 03:53-04:38 vs 03:08-03:53)
 
 - **Home W46N8:** upgrade **18.0 e/t (prev 13.2)** vs ideal 26.0; 15-min buckets 14.1 / 24.2 / 21.7, so recovering now that no joint-defence spawns are queued. Storage 11.9k -> 14.7k; touched 15.0k at t83751166 (04:24), then dipped to 13.9k on upgrader/reserver/rminer replacements (inside UP_DIP 2k by design), 14.6k at t83751410. RCL6 595.2k/3.645M; RCL7 ~10-25 22:30 at 26 e/t, ~10-26 23:30 at 22 e/t. The 03:5x watch condition (storage < 15k 1500 t after the last defence spawn) did not trigger. Walls 142101 no loss, gates ~176k.
