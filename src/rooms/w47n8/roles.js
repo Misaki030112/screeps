@@ -246,19 +246,27 @@ const R = {
   // 14:46 (Misaki): border ranged defender. Attacks intruders inside W47N8 only (never leaves: home() + no exit/seal-north tiles),
   // kites melee, self/ally heal when it has HEAL. Spawned only on an invasion move (TH.invasion) or an armed hostile in the base.
   w8defender(c) {
+    // 17:3x doctrine (src/rooms/w47n8/defense.js defPlan, docs/DEFENSE_W47N8.md): focus the towers' target, healer first, kite melee,
+    // retreat to a tower below 60%, stay in tower cover when the fight is not winnable, recycle after 100 quiet ticks
     if (!home(c)) return;
+    const D = require('./defense');
     const cb = (rn, m) => { if (rn !== C.ROOM) return false; for (let i = 0; i < 50; i++) { for (let y = 0; y <= 3; y++) m.set(i, y, 255); m.set(0, i, 255); m.set(49, i, 255); m.set(i, 49, 255); } return m; };
-    const mv = (pos, r) => c.moveTo(pos, { range: r, maxRooms: 1, reusePath: 5, costCallback: cb });
-    const hs = c.room.find(FIND_HOSTILE_CREEPS), armed = hs.filter(x => x.body.some(p => (p.type === ATTACK || p.type === RANGED_ATTACK) && p.hits > 0));
-    const t = c.pos.findClosestByRange(armed.length ? armed : hs);
+    const mv = (pos, r) => c.moveTo(pos.x, pos.y, { range: r, maxRooms: 1, reusePath: 3, costCallback: cb });
+    const room = c.room, hs = room.find(FIND_HOSTILE_CREEPS).filter(x => !x.my), mem = c.memory;
+    if (hs.length || TH.invasion()) mem.seen = Game.time;
+    const towers = room.find(FIND_MY_STRUCTURES, { filter: s => s.structureType === STRUCTURE_TOWER }).map(t => t.pos);
+    const th = room.memory.threat8, as = room.memory.w8assess;
+    const p = D.defPlan({ pos: c.pos, hits: c.hits, hitsMax: c.hitsMax, ra: c.getActiveBodyparts(RANGED_ATTACK), hurt: mem.hurt }, hs,
+      { focus: th && th.id, prev: mem.tgt, towers, win: as ? as.spawn || as.why === 'towers win' : undefined, quiet: Game.time - (mem.seen || mem.born || Game.time) });
+    mem.hurt = p.hurt; mem.tgt = p.shoot ? p.shoot.id : undefined;
+    if (p.mass) c.rangedMassAttack(); else if (p.shoot) c.rangedAttack(p.shoot);
     if (c.getActiveBodyparts(HEAL)) { const hurt = c.hits < c.hitsMax ? c : c.pos.findClosestByRange(FIND_MY_CREEPS, { filter: x => x.hits < x.hitsMax && c.pos.inRangeTo(x, 3) }); if (hurt) (c.pos.isNearTo(hurt) ? c.heal(hurt) : c.rangedHeal(hurt)); }
+    if (p.move === 'flee') { const away = PathFinder.search(c.pos, { pos: new RoomPosition(p.from.x, p.from.y, C.ROOM), range: 4 }, { flee: true, maxRooms: 1, roomCallback: rn => cb(rn, new PathFinder.CostMatrix()) }).path[0]; if (away) c.move(c.pos.getDirectionTo(away)); return; }
+    if (p.move === 'retreat') return c.pos.inRangeTo(p.goal.x, p.goal.y, 2) || mv(p.goal, 2);
+    if (p.move === 'approach') return mv(p.goal, 3);
+    if (p.move === 'recycle') { const sp = room.find(FIND_MY_SPAWNS)[0]; if (sp) return c.pos.isNearTo(sp) ? sp.recycleCreep(c) : mv(sp.pos, 1); }
     // idle: wait at the north seal (inside), between the two wall groups' approaches
-    if (!t) return c.pos.inRangeTo(C.BORDER_POST[0], C.BORDER_POST[1], 2) || mv(new RoomPosition(C.BORDER_POST[0], C.BORDER_POST[1], C.ROOM), 2);
-    const r = c.pos.getRangeTo(t);
-    if (r <= 3) c.rangedAttack(t);
-    const melee = t.body.some(p => p.type === ATTACK && p.hits > 0);
-    if (melee && r <= 2) { const away = PathFinder.search(c.pos, { pos: t.pos, range: 4 }, { flee: true, maxRooms: 1, roomCallback: rn => cb(rn, new PathFinder.CostMatrix()) }).path[0]; if (away) c.move(c.pos.getDirectionTo(away)); }
-    else if (r > 3) mv(t.pos, 3);
+    if (p.move === 'post' || p.move === 'recycle') return c.pos.inRangeTo(C.BORDER_POST[0], C.BORDER_POST[1], 2) || mv({ x: C.BORDER_POST[0], y: C.BORDER_POST[1] }, 2);
   },
   w8rminer(c) {
     // 14:23: armed hostiles in W47N7 / W47N8 north -> hold inside the W47N8 base (loaded haulers still unload there), resume when clear

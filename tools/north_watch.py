@@ -15,11 +15,19 @@ def hostile_creeps(objs, U):
     """creeps not owned by ME (our own never count as armed/drain/intrusion)"""
     return [x for x in objs if x['type'] == 'creep' and U.get(x.get('user')) != ME]
 def triggers(room, armed, drain): return (room == 'W47N9' and bool(armed or drain)) or (room == 'W48N9' and len(armed) >= 2)
+def verdict(bodies, inside=False):
+    """towers-only / towers + 2 defenders outcome at the seal (RCL4: 1 tower r32; inside: at Spawn2, r19). Advice only, never acts."""
+    import combat_sim as S
+    mk = lambda: [S.Cr(str(i), S.body(**{k: v for k, v in b.items() if k in ('tough', 'move', 'attack', 'ranged_attack', 'heal')})) for i, b in enumerate(bodies)]
+    tr = [19] if inside else [32]
+    a, d = S.fight(mk(), tr, 0), S.fight(mk(), tr, 2)
+    v = 'towers win' if a['result'] == 'win' else 'towers+2 defenders win' if d['result'] == 'win' else 'unwinnable' + (' -> recommend safe mode to Misaki if it pushes past the seal' if not inside else ' inside -> recommend safe mode to Misaki')
+    return f"{v} (towers {a['result']}, +2def {d['result']})"
 def main():
     global st, invN
     st = json.load(open(STATE)) if os.path.exists(STATE) else {}
     tick = api.req('game/time?shard=' + api.SHARD).get('time', 0)
-    alerts, summary, threatN, invN = [], {}, False, False
+    alerts, summary, threatN, invN, n9 = [], {}, False, False, []
     for r in ROOMS:
         o = api.req(f'game/room-objects?room={r}&shard={api.SHARD}'); U = {k: v.get('username') for k, v in o.get('users', {}).items()}
         cs = hostile_creeps(o['objects'], U)
@@ -42,6 +50,9 @@ def main():
             a = {'episode': ep, 'severity': 'medium', 'room': r, 'owner': own, 'tick': tick, 'creeps': len(cre), 'kind': kind,
                  'body': [c['body'] for c in cre][:6], 'positions': [c['pos'] for c in cre][:6], 'totalDamage': 0, 'structureHitLoss': 0, 'damaged': []}
             if extra: a.update(extra)
+            if cre and kind in ('intrusion', 'group'):  # 17:3x: combat-model verdict for Misaki (tools/combat_sim.py)
+                try: a['verdict'] = verdict([c['body'] for c in cre], inside=(kind == 'intrusion'))
+                except Exception as ex: a['verdict'] = 'sim error ' + str(ex)[:60]
             alerts.append((a, ingest.alert_state(a, None)))
         if intr: add('intrusion', intr)
         if r in ('W47N9', 'W48N9') and len(armed) >= 2: add('group', armed)
@@ -50,10 +61,12 @@ def main():
         if prev and rise: add('boost', [], {'owner': (U.get(next((x.get('user') for x in o['objects'] if x['type'] == 'controller' and x.get('user')), None)) or '?'), 'rise': rise})
         if triggers(r, armed, drain): threatN = True  # W47N9 armed/drain, or W48N9 >=2 armed (Misaki 14:27)
         if r == 'W47N9' and len(armed) >= 2: invN = True  # 14:46 armed group at the W47N9 border -> border defenders
+        if r == 'W47N9': n9 = [i['body'] for i in {id(i): i for i in armed + drain}.values()][:12]  # 17:3x: bodies for the in-game assessment
         st[r] = {'tick': tick, 'boost': dict(stock)}
     json.dump(st, open(STATE, 'w'))
     if threatN:
-        expr = '(Memory.ops.w8threatN=Game.time,' + ('Memory.ops.w8invN=Game.time,' if invN else '') + '"ok")'  # w8invN: armed group at the W47N9 border -> W47N8 border defenders
+        nb = json.dumps([{k: v for k, v in b.items() if k in ('attack', 'ranged_attack', 'heal', 'tough', 'move', 'work', 'claim')} for b in n9], separators=(',', ':'))
+        expr = '(Memory.ops.w8threatN=Game.time,' + (f'Memory.ops.w8invN=Game.time,Memory.ops.w8invNb={nb},' if invN else '') + '"ok")'  # w8invN: armed group at the W47N9 border -> W47N8 border defenders
         subprocess.run([sys.executable, os.path.join(H, 'q.py'), expr], capture_output=True, timeout=60)
     if '--quiet' not in sys.argv:
         print(json.dumps({'tick': tick, 'rooms': summary, 'threatN': threatN, 'alerts': [(a['episode'], s) for a, s in alerts]}))

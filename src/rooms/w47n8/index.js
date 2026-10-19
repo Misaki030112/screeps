@@ -52,7 +52,11 @@ function spawnRun(spawn) {
   // 0) defender (Misaki 14:09): only when an armed hostile is inside the sealed base (towerRun sets threat8.inBase); max 2
   const th = room.memory && room.memory.threat8;
   // 14:46 (Misaki): also on an invasion move (armed hostiles entering W47N8, or an armed group at the W47N9 border); max 2, stays in W47N8
-  if (((th && th.inBase && Game.time - th.t < 5) || TH.invasion()) && n('w8defender') < 2) { want = 'w8defender'; }
+  // 17:3x doctrine (docs/DEFENSE_W47N8.md): only when towerRun's assessment says towers alone lose AND towers + 2 defenders win;
+  // never feed an unwinnable fight (Memory.ops.w8adv advises safe mode instead). Memory.ops.w8defOld = 1 restores the old trigger.
+  const dAs = room.memory && room.memory.w8assess, dOld = Memory.ops && Memory.ops.w8defOld;
+  const dGo = dOld ? ((th && th.inBase && Game.time - th.t < 5) || TH.invasion()) : !!(dAs && dAs.spawn && Game.time - dAs.t < 20);
+  if (dGo && n('w8defender') < 2) { want = 'w8defender'; }
   // 1) miners per source: keep >=5 WORK (10 e/t) on each source. Replace at TTL<60; and since the first w8miners were 2 WORK
   // (cap 300) and would run at 40% for ~1000 ticks, add a bigger one once cap allows (17:25), counting any cqminer still there.
   for (let i = 0; i < C.SOURCES.length && !want; i++) {
@@ -220,10 +224,11 @@ function layoutRun(room) {
     }
   }
 }
-// Drain-aware tower (Misaki 14:09: BustJetter TOUGH/MOVE tanks + healers sit at W47N8 y0-2, north of the seal walls, to burn
-// tower energy). Shoot only what matters: CLAIM creeps, anything inside the sealed base (y>=4), creeps able to hurt walls/
-// creeps (WORK/ATTACK/RANGED) within 3 of our structures, and only when our damage beats the healing around the target.
-// Never safe mode. Keeps 300 energy unless an armed creep is inside the base.
+// Drain-aware tower (Misaki 14:09 / 17:3x doctrine, docs/DEFENSE_W47N8.md): BustJetter TOUGH/MOVE tanks + healers sit at W47N8 y0-2,
+// north of the seal walls, to burn tower energy. Target choice is ./defense towerPick: claimers anywhere, anything inside the seal
+// (y>3), armed creeps hurting us; net damage > 0 only (tower dmg at range - reachable heal); healer > ranged > melee; one focus for
+// all towers; non-urgent targets only from towers >= 400 energy; drain-pattern creeps (knocked down and healed back twice, or
+// 1000 energy spent) are skipped unless urgent. Never safe mode (assessment only advises, Memory.ops.w8adv).
 const PARTS = (c, t) => c.body.reduce((n, p) => n + (p.type === t && p.hits > 0 ? 1 : 0), 0);
 const tdmg = r => (r <= 5 ? 600 : r >= 20 ? 150 : 600 - (r - 5) * 30);
 // 17:20 (Misaki final rule): no new ramparts; built ones only offset decay. Memory.ops.w8hold[id] = hits first seen (ratchets down never,
@@ -245,25 +250,48 @@ function linkRun() {
 }
 function towerRun(room) {
   TH.mark(room); TH.mark(Game.rooms[C.REMOTE.room]); linkRun();
+const D = require('./defense'), F = require('../../utils/focus');
+const SEAL_FIGHT = { x: 27, y: 3 }; // centre of the east seal: where a north squad has to break in
+// armed hostiles within reach (RA 3, ATTACK/WORK 1) of our creeps, our structures or the seal walls
+function hurtingSet(room, hs) {
+  const s = new Set(); hs = hs.filter(D.armed); if (!hs.length) return s; // drain tanks only: skip the structure scan (CPU)
+  const ours = room.find(FIND_MY_CREEPS).concat(room.find(FIND_STRUCTURES, { filter: x => x.my || x.structureType === STRUCTURE_WALL }));
+  for (const h of hs) { const r = PARTS(h, RANGED_ATTACK) ? 3 : PARTS(h, ATTACK) + PARTS(h, WORK) ? 1 : 0;
+    if (r && ours.some(o => Math.max(Math.abs(o.pos.x - h.pos.x), Math.abs(o.pos.y - h.pos.y)) <= r)) s.add(h.id); }
+  return s;
+}
+// every 5 ticks while an armed force is in W47N8 or announced at the W47N9 border: can towers / towers + 2 defenders win?
+function assessRun(room, towers, hs) {
+  const m = room.memory, o = (Memory.ops = Memory.ops || {});
+  const inRoom = hs.filter(h => PARTS(h, ATTACK) + PARTS(h, RANGED_ATTACK) > 0), north = o.w8invN > 0 && Game.time - o.w8invN < 300;
+  if (!inRoom.length && !north) { if (m.w8assess) delete m.w8assess; return; }
+  if (m.w8assess && Game.time - m.w8assess.t < 5) return;
+  let force, at;
+  if (inRoom.length) { force = hs.filter(h => D.armed(h) || PARTS(h, HEAL)); at = inRoom.reduce((a, h) => (h.pos.y > a.pos.y ? h : a)).pos; }
+  else if (Array.isArray(o.w8invNb) && o.w8invNb.length) { force = o.w8invNb.map(D.fromCounts); at = SEAL_FIGHT; }
+  else { m.w8assess = { t: Game.time, spawn: true, why: 'north group, no body data' }; return; } // pre-doctrine behaviour
+  const inside = inRoom.some(h => h.pos.y > D.SEAL_Y);
+  const tr = towers.map(t => Math.max(Math.abs(t.pos.x - at.x), Math.abs(t.pos.y - at.y)));
+  const r = D.assess(force, tr, bodyFor('w8defender', room.energyCapacityAvailable || 300), { inside, towerE: Math.min(...towers.map(t => t.store[RESOURCE_ENERGY])) });
+  m.w8assess = { t: Game.time, spawn: r.spawn, why: r.why, at: [at.x, at.y] };
+  if (r.advise) o.w8adv = { t: Game.time, advise: r.advise, why: r.why, n: force.length }; // safe mode is Misaki's call (alerts relay it)
+}
   const towers = room.find(FIND_MY_STRUCTURES, { filter: s => s.structureType === STRUCTURE_TOWER });
   if (!towers.length) return;
-  const h = room.find(FIND_HOSTILE_CREEPS);
+  const h = room.find(FIND_HOSTILE_CREEPS).filter(x => !x.my);
+  assessRun(room, towers, h);
   const hurt = room.find(FIND_MY_CREEPS, { filter: c => c.hits < c.hitsMax })[0];
-  let best = null, bestScore = -1, inBaseThreat = false;
-  for (const x of h) {
-    const inBase = x.pos.y >= 4, claim = PARTS(x, CLAIM) > 0, armed = PARTS(x, ATTACK) + PARTS(x, RANGED_ATTACK) + PARTS(x, WORK) > 0;
-    const nearOurs = armed && x.pos.findInRange(FIND_STRUCTURES, 3, { filter: s => s.my || s.structureType === STRUCTURE_WALL }).length > 0;
-    if (!(claim || inBase || nearOurs)) continue;
-    const dmg = towers.reduce((a, t) => a + tdmg(t.pos.getRangeTo(x)), 0);
-    const heal = x.pos.findInRange(FIND_HOSTILE_CREEPS, 3).reduce((a, y) => a + PARTS(y, HEAL) * (y.pos.getRangeTo(x) <= 1 ? 12 : 4), 0);
-    if (dmg <= heal && !inBase && !claim) continue; // out-healed outside the base: holding fire is the drain defence
-    if (inBase && armed) inBaseThreat = true;
-    const score = (claim ? 1000 : 0) + (inBase ? 500 : 0) + dmg - heal;
-    if (score > bestScore) { bestScore = score; best = x; }
-  }
-  room.memory.threat8 = best ? { t: Game.time, id: best.id, inBase: inBaseThreat } : undefined;
+  let p = null;
+  if (h.length) {
+    const m = room.memory, hurting = hurtingSet(room, h);
+    const banned = F.track(m.drain8 || (m.drain8 = {}), h, Game.time, m.threat8 && m.threat8.id, m.threat8 && m.threat8.e);
+    p = D.towerPick(towers.map(t => ({ pos: t.pos, energy: t.store[RESOURCE_ENERGY], t })), h, { prev: m.threat8 && m.threat8.id, hurting, banned });
+  } else if (room.memory.drain8 && Game.time % 100 === 0) F.track(room.memory.drain8, [], Game.time);
+  const inBaseThreat = !!p && p.h.pos.y > D.SEAL_Y && D.armed(p.h);
+  room.memory.threat8 = p ? { t: Game.time, id: p.h.id, inBase: inBaseThreat, e: p.shooters.length * 10 } : undefined;
+  const fire = new Set(p ? p.shooters.map(s => s.t) : []);
   for (const t of towers) {
-    if (best && (t.store[RESOURCE_ENERGY] > 300 || inBaseThreat || PARTS(best, CLAIM))) t.attack(best);
+    if (fire.has(t)) t.attack(p.h);
     else if (hurt && t.store[RESOURCE_ENERGY] > 500) t.heal(hurt);
     else if (t.store[RESOURCE_ENERGY] > 600) { // 17:20 (Misaki): built ramparts hold their current hits (decay offset only, never raised)
       const r = rampHold(room);
