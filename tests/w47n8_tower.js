@@ -1,6 +1,6 @@
 // W47N8 drain-aware tower: hold fire on out-healed tanks north of the seal, shoot in-base armed creeps and claimers.
 const assert = require('assert'), path = require('path');
-global._ = require('lodash'); Object.assign(global, { FIND_MY_STRUCTURES: 1, FIND_HOSTILE_CREEPS: 2, FIND_MY_CREEPS: 3, FIND_STRUCTURES: 4, STRUCTURE_TOWER: 'tower', STRUCTURE_WALL: 'constructedWall',
+global._ = require('lodash'); Object.assign(global, { FIND_MY_STRUCTURES: 1, FIND_HOSTILE_CREEPS: 2, FIND_MY_CREEPS: 3, FIND_STRUCTURES: 4, STRUCTURE_TOWER: 'tower', STRUCTURE_WALL: 'constructedWall', STRUCTURE_RAMPART: 'rampart',
   RESOURCE_ENERGY: 'energy', CLAIM: 'claim', ATTACK: 'attack', RANGED_ATTACK: 'ranged_attack', WORK: 'work', HEAL: 'heal', Memory: {}, Game: { time: 1, creeps: {} } });
 const W = require(path.join(__dirname, '..', 'src', 'rooms', 'w47n8', 'index.js'));
 let H;

@@ -194,6 +194,10 @@ function towerRun(room) {
   for (const t of towers) {
     if (best && (t.store[RESOURCE_ENERGY] > 300 || inBaseThreat || PARTS(best, CLAIM))) t.attack(best);
     else if (hurt && t.store[RESOURCE_ENERGY] > 500) t.heal(hurt);
+    else if (t.store[RESOURCE_ENERGY] > 600) { // 14:09: keep fresh core ramparts alive (<5k; builders lift them further)
+      const r = room.find(FIND_MY_STRUCTURES, { filter: s => s.structureType === STRUCTURE_RAMPART && s.hits < 5000 })[0];
+      if (r) t.repair(r);
+    }
   }
 }
 // self-sufficient = own spawn + a miner + a hauler alive (conquest.js stops sending cqworkers/cqhaulers)
