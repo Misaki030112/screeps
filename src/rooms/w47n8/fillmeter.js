@@ -3,11 +3,13 @@
 // Refill: energy delivered into spawn/extensions (dAvail + spent), ticks below cap, episodes empty-ish -> full (last 12).
 // Fill transfers by role: n transfers, e energy, trips (loads that made >= 1 fill), walk = ticks a creep held a fill target.
 // Reset: Memory.ops.w8fm = undefined (starts a new window).
-const M = () => { const o = (Memory.ops = Memory.ops || {}); return (o.w8fm = o.w8fm || { t0: Game.time, n: 0, sp: 0, w: 0, i: 0, low: 0, del: 0, ep: [], ws: [], x: {} }); };
-let lastT = -1, waitT = -1;
+// 17:5x: also home W46N8 (Memory.ops.fm.W46N8; spawn wait there stays in Memory.stats.sw). Rooms other than W47N8 key by name.
+const NEW = () => ({ t0: Game.time, n: 0, sp: 0, w: 0, i: 0, low: 0, del: 0, ep: [], ws: [], x: {} });
+const M = (rn = 'W47N8') => { const o = (Memory.ops = Memory.ops || {}); if (rn === 'W47N8') return (o.w8fm = o.w8fm || NEW()); const f = (o.fm = o.fm || {}); return (f[rn] = f[rn] || NEW()); };
+const lastT = {}; let waitT = -1;
 function tick(spawn) {
-  if (lastT === Game.time) return; lastT = Game.time;
-  const m = M(), r = spawn.room, a = r.energyAvailable, cap = r.energyCapacityAvailable;
+  const r = spawn.room; if (lastT[r.name] === Game.time) return; lastT[r.name] = Game.time;
+  const m = M(r.name), a = r.energyAvailable, cap = r.energyCapacityAvailable;
   m.n++;
   if (spawn.spawning) m.sp++;
   if (m.pa !== undefined) { const d = a - m.pa + (m.ps || 0); if (d > 0) m.del += d; }
@@ -29,8 +31,8 @@ function spent(cost) {
 function idle() { const m = M(); m.i++; if (m.wc) { delete m.wc; } }
 // fill transfer accounting (role-level): amt actually moved; trip flag kept on the creep memory (fm)
 function xfer(c, amt) {
-  const m = M(), k = c.memory.role, x = (m.x[k] = m.x[k] || [0, 0, 0, 0]);
+  const m = M(c.room.name), k = c.memory.role, x = (m.x[k] = m.x[k] || [0, 0, 0, 0]);
   x[0]++; x[1] += amt; if (!c.memory.fm) { c.memory.fm = 1; x[2]++; }
 }
-function walk(c) { const m = M(), k = c.memory.role, x = (m.x[k] = m.x[k] || [0, 0, 0, 0]); x[3]++; }
+function walk(c) { const m = M(c.room.name), k = c.memory.role, x = (m.x[k] = m.x[k] || [0, 0, 0, 0]); x[3]++; }
 module.exports = { tick, wait, spent, idle, xfer, walk };

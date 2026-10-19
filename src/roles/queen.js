@@ -88,7 +88,7 @@ function fillRoute(c) {
   }
   if (cur && c.pos.inRangeTo(cur.x, cur.y, cur.r)) {
     const t = stopNeedy(cur);
-    if (t) { c.transfer(t, RESOURCE_ENERGY); return true; }
+    if (t) { const a = Math.min(c.store[RESOURCE_ENERGY], t.store.getFreeCapacity(RESOURCE_ENERGY)); if (c.transfer(t, RESOURCE_ENERGY) === OK) require('../rooms/w47n8/fillmeter').xfer(c, a); return true; } // 17:5x meter
     cur = null;
   }
   // nearest needy stop (Chebyshev)
@@ -102,7 +102,7 @@ function fillRoute(c) {
   });
   if (best < 0) { delete c.memory.stop; delete c.memory.sx; delete c.memory.sy; return false; }
   c.memory.stop = best; cur = st[best]; c.memory.sx = cur.x; c.memory.sy = cur.y;
-  if (move.to(c, cur.x, cur.y, cur.r)) { const t = stopNeedy(cur); if (t) c.transfer(t, RESOURCE_ENERGY); }
+  if (move.to(c, cur.x, cur.y, cur.r)) { const t = stopNeedy(cur); if (t) { const a = Math.min(c.store[RESOURCE_ENERGY], t.store.getFreeCapacity(RESOURCE_ENERGY)); if (c.transfer(t, RESOURCE_ENERGY) === OK) require('../rooms/w47n8/fillmeter').xfer(c, a); } } else require('../rooms/w47n8/fillmeter').walk(c);
   return true;
 }
 

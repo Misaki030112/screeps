@@ -238,6 +238,7 @@ module.exports = { rhTarget, birthDirs, targets, rhaulerNeed, remoteNext, retiri
   //   last = [role, cost, avail] of the latest wait.
   const SW = ((Memory.stats || (Memory.stats = {})).sw || (Memory.stats.sw = {}));
   const sw = SW[spawn.room.name] || (SW[spawn.room.name] = { since: Game.time, busy: 0, wait: 0, idle: 0 });
+  require('../rooms/w47n8/fillmeter').tick(spawn); // 17:5x refill meter (Memory.ops.fm[room]: delivered, ticks below cap, episodes, queen transfers)
   if (spawn.spawning) { sw.busy++; return; }
   // CPU (strategy review 2026-10-19): run1 costs ~2.4 ms a call and finds nothing to spawn on ~36% of ticks
   // (sw busy 15268 / idle 8853 / wait 231; prof.spawn EMA 0.91). After an idle pass, re-check every IDLE_EVERY ticks;
