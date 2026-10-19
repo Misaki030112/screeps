@@ -42,7 +42,9 @@ function tiles(P) {
 }
 // Misaki 09:18: W46N8 leg of the W47N8<->home link road (layouts/w8link.js). Infrastructure only; placed/maintained by home,
 // independent of the RCL6 phase machine (few tiles: 6 new, the rest already road).
-const W8LINK = require('../layouts/w8link').W46N8;
+// Tiles the home plan reserves for a non-road structure are skipped (34,34 = planned container): placing a road there made
+// layout.run destroy it every ~100 ticks (10:16-10:28 loop). Creeps still walk the tile; the path stays the same length.
+const W8LINK = require('../layouts/w8link').W46N8.filter(([x, y]) => { const w = require('../utils/plan').get(HOME).any[x * 50 + y]; return !w || w.type === 'road'; });
 function placeW8Link(home) {
   if (Game.time % 100 !== 37 || home.find(FIND_MY_CONSTRUCTION_SITES).length >= 5) return; // offset off the 50t phase replans
   let n = 0;
