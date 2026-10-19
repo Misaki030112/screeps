@@ -237,10 +237,15 @@ module.exports = { rhTarget, birthDirs, targets, rhaulerNeed, remoteNext, retiri
   const SW = ((Memory.stats || (Memory.stats = {})).sw || (Memory.stats.sw = {}));
   const sw = SW[spawn.room.name] || (SW[spawn.room.name] = { since: Game.time, busy: 0, wait: 0, idle: 0 });
   if (spawn.spawning) { sw.busy++; return; }
-  let waited = false;
-  try { return run1(spawn, (role, cost, avail) => { if (!waited) { waited = true; sw.wait++; sw.last = [role, cost, avail, Game.time]; } }); }
-  finally { if (!waited && !spawn.spawning) sw.idle++; }
+  // CPU (strategy review 2026-10-19): run1 costs ~2.4 ms a call and finds nothing to spawn on ~36% of ticks
+  // (sw busy 15268 / idle 8853 / wait 231; prof.spawn EMA 0.91). After an idle pass, re-check every IDLE_EVERY ticks;
+  // any hostile in the room forces a full pass. Worst case a replacement starts IDLE_EVERY-1 ticks later.
+  if (sw.ne && Game.time < sw.ne && !spawn.room.find(FIND_HOSTILE_CREEPS).length) { sw.idle++; sw.skip = (sw.skip || 0) + 1; return; }
+  let waited = false, done = false, rv;
+  try { rv = run1(spawn, (role, cost, avail) => { if (!waited) { waited = true; sw.wait++; sw.last = [role, cost, avail, Game.time]; } }); done = true; return rv; }
+  finally { if (!waited && !spawn.spawning) sw.idle++; sw.ne = done && rv === undefined && !waited ? Game.time + IDLE_EVERY : 0; }
 } };
+const IDLE_EVERY = 4;
 function run1(spawn, onWait) {
   const room = spawn.room, cap = room.energyCapacityAvailable, avail = room.energyAvailable, rcl = room.controller.level;
   if (nearFull(avail, cap)) room.memory.lastFull = Game.time; // cap-100: RCL5 build rarely hits exact cap
