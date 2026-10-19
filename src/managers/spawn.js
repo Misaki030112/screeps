@@ -45,6 +45,14 @@ const B = {
   manager: e => [].concat(rep(Math.min(16, Math.floor((e - 50) / 50)), CARRY), [MOVE]),
 };
 function remoteSites() { let n = 0; try { for (const r of ['W45N8']) { const rm = typeof Game !== 'undefined' && Game.rooms && Game.rooms[r]; if (rm) n += rm.find(FIND_MY_CONSTRUCTION_SITES).filter(s => s.structureType === STRUCTURE_ROAD).length; } } catch (e) {} return n; }
+// Mineral stock cap (strategy review 2026-10-19 22:4x, docs/MARKET.md): console switch Memory.ops.mineralCap = N stops the mineral
+// miner while storage + terminal hold >= N of the room's mineral. Unset (default) = mine as before. A full O cycle costs ~15k energy
+// (11 mminers 12W3M over ~16.6k ticks, 10-18/19) for 35k O that has no use until labs code or a sale (Overmind: excess > 25k).
+function mineralCapped(room, type) {
+  const cap = typeof Memory !== 'undefined' && Memory.ops && Memory.ops.mineralCap; if (!cap || !type) return false;
+  const have = s => (s && s.store && s.store[type]) || 0;
+  return have(room.storage) + have(room.terminal) >= cap;
+}
 function targets(room, count, backlog, ctlEnergy, sites) {
   const rcl = room.controller.level, P = plan.get(room.name);
   const st = !!room.storage, links = rc.all(room, STRUCTURE_LINK).length;
@@ -59,7 +67,7 @@ function targets(room, count, backlog, ctlEnergy, sites) {
   T.filler = fillersOn ? 4 : 0;
   // RCL6 mineral line: one mineral miner while extractor + container stand, the mineral has amount and the container has room
   { const mm = P.pos.mineralMiner, k = mm && st && rc.at(room, mm[0], mm[1], STRUCTURE_CONTAINER), ex = rcl >= 6 && rc.all(room, 'extractor')[0];
-    const m = ex && room.find(FIND_MINERALS)[0]; T.mminer = k && m && m.mineralAmount > 0 && k.store.getFreeCapacity() > 400 ? 1 : 0; }
+    const m = ex && room.find(FIND_MINERALS)[0]; T.mminer = k && m && m.mineralAmount > 0 && k.store.getFreeCapacity() > 400 && !mineralCapped(room, m.mineralType) ? 1 : 0; }
   T.manager = plan.STATIONARY_FILL && st && rcl >= 5 ? 1 : 0; // manager tile 36,30 is also a queen stop
   // Supply-follows-demand on the smoothed ctl container level (ctlEnergy = ~300-tick EMA): an empty container means upgraders
   // outnumber the feed. A snapshot rule (3 + level/700) spawned 4x7 WORK for ~11/t feed -> upgraders idle 55% waiting_feed (10-13 17:30).
@@ -244,7 +252,7 @@ function spawnOrder(count, T, nSites) {
     ? ['queen', 'hauler', 'upgrader', 'REMOTE', 'filler', 'manager', 'builder', 'mminer']
     : ['queen', 'hauler', 'REMOTE', 'filler', 'manager', 'upgrader', 'builder', 'mminer'];
 }
-module.exports = { rhTarget, birthDirs, targets, rhaulerNeed, remoteNext, retiring, B, reserverBody, nearFull, bodyEnergy, spawnOrder, run(spawn) {
+module.exports = { rhTarget, birthDirs, targets, mineralCapped, rhaulerNeed, remoteNext, retiring, B, reserverBody, nearFull, bodyEnergy, spawnOrder, run(spawn) {
   // spawn-wait metric (Misaki 10-18 09:30: zero spawn idle due to refill). Memory.stats.sw[room] cumulative ticks:
   //   busy = spawning; wait = a creep was wanted, cost <= cap but energyAvailable < cost (refill wait); idle = nothing wanted.
   //   last = [role, cost, avail] of the latest wait.

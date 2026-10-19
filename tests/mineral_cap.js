@@ -1,0 +1,32 @@
+// Mineral stock cap (Memory.ops.mineralCap, managers/spawn.js mineralCapped + targets T.mminer). node tests/mineral_cap.js
+const path = require('path'), assert = require('assert');
+const src = p => path.join(__dirname, '..', 'src', p);
+Object.assign(global, { WORK: 'work', CARRY: 'carry', MOVE: 'move', RESOURCE_ENERGY: 'energy', STRUCTURE_LINK: 'link', STRUCTURE_CONTAINER: 'container', STRUCTURE_SPAWN: 'spawn', STRUCTURE_EXTENSION: 'extension', STRUCTURE_TOWER: 'tower', FIND_MINERALS: 116, _: { filter: () => [] }, Memory: {} });
+const stub = (p, exp) => { require.cache[require.resolve(src(p))] = { id: p, filename: p, loaded: true, exports: exp }; };
+const P = { pos: { upgraders: [[29, 30], [30, 31]], controllerContainer: [30, 30], fillerContainerA: [35, 24], fillers: [], miners: [], mineralMiner: [41, 24] }, raw: { stamps: {} }, any: {} };
+stub('utils/plan.js', { get: () => P, key: (x, y) => x * 50 + y });
+stub('roles/builder.js', { remoteRoadSite: () => null });
+stub('utils/move.js', { to: () => true });
+const cont = { store: { getFreeCapacity: () => 1800 } };
+stub('utils/roomcache.js', { all: (r, t) => (t === 'extractor' ? [{}] : []), at: (r, x, y) => (x === 41 && y === 24 ? cont : null), get: () => ({ at: [] }), sites: () => [] });
+stub('utils/trace.js', { why: () => {} });
+stub('managers/threat.js', { reserve: () => 0, holding: () => false });
+stub('managers/walls.js', { phase: () => 'build', noUpgrade: () => false, wantBuilder: () => false, reserved: () => 0, budgetE: () => 0, fund: () => 0 });
+stub('managers/roads.js', { phase: () => 'done', repairTarget: () => null });
+const S = require(src('managers/spawn.js'));
+const room = (stor, term, amount = 35000) => ({ name: 'W46N8', controller: { level: 6 }, energyCapacityAvailable: 2300,
+  storage: { store: Object.assign({ energy: 20000 }, stor) }, terminal: term && { store: term }, find: () => [{ mineralType: 'O', mineralAmount: amount }] });
+const mm = r => S.targets(r, {}, 0, 900, 0).mminer;
+Memory.ops = undefined;
+assert.strictEqual(S.mineralCapped(room({ O: 17324 }, { O: 17524 }), 'O'), false, 'unset -> never capped');
+assert.strictEqual(mm(room({ O: 17324 }, { O: 17524 })), 1, 'unset -> mines as before');
+assert.strictEqual(mm(room({}, null, 0)), 0, 'depleted -> 0 (unchanged)');
+Memory.ops = { mineralCap: 30000 };
+assert.strictEqual(S.mineralCapped(room({ O: 17324 }, { O: 17524 }), 'O'), true, 'storage + terminal counted');
+assert.strictEqual(mm(room({ O: 17324 }, { O: 17524 })), 0, 'stock >= cap -> no mminer');
+assert.strictEqual(mm(room({ O: 10000 }, { O: 5000 })), 1, 'stock < cap -> mines');
+assert.strictEqual(mm(room({ O: 10000 }, null)), 1, 'no terminal ok');
+assert.strictEqual(S.mineralCapped(room({ H: 50000 }, null), 'O'), false, 'other minerals do not count');
+Memory.ops = { mineralCap: 0 };
+assert.strictEqual(mm(room({ O: 90000 }, null)), 1, 'cap 0 = off');
+console.log('mineral cap ok');
