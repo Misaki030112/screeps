@@ -3,6 +3,14 @@
 Novice zone ends **2026-10-28 03:33 UTC+8**. Defence timeline: `docs/DEFENSE_NOVICE.md` (2026-10-16); detail `docs/DEFENSE.md` / geometry `docs/DEFENSE_PLAN.md`.
 **Safe mode: NEVER auto-activate** — alert Misaki.
 
+## 2026-10-19 19:5x strategy review: W47N8 RCL5 transition (`docs/PLAN_W47N8.md` "RCL5 transition")
+
+- **Tower 2 slot verified: 24,8** (Misaki 18:06) in layout.js ORDER.tower[0], PLAN_W47N8.md and tests/w47n8_tower_first.js; live since 108baf0 (18:09). The 17:55 note "34,31" is superseded.
+- **Deployed 75f8265 (t83743900, dormant until RCL5):** 24,8 is fed from source A (2 tiles) instead of the hub filler (23 tiles, ~50 t away from the extensions): source-A miner skips link 26,12 while that tower < 600, overflow into 26,11, haulers score 26,11 x3 -> tower; filler serves only core towers (<= 8 of POST).
+- RCL5 ETA **10-20 ~06:30-09:15 UTC+8** (274.7k left at 24-30 e/t, 4.2 s/t). Build order unchanged: tower 24,8 -> 10 ext (slots verified empty, strip roads built) -> links 13,25 + 26,12.
+- 19:37 ctl stall: no hauler-priority change (spawn-first with empty storage, energy not lost, ~6 min ETA); the RCL5 link gives the ctl a non-divertible ~10 e/t. Watch line below unchanged.
+- **W47N8 patrol at RCL5:** follow the 4-point checklist in PLAN_W47N8.md (24,8 only site; links after ext; 24,8 >= 600 within ~100 t via 26,11; filler stays home).
+
 ## 2026-10-19 19:42 two-room evaluation (45-min window 18:56-19:41 vs 18:11-18:56)
 
 - Home W46N8: controller progress 23.3 e/t (prev 23.4; model 1h 23.4, 6h 20.9 vs ideal 21.8). Storage 12.2k -> 16.2k (+6.4 e/t; prev -8.8 e/t): back above the 15k reserve since ~19:29, so a1d78b3 (rminers first across remotes) is verified. RCL6 425.1k/3.645M, RCL7 ETA ~10-26 afternoon at this rate. Walls 142101 no loss, ramparts min 168.3k, 0 sites, no safe mode.
@@ -81,6 +89,7 @@ Focus (Misaki 10-14): **W46N8 upgrade speed**; expansion (2nd account W47N8, W45
 7. Later: RCL6 terminal/extractor/labs; 2nd room (**approval required**).
 
 ## Log
+- 2026-10-19 19:5x strategy review: topic **W47N8 RCL5 transition** (`docs/PLAN_W47N8.md`). Tower 2 = 24,8 verified in code/test/doc/live; deployed 75f8265 (north tower fed from source A 26,11, filler core towers only; dormant until RCL5); link timing and hauler priority unchanged (reasoned); RCL5 ETA 10-20 ~06:30-09:15.
 - 2026-10-19 18:4x strategy review: topic **home RCL7 readiness** (`docs/RCL7.md`). 250k of the 305k RCL7 bill was idle (factory + 3 labs, no code); gated by plan.RCL7_INDUSTRY=false; home hauler kept at RCL7 for the mineral run. RCL7 ETA ~10-26/27, W47N8 RCL5 ETA ~10-20 evening (live ~16 e/t, 104.6k/405k).
 - 2026-10-19 17:5x strategy review: topic **W47N8 2nd-tower timing** (`docs/DEFENSE_W47N8.md`). Sim: 2 towers alone beat the full BustJetter squad; the RCL5 build order put tower 2 behind 10 extensions (~2-3 h). Deployed c7357bc tower-first (+ test). RCL5 ETA 10-20 05:45 (ideal) – 09:00 (live 23 e/t); home RCL7 ETA ~10-26 (390.8k/3.645M at ~22 e/t), before novice end. UH boosts seen in W48N9/W47N9 labs only speed the enemy melee on walls.
 - 2026-10-19 14:40 strategy review: topic **CPU budget for two rooms** (`docs/CPU.md`). Live prof: total 12.0, creeps 9.1, home spawn 0.91 (run1 ≈2.4 ms, idle 36% of ticks), w8spawn 0.49, mem 0.34. Deployed fbe8a00 spawn idle throttle. RCL7 ETA ~10-28, W47N8 RCL5 ETA ~10-21.

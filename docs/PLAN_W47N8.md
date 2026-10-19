@@ -66,9 +66,48 @@ North approach = tiles y<=2 from which an enemy can hit a seal wall (east segmen
 | **22,7** | RCL7 (tower 3) | 390 / 526 | 330 / 420 | 4 from 26,11 | covers both seal segments |
 | 34,31, 36,31, 36,33 | RCL8 | core | | hub | |
 ORDER.tower = 24,8 / 33,35 / 22,7 / 34,31 / 36,31 / 36,33 (layout.js + w47n8_plan3b.py). At RCL5: 33,35 + 24,8 -> east 600 min, west 420 min vs the
-squad's 228 heal. Haulers refill towers via fillTarget (tower > 200 free); source A container 26,11 is the nearest stock.
+squad's 228 heal. Refill of 24,8 (19:5x review, 75f8265): see "RCL5 transition" below; road 23,8 is adjacent, 25,10/25,12 lead to source A.
 Relocation of 33,35 at RCL4 is NOT planned: RCL4 allows 1 tower, so moving means destroying the only tower (5k rebuild, 0 towers
 for ~300-500 ticks) under an active threat. RCL5 (ETA 10-20 ~07:00) adds 24,8 with zero gap. Misaki 18:06: 33,35 is NOT relocated.
 17:58 hand-calc: a tower within 5 of y=3 near x28 (= 27,6) gives 600/t; focused with the defenders (~1050/t) vs both enemy groups' 396
 heal/t turns scenario B from stalemate into a win. Today 33,35 adds only 150 at the wall; towerPick now counts tower + defender RA
 together (3bdaefe), so it fires whenever the combined focus beats the heal. Render: tools/w47n8_tower_png.py -> /workspace/w47n8_tower_plan.png.
+
+## RCL5 transition (2026-10-19 19:5x strategy review, tick 83743900, deployed 75f8265)
+Live at 19:45 (t83743815): RCL4 130.3k/405k, 20/20 ext (15 v3b + 5 temp), tower 33,35, storage 35,32, 0 sites, 0 hostiles.
+**ETA RCL5: 274.7k left at 24-30 e/t (live ~30, 45-min window 24) x 4.2 s/t = 10.7-13.4 h -> 10-20 ~06:30-09:15 UTC+8 (central ~07:30).**
+
+Tower slot check (Misaki 18:06): layout.js ORDER.tower[0] = **24,8**, 33,35 second (built, kept), 22,7 RCL7, 34,31/36,31/36,33 RCL8.
+tests/w47n8_tower_first.js asserts the only RCL5 site is the tower at 24,8 and no 2nd tower site at RCL4. Live code = 108baf0+ (deployed 18:09).
+The 17:55 log line "verify the only new site is tower 34,31" predates the 18:06 decision and is superseded: **verify 24,8**.
+Tile 24,8 is plain and empty live; road 23,8 adjacent (built), 25,10 / 25,12 built.
+
+Build order at RCL5 (layoutRun): tower 24,8 (5k) alone -> 10 ext (30k) -> links 13,25 + 26,12 (10k, placed as the last ext sites go up).
+Next 10 ext slots (ORDER 16-25): 39,34 39,35 39,36 28,34 28,36 30,27 32,27 37,37 39,37 27,34, all plain and empty live; their strip roads
+(38,33-38,38 / 27-29,35 / 31,25-31,28) are built. Filler body at 1800: 20C10M (duty 1250). Storage exists (RCL4).
+Link timing kept after extensions: links pay back in ~14 h (+1 e/t ctl, -0.6 hauler) while 1800 cap gives bigger defender/hauler bodies
+for the defence; the whole 45k bill is ~1.5-2 h of income and moves the RCL6 ETA (~50 h) by < 1 h whichever order.
+
+### Energy to tower 24,8 (Misaki 18:06: "ample energy supply")
+Path costs (road 1 / plain 2 / swamp 10): hub POST 34,32 -> 24,8 = 23 tiles (~50 t round trip); source A container 26,11 -> 24,8 = 2 tiles;
+source B 11,43 -> 24,8 = 40. Before 75f8265 the hub filler would walk the 50 t round trip whenever the hub was full (hub unattended
+during that time = slower extension refill), and once link 26,12 exists nothing stocks 26,11 any more (the miner ships source A to the ctl).
+Now (dormant until 24,8 + link 26,12 exist):
+- **tower within 4 of source-A stand < 600 energy -> source-A miner skips the link**; harvest overflows into container 26,11 (stops at 1500).
+  ~10 e/t = exactly one tower firing every tick. Haulers score 26,11 x3 and their nearest fill target from there is 24,8 (2 tiles, > 200 free).
+- >= 600: source A goes back to link 26,12 -> ctl link 13,25.
+- Hub filler serves only core towers (<= 8 of POST, i.e. 33,35); never walks north.
+- First fill after the tower is built uses the same path (tower 0 -> 600 via 26,11, ~60-100 t).
+Cost: while 24,8 is below 600 the controller loses the link's ~10 e/t; in quiet times the tower spends only on heal/rampHold (~0.2 e/t).
+
+### Controller-feed stall (19:37, ~80 t) - no hauler-priority change
+Cause: replacement spawn burst with storage < 100, so haulers filled spawn/extensions first (correct: spawn first) and 13,26 ran dry.
+Energy was not lost (containers had room; 4 upgraders = 40 WORK vs upw 30 caught up after); cost ~2.4k progress-time = ~6 min of ETA.
+Storage is now rising (1.6-1.9k) with defenders gone; RCL5 link 26,12 -> 13,25 gives the ctl a ~10 e/t feed that haulers cannot divert.
+Revisit only if 13,26 empties again while storage > 3k (patrol watch, unchanged).
+
+### Patrol checklist at RCL5
+1. Only site = tower 24,8 until built; then ext sites (max 6 open) then links 13,25 / 26,12. No 34,31 tower site.
+2. After link 26,12: w8miner si0 gets 1 CARRY (bodyFor); link transfers 400 at a time (linkRun); ctl link drained by upgraders on 12,25/12,26/14,26.
+3. Tower 24,8 rises to >= 600 within ~100 t of completion via 26,11 (Memory: none; watch container 26,11 and tower energy).
+4. Filler stays in the hub when only 24,8 is low.
