@@ -68,3 +68,6 @@ ORDER.tower = 27,6 / 33,35 / 22,7 / 34,31 / 36,31 / 36,33 (layout.js + w47n8_pla
 squad's 228 heal. Haulers refill towers via fillTarget (tower > 200 free); source A container 26,11 is the nearest stock.
 Relocation of 33,35 at RCL4 is NOT planned: RCL4 allows 1 tower, so moving means destroying the only tower (5k rebuild, 0 towers
 for ~300-500 ticks) under an active threat. RCL5 (ETA 10-20 ~07:00) adds 27,6 with zero gap.
+17:58 hand-calc: a tower within 5 of y=3 near x28 (= 27,6) gives 600/t; focused with the defenders (~1050/t) vs both enemy groups' 396
+heal/t turns scenario B from stalemate into a win. Today 33,35 adds only 150 at the wall; towerPick now counts tower + defender RA
+together (3bdaefe), so it fires whenever the combined focus beats the heal. Render: tools/w47n8_tower_png.py -> /workspace/w47n8_tower_plan.png.
