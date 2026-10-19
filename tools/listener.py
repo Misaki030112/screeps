@@ -178,9 +178,19 @@ def segment_poller():
         except Exception as ex: append('errors.log', f'{stamp()} [listener] segment poll {ex}')
         time.sleep(60)
         polls[0] += 1
+        if polls[0] % 5 == 0: prof_poll()
         if polls[0] % 10 == 0:  # creep audit + heatmaps every ~10 min (prune once a day)
             import subprocess
             subprocess.run([sys.executable, os.path.join(ROOT, 'tools', 'creep_audit.py')], capture_output=True, timeout=300)
+def prof_poll():
+    """Memory.stats.prof (per-section CPU EMA) -> cpu_prof every ~5 min; was only readable live (docs/CPU.md 2026-10-20)."""
+    try:
+        from api import memory
+        p, t, b = memory('stats.prof') or {}, memory('stats.time'), memory('stats.bucket')
+        ts, cm = utcnow(), ingest.commit()
+        for k, v in p.items():
+            if isinstance(v, (int, float)): ingest.put('cpu_prof', (ts, t, k, v, b, cm))
+    except Exception as ex: append('errors.log', f'{stamp()} [listener] prof poll {ex}')
 STALE_S = 180  # STATS arrive every 10 ticks (~40 s); a silent-but-alive socket gets closed so run_listener.sh reconnects
 def watchdog(ws):
     while True:

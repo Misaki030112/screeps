@@ -10,6 +10,7 @@ SQL = {
  'path_arrivals': 'INSERT INTO path_arrivals (ts,tick,creep,role,target,planned,actual,commit) VALUES (%s,%s,%s,%s,%s,%s,%s,%s) ON CONFLICT DO NOTHING',
  'room_stats': 'INSERT INTO room_stats (ts,tick,room,rcl,progress,progress_total,energy,energy_cap,sites,hostiles,safe_mode,cpu,bucket,trace_cpu,gcl_progress,creeps,commit,storage,ctl,ctl_ema) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) ON CONFLICT DO NOTHING',
  'incidents': 'INSERT INTO incidents (ts,tick,remote,inc,ev,from_state,state,why,inv,inv_ttl,def,dur,data) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)',
+ 'cpu_prof': 'INSERT INTO cpu_prof (ts,tick,section,ms,bucket,commit) VALUES (%s,%s,%s,%s,%s,%s)',
  'events': 'INSERT INTO events (ts,tick,kind,room,severity,episode,msg,data) VALUES (%s,%s,%s,%s,%s,%s,%s,%s)',
 }
 state = {'commit': None, 'commit_at': 0, 'rows': 0, 'last_flush': None, 'err': None}

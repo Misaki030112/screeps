@@ -119,3 +119,8 @@ CREATE OR REPLACE VIEW idle_by_reason AS
       WHEN 'r' THEN 'renewing' ELSE 'other' END AS reason,
     ch IN ('e','s','r','w','m') AS legit, count(*) AS ticks
   FROM creep_cpu, regexp_split_to_table(codes, '') AS ch WHERE codes IS NOT NULL AND codes <> '' GROUP BY 1, 2, 3, 4, 5;
+
+-- per-section CPU EMA (Memory.stats.prof, EMA 1/50 per tick), polled by the listener every ~5 min (docs/CPU.md, 2026-10-20)
+CREATE TABLE IF NOT EXISTS cpu_prof (ts timestamptz NOT NULL, tick bigint, section text NOT NULL, ms real, bucket int, commit text);
+SELECT create_hypertable('cpu_prof', by_range('ts', INTERVAL '7 days'), if_not_exists => true);
+CREATE INDEX IF NOT EXISTS cpu_prof_sec ON cpu_prof (section, ts DESC);
