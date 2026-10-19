@@ -222,7 +222,12 @@ function layoutRun(room) {
   // 03:05 west<->hub link road (missing from v3b plan): loaded 10C5M rhaulers sat 7-10 ticks on unroaded swamp 22,34 (fatigue 70)
   // between road 15,33 and strip road 24,35; queued ahead of the plan roads since every hub trip crosses it
   // 09:13 road audit: only the target network (roads.js: v3b spines + shared trunks + busy live roads) is placed
-  const O = ok ? Object.assign({}, L.ORDER, { link: [C.CTL_LINK, C.SOURCES[0].link].concat(L.ORDER.link), road: (rcl >= 6 ? require('./roads').ROADS : require('./roads').ROADS.filter(([x, y]) => !require('./roads').MINERAL.some(([a, b]) => a === x && b === y))).concat(require('../../layouts/w8link').W47N8) }) : { extension: L.TEMP_EXT, container: L.ORDER.container };
+  // 10-20 03:4x strategy review (docs/PLAN_W47N8.md "RCL6 gate"): with RCL6_MINERALS off, terminal (100k), extractor (5k), 3 labs (150k),
+  // the extractor trunk and, with HUB_LINK off, the hub link 33,34 (5k) are not placed: no W47N8 code uses any of them (no mineral miner,
+  // no lab/terminal logic, linkRun only moves A -> ctl), so they would idle 260k of energy (~8.7k t, ~10 h of upgrade at ~30 e/t).
+  const R8 = require('./roads'), minOk = !!C.RCL6_MINERALS;
+  const O = ok ? Object.assign({}, L.ORDER, { link: [C.CTL_LINK, C.SOURCES[0].link].concat(C.HUB_LINK ? L.ORDER.link : []), road: (rcl >= 6 && minOk ? R8.ROADS : R8.ROADS.filter(([x, y]) => !R8.MINERAL.some(([a, b]) => a === x && b === y))).concat(require('../../layouts/w8link').W47N8) },
+    minOk ? {} : { terminal: [], extractor: [], lab: [] }) : { extension: L.TEMP_EXT, container: L.ORDER.container };
   // 17:15 (Misaki "急着早 rampart 是为了什么" / "看看主房间"): no rampart placement here. The PRIO loop placed every v3b ORDER.rampart
   // tile at RCL4, incl. empty future spawn/terminal/tower slots (32,32 32,33 33,32 33,30 built; 34,31 36,31 36,33 sites), and
   // builders raised them to the 50k seal target. Home only rampart-covers real structures and deferred even those behind storage
