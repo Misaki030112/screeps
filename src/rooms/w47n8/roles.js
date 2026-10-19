@@ -135,8 +135,8 @@ function pickTile(c, tiles, key) {
 // 20:55: plain 'lowest first' made both builders ping-pong between the x8-11 and x24-31 groups (16+ tiles) every time one
 // repair lifted a wall past the others (walls within 200 hits), even walking over with 2 energy left. Now: sticky per-creep
 // target kept until it is 500 above the weakest; new picks are the closest wall within 500 of the weakest.
-function wallJob(room, c) {
-  const tgt = TH.wallTarget(C.WALL_TARGET[room.controller.level] || 0);
+function wallJob(room, c, cap) {
+  const tgt = Math.min(cap === undefined ? Infinity : cap, TH.wallTarget(C.WALL_TARGET[room.controller.level] || 0));
   // 17:15: seal walls only. Core ramparts (14:09) are no longer raised by builders (Misaki: development first, as in home).
   const ws = room.find(FIND_STRUCTURES, { filter: s => s.structureType === STRUCTURE_WALL && s.hits < tgt && C.SEAL.some(([x, y]) => s.pos.x === x && s.pos.y === y) });
   if (!ws.length) { if (c) delete c.memory.wt; return null; }
@@ -408,7 +408,7 @@ const R = {
     // north seal walls first (1 energy each, Misaki 17:08), x8-11 before x24-31; then the spawn/extension sites
     const seal = all.filter(s => s.structureType === STRUCTURE_WALL).sort((a, b) => (a.pos.x <= 11 ? 0 : 1) - (b.pos.x <= 11 ? 0 : 1));
     // 14:23 threat mode: seal walls to 50k before other sites (seal wall sites still first)
-    const tj = !seal[0] && TH.on() && wallJob(c.room, c);
+    const tj = !seal[0] && TH.on() && wallJob(c.room, c, TH.urgentTarget()); // 06:3x: only up to the 50k floor ahead of sites (tower 24,8 first at RCL5)
     if (tj) { if (!c.pos.inRangeTo(tj, 3)) go(c, tj.pos.x, tj.pos.y, 3); else c.repair(tj); return; }
     const site = seal[0] || c.pos.findClosestByRange(all);
     if (site) { if (!c.pos.inRangeTo(site, 3)) go(c, site.pos.x, site.pos.y, 3); else c.build(site); return; }
@@ -443,3 +443,4 @@ Object.defineProperty(module.exports, '_fill', { value: fillTarget, enumerable: 
 Object.defineProperty(module.exports, '_northFeed', { value: northFeed, enumerable: false }); // tests only
 Object.defineProperty(module.exports, '_sink', { value: sink, enumerable: false }); // tests only
 Object.defineProperty(module.exports, '_haulPick', { value: haulPick, enumerable: false }); // tests only
+Object.defineProperty(module.exports, '_wallJob', { value: wallJob, enumerable: false }); // tests only
