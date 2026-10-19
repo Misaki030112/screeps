@@ -33,6 +33,12 @@ const cases = [
   ['on fill route, nothing needy -> leaves fill mode and delivers to ctl', () => { const c = mk(); step(c, 400); W.needy = false; assert.deepStrictEqual(step(c, 1800), [30, 30]); assert.strictEqual(c.memory.fl, undefined); }],
   ['empty -> fill flag cleared', () => { const c = mk(); step(c, 400); c.store.energy = 0; c.store.getFreeCapacity = () => 700; c.memory.working = true; step(c, 400); assert.strictEqual(c.memory.fl, undefined); }],
   ['no queen: fill at 90% threshold even mid-trip', () => { const c = mk(); step(c, 1800); c.room.memory.queenAlive = 0; assert.deepStrictEqual(step(c, 1500), [34, 27]); }],
+  ['storage under reserveE -> banks to storage before the empty ctl container', () => { global.Memory = { defense: { reserveE: 15000 } };
+    const c = mk(), sto = { id: 'st', pos: { x: 37, y: 31 }, structureType: 'storage', store: { energy: 10400, getFreeCapacity: () => 900000 } };
+    W.objs.st = sto; c.room.storage = sto; W.cc.store.energy = 0; const m = step(c, 1800); delete global.Memory; assert.strictEqual(c.memory.dst, 'st'); assert.deepStrictEqual(m, [37, 31]); }],
+  ['storage above reserveE -> ctl container first', () => { global.Memory = { defense: { reserveE: 15000 } };
+    const c = mk(), sto = { id: 'st', pos: { x: 37, y: 31 }, structureType: 'storage', store: { energy: 16000, getFreeCapacity: () => 900000 } };
+    W.objs.st = sto; c.room.storage = sto; W.cc.store.energy = 0; step(c, 1800); delete global.Memory; assert.strictEqual(c.memory.dst, 'cc'); }],
 ];
 let fail = 0; for (const [n, f] of cases) { try { f(); console.log('ok  ', n); } catch (e) { fail++; console.log('FAIL', n, e.message); } }
 console.log(`hauler fill sticky: ${cases.length - fail}/${cases.length}`); process.exit(fail ? 1 : 0);

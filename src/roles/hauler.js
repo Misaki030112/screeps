@@ -157,9 +157,14 @@ module.exports = { pickups, handoff, ctlLow, mineralRun, hubPickup, homeHauler, 
     if (queens && fc && fc.store[RESOURCE_ENERGY] < 400 && fc.store.getFreeCapacity(RESOURCE_ENERGY) >= 100) opts.push(fc); // queen's fixed refill
     const tw = rc.all(room, STRUCTURE_TOWER).filter(t => t.store[RESOURCE_ENERGY] < 600);
     if (!queens) opts.push(...tw);
-    const noUp = require('../managers/walls').noUpgrade(room) && room.storage; // build hold: feed storage, not the controller
-    const cc = !noUp && rc.at(room, cx, cy, STRUCTURE_CONTAINER); if (cc && cc.store.getFreeCapacity(RESOURCE_ENERGY) >= 100) { if (cc.store[RESOURCE_ENERGY] < CTL_LOW) opts.unshift(cc); else opts.push(cc); }
-    const st = room.storage; if (st && st.store.getFreeCapacity() > 10000) opts.push(st);
+    const Wl = require('../managers/walls'), noUp = Wl.noUpgrade(room) && room.storage; // build hold: feed storage, not the controller
+    // Storage under the defence reserve (walls.defLow, Memory.defense.reserveE 15k) is refilled before the controller (patrol
+    // 10-20 03:05: every load went to the always-empty ctl container while spawn refills drew storage, 15.0k -> 10.4k in ~1750t
+    // with 28 upgrader WORK vs ~26 e/t net). The ctl link (source A) keeps feeding upgraders meanwhile; above the reserve, ctl first.
+    const st = room.storage, bank = st && st.store.getFreeCapacity() > 10000 && Wl.defLow(room);
+    if (bank) opts.push(st);
+    const cc = !noUp && rc.at(room, cx, cy, STRUCTURE_CONTAINER); if (cc && cc.store.getFreeCapacity(RESOURCE_ENERGY) >= 100) { if (cc.store[RESOURCE_ENERGY] < CTL_LOW && !bank) opts.unshift(cc); else opts.push(cc); }
+    if (!bank && st && st.store.getFreeCapacity() > 10000) opts.push(st);
     if (fc && fc.store.getFreeCapacity(RESOURCE_ENERGY) >= 200) opts.push(fc);
     // creeps that need energy: queen first (keeps the fill loop short), then builders. Pre-storage only: with storage both
     // refill there, and chasing moving creeps doubled hauler repaths (rp/100 8.6 -> 21.7, trip 13 -> 22 after 4b8715a).
