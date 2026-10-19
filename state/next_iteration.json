@@ -1,223 +1,223 @@
 {
- "next_at": "2026-10-19T17:50:00+08:00",
- "reason": "16:52 home patrol: fix deployed e9cf7a3 tick 83741447: rhauler replacement lead = body*3+72+C.lead (16-part 8C8M unchanged at 120; lone W45N8 24C12M 120->180). Cause: rhauler83739541 died ~83741149, replacement rhauler83741255 out at 83741363 (~214t gap, queued behind reserver/miner/queen/rminer on the single RCL6 spawn) -> cont 13,11 hit 2000 (~1.7k overflow); same pattern at 83738176 (1842). Health: gates min 165.9k (rising), walls 142101 no loss; storage 13.9k (15k reserveE floor); RCL6 377.3k (+19.8k/881t ~22.4 e/t vs ideal 21.8); bkt 10000; no new errors; remotes SAFE res W45N8 2256 W45N7 2075; delivered W45N8 1094.7k (+5.7k/859t 6.6 e/t, gap) W45N7 586.7k (~11.2 e/t). Next: hourly gates/walls; verify W45N8 rhauler83741255 replacement queues at ttl<=180 (~tick 83742683, ~18:20) and cont 13,11 stays <1800 through the handover.",
- "road_plan": {
-  "doc": "docs/ROADS.md",
-  "each_patrol": [
-   "phase & progress: Memory.roads (phase, prog{road,site,open,unseen,blocked,total}, log, bad) via scripts/api.py memory('roads'); compare prog.road with last patrol",
-   "sites: count + locations of road sites in W46N8 / W45N8 (<=5 per room from roads.js; none on walls/structures/container 30,30/sources; none in W45N7); m.bad codes",
-   "builders: count (home phase 1-2, W45N8 phase 1-2, 0 before core done is fine), alive and not no_task/starved >50%",
-   "spawn queue health: queen, both miners, home haulers, W45N8 rminer/reserver/rhauler, W45N7 5x rhauler alive or pre-spawned; no role missing >100t",
-   "energy not starved: energyAvailable recovers to capacity between spawns, storage >= 1300 reserve, extensions filled",
-   "errors: 0 new ERR/exception lines (err.wrap 'roads', 'spawn', 'creep builder')",
-   "CPU: avg <= ~8, bucket not falling",
-   "walls.phase == 'roads' (1 upgrader hold, no rampart/wall sites) until Memory.roads.phase == 'done'",
-   "stall: no prog.road change (or core phase not advancing) for >2h -> investigate (bad codes, vision, paused remote, starved builders) and tell Misaki",
-   "after done: W45N8 rhaulers -> 1x 16C8M as old ones die (no gap), W45N8 container not overflowing (else pavedHaulers 2); W45N7 unchanged 5x 8C8M",
-   "report each phase completion to Misaki; include road phase/progress in every 2-hour briefing",
-   "build hold (walls.noUpgrade): 0 upgraders alive/spawned (old 6W recycles once empty); controller.ticksToDowngrade >= 20000 (else 1 safety upgrader must exist); report if timer < 30000",
-   "build rate: construction progress per tick since last patrol (target >= 15/t with the hold; was 13.6/t); builders count 2-3, waiting_feed share",
-   "storage trend: value vs last patrol (should not fall below 1300 reserve; rising once builders saturate); ctl container not refilled by haulers",
-   "after roads done: bank phase = 1 normal upgrader, storage must rise toward 20k; if it falls 2 patrols in a row -> investigate",
-   "swamp7 phase: 3 W45N8 sites placed after home; progress Memory.roads.prog"
-  ],
-  "switches": "Memory.roads.off / skip / phase (console; verify by reading back); Memory.roads.upgrade=1 lifts the build hold (1x700e upgrader)",
-  "phases": "core -> home (54 tiles, 19.5k) -> W45N8 (13 tiles, 6.0k) -> done(walls); W45N7 road dropped (Misaki 17:47)",
-  "briefing": "2-hour briefing: add one line 'roads: phase X, road a/b tiles, sites n, builders n, est. remaining' (no template file; routine text)",
-  "v2": {
-   "deployed": "c907aae tick 83705668 (a839e9f + exit-tile fix)",
-   "each_patrol": [
-    "phase order haul(16)->W45N8(12)->econ(4)->home(37 trunks)->done; Memory.roads.v2 true; prog.road rising each patrol; m.bad must not grow (old W46N8:49:14 -7 entry is from before the fix, ignore)",
-    "build rate target ~25 e/t (builder store drops, creep_ticks) and builder no_task 'n' share < 10% (was 19% at BATCH 5)",
-    "builders 8W8C8M as new ones spawn; 4th only when storage>=6000 & sites>=6; storage must stay >=1300",
-    "after W45N8 phase: W45N8 rhaulers -> 1x 16C8M, no gap, container 13,11 not overflowing (else pavedHaulers 2)",
-    "econ phase: sites only at 35,26 36,25 34,25 35,31; trunks (home) only after econ; walls gated until done",
-    "stall >2h in any phase -> investigate and tell Misaki"
-   ]
+  "next_at": "2026-10-19T18:50:00+08:00",
+  "reason": "17:52 home patrol observe-only tick 83742219; storage 14.5k<15k reserve after joint-def; next 18:50",
+  "road_plan": {
+    "doc": "docs/ROADS.md",
+    "each_patrol": [
+      "phase & progress: Memory.roads (phase, prog{road,site,open,unseen,blocked,total}, log, bad) via scripts/api.py memory('roads'); compare prog.road with last patrol",
+      "sites: count + locations of road sites in W46N8 / W45N8 (<=5 per room from roads.js; none on walls/structures/container 30,30/sources; none in W45N7); m.bad codes",
+      "builders: count (home phase 1-2, W45N8 phase 1-2, 0 before core done is fine), alive and not no_task/starved >50%",
+      "spawn queue health: queen, both miners, home haulers, W45N8 rminer/reserver/rhauler, W45N7 5x rhauler alive or pre-spawned; no role missing >100t",
+      "energy not starved: energyAvailable recovers to capacity between spawns, storage >= 1300 reserve, extensions filled",
+      "errors: 0 new ERR/exception lines (err.wrap 'roads', 'spawn', 'creep builder')",
+      "CPU: avg <= ~8, bucket not falling",
+      "walls.phase == 'roads' (1 upgrader hold, no rampart/wall sites) until Memory.roads.phase == 'done'",
+      "stall: no prog.road change (or core phase not advancing) for >2h -> investigate (bad codes, vision, paused remote, starved builders) and tell Misaki",
+      "after done: W45N8 rhaulers -> 1x 16C8M as old ones die (no gap), W45N8 container not overflowing (else pavedHaulers 2); W45N7 unchanged 5x 8C8M",
+      "report each phase completion to Misaki; include road phase/progress in every 2-hour briefing",
+      "build hold (walls.noUpgrade): 0 upgraders alive/spawned (old 6W recycles once empty); controller.ticksToDowngrade >= 20000 (else 1 safety upgrader must exist); report if timer < 30000",
+      "build rate: construction progress per tick since last patrol (target >= 15/t with the hold; was 13.6/t); builders count 2-3, waiting_feed share",
+      "storage trend: value vs last patrol (should not fall below 1300 reserve; rising once builders saturate); ctl container not refilled by haulers",
+      "after roads done: bank phase = 1 normal upgrader, storage must rise toward 20k; if it falls 2 patrols in a row -> investigate",
+      "swamp7 phase: 3 W45N8 sites placed after home; progress Memory.roads.prog"
+    ],
+    "switches": "Memory.roads.off / skip / phase (console; verify by reading back); Memory.roads.upgrade=1 lifts the build hold (1x700e upgrader)",
+    "phases": "core -> home (54 tiles, 19.5k) -> W45N8 (13 tiles, 6.0k) -> done(walls); W45N7 road dropped (Misaki 17:47)",
+    "briefing": "2-hour briefing: add one line 'roads: phase X, road a/b tiles, sites n, builders n, est. remaining' (no template file; routine text)",
+    "v2": {
+      "deployed": "c907aae tick 83705668 (a839e9f + exit-tile fix)",
+      "each_patrol": [
+        "phase order haul(16)->W45N8(12)->econ(4)->home(37 trunks)->done; Memory.roads.v2 true; prog.road rising each patrol; m.bad must not grow (old W46N8:49:14 -7 entry is from before the fix, ignore)",
+        "build rate target ~25 e/t (builder store drops, creep_ticks) and builder no_task 'n' share < 10% (was 19% at BATCH 5)",
+        "builders 8W8C8M as new ones spawn; 4th only when storage>=6000 & sites>=6; storage must stay >=1300",
+        "after W45N8 phase: W45N8 rhaulers -> 1x 16C8M, no gap, container 13,11 not overflowing (else pavedHaulers 2)",
+        "econ phase: sites only at 35,26 36,25 34,25 35,31; trunks (home) only after econ; walls gated until done",
+        "stall >2h in any phase -> investigate and tell Misaki"
+      ]
+    },
+    "v2_1": {
+      "deployed": "70b38d8 22:47",
+      "what": "haul/W45N8/econ sites in parallel (BATCH 15/room), builders up to 5 in build mode (storage>=5k,4 sites ->4; >=8k,8 sites ->5), body cap 11W11C11M",
+      "check_each_patrol": "storage trending down toward ~3k, build >=25/t, no builder stuck, W45N8 sites progressing; trunks only after econ",
+      "known_bug": "fixed ecde27e",
+      "no_further_deploys_without_approval": true
+    },
+    "v2_2": {
+      "deployed": [
+        "6782779 23:33 builder cross-room fetch",
+        "ecde27e 23:35 hub drain + trunk parallel",
+        "18aaa13 23:40 builder hub-link withdraw (parent)",
+        "0e08aed 23:43 builder cross-room hop both directions"
+      ],
+      "each_patrol": "storage falling toward ~3-5k; builders 4-5 while storage>5k; W45N8 sites rising; trunk sites only after econ placed; links 30,11 and 37,29 cycling (hub <=400 between drains)",
+      "after_roads": "F: terminal -> extractor+container -> labs -> walls, ask Misaki first (RCL6_MINERALS off, see docs/RCL6.md)"
+    },
+    "swamp7": {
+      "decided": "2026-10-17 23:55 UTC+8 (Misaki delegated)",
+      "phase": "after home(trunks), before done",
+      "tiles": "W45N8 15,39 16,40 25,39",
+      "basis": "creep_ticks 6h: ~155 rhauler visits/6h/tile, 3.0 ticks/visit vs 1.0 on roaded 2,12",
+      "est": "build 4.5k, net ~+600 e/day/tile, payback ~2.5 d",
+      "check": "after done: ticks/visit on these tiles ->1.0; W45N7 trip time down ~6 ticks/round trip",
+      "status": "done+verified 2026-10-18 01:50: ticks/visit=1.00 on 15,39 16,40 25,39"
+    },
+    "status": "done 2026-10-18 ~00:36 UTC+8 tick 83707350 (log core..swamp7); swamp7 check pending: ticks/visit on W45N8 15,39 16,40 25,39 -> 1.0"
   },
-  "v2_1": {
-   "deployed": "70b38d8 22:47",
-   "what": "haul/W45N8/econ sites in parallel (BATCH 15/room), builders up to 5 in build mode (storage>=5k,4 sites ->4; >=8k,8 sites ->5), body cap 11W11C11M",
-   "check_each_patrol": "storage trending down toward ~3k, build >=25/t, no builder stuck, W45N8 sites progressing; trunks only after econ",
-   "known_bug": "fixed ecde27e",
-   "no_further_deploys_without_approval": true
+  "pending_approval": {
+    "RCL6_MINERALS": "After walls ring thicken: terminal -> extractor+container -> labs. Ask Misaki before enabling (docs/RCL6.md)."
   },
-  "v2_2": {
-   "deployed": [
-    "6782779 23:33 builder cross-room fetch",
-    "ecde27e 23:35 hub drain + trunk parallel",
-    "18aaa13 23:40 builder hub-link withdraw (parent)",
-    "0e08aed 23:43 builder cross-room hop both directions"
-   ],
-   "each_patrol": "storage falling toward ~3-5k; builders 4-5 while storage>5k; W45N8 sites rising; trunk sites only after econ placed; links 30,11 and 37,29 cycling (hub <=400 between drains)",
-   "after_roads": "F: terminal -> extractor+container -> labs -> walls, ask Misaki first (RCL6_MINERALS off, see docs/RCL6.md)"
+  "w45n7_hauler_trial": {
+    "started": "2026-10-17 23:52 UTC+8",
+    "tick": 83706676,
+    "set": "Memory.remote.W45N7.haulers=4 (cde1e9b override; was CFG 5)",
+    "baseline_delivered": [
+      83706672,
+      269064
+    ],
+    "note": "5 haulers still alive; take a 2nd baseline sample ~300t later before any dies, then compare delivered/tick over the next 1500t window",
+    "revert_if": "W45N7 delivered/tick drops >10% vs baseline -> console: delete Memory.remote.W45N7.haulers",
+    "also_watch": "container 21,15 energy (overflow at 2000 = too few haulers)",
+    "sample2": [
+      83707037,
+      272842
+    ],
+    "sample2_at": "2026-10-18 00:12 UTC+8",
+    "window_vs_baseline": {
+      "ticks": 745,
+      "delivered_delta": 7662,
+      "e_per_tick": 10.285,
+      "note": "container 21,15 at 356 (no overflow); continue to ~1500t"
+    },
+    "sample3": [
+      83707417,
+      276726
+    ],
+    "sample3_at": "2026-10-18 00:39 UTC+8",
+    "sample4": [
+      83707864,
+      280640
+    ],
+    "sample4_at": "2026-10-18 01:13 UTC+8",
+    "window_vs_baseline_4": {
+      "ticks": 1192,
+      "delivered_delta": 11576,
+      "e_per_tick": 9.71,
+      "note": "container 21,15 34-126 no overflow; pre-trial 5-hauler rate not recorded here -> compare to W45N7 source max 10 e/t"
+    },
+    "final": {
+      "at": "2026-10-18 01:50 UTC+8",
+      "tick": 83708349,
+      "delivered": 285616,
+      "ticks": 1677,
+      "delivered_delta": 16552,
+      "e_per_tick": 9.87,
+      "vs_source_10": 0.987,
+      "decision": "KEEP haulers=4",
+      "container": {
+        "e": 24,
+        "hits": 100400
+      }
+    },
+    "sample5": [
+      83708349,
+      285616
+    ]
   },
-  "swamp7": {
-   "decided": "2026-10-17 23:55 UTC+8 (Misaki delegated)",
-   "phase": "after home(trunks), before done",
-   "tiles": "W45N8 15,39 16,40 25,39",
-   "basis": "creep_ticks 6h: ~155 rhauler visits/6h/tile, 3.0 ticks/visit vs 1.0 on roaded 2,12",
-   "est": "build 4.5k, net ~+600 e/day/tile, payback ~2.5 d",
-   "check": "after done: ticks/visit on these tiles ->1.0; W45N7 trip time down ~6 ticks/round trip",
-   "status": "done+verified 2026-10-18 01:50: ticks/visit=1.00 on 15,39 16,40 25,39"
+  "last_deploy": {
+    "commit": "e9cf7a3",
+    "tick": 83741447,
+    "at": "2026-10-19 16:57 UTC+8"
   },
-  "status": "done 2026-10-18 ~00:36 UTC+8 tick 83707350 (log core..swamp7); swamp7 check pending: ticks/visit on W45N8 15,39 16,40 25,39 -> 1.0"
- },
- "pending_approval": {
-  "RCL6_MINERALS": "After walls ring thicken: terminal -> extractor+container -> labs. Ask Misaki before enabling (docs/RCL6.md)."
- },
- "w45n7_hauler_trial": {
-  "started": "2026-10-17 23:52 UTC+8",
-  "tick": 83706676,
-  "set": "Memory.remote.W45N7.haulers=4 (cde1e9b override; was CFG 5)",
-  "baseline_delivered": [
-   83706672,
-   269064
-  ],
-  "note": "5 haulers still alive; take a 2nd baseline sample ~300t later before any dies, then compare delivered/tick over the next 1500t window",
-  "revert_if": "W45N7 delivered/tick drops >10% vs baseline -> console: delete Memory.remote.W45N7.haulers",
-  "also_watch": "container 21,15 energy (overflow at 2000 = too few haulers)",
-  "sample2": [
-   83707037,
-   272842
-  ],
-  "sample2_at": "2026-10-18 00:12 UTC+8",
-  "window_vs_baseline": {
-   "ticks": 745,
-   "delivered_delta": 7662,
-   "e_per_tick": 10.285,
-   "note": "container 21,15 at 356 (no overflow); continue to ~1500t"
+  "walls": {
+    "started": 83707350,
+    "why": "bank",
+    "fund_at_start": 20108,
+    "check_each_patrol": "gates 6 ramparts first then with_gate trunks then 41 walls; SITE_CAP 2; no rampart decays at low hits; storage should not fall below ~5k after fund; terminal/extractor/labs stay off (RCL6_MINERALS) until Misaki decides",
+    "decay_fix": "434a2c3: gate ramparts <5000 outrank sites (to 10k, 1 builder/gate); check each patrol no gate < 3000",
+    "check_note": "09:25: min 136.4k med 143.4k step 300k; storage 36.9k (-10 e/t); builders 4 (35W) after tier step-down"
   },
-  "sample3": [
-   83707417,
-   276726
-  ],
-  "sample3_at": "2026-10-18 00:39 UTC+8",
-  "sample4": [
-   83707864,
-   280640
-  ],
-  "sample4_at": "2026-10-18 01:13 UTC+8",
-  "window_vs_baseline_4": {
-   "ticks": 1192,
-   "delivered_delta": 11576,
-   "e_per_tick": 9.71,
-   "note": "container 21,15 34-126 no overflow; pre-trial 5-hauler rate not recorded here -> compare to W45N7 source max 10 e/t"
+  "w45n8_rhauler": {
+    "deployed": "c4a8eb6",
+    "body": "24C12M 1800e (rhE)",
+    "check": "cont 13,11 < 1500 steady, R income -> ~10 e/t; revert = remove rhE from remote CFG"
   },
-  "final": {
-   "at": "2026-10-18 01:50 UTC+8",
-   "tick": 83708349,
-   "delivered": 285616,
-   "ticks": 1677,
-   "delivered_delta": 16552,
-   "e_per_tick": 9.87,
-   "vs_source_10": 0.987,
-   "decision": "KEEP haulers=4",
-   "container": {
-    "e": 24,
-    "hits": 100400
-   }
+  "builder_refill": {
+    "deployed": "e2acdb0",
+    "check": "builder w share >25%, storage not rising, no ping-pong; revert = drop low-carry block in roles/builder.js + 5th builder line in spawn.js"
   },
-  "sample5": [
-   83708349,
-   285616
-  ]
- },
- "last_deploy": {
-  "commit": "e9cf7a3",
-  "tick": 83741447,
-  "at": "2026-10-19 16:57 UTC+8"
- },
- "walls": {
-  "started": 83707350,
-  "why": "bank",
-  "fund_at_start": 20108,
-  "check_each_patrol": "gates 6 ramparts first then with_gate trunks then 41 walls; SITE_CAP 2; no rampart decays at low hits; storage should not fall below ~5k after fund; terminal/extractor/labs stay off (RCL6_MINERALS) until Misaki decides",
-  "decay_fix": "434a2c3: gate ramparts <5000 outrank sites (to 10k, 1 builder/gate); check each patrol no gate < 3000",
-  "check_note": "09:25: min 136.4k med 143.4k step 300k; storage 36.9k (-10 e/t); builders 4 (35W) after tier step-down"
- },
- "w45n8_rhauler": {
-  "deployed": "c4a8eb6",
-  "body": "24C12M 1800e (rhE)",
-  "check": "cont 13,11 < 1500 steady, R income -> ~10 e/t; revert = remove rhE from remote CFG"
- },
- "builder_refill": {
-  "deployed": "e2acdb0",
-  "check": "builder w share >25%, storage not rising, no ping-pong; revert = drop low-carry block in roles/builder.js + 5th builder line in spawn.js"
- },
- "rampart_slack": {
-  "deployed": "3499428",
-  "check": "builders on distinct barriers, no lockstep retargets in creep_cpu target keys, w share >=30%; revert = SLACK=0 in managers/walls.js",
-  "status_0450": "w share 42% since 0d91278; distinct targets 16; ok"
- },
- "builder_floor": {
-  "deployed": "0d91278",
-  "fix": "6b939c1",
-  "check": "new builders >=8W even while starving (lastFull>300t); storage not rising; revert = Math.min(E, ...) in spawn.js bodyEnergy",
-  "live_at_deploy": "11W/5W/3W/11W/6W totalW=36; starving=true lastFull=83710596",
-  "check_note": "05:40: post-deploy spawns builder83711351=8W and builder83711498=10W while lastFull=83711276 (starving); pass"
- },
- "builder_six": {
-  "deployed": "966c81c",
-  "rule": "T.builder 5->6 when walls build phase, noUpgrade, budgetE>=40k and storage>=40k",
-  "check": "storage stops rising (was +12..27 e/t); builder w share >=30%; no congestion at storage/hub; CPU <=~9; spawn util ok",
-  "revert": "drop the T.builder===5 -> 6 line in src/managers/spawn.js targets",
-  "check_note": "06:06: 6 live, 54 WORK; storage +4 e/t (was +27); CPU ~7.4; converged ok"
- },
- "hold_lift_tiers": {
-  "deployed": "7ea548d",
-  "rule": "build-phase builder tiers 3/4/5/6 no longer require walls.noUpgrade",
-  "check": "builders back to 6 while budget>=40k; storage falls gently toward ~5k floor then tiers step down; upgraders 2 fed; CPU <=~9.5",
-  "revert": "re-add W.noUpgrade(room) && to the three tier lines in src/managers/spawn.js targets (and tests/build_hold.js case)"
- },
- "builder_floor5k": {
-  "deployed": "9edf999",
-  "rule": "builder pickSource + low-carry refill use max(threat.reserve, walls.FLOOR=5000) at RCL6+",
-  "check": "storage holds ~5k while mineral sites open; queen not starved; spawn wait share not rising",
-  "revert": "storeFloor() in src/roles/builder.js -> threat reserve only"
- },
- "mineral_hold_fix": {
-  "status": "deployed be9083d 10:44 by parent; verified 11:11 (0 upgraders, storage recovered)",
-  "file": "src/managers/walls.js noUpgrade",
-  "revert": "re-add storage > FLOOR condition"
- },
- "defense_reserve": {
-  "deployed": "be9083d",
-  "set": "Memory.defense.reserveE=15000 (parent)",
-  "effect": "builders draw nothing while storage<15k",
-  "check": "builders resume above 15k; mineral sites progress; reserve is the parent/Misaki call, do not change"
- },
- "hub_drain_hauler": {
-  "deployed": "12fe2d8 + d98017b",
-  "rule": "walls.noUpgrade && storage && hub+source link -> hauler fixed pickup = hub link from P.pos.manager (36,30), withdraw >= min(free,400); container A only when it holds a full load; queen standby hub drain only when no home hauler",
-  "check": "queen targets 36,30/37,31 share << 25% (1h creep_cpu); queen ticks on x=38 corridor down; hub <800; 31,12 container < 800; sw wait share <= 2.6%",
-  "revert": "git revert d98017b 12fe2d8 (hauler.hubPickup + queen standby !H.homeHauler)"
- },
- "bank_recycle": {
-  "deployed": "3dc461c",
-  "rule": "builder empty + walls.defLow(home) + not remote -> salvage.retire after 50t (memory.nb)",
-  "check": "builders 0 during bank, none respawned; respawn via surplus hysteresis when reserveE lifts",
-  "revert": "drop the Wb.defLow line in src/roles/builder.js (!src branch)"
- },
- "remote_sample": {
-  "tick": 83741370,
-  "W45N8": 1094695,
-  "W45N7": 586670,
-  "at": "2026-10-19 16:53 UTC+8"
- },
- "last_home_patrol": {
-  "tick": 83741397,
-  "at": "2026-10-19 16:53 UTC+8",
-  "mode": "fix",
-  "storage": 13872,
-  "progress": 377274,
-  "gate_min": 165901,
-  "wall_min": 142101
- },
- "rhauler_lead": {
-  "deployed": "e9cf7a3",
-  "rule": "remote rhauler counts live only while ttl > body.length*3 + 72 + C.lead",
-  "check": "W45N8 replacement born when old ttl ~180 (old rhauler83741255 out 83741363, dies ~83742863); watch events / Memory.remote.W45N8.cont.e < 1800 at handover; W45N8 delivered back to ~9.5-10 e/t",
-  "revert": "restore 120 + lead in remoteSpawn live() in src/managers/spawn.js"
- }
+  "rampart_slack": {
+    "deployed": "3499428",
+    "check": "builders on distinct barriers, no lockstep retargets in creep_cpu target keys, w share >=30%; revert = SLACK=0 in managers/walls.js",
+    "status_0450": "w share 42% since 0d91278; distinct targets 16; ok"
+  },
+  "builder_floor": {
+    "deployed": "0d91278",
+    "fix": "6b939c1",
+    "check": "new builders >=8W even while starving (lastFull>300t); storage not rising; revert = Math.min(E, ...) in spawn.js bodyEnergy",
+    "live_at_deploy": "11W/5W/3W/11W/6W totalW=36; starving=true lastFull=83710596",
+    "check_note": "05:40: post-deploy spawns builder83711351=8W and builder83711498=10W while lastFull=83711276 (starving); pass"
+  },
+  "builder_six": {
+    "deployed": "966c81c",
+    "rule": "T.builder 5->6 when walls build phase, noUpgrade, budgetE>=40k and storage>=40k",
+    "check": "storage stops rising (was +12..27 e/t); builder w share >=30%; no congestion at storage/hub; CPU <=~9; spawn util ok",
+    "revert": "drop the T.builder===5 -> 6 line in src/managers/spawn.js targets",
+    "check_note": "06:06: 6 live, 54 WORK; storage +4 e/t (was +27); CPU ~7.4; converged ok"
+  },
+  "hold_lift_tiers": {
+    "deployed": "7ea548d",
+    "rule": "build-phase builder tiers 3/4/5/6 no longer require walls.noUpgrade",
+    "check": "builders back to 6 while budget>=40k; storage falls gently toward ~5k floor then tiers step down; upgraders 2 fed; CPU <=~9.5",
+    "revert": "re-add W.noUpgrade(room) && to the three tier lines in src/managers/spawn.js targets (and tests/build_hold.js case)"
+  },
+  "builder_floor5k": {
+    "deployed": "9edf999",
+    "rule": "builder pickSource + low-carry refill use max(threat.reserve, walls.FLOOR=5000) at RCL6+",
+    "check": "storage holds ~5k while mineral sites open; queen not starved; spawn wait share not rising",
+    "revert": "storeFloor() in src/roles/builder.js -> threat reserve only"
+  },
+  "mineral_hold_fix": {
+    "status": "deployed be9083d 10:44 by parent; verified 11:11 (0 upgraders, storage recovered)",
+    "file": "src/managers/walls.js noUpgrade",
+    "revert": "re-add storage > FLOOR condition"
+  },
+  "defense_reserve": {
+    "deployed": "be9083d",
+    "set": "Memory.defense.reserveE=15000 (parent)",
+    "effect": "builders draw nothing while storage<15k",
+    "check": "builders resume above 15k; mineral sites progress; reserve is the parent/Misaki call, do not change"
+  },
+  "hub_drain_hauler": {
+    "deployed": "12fe2d8 + d98017b",
+    "rule": "walls.noUpgrade && storage && hub+source link -> hauler fixed pickup = hub link from P.pos.manager (36,30), withdraw >= min(free,400); container A only when it holds a full load; queen standby hub drain only when no home hauler",
+    "check": "queen targets 36,30/37,31 share << 25% (1h creep_cpu); queen ticks on x=38 corridor down; hub <800; 31,12 container < 800; sw wait share <= 2.6%",
+    "revert": "git revert d98017b 12fe2d8 (hauler.hubPickup + queen standby !H.homeHauler)"
+  },
+  "bank_recycle": {
+    "deployed": "3dc461c",
+    "rule": "builder empty + walls.defLow(home) + not remote -> salvage.retire after 50t (memory.nb)",
+    "check": "builders 0 during bank, none respawned; respawn via surplus hysteresis when reserveE lifts",
+    "revert": "drop the Wb.defLow line in src/roles/builder.js (!src branch)"
+  },
+  "remote_sample": {
+    "tick": 83741370,
+    "W45N8": 1094695,
+    "W45N7": 586670,
+    "at": "2026-10-19 16:53 UTC+8"
+  },
+  "last_home_patrol": {
+    "at": "2026-10-19T17:52:00+08:00",
+    "tick": 83742219,
+    "observe_only": true,
+    "storage": 14510,
+    "gates_min": 166701,
+    "walls": 142101,
+    "note": "observe-only; defLow upgrade hold after joint-def home:2"
+  },
+  "rhauler_lead": {
+    "deployed": "e9cf7a3",
+    "rule": "remote rhauler counts live only while ttl > body.length*3 + 72 + C.lead",
+    "check": "W45N8 replacement born when old ttl ~180 (old rhauler83741255 out 83741363, dies ~83742863); watch events / Memory.remote.W45N8.cont.e < 1800 at handover; W45N8 delivered back to ~9.5-10 e/t",
+    "revert": "restore 120 + lead in remoteSpawn live() in src/managers/spawn.js"
+  }
 }
