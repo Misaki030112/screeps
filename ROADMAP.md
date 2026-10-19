@@ -3,6 +3,14 @@
 Novice zone ends **2026-10-28 03:33 UTC+8**. Defence timeline: `docs/DEFENSE_NOVICE.md` (2026-10-16); detail `docs/DEFENSE.md` / geometry `docs/DEFENSE_PLAN.md`.
 **Safe mode: NEVER auto-activate** — alert Misaki.
 
+## 2026-10-19 21:2x two-room evaluation (45-min window 20:39-21:24 vs 19:54-20:39)
+
+- Home W46N8: controller progress 23.2 e/t (prev 23.3; model 1h 23.2, 6h 20.9 vs ideal 21.8). Storage 16.2k -> 15.9k (flat, -0.4 e/t), above the 15k floor. RCL6 458.8k/3.645M; RCL7 ETA still ~10-26 afternoon at this rate. Walls 142101 no loss, ramparts min 169.8k rising, towers 930/910, 0 sites, no safe mode. Spawn utilisation 48%. Memory 32.9k.
+- W47N8: controller progress 20.2 e/t (prev 20.2; model 1h 18.1 cov0.65, 6h 20.7 vs ideal 29.9). Settled at the post-defender sustainable rate after the 19:41-20:26 bounce (~26 e/t). RCL4 160.2k/405k; RCL5 ETA ~14.2 h at the window rate (~10-20 11:30 UTC+8), ideal 9.6 h. Storage ~1.2-2.1k, ctl cont 13,26 cycling 0↔600 (30 WORK > ~20 e/t delivered; energy-bound, not lost). 10 ramparts, 0 sites, walls min 50.0k, tower 880, 0 hostiles. BustJetter MEDIUM group stays in own W48N9.
+- Cross-room: CPU avg 12.4 (prev 12.6 / last-eval 13.6), max 16.8, bucket 10000. Top creep CPU: queen, wbuilder, wrhauler. DB lag ~32 s. Listener stalled ~20:58, restarted 21:00 (known half-open ws). Tests all pass, src clean. 0 new game errors (tail still t83730121). No deploy (no clear reversible lever beyond the known hauler-size watch).
+- **W47N8 patrol:** keep the prior hauler-size note (next remote 13 CARRY / local 2x11 ≈ +1.3 e/t); do not retune hauler→ctl priority before RCL5 (link gives ~10 e/t non-divertible). At RCL5 follow PLAN_W47N8.md 4-point checklist (tower 24,8 only site first).
+- **Home patrol:** hauler still 54 CARRY vs 24.6 need (idle/waiting high); size from model at next natural replacement. Wall step 2 still waits post-RCL7.
+
 ## 2026-10-19 20:5x strategy review: what opens at novice end (`docs/DEFENSE_NOVICE.md` "20:5x refresh")
 
 - Home N/S are terrain-closed (0 exits); the 10-28 risk is three novice-wall openings: **W45N7 x=49 (44 tiles) and W44N8 y=49 (18) <- W44N7 Cody132 RCL7**, and **W47N9 x=49 (20) <- W46N9 drtk712 RCL8** (then W47N8 north). Remotes W45N7/W45N8 become the first rooms outsiders reach.
