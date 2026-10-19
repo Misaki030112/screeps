@@ -360,7 +360,13 @@ function run1(spawn, onWait) {
   { const Wr = require('./walls'), dr = Wr.defReserve ? Wr.defReserve() : 0, war = Wr.siege(room);
     if (dr && room.storage && T.builder > 0 && !war) { const sur = room.storage.store[RESOURCE_ENERGY] - dr - 2000; T.builder = sur < 0 ? 0 : Math.min(T.builder, 1 + Math.floor(sur / 4000)); }
     if (war) T.builder = Math.min(T.builder, 1);
-    if (Wr.defLow && Wr.defLow(room)) { if (!war) T.builder = 0;
+    const low = Wr.defLow && Wr.defLow(room);
+    if (low) { if (!war) T.builder = 0; }
+    // A site no builder will work must not cost an upgrader slot ('sites ? 1 : 2' frees feed for a builder). Patrol 10-20 07:2x:
+    // walls.js NW spur road 30,12 (0/300) sat with builder target 0 (storage at the 15k floor) -> upgrader target 1, the 2nd
+    // 14W upgrader died unreplaced (~-8 e/t upgrade) against Misaki's 'upgrade first until RCL7'.
+    if (nSites && !T.builder && !(count.builder || 0)) T.upgrader = targets(room, count, backlog, m.ctlEma, 0).upgrader;
+    if (low) {
       T.upgrader = defLowUpgraders(T.upgrader, room.storage ? room.storage.store[RESOURCE_ENERGY] : 0, dr, !!(Wr.stepHeld && Wr.stepHeld(room)), (room.controller.ticksToDowngrade || 0) < Wr.UP_SAFE); } }
   room.memory.roleTargets = T;
   const homeRole = role => {
