@@ -1,6 +1,6 @@
 {
- "next_at": "2026-10-19T10:40:00+08:00",
- "reason": "09:40 home patrol: observe-only, no fix. Tick 83735185: alerts LOW only (exit 1), Memory.errs null; gates min 159.6k (+0.9k since 08:38), walls min 142101 (no loss); towers 920/940; storage 15.6k (15k floor); RCL6 262.8k (+10.1k/892t ~11.3 e/t); bkt 10000; remotes SAFE res W45N8 1955 W45N7 2046, 0 hostiles; lab 35,21 39168/50000 (~1h left); new road sites 29,33 46,17 from parent link-road deploy 9dbe89f 09:28 (builder trip_med up as expected). Queens 3 = pre-spawn (one ttl 75). Audit/model pattern unchanged. Next: hourly check gates/walls, lab finish, link-road sites progressing; no deploy.",
+ "next_at": "2026-10-19T11:40:00+08:00",
+ "reason": "10:40 home patrol: observe-only, no fix. Tick 83736067: alerts LOW only (exit 1), Memory.errs null (remote_status errors list is old tick 83723314); gates min 160.5k (+0.9k since 09:40), walls min 142101 (no loss); towers 970/950; storage 14.8k (at 15k reserveE floor, builders gated); RCL6 273.1k (+10.4k/882t ~11.8 e/t); bkt 10000 cpu ~10.5; remotes SAFE res W45N8 2143 W45N7 2144; delivered W45N8 1047.1k (+4.5k since 10:10 ~10 e/t) W45N7 540.7k (+4.2k ~9.6 e/t), so the 2h-briefing 'half rate' was the DB gap, not a real drop. Queen rp100 ~11 is mostly 'n' (new target) + 's' (stuck 2t) repaths, normal refill churn; CPU not constrained. Model upgrade gap = energy-bound at storage floor (by design). Next: hourly gates/walls, link-road sites; no deploy.",
  "road_plan": {
   "doc": "docs/ROADS.md",
   "each_patrol": [
@@ -200,18 +200,18 @@
   "revert": "drop the Wb.defLow line in src/roles/builder.js (!src branch)"
  },
  "remote_sample": {
-  "tick": 83731699,
-  "W45N8": 1006239,
-  "W45N7": 501898,
-  "at": "2026-10-19 05:23 UTC+8"
+  "tick": 83736069,
+  "W45N8": 1047099,
+  "W45N7": 540746,
+  "at": "2026-10-19 10:41 UTC+8"
  },
  "last_home_patrol": {
-  "tick": 83735185,
-  "at": "2026-10-19 09:40 UTC+8",
+  "tick": 83736067,
+  "at": "2026-10-19 10:40 UTC+8",
   "mode": "observe-only",
-  "storage": 15581,
-  "progress": 262757,
-  "gate_min": 159601,
+  "storage": 14849,
+  "progress": 273125,
+  "gate_min": 160461,
   "wall_min": 142101
  }
 }
