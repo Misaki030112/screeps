@@ -89,6 +89,7 @@ const cases = [
     const r = room({ mem: m, storage: 30000 }); assert.strictEqual(W.target(r, W.barriers(r, P)), 300000);
     assert.strictEqual(W.repairJob(r), null, 'step 2 held at RCL6'); assert.strictEqual(W.wantBuilder(r), false);
     Game.time++; assert.strictEqual(W.stepHeld(r), true);
+    const r4 = Object.assign(room({ mem: {}, rcl: 4, storage: 800 }), { name: 'W47N8' }); assert.strictEqual(W.stepHeld(r4), false, 'same tick, other room: cache is per room');
     HOLD = true; Game.time++; assert.ok(W.repairJob(r), 'threat: attacked walls still repaired'); assert.strictEqual(W.stepHeld(r), false); HOLD = false;
     const r7 = room({ mem: m, rcl: 7, storage: 30000 }); Game.time++; assert.strictEqual(W.repairJob(r7).id, 'a', 'RCL7: step 2 resumes'); assert.strictEqual(W.stepHeld(r7), false);
     OBJ.a.hits = 60000; Game.time++; assert.strictEqual(W.repairJob(r).id, 'a', 'below 100k still repaired at RCL6'); assert.strictEqual(W.stepHeld(r), false);

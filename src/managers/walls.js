@@ -134,15 +134,15 @@ function reserved(room) { const m = room.memory && room.memory.walls; return m &
 // Before this (2room eval 10-20 00:3x) every storage pop above reserveE+2k spawned a 33-part wall builder (~10 e/t, 1h window) that
 // lifted walls 142k -> 152-162k. Ramparts still never decay: towers ratchet rampHW (managers/tower.js). The fund keeps accruing.
 const HOLD_STEP = 100000, HOLD_BELOW_RCL = 7;
-let heldT = -1, heldV = false;
+const heldC = {}; // per room per tick: { t, v }
 function stepHeld(room, tgt) {
   if (!room || !room.controller || room.controller.level >= HOLD_BELOW_RCL) return false;
   if (tgt === undefined) {
-    if (typeof Game !== 'undefined' && heldT === Game.time) return heldV;
+    const c = heldC[room.name]; if (typeof Game !== 'undefined' && c && c.t === Game.time) return c.v;
     const P = plan().get(room.name);
     tgt = defense(P) && phase(room) === 'build' ? target(room, barriers(room, P)) : 0;
     const v = tgt > HOLD_STEP && !threat(room);
-    if (typeof Game !== 'undefined') { heldT = Game.time; heldV = v; }
+    if (typeof Game !== 'undefined') heldC[room.name] = { t: Game.time, v };
     return v;
   }
   return tgt > HOLD_STEP && !threat(room);
