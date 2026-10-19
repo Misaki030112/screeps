@@ -1,6 +1,6 @@
 {
- "next_at": "2026-10-19T11:40:00+08:00",
- "reason": "10:40 home patrol: observe-only, no fix. Tick 83736067: alerts LOW only (exit 1), Memory.errs null (remote_status errors list is old tick 83723314); gates min 160.5k (+0.9k since 09:40), walls min 142101 (no loss); towers 970/950; storage 14.8k (at 15k reserveE floor, builders gated); RCL6 273.1k (+10.4k/882t ~11.8 e/t); bkt 10000 cpu ~10.5; remotes SAFE res W45N8 2143 W45N7 2144; delivered W45N8 1047.1k (+4.5k since 10:10 ~10 e/t) W45N7 540.7k (+4.2k ~9.6 e/t), so the 2h-briefing 'half rate' was the DB gap, not a real drop. Queen rp100 ~11 is mostly 'n' (new target) + 's' (stuck 2t) repaths, normal refill churn; CPU not constrained. Model upgrade gap = energy-bound at storage floor (by design). Next: hourly gates/walls, link-road sites; no deploy.",
+ "next_at": "2026-10-19T12:40:00+08:00",
+ "reason": "11:51 home patrol: observe-only, no fix. Tick 83737072: alerts LOW only (exit 1), errs only old 83723314 w8hauler lines; gates min 161.5k (+1.0k since 10:40), walls min 142101 (no loss); towers 870/950; storage 14990 (at 15k reserveE floor, builders gated, 0 sites); RCL6 287.7k (+14.6k/1005t ~14.5 e/t, 1h upgrade 14.8); bkt 10000; remotes SAFE res W45N8 2225 W45N7 2104; delivered W45N8 1057.0k (+9.9k ~9.9 e/t) W45N7 548.6k (+7.8k ~7.8 e/t, dip during rminer replacement, both rminers <450t old; rhaulers waiting_pickup = supply-bound, watch next patrol). Model: upgrade energy-bound at storage floor by design; paused-remote home work already in roles/remote.js. Next: hourly gates/walls, W45N7 rate recovery; no deploy.",
  "road_plan": {
   "doc": "docs/ROADS.md",
   "each_patrol": [
@@ -200,18 +200,18 @@
   "revert": "drop the Wb.defLow line in src/roles/builder.js (!src branch)"
  },
  "remote_sample": {
-  "tick": 83736069,
-  "W45N8": 1047099,
-  "W45N7": 540746,
-  "at": "2026-10-19 10:41 UTC+8"
+  "tick": 83737065,
+  "W45N8": 1057029,
+  "W45N7": 548552,
+  "at": "2026-10-19 11:51 UTC+8"
  },
  "last_home_patrol": {
-  "tick": 83736067,
-  "at": "2026-10-19 10:40 UTC+8",
+  "tick": 83737072,
+  "at": "2026-10-19 11:51 UTC+8",
   "mode": "observe-only",
-  "storage": 14849,
-  "progress": 273125,
-  "gate_min": 160461,
+  "storage": 14990,
+  "progress": 287735,
+  "gate_min": 161501,
   "wall_min": 142101
  }
 }
