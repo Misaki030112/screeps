@@ -11,6 +11,32 @@ const F = require('../../utils/focus');
 const SEAL_Y = 3, FLOOR = 400, MAX_T = 600;
 const rng = (a, b) => Math.max(Math.abs(a.x - b.x), Math.abs(a.y - b.y));
 const live = (c, t) => c.body.reduce((n, p) => n + (p.type === t && p.hits > 0 ? 1 : 0), 0);
+// 17:58: boosted melee. UH x2, UH2O x3, XUH2O x4 per ATTACK part; unboosted parts assume `def` (north stock has UH -> plan assumes UH)
+const ATK_MULT = { UH: 2, UH2O: 3, XUH2O: 4 };
+const atkPow = (c, def) => c.body.reduce((n, p) => n + (p.type === 'attack' && p.hits > 0 ? 30 * (ATK_MULT[p.boost || def] || 1) : 0), 0);
+// 17:59 (Misaki): defenders with HEAL heal every tick besides shooting. me {pos,hits,hitsMax,id}, friends [{id,pos,hits,hitsMax}] (incl. me),
+// shooting: rangedAttack/mass this tick. -> {act:'heal'|'rangedHeal', id} | null. heal() at 1 never conflicts with rangedAttack;
+// rangedHeal does, so only when not shooting. Pre-heal self when armed hostiles within 4.
+function healAct(me, friends, hs, shooting) {
+  const pct = f => f.hits / f.hitsMax, hurt = friends.filter(f => f.hits < f.hitsMax);
+  const adj = hurt.filter(f => rng(f.pos, me.pos) <= 1).sort((a, b) => pct(a) - pct(b))[0];
+  if (adj) return { act: 'heal', id: adj.id };
+  if (me.hits < me.hitsMax || hs.some(h => armed(h) && rng(h.pos, me.pos) <= 4)) return { act: 'heal', id: me.id };
+  if (!shooting) { const far = hurt.filter(f => rng(f.pos, me.pos) <= 3).sort((a, b) => pct(a) - pct(b))[0]; if (far) return { act: 'rangedHeal', id: far.id }; }
+  return null;
+}
+// 17:58 feints: armed groups on BOTH seal segments -> defenders split by wall threat (10/RA, 30/ATTACK, 50/WORK; >=1 each when n>=2).
+// -> { x: target x for this defender, idx: index inside its group }
+const SEG_X = 18;
+function segSplit(elig, n, idx) {
+  const w = h => 10 * live(h, 'ranged_attack') + 30 * live(h, 'attack') + 50 * live(h, 'work');
+  const W = elig.filter(h => h.pos.x < SEG_X), E = elig.filter(h => h.pos.x >= SEG_X);
+  const ww = W.reduce((s, h) => s + w(h), 0), we = E.reduce((s, h) => s + w(h), 0);
+  const cx = g => Math.round(g.reduce((s, h) => s + h.pos.x, 0) / g.length);
+  if (!ww || !we || n < 2) return null;
+  const nw = Math.min(n - 1, Math.max(1, Math.round(n * ww / (ww + we))));
+  return idx < n - nw ? { x: cx(E), idx } : { x: cx(W), idx: idx - (n - nw) };
+}
 const cls = c => (live(c, 'heal') ? 0 : live(c, 'ranged_attack') ? 1 : live(c, 'attack') ? 2 : 3); // Misaki 17:40: healers always first, then ranged, melee
 const armed = c => live(c, 'attack') + live(c, 'ranged_attack') + live(c, 'work') > 0;
 const inBase = c => c.pos.y > SEAL_Y;
@@ -18,10 +44,13 @@ const inBase = c => c.pos.y > SEAL_Y;
 function towerPick(towers, hostiles, o = {}) {
   const tw = towers.filter(t => t.energy >= 10); if (!tw.length || !hostiles.length) return null;
   const hurting = o.hurting || new Set(), banned = o.banned || new Set();
-  const rows = hostiles.map(h => { const raw = tw.reduce((s, t) => s + F.towerDmg(rng(t.pos, h.pos)), 0), net = F.effective(h, raw) - F.healOn(h, hostiles);
-    const claim = live(h, 'claim') > 0, hurt = hurting.has(h.id);
+  // 17:58: net counts COMBINED focused damage: towers + our RA within 3 (defenders shoot the tower focus). Tower-only net made a far
+  // tower (150) hold fire forever vs 84-252 heal while defenders + tower together beat it. o.allies: [{pos, ra}] (live RA parts)
+  const allies = o.allies || [], hurtIds = new Set([...hurting]);
+  const rows = hostiles.map(h => { const raw = tw.reduce((s, t) => s + F.towerDmg(rng(t.pos, h.pos)), 0) + allies.reduce((s, a) => s + (rng(a.pos, h.pos) <= 3 ? 10 * a.ra : 0), 0), net = F.effective(h, raw) - F.healOn(h, hostiles);
+    const claim = live(h, 'claim') > 0, hurt = hurting.has(h.id) || (live(h, 'heal') > 0 && hostiles.some(x => hurtIds.has(x.id) && rng(x.pos, h.pos) <= 3)); // healer backing an attacker counts as hurting us
     return { h, net, ttk: net > 0 ? h.hits / net : Infinity, cls: claim ? -1 : cls(h), claim, hurt,
-      urgent: claim || hurt || (inBase(h) && armed(h)), elig: claim || inBase(h) || (hurt && armed(h)) }; });
+      urgent: claim || hurt || (inBase(h) && armed(h)), elig: claim || inBase(h) || (hurt && (armed(h) || live(h, 'heal') > 0)) }; });
   const ok = rows.filter(r => r.elig && r.net > 0 && !(banned.has(r.h.id) && !r.urgent && r.ttk > 2));
   const best = ok.find(r => r.h.id === o.prev && r.ttk <= 2) || ok.sort((a, b) => a.cls - b.cls || a.h.hits - b.h.hits)[0];
   if (!best) return null;
@@ -45,7 +74,7 @@ function sim(enemy, towerR, def, nDef, o = {}) {
     const hp = E.reduce((s, x) => s + F.healPow(x), 0), ra = U.reduce((s, x) => s + live(x, 'ranged_attack'), 0) * 10;
     const fire = energy >= 10 * towerR.length ? tw : 0;
     const tgt = E.slice().sort((a, b) => cls(a) - cls(b) || a.hits - b.hits).find(x => F.effective(x, fire + ra) - hp > 0);
-    let ed = E.reduce((s, x) => s + live(x, 'ranged_attack'), 0) * 10; mel += up; if (mel >= 1) { mel -= 1; ed += E.reduce((s, x) => s + live(x, 'attack'), 0) * 30; }
+    let ed = E.reduce((s, x) => s + live(x, 'ranged_attack'), 0) * 10; mel += up; if (mel >= 1) { mel -= 1; ed += E.reduce((s, x) => s + atkPow(x, o.atkBoost), 0); }
     if (tgt) { if (fire) { energy -= 10 * towerR.length; burnt += 10 * towerR.length; } hit(tgt, Math.min(tgt.hits, F.effective(tgt, fire + ra))); }
     if (U.length && ed) { const v = U.reduce((a, b) => (b.hits < a.hits ? b : a)); hit(v, Math.min(v.hits, ed));
       for (const d of U) if (d.hits > 0) { heal(d, 12 * live(d, 'heal')); if (d.hits < 0.6 * d.max) out.add(d); } }
@@ -103,8 +132,9 @@ function defPlan(me, hs, o = {}) {
   if (inside.length) { const g = inside.sort((a, b) => dcls(a) - dcls(b) || a.hits - b.hits)[0]; return rng(g.pos, me.pos) > 3 ? r('approach', g.pos) : r('hold', null); }
   // enemy north of the seal: stand on the post behind the wall nearest them (shoots at range 3 from y=4)
   // shadow the enemy along the inner wall: focus target x (else the group centroid), re-picked every tick (11 cached tiles: cheap)
+  const sp = o.n && segSplit(elig.filter(armed), o.n, o.idx || 0);
   const ft = o.focus && elig.find(h => h.id === o.focus), ex = ft ? ft.pos.x : Math.round(elig.reduce((s, h) => s + h.pos.x, 0) / elig.length);
-  const p = postTile(ex, o.idx, o.avoid);
+  const p = sp ? postTile(sp.x, sp.idx, o.avoid) : postTile(ex, o.idx, o.avoid);
   return me.pos.x === p.x && me.pos.y === p.y ? r('hold', null) : r('post', p);
 }
 // ---- joint defence (Misaki 17:34): ONE planner for the W46N8 + W47N8 roster. Bodies: RA+MOVE only (towers heal on our ground).
@@ -138,4 +168,4 @@ function repairStand(wall, hs, open = () => true) {
 }
 // body summary {attack:n,...} (tools/north_watch.py) -> body list in the worst-case order (tough, move, work parts last)
 function fromCounts(b) { const out = []; for (const t of ['tough', 'move', 'attack', 'ranged_attack', 'heal', 'work', 'claim', 'carry']) for (let i = 0; i < (b[t] | 0); i++) out.push({ type: t, hits: 100 }); return { body: out, hits: out.length * 100 }; }
-module.exports = { MAXH, MAXL, towerPick, sim, assess, defPlan, postTile, POSTS, IDLE, plan, raBody, repairPick, repairStand, COVER, RECYCLE, fromCounts, cls, armed, inBase, FLOOR, SEAL_Y };
+module.exports = { MAXH, MAXL, healAct, segSplit, atkPow, towerPick, sim, assess, defPlan, postTile, POSTS, IDLE, plan, raBody, repairPick, repairStand, COVER, RECYCLE, fromCounts, cls, armed, inBase, FLOOR, SEAL_Y };

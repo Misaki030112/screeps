@@ -249,10 +249,13 @@ const R = {
     const towers = room.find(FIND_MY_STRUCTURES, { filter: s => s.structureType === STRUCTURE_TOWER }).map(t => t.pos);
     const th = room.memory.threat8, idx = _.filter(Game.creeps, x => x.memory.role === 'w8defender').map(x => x.name).sort().indexOf(c.name);
     const p = D.defPlan({ pos: c.pos, hits: c.hits, hitsMax: c.hitsMax, hurt: mem.hurt }, hs,
-      { focus: th && th.id, towers, quiet: Game.time - (mem.seen || mem.born || Game.time), enemyX: hs.length ? undefined : TH.invasion() ? Memory.ops && Memory.ops.w8invNx : undefined, idx: Math.max(0, idx),
+      { focus: th && th.id, towers, quiet: Game.time - (mem.seen || mem.born || Game.time), enemyX: hs.length ? undefined : TH.invasion() ? Memory.ops && Memory.ops.w8invNx : undefined, idx: Math.max(0, idx), n: _.filter(Game.creeps, x => x.memory.role === 'w8defender' && x.room.name === C.ROOM).length,
         avoid: room.find(FIND_MY_CREEPS, { filter: x => x.memory.role === 'w8builder' && x.pos.y <= 6 }).map(x => x.pos) });
     mem.hurt = p.hurt;
     if (p.mass) c.rangedMassAttack(); else if (p.shoot) c.rangedAttack(p.shoot);
+    if (c.body.some(b => b.type === HEAL && b.hits > 0)) { // 17:59: HEAL parts heal every tick (heal() + rangedAttack same tick; rangedHeal only when not shooting)
+      const fr = room.find(FIND_MY_CREEPS, { filter: x => x.hits < x.hitsMax || x.id === c.id }), a = D.healAct(c, fr, hs, !!(p.mass || p.shoot));
+      if (a) { const t = Game.getObjectById(a.id); if (t) a.act === 'heal' ? c.heal(t) : c.rangedHeal(t); } }
     if (p.move === 'flee') { const away = PathFinder.search(c.pos, { pos: new RoomPosition(p.from.x, p.from.y, C.ROOM), range: 4 }, { flee: true, maxRooms: 1, roomCallback: rn => cb(rn, new PathFinder.CostMatrix()) }).path[0]; if (away) c.move(c.pos.getDirectionTo(away)); return; }
     if (p.move === 'retreat') return c.pos.inRangeTo(p.goal.x, p.goal.y, 2) || mv(p.goal, 2);
     if (p.move === 'approach') return mv(p.goal, 3);

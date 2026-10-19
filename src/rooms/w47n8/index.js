@@ -279,7 +279,7 @@ function assessRun(room, towers, hs) {
   // 17:34 joint planner (defense.plan): one place decides the W46N8 + W47N8 roster; home only if home itself is not threatened
   const hr = Game.rooms[HOME], homeOk = !!hr && !require('../../managers/home').active(hr);
   const r = D.plan({ force, towerR: tr, inside, homeOk, homeCap: hr ? hr.energyCapacityAvailable : 0, w8Cap: room.energyCapacityAvailable || 300,
-    towerE: Math.min(...towers.map(t => t.store[RESOURCE_ENERGY])) });
+    towerE: Math.min(...towers.map(t => t.store[RESOURCE_ENERGY])), atkBoost: o.w8uh > 0 ? 'UH' : '', meleeUptime: inside ? 1 : 0 }); // 17:58: UH stock north -> boosted melee; melee only reaches us inside the seal
   o.w8roster = { t: Game.time, home: r.home, w8: r.w8, why: r.why };
   m.w8assess = { t: Game.time, spawn: r.w8 > 0, why: r.why, at: [at.x, at.y] };
   if (r.advise) o.w8adv = { t: Game.time, advise: r.advise, why: r.why, n: force.length }; // safe mode is Misaki's call (alerts relay it)
@@ -291,18 +291,20 @@ function towerRun(room) {
   const h = room.find(FIND_HOSTILE_CREEPS).filter(x => !x.my);
   assessRun(room, towers, h);
   // 17:48 (Misaki): heal only creeps < 60% (no-HEAL creeps first, lowest %); a heal candidate beats attacking this tick
-  const hurt = F.healPick(room.find(FIND_MY_CREEPS));
+  const peace = !F.hostileArmed(h); // 18:00 (Misaki): no armed/healing hostile -> heal any damaged creep to full (floor 200 e)
+  const hurt = F.healPick(room.find(FIND_MY_CREEPS), peace);
   let p = null;
   if (h.length) {
     const m = room.memory, hurting = hurtingSet(room, h);
     const banned = F.track(m.drain8 || (m.drain8 = {}), h, Game.time, m.threat8 && m.threat8.id, m.threat8 && m.threat8.e);
-    p = D.towerPick(towers.map(t => ({ pos: t.pos, energy: t.store[RESOURCE_ENERGY], t })), h, { prev: m.threat8 && m.threat8.id, hurting, banned });
+    p = D.towerPick(towers.map(t => ({ pos: t.pos, energy: t.store[RESOURCE_ENERGY], t })), h, { prev: m.threat8 && m.threat8.id, hurting, banned,
+      allies: room.find(FIND_MY_CREEPS).map(c => ({ pos: c.pos, ra: (c.body || []).filter(b => b.type === RANGED_ATTACK && b.hits > 0).length })).filter(a => a.ra) });
   } else if (room.memory.drain8 && Game.time % 100 === 0) F.track(room.memory.drain8, [], Game.time);
   const inBaseThreat = !!p && p.h.pos.y > D.SEAL_Y && D.armed(p.h);
   room.memory.threat8 = p ? { t: Game.time, id: p.h.id, inBase: inBaseThreat, e: p.shooters.length * 10 } : undefined;
   const fire = new Set(p ? p.shooters.map(s => s.t) : []);
   for (const t of towers) {
-    if (hurt) t.heal(hurt);
+    if (hurt && (!peace || t.store[RESOURCE_ENERGY] >= 200)) t.heal(hurt);
     else if (fire.has(t)) t.attack(p.h);
     else if (t.store[RESOURCE_ENERGY] > 600) { // 17:20 (Misaki): built ramparts hold their current hits (decay offset only, never raised)
       const r = rampHold(room);

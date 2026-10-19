@@ -66,7 +66,8 @@ def main():
     json.dump(st, open(STATE, 'w'))
     if threatN:
         nb = json.dumps([{k: v for k, v in b.items() if k in ('attack', 'ranged_attack', 'heal', 'tough', 'move', 'work', 'claim')} for b in n9], separators=(',', ':'))
-        expr = '(Memory.ops.w8threatN=Game.time,' + (f'Memory.ops.w8invN=Game.time,Memory.ops.w8invNb={nb},Memory.ops.w8invNx={x9},' if invN else '') + '"ok")'  # w8invN: armed group at the W47N9 border -> W47N8 border defenders
+        uh = sum(v for r2 in ('W47N9', 'W48N9') for k, v in st.get(r2, {}).get('boost', {}).items() if 'UH' in k)  # 17:58: UH stock -> plan assumes boosted melee
+        expr = f'(Memory.ops.w8uh={uh},Memory.ops.w8threatN=Game.time,' + (f'Memory.ops.w8invN=Game.time,Memory.ops.w8invNb={nb},Memory.ops.w8invNx={x9},' if invN else '') + '"ok")'  # w8invN: armed group at the W47N9 border -> W47N8 border defenders
         subprocess.run([sys.executable, os.path.join(H, 'q.py'), expr], capture_output=True, timeout=60)
     if '--quiet' not in sys.argv:
         print(json.dumps({'tick': tick, 'rooms': summary, 'threatN': threatN, 'alerts': [(a['episode'], s) for a, s in alerts]}))

@@ -121,3 +121,46 @@ console.log('w47n8 defense ok');
 // home-sent marker must survive main.js's first-tick memory cleanup (it deletes 'src' on creeps without v2)
 { const s = require('fs').readFileSync(path.join(__dirname, '..', 'src', 'rooms', 'w47n8', 'index.js'), 'utf8');
   assert.ok(/jd: HOME, born: Game\.time, v2: 1/.test(s) && !/src: HOME/.test(s), 'home defender marked jd + v2'); console.log('w47n8 jd marker ok'); }
+// ---- 17:58-18:00 fixes
+{
+  const D2 = require('../src/rooms/w47n8/defense'), F2 = require('../src/utils/focus'), A = require('assert');
+  const bp = (o) => { const b = []; for (const t in o) for (let i = 0; i < o[t]; i++) b.push({ type: t, hits: 100 }); return b; };
+  // combined focused damage: far tower (150) alone < heal 168, but tower + 2x8RA defenders in range beat it
+  const atk = { id: 'a', pos: { x: 27, y: 1 }, hits: 1400, body: bp({ ranged_attack: 8, move: 6 }) };
+  const hl = { id: 'h', pos: { x: 28, y: 1 }, hits: 1400, body: bp({ heal: 14, move: 14 }) };
+  const tw = [{ pos: { x: 33, y: 35 }, energy: 900 }], hurting = new Set(['a']);
+  A.strictEqual(D2.towerPick(tw, [atk, hl], { hurting }), null, 'tower-only net <= 0 holds fire');
+  const allies = [{ pos: { x: 27, y: 4 }, ra: 8 }, { pos: { x: 28, y: 4 }, ra: 8 }];
+  const p = D2.towerPick(tw, [atk, hl], { hurting, allies });
+  A.ok(p && p.h.id === 'h' && p.net > 0, 'combined net > 0 fires; backing healer is eligible and first: ' + (p && p.h.id));
+  A.strictEqual(D2.towerPick(tw, [hl], { allies }), null, 'lone healer north (drain tank) still not eligible');
+  // boosted melee
+  const m = { body: [{ type: 'attack', hits: 100 }, { type: 'attack', hits: 100, boost: 'UH' }, { type: 'attack', hits: 0 }] };
+  A.strictEqual(D2.atkPow(m), 90); A.strictEqual(D2.atkPow(m, 'UH'), 120); A.strictEqual(D2.atkPow({ body: [{ type: 'attack', hits: 100, boost: 'XUH2O' }] }), 120);
+  const mel = [{ body: bp({ attack: 10, move: 10 }), hits: 2000 }];
+  const s0 = D2.sim(mel, [10], ['ranged_attack', 'ranged_attack', 'move', 'move'], 1, { meleeUptime: 1 }), s1 = D2.sim(mel, [10], ['ranged_attack', 'ranged_attack', 'move', 'move'], 1, { meleeUptime: 1, atkBoost: 'UH' });
+  A.ok(s1.lost >= s0.lost, 'UH never makes melee weaker');
+  // healAct
+  const me = { id: 'm', pos: { x: 28, y: 4 }, hits: 1200, hitsMax: 1200 };
+  const fr = [me, { id: 'f', pos: { x: 29, y: 4 }, hits: 500, hitsMax: 1000 }, { id: 'g', pos: { x: 30, y: 4 }, hits: 100, hitsMax: 1000 }];
+  A.deepStrictEqual(D2.healAct(me, fr, [], true), { act: 'heal', id: 'f' }, 'adjacent hurt ally healed even while shooting');
+  A.deepStrictEqual(D2.healAct(me, [me, fr[2]], [], true), null, 'range-2 ally: no rangedHeal while shooting');
+  A.deepStrictEqual(D2.healAct(me, [me, fr[2]], [], false), { act: 'rangedHeal', id: 'g' }, 'rangedHeal when not shooting');
+  A.deepStrictEqual(D2.healAct(me, [me], [atk], true), { act: 'heal', id: 'm' }, 'pre-heal self, armed within 4');
+  A.deepStrictEqual(D2.healAct({ ...me, hits: 900 }, [me], [], true), { act: 'heal', id: 'm' }, 'self when hurt');
+  // feint split: groups on both segments -> defenders split, west gets >=1
+  const west = { id: 'w', pos: { x: 9, y: 1 }, hits: 1000, body: bp({ ranged_attack: 6, move: 6 }) };
+  const east = { id: 'e', pos: { x: 29, y: 1 }, hits: 2000, body: bp({ ranged_attack: 12, move: 12 }) };
+  const sides = [0, 1, 2, 3].map(i => D2.segSplit([west, east], 4, i).x < 18 ? 'W' : 'E');
+  A.ok(sides.includes('W') && sides.includes('E'), 'split ' + sides.join(''));
+  A.strictEqual(D2.segSplit([east], 4, 0), null); A.strictEqual(D2.segSplit([west, east], 1, 0), null);
+  const pw = D2.defPlan({ pos: { x: 29, y: 4 }, hits: 1000, hitsMax: 1000 }, [west, east], { towers: [{ x: 33, y: 35 }], idx: 3, n: 4 });
+  A.ok(pw.goal && pw.goal.y === 4 && pw.goal.x <= 11, 'idx3 of 4 posts west: ' + JSON.stringify(pw.goal));
+  // tower heal 18:00
+  const c = (id, hp, heal) => ({ id, hits: hp, hitsMax: 1000, body: heal ? [{ type: 'heal', hits: 100 }] : [] });
+  A.strictEqual(F2.healPick([c('a', 900)]), null, 'combat: 90% not healed');
+  A.strictEqual(F2.healPick([c('a', 900), c('b', 950)], true).id, 'a', 'peace: heal to full, lowest first');
+  A.strictEqual(F2.healPick([c('a', 800, 1), c('b', 950)], true).id, 'b', 'peace: non-healers first');
+  A.ok(!F2.hostileArmed([{ body: [{ type: 'move', hits: 100 }, { type: 'claim', hits: 100 }] }]) && F2.hostileArmed([hl]));
+  console.log('w47n8 17:58 fixes ok');
+}
