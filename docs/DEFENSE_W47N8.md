@@ -78,3 +78,11 @@ Model examples (RCL4, tower r32): pair 8RA+6RA -> home 1, local 0; pair + 2x7H -
 - **Alert verdict bug, fixed (tools only):** the alert verdict only fed the armed bodies to the combat model, so 2RA + 2 escort healers read "towers win". With the healers the model says 1 tower at r32 **loses** and towers + 2 defenders win. The in-game planner already counted the healers (`w8invNb` = armed + drain), so the roster was right and only the alert text was wrong. `tools/north_watch.py` now adds healers within 3 tiles of the group to the verdict, uses live W47N8 tower ranges to the seal (27,3) and records `support` (number of escort healers). `tests/north_watch_test.py` covers both.
 - **Tower 2 at 24,8 ends the standing bill:** range 5 to the seal (600 dmg). Model at the seal, towers only: [32] loses to 2RA+2H and to 2RA+3H, [32, 5] wins both in about 10 ticks. Once 24,8 is built, the minimal winning combination is towers only, so under the 17:45 rule only the baseline home defender stays (~1.5 e/t) instead of 3 local + home. Keep 24,8 as the only site at RCL5 (RCL5 ~08:15-08:40, then build), ahead of extensions.
 - **Not changed (Misaki's call):** the in-game force still includes every W47N9 healer, including the one in their core 17 tiles away, so it sizes the roster one healer heavier than the border group. Counting only escorts would save about one local 12-part defender per wave until tower 2 is up (~2.5 h). Not worth changing defence sizing for that window.
+
+## Healer positioning (Misaki 10-20 07:31)
+- The dedicated healer (w8healer) never stands by the walls. It waits at a safe spot >= 4 tiles inside the seal
+  (`HIDLE` 21,8 / 20,8 / 19,8 / 22,8: plain, off roads), out of reach of enemy ranged standing north of the seal (y<=2 reaches y<=5).
+- It leaves only when a friendly is hurt: it moves to the nearest walkable, off-road tile within 3 of the target that is outside every
+  armed hostile's reach (y>=6, >4 from RA, >2 from melee) and uses rangedHeal (heal when adjacent). No such tile -> it stays home.
+  When nobody is hurt it walks back to its spot. HP rule 60/90 unchanged (retreat to tower).
+- Defenders below 60% retreat to the healer (tower if no healer), back at 90% as before.

@@ -192,13 +192,18 @@ console.log('w47n8 defense ok');
   const e = { id: 'e', pos: { x: 28, y: 1 }, hits: 1000, body: bp({ ranged_attack: 5, move: 5 }) };
   let q = D3.healPlan(h, [d1, d2], [e], { towers: [{ x: 33, y: 35 }] });
   A.deepStrictEqual(q.heal, { act: 'heal', id: 'd2' }, 'adjacent first (heal at 1)');
-  A.ok(q.goal && q.goal.x === 28 && q.goal.y === 5, 'moves behind the most-hurt defender, y>=5: ' + JSON.stringify(q.goal));
-  q = D3.healPlan({ ...h, pos: { x: 28, y: 5 } }, [d1], [e], { towers: [{ x: 33, y: 35 }] });
-  A.deepStrictEqual(q.heal, { act: 'heal', id: 'd1' }); A.strictEqual(q.move, 'hold');
+  // 10-20 07:31 (Misaki): healer never by the wall. Goal out of reach of the RA at 28,1 (rng > 4), y >= 6, within 3 of d1 (rangedHeal)
+  q = D3.healPlan({ ...h, pos: { x: 21, y: 8 } }, [d1, d2], [e], { towers: [{ x: 33, y: 35 }] });
+  A.ok(q.goal && q.goal.y >= 6 && Math.max(Math.abs(q.goal.x - 28), Math.abs(q.goal.y - 1)) > 4 && Math.max(Math.abs(q.goal.x - 28), Math.abs(q.goal.y - 4)) <= 3, 'safe heal tile: ' + JSON.stringify(q.goal));
   q = D3.healPlan({ ...h, pos: { x: 26, y: 7 } }, [{ ...d1, pos: { x: 28, y: 5 } }], [e], { towers: [{ x: 33, y: 35 }] });
-  A.deepStrictEqual(q.heal, { act: 'rangedHeal', id: 'd1' }, 'rangedHeal at 2-3');
+  A.deepStrictEqual(q.heal, { act: 'rangedHeal', id: 'd1' }, 'rangedHeal at 2-3'); A.strictEqual(q.move, 'hold', 'safe + in heal range -> stay');
+  q = D3.healPlan(h, [d1], [e], { towers: [{ x: 33, y: 35 }], open: (x, y) => !(y === 6 || y === 7) }); A.ok(!q.goal || q.goal.y >= 7, 'no unsafe fallback by the wall: ' + JSON.stringify(q.goal));
   q = D3.healPlan({ ...h, hits: 600 }, [d1], [e], { towers: [{ x: 33, y: 35 }] }); A.strictEqual(q.move, 'retreat', 'HP rule 60%');
   q = D3.healPlan({ ...h, hits: 1000, hurt: true }, [d1], [e], { towers: [{ x: 33, y: 35 }] }); A.strictEqual(q.move, 'retreat', 'back only at 90%');
-  q = D3.healPlan(h, [], [], { towers: [{ x: 33, y: 35 }] }); A.ok(q.move === 'post' && q.goal.y >= 5, 'quiet: idle, no recycle');
+  for (const hs of [[], [e]]) { q = D3.healPlan({ ...h, pos: { x: 10, y: 20 } }, [{ ...d1, hits: 1200 }], hs, { towers: [{ x: 33, y: 35 }] });
+    A.ok(q.move === 'post' && q.goal.y >= D3.SEAL_Y + 4, 'nobody hurt -> safe spot >= 4 inside the seal: ' + JSON.stringify(q.goal)); }
+  // hurt defender retreats to the healer
+  const dp = D3.defPlan({ pos: { x: 28, y: 4 }, hits: 500, hitsMax: 1200 }, [e], { towers: [{ x: 33, y: 35 }], healer: { x: 21, y: 8 } });
+  A.ok(dp.move === 'retreat' && dp.goal.x === 21 && dp.goal.y === 8, 'retreat to healer: ' + JSON.stringify(dp.goal));
   console.log('w47n8 18:04 healer ok');
 }

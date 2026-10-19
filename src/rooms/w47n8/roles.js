@@ -272,19 +272,21 @@ const R = {
     const th = room.memory.threat8, idx = _.filter(Game.creeps, x => x.memory.role === 'w8defender').map(x => x.name).sort().indexOf(c.name);
     const p = D.defPlan({ pos: c.pos, hits: c.hits, hitsMax: c.hitsMax, hurt: mem.hurt }, hs,
       { focus: th && th.id, towers, quiet: Game.time - (mem.seen || mem.born || Game.time), enemyX: hs.length ? undefined : TH.invasion() ? Memory.ops && Memory.ops.w8invNx : undefined, idx: Math.max(0, idx), n: _.filter(Game.creeps, x => x.memory.role === 'w8defender' && x.room.name === C.ROOM).length,
-        avoid: room.find(FIND_MY_CREEPS, { filter: x => x.memory.role === 'w8builder' && x.pos.y <= 6 }).map(x => x.pos) });
+        avoid: room.find(FIND_MY_CREEPS, { filter: x => x.memory.role === 'w8builder' && x.pos.y <= 6 }).map(x => x.pos),
+        healer: (room.find(FIND_MY_CREEPS, { filter: x => x.memory.role === 'w8healer' && x.getActiveBodyparts(HEAL) > 0 })[0] || {}).pos });
     mem.hurt = p.hurt;
     if (p.mass) c.rangedMassAttack(); else if (p.shoot) c.rangedAttack(p.shoot);
     if (c.body.some(b => b.type === HEAL && b.hits > 0)) { // 17:59: HEAL parts heal every tick (heal() + rangedAttack same tick; rangedHeal only when not shooting)
       const fr = room.find(FIND_MY_CREEPS, { filter: x => x.hits < x.hitsMax || x.id === c.id }), a = D.healAct(c, fr, hs, !!(p.mass || p.shoot));
       if (a) { const t = Game.getObjectById(a.id); if (t) a.act === 'heal' ? c.heal(t) : c.rangedHeal(t); } }
     if (p.move === 'flee') { const away = PathFinder.search(c.pos, { pos: new RoomPosition(p.from.x, p.from.y, C.ROOM), range: 4 }, { flee: true, maxRooms: 1, roomCallback: rn => cb(rn, new PathFinder.CostMatrix()) }).path[0]; if (away) c.move(c.pos.getDirectionTo(away)); return; }
-    if (p.move === 'retreat') return c.pos.inRangeTo(p.goal.x, p.goal.y, 2) || mv(p.goal, 2);
+    if (p.move === 'retreat') { const rr = p.toHealer ? 1 : 2; return c.pos.inRangeTo(p.goal.x, p.goal.y, rr) || mv(p.goal, rr); }
     if (p.move === 'approach') return mv(p.goal, 3);
     if (p.move === 'post') return mv(p.goal, 0);
   },
   // 18:04 (Misaki) dedicated healer (HEAL+MOVE) in a joint roster of >= 4 defenders: behind the defenders, heals the most-hurt (heal at 1,
-  // rangedHeal at 3), HP rule 60/90 like defenders, never crosses the seal; quiet -> idles off-road by the wall, lives out its TTL.
+  // rangedHeal at 3), HP rule 60/90 like defenders, never crosses the seal. 10-20 07:31 (Misaki): waits at a safe spot >= 4 tiles inside
+  // the seal (HIDLE, y=8, off road), goes out only to heal a hurt friendly from a tile out of enemy reach, then walks back.
   w8healer(c) {
     if (!home(c)) return;
     const D = require('./defense'), room = c.room, hs = room.find(FIND_HOSTILE_CREEPS).filter(x => !x.my), mem = c.memory;
@@ -293,7 +295,9 @@ const R = {
     const defs = room.find(FIND_MY_CREEPS, { filter: x => x.memory.role === 'w8defender' });
     const towers = room.find(FIND_MY_STRUCTURES, { filter: s => s.structureType === STRUCTURE_TOWER }).map(t => t.pos);
     const idx = _.filter(Game.creeps, x => x.memory.role === 'w8healer').map(x => x.name).sort().indexOf(c.name);
-    const p = D.healPlan({ id: c.id, pos: c.pos, hits: c.hits, hitsMax: c.hitsMax, hurt: mem.hurt }, defs, hs, { towers, idx: Math.max(0, idx) });
+    const tr = room.getTerrain(), open = (x, y) => !(tr.get(x, y) & TERRAIN_MASK_WALL) && !room.lookForAt(LOOK_STRUCTURES, x, y).some(s => s.structureType === STRUCTURE_ROAD || (s.structureType !== STRUCTURE_RAMPART && s.structureType !== STRUCTURE_CONTAINER)) && !room.lookForAt(LOOK_CREEPS, x, y).some(k => k.id !== c.id);
+    const dmgd = room.find(FIND_MY_CREEPS, { filter: x => x.memory.role !== 'w8defender' && x.id !== c.id && x.hits < x.hitsMax }); // any hurt friendly
+    const p = D.healPlan({ id: c.id, pos: c.pos, hits: c.hits, hitsMax: c.hitsMax, hurt: mem.hurt }, defs.concat(dmgd), hs, { towers, idx: Math.max(0, idx), open });
     mem.hurt = p.hurt;
     if (p.heal) { const t = Game.getObjectById(p.heal.id); if (t) p.heal.act === 'heal' ? c.heal(t) : c.rangedHeal(t); }
     if (p.move === 'flee') { const away = PathFinder.search(c.pos, { pos: new RoomPosition(p.from.x, p.from.y, C.ROOM), range: 4 }, { flee: true, maxRooms: 1, roomCallback: rn => cb(rn, new PathFinder.CostMatrix()) }).path[0]; if (away) c.move(c.pos.getDirectionTo(away)); return; }

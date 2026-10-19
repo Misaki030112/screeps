@@ -127,6 +127,7 @@ function defPlan(me, hs, o = {}) {
   const r = (move, goal) => ({ hurt, shoot, mass, move, goal });
   const melee = hs.find(h => inBase(h) && live(h, 'attack') && rng(h.pos, me.pos) <= 2);
   if (melee) return Object.assign(r('flee', null), { from: melee.pos });
+  if (hurt && o.healer) return Object.assign(r('retreat', o.healer), { toHealer: true }); // 07:31: hurt defenders come to the healer
   if (hurt && nearT) return r('retreat', nearT);
   if (!elig.length) { // 18:04 (Misaki): no recycle when quiet; defenders live out their TTL idling off-road by the north wall
     if (o.enemyX === undefined) { const [x, y] = IDLE[Math.min(IDLE.length - 1, o.idx || 0)]; return me.pos.x === x && me.pos.y === y ? r('hold', null) : r('post', { x, y }); }
@@ -143,10 +144,14 @@ function defPlan(me, hs, o = {}) {
 // ---- joint defence (Misaki 17:34): ONE planner for the W46N8 + W47N8 roster. Bodies: RA+MOVE only (towers heal on our ground).
 // 18:04 dedicated healer: HEAL+MOVE pairs (300 e each)
 const healBody = (e, max = 25) => { const k = Math.max(1, Math.min(max, Math.floor(e / 300))); return Array(k).fill('heal').concat(Array(k).fill('move')); };
-const HIDLE = [[23, 5], [24, 6]];
-// healer (pure). me {id,pos,hits,hitsMax,hurt}, defs: our combat defenders [{id,pos,hits,hitsMax}], hs: hostiles, o {towers:[pos], idx}
-// -> {hurt, heal:{act,id}|null, move:'flee'|'retreat'|'post'|'hold', goal}. HP rule 60/90 like defenders; stands one tile behind (y+1,
-// never y<5) the most-hurt defender (else the defenders' middle), so the wall + defender line is between it and the enemy; inside tower range.
+// 10-20 07:31 (Misaki): the healer never stands by the walls. Enemy ranged can stand at y<=2 (north of the y=3 seal) and reach y<=5;
+// safe spots are >= 4 tiles inside the seal (y >= SAFE_HY), plain, off roads/paths. It waits there, goes out only to heal a hurt
+// friendly (rangedHeal from range 2-3, picking a tile outside every armed hostile's reach when one exists) and walks back afterwards.
+const SAFE_HY = SEAL_Y + 4; // y >= 7
+const HIDLE = [[21, 8], [20, 8], [19, 8], [22, 8]];
+const hSafe = (t, hs) => t.y >= SAFE_HY - 1 && !hs.some(h => armed(h) && rng(h.pos, t) <= (live(h, 'attack') && !live(h, 'ranged_attack') ? 2 : 4)); // y>=6: out of reach from y<=2
+// healer (pure). me {id,pos,hits,hitsMax,hurt}, defs: our combat defenders [{id,pos,hits,hitsMax}], hs: hostiles, o {towers:[pos], idx, open(x,y)}
+// -> {hurt, heal:{act,id}|null, move:'flee'|'retreat'|'post'|'hold', goal}. HP rule 60/90 like defenders.
 function healPlan(me, defs, hs, o = {}) {
   const hurt = me.hits < me.hitsMax * 0.6 ? true : me.hits >= me.hitsMax * 0.9 ? false : !!me.hurt;
   const all = defs.concat([me]), pct = f => f.hits / f.hitsMax, dmg = all.filter(f => f.hits < f.hitsMax);
@@ -155,14 +160,20 @@ function healPlan(me, defs, hs, o = {}) {
   const r = (move, goal) => ({ hurt, heal, move, goal });
   const melee = hs.find(h => inBase(h) && live(h, 'attack') && rng(h.pos, me.pos) <= 2);
   if (melee) return Object.assign(r('flee', null), { from: melee.pos });
-  const towers = o.towers || [];
+  const towers = o.towers || [], open = o.open || (() => true);
   if (hurt && towers.length) return r('retreat', towers.reduce((a, t) => (rng(t, me.pos) < rng(a, me.pos) ? t : a)));
+  const [ix, iy] = HIDLE[Math.min(HIDLE.length - 1, o.idx || 0)], home = { x: ix, y: iy };
   const tgt = defs.filter(d => d.hits < d.hitsMax).sort((a, b) => pct(a) - pct(b))[0];
-  let g;
-  if (tgt) g = { x: tgt.pos.x, y: Math.max(5, tgt.pos.y + 1) };
-  else if (defs.length && hs.length) g = { x: Math.round(defs.reduce((s, d) => s + d.pos.x, 0) / defs.length), y: Math.max(5, Math.max(...defs.map(d => d.pos.y)) + 1) };
-  else { const [x, y] = HIDLE[Math.min(HIDLE.length - 1, o.idx || 0)]; g = { x, y }; }
-  return (tgt ? rng(tgt.pos, me.pos) <= 1 && me.pos.y > tgt.pos.y : rng(g, me.pos) === 0) ? r('hold', null) : r('post', g);
+  if (!tgt) return rng(home, me.pos) === 0 ? r('hold', null) : r('post', home);
+  // hurt friendly: already in heal range from a safe tile -> stay; else the safe tile within 3 of it nearest to us (prefer range 2-3)
+  if (rng(tgt.pos, me.pos) <= 3 && hSafe(me.pos, hs)) return r('hold', null);
+  let best = null, bs = Infinity;
+  for (let dx = -3; dx <= 3; dx++) for (let dy = -3; dy <= 3; dy++) { const t = { x: tgt.pos.x + dx, y: tgt.pos.y + dy };
+    if (t.x < 1 || t.x > 48 || t.y <= SEAL_Y || t.y > 48 || !open(t.x, t.y) || !hSafe(t, hs)) continue;
+    const sc = rng(t, me.pos) * 10 + (rng(t, tgt.pos) <= 1 ? 5 : 0); if (sc < bs) { bs = sc; best = t; } }
+  if (best) return rng(best, me.pos) === 0 ? r('hold', null) : r('post', best);
+  // no safe tile reaches it: the defender comes back to us (defPlan retreat -> healer); wait at home
+  return rng(home, me.pos) === 0 ? r('hold', null) : r('post', home);
 }
 const raBody = (e, max = 25) => { const k = Math.max(1, Math.min(max, Math.floor(e / 200))); return Array(k).fill('ranged_attack').concat(Array(k).fill('move')); };
 // o: {force, towerR (ranges tower -> fight), homeOk, homeCap, w8Cap, inside}
@@ -198,4 +209,4 @@ function repairStand(wall, hs, open = () => true) {
 }
 // body summary {attack:n,...} (tools/north_watch.py) -> body list in the worst-case order (tough, move, work parts last)
 function fromCounts(b) { const out = []; for (const t of ['tough', 'move', 'attack', 'ranged_attack', 'heal', 'work', 'claim', 'carry']) for (let i = 0; i < (b[t] | 0); i++) out.push({ type: t, hits: 100 }); return { body: out, hits: out.length * 100 }; }
-module.exports = { HEAL_AT, healBody, healPlan, HIDLE, MAXH, MAXL, healAct, segSplit, atkPow, towerPick, sim, assess, defPlan, postTile, POSTS, IDLE, plan, raBody, repairPick, repairStand, COVER, RECYCLE, fromCounts, cls, armed, inBase, FLOOR, SEAL_Y };
+module.exports = { SAFE_HY, hSafe, HEAL_AT, healBody, healPlan, HIDLE, MAXH, MAXL, healAct, segSplit, atkPow, towerPick, sim, assess, defPlan, postTile, POSTS, IDLE, plan, raBody, repairPick, repairStand, COVER, RECYCLE, fromCounts, cls, armed, inBase, FLOOR, SEAL_Y };
