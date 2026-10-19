@@ -3,6 +3,14 @@
 Novice zone ends **2026-10-28 03:33 UTC+8**. Defence timeline: `docs/DEFENSE_NOVICE.md` (2026-10-16); detail `docs/DEFENSE.md` / geometry `docs/DEFENSE_PLAN.md`.
 **Safe mode: NEVER auto-activate** — alert Misaki.
 
+## 2026-10-19 strategy review (CPU budget, `docs/CPU.md`)
+
+- 24 h: W47N8 RCL2→3 (10-18 22:00) →4 (10-19 ~10:00), now 48.6k/405k at ~10 e/t → **RCL5 (tower 2) ETA ~10-21 07:00**. Its 3 SM charges are unused (the 10-18 autoSafe question is moot).
+- Home RCL6 337k/3.645M at ~18.8 e/t (4 h) → **RCL7 ETA ~10-28**, i.e. around novice end. Storage pinned at the 15k floor; gates min 163.7k, walls 142.1k (flat, no step 2 progress while energy goes to upgrade).
+- CPU 6.5–8.8 → 11.7–14.2 avg since the claim (limit 20, bucket full). Creeps are 76% at ≈0.27/creep, close to the 0.2 intent floor: savings now come from fewer/bigger creeps and links. **A 3rd room needs CPU work first.** Shipped fbe8a00 (home spawn idle re-check every 4 ticks, ≈ −0.6 ms).
+- Threat: BustJetter staged 4 armed unboosted creeps in W48N9 (10-19 14:26). W47N8 has threat mode + core ramparts (parent, 14:14–14:30).
+- Option for Misaki (not urgent): generate pixels from the full bucket (1 per ~1.5 h, empties the combat reserve). Default **off**.
+
 ## 2026-10-18 strategy review (W47N8 hold, `docs/W47N8_HOLD.md`)
 
 - Engine-verified: RCL2 gives W47N8 its first SM charge; enemy `attackController` between claim and SM = 1000 t upgradeBlock (no upgrade, no SM); one SM at a time across our rooms; no cooldown while novice.
@@ -40,6 +48,7 @@ Focus (Misaki 10-14): **W46N8 upgrade speed**; expansion (2nd account W47N8, W45
 7. Later: RCL6 terminal/extractor/labs; 2nd room (**approval required**).
 
 ## Log
+- 2026-10-19 14:40 strategy review: topic **CPU budget for two rooms** (`docs/CPU.md`). Live prof: total 12.0, creeps 9.1, home spawn 0.91 (run1 ≈2.4 ms, idle 36% of ticks), w8spawn 0.49, mem 0.34. Deployed fbe8a00 spawn idle throttle. RCL7 ETA ~10-28, W47N8 RCL5 ETA ~10-21.
 - 2026-10-18 14:40 strategy review: topic **W47N8 after the claim** (engine source: claim/upgrade/attackController/safe mode). 24h: RCL6 at 10-17 ~19:00; walls step 1 done (all ≥131k); storage peak 57.8k (06:00) → walls → 15.8k (11:00) → 39k banked for the op; CPU 6.6–8.7, bucket ~10k; LOW scouts only. Docs only, no deploy (op code edited live).
 - 2026-10-17 14:40 strategy review: topic **neighbour strength** (`docs/NEIGHBORS.md`). W48N9 count is noise inside its 48h band; added trend line + W48N8/W47N8/W47N7 to neighbor_scan; RCL6 ETA 18:40–19:20.
 - 2026-10-16 14:34 strategy review: topic **defence readiness before novice end** (~11.5 d). Wrote `docs/DEFENSE_NOVICE.md`; refreshed STRATEGY current-state; ROADMAP priority → RCL6→bank→wall step 1 before 10-28, upgrade-first, expansion/minerals parked. 24h: RCL5 361k→631k (~+270k / ~15.5 h DB window ≈20/t avg; recent ctl_ema ~21–23/t); CPU ~4.0–4.5 bucket 10k nerr0; remote SAFE delivered ~506k defender ON; storage max ~2.4k (bank still the gate); walls coded dormant; early walls/guards paused; LOW BustJetter/Fandalah scouts; BustJetter W48N9 ~8 combat (thinned). No code this run.
