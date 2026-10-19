@@ -60,7 +60,7 @@ function spawnRun(spawn) {
   // 17:34 joint defence: Memory.ops.w8roster (assessRun -> defense.plan) = local defenders + 1 home defender (src W46N8, spawned by home)
   const ro = Memory.ops && Memory.ops.w8roster, dOld = Memory.ops && Memory.ops.w8defOld, fresh = ro && Game.time - ro.t < 20;
   const local = cs.filter(c => c.memory.role === 'w8defender' && !c.memory.jd).length;
-  const dGo = dOld ? ((th && th.inBase && Game.time - th.t < 5) || TH.invasion()) && local < 2 : !!(fresh && local < Math.min(2, ro.w8));
+  const dGo = dOld ? ((th && th.inBase && Game.time - th.t < 5) || TH.invasion()) && local < 2 : !!(fresh && local < Math.min(D.MAXL, ro.w8)); // 17:56: up to 4 local
   if (dGo) { want = 'w8defender'; }
   // 1) miners per source: keep >=5 WORK (10 e/t) on each source. Replace at TTL<60; and since the first w8miners were 2 WORK
   // (cap 300) and would run at 40% for ~1000 ticks, add a bigger one once cap allows (17:25), counting any cqminer still there.
@@ -268,7 +268,7 @@ function assessRun(room, towers, hs) {
   const m = room.memory, o = (Memory.ops = Memory.ops || {});
   const inRoom = hs.filter(h => PARTS(h, ATTACK) + PARTS(h, RANGED_ATTACK) > 0), north = o.w8invN > 0 && Game.time - o.w8invN < 300;
   if (!inRoom.length && !north) { if (m.w8assess) delete m.w8assess; if (o.w8roster) delete o.w8roster; return; }
-  if (m.w8assess && Game.time - m.w8assess.t < 5) return;
+  if (m.w8assess && Game.time - m.w8assess.t < 10) return; // up to 5x5 sims (<=600 t each): cached 10 ticks
   let force, at;
   if (inRoom.length) { force = hs.filter(h => D.armed(h) || PARTS(h, HEAL)); at = inRoom.reduce((a, h) => (h.pos.y > a.pos.y ? h : a)).pos; }
   else if (Array.isArray(o.w8invNb) && o.w8invNb.length) { force = o.w8invNb.map(D.fromCounts); at = SEAL_FIGHT; }

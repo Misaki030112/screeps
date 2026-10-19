@@ -111,15 +111,16 @@ function defPlan(me, hs, o = {}) {
 const raBody = (e, max = 25) => { const k = Math.max(1, Math.min(max, Math.floor(e / 200))); return Array(k).fill('ranged_attack').concat(Array(k).fill('move')); };
 // o: {force, towerR (ranges tower -> fight), homeOk, homeCap, w8Cap, inside}
 // Misaki 17:45: home ALWAYS sends a baseline of 1 defender while a real (armed) threat is active and home itself is safe, win or lose.
-// Local W47N8 defenders = fewest (0-2) that win (no losses) together with the baseline. A 2nd home defender only if the sim says it
-// turns a loss into a win. Still unwinnable -> baseline only, no local spawns (never feed a lost fight); inside the seal -> advise safe mode.
+// Local W47N8 defenders = fewest (0-4) that win (no losses) together with the baseline. Extra home defenders (up to 4 total) only if
+// the sim says they turn a loss into a win (home iterated from the baseline upward, local 0-4 each). Still unwinnable -> baseline only, no local spawns (never feed a lost fight); inside the seal -> advise safe mode.
+const MAXH = 4, MAXL = 4; // Misaki 17:56: home max 4, W47N8 local max 4
 function plan(o) {
   const fighters = o.force.filter(c => live(c, 'attack') + live(c, 'ranged_attack') > 0);
   if (!fighters.length) return { home: 0, w8: 0, win: true, why: 'unarmed', advise: '' };
   const hb = raBody(o.homeCap || 0), wb = raBody(o.w8Cap || 0, 12), base = o.homeOk ? 1 : 0;
   const wins = defs => { const r = defs.length ? sim(o.force, o.towerR, defs, 0, o) : sim(o.force, o.towerR, wb, 0, o); return r.result === 'win' && !r.lost; };
-  for (let h = base; h <= (o.homeOk ? 2 : 0); h++)
-    for (let n = 0; n <= 2; n++) if (wins(Array(h).fill(hb).concat(Array(n).fill(wb)))) return { home: h, w8: n, win: true, why: h > base ? 'extra home' : 'win', advise: '' };
+  for (let h = base; h <= (o.homeOk ? MAXH : 0); h++)
+    for (let n = 0; n <= MAXL; n++) if (wins(Array(h).fill(hb).concat(Array(n).fill(wb)))) return { home: h, w8: n, win: true, why: h > base ? 'extra home' : 'win', advise: '' };
   return { home: base, w8: 0, win: false, why: 'unwinnable', advise: o.inside ? 'safemode' : '' };
 }
 // ---- seal repair under fire (Misaki 17:36): walls an armed hostile can reach (RA 3 / ATTACK, WORK 1); lowest first
@@ -137,4 +138,4 @@ function repairStand(wall, hs, open = () => true) {
 }
 // body summary {attack:n,...} (tools/north_watch.py) -> body list in the worst-case order (tough, move, work parts last)
 function fromCounts(b) { const out = []; for (const t of ['tough', 'move', 'attack', 'ranged_attack', 'heal', 'work', 'claim', 'carry']) for (let i = 0; i < (b[t] | 0); i++) out.push({ type: t, hits: 100 }); return { body: out, hits: out.length * 100 }; }
-module.exports = { towerPick, sim, assess, defPlan, postTile, POSTS, IDLE, plan, raBody, repairPick, repairStand, COVER, RECYCLE, fromCounts, cls, armed, inBase, FLOOR, SEAL_Y };
+module.exports = { MAXH, MAXL, towerPick, sim, assess, defPlan, postTile, POSTS, IDLE, plan, raBody, repairPick, repairStand, COVER, RECYCLE, fromCounts, cls, armed, inBase, FLOOR, SEAL_Y };

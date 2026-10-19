@@ -98,15 +98,18 @@ const P = f => D.plan(Object.assign({ towerR: [32], homeOk: true, homeCap: 2300,
 const B9 = a => a.map(fc), RA = (k) => ({ ranged_attack: k, move: k }), HL = k => ({ heal: k, move: k });
 let pl = P({ force: B9([RA(6), RA(8)]) }); assert.deepStrictEqual([pl.home, pl.w8, pl.win], [1, 0, true], 'pair: baseline home 1 even though towers win');
 pl = P({ force: B9([RA(6), RA(8), HL(7), HL(7)]) }); assert.deepStrictEqual([pl.home, pl.w8], [1, 1], 'pair + 2 healers: baseline + fewest local that win');
-pl = P({ force: B9([RA(6), RA(8), HL(7), HL(7), HL(7)]) }); assert.ok(pl.home >= 1 && pl.home <= 2, 'pair + 3 healers: baseline, a 2nd only if it wins');
-if (pl.home === 2) assert.ok(pl.win, '2nd home defender only when it turns it into a win'); else assert.ok(!pl.win && pl.w8 === 0, 'unwinnable: baseline only, no local fed');
-pl = P({ force: SQ() }); assert.deepStrictEqual([pl.home, pl.w8, pl.win], [2, 2, true], 'full squad RCL4: only 2 home + 2 local (all four 11RA/6RA) win in the model');
-pl = P({ force: SQ(), homeCap: 1300 }); assert.deepStrictEqual([pl.home, pl.w8, pl.win], [1, 0, false], 'full squad, small home bodies: unwinnable -> baseline only, nothing else fed');
+pl = P({ force: B9([RA(6), RA(8), HL(7), HL(7), HL(7)]) }); assert.ok(pl.home >= 1 && pl.home <= 4, 'pair + 3 healers: baseline, extras only if they win');
+if (pl.home >= 2) assert.ok(pl.win, 'extra home defenders only when they turn it into a win'); else assert.ok(pl.win || pl.w8 === 0, 'baseline: local only when it wins');
+pl = P({ force: SQ() }); assert.ok(pl.win && pl.home >= 1 && pl.home <= 4 && pl.w8 <= 4, 'full squad RCL4: a combination up to 4+4 wins ' + JSON.stringify(pl));
+{ const lo = P({ force: SQ() }); for (let n = 0; n < lo.w8; n++) assert.ok(D.sim(SQ(), [32], Array(lo.home).fill(D.raBody(2300)).concat(Array(n).fill(D.raBody(1300, 12))), 0).result !== 'win' || false, 'minimal local count'); }
+{ const big = SQ().concat(SQ(), SQ()); pl = P({ force: big }); assert.deepStrictEqual([pl.home, pl.w8, pl.win], [1, 0, false], '3 full squads: no combo up to 4+4 wins -> baseline only, nothing else fed');
+  pl = P({ force: big, inside: true }); assert.strictEqual(pl.advise, 'safemode', 'inside: advise safe mode'); }
+{ const t0 = Date.now(); for (let i = 0; i < 5; i++) P({ force: SQ().concat(SQ(), SQ()) }); assert.ok((Date.now() - t0) / 5 < 50, 'worst-case plan (25 sims) < 50 ms in node: ' + (Date.now() - t0) / 5); }
 pl = P({ force: SQ(), towerR: [19], inside: true, homeOk: false }); assert.strictEqual(pl.advise, 'safemode', 'inside + unwinnable (home busy): advise safe mode');
 pl = P({ force: B9([RA(6), RA(8)]), homeOk: false }); assert.strictEqual(pl.home, 0, 'home threatened: no support');
 assert.strictEqual(P({ force: B9([{ tough: 14, move: 14 }, HL(7)]) }).home, 0, 'drain group (unarmed): no support');
 for (const f of [[RA(6), RA(8), HL(7), HL(7), HL(7)], [RA(11), HL(6), HL(6)], [RA(11), RA(7), HL(7), HL(7), HL(6)]]) { const r = P({ force: B9(f) });
-  assert.ok(r.home <= 2 && r.w8 <= 2 && (r.home < 2 || r.win), 'support capped; 2nd home only on a win ' + JSON.stringify(r)); }
+  assert.ok(r.home <= 4 && r.w8 <= 4 && (r.home < 2 || r.win), 'support capped at 4+4; extra home only on a win ' + JSON.stringify(r)); }
 // ---- seal repair under fire
 const wl = (x, hits) => ({ pos: { x, y: 3 }, hits });
 const ws = [wl(24, 50000), wl(29, 42000), wl(30, 30000), wl(10, 1000)];
