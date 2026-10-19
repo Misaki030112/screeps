@@ -73,6 +73,10 @@ const cases = [
     const b = S.B.miner(Math.min(S.bodyEnergy('miner', 400, 1750, 400, true, true, true), 800), true);
     assert.strictEqual(b.filter(p => p === 'work').length, 5); assert.strictEqual(b.filter(p => p === 'move').length, 3);
     assert.strictEqual(S.bodyEnergy('miner', 400, 1750, 400, true, true, false), 400); }],
+  ['RCL6/7 at >=1550 -> 14W1C2M (1550); below 1550 the 12W1C1M rule; RCL4/5 stay 12W', () => {
+    for (const r of [6, 7]) { const b = S.B.upgrader(2300, r); assert.strictEqual(b.filter(p => p === 'work').length, 14); assert.strictEqual(b.filter(p => p === 'move').length, 2); assert.strictEqual(b.length, 17); }
+    assert.strictEqual(S.B.upgrader(1549, 6).filter(p => p === 'work').length, 12);
+    assert.strictEqual(S.B.upgrader(2300, 5).filter(p => p === 'work').length, 12); }],
   ['RCL8 still 15W max', () => assert.strictEqual(S.B.upgrader(5000, 8).filter(p => p === 'work').length, 15)],
   ['spawnOrder: 1 upgrader below base 2 -> upgrader before REMOTE', () => {
     const o = S.spawnOrder({ upgrader: 1 }, { upgrader: 2 }, 0);

@@ -36,7 +36,12 @@ const B = {
   // Upgraders walk once (spawn -> ctl spot, ~6 tiles) then sit, so 1 MOVE is enough. RCL4: 2x10W = 20 WORK was the binding
   // limit (1h upgrade ~19/t, ctl container 1000+ unused, storage parked at the ferry floor so the 3rd-upgrader gate never opened;
   // patrol 10-14 10:55). Cap 12 -> 12W1C1M = 1300 = RCL4 full cap, 2x12 = 24 WORK ~ model ideal 23.5.
-  upgrader: (e, rcl) => { const w = Math.max(1, Math.min(rcl >= 8 ? 15 : 12, Math.floor((e - 100) / 100))); return [].concat(rep(w, WORK), [CARRY, MOVE]); },
+  // RCL6-7 (strategy 10-20 00:5x): 2x12W = 24 WORK became the cap again. True home net with W45N7 is ~26 e/t (tools/flow.py
+  // upgrade_expected 26.2; the old 21.8/23.5 ideal left W45N7 out) and the wall step-2 hold (walls.stepHeld) frees the ~2-10 e/t
+  // wall builder: live 00:4x ctl container 2000 full, ctlEma 1419, 2 upgraders 23.4 e/t. 14W1C2M (1550) = 28 WORK for +0.33 e/t
+  // upkeep instead of a 3rd 12W (+0.87, starves once storage hits the floor); 2 MOVE also walks in faster (14/4 vs 12/2 t/tile).
+  upgrader: (e, rcl) => { if (rcl >= 6 && rcl < 8 && e >= 1550) return [].concat(rep(14, WORK), [CARRY, MOVE, MOVE]);
+    const w = Math.max(1, Math.min(rcl >= 8 ? 15 : 12, Math.floor((e - 100) / 100))); return [].concat(rep(w, WORK), [CARRY, MOVE]); },
   guard: e => { const n = Math.max(1, Math.min(6, Math.floor((e - 300) / 200))); return [].concat(rep(n, RANGED_ATTACK), rep(n + 1, MOVE), [HEAL]); },
   // builder cap 8W8C8M (1600e) at RCL6: 400 carry, fewer refill walks (was 5W5C5M)
   builder: e => { const n = Math.max(1, Math.min(11, Math.floor(e / 200))); return [].concat(rep(n, WORK), rep(n, CARRY), rep(n, MOVE)); },

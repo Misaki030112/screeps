@@ -247,6 +247,12 @@ def main():
     # 21:5x 2room-eval: carry need must include the extra remotes (W45N7, 4x8C8M live) that hauler_carry_live already counts;
     # before this the patrol compared 54-86 live CARRY with a 24.6 need that covered only A + W45N8.
     M['hauler_carry_need'] = round(M['hauler_carry_need'] + sum(v['carry'] for k, v in M['flow']['sources'].items() if k not in M['sources']), 1)
+    # strategy 10-20 00:5x: same omission in the headline ideal. It covered A + B + W45N8 only (21.8), so patrols read 22-23 e/t as
+    # "above ideal" while W45N7 adds ~4.5 net (flow). Add the extra remotes' flow net (already after their own upkeep); ETA follows.
+    extra_net = sum(v['net'] for k, v in M['flow']['sources'].items() if k not in M['sources'])
+    M['upgrade_max_ideal_3src'] = M['upgrade_max_ideal']
+    M['upgrade_max_ideal'] = M['upgrade_max_ideal'] + extra_net / (1 + up_upkeep)
+    for v in M['eta_ideal'].values(): v['ticks'] = round(v['ticks'] * M['upgrade_max_ideal_3src'] / M['upgrade_max_ideal']); v['hours'] = round(v['ticks'] * tick_s / 3600, 1)
     if not a.no_db:
         c = db.connect(); eps, span, nd = flow.events(c, q)
         M['flow']['stochastic'] = st = flow.stochastic(eps, span, nd, M['actual'].get('tick_s') or 4.08)
