@@ -113,7 +113,7 @@ function wallJob(room, c) {
 // ---- W47N7 remote (only while reserved by us) ----
 const RM = C.REMOTE;
 const LAY = require('./layout');
-const ROADSET = new Set(require('./roads').ROADS.map(([x, y]) => x * 50 + y)); // deprecated roads are never repaired (09:13)
+const ROADSET = new Set(require('./roads').ROADS.concat(require('../../layouts/w8link').W47N8).map(([x, y]) => x * 50 + y)); // deprecated roads are never repaired (09:13)
 // w8filler: owns one v3b strip; refills from hub storage, walks its 1-tile-wide strip road, parks at the strip's filler stand
 function fillerRun(c) {
   if (!home(c)) return;

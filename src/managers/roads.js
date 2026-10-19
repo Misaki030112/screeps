@@ -40,7 +40,15 @@ function tiles(P) {
     if (d.trunks[g] && d.trunks[g].mode === 'with_gate') for (const [x, y] of d.trunks[g].new_tiles) add('home', HOME, x, y);
   return (memo.t = out);
 }
-function isHomeTile(x, y) { const P = require('../utils/plan').get(HOME); const T = tiles(P); return KEEP.some(([a, b]) => a === x && b === y) || [].concat(T.haul, T.econ, T.home).some(([, a, b]) => a === x && b === y); }
+// Misaki 09:18: W46N8 leg of the W47N8<->home link road (layouts/w8link.js). Infrastructure only; placed/maintained by home,
+// independent of the RCL6 phase machine (few tiles: 6 new, the rest already road).
+const W8LINK = require('../layouts/w8link').W46N8;
+function placeW8Link(home) {
+  if (Game.time % 100 !== 37 || home.find(FIND_MY_CONSTRUCTION_SITES).length >= 5) return; // offset off the 50t phase replans
+  let n = 0;
+  for (const [x, y] of W8LINK) { if (n >= 3) break; if (look(HOME, x, y) === 'open' && home.createConstructionSite(x, y, STRUCTURE_ROAD) === OK) n++; }
+}
+function isHomeTile(x, y) { if (W8LINK.some(([a, b]) => a === x && b === y)) return true; const P = require('../utils/plan').get(HOME); const T = tiles(P); return KEEP.some(([a, b]) => a === x && b === y) || [].concat(T.haul, T.econ, T.home).some(([, a, b]) => a === x && b === y); }
 function isRouteTile(r, x, y) { const T = memo.t || tiles(require('../utils/plan').get(HOME)); return [].concat(T.haul, T.econ, T.home, T.W45N8, T.swamp7).some(([rm, a, b]) => rm === r && a === x && b === y); }
 function mem() { return (Memory.roads = Memory.roads || { phase: 'core' }); }
 function M() { return typeof Memory === 'undefined' ? undefined : Memory.roads; }
@@ -69,6 +77,7 @@ function look(r, x, y) {
 function coreDone(nExt, extMax, nLink, linkMax, coreSites) { return coreSites === 0 && nExt >= extMax && nLink >= Math.min(linkMax, 3); }
 function run() {
   const home = Game.rooms[HOME]; if (!home || !home.controller || !home.controller.my || home.controller.level < 6) return;
+  placeW8Link(home);
   const m = mem(); if (PHASES.indexOf(m.phase) < 0) { console.log(`ROADS bad phase ${m.phase} -> core`); m.phase = 'core'; } // console typo guard
   if (!m.v2) migrate(m, home); // one-shot: v1 'home' (trunks first) -> v2 'haul'; drop untouched (0-progress) trunk sites
   if (m.off || m.phase === 'done') return;
