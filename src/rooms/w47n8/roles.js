@@ -301,11 +301,21 @@ const R = {
     // Under 90 ttl: carry what I have home, never start a new pickup (energy stays in the container for the next hauler).
     if (!c.memory.w && c.ticksToLive < 90) { if (c.store[E] > 0) c.memory.w = true; else { c.suicide(); return; } }
     if (!c.memory.w) {
+      // 17:45: W47N7 over-hauled (75 CARRY, conts 120/520, rhaulers waiting) while W47N8 source B cont 11,43 hit 1826/2000 (local haulers
+      // busy refilling extensions). The rhauler exit path passes beside 11,43 (12,42): when W47N7 holds < 800, take a load there -> ctl.
+      if (c.room.name === C.ROOM) {
+        const l7 = Memory.ops && Memory.ops.w8lo7, B = C.SOURCES[1].stand;
+        if (l7 && Game.time - l7.t < 50 && l7.v < 800 && c.pos.inRangeTo(B[0], B[1], 4)) {
+          const kb = c.room.lookForAt(LOOK_STRUCTURES, B[0], B[1]).find(s => s.structureType === STRUCTURE_CONTAINER && s.store[E] >= 500);
+          if (kb) return c.pos.isNearTo(kb) ? c.withdraw(kb, E) : go(c, B[0], B[1]);
+        }
+      }
       if (c.room.name !== RM.room) return rgo(c, 25, 25, 20);
       const amt = o => (o.amount !== undefined ? o.amount : o.store[E]);
       // 03:30: closest-first starved the south source (31,34 at 2000+2k drop while north 18,17 had 400-600 and ate every empty rhauler from the N exit)
       const piles = c.room.find(FIND_DROPPED_RESOURCES, { filter: r => r.resourceType === E && r.amount >= 100 })
         .concat(c.room.find(FIND_STRUCTURES, { filter: s => s.structureType === STRUCTURE_CONTAINER && s.store[E] >= 200 }));
+      Memory.ops = Memory.ops || {}; if (!Memory.ops.w8lo7 || Memory.ops.w8lo7.t !== Game.time) Memory.ops.w8lo7 = { t: Game.time, v: _.sum(c.room.find(FIND_STRUCTURES, { filter: s => s.structureType === STRUCTURE_CONTAINER }), s => s.store[E]) + _.sum(c.room.find(FIND_DROPPED_RESOURCES), r => r.amount) };
       const closest = c.pos.findClosestByRange(piles);
       const fullest = piles.length ? _.max(piles, amt) : null;
       const t = (fullest && closest && amt(fullest) >= amt(closest) + 500) ? fullest : closest;
