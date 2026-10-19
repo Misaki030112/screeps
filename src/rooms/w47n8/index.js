@@ -65,7 +65,9 @@ function spawnRun(spawn) {
   if (!want && n('w8hauler') < 3) want = 'w8hauler';
   // 14:23 threat mode: walls/core ramparts to 50k ahead of upgrading; 1 upgrader keeps the controller safe (2 if downgrade < 10k)
   const thr = TH.on(), wtgt = TH.wallTarget(C.WALL_TARGET[(room.controller || {}).level] || 0);
-  const wallsLow = thr && room.find(FIND_STRUCTURES, { filter: s => ((s.structureType === STRUCTURE_WALL && C.SEAL.some(([x, y]) => s.pos.x === x && s.pos.y === y)) || (s.structureType === STRUCTURE_RAMPART && s.my)) && s.hits < wtgt }).length > 0;
+  // 15:45 hysteresis: core ramparts decay 300/100t, so a strict '< 50k' gate re-entered wall mode (1-2 upgraders, +builders) ~100 ticks
+  // after every top-up. Wall mode starts below 90% of target; builders still repair to the full target (wallJob).
+  const wallsLow = thr && room.find(FIND_STRUCTURES, { filter: s => ((s.structureType === STRUCTURE_WALL && C.SEAL.some(([x, y]) => s.pos.x === x && s.pos.y === y)) || (s.structureType === STRUCTURE_RAMPART && s.my)) && s.hits < wtgt * 0.9 }).length > 0;
   // 15:10 model: under the wall raise 1 upgrader (10 WORK of ~30 e/t net) left ~8k idle in containers (ctl/hub 1.5k+1.6k, W47N8 sources
   // 2.3k, W47N7 2.8k) while builders spent ~13 e/t; a 2nd upgrader while >3000 sits in local piles + ctl/hub conts (stock covers the gap)
   const stock8 = () => looseE(room) + _.sum([C.CTL_CONT, C.HUB_CONT], ([x, y]) => _.sum(room.lookForAt(LOOK_STRUCTURES, x, y).filter(s => s.structureType === STRUCTURE_CONTAINER), s => s.store[RESOURCE_ENERGY]));
