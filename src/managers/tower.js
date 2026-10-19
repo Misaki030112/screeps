@@ -28,9 +28,11 @@ module.exports = { growthPaused, run(room) {
     const shooters = p && (hurting.has(p.h.id) || p.ttk <= 2) ? towers : towers.filter(t => t.store[RESOURCE_ENERGY] >= FIRE_FLOOR);
     if (p && !shooters.length) p = null;
     mem.focus = p ? p.h.id : undefined; mem.focusE = p ? shooters.length * 10 : 0;
+    // 17:48 (Misaki): a friendly creep < 60% (no-HEAL first, lowest %) is healed instead of attacking this tick
+    const hurt = F.healPick(room.find(FIND_MY_CREEPS));
+    if (hurt) { for (const t of towers) t.heal(hurt); return; }
     if (p) { for (const t of shooters) t.attack(p.h); return; }
-    // holding fire: heal our creeps; repair only critical barriers (<2000) and keep >=500 for the next shot window
-    const hurt = room.find(FIND_MY_CREEPS).find(c => c.hits < c.hitsMax);
+    // holding fire: repair only critical barriers (<2000) and keep >=500 for the next shot window
     const crit = !hurt && rc.all(room, STRUCTURE_RAMPART).concat(rc.all(room, STRUCTURE_WALL)).filter(s => s.hits < 2000)[0];
     for (const t of towers) { if (hurt) t.heal(hurt); else if (crit && t.store[RESOURCE_ENERGY] > 500) t.repair(crit); }
     return;
@@ -39,7 +41,7 @@ module.exports = { growthPaused, run(room) {
     const P = plan.get(room.name), st = room.storage;
     const funded = !st || st.store[RESOURCE_ENERGY] >= require('./threat').reserve(room.name);
     const target = funded ? RAMPART_TARGET[room.controller.level] : Math.min(RAMPART_FLOOR, RAMPART_TARGET[room.controller.level]);
-    const hurt = room.find(FIND_MY_CREEPS).find(c => c.hits < c.hitsMax);
+    const hurt = require('../utils/focus').healPick(room.find(FIND_MY_CREEPS)); // 17:48: only < 60%
     mem.towerHeal = hurt ? hurt.id : undefined;
     // v4 gate ramparts: towers only keep them alive (FLOOR); hits steps are builder work from the wall fund (managers/walls.js)
     const W = require('./walls');
@@ -60,7 +62,7 @@ module.exports = { growthPaused, run(room) {
   const rep = mem.towerRep && Game.getObjectById(mem.towerRep);
   const fl = mem.rampFloorRep && Game.getObjectById(mem.rampFloorRep);
   for (const t of towers) {
-    if (heal && heal.hits < heal.hitsMax) t.heal(heal);
+    if (heal && heal.hits < heal.hitsMax * 0.6) t.heal(heal);
     else if (!rep && fl && fl.hits < (mem.rampHW || 0) && t.store[RESOURCE_ENERGY] > 600) t.repair(fl);
     else if (rep && t.store[RESOURCE_ENERGY] > 800 && !growthPaused(rep, room.controller.level, Game.time)) t.repair(rep); // keep ≥800 for combat (novice ends 2026-10-28)
   }

@@ -286,7 +286,8 @@ function towerRun(room) {
   if (!towers.length) return;
   const h = room.find(FIND_HOSTILE_CREEPS).filter(x => !x.my);
   assessRun(room, towers, h);
-  const hurt = room.find(FIND_MY_CREEPS, { filter: c => c.hits < c.hitsMax })[0];
+  // 17:48 (Misaki): heal only creeps < 60% (no-HEAL creeps first, lowest %); a heal candidate beats attacking this tick
+  const hurt = F.healPick(room.find(FIND_MY_CREEPS));
   let p = null;
   if (h.length) {
     const m = room.memory, hurting = hurtingSet(room, h);
@@ -297,8 +298,8 @@ function towerRun(room) {
   room.memory.threat8 = p ? { t: Game.time, id: p.h.id, inBase: inBaseThreat, e: p.shooters.length * 10 } : undefined;
   const fire = new Set(p ? p.shooters.map(s => s.t) : []);
   for (const t of towers) {
-    if (fire.has(t)) t.attack(p.h);
-    else if (hurt && t.store[RESOURCE_ENERGY] > 500) t.heal(hurt);
+    if (hurt) t.heal(hurt);
+    else if (fire.has(t)) t.attack(p.h);
     else if (t.store[RESOURCE_ENERGY] > 600) { // 17:20 (Misaki): built ramparts hold their current hits (decay offset only, never raised)
       const r = rampHold(room);
       if (r) t.repair(r);

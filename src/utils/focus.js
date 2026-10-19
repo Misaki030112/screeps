@@ -81,4 +81,10 @@ function canWin(we, h, hostiles) {
   const theirNet = dps - 12 * (we.heal || 0); if (theirNet <= 0) return true;
   return h.hits / net < 0.8 * (we.hits * 0.6) / theirNet; // must kill before we hit the 60% retreat line (with margin)
 }
-module.exports = { pickDef, canWin, track, BAN, towerDmg, effective, healOn, healPow, pick };
+// Tower heal pick (Misaki 17:48, W47N8 + home): only creeps below 60% hp; creeps without live HEAL parts first, then lowest hp%.
+function healPick(creeps) {
+  const c = creeps.filter(x => x.hits < x.hitsMax * 0.6);
+  const sh = x => (x.body.some(p => p.type === 'heal' && p.hits > 0) ? 1 : 0);
+  return c.sort((a, b) => sh(a) - sh(b) || a.hits / a.hitsMax - b.hits / b.hitsMax)[0] || null;
+}
+module.exports = { healPick, pickDef, canWin, track, BAN, towerDmg, effective, healOn, healPow, pick };

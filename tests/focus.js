@@ -47,3 +47,10 @@ assert.ok(!sq.length, 'towers must kill the squad'); console.log(`focus ok; towe
   for (let i = 0; i < 2; i++) { h.hits = 3000; F.track(mem, [h], 10 + i * 2, 't', 20); h.hits = 5000; b = F.track(mem, [h], 11 + i * 2); }
   require('assert').ok(b.has('t'), 'real knock-down cycles ban'); console.log('focus dpefwd3 ok');
 }
+{ // 17:48 tower heal rule: < 60% only; no-HEAL creeps first, then lowest hp%
+  const F = require('../src/utils/focus'), A = require('assert');
+  const k = (id, hits, max, heal) => ({ id, hits, hitsMax: max, body: heal ? [{ type: 'heal', hits: 100 }] : [{ type: 'ranged_attack', hits: 100 }] });
+  A.strictEqual(F.healPick([k('a', 700, 1000)]), null, '70%: no heal');
+  A.strictEqual(F.healPick([k('a', 500, 1000, true), k('b', 550, 1000)]).id, 'b', 'no-HEAL creep first even if higher %');
+  A.strictEqual(F.healPick([k('a', 500, 1000), k('b', 300, 1000)]).id, 'b', 'then lowest %');
+  console.log('focus healPick ok'); }

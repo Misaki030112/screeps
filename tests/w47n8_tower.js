@@ -8,8 +8,8 @@ const P = (x, y) => ({ x, y, getRangeTo: o => Math.max(Math.abs(x - (o.pos || o)
   findInRange: (t, r) => t === 2 ? H.filter(h => Math.max(Math.abs(h.pos.x - x), Math.abs(h.pos.y - y)) <= r) : [] });
 const body = o => Object.entries(o).flatMap(([t, n]) => Array(n).fill({ type: t, hits: 100 }));
 const hc = (id, x, y, b) => { const bd = body(b); return { id, pos: P(x, y), body: bd, hits: bd.length * 100, hitsMax: bd.length * 100 }; };
-let shots = []; const tw = { structureType: 'tower', pos: P(33, 35), store: { energy: 690 }, attack: x => shots.push(x.id), heal: () => {} };
-const room = { memory: {}, find: (t, o) => { const a = t === 1 ? [tw] : t === 2 ? H : []; return o && o.filter ? a.filter(o.filter) : a; } };
+let shots = [], heals = [], mine = []; const tw = { structureType: 'tower', pos: P(33, 35), store: { energy: 690 }, attack: x => shots.push(x.id), heal: x => heals.push(x.id) };
+const room = { memory: {}, find: (t, o) => { const a = t === 1 ? [tw] : t === 2 ? H : t === 3 ? mine : []; return o && o.filter ? a.filter(o.filter) : a; } };
 const go = h => { H = h; shots = []; W.towerRun(room); return shots; };
 assert.deepStrictEqual(go([hc('d', 31, 1, { tough: 14, move: 14 }), hc('h', 32, 1, { heal: 7, move: 7 })]), [], 'drain tanks north of seal: hold fire');
 assert.deepStrictEqual(go([hc('a', 30, 20, { attack: 10, move: 10 })]), ['a'], 'armed in base: fire');
@@ -18,6 +18,11 @@ assert.deepStrictEqual(go([hc('c', 30, 1, { claim: 1, move: 1 })]), ['c'], 'clai
 tw.store.energy = 200;
 assert.deepStrictEqual(go([hc('b', 30, 20, { tough: 14, move: 14 })]), [], 'unarmed in base, not dying in 2 ticks, tower < 400: keep reserve');
 assert.deepStrictEqual(go([hc('b', 33, 30, { tough: 5, move: 5 })]), ['b'], 'unarmed in base dying within 2 ticks: fire even at low energy');
+// 17:48 heal rule: a friendly < 60% is healed instead of attacking; >= 60% is not healed
+tw.store.energy = 690; mine = [{ id: 'd', pos: P(29, 4), hits: 1400, hitsMax: 2200, body: body({ ranged_attack: 11, move: 11 }) }];
+heals = []; assert.deepStrictEqual(go([hc('a', 30, 20, { attack: 10, move: 10 })]), ['a'], '64%: keep attacking'); assert.deepStrictEqual(heals, []);
+mine[0].hits = 1200; heals = []; assert.deepStrictEqual(go([hc('a', 30, 20, { attack: 10, move: 10 })]), [], '<60%: no attack this tick'); assert.deepStrictEqual(heals, ['d'], 'heal the defender');
+mine = [];
 console.log('w47n8 tower ok');
 // threat mode (14:23)
 const TH = require(path.join(__dirname, '..', 'src', 'rooms', 'w47n8', 'threat.js'));
