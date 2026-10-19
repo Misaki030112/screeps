@@ -4,6 +4,7 @@ const C = require('./config');
 const rep = (n, p) => Array(n).fill(p);
 function mine() { return _.filter(Game.creeps, c => c.memory.home === C.ROOM); }
 function bodyFor(role, e) {
+  if (role === 'w8defender') { const k = Math.max(1, Math.min(10, Math.floor(e / 200))); return rep(k, RANGED_ATTACK).concat(rep(k, MOVE)); }
   if (role === 'w8filler') { const n = Math.max(2, Math.min(8, Math.floor(e / 150))); return rep(n, CARRY).concat(rep(Math.ceil(n / 2), MOVE)); }
   if (role === 'w8rminer') { // 20:22: old formula priced 4W1C3M=600 at cap 550, so it never spawned; now the biggest that fits, trimming MOVE first
     for (let w = 5; w >= 2; w--) for (let m = Math.ceil((w + 1) / 2); m >= Math.ceil((w + 1) / 3); m--)
@@ -30,6 +31,9 @@ function spawnRun(spawn) {
   const cap = room.energyCapacityAvailable, avail = room.energyAvailable;
   const sites = room.find(FIND_MY_CONSTRUCTION_SITES).length;
   let want = null, mem = {};
+  // 0) defender (Misaki 14:09): only when an armed hostile is inside the sealed base (towerRun sets threat8.inBase); max 2
+  const th = room.memory && room.memory.threat8;
+  if (th && th.inBase && Game.time - th.t < 5 && n('w8defender') < 2) { want = 'w8defender'; }
   // 1) miners per source: keep >=5 WORK (10 e/t) on each source. Replace at TTL<60; and since the first w8miners were 2 WORK
   // (cap 300) and would run at 40% for ~1000 ticks, add a bigger one once cap allows (17:25), counting any cqminer still there.
   for (let i = 0; i < C.SOURCES.length && !want; i++) {
@@ -155,15 +159,33 @@ function layoutRun(room) {
     }
   }
 }
+// Drain-aware tower (Misaki 14:09: BustJetter TOUGH/MOVE tanks + healers sit at W47N8 y0-2, north of the seal walls, to burn
+// tower energy). Shoot only what matters: CLAIM creeps, anything inside the sealed base (y>=4), creeps able to hurt walls/
+// creeps (WORK/ATTACK/RANGED) within 3 of our structures, and only when our damage beats the healing around the target.
+// Never safe mode. Keeps 300 energy unless an armed creep is inside the base.
+const PARTS = (c, t) => c.body.reduce((n, p) => n + (p.type === t && p.hits > 0 ? 1 : 0), 0);
+const tdmg = r => (r <= 5 ? 600 : r >= 20 ? 150 : 600 - (r - 5) * 30);
 function towerRun(room) {
   const towers = room.find(FIND_MY_STRUCTURES, { filter: s => s.structureType === STRUCTURE_TOWER });
   if (!towers.length) return;
   const h = room.find(FIND_HOSTILE_CREEPS);
-  const claimer = h.find(x => x.body.some(p => p.type === CLAIM && p.hits > 0));
   const hurt = room.find(FIND_MY_CREEPS, { filter: c => c.hits < c.hitsMax })[0];
+  let best = null, bestScore = -1, inBaseThreat = false;
+  for (const x of h) {
+    const inBase = x.pos.y >= 4, claim = PARTS(x, CLAIM) > 0, armed = PARTS(x, ATTACK) + PARTS(x, RANGED_ATTACK) + PARTS(x, WORK) > 0;
+    const nearOurs = armed && x.pos.findInRange(FIND_STRUCTURES, 3, { filter: s => s.my || s.structureType === STRUCTURE_WALL }).length > 0;
+    if (!(claim || inBase || nearOurs)) continue;
+    const dmg = towers.reduce((a, t) => a + tdmg(t.pos.getRangeTo(x)), 0);
+    const heal = x.pos.findInRange(FIND_HOSTILE_CREEPS, 3).reduce((a, y) => a + PARTS(y, HEAL) * (y.pos.getRangeTo(x) <= 1 ? 12 : 4), 0);
+    if (dmg <= heal && !inBase && !claim) continue; // out-healed outside the base: holding fire is the drain defence
+    if (inBase && armed) inBaseThreat = true;
+    const score = (claim ? 1000 : 0) + (inBase ? 500 : 0) + dmg - heal;
+    if (score > bestScore) { bestScore = score; best = x; }
+  }
+  room.memory.threat8 = best ? { t: Game.time, id: best.id, inBase: inBaseThreat } : undefined;
   for (const t of towers) {
-    if (claimer || h.length) t.attack(claimer || t.pos.findClosestByRange(h));
-    else if (hurt) t.heal(hurt);
+    if (best && (t.store[RESOURCE_ENERGY] > 300 || inBaseThreat || PARTS(best, CLAIM))) t.attack(best);
+    else if (hurt && t.store[RESOURCE_ENERGY] > 500) t.heal(hurt);
   }
 }
 // self-sufficient = own spawn + a miner + a hauler alive (conquest.js stops sending cqworkers/cqhaulers)

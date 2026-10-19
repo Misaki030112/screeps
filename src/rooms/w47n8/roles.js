@@ -203,6 +203,18 @@ const R = {
     }
   },
   w8filler(c) { fillerRun(c); },
+  // in-room defender (14:09): ranged-only, never leaves W47N8, never goes north of the seal (y<5); idles beside Spawn2.
+  w8defender(c) {
+    if (!home(c)) return;
+    const hs = c.room.find(FIND_HOSTILE_CREEPS, { filter: x => x.pos.y >= 4 });
+    const t = c.pos.findClosestByRange(hs);
+    if (!t) return c.pos.inRangeTo(C.SPAWN[0], C.SPAWN[1], 3) || go(c, C.SPAWN[0], C.SPAWN[1], 3);
+    const r = c.pos.getRangeTo(t);
+    if (r <= 3) c.rangedAttack(t);
+    const melee = t.body.some(p => p.type === ATTACK && p.hits > 0);
+    if (melee && r <= 2) { const away = PathFinder.search(c.pos, { pos: t.pos, range: 4 }, { flee: true, maxRooms: 1 }).path[0]; if (away && away.y >= 5) c.move(c.pos.getDirectionTo(away)); }
+    else if (r > 3 && t.pos.y >= 5) go(c, t.pos.x, t.pos.y, 3);
+  },
   w8rminer(c) {
     const S = RM.sources[c.memory.si | 0], [x, y] = S.stand;
     if (c.room.name !== RM.room) return rgo(c, x, y, 0);
