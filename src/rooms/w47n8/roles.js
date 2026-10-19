@@ -181,8 +181,11 @@ const R = {
       if (i >= 0) {
         c.memory.st = i; const [x, y] = C.UPG_STAND[i];
         if (c.store[E] && c.pos.inRangeTo(ctl, 3)) c.upgradeController(ctl);
-        if (c.pos.x !== x || c.pos.y !== y) { if (c.store[E] || cont.store[E]) return go(c, x, y, 0); }
-        else { if (c.store[E] < 2 * c.getActiveBodyparts(WORK) && cont.store[E]) c.withdraw(cont, E); /* CPU 21:20: refill only when ~2 ticks left (0.2/intent) */ if (c.store[E] || cont.store[E]) return; }
+        // 11:30: 9W1C2M upgraders left the stands whenever the ctl cont ran dry and walked ~20 tiles toward the piles (1 tile/3t) to fetch
+        // 50 energy, missing the refill by ~30 ticks; a 1-CARRY upgrader waits at its stand instead
+        const stay = c.store.getCapacity() <= 50;
+        if (c.pos.x !== x || c.pos.y !== y) { if (c.store[E] || cont.store[E] || stay) return go(c, x, y, 0); }
+        else { if (c.store[E] < 2 * c.getActiveBodyparts(WORK) && cont.store[E]) c.withdraw(cont, E); /* CPU 21:20: refill only when ~2 ticks left (0.2/intent) */ if (c.store[E] || cont.store[E] || stay) return; }
         // container empty and I'm empty: fall through and fetch from the piles
       } else delete c.memory.st;
     }
