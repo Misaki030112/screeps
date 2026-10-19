@@ -9,7 +9,9 @@ const D = require(path.join(__dirname, '..', 'src', 'rooms', 'w47n8', 'defense.j
 const cost = b => b.reduce((s, p) => s + BODYPART_COST[p], 0);
 for (const e of [300, 800, 1099, 1100, 1300, 5600]) { const b = W.bodyFor('w8defender', e); assert.ok(cost(b) <= e && b.length <= 50, 'fits ' + e);
   assert.strictEqual(b.filter(p => p === 'move').length, b.length - b.filter(p => p === 'move').length, 'MOVE = non-MOVE (kites at full speed) @' + e);
-  assert.strictEqual(b.includes('heal'), e >= 1100, 'heal only when energy allows @' + e); }
+  assert.ok(!b.includes('heal'), 'no HEAL (17:34: towers heal) @' + e); }
+assert.strictEqual(W.bodyFor('w8defender', 2300).length, 22, 'RCL4/5 local body: up to 11RA11M');
+assert.deepStrictEqual(require('lodash').countBy(D.raBody(2300, 25)), { ranged_attack: 11, move: 11 }, 'home defender at cap 2300: 11RA11M (2200)');
 const R = (hs, name = 'W47N8') => ({ name, find: () => hs });
 const body = o => Object.entries(o).flatMap(([t, n]) => Array(n).fill({ type: t, hits: 100 }));
 assert.strictEqual(TH.invasion(), false, 'quiet');
@@ -32,11 +34,12 @@ assert.strictEqual(D.towerPick(T1, [c('r', 27, 1, { ranged_attack: 7, move: 7 })
 assert.strictEqual(D.towerPick(T1, [c('r', 27, 1, { ranged_attack: 7, move: 7 }), c('h', 27, 0, { heal: 7, move: 7 }), c('g', 28, 0, { heal: 6, move: 6 })], { hurting: new Set(['r']) }), null, 'armed + 2 healers at the seal, tower 150 vs heal 156 -> net<=0, hold');
 // in base: healer > ranged > melee, then fastest kill
 let sq = [c('m', 30, 30, { attack: 10, move: 10 }), c('r', 31, 30, { ranged_attack: 7, move: 7 }), c('h', 31, 31, { heal: 6, move: 6 })];
-assert.strictEqual(D.towerPick(T1, sq).h.id, 'h', 'healer first');
+assert.strictEqual(D.towerPick(T1, sq).h.id, 'h', 'healer always first (Misaki 17:40)');
 assert.strictEqual(D.towerPick(T1, sq.slice(0, 2)).h.id, 'r', 'ranged before melee');
 assert.strictEqual(D.towerPick(T1, sq.slice(0, 1)).h.id, 'm', 'melee when alone');
 // sticky prev when about to die, even if a healer is present
 sq[0].hits = 300; assert.strictEqual(D.towerPick(T1, sq, { prev: 'm' }).h.id, 'm', 'finish the near-dead previous target');
+assert.strictEqual(D.towerPick(T1, [c('r1', 30, 30, { ranged_attack: 7, move: 7 }), c('r2', 31, 30, { ranged_attack: 7, move: 7 }, 500)]).h.id, 'r2', 'within a class: lowest hp');
 // out-healed healer skipped -> next class with net>0
 const ball = [c('h1', 20, 10, { heal: 7, move: 7 }), c('h2', 20, 11, { heal: 7, move: 7 }), c('h3', 21, 10, { heal: 6, move: 6 }), c('r', 21, 11, { ranged_attack: 11, move: 11 })];
 assert.strictEqual(D.towerPick(T1, ball), null, 'tower r>=20 vs 240 heal: nothing killable -> hold fire (no drain)');
@@ -60,18 +63,39 @@ a = D.assess(SQ(), [19], d4, { inside: true }); assert.ok(!a.spawn && a.advise =
 a = D.assess([fc({ ranged_attack: 7, move: 7 })], [32], d4); assert.ok(!a.spawn && a.why === 'towers win', 'lone RA: tower handles it, no defenders');
 a = D.assess([fc({ tough: 5, move: 15, attack: 10 }), fc({ heal: 6, move: 6 }), fc({ heal: 7, move: 7 })], [32], d4); assert.ok(a.spawn, 'melee + 2 healers at the seal: towers lose, towers + 2 kiting defenders win -> spawn');
 assert.strictEqual(D.assess([fc({ tough: 14, move: 14 }), fc({ heal: 7, move: 7 })], [32], d4).why, 'unarmed', 'drain group: never spawns');
-// ---- defender plan
-const me = (x, y, hits = 1200) => ({ pos: { x, y }, hits, hitsMax: 1200, ra: 5 });
+// ---- defender plan (Misaki 17:36-17:40: wall posts, HP rule 60/90, healer > ranged > melee)
+const me = (x, y, hits = 2200) => ({ pos: { x, y }, hits, hitsMax: 2200 });
 const tw = [{ x: 33, y: 35 }];
-let p = D.defPlan(me(27, 6), [c('m', 27, 4, { attack: 10, move: 10 })], { towers: tw }); assert.strictEqual(p.move, 'flee', 'melee within 2 -> kite away'); assert.strictEqual(p.shoot.id, 'm', 'and shoot it');
-p = D.defPlan(me(27, 6, 600), [c('r', 27, 2, { ranged_attack: 7, move: 7 })], { towers: tw }); assert.ok(p.hurt && p.move === 'retreat', '<60% -> retreat to tower');
-p = D.defPlan(Object.assign(me(27, 6, 1100), { hurt: true }), [c('r', 27, 2, { ranged_attack: 7, move: 7 })], { towers: tw }); assert.ok(p.hurt, 'stays hurt until 95%');
-p = D.defPlan(me(27, 6), [c('r', 26, 3, { ranged_attack: 7, move: 7 }), c('h', 27, 3, { heal: 6, move: 6 })], { towers: tw, focus: 'r' }); assert.strictEqual(p.shoot.id, 'r', 'tower focus in range: same target');
-p = D.defPlan(me(27, 6), [c('r', 26, 4, { ranged_attack: 3, move: 3 }), c('h', 27, 4, { heal: 1, move: 1 })], { towers: tw }); assert.strictEqual(p.shoot.id, 'h', 'own pick: healer first');
-p = D.defPlan(me(27, 6), [c('d', 27, 2, { tough: 14, move: 14 })], { towers: tw }); assert.ok(!p.shoot && p.move === 'post', 'drain tank north of seal: ignore, stay on post');
+let p = D.defPlan(me(29, 4), [c('r', 29, 1, { ranged_attack: 8, move: 8 }), c('h', 30, 1, { heal: 7, move: 7 }), c('m', 28, 2, { attack: 10, move: 10 })], { towers: tw });
+assert.strictEqual(p.shoot.id, 'h', 'at the wall: healer first'); assert.notStrictEqual(p.move, 'flee', 'melee north of the seal cannot reach y=4: no kiting');
+p = D.defPlan(me(29, 4), [c('r', 29, 1, { ranged_attack: 8, move: 8 }), c('r2', 30, 1, { ranged_attack: 6, move: 6 }, 300)], { towers: tw }); assert.strictEqual(p.shoot.id, 'r2', 'lowest hp within class');
+p = D.defPlan(me(29, 4), [c('r', 29, 1, { ranged_attack: 8, move: 8 }), c('h', 30, 1, { heal: 7, move: 7 })], { towers: tw, focus: 'h' }); assert.strictEqual(p.shoot.id, 'h', 'tower focus in range: same target');
+p = D.defPlan(me(29, 4, 1400), [c('r', 29, 1, { ranged_attack: 8, move: 8 })], { towers: tw }); assert.ok(!p.hurt && p.move !== 'retreat', '64% hp: stays at the wall');
+p = D.defPlan(me(29, 4, 1300), [c('r', 29, 1, { ranged_attack: 8, move: 8 })], { towers: tw }); assert.ok(p.hurt && p.move === 'retreat' && p.goal.y === 35, '<60%: retreat to the tower');
+p = D.defPlan(Object.assign(me(30, 20, 1900), { hurt: true }), [c('r', 29, 1, { ranged_attack: 8, move: 8 })], { towers: tw }); assert.ok(p.hurt, '86%: still retreating');
+p = D.defPlan(Object.assign(me(30, 20, 1980), { hurt: true }), [c('r', 29, 1, { ranged_attack: 8, move: 8 })], { towers: tw }); assert.ok(!p.hurt && p.move === 'post' && p.goal.y === 4, '>=90%: back to the wall post');
+// posts: right behind the seal (y=4) on the segment nearest the enemy, spread by idx, never the 27,4 swamp
+assert.deepStrictEqual(D.postTile(31, 0), { x: 31, y: 4 }); assert.deepStrictEqual(D.postTile(31, 1), { x: 29, y: 4 }, 'second defender spread 2 tiles');
+assert.deepStrictEqual(D.postTile(9, 0), { x: 9, y: 4 }, 'west seal segment'); assert.ok([0, 1, 2, 3].every(i => D.postTile(27, i).x !== 27), 'no swamp post');
+p = D.defPlan(me(25, 8), [c('r', 31, 1, { ranged_attack: 8, move: 8 })], { towers: tw }); assert.deepStrictEqual([p.move, p.goal], ['post', { x: 31, y: 4 }], 'enemy at x31 north: go to 31,4');
+p = D.defPlan(me(25, 8), [], { towers: tw, enemyX: 31, quiet: 10 }); assert.deepStrictEqual(p.goal, { x: 31, y: 4 }, 'alert from W47N9 (x31): pre-stage at 31,4');
+p = D.defPlan(me(27, 6), [c('m', 27, 7, { attack: 10, move: 10 })], { towers: tw }); assert.strictEqual(p.move, 'flee', 'melee inside the seal within 2 -> kite');
+p = D.defPlan(me(27, 6), [c('d', 27, 2, { tough: 14, move: 14 })], { towers: tw }); assert.ok(!p.shoot, 'drain tank north of seal: ignored');
 p = D.defPlan(me(27, 6), [], { towers: tw, quiet: 150 }); assert.strictEqual(p.move, 'recycle', 'quiet 100+ ticks: recycle');
-p = D.defPlan(me(27, 6), [c('r', 20, 15, { ranged_attack: 11, move: 11 })], { towers: tw, win: false }); assert.strictEqual(p.move, 'retreat', 'unwinnable: back into tower cover');
-p = D.defPlan(me(30, 30), [c('r', 20, 15, { ranged_attack: 11, move: 11 })], { towers: tw, win: false }); assert.strictEqual(p.move, 'hold', 'unwinnable and covered: hold, do not chase');
-p = D.defPlan(me(30, 30), [c('r', 20, 15, { ranged_attack: 11, move: 11 })], { towers: tw, win: true }); assert.strictEqual(p.move, 'approach', 'winnable: approach to range 3');
-p = D.defPlan(me(27, 6), [c('a', 26, 7, { ranged_attack: 2, move: 2 }), c('b', 27, 8, { ranged_attack: 2, move: 2 }), c('e', 28, 7, { ranged_attack: 2, move: 2 })], { towers: tw }); assert.ok(p.mass, '3 at range 1-2: rangedMassAttack');
+p = D.defPlan(me(27, 6), [c('a', 26, 7, { ranged_attack: 2, move: 2 }), c('b', 27, 8, { ranged_attack: 2, move: 2 }), c('e', 28, 7, { ranged_attack: 2, move: 2 })], { towers: tw }); assert.ok(p.mass, '3 within 2: rangedMassAttack');
+// ---- joint planner (one place for W46N8 + W47N8)
+const pair = () => [fc({ ranged_attack: 8, move: 8 }), fc({ ranged_attack: 6, move: 6 })];
+let pl = D.plan({ force: pair(), towerR: [32], homeOk: true, homeCap: 2300, w8Cap: 1300 }); assert.strictEqual(pl.home, 1, 'threat active + home safe: home sends one');
+assert.ok(pl.w8 <= 2 && pl.healer === undefined, 'no healer role');
+pl = D.plan({ force: pair(), towerR: [32], homeOk: false, homeCap: 2300, w8Cap: 1300 }); assert.strictEqual(pl.home, 0, 'home threatened: home keeps its spawn');
+pl = D.plan({ force: SQ(), towerR: [32], homeOk: true, homeCap: 2300, w8Cap: 1300 }); assert.ok(!pl.win && pl.w8 === 0, 'full squad at RCL4: no local defenders fed');
+pl = D.plan({ force: SQ(), towerR: [19], homeOk: true, homeCap: 2300, w8Cap: 1300, inside: true }); assert.strictEqual(pl.advise, 'safemode', 'inside + unwinnable: advise safe mode');
+assert.strictEqual(D.plan({ force: [fc({ tough: 14, move: 14 })], towerR: [32], homeOk: true, homeCap: 2300 }).home, 0, 'drain tanks: nobody');
+// ---- seal repair under fire
+const wl = (x, hits) => ({ pos: { x, y: 3 }, hits });
+const ws = [wl(24, 50000), wl(29, 42000), wl(30, 30000), wl(10, 1000)];
+assert.strictEqual(D.repairPick(ws, [c('r', 29, 1, { ranged_attack: 8, move: 8 })]).pos.x, 30, 'lowest wall in reach of the enemy (west 10,3 unattacked ignored)');
+assert.strictEqual(D.repairPick(ws, [c('d', 29, 1, { tough: 8, move: 8 })]), null, 'unarmed: no combat repair');
+const st = D.repairStand(wl(30, 1), [c('r', 30, 1, { ranged_attack: 8, move: 8 })]);
+assert.ok(st.y > 3 && Math.max(Math.abs(st.x - 30), st.y - 3) <= 3 && Math.max(Math.abs(st.x - 30), st.y - 1) >= 4, 'repair stand in range 3 of the wall, out of enemy range 3: ' + JSON.stringify(st));
 console.log('w47n8 defense ok');

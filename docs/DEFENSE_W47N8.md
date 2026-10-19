@@ -39,3 +39,18 @@ Break-even vs heal H (12 per HEAL part, all stacked): tower wins only if sum(tow
 Caveat: model assumes the squad stands and fights; a real player retreats to heal (drain) — the tracker and net>0 rule cover that.
 Conclusion RCL4: full squad breaking in = unwinnable for us; recommend Misaki activates safe mode (3 left) when it passes the seal
 and heads to Spawn2. From RCL5 (2nd tower 34,31) towers alone are expected to hold.
+
+## 17:34-17:40 updates (Misaki)
+- **Joint defence** (`defense.plan`, the one planner; `index.js assessRun` writes `Memory.ops.w8roster = {home, w8}`): whenever an armed
+  threat is active (armed in W47N8, or north_watch W47N9 group) and W46N8 has no player combat creeps, home spawns ONE `w8defender`
+  (`memory.src = 'W46N8'`, home W47N8, RA+MOVE max fit: 11RA11M at cap 2300) via `managers/spawn.js` 1b2 (overrides the storage floor,
+  queen first). Local W47N8 defenders = fewest (0-2) that make towers + home + local win with no losses in the sim, else 0.
+- **Bodies**: RA+MOVE only, no HEAL; no healer role (HP rule instead of damage prediction).
+- **HP rule**: fight while >= 60%; < 60% retreat to the nearest tower (towers heal); back to the wall at >= 90%.
+- **Targeting** (towers and defenders): healers always first, then ranged, then melee; lowest hp within a class; defenders shoot the
+  towers' focus when in range 3. Towers still need net damage > 0 (anti-drain).
+- **Wall posts**: tile right behind the seal (y=4) of the segment nearest the enemy (east 24-31 minus swamp 27,4; west 8-11),
+  2 tiles apart per defender; pre-staged from north_watch's mean enemy x (`Memory.ops.w8invNx`). Melee north of the seal cannot reach y=4.
+- **Seal repair under fire**: w8builders with energy repair the lowest seal wall an armed hostile can reach, standing within 3 of it on our
+  side as far from enemy range as possible (`repairPick` / `repairStand`).
+- Sim: 17:34 pair (8RA+6RA) at the seal: tower + home 11RA11M win in ~15 t; pair + 2x7H: needs home + 1 local (planner picks it).

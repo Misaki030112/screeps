@@ -6,9 +6,8 @@ const FM = require('./fillmeter');
 const FL = require('./fill');
 function mine() { return _.filter(Game.creeps, c => c.memory.home === C.ROOM); }
 function bodyFor(role, e) {
-  // 14:46 kite body: RA+MOVE pairs, plus 1 HEAL(+MOVE) once energy allows (>=1100)
-  if (role === 'w8defender') { const h = e >= 1100 ? 1 : 0, k = Math.max(1, Math.min(9, Math.floor((e - 300 * h) / 200)));
-    return rep(k, RANGED_ATTACK).concat(rep(k + h, MOVE), rep(h, HEAL)); }
+  // 17:34 (Misaki joint defence): RA+MOVE only, no HEAL (towers heal on our ground; HP rule 60%/90% in defense.defPlan)
+  if (role === 'w8defender') return require('./defense').raBody(e, 12);
   if (role === 'w8filler') return FL.body(e, Game.rooms[C.ROOM]); // 17:4x 2C:1M, carry ~75% of the hub spawn energy (fill.js)
   if (role === 'w8rminer') { // 20:22: old formula priced 4W1C3M=600 at cap 550, so it never spawned; now the biggest that fits, trimming MOVE first
     for (let w = 5; w >= 2; w--) for (let m = Math.ceil((w + 1) / 2); m >= Math.ceil((w + 1) / 3); m--)
@@ -55,9 +54,11 @@ function spawnRun(spawn) {
   // 14:46 (Misaki): also on an invasion move (armed hostiles entering W47N8, or an armed group at the W47N9 border); max 2, stays in W47N8
   // 17:3x doctrine (docs/DEFENSE_W47N8.md): only when towerRun's assessment says towers alone lose AND towers + 2 defenders win;
   // never feed an unwinnable fight (Memory.ops.w8adv advises safe mode instead). Memory.ops.w8defOld = 1 restores the old trigger.
-  const dAs = room.memory && room.memory.w8assess, dOld = Memory.ops && Memory.ops.w8defOld;
-  const dGo = dOld ? ((th && th.inBase && Game.time - th.t < 5) || TH.invasion()) : !!(dAs && dAs.spawn && Game.time - dAs.t < 20);
-  if (dGo && n('w8defender') < 2) { want = 'w8defender'; }
+  // 17:34 joint defence: Memory.ops.w8roster (assessRun -> defense.plan) = local defenders + 1 home defender (src W46N8, spawned by home)
+  const ro = Memory.ops && Memory.ops.w8roster, dOld = Memory.ops && Memory.ops.w8defOld, fresh = ro && Game.time - ro.t < 20;
+  const local = cs.filter(c => c.memory.role === 'w8defender' && !c.memory.src).length;
+  const dGo = dOld ? ((th && th.inBase && Game.time - th.t < 5) || TH.invasion()) && local < 2 : !!(fresh && local < Math.min(2, ro.w8));
+  if (dGo) { want = 'w8defender'; }
   // 1) miners per source: keep >=5 WORK (10 e/t) on each source. Replace at TTL<60; and since the first w8miners were 2 WORK
   // (cap 300) and would run at 40% for ~1000 ticks, add a bigger one once cap allows (17:25), counting any cqminer still there.
   for (let i = 0; i < C.SOURCES.length && !want; i++) {
@@ -222,7 +223,7 @@ function layoutRun(room) {
 }
 // Drain-aware tower (Misaki 14:09 / 17:3x doctrine, docs/DEFENSE_W47N8.md): BustJetter TOUGH/MOVE tanks + healers sit at W47N8 y0-2,
 // north of the seal walls, to burn tower energy. Target choice is ./defense towerPick: claimers anywhere, anything inside the seal
-// (y>3), armed creeps hurting us; net damage > 0 only (tower dmg at range - reachable heal); healer > ranged > melee; one focus for
+// (y>3), armed creeps hurting us; net damage > 0 only (tower dmg at range - reachable heal); healer > ranged > melee (lowest hp); one focus for
 // all towers; non-urgent targets only from towers >= 400 energy; drain-pattern creeps (knocked down and healed back twice, or
 // 1000 energy spent) are skipped unless urgent. Never safe mode (assessment only advises, Memory.ops.w8adv).
 const PARTS = (c, t) => c.body.reduce((n, p) => n + (p.type === t && p.hits > 0 ? 1 : 0), 0);
@@ -258,16 +259,20 @@ function hurtingSet(room, hs) {
 function assessRun(room, towers, hs) {
   const m = room.memory, o = (Memory.ops = Memory.ops || {});
   const inRoom = hs.filter(h => PARTS(h, ATTACK) + PARTS(h, RANGED_ATTACK) > 0), north = o.w8invN > 0 && Game.time - o.w8invN < 300;
-  if (!inRoom.length && !north) { if (m.w8assess) delete m.w8assess; return; }
+  if (!inRoom.length && !north) { if (m.w8assess) delete m.w8assess; if (o.w8roster) delete o.w8roster; return; }
   if (m.w8assess && Game.time - m.w8assess.t < 5) return;
   let force, at;
   if (inRoom.length) { force = hs.filter(h => D.armed(h) || PARTS(h, HEAL)); at = inRoom.reduce((a, h) => (h.pos.y > a.pos.y ? h : a)).pos; }
   else if (Array.isArray(o.w8invNb) && o.w8invNb.length) { force = o.w8invNb.map(D.fromCounts); at = SEAL_FIGHT; }
-  else { m.w8assess = { t: Game.time, spawn: true, why: 'north group, no body data' }; return; } // pre-doctrine behaviour
+  else force = [D.fromCounts({ ranged_attack: 8, move: 8 }), D.fromCounts({ ranged_attack: 6, move: 6 })], at = SEAL_FIGHT; // no body data: assume the 17:34 pair
   const inside = inRoom.some(h => h.pos.y > D.SEAL_Y);
   const tr = towers.map(t => Math.max(Math.abs(t.pos.x - at.x), Math.abs(t.pos.y - at.y)));
-  const r = D.assess(force, tr, bodyFor('w8defender', room.energyCapacityAvailable || 300), { inside, towerE: Math.min(...towers.map(t => t.store[RESOURCE_ENERGY])) });
-  m.w8assess = { t: Game.time, spawn: r.spawn, why: r.why, at: [at.x, at.y] };
+  // 17:34 joint planner (defense.plan): one place decides the W46N8 + W47N8 roster; home only if home itself is not threatened
+  const hr = Game.rooms[HOME], homeOk = !!hr && !require('../../managers/home').active(hr);
+  const r = D.plan({ force, towerR: tr, inside, homeOk, homeCap: hr ? hr.energyCapacityAvailable : 0, w8Cap: room.energyCapacityAvailable || 300,
+    towerE: Math.min(...towers.map(t => t.store[RESOURCE_ENERGY])) });
+  o.w8roster = { t: Game.time, home: r.home, w8: r.w8, why: r.why };
+  m.w8assess = { t: Game.time, spawn: r.w8 > 0, why: r.why === 'win' ? 'winnable' : r.why, at: [at.x, at.y] };
   if (r.advise) o.w8adv = { t: Game.time, advise: r.advise, why: r.why, n: force.length }; // safe mode is Misaki's call (alerts relay it)
 }
 function towerRun(room) {
@@ -295,9 +300,21 @@ function towerRun(room) {
     }
   }
 }
+// 17:34 joint defence, home side: W46N8 spawn asks this. One RA+MOVE defender (max that fits home cap, no HEAL) for W47N8 when the
+// planner wants it, home has no player combat creeps, and fewer home-sent defenders (memory.src W46N8) are alive/spawning.
+// Overrides the home storage floor (defence). The creep runs the w8defender role (home: W47N8) and recycles there after 100 quiet t.
+const HOME = 'W46N8';
+function homeWant(room) {
+  const ro = Memory.ops && Memory.ops.w8roster;
+  if (room.name !== HOME || !ro || !ro.home || Game.time - ro.t > 20) return null;
+  if (require('../../managers/home').active(room)) return null;
+  const sent = _.filter(Game.creeps, c => c.memory.role === 'w8defender' && c.memory.src === HOME).length;
+  if (sent >= ro.home) return null;
+  return { body: require('./defense').raBody(room.energyCapacityAvailable, 25), mem: { home: C.ROOM, src: HOME, born: Game.time } };
+}
 // self-sufficient = own spawn + a miner + a hauler alive (conquest.js stops sending cqworkers/cqhaulers)
 function selfSufficient() {
   const r = Game.rooms[C.ROOM]; if (!r || !r.find(FIND_MY_SPAWNS).length) return false;
   return mine().some(c => c.memory.role === 'w8miner'); // Spawn2 + its own miner -> home stops cq pioneers/haulers (guard stays)
 }
-module.exports = { linkAt, linkRun, rampHold, swapTemp, energyOrder, ROOM: C.ROOM, spawnRun, layoutRun, towerRun, selfSufficient, bodyFor };
+module.exports = { homeWant, linkAt, linkRun, rampHold, swapTemp, energyOrder, ROOM: C.ROOM, spawnRun, layoutRun, towerRun, selfSufficient, bodyFor };

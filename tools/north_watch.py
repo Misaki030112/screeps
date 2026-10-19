@@ -27,7 +27,7 @@ def main():
     global st, invN
     st = json.load(open(STATE)) if os.path.exists(STATE) else {}
     tick = api.req('game/time?shard=' + api.SHARD).get('time', 0)
-    alerts, summary, threatN, invN, n9 = [], {}, False, False, []
+    alerts, summary, threatN, invN, n9, x9 = [], {}, False, False, [], 29
     for r in ROOMS:
         o = api.req(f'game/room-objects?room={r}&shard={api.SHARD}'); U = {k: v.get('username') for k, v in o.get('users', {}).items()}
         cs = hostile_creeps(o['objects'], U)
@@ -61,12 +61,12 @@ def main():
         if prev and rise: add('boost', [], {'owner': (U.get(next((x.get('user') for x in o['objects'] if x['type'] == 'controller' and x.get('user')), None)) or '?'), 'rise': rise})
         if triggers(r, armed, drain): threatN = True  # W47N9 armed/drain, or W48N9 >=2 armed (Misaki 14:27)
         if r == 'W47N9' and len(armed) >= 2: invN = True  # 14:46 armed group at the W47N9 border -> border defenders
-        if r == 'W47N9': n9 = [i['body'] for i in {id(i): i for i in armed + drain}.values()][:12]  # 17:3x: bodies for the in-game assessment
+        if r == 'W47N9': g9 = list({id(i): i for i in armed + drain}.values()); n9 = [i['body'] for i in g9][:12]; x9 = round(sum(i['pos'][0] for i in g9) / len(g9)) if g9 else 29  # 17:3x: bodies + mean x for the in-game assessment / staging
         st[r] = {'tick': tick, 'boost': dict(stock)}
     json.dump(st, open(STATE, 'w'))
     if threatN:
         nb = json.dumps([{k: v for k, v in b.items() if k in ('attack', 'ranged_attack', 'heal', 'tough', 'move', 'work', 'claim')} for b in n9], separators=(',', ':'))
-        expr = '(Memory.ops.w8threatN=Game.time,' + (f'Memory.ops.w8invN=Game.time,Memory.ops.w8invNb={nb},' if invN else '') + '"ok")'  # w8invN: armed group at the W47N9 border -> W47N8 border defenders
+        expr = '(Memory.ops.w8threatN=Game.time,' + (f'Memory.ops.w8invN=Game.time,Memory.ops.w8invNb={nb},Memory.ops.w8invNx={x9},' if invN else '') + '"ok")'  # w8invN: armed group at the W47N9 border -> W47N8 border defenders
         subprocess.run([sys.executable, os.path.join(H, 'q.py'), expr], capture_output=True, timeout=60)
     if '--quiet' not in sys.argv:
         print(json.dumps({'tick': tick, 'rooms': summary, 'threatN': threatN, 'alerts': [(a['episode'], s) for a, s in alerts]}))

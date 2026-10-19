@@ -237,8 +237,9 @@ const R = {
   // 14:46 (Misaki): border ranged defender. Attacks intruders inside W47N8 only (never leaves: home() + no exit/seal-north tiles),
   // kites melee, self/ally heal when it has HEAL. Spawned only on an invasion move (TH.invasion) or an armed hostile in the base.
   w8defender(c) {
-    // 17:3x doctrine (src/rooms/w47n8/defense.js defPlan, docs/DEFENSE_W47N8.md): focus the towers' target, healer first, kite melee,
-    // retreat to a tower below 60%, stay in tower cover when the fight is not winnable, recycle after 100 quiet ticks
+    // doctrine (src/rooms/w47n8/defense.js defPlan, docs/DEFENSE_W47N8.md): station right behind the seal nearest the enemy, shoot the
+    // towers' focus (healer > ranged > melee), retreat to a tower below 60% hp, back at 90%, recycle after 100 quiet ticks.
+    // memory.src 'W46N8' = joint-defence creep sent by home (same role, counted in the joint roster)
     if (!home(c)) return;
     const D = require('./defense');
     const cb = (rn, m) => { if (rn !== C.ROOM) return false; for (let i = 0; i < 50; i++) { for (let y = 0; y <= 3; y++) m.set(i, y, 255); m.set(0, i, 255); m.set(49, i, 255); m.set(i, 49, 255); } return m; };
@@ -246,18 +247,16 @@ const R = {
     const room = c.room, hs = room.find(FIND_HOSTILE_CREEPS).filter(x => !x.my), mem = c.memory;
     if (hs.length || TH.invasion()) mem.seen = Game.time;
     const towers = room.find(FIND_MY_STRUCTURES, { filter: s => s.structureType === STRUCTURE_TOWER }).map(t => t.pos);
-    const th = room.memory.threat8, as = room.memory.w8assess;
-    const p = D.defPlan({ pos: c.pos, hits: c.hits, hitsMax: c.hitsMax, ra: c.getActiveBodyparts(RANGED_ATTACK), hurt: mem.hurt }, hs,
-      { focus: th && th.id, prev: mem.tgt, towers, win: as ? as.spawn || as.why === 'towers win' : undefined, quiet: Game.time - (mem.seen || mem.born || Game.time) });
-    mem.hurt = p.hurt; mem.tgt = p.shoot ? p.shoot.id : undefined;
+    const th = room.memory.threat8, idx = _.filter(Game.creeps, x => x.memory.role === 'w8defender').map(x => x.name).sort().indexOf(c.name);
+    const p = D.defPlan({ pos: c.pos, hits: c.hits, hitsMax: c.hitsMax, hurt: mem.hurt }, hs,
+      { focus: th && th.id, towers, quiet: Game.time - (mem.seen || mem.born || Game.time), enemyX: Memory.ops && Memory.ops.w8invNx, idx: Math.max(0, idx) });
+    mem.hurt = p.hurt;
     if (p.mass) c.rangedMassAttack(); else if (p.shoot) c.rangedAttack(p.shoot);
-    if (c.getActiveBodyparts(HEAL)) { const hurt = c.hits < c.hitsMax ? c : c.pos.findClosestByRange(FIND_MY_CREEPS, { filter: x => x.hits < x.hitsMax && c.pos.inRangeTo(x, 3) }); if (hurt) (c.pos.isNearTo(hurt) ? c.heal(hurt) : c.rangedHeal(hurt)); }
     if (p.move === 'flee') { const away = PathFinder.search(c.pos, { pos: new RoomPosition(p.from.x, p.from.y, C.ROOM), range: 4 }, { flee: true, maxRooms: 1, roomCallback: rn => cb(rn, new PathFinder.CostMatrix()) }).path[0]; if (away) c.move(c.pos.getDirectionTo(away)); return; }
     if (p.move === 'retreat') return c.pos.inRangeTo(p.goal.x, p.goal.y, 2) || mv(p.goal, 2);
     if (p.move === 'approach') return mv(p.goal, 3);
+    if (p.move === 'post') return mv(p.goal, 0);
     if (p.move === 'recycle') { const sp = room.find(FIND_MY_SPAWNS)[0]; if (sp) return c.pos.isNearTo(sp) ? sp.recycleCreep(c) : mv(sp.pos, 1); }
-    // idle: wait at the north seal (inside), between the two wall groups' approaches
-    if (p.move === 'post' || p.move === 'recycle') return c.pos.inRangeTo(C.BORDER_POST[0], C.BORDER_POST[1], 2) || mv({ x: C.BORDER_POST[0], y: C.BORDER_POST[1] }, 2);
   },
   w8rminer(c) {
     // 14:23: armed hostiles in W47N7 / W47N8 north -> hold inside the W47N8 base (loaded haulers still unload there), resume when clear
@@ -346,6 +345,11 @@ const R = {
     }
     if (c.store[E] > 0) delete c.memory.fw;
     if (!c.memory.w) { getEnergy(c); return; }
+    // 17:36 (Misaki): seal walls under attack -> repair the lowest attacked segment from behind it, as far from enemy range as possible
+    { const hs = c.room.find(FIND_HOSTILE_CREEPS).filter(x => !x.my), D = require('./defense');
+      if (hs.some(D.armed)) { const ws = c.room.find(FIND_STRUCTURES, { filter: s => s.structureType === STRUCTURE_WALL && s.pos.y === 3 }), w = D.repairPick(ws, hs);
+        if (w) { const ter = c.room.getTerrain(), st = D.repairStand(w, hs, (x, y) => ter.get(x, y) !== TERRAIN_MASK_WALL);
+          if (st && (c.pos.x !== st.x || c.pos.y !== st.y)) go(c, st.x, st.y, 0); if (c.pos.inRangeTo(w, 3)) c.repair(w); return; } } }
     const all = c.room.find(FIND_MY_CONSTRUCTION_SITES);
     // north seal walls first (1 energy each, Misaki 17:08), x8-11 before x24-31; then the spawn/extension sites
     const seal = all.filter(s => s.structureType === STRUCTURE_WALL).sort((a, b) => (a.pos.x <= 11 ? 0 : 1) - (b.pos.x <= 11 ? 0 : 1));

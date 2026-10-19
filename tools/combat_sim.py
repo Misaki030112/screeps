@@ -24,8 +24,8 @@ class Cr:
     @property
     def alive(s): return s.hits > 0
     def cls(s): return 0 if s.n('heal') else 1 if s.n('ranged_attack') else 2 if s.n('attack') else 3
-def defender(e):  # src/rooms/w47n8/index.js bodyFor('w8defender', e)
-    h = 1 if e >= 1100 else 0; k = max(1, min(9, (e - 300 * h) // 200)); return body(ranged_attack=k, move=k + h, heal=h), k * 150 + (k + h) * 50 + h * 250
+def defender(e, mx=12):  # 17:34: RA+MOVE only (src/rooms/w47n8/defense.js raBody); home W46N8 sends mx=25 (11RA11M at cap 2300)
+    k = max(1, min(mx, e // 200)); return body(ranged_attack=k, move=k), k * 200
 SQUAD = lambda: [Cr('RA11', body(ranged_attack=11, move=11)), Cr('RA7', body(ranged_attack=7, move=7)),
                  Cr('M10', body(tough=5, move=15, attack=10)), Cr('M8', body(tough=4, move=12, attack=8)),
                  Cr('H6a', body(heal=6, move=6)), Cr('H7', body(heal=7, move=7)), Cr('H6b', body(heal=6, move=6))]
@@ -94,6 +94,8 @@ SCEN = [
     ('F3 full squad at the north seal, towers only RCL5 (r32/r28)', SQUAD, [32, 28], 0, 1800),
     ('F4 melee + 2 healers at the seal, RCL4 towers only', lambda: [Cr('M10', body(tough=5, move=15, attack=10)), Cr('H6', body(heal=6, move=6)), Cr('H7', body(heal=7, move=7))], [32], 0, 1300),
     ('F5 melee + 2 healers at the seal, RCL4 + 2 def', lambda: [Cr('M10', body(tough=5, move=15, attack=10)), Cr('H6', body(heal=6, move=6)), Cr('H7', body(heal=7, move=7))], [32], 2, 1300),
+    ('N 17:34 pair 8RA+6RA at the seal, tower + 1 home def (11RA11M)', lambda: [Cr('RA8', body(ranged_attack=8, move=8)), Cr('RA6', body(ranged_attack=6, move=6))], [32], 1, 2300),
+    ('O 17:34 pair + 2 healers (7H,7H) at the seal, tower + 1 home def', lambda: [Cr('RA8', body(ranged_attack=8, move=8)), Cr('RA6', body(ranged_attack=6, move=6)), Cr('H7', body(heal=7, move=7)), Cr('H7b', body(heal=7, move=7))], [32], 1, 2300),
     ('G 1 RA (7RA7M) at the seal, 2 def', lambda: [Cr('RA7', body(ranged_attack=7, move=7))], [32], 2, 1300),
     ('H 1 RA + 1 healer (11RA + 6H) at the seal, 2 def', lambda: [Cr('RA11', body(ranged_attack=11, move=11)), Cr('H6', body(heal=6, move=6))], [32], 2, 1300),
     ('I 2 RA + 1 healer at the seal, 2 def', lambda: [Cr('RA11', body(ranged_attack=11, move=11)), Cr('RA7', body(ranged_attack=7, move=7)), Cr('H6', body(heal=6, move=6))], [32], 2, 1300),
