@@ -7,6 +7,7 @@ Object.assign(global, { Memory: {}, TERRAIN_MASK_WALL: 1, LOOK_STRUCTURES: 's', 
   CONTROLLER_STRUCTURES: { extension: { 5: 30, 6: 40 }, link: { 5: 2, 6: 3 } } });
 let paused = false;
 require.cache[require.resolve(src('managers/remote.js'))] = { id: 'r', filename: 'r', loaded: true, exports: { paused: () => paused } };
+{ const k = require.resolve(src('layouts/w8link.js')); require.cache[k] = { id: k, filename: k, loaded: true, exports: { W46N8: [], W47N8: [] } }; } // link road tested live, not in the phase machine
 const R = require(src('managers/roads.js'));
 console.log = () => {};
 function mkRoom(name, o) {
