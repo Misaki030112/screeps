@@ -136,7 +136,16 @@ function run(c) {
     delete m.fs;
   }
   // 4) next job: nearest needy strip entry or point; out of energy -> POST
-  if (held < 50) { delete m.fs; return c.pos.x === POST[0] && c.pos.y === POST[1] ? undefined : go(c, POST[0], POST[1], 0); }
+  if (held < 50) {
+    delete m.fs;
+    // 17:5x fallback (patrol: storage 66 / hub 63 while source cont 26,11 held 1536): buffer empty -> fetch from the fullest container
+    if (!source(room).length && room.energyAvailable < room.energyCapacityAvailable) {
+      const k = room.find(FIND_STRUCTURES, { filter: s => s.structureType === STRUCTURE_CONTAINER && s.store[E] >= 300 && !(s.pos.x === C.CTL_CONT[0] && s.pos.y === C.CTL_CONT[1]) })
+        .sort((a, b) => b.store[E] - a.store[E])[0];
+      if (k) { if (c.pos.isNearTo(k)) c.withdraw(k, E); else go(c, k.pos.x, k.pos.y, 1); return; }
+    }
+    return c.pos.x === POST[0] && c.pos.y === POST[1] ? undefined : go(c, POST[0], POST[1], 0);
+  }
   const jobs = [];
   ROUTES.forEach((R, i) => { if (taken.has(i)) return; const n = objs(D.strip[i]).filter(s => left(s) > 0); if (!n.length) return;
     const e = R.road[ent[i] ? R.road.length - 1 : 0]; jobs.push({ i, d: ent[i], cost: c.pos.getRangeTo(e[0], e[1]), e }); });
