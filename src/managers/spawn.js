@@ -30,7 +30,9 @@ const B = {
   // home hauler with storage: the A->ctl route is fully paved, so 2 CARRY : 1 MOVE still moves 1 tile/tick loaded
   roadHauler: (e, max = 8) => { const n = Math.max(1, Math.min(max, Math.floor(e / 150))); return [].concat(rep(2 * n, CARRY), rep(n, MOVE)); },
   // v6: queen up to 16C8M (800 carry): full 2300 refill in 3 trips (8C4M needed 6)
-  queen: e => { const n = Math.max(2, Math.min(8, Math.floor(e / 150))); return [].concat(rep(2 * n, CARRY), rep(n, MOVE)); },
+  // 17:5x refill spec (Misaki: refill speed = reaction speed): up to 24C12M (1200) once e >= 1800, so one load covers a zone (A 21 ext + spawn = 1350,
+  // B+C 20 ext = 1000) instead of 2 trips at 16C8M; 2C:1M keeps full speed loaded on the stamp roads
+  queen: e => { const n = Math.max(2, Math.min(12, Math.floor(e / 150))); return [].concat(rep(2 * n, CARRY), rep(n, MOVE)); },
   // Upgraders walk once (spawn -> ctl spot, ~6 tiles) then sit, so 1 MOVE is enough. RCL4: 2x10W = 20 WORK was the binding
   // limit (1h upgrade ~19/t, ctl container 1000+ unused, storage parked at the ferry floor so the 3rd-upgrader gate never opened;
   // patrol 10-14 10:55). Cap 12 -> 12W1C1M = 1300 = RCL4 full cap, 2x12 = 24 WORK ~ model ideal 23.5.

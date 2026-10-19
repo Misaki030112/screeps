@@ -78,8 +78,15 @@ function myStops(c, room) {
 }
 
 // refill loop: transfer at current stop; else walk to nearest needy stop
+// 17:5x (Misaki: refill speed = reaction speed): pipelined like W47N8 fill.js. (1) after the transfer that empties a stop's
+// last needy structure, start walking to the next needy stop in the same tick (was: one dead tick per stop); (2) while walking,
+// transfer to any adjacent needy structure of my zone in passing (was: transfers only on the chosen stop tile).
+const FM = require('../rooms/w47n8/fillmeter');
+function qx(c, t, done) { const a = Math.min(c.store[RESOURCE_ENERGY], t.store.getFreeCapacity(RESOURCE_ENERGY)); if (c.transfer(t, RESOURCE_ENERGY) === OK) { FM.xfer(c, a); done.add(t.id); return a; } return 0; }
 function fillRoute(c) {
-  const st = myStops(c, c.room);
+  const st = myStops(c, c.room), done = new Set();
+  const live = id => !done.has(id) && needy(id), liveStop = s => s.ids.find(live);
+  let gave = 0;
   // resolve stop by stored coords (stable across zone rebuild / sort)
   let cur = null;
   if (c.memory.sx !== undefined) {
@@ -88,21 +95,32 @@ function fillRoute(c) {
   }
   if (cur && c.pos.inRangeTo(cur.x, cur.y, cur.r)) {
     const t = stopNeedy(cur);
-    if (t) { const a = Math.min(c.store[RESOURCE_ENERGY], t.store.getFreeCapacity(RESOURCE_ENERGY)); if (c.transfer(t, RESOURCE_ENERGY) === OK) require('../rooms/w47n8/fillmeter').xfer(c, a); return true; } // 17:5x meter
+    if (t) {
+      gave = qx(c, t, done);
+      if (liveStop(cur) || c.store[RESOURCE_ENERGY] - gave <= 0) return true; // more here, or load spent: stay
+    }
     cur = null;
   }
   // nearest needy stop (Chebyshev)
   let best = -1, bd = 1e9;
   const war = require('../managers/home').active(c.room);
   st.forEach((s, i) => {
-    if (!stopNeedy(s)) return;
+    if (!liveStop(s)) return;
     let d = c.pos.getRangeTo(s.x, s.y);
     if (war && s.ids.some(id => { const o = Game.getObjectById(id); return o && o.structureType === STRUCTURE_TOWER && o.store.getFreeCapacity(RESOURCE_ENERGY) > 100; })) d -= 100;
     if (d < bd) { bd = d; best = i; }
   });
-  if (best < 0) { delete c.memory.stop; delete c.memory.sx; delete c.memory.sy; return false; }
+  if (best < 0) { delete c.memory.stop; delete c.memory.sx; delete c.memory.sy; return gave > 0; }
   c.memory.stop = best; cur = st[best]; c.memory.sx = cur.x; c.memory.sy = cur.y;
-  if (move.to(c, cur.x, cur.y, cur.r)) { const t = stopNeedy(cur); if (t) { const a = Math.min(c.store[RESOURCE_ENERGY], t.store.getFreeCapacity(RESOURCE_ENERGY)); if (c.transfer(t, RESOURCE_ENERGY) === OK) require('../rooms/w47n8/fillmeter').xfer(c, a); } } else require('../rooms/w47n8/fillmeter').walk(c);
+  if (move.to(c, cur.x, cur.y, cur.r)) { const t = cur.ids.map(id => live(id)).find(Boolean); if (t && !gave) qx(c, t, done); }
+  else {
+    FM.walk(c);
+    if (!gave) { // in passing: any adjacent needy fill structure of my zone (spawn first)
+      let pass = null;
+      for (const s of st) for (const id of s.ids) { const o = live(id); if (o && c.pos.isNearTo(o) && (!pass || o.structureType === STRUCTURE_SPAWN)) pass = o; }
+      if (pass) qx(c, pass, done);
+    }
+  }
   return true;
 }
 
