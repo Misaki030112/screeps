@@ -184,3 +184,21 @@ const noSt = room.storage; room.storage = null; assert.ok(!F.want(room, []), 'no
 }
 if (process.env.FILL_TRACE) fs.writeFileSync(process.env.FILL_TRACE, JSON.stringify({ R4, traces: TRACES.slice(0, 4) }));
 console.log('w47n8 filler ok' + (quiet ? '' : ' (' + JSON.stringify(R4[800]) + ' for 800)'));
+// ---------- (F) 02:3x sink(): storage buffer counts committed loads and releases a storage commitment once met (t83749490 ctl stall)
+{
+  build(50); DUTY_RESET(); fillAll();
+  const RL = require(path.join(ROOT, 'src/rooms/w47n8/roles.js'));
+  const fl = mkCreep('w8filler', body, 34, 32); fl.store.energy = 0;
+  const ctl = Object.values(OBJ).find(s => s.structureType === 'container' && s.pos.x === 13 && s.pos.y === 26);
+  assert.ok(ctl, 'snapshot has ctl cont 13,26'); ctl.store.energy = 0;
+  room.storage.store.energy = 600; Game.time++;
+  const mk = (e, sk) => { const h = mkCreep('w8hauler', body, 25, 14); h.store.energy = e; h.memory.sk = sk; return h; };
+  const h1 = mk(500); assert.strictEqual(RL._sink(room, h1), room.storage, 'buffer 600 < 950: first load goes to storage');
+  const h2 = mk(500); assert.strictEqual(RL._sink(room, h2), ctl, '600 + 500 in flight >= 950: second load goes to the ctl cont');
+  room.storage.store.energy = 1200; Game.time++;
+  assert.strictEqual(RL._sink(room, h1), ctl, 'buffer met: storage commitment released to the ctl cont');
+  room.storage.store.energy = 100; h1.memory.sk = room.storage.id; Game.time++;
+  assert.strictEqual(RL._sink(room, h1), room.storage, 'buffer still low: storage commitment kept');
+  creeps = [];
+}
+say('sink buffer ok');

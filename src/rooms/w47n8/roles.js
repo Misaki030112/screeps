@@ -87,10 +87,17 @@ const hubSites = room => room.find(FIND_MY_CONSTRUCTION_SITES, { filter: s => s.
 // container sink after spawn/extensions/tower: while hub sites (non-wall) exist, the emptier of hub/ctl container; else ctl first
 // sticky per load (memory.sk, cleared when empty) so a hauler never flips between the two mid-walk
 function sink(room, c) {
-  const free = s => (s && s.store.getFreeCapacity(E) > 0 ? s : null), was = free(c.memory.sk && Game.getObjectById(c.memory.sk));
+  const free = s => (s && s.store.getFreeCapacity(E) > 0 ? s : null);
+  // 02:3x (2room-eval) the filler buffer counts loads already committed to storage, and a storage commitment ends once the buffer is
+  // met: t83749490-547 four haulers chose storage at 648 < 950, kept walking there by stickiness (storage 648 -> 2752) while the ctl
+  // cont sat at 0 and 40 WORK upgraded nothing for 57+ ticks (same at t83749050-100)
+  const inbound = () => room.find(FIND_MY_CREEPS, { filter: o => o.id !== c.id && o.memory.sk === room.storage.id }).reduce((a, o) => a + o.store[E], 0);
+  const bufLow = () => room.storage && F.alive(room) && F.stock(room) + inbound() < F.reserve(room);
+  let was = free(c.memory.sk && Game.getObjectById(c.memory.sk));
+  if (was && room.storage && was.id === room.storage.id && !bufLow()) was = null;
   if (was) return was;
   // 17:4x filler buffer: while a w8filler lives, storage below one hub refill (+200) comes before the ctl/hub containers
-  if (room.storage && free(room.storage) && F.alive(room) && F.stock(room) < F.reserve(room)) { c.memory.sk = room.storage.id; return room.storage; }
+  if (room.storage && free(room.storage) && bufLow()) { c.memory.sk = room.storage.id; return room.storage; }
   const ctl = free(ctlCont()), hub = free(hubCont());
   // 03:20 hub only while sites near the hub need it: any road site anywhere sent rhaulers to the hub (864 -> 2000 full in ~290t)
   // while the ctl cont fell 1024 -> 652 and the upgraders starved
@@ -434,4 +441,5 @@ function recycled(c) {
 module.exports = Object.fromEntries(Object.entries(R).map(([k, f]) => [k, { run: c => recycled(c) || f(c) }]));
 Object.defineProperty(module.exports, '_fill', { value: fillTarget, enumerable: false }); // tests only
 Object.defineProperty(module.exports, '_northFeed', { value: northFeed, enumerable: false }); // tests only
+Object.defineProperty(module.exports, '_sink', { value: sink, enumerable: false }); // tests only
 Object.defineProperty(module.exports, '_haulPick', { value: haulPick, enumerable: false }); // tests only
