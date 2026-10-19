@@ -27,4 +27,7 @@ assert.strictEqual(TH.on(), true, 'drain group -> threat'); assert.strictEqual(T
 TH.mark(R([{ owner: { username: 'BustJetter' }, pos: { y: 5 }, body: body({ attack: 10, move: 10 }) }])); assert.strictEqual(TH.flee(), true, 'armed in north -> flee');
 Game.time += 21; assert.strictEqual(TH.flee(), false, 'flee clears after 20 quiet ticks');
 Game.time += 1500; assert.strictEqual(TH.on(), false, 'threat reverts after 1500 quiet ticks');
+// own creeps never count, even if a find() result includes them (14:27)
+Memory.ops = {}; TH.mark(R([{ my: true, owner: { username: 'Misaki' }, pos: { y: 5 }, body: body({ attack: 10, ranged_attack: 5, work: 5, heal: 5, tough: 10, move: 10 }) }]));
+assert.strictEqual(TH.on(), false, 'own armed creep -> no threat'); assert.strictEqual(TH.flee(), false, 'own armed creep -> no flee');
 console.log('w47n8 threat ok');
