@@ -55,6 +55,10 @@ function spawnRun(spawn) {
   // ~3-4 x 700-carry rhaulers (round trip ~100-120t), so floor 4 while lo7 > 3000
   // 11:12: lo7 kept rising 6.9k -> 7.3k (conts 2000/2000 + 3292 dropped) while 3 builders and 2 upgraders sat queue_blocked (energy-starved,
   // local conts 140/530): remote haul is the income bottleneck, so floor 6 above 5k (each 14C7M rhauler ~6 e/t over a ~110t round trip)
+  // 14:05: rminer replacement sat in step 7 behind builders/surplus: W47N7 ran on 1 rminer (one source unmined) while Spawn2 made a 4th
+  // w8builder t83738940, and the rhauler floor (lo7 ~5.0k -> 6) would have spawned 2 more rhaulers first. A source is ~10 e/t; mine it first.
+  for (let i = 0; ours7 && i < C.REMOTE.sources.length && !want; i++)
+    if (!cs.some(c => c.memory.role === 'w8rminer' && (c.memory.si | 0) === i && (c.spawning || c.ticksToLive > 100))) { want = 'w8rminer'; mem.si = i; }
   if (!want && ours7 && lo7 > 1000 && n('w8rminer') && cs.filter(c => c.memory.role === 'w8rhauler' && (c.spawning || c.ticksToLive > 150)).length < (lo7 > 5000 ? 6 : lo7 > 3000 ? 4 : 2)) want = 'w8rhauler';
   // 12:00: local loose ~2.9k (source conts 1090/2000) with hub 0 while spawn waited on a 1000-cost 4th builder (have 3). Surplus
   // haulers sit behind builders in the queue (same trap as the rhauler floor): floor up to 5 haulers ahead of the 4th builder
@@ -96,8 +100,6 @@ function spawnRun(spawn) {
   }
   // 7) W47N7 remote (after all local roles): only while home's reserve7 holds the reservation for us
   if (!want && ours7) {
-    for (let i = 0; i < C.REMOTE.sources.length && !want; i++)
-      if (!cs.some(c => c.memory.role === 'w8rminer' && (c.memory.si | 0) === i && (c.spawning || c.ticksToLive > 100))) { want = 'w8rminer'; mem.si = i; }
     // 02:16: 3 rhaulers fell behind 2 reserved sources (~20 e/t): W47N7 had 31,34 full 2000 + 5871 dropped, 18,17 at 1138.
     // +1 per 1500 loose above 1500 in W47N7 (max 6), same idea as the local hauler surplus rule
     // looseE already counts drops + containers (CTL/HUB excludes are W47N8 coords, so both W47N7 conts count)
