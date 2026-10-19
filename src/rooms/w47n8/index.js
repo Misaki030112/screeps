@@ -158,7 +158,8 @@ function spawnRun(spawn) {
     // looseE already counts drops + containers (CTL/HUB excludes are W47N8 coords, so both W47N7 conts count)
     // 02:35: max 6 -> 8: with 5 alive the pile kept growing (6175 -> 6229 dropped + conts 1978/2000 by t83729299); round trips ~90-120 ticks
     // at 400 carry = ~3.6 e/t each, below the 2 sources' ~20 e/t plus decay
-    if (!want && n('w8rhauler') < 8 && rCarry(100) < rNeed * 1.1 + 16 * Math.floor(Math.max(0, lo7 - 3000) / 2000)) want = 'w8rhauler';
+    // 18:05: need x1.0 (model rcarry already carries the 1.1 congestion factor; x1.1 kept 75 CARRY vs 56 with W47N7 conts empty)
+    if (!want && n('w8rhauler') < 8 && rCarry(100) < rNeed + 16 * Math.floor(Math.max(0, lo7 - 3000) / 2000)) want = 'w8rhauler';
   }
   if (!want) { FM.idle(); return; }
   // emergency: nothing alive that refills -> spawn with what we have
