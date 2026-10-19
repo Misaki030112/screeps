@@ -303,6 +303,8 @@ const R = {
     if (c.room.name !== RM.room) return rgo(c, x, y, 0);
     rroadSites(c.room);
     const src = c.room.lookForAt(LOOK_SOURCES, S.src[0], S.src[1])[0];
+    // 10-19 21:4x: learn the walk (spawn end -> beside the source) for the replacement lead in index.js rmLead8
+    if (src && !c.memory.arr && c.pos.isNearTo(src)) { c.memory.arr = Game.time; const o = Memory.ops = Memory.ops || {}; (o.w8rlead = o.w8rlead || {})[c.memory.si | 0] = Game.time - (c.memory.born || Game.time) - 3 * c.body.length; }
     if (c.pos.x !== x || c.pos.y !== y) {
       // stand taken (e.g. a BustJetter creep; passive, never attack): mine from any tile next to the source
       if (c.room.lookForAt(LOOK_CREEPS, x, y).length && src) return c.pos.isNearTo(src) ? c.harvest(src) : rgo(c, src.pos.x, src.pos.y, 1);

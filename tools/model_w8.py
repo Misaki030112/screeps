@@ -111,7 +111,7 @@ def flow(M, hbody, rbody, cap, mix_ctl=0.75, links=None):
         carry = 0 if link else 10 * (rtt * CONG + 4) / 50
         cpc = (bodycost(rbody) / rbody.count('carry')) if remote else (bodycost(hbody) / hbody.count('carry'))
         loss = (0.5 if remote else 0.1) + (10 * LINK_LOSS * (1 if link or (links and links.get('hub')) else 0) * (mix_ctl if not link else 1))
-        miner = (700 if remote else 550 + (100 if link else 0)) / 1500
+        miner = (800 if remote else 550 + (100 if link else 0)) / 1500  # 10-19 21:4x: w8rminer 6W1C3M (repair blocks harvest; 5W mined ~9/t)
         net = 10 - loss - miner - carry * cpc / 1500
         S[k] = dict(rt=round(rtt), carry=round(carry, 1), hauler_e=round(carry * cpc / 1500, 2), miner_e=round(miner, 2), loss=round(loss, 2), net=round(net, 2))
     shared = {'roads': M['roads_e'], 'ramparts': M['ramparts_e'], 'builder_lite': 1000 / 1500, 'reserver(home-paid)': 0.0}
@@ -208,7 +208,10 @@ def main():
     print(' rcl5', best5['links'], best5['upgrade'], ' stores', st)
     if A:  # 15:10 (Misaki): balanced allocation of harvested energy, not only upgrade
         I = A.get('idle', {}); wk = lambda r: (I.get(r) or {}).get('working', 0)
-        harv = 2 * 10 * wk('wminer') + 2 * 10 * wk('wrminer')
+        # 10-19 21:4x: 6W miners mine 12/t and wait for regen (working ~0.83 at a full 10/t), so 10 x working under-read them;
+        # per source min(10, 2 x WORK x working). 'working' includes repair ticks, so a 5W rminer still reads ~9.1 (true ~9).
+        wavg = lambda p: (lambda b: sum(x.count('work') for x in b) / len(b) if b else 5)([b for n, b in mine.items() if n.startswith(p)])
+        harv = 2 * min(10, 2 * wavg('w8miner') * wk('wminer')) + 2 * min(10, 2 * wavg('w8rminer') * wk('wrminer'))
         up = sum(v for k, v in M['upkeep_live'].items() if k != 'reserve')
         al = dict(harvest=round(harv, 1), upgrade=A.get('upgrade'), build_repair=A.get('spent', {}).get('wbuilder'), storage=A.get('storage_delta'), upkeep=round(up, 1))
         al['waste_other'] = round(harv - sum(v or 0 for k, v in al.items() if k != 'harvest'), 1)
