@@ -59,4 +59,7 @@ def q(expr, timeout=40):
         except Exception: pass
         time.sleep(2)
     raise SystemExit('timeout')
-if __name__ == '__main__': print(json.dumps(q(sys.argv[1]), separators=(',', ':')))
+if __name__ == '__main__':
+    # `q.py --help` used to send the JS expression `--help` -> 'help is not defined' console error events (3 patrols, 10-20 03:2x-03:4x)
+    if len(sys.argv) != 2 or sys.argv[1].startswith('-'): raise SystemExit(__doc__.strip() + "\nusage: tools/q.py '<js expr>' (nothing sent)")
+    print(json.dumps(q(sys.argv[1]), separators=(',', ':')))
