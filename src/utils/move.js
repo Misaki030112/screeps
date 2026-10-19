@@ -52,7 +52,17 @@ function matrix(roomName, avoidCreeps) {
   for (const c of room.find(FIND_CREEPS)) m2.set(c.pos.x, c.pos.y, 255);
   return m2;
 }
+// CPU 13:10: heap cache of creep-agnostic searches (avoid=false: matrix-only, deterministic per room matrix version).
+// Queens/haulers repeat the same stop-to-stop legs; same path as a fresh search, so behaviour is unchanged.
+const PC = {}; let PCN = 0;
 function search(c, x, y, range, avoid, why) {
+  const ck = !avoid && (c.room.name + ':' + version(c.room) + ':' + c.pos.x + ',' + c.pos.y + '>' + x + ',' + y + ',' + range);
+  if (ck && PC[ck]) { trace.repath(c, 'c'); return PC[ck]; }
+  const out = search0(c, x, y, range, avoid, why);
+  if (ck && out[1] !== Infinity) { if (++PCN > 2000) { for (const k in PC) delete PC[k]; PCN = 0; } PC[ck] = out; }
+  return out;
+}
+function search0(c, x, y, range, avoid, why) {
   const r = PathFinder.search(c.pos, { pos: new RoomPosition(x, y, c.room.name), range },
     { plainCost: 2, swampCost: 10, maxRooms: 1, maxOps: 2000, roomCallback: rn => matrix(rn, avoid) });
   trace.repath(c, why);
