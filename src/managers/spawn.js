@@ -178,7 +178,9 @@ function remoteSpawn(room, go, avail) {
     const mineR = role => _.filter(Game.creeps, c => c.memory.remote === r && c.memory.role === role);
     // rminer lead = measured travel + spawn time + 10 (fixed 120 arrived ~3t after the old one died: born+121 vs ttl 118, 10-15 data)
     const rmLead = c => Math.min(c.memory.travel || C.travel || 110, C.travel ? C.travel + 60 : 160) + c.body.length * 3 + 10;
-    const live = role => mineR(role).filter(c => c.spawning || c.ticksToLive > (role === 'reserver' ? resLead : role === 'rminer' ? rmLead(c) : 120 + lead)).length;
+    // rhauler lead scales with spawn time: 120 fit 16-part 8C8M (48 spawn + ~40 walk + 32); the lone W45N8 24C12M (36 parts, 108 spawn)
+    // got replaced ~214t after death behind a queen+rminer (patrol 10-19 16:52: cont 13,11 at 2000, ~1.7k overflow). 16 parts -> 120 unchanged.
+    const live = role => mineR(role).filter(c => c.spawning || c.ticksToLive > (role === 'reserver' ? resLead : role === 'rminer' ? rmLead(c) : c.body.length * 3 + 72 + lead)).length;
     const rhAll = mineR('rhauler'), target = rhTarget(C, m, room.storage ? room.storage.store[RESOURCE_ENERGY] : 0, rhPaved(r));
     const gapOk = !C.rhGap || Game.time - (m.lastRh || 0) >= C.rhGap;
     const next = remoteNext({
