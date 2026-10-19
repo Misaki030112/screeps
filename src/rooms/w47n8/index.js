@@ -63,7 +63,9 @@ function spawnRun(spawn) {
   // 2) haulers 2, 3) upgraders 2 (3 when no sites), 4) builders while sites
   // 04:47: base 3 (was 2): with 2 haulers and 0 sites RCL3 fell ~22 -> ~7.5 e/t (t83731005..1169), ctl cont 0-114 while source conts
   // rose to 633/1000; the surplus 3rd only spawned after loose passed 1200, so the ctl ran dry every cycle
-  if (!want && n('w8hauler') < 3) want = 'w8hauler';
+  // 17:15: count only haulers that outlive a replacement (15-part body 45t spawn + ~30t walk): the 5-hauler cohort aged out together
+  // to 2 (one at TTL 155) before the floor fired; ctl cont 13,26 at 0 with 3 upgraders empty while 11,43 rose to 1450 (t83741650)
+  if (!want && cs.filter(c => c.memory.role === 'w8hauler' && (c.spawning || c.ticksToLive > 75)).length < 3) want = 'w8hauler';
   // 14:23 threat mode: seal walls to 50k ahead of upgrading; 1 upgrader keeps the controller safe (2 if downgrade < 10k)
   const thr = TH.on(), wtgt = TH.wallTarget(C.WALL_TARGET[(room.controller || {}).level] || 0);
   // 15:45 hysteresis: core ramparts decay 300/100t, so a strict '< 50k' gate re-entered wall mode (1-2 upgraders, +builders) ~100 ticks
@@ -200,7 +202,7 @@ function layoutRun(room) {
   // 17:15 (Misaki "急着早 rampart 是为了什么" / "看看主房间"): no rampart placement here. The PRIO loop placed every v3b ORDER.rampart
   // tile at RCL4, incl. empty future spawn/terminal/tower slots (32,32 32,33 33,32 33,30 built; 34,31 36,31 36,33 sites), and
   // builders raised them to the 50k seal target. Home only rampart-covers real structures and deferred even those behind storage
-  // (6957a9a). Unbuilt rampart sites are dropped (top of layoutRun); built ones are left as-is (tower keeps them above 5k, ~0.2 e/t once they get there).
+  // (6957a9a). Unbuilt rampart sites are dropped (top of layoutRun); built ones hold their current hits via the tower (rampHold, ~0.2 e/t for 7).
   for (const t of PRIO) {
     if (t === 'road' && rcl < 3) continue;
     for (const [x, y] of (O[t] || [])) {
@@ -219,6 +221,17 @@ function layoutRun(room) {
 // Never safe mode. Keeps 300 energy unless an armed creep is inside the base.
 const PARTS = (c, t) => c.body.reduce((n, p) => n + (p.type === t && p.hits > 0 ? 1 : 0), 0);
 const tdmg = r => (r <= 5 ? 600 : r >= 20 ? 150 : 600 - (r - 5) * 30);
+// 17:20 (Misaki final rule): no new ramparts; built ones only offset decay. Memory.ops.w8hold[id] = hits first seen (ratchets down never,
+// up never: a fresh rampart's hold is what it had). Tower tops up one rampart once it is HOLD_SLACK below its hold (300 hits/100t decay,
+// ~0.03 e/t per rampart). Gone ramparts drop out of the map.
+const HOLD_SLACK = 1000;
+function rampHold(room) {
+  const rs = room.find(FIND_MY_STRUCTURES, { filter: s => s.structureType === STRUCTURE_RAMPART });
+  const o = (Memory.ops = Memory.ops || {}), h = (o.w8hold = o.w8hold || {}), live = {};
+  for (const r of rs) live[r.id] = h[r.id] === undefined ? r.hits : h[r.id];
+  o.w8hold = live;
+  return rs.find(r => r.hits < live[r.id] - HOLD_SLACK) || null;
+}
 function towerRun(room) {
   TH.mark(room); TH.mark(Game.rooms[C.REMOTE.room]);
   const towers = room.find(FIND_MY_STRUCTURES, { filter: s => s.structureType === STRUCTURE_TOWER });
@@ -241,8 +254,8 @@ function towerRun(room) {
   for (const t of towers) {
     if (best && (t.store[RESOURCE_ENERGY] > 300 || inBaseThreat || PARTS(best, CLAIM))) t.attack(best);
     else if (hurt && t.store[RESOURCE_ENERGY] > 500) t.heal(hurt);
-    else if (t.store[RESOURCE_ENERGY] > 600) { // keep built ramparts above 5k (17:15: builders no longer raise them; no new rampart sites)
-      const r = room.find(FIND_MY_STRUCTURES, { filter: s => s.structureType === STRUCTURE_RAMPART && s.hits < 5000 })[0];
+    else if (t.store[RESOURCE_ENERGY] > 600) { // 17:20 (Misaki): built ramparts hold their current hits (decay offset only, never raised)
+      const r = rampHold(room);
       if (r) t.repair(r);
     }
   }
@@ -252,4 +265,4 @@ function selfSufficient() {
   const r = Game.rooms[C.ROOM]; if (!r || !r.find(FIND_MY_SPAWNS).length) return false;
   return mine().some(c => c.memory.role === 'w8miner'); // Spawn2 + its own miner -> home stops cq pioneers/haulers (guard stays)
 }
-module.exports = { swapTemp, energyOrder, ROOM: C.ROOM, spawnRun, layoutRun, towerRun, selfSufficient, bodyFor };
+module.exports = { rampHold, swapTemp, energyOrder, ROOM: C.ROOM, spawnRun, layoutRun, towerRun, selfSufficient, bodyFor };
