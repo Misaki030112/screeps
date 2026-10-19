@@ -5,8 +5,10 @@ const QUIET = 50;
 // WORK-only creeps (neighbour remote harvesters) are low severity unless structures lose hits (dismantle).
 const DANGER = [ATTACK, RANGED_ATTACK, CLAIM, HEAL];
 function bodySummary(c) { return _.countBy(c.body, p => p.type); }
+const HEAP = {}; // CPU 13:10: per-structure hit snapshot lives in heap, not Memory (7 KB parsed every tick); a global reset skips one diff
 module.exports = { run(room) {
   const mem = room.memory.alerts || (room.memory.alerts = { episodes: {}, hits: {} });
+  if (mem.hits) delete mem.hits; mem.hitsH = 1; const H = HEAP[room.name] || (HEAP[room.name] = {});
   const out = [];
   const hostiles = room.find(FIND_HOSTILE_CREEPS);
   // structure hit loss since last tick (own structures + roads/containers)
@@ -18,15 +20,15 @@ module.exports = { run(room) {
     if (ownDis.has(s.id)) continue;
     if (!(s.my || s.structureType === STRUCTURE_ROAD || s.structureType === STRUCTURE_CONTAINER)) continue;
     hitsNow[s.id] = [s.hits, s.ticksToDecay];
-    const prev = mem.hits[s.id];
+    const prev = H.hits && H.hits[s.id];
     if (!Array.isArray(prev)) continue;
     // ignore natural decay (roads/containers/ramparts): ticksToDecay jumps back up when decay applies
     const decayed = prev[1] !== undefined && s.ticksToDecay !== undefined && s.ticksToDecay > prev[1];
     if (s.hits < prev[0] && !decayed) { loss += prev[0] - s.hits; damaged.push(s.structureType); }
   }
   // owned structures that vanished (destroyed)
-  if (scan) for (const id in mem.hits) if (hitsNow[id] === undefined && !Game.getObjectById(id)) damaged.push('destroyed:' + id.slice(-4));
-  if (scan) mem.hits = hitsNow;
+  if (scan) for (const id in (H.hits || {})) if (hitsNow[id] === undefined && !Game.getObjectById(id)) damaged.push('destroyed:' + id.slice(-4));
+  if (scan) H.hits = hitsNow;
   // event log attackers
   const evAttackers = {}; let evDamage = 0;
   for (const e of room.getEventLog()) {

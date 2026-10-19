@@ -25,9 +25,9 @@ module.exports = { run(errors, alerts = []) {
   for (const n in rooms) if (Game.rooms[n]) { rooms[n].energy = Game.rooms[n].energyAvailable; rooms[n].progress = Game.rooms[n].controller.progress; }
   s.creeps = _.countBy(Game.creeps, c => c.memory.role);
   s.bucket = Game.cpu.bucket;
-  s.errors = (s.errors || []).concat(errors).slice(-20);
+  s.errors = (s.errors || []).concat(errors).slice(-10); // CPU 13:10: smaller Memory parse
   if (errors.length) s.lastErrorTick = Game.time;
-  s.alerts = (s.alerts || []).concat(alerts).slice(-30);
+  s.alerts = (s.alerts || []).concat(alerts).slice(-12);
   if (alerts.length) s.lastAlertTick = Game.time;
   s.cpu = Game.cpu.getUsed();
   // EMA(1/50) per section; mem = CPU before the loop body (Memory parse + global), set by main.js

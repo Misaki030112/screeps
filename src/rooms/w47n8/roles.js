@@ -154,9 +154,10 @@ const R = {
     if (!home(c)) return; toggle(c);
     if (!c.memory.w) { if (!haulPick(c) && c.store[E] > 0) c.memory.w = true; return; }
     const room8 = Game.rooms[C.ROOM];
-    const fed = hubFeed(room8) && room8.find(FIND_MY_CREEPS, { filter: x => x.memory.role === 'w8builder' && x.store.getFreeCapacity(E) >= 50 && nearHub(x, 8) })
+    // CPU 13:10: the builder scan only runs when no fill target (same result as before, evaluated lazily)
+    const fed = () => hubFeed(room8) && room8.find(FIND_MY_CREEPS, { filter: x => x.memory.role === 'w8builder' && x.store.getFreeCapacity(E) >= 50 && nearHub(x, 8) })
       .sort((a, b) => a.store[E] - b.store[E])[0];
-    const t = fillTarget(c, true) || fed || sink(room8, c) || room8.storage;
+    const t = fillTarget(c, true) || fed() || sink(room8, c) || room8.storage;
     // nothing to fill: hand it to the emptiest w8upgrader/w8builder; never drop on the ground (Misaki rule), else wait
     const k = t || Game.rooms[C.ROOM].find(FIND_MY_CREEPS, { filter: x => (x.memory.role === 'w8upgrader' || x.memory.role === 'w8builder')
       && x.store.getFreeCapacity(E) > 0 }).sort((a, b) => a.store[E] - b.store[E])[0];
@@ -275,7 +276,11 @@ const R = {
     // 19:31: urgent road/container repair (<10%; container 11,43 at 18% = 2k ticks of decay left pulled the builder off the walls) -> seal walls to WALL_TARGET[rcl], lowest first -> maintenance (<60%).
     // With maintenance first the lone 2W builder spent 180 ticks on container 26,11 (87k/250k) + 22 roads and no wall left 1 hit.
     const rr = f => c.pos.findClosestByRange(FIND_STRUCTURES, { filter: s => (s.structureType === STRUCTURE_CONTAINER || (s.structureType === STRUCTURE_ROAD && ROADSET.has(s.pos.x * 50 + s.pos.y))) && s.hits < s.hitsMax * f });
-    const rep = rr(0.1) || wallJob(c.room, c) || rr(0.6);
+    // CPU 13:10: sticky repair target, rescanned every 15 ticks or when done (was 2-3 FIND_STRUCTURES scans per builder per tick)
+    let rep = c.memory.rj && Game.getObjectById(c.memory.rj);
+    if (!rep || Game.time >= (c.memory.rjt || 0) || rep.hits >= (rep.structureType === STRUCTURE_WALL ? (C.WALL_TARGET[c.room.controller.level] || 0) : rep.hitsMax * 0.95)) {
+      rep = rr(0.1) || wallJob(c.room, c) || rr(0.6); c.memory.rj = rep ? rep.id : undefined; c.memory.rjt = Game.time + 15;
+    }
     if (rep) {
       if (c.pos.inRangeTo(rep, 3)) { c.repair(rep); return; }
       if (c.store[E] < 20 && c.pos.getRangeTo(rep) > 6) { c.memory.w = false; getEnergy(c); return; } // don't walk a near-empty load across the room
