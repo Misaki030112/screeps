@@ -168,8 +168,19 @@ function rhTarget(C, m, storageE, paved) {
   if ((m.siteProg || 0) < 3000) return 0;
   return storageE >= 1300 ? Math.min(2, want) : 0;
 }
+// rminer lead = measured travel + spawn time + 10 (fixed 120 arrived ~3t after the old one died: born+121 vs ttl 118, 10-15 data)
+const rmLead = (C, c) => Math.min(c.memory.travel || C.travel || 110, C.travel ? C.travel + 60 : 160) + c.body.length * 3 + 10;
+const rmBody = cap => { const w = Math.min(6, Math.floor((Math.min(cap, 800) - 200) / 100)); return [].concat(rep(w, WORK), [CARRY], rep(3, MOVE)); };
 function remoteSpawn(room, go, avail) {
   const remote = require('./remote'), cap = room.energyCapacityAvailable;
+  // rminers first across ALL remotes (patrol 10-19 18:50): one home spawn; W45N7's rminer queued behind W45N8's rminer + reserver +
+  // 36-part rhauler (~190 busy ticks) and finished 10t after its predecessor died, +150t walk -> ~160t unmined (~1.6k e) each cycle
+  // (same at 83741397). A missing miner loses 10/t; a late reserver/rhauler is buffered by reservation ticks and the container.
+  for (const r in remote.CFG) {
+    const C = remote.CFG[r];
+    if (C.home !== room.name || remote.paused(r)) continue;
+    if (!_.some(Game.creeps, c => c.memory.remote === r && c.memory.role === 'rminer' && (c.spawning || c.ticksToLive > rmLead(C, c)))) return go('rminer', rmBody(cap), { remote: r });
+  }
   for (const r in remote.CFG) {
     const C = remote.CFG[r];
     if (C.home !== room.name) continue;
@@ -179,11 +190,9 @@ function remoteSpawn(room, go, avail) {
     const lead = C.lead || 0;
     const resLead = 150 + lead; // travel ~40 + spawn + margin (was 80; late spawn left ticksToEnd≈13); W45N7 +140 walk
     const mineR = role => _.filter(Game.creeps, c => c.memory.remote === r && c.memory.role === role);
-    // rminer lead = measured travel + spawn time + 10 (fixed 120 arrived ~3t after the old one died: born+121 vs ttl 118, 10-15 data)
-    const rmLead = c => Math.min(c.memory.travel || C.travel || 110, C.travel ? C.travel + 60 : 160) + c.body.length * 3 + 10;
     // rhauler lead scales with spawn time: 120 fit 16-part 8C8M (48 spawn + ~40 walk + 32); the lone W45N8 24C12M (36 parts, 108 spawn)
     // got replaced ~214t after death behind a queen+rminer (patrol 10-19 16:52: cont 13,11 at 2000, ~1.7k overflow). 16 parts -> 120 unchanged.
-    const live = role => mineR(role).filter(c => c.spawning || c.ticksToLive > (role === 'reserver' ? resLead : role === 'rminer' ? rmLead(c) : c.body.length * 3 + 72 + lead)).length;
+    const live = role => mineR(role).filter(c => c.spawning || c.ticksToLive > (role === 'reserver' ? resLead : role === 'rminer' ? rmLead(C, c) : c.body.length * 3 + 72 + lead)).length;
     const rhAll = mineR('rhauler'), target = rhTarget(C, m, room.storage ? room.storage.store[RESOURCE_ENERGY] : 0, rhPaved(r));
     const gapOk = !C.rhGap || Game.time - (m.lastRh || 0) >= C.rhGap;
     const next = remoteNext({
@@ -194,7 +203,7 @@ function remoteSpawn(room, go, avail) {
     if (next === 'reserver') return go('reserver', reserverBody(avail), { remote: r });
     // rminer 6W: repair (50 hits/t container decay, 1 tick in 10 at 5W) blocks harvest in the same tick, so 5W harvested ~9/t
     // (R income 8.7 measured 10-15); 6W = 250 harvest + ~25 repair ticks per 300-tick regen -> full 10/t, +25t slack for handoffs.
-    if (next === 'rminer') { const w = Math.min(6, Math.floor((Math.min(cap, 800) - 200) / 100)); return go('rminer', [].concat(rep(w, WORK), [CARRY], rep(3, MOVE)), { remote: r }); }
+    if (next === 'rminer') return go('rminer', rmBody(cap), { remote: r });
     if (next === 'rhauler') { const rv = go('rhauler', rhPaved(r) && cap >= 1200 ? B.roadHauler(Math.min(cap, C.rhE || 1200), 16) : B.hauler(Math.min(cap, 800)), { remote: r }); if (rv === OK) m.lastRh = Game.time; return rv; }
     // vision fallback (P4): no vision for 100+ ticks and no rminer/reserver alive or en route -> one 1-MOVE scout (50e)
     if (C.scout && !Game.rooms[r] && Game.time - (m.seen || 0) > 100 && !rhAll.length && !mineR('rminer').length && !mineR('reserver').length && !mineR('rscout').length)
