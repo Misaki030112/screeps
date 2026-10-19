@@ -32,6 +32,18 @@ function hubSpare(room) {
   if (F.alive(room) && F.stock(room) < F.reserve(room)) return false; // 17:4x: hub container is the filler's buffer
   const k = ctlCont(); return !!k && k.store.getFreeCapacity(E) >= 400;
 }
+// 19:5x strategy review (RCL5 tower 24,8, Misaki 18:06 "ample energy supply"): tower 2 sits 2 tiles from source A's container 26,11
+// but ~23 road tiles from storage, and once link 26,12 ships source A to the controller nothing stocks 26,11 any more. While a tower
+// within 4 of the source-A stand is below NORTH_FEED the miner skips the link, so harvest overflows into 26,11 (~10 e/t = that tower
+// firing every tick), haulers score 26,11 x3 and fillTarget's nearest pick carries it the 2 tiles. Above the line source A goes back to
+// the ctl link. Dormant until tower 24,8 + link 26,12 exist (RCL5). The hub filler no longer walks there (fill.js TOWER_R).
+const NORTH_FEED = 600;
+let nfT = -1, nfV = null;
+function northFeed(room) {
+  if (nfT === Game.time) return nfV; nfT = Game.time;
+  const [x, y] = C.SOURCES[0].stand;
+  return (nfV = (room && room.find(FIND_MY_STRUCTURES, { filter: s => s.structureType === STRUCTURE_TOWER && s.pos.inRangeTo(x, y, 4) && s.store[E] < NORTH_FEED })[0]) || null);
+}
 function haulPick(c) {
   const room = Game.rooms[C.ROOM], free = c.store.getFreeCapacity(), amt = o => (o.amount !== undefined ? o.amount : o.store[E]);
   let t = c.memory.pt && Game.getObjectById(c.memory.pt);
@@ -45,7 +57,8 @@ function haulPick(c) {
     // 04:05: ground piles score x2 (they decay 1+/tick): 241 sat on road 29,35 losing 1/t while haulers chose 780-1110 source conts
     // 18:20: score by the whole unclaimed pile, not min(free, pile): capped by a 150-250 free store every pile scored the same and
     // the nearest (north, drained by 10 workers) always won, so 10,43 grew 1574->2011 and decayed ~2 e/t
-    for (const o of cands) { const left = amt(o) - (claimed[o.id] || 0), sc = (o.structureType ? (isHub(o) ? 0.5 : 1) : 2) * left / (c.pos.getRangeTo(o) + 10); if (Math.min(free, left) >= 50 && sc > bs) { bs = sc; t = o; } }
+    const nf = northFeed(room), A = C.SOURCES[0].stand, isA = o => o.pos.x === A[0] && o.pos.y === A[1];
+    for (const o of cands) { const left = amt(o) - (claimed[o.id] || 0), sc = (o.structureType ? (isHub(o) ? 0.5 : nf && isA(o) ? 3 : 1) : 2) * left / (c.pos.getRangeTo(o) + 10); if (Math.min(free, left) >= 50 && sc > bs) { bs = sc; t = o; } }
     c.memory.pt = t ? t.id : undefined;
   }
   if (!t) return false;
@@ -173,7 +186,9 @@ const R = {
     const cont = c.pos.lookFor(LOOK_STRUCTURES).find(s => s.structureType === STRUCTURE_CONTAINER);
     if (cont && cont.hits < cont.hitsMax * 0.5 && c.store[E] > 0) return c.repair(cont);
     // RCL5: source link beside the stand; harvest overflow lands in the container under me
-    if (S.link && c.store.getCapacity() && c.store.getFreeCapacity() <= 2 * c.getActiveBodyparts(WORK)) {
+    // 19:5x: north tower low -> skip the link, overflow into the container under me for the haulers (northFeed above)
+    const feed = S.link && cont && cont.store[E] < 1500 && northFeed(c.room);
+    if (S.link && !feed && c.store.getCapacity() && c.store.getFreeCapacity() <= 2 * c.getActiveBodyparts(WORK)) {
       const lk = c.room.lookForAt(LOOK_STRUCTURES, S.link[0], S.link[1]).find(s => s.structureType === STRUCTURE_LINK);
       if (lk && lk.store.getFreeCapacity(E) > 0) c.transfer(lk, E);
     }
@@ -416,3 +431,5 @@ function recycled(c) {
 }
 module.exports = Object.fromEntries(Object.entries(R).map(([k, f]) => [k, { run: c => recycled(c) || f(c) }]));
 Object.defineProperty(module.exports, '_fill', { value: fillTarget, enumerable: false }); // tests only
+Object.defineProperty(module.exports, '_northFeed', { value: northFeed, enumerable: false }); // tests only
+Object.defineProperty(module.exports, '_haulPick', { value: haulPick, enumerable: false }); // tests only

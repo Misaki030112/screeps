@@ -143,5 +143,44 @@ assert.ok(F.want(room, []), 'want a filler (15 hub ext, storage built)');
 assert.ok(!F.want(room, [{ memory: { role: 'w8filler' }, ticksToLive: 500 }]), 'one live filler is enough at 750');
 assert.ok(F.want(room, [{ memory: { role: 'w8filler' }, ticksToLive: 80 }]), 'replacement ahead of death (lead 3*18+40=94)');
 const noSt = room.storage; room.storage = null; assert.ok(!F.want(room, []), 'no storage, no filler'); room.storage = noSt;
+// ---------- (E) 19:5x RCL5 north tower 24,8 (Misaki 18:06): fed from source A's container 26,11, never by the hub filler
+{
+  build(50); room.storage.store.energy = 3000; DUTY_RESET(); fillAll();
+  const at = (t, x, y) => Object.values(OBJ).find(o => o.structureType === t && o.pos.x === x && o.pos.y === y);
+  const tN = mkS('tower', 24, 8, 300), lA = mkS('link', 26, 12), cA = at('container', 26, 11), cB = at('container', 11, 43);
+  lA.store = st(800, 0); at('tower', 33, 35).store.energy = 1000;
+  for (const o of Object.values(OBJ)) if (o.store && (o.structureType === 'extension' || o.structureType === 'spawn')) o.store.energy = o.store.getCapacity(); // spawn energy full (tower rule)
+  assert.strictEqual(room.energyAvailable, room.energyCapacityAvailable); DUTY_RESET(); // duty cache must see the new tower
+  // filler: hub full, only 24,8 needs energy (700 free) -> it stays home (was: ~23 road tiles away, ~50 t round trip)
+  const g = mkCreep('w8filler', F.body(1300, room), 34, 32); g.store.energy = g.store.getCapacity();
+  for (let i = 0; i < 15; i++) step();
+  assert.ok(cheb(g.pos, { x: 34, y: 32 }) <= 1, 'filler does not walk to the north tower: ' + g.pos.x + ',' + g.pos.y);
+  // core tower 33,35 low -> the filler still serves it
+  at("tower", 33, 35).store.energy = 500; for (let i = 0; i < 30 && at("tower", 33, 35).store.energy <= 500; i++) step();
+  assert.ok(at('tower', 33, 35).store.energy > 500, 'filler still feeds the core tower 33,35');
+  creeps = creeps.filter(x => x !== g);
+  const RL = require(path.join(ROOT, 'src/rooms/w47n8/roles.js'));
+  Game.time++; assert.strictEqual(RL._northFeed(room), tN, 'tower 24,8 at 300 < 600: north feed on');
+  // source-A miner on 26,11 with a full store: feed on -> no link transfer (overflow lands in 26,11); feed off -> link
+  const m = mkCreep('w8miner', ['work', 'work', 'work', 'work', 'work', 'work', 'carry', 'move'], 26, 11, { si: 0, arr: 1 });
+  m.store.energy = 50; m.harvest = () => 0; m.repair = () => 0; let sent = 0; m.transfer = (s) => { if (s === lA) sent++; return 0; };
+  m.pos.lookFor = k => (k === 'ls' ? Object.values(OBJ).filter(o => o.structureType && o.pos.x === 26 && o.pos.y === 11) : []);
+  room.lookForAt = ((f) => (k, x, y) => (k === 'lso' ? [] : f(k, x, y)))(room.lookForAt);
+  cA.hits = cA.hitsMax = 1; cA.store.energy = 200;
+  RL.w8miner.run(m); assert.strictEqual(sent, 0, 'feed on: miner skips the source link');
+  cA.store.energy = 1600; Game.time++; RL.w8miner.run(m); assert.strictEqual(sent, 1, 'container >= 1500: back to the link (no overflow to the ground)');
+  cA.store.energy = 200; tN.store.energy = 900; Game.time++; RL.w8miner.run(m); assert.strictEqual(sent, 2, 'tower >= 600: source A to the ctl link again');
+  creeps = creeps.filter(x => x !== m);
+  // hauler pickup at 20,30: B 11,43 (range 13) normally wins; with the north feed on, A 26,11 (x3) wins
+  cA.store.energy = 600; cB.store.energy = 600; at('container', 33, 33).store.energy = 0; at('container', 13, 26).store.energy = 0;
+  const h = mkCreep('w8hauler', ['carry', 'carry', 'carry', 'carry', 'carry', 'carry', 'carry', 'carry', 'carry', 'carry', 'move'], 20, 30);
+  Game.time++; RL._haulPick(h); assert.strictEqual(h.memory.pt, cB.id, 'feed off: nearer B container');
+  delete h.memory.pt; tN.store.energy = 300; Game.time++; RL._haulPick(h); assert.strictEqual(h.memory.pt, cA.id, 'feed on: source A container for the north tower');
+  // loaded hauler beside 26,11: nearest fill target is the north tower (2 tiles), not Spawn2's cluster
+  const h2 = mkCreep('w8hauler', ['carry', 'carry', 'move'], 25, 11); h2.store.energy = 100;
+  for (const o of Object.values(OBJ)) if (o.store && (o.structureType === 'extension' || o.structureType === 'spawn')) o.store.energy = 0;
+  assert.strictEqual(RL._fill(h2, true), tN, 'hauler at source A fills tower 24,8 first');
+  creeps = [];
+}
 if (process.env.FILL_TRACE) fs.writeFileSync(process.env.FILL_TRACE, JSON.stringify({ R4, traces: TRACES.slice(0, 4) }));
 console.log('w47n8 filler ok' + (quiet ? '' : ' (' + JSON.stringify(R4[800]) + ' for 800)'));

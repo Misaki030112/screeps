@@ -8,7 +8,7 @@
 // stops. Spawn2 15,18 + its 5 temp extensions are the haulers' job; the filler goes there only when the spawn is waiting on
 // energy and every hub structure is already full.
 const C = require('./config'), L = require('./layout');
-const E = 'energy', K = (x, y) => x * 50 + y, POST = [34, 32];
+const E = 'energy', K = (x, y) => x * 50 + y, POST = [34, 32], TOWER_R = 8;
 const cheb = (a, b) => Math.max(Math.abs(a[0] - b[0]), Math.abs(a[1] - b[1]));
 const TEMP = new Set(L.TEMP_EXT.map(([x, y]) => K(x, y)));
 const isS2 = s => s.structureType === STRUCTURE_SPAWN && s.pos.x === C.SPAWN[0] && s.pos.y === C.SPAWN[1];
@@ -150,8 +150,9 @@ function run(c) {
   ROUTES.forEach((R, i) => { if (taken.has(i)) return; const n = objs(D.strip[i]).filter(s => left(s) > 0); if (!n.length) return;
     const e = R.road[ent[i] ? R.road.length - 1 : 0]; jobs.push({ i, d: ent[i], cost: c.pos.getRangeTo(e[0], e[1]), e }); });
   for (const s of objs(D.point)) if (left(s) > 0) jobs.push({ p: s, cost: c.pos.getRangeTo(s) - 1 });
-  // tower last: only with the spawn energy full
-  if (!jobs.length && room.energyAvailable === room.energyCapacityAvailable) for (const s of objs(D.tower)) if (free(s) >= 300) jobs.push({ p: s, cost: c.pos.getRangeTo(s) });
+  // tower last: only with the spawn energy full. 19:5x: core towers only (<= TOWER_R of POST): RCL5 tower 24,8 is ~23 road tiles away
+  // (~50 t round trip with the hub unattended); it is fed from source A's container 26,11 (roles.js northFeed)
+  if (!jobs.length && room.energyAvailable === room.energyCapacityAvailable) for (const s of objs(D.tower)) if (free(s) >= 300 && cheb([s.pos.x, s.pos.y], POST) <= TOWER_R) jobs.push({ p: s, cost: c.pos.getRangeTo(s) });
   const j = jobs.reduce((a, x) => (!a || x.cost < a.cost ? x : a), null); // (no lodash: 3.10 in game, 4 in tests)
   if (j) {
     // short on energy for the job and beside the source: the withdraw above already ran; just go
