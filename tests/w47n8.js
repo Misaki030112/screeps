@@ -1,6 +1,6 @@
 // W47N8 room module: bodies fit cap, spawn order miner->hauler->upgrader->builder, home creeps ignored.
 const assert = require('assert'), path = require('path');
-Object.assign(global, { _: require('lodash'), WORK: 'work', CARRY: 'carry', MOVE: 'move', CLAIM: 'claim',
+Object.assign(global, { _: require('lodash'), FIND_MY_STRUCTURES: 10, STRUCTURE_EXTENSION: 'extension', STRUCTURE_SPAWN: 'spawn', WORK: 'work', CARRY: 'carry', MOVE: 'move', CLAIM: 'claim',
   BODYPART_COST: { work: 100, carry: 50, move: 50 }, FIND_MY_CONSTRUCTION_SITES: 1, FIND_MY_SPAWNS: 2, FIND_MY_CREEPS: 3, RANGED_ATTACK: 'ranged_attack', FIND_DROPPED_RESOURCES: 4, FIND_STRUCTURES: 5, RESOURCE_ENERGY: 'energy', STRUCTURE_CONTAINER: 'container', Game: { time: 5, creeps: {}, rooms: {} }, Memory: {} });
 const W = require(path.join(__dirname, '..', 'src', 'rooms', 'w47n8', 'index.js'));
 const cost = b => b.reduce((s, p) => s + BODYPART_COST[p], 0);
