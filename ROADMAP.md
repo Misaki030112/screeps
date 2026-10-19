@@ -11,6 +11,14 @@ Novice zone ends **2026-10-28 03:33 UTC+8**. Defence timeline: `docs/DEFENSE_NOV
 - 19:37 ctl stall: no hauler-priority change (spawn-first with empty storage, energy not lost, ~6 min ETA); the RCL5 link gives the ctl a non-divertible ~10 e/t. Watch line below unchanged.
 - **W47N8 patrol at RCL5:** follow the 4-point checklist in PLAN_W47N8.md (24,8 only site; links after ext; 24,8 >= 600 within ~100 t via 26,11; filler stays home).
 
+## 2026-10-19 20:27 two-room evaluation (45-min window 19:41-20:26 vs 18:56-19:41)
+
+- Home W46N8: controller progress 22.4 e/t (prev 23.4; model 1h 22.6, 6h 20.9 vs ideal 21.8). Storage 16.1k -> 15.8k (flat, ~-0.5 e/t), dipped to 14.3k at 20:06 on queen/miner replacements and recovered. RCL6 439.0k/3.645M. Walls 142101 no loss, ramparts min 168.9k rising, 0 sites, no safe mode. Spawn utilisation 47%.
+- W47N8: controller progress 26.0 e/t (prev 23.3; model 1h 25.4, 6h 19.5 vs ideal 29.85). Recovery continues now that all w8defenders expired. RCL4 144.7k/405k; RCL5 ETA ~11.7 h at the window rate (~10-20 08:00 UTC+8), ideal 10.2 h. Storage 1.6k -> 2.3k, ctl container 13,26 at 0 again (30 WORK drain faster than ~25 e/t sustainable; upgraders queue_blocked 21%, energy not lost). 10 ramparts, no new ones.
+- Cross-room: CPU avg 13.6 (prev 13.5), single 55.2 at t83743900 = 75f8265 deploy global reset; bucket 10000. Memory 33.1k. DB lag 26 s. Tests all pass, src clean. 0 new game errors (errors.log tail is t83730121, old).
+- **W47N8 upkeep gap explained (for the w8patrol, no change now):** live upkeep 11.2 e/t (excl. home-paid reserve7) vs model ~8.5 incl. upgraders. Extra ~2.7 e/t = wrhauler 4.17 vs 2.78 (60-75 CARRY vs 50 need; 15-CARRY granularity + replacement overlap), whauler 1.5 vs 1.04 (3x10 = 30 vs 20.7), wfiller 0.6 (model omits the filler), wbuilder 0.8 vs 0.67. Only lever is hauler size: if the next remote hauler can be 13 CARRY (4x13 = 52) and local 2x11 instead of 3x10, ~1.3 e/t returns to upgrading. Patrol decides at the next natural replacement; not worth a deploy before RCL5 (the link changes the haul routes anyway).
+- Model note: `tools/model_w8.py` 1h window had coverage 0.66 and showed src A/B 7.0/7.5 e/t; live check t83744370 shows both miners 6 WORK on station and source A on pace (1596 left, ttr 183). Treat sub-0.7 coverage source rates as measurement noise.
+
 ## 2026-10-19 19:42 two-room evaluation (45-min window 18:56-19:41 vs 18:11-18:56)
 
 - Home W46N8: controller progress 23.3 e/t (prev 23.4; model 1h 23.4, 6h 20.9 vs ideal 21.8). Storage 12.2k -> 16.2k (+6.4 e/t; prev -8.8 e/t): back above the 15k reserve since ~19:29, so a1d78b3 (rminers first across remotes) is verified. RCL6 425.1k/3.645M, RCL7 ETA ~10-26 afternoon at this rate. Walls 142101 no loss, ramparts min 168.3k, 0 sites, no safe mode.
