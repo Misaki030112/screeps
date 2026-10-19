@@ -3,12 +3,13 @@
 const C = require('./config');
 const rep = (n, p) => Array(n).fill(p);
 const FM = require('./fillmeter');
+const FL = require('./fill');
 function mine() { return _.filter(Game.creeps, c => c.memory.home === C.ROOM); }
 function bodyFor(role, e) {
   // 14:46 kite body: RA+MOVE pairs, plus 1 HEAL(+MOVE) once energy allows (>=1100)
   if (role === 'w8defender') { const h = e >= 1100 ? 1 : 0, k = Math.max(1, Math.min(9, Math.floor((e - 300 * h) / 200)));
     return rep(k, RANGED_ATTACK).concat(rep(k + h, MOVE), rep(h, HEAL)); }
-  if (role === 'w8filler') { const n = Math.max(2, Math.min(8, Math.floor(e / 150))); return rep(n, CARRY).concat(rep(Math.ceil(n / 2), MOVE)); }
+  if (role === 'w8filler') return FL.body(e, Game.rooms[C.ROOM]); // 17:4x 2C:1M, carry ~75% of the hub spawn energy (fill.js)
   if (role === 'w8rminer') { // 20:22: old formula priced 4W1C3M=600 at cap 550, so it never spawned; now the biggest that fits, trimming MOVE first
     for (let w = 5; w >= 2; w--) for (let m = Math.ceil((w + 1) / 2); m >= Math.ceil((w + 1) / 3); m--)
       if (100 * w + 50 + 50 * m <= e) return rep(w, WORK).concat([CARRY], rep(m, MOVE));
@@ -75,6 +76,8 @@ function spawnRun(spawn) {
   // 17:15: count only haulers that outlive a replacement (15-part body 45t spawn + ~30t walk): the 5-hauler cohort aged out together
   // to 2 (one at TTL 155) before the floor fired; ctl cont 13,26 at 0 with 3 upgraders empty while 11,43 rose to 1450 (t83741650)
   if (!want && cs.filter(c => c.memory.role === 'w8hauler' && (c.spawning || c.ticksToLive > 75)).length < 3) want = 'w8hauler';
+  // 17:4x (Misaki: spawn must never wait for energy): hub filler right after miners + the hauler floor, replaced ahead of death (fill.js)
+  if (!want && FL.want(room, cs)) want = 'w8filler';
   // 14:23 threat mode: seal walls to 50k ahead of upgrading; 1 upgrader keeps the controller safe (2 if downgrade < 10k)
   const thr = TH.on(), wtgt = TH.wallTarget(C.WALL_TARGET[(room.controller || {}).level] || 0);
   // 15:45 hysteresis: core ramparts decay 300/100t, so a strict '< 50k' gate re-entered wall mode (1-2 upgraders, +builders) ~100 ticks
@@ -137,13 +140,6 @@ function spawnRun(spawn) {
     const wcap = Math.max(24, Math.min(40, (wm.upw || 0) + 5 * Math.floor(stor / 5000)));
     if (!want && !wallsLow && n('w8upgrader') < Math.min(6, (bigBuild ? 2 : 3) + Math.floor(Math.max(0, loose + hubIdle + Math.max(0, stor - 2000) - 600) / 600))
       && _.sum(cs.filter(c => c.memory.role === 'w8upgrader'), c => _.filter(c.body, p => p.type === WORK).length) + bodyFor('w8upgrader', cap).filter(p => p === WORK).length <= wcap + 5) want = 'w8upgrader'; // 15:55: a whole new body must fit (upw 31 made 4x10W = 40 WORK on ~30 e/t net) // 14:55: WORK cap = model net income (upw ~30) instead of fixed 24 // 21:20: 16->24 WORK; income ~20 local + ~13 W47N7 remote, ctl cont 1984/2000 full with 4x4W upgraders (WORK-bound)
-  }
-  // 5b) strip fillers (v3b): one per strip with >=4 built extensions, once the hub storage exists
-  if (!want && room.storage && room.storage.store[RESOURCE_ENERGY] > 1000) {
-    for (let i = 0; i < L.STRIPS.length && !want; i++) {
-      const built = L.STRIPS[i].ext.filter(([x, y]) => room.lookForAt(LOOK_STRUCTURES, x, y).some(s => s.structureType === STRUCTURE_EXTENSION)).length;
-      if (built >= 4 && !cs.some(c => c.memory.role === 'w8filler' && c.memory.si === i && (c.spawning || c.ticksToLive > 50))) { want = 'w8filler'; mem.si = i; }
-    }
   }
   // 6) wall builder from surplus (19:18): 1 builder while a seal wall is below target and spawn is full
   // 19:31: 2 while >1500 loose energy piles (2.8k at 19:30 with the ctl container full and upgraders at the WORK cap)

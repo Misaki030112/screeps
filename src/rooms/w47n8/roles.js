@@ -3,6 +3,7 @@ const C = require('./config');
 const go = (c, x, y, r = 1) => c.moveTo(new RoomPosition(x, y, C.ROOM), { range: r, reusePath: 10, maxRooms: 1 });
 const E = 'energy';
 const FM = require('./fillmeter');
+const F = require('./fill');
 const isFill = s => s && (s.structureType === STRUCTURE_EXTENSION || s.structureType === STRUCTURE_SPAWN);
 const fillXfer = (c, s) => { const a = Math.min(c.store[E], s.store.getFreeCapacity(E)); if (c.transfer(s, E) === 0) FM.xfer(c, a); };
 const isHub = s => s.pos.x === C.HUB_CONT[0] && s.pos.y === C.HUB_CONT[1];
@@ -13,7 +14,8 @@ function getEnergy(c) {
     && !((s.pos.x === C.CTL_CONT[0] && s.pos.y === C.CTL_CONT[1] || isHub(s)) && c.memory.role === 'w8hauler') });
   // 13:00 storage 35,32 finished (2026-10-19): haulers only top it up once ctl/hub conts are full, so builders/upgraders may draw
   // from it (>= 300) instead of letting the surplus sit while they walk to source containers
-  const st = c.room.storage && c.memory.role !== 'w8hauler' && c.room.storage.store[E] >= 300 ? c.room.storage : null;
+  // 17:4x: with a w8filler alive the storage first holds its buffer (one hub refill + 200); spenders take only what is above it + 300
+  const st = c.room.storage && c.memory.role !== 'w8hauler' && c.room.storage.store[E] >= (F.alive(c.room) ? F.reserve(c.room) + 300 : 300) ? c.room.storage : null;
   const t = [drop, cont, st].filter(Boolean).sort((a, b) => c.pos.getRangeTo(a) - c.pos.getRangeTo(b))[0];
   if (t) { if (!c.pos.isNearTo(t)) go(c, t.pos.x, t.pos.y); else if (t.amount !== undefined) c.pickup(t); else c.withdraw(t, E); return true; }
   const src = c.pos.findClosestByRange(FIND_SOURCES_ACTIVE);
@@ -27,6 +29,7 @@ function getEnergy(c) {
 // need it and the ctl cont has >= 400 free, so a hub load always has somewhere else to go (sink() falls back to ctl first)
 function hubSpare(room) {
   if (hubSites(room)) return false;
+  if (F.alive(room) && F.stock(room) < F.reserve(room)) return false; // 17:4x: hub container is the filler's buffer
   const k = ctlCont(); return !!k && k.store.getFreeCapacity(E) >= 400;
 }
 function haulPick(c) {
@@ -73,6 +76,8 @@ const hubSites = room => room.find(FIND_MY_CONSTRUCTION_SITES, { filter: s => s.
 function sink(room, c) {
   const free = s => (s && s.store.getFreeCapacity(E) > 0 ? s : null), was = free(c.memory.sk && Game.getObjectById(c.memory.sk));
   if (was) return was;
+  // 17:4x filler buffer: while a w8filler lives, storage below one hub refill (+200) comes before the ctl/hub containers
+  if (room.storage && free(room.storage) && F.alive(room) && F.stock(room) < F.reserve(room)) { c.memory.sk = room.storage.id; return room.storage; }
   const ctl = free(ctlCont()), hub = free(hubCont());
   // 03:20 hub only while sites near the hub need it: any road site anywhere sent rhaulers to the hub (864 -> 2000 full in ~290t)
   // while the ctl cont fell 1024 -> 652 and the upgraders starved
@@ -90,9 +95,10 @@ function fillTarget(c, tower, rng = 99) {
   for (const o of c.room.find(FIND_MY_CREEPS)) if (o.id !== c.id && o.memory.ft) taken.add(o.memory.ft);
   // 03:00 once a trip has committed to a container sink (memory.sk), only divert to a fill target within 5 tiles: a loaded
   // w8hauler flipped 4x in 60 ticks between ctl cont 13,26 and hub ext 32,36 as Spawn2 drained/others refilled extensions
-  const lim = Math.min(rng, c.memory.sk ? 5 : 99);
+  const lim = Math.min(rng, c.memory.sk ? 5 : 99), fa = F.active(c.room);
   const cand = c.room.find(FIND_MY_STRUCTURES, { filter: s => s.store && s.store.getFreeCapacity(E) > 0 && c.pos.inRangeTo(s, lim) && (s.structureType === STRUCTURE_SPAWN
-    || (s.structureType === STRUCTURE_EXTENSION && !taken.has(s.id)) || (tower && s.structureType === STRUCTURE_TOWER && s.store.getFreeCapacity(E) > 200)) });
+    || (s.structureType === STRUCTURE_EXTENSION && !taken.has(s.id)) || (tower && s.structureType === STRUCTURE_TOWER && s.store.getFreeCapacity(E) > 200))
+    && !(fa && F.isDuty(c.room, s)) }); // 17:4x: hub extensions/spawns are the w8filler's while it works (haulers: Spawn2 cluster + tower)
   // 14:57 (Misaki): hub extensions/spawns/tower first, Spawn2 + its 5 temp extensions last (spawning drains them last too)
   const hub = cand.filter(s => !lastE(s)), t = c.pos.findClosestByRange(hub.length ? hub : cand);
   c.memory.ft = t ? t.id : undefined; return t;
@@ -129,21 +135,6 @@ const RM = C.REMOTE;
 const LAY = require('./layout');
 const TH = require('./threat');
 const ROADSET = new Set(require('./roads').ROADS.concat(require('../../layouts/w8link').W47N8).map(([x, y]) => x * 50 + y)); // deprecated roads are never repaired (09:13)
-// w8filler: owns one v3b strip; refills from hub storage, walks its 1-tile-wide strip road, parks at the strip's filler stand
-function fillerRun(c) {
-  if (!home(c)) return;
-  const S = LAY.STRIPS[c.memory.si | 0], st = c.room.storage;
-  if (!S) return;
-  if (c.store[E] === 0) { if (st) { if (!c.pos.isNearTo(st)) go(c, st.pos.x, st.pos.y); else c.withdraw(st, E); } return; }
-  let t = c.memory.ft && Game.getObjectById(c.memory.ft);
-  if (!t || t.store.getFreeCapacity(E) === 0) {
-    const need = [];
-    for (const [x, y] of S.ext) { const e = c.room.lookForAt(LOOK_STRUCTURES, x, y).find(s => s.structureType === STRUCTURE_EXTENSION); if (e && e.store.getFreeCapacity(E) > 0) need.push(e); }
-    t = c.pos.findClosestByRange(need); c.memory.ft = t ? t.id : undefined;
-  }
-  if (!t) { if (c.store.getFreeCapacity(E) > 0 && st) { if (!c.pos.isNearTo(st)) go(c, st.pos.x, st.pos.y); else c.withdraw(st, E); return; } return go(c, S.fill[0], S.fill[1], 0); }
-  if (!c.pos.isNearTo(t)) go(c, t.pos.x, t.pos.y); else { c.transfer(t, E); c.memory.ft = undefined; }
-}
 // 15:55 (Misaki "路断了"): W47N7 haul roads were never in any plan/repair list (laid by the old conquest builders), so 20 of ~39
 // decayed to 30-570 hits and the rest vanished. remote_roads.js = shortest path cont -> N exit (tools/w47n7_roads.py).
 // rminer places missing sites (<=3 open, every 50t); loaded rhaulers with a WORK part build/repair in passing (no detour).
@@ -241,7 +232,7 @@ const R = {
       else if (!c.pos.inRangeTo(ctl, 3)) go(c, ctl.pos.x, ctl.pos.y, 3);
     }
   },
-  w8filler(c) { fillerRun(c); },
+  w8filler(c) { F.run(c); },
   // in-room defender (14:09): ranged-only, never leaves W47N8, never goes north of the seal (y<5); idles beside Spawn2.
   // 14:46 (Misaki): border ranged defender. Attacks intruders inside W47N8 only (never leaves: home() + no exit/seal-north tiles),
   // kites melee, self/ally heal when it has HEAL. Spawned only on an invasion move (TH.invasion) or an armed hostile in the base.
