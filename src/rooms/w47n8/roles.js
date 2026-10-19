@@ -78,6 +78,8 @@ function sink(room, c) {
 }
 // 02:45 fill target sticky per trip (memory.ft) and one creep per extension: with a fresh closest-free pick every tick, Spawn2
 // draining the TEMP_EXT ring by the spawn turned loaded w8hauler/w8rhauler around mid-walk to the hub strips (22,11 -> 16,10).
+const lastE = s => (s.structureType === STRUCTURE_SPAWN && s.pos.x === C.SPAWN[0] && s.pos.y === C.SPAWN[1]) || (s.structureType === STRUCTURE_EXTENSION && LAYT.some(([x, y]) => s.pos.x === x && s.pos.y === y));
+const LAYT = require('./layout').TEMP_EXT;
 function fillTarget(c, tower) {
   const t0 = c.memory.ft && Game.getObjectById(c.memory.ft);
   if (t0 && t0.store && t0.store.getFreeCapacity(E) > 0) return t0;
@@ -86,8 +88,10 @@ function fillTarget(c, tower) {
   // 03:00 once a trip has committed to a container sink (memory.sk), only divert to a fill target within 5 tiles: a loaded
   // w8hauler flipped 4x in 60 ticks between ctl cont 13,26 and hub ext 32,36 as Spawn2 drained/others refilled extensions
   const lim = c.memory.sk ? 5 : 99;
-  const t = c.pos.findClosestByRange(FIND_MY_STRUCTURES, { filter: s => s.store && s.store.getFreeCapacity(E) > 0 && c.pos.inRangeTo(s, lim) && (s.structureType === STRUCTURE_SPAWN
+  const cand = c.room.find(FIND_MY_STRUCTURES, { filter: s => s.store && s.store.getFreeCapacity(E) > 0 && c.pos.inRangeTo(s, lim) && (s.structureType === STRUCTURE_SPAWN
     || (s.structureType === STRUCTURE_EXTENSION && !taken.has(s.id)) || (tower && s.structureType === STRUCTURE_TOWER && s.store.getFreeCapacity(E) > 200)) });
+  // 14:57 (Misaki): hub extensions/spawns/tower first, Spawn2 + its 5 temp extensions last (spawning drains them last too)
+  const hub = cand.filter(s => !lastE(s)), t = c.pos.findClosestByRange(hub.length ? hub : cand);
   c.memory.ft = t ? t.id : undefined; return t;
 }
 const onTile = (c, tiles) => tiles.some(([x, y]) => c.pos.x === x && c.pos.y === y);
@@ -330,3 +334,4 @@ const R = {
 };
 // main.js dispatches roles[role].run(c): wrap (bare functions crashed every w8 creep with 'run is not a function')
 module.exports = Object.fromEntries(Object.entries(R).map(([k, f]) => [k, { run: f }]));
+Object.defineProperty(module.exports, '_fill', { value: fillTarget, enumerable: false }); // tests only

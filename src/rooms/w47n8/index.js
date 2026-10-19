@@ -27,6 +27,13 @@ function bodyFor(role, e) {
 const looseE = room => _.sum(room.find(FIND_DROPPED_RESOURCES, { filter: r => r.resourceType === RESOURCE_ENERGY }), r => r.amount)
   + _.sum(room.find(FIND_STRUCTURES, { filter: s => s.structureType === STRUCTURE_CONTAINER && !(s.pos.x === C.CTL_CONT[0] && s.pos.y === C.CTL_CONT[1]) && !(s.pos.x === C.HUB_CONT[0] && s.pos.y === C.HUB_CONT[1]) }), s => s.store[RESOURCE_ENERGY]);
 const siteRem = room => _.sum(room.find(FIND_MY_CONSTRUCTION_SITES), s => s.progressTotal - s.progress);
+// 14:57 (Misaki): spawn energy from hub-area extensions (nearest the core first) and hub spawns, Spawn2 + its 5 temp extensions last
+function energyOrder(room) {
+  const [cx, cy] = L.CORE, all = room.find(FIND_MY_STRUCTURES, { filter: s => s.structureType === STRUCTURE_EXTENSION || s.structureType === STRUCTURE_SPAWN });
+  const last = s => (s.structureType === STRUCTURE_SPAWN && s.pos.x === C.SPAWN[0] && s.pos.y === C.SPAWN[1]) || (s.structureType === STRUCTURE_EXTENSION && isTemp(s));
+  const d = s => Math.max(Math.abs(s.pos.x - cx), Math.abs(s.pos.y - cy));
+  return all.filter(s => !last(s)).sort((a, b) => d(a) - d(b)).concat(all.filter(last).sort((a, b) => (a.structureType === STRUCTURE_SPAWN ? 0 : 1) - (b.structureType === STRUCTURE_SPAWN ? 0 : 1)));
+}
 function spawnRun(spawn) {
   if (spawn.spawning) return;
   const room = spawn.room, cs = mine(), n = r => cs.filter(c => c.memory.role === r).length;
@@ -130,7 +137,7 @@ function spawnRun(spawn) {
   const e = starving ? Math.max(200, avail) : cap;
   const body = bodyFor(want, e), cost = _.sum(body, p => BODYPART_COST[p]);
   if (avail < cost) return;
-  spawn.spawnCreep(body, want + Game.time, { memory: Object.assign({ role: want, home: C.ROOM, born: Game.time, v2: 1 }, mem) });
+  spawn.spawnCreep(body, want + Game.time, { memory: Object.assign({ role: want, home: C.ROOM, born: Game.time, v2: 1 }, mem), energyStructures: energyOrder(room) });
 }
 function placeSeal(room) {
   for (const [x, y] of C.SEAL) {
@@ -143,18 +150,29 @@ const L = require('./layout');
 const TH = require('./threat'); // v3b (approved 20:11): ORDER per type nearest-core first; STRIPS with filler stand
 const PRIO = ['spawn', 'extension', 'tower', 'container', 'storage', 'link', 'terminal', 'extractor', 'lab', 'factory', 'powerSpawn', 'nuker', 'observer', 'road', 'rampart'];
 const isTemp = s => L.TEMP_EXT.some(([x, y]) => s.pos.x === x && s.pos.y === y);
+function swapTemp(room) {
+  const hub = room.lookForAt(LOOK_STRUCTURES, L.ORDER.spawn[0][0], L.ORDER.spawn[0][1]).some(s => s.structureType === STRUCTURE_SPAWN && s.my);
+  if (!hub || !room.storage || room.storage.store[RESOURCE_ENERGY] <= 50000 || room.energyAvailable < room.energyCapacityAvailable) return null;
+  if (room.find(FIND_MY_CONSTRUCTION_SITES, { filter: s => s.structureType === STRUCTURE_EXTENSION }).length || room.find(FIND_MY_CONSTRUCTION_SITES).length >= 5) return null;
+  const temp = L.TEMP_EXT.map(([x, y]) => room.lookForAt(LOOK_STRUCTURES, x, y).find(s => s.structureType === STRUCTURE_EXTENSION)).find(Boolean);
+  if (!temp) return null;
+  const tr = room.getTerrain(), slot = L.ORDER.extension.find(([x, y]) => !room.lookForAt(LOOK_STRUCTURES, x, y).some(s => s.structureType === STRUCTURE_EXTENSION));
+  if (!slot || (tr.get(slot[0], slot[1]) & 1) || room.lookForAt(LOOK_STRUCTURES, slot[0], slot[1]).some(s => s.structureType !== STRUCTURE_RAMPART)) return null;
+  if (temp.destroy() !== OK) return null;
+  (Memory.ops = Memory.ops || {}).w8swap = { from: [temp.pos.x, temp.pos.y], to: slot, t: Game.time };
+  return slot;
+}
 function layoutRun(room) {
   if (Game.time % 20) return;
   if (room.controller.level >= 2) placeSeal(room);
   if (!room.find(FIND_MY_SPAWNS).length) return;
   const rcl = room.controller.level, ok = Memory.ops && Memory.ops.w8layout === 'approved';
   if (rcl >= 3) { const [hx, hy] = C.HUB_CONT; if (!room.lookForAt(LOOK_STRUCTURES, hx, hy).some(s => s.structureType === STRUCTURE_CONTAINER) && !room.lookForAt(LOOK_CONSTRUCTION_SITES, hx, hy).length) room.createConstructionSite(hx, hy, STRUCTURE_CONTAINER); }
-  // RCL8: the 5 temporary RCL2 extensions near Spawn2 give their slots to the last 5 strip extensions
-  if (ok && rcl === 8) {
-    const ex = room.find(FIND_MY_STRUCTURES, { filter: s => s.structureType === STRUCTURE_EXTENSION });
-    const temp = ex.filter(isTemp);
-    if (temp.length && ex.length - temp.length >= 55) temp[0].destroy();
-  }
+  // 14:57 (Misaki, was RCL8): temp-extension swap from RCL7 once hub spawn 32,32 stands and storage > 50k. One at a time, in TEMP_EXT
+  // order, into the next unbuilt v3b ORDER.extension slot. Destroy only when: spawn energy full (spare), no extension site pending
+  // (previous swap done), the replacement tile is clear and the site budget has room (this run's PRIO loop / the next places it).
+  // Spawn2 is kept.
+  if (ok && rcl >= 7) swapTemp(room);
   let sites = room.find(FIND_MY_CONSTRUCTION_SITES).length; if (sites >= 6) return;
   // 03:05 west<->hub link road (missing from v3b plan): loaded 10C5M rhaulers sat 7-10 ticks on unroaded swamp 22,34 (fatigue 70)
   // between road 15,33 and strip road 24,35; queued ahead of the plan roads since every hub trip crosses it
@@ -220,4 +238,4 @@ function selfSufficient() {
   const r = Game.rooms[C.ROOM]; if (!r || !r.find(FIND_MY_SPAWNS).length) return false;
   return mine().some(c => c.memory.role === 'w8miner'); // Spawn2 + its own miner -> home stops cq pioneers/haulers (guard stays)
 }
-module.exports = { ROOM: C.ROOM, spawnRun, layoutRun, towerRun, selfSufficient, bodyFor };
+module.exports = { swapTemp, energyOrder, ROOM: C.ROOM, spawnRun, layoutRun, towerRun, selfSufficient, bodyFor };
