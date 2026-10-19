@@ -47,3 +47,10 @@ Total net 28.09 → **upgrade ceiling 26.2/t** (steady state, before Invader EV)
 WORK cap: 12W per upgrader (1800 cap, code min 12); 3 upgraders = 36 WORK, so the rate is energy-bound, not WORK-bound. 2 upgraders = 24 WORK is binding just below the ceiling.
 Spawn: about 0.38 utilisation pre-W45N7, plus about 0.23 for W45N7 (96 hauler parts, 10 miner, reserver ×2.5), plus a 3rd upgrader → about 0.65. One spawn is enough.
 Fluctuation (hourly W46N8 rate 10-16 00–15h, W45N8 only): 17.0–23.4, median about 20; a ±3/t band per hour. New sources of dips: remote opening spawn contention (16:00h 14.6/t, fixed in 147bbda); a miner swap deadlock (fixed in 00e1ded); the 3rd upgrader gate (storage ≥ floor+1000).
+
+
+## 2026-10-20 00:5x: home ideal includes W45N7; upgraders were the cap
+
+- `upgrade_max_ideal` summed A + B + W45N8 only (21.8). tools/flow.py already had W45N7 (net 4.54 after its rminer, 4x8C haulers, reserver), and the hauler need was fixed for the same gap at 21:5x. The ideal is now 26.0 (3-source value kept as `upgrade_max_ideal_3src`). `upgrade_max_live_comp` / `upgrader_bound` still use 3 sources; read them with that in mind.
+- 6h balance: upgrade 22.7 + builder 2.4 + storage -0.2, plus upgrader upkeep ~1.7, comes to ~26.9 of a flow net of 28.1, so ~1.2 e/t is overhead above the model (extra queen/rhauler bodies). Energy is not lost. Live at 00:4x the ctl container was full (2000) with 2x12W: WORK-bound, not energy-bound.
+- Lever: 14W1C2M upgraders at RCL6-7 (e1df502). 28 WORK sits just above the ~26 feed, so the room stays slightly energy-bound and the 3rd-upgrader gate (storage >= floor+1000, ctlEma >= 700) stays for real surplus only.

@@ -13,6 +13,14 @@ Novice zone ends **2026-10-28 03:33 UTC+8**. Defence timeline: `docs/DEFENSE_NOV
 - **Home patrol:** watch for (a) no wall builder spawning while held, (b) the queen ferrying storage only above 15k, and (c) allowExtra adding an upgrader once storage stays at or above 16k with ctl EMA at or above 700. If an extra upgrader oscillates (spawn then starve), report it; don't revert the hold. Report walls with min **and** median from now on.
 - **W47N8 patrol:** no change. At RCL5, place the tower 24,8 site first.
 
+## 2026-10-20 00:5x strategy review: home upgrade ceiling after the wall step-2 hold (`docs/MODEL.md` "00:5x")
+
+- **Finding:** the home headline ideal (21.8 e/t) left W45N7 out, so patrols read 22-23 e/t as "above ideal". With W45N7 (flow net 4.5) the true ideal is **26.0 e/t** (flow upgrade_expected 26.2). Measured 6h: upgrade 22.7 + build 2.4 + storage -0.2, about 95% of the flow net, so energy is not being lost. The binding limit is **2x12W = 24 WORK**. Live 00:4x: ctl container 2000 full, ctlEma 1419, storage 15.1k at the held floor, 0 builders. With the step-2 hold (70e0877/da5a3d3) the wall builder's 2-10 e/t now has nowhere to go but the controller.
+- **Shipped e1df502 (deployed t83748082):** home upgrader at RCL6-7 with >=1550 energy = **14W1C2M (1550)**, so 2 upgraders = 28 WORK. Upkeep +0.33 e/t vs +0.87 for a 3rd 12W, and 2 MOVE walks in faster. RCL4/5, RCL8 and the build-mode 700e body are unchanged. `tests/spawn_upgraders.js`. **tools/model.py:** upgrade_max_ideal now includes extra remotes (old value kept as upgrade_max_ideal_3src).
+- **Expected:** about +2 e/t (23.4 to ~25.5) from the next upgrader replacements (TTL 218/336 at t83748046). RCL7 about 10-26 01:00 instead of ~13:00 UTC+8 (~12 h earlier).
+- **Home patrol:** compare against the new ideal 26.0, not 21.8. Check the first 14W upgrader walks in under ~60 t and holds the spot. If the ctl container stays at 0 for >30 min with 2x14W, the feed is short and that is fine (bound by energy). Revert to 12W only if upgrade drops below 23.
+- Unchanged: wall step 2 after RCL7; mineralCap and remote posture still waiting on Misaki for the 10-25 review.
+
 ## 2026-10-20 00:0x strategy review: remote posture after novice end (`docs/DEFENSE_NOVICE.md`)
 
 - **Live:** home W46N8 RCL6 ~509k/3.645M, model upgrade 22.7 e/t (1h 21.1) vs ideal 21.8 → **RCL7 ~10-26 evening** (~163 h). Storage ~15k floor; walls 142101 (step 2 still post-RCL7); gates rising. W47N8 RCL4 ~219k/405k, live upgrade ~30 e/t (6h model 23.2) vs ideal 29.84 → **RCL5 ~10-20 07:30 UTC+8** (ideal 7.3 h / model 9.4 h). Tower 33,35; second at 24,8 on RCL5. Neighbors sev low (BustJetter 0 combat in W48N9; Evans 2×2RA2M). CPU ~13.2 avg, bucket 10000. Novice ends **10-28 03:33** (~8.1 d).
