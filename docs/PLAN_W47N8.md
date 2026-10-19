@@ -14,7 +14,7 @@ Theoretical limit: 4 sources × 10 = 40 e/t; minimum upkeep at these distances i
 | RCL4→5 | Upgrade-max: 30 WORK, build only roads | — | upgrade 14→26–29 e/t; RCL5 ETA ~12.5 h (ideal) vs 26 h (current rate) | — |
 | RCL5 | 10 ext (cap 1300→1800) | 30k | bigger bodies, fewer creeps, ~-1 e/t upkeep | ~30k t; required for RCL5 bodies |
 | RCL5 | link A 26,12 → ctl 13,25 (pending OK) | 2×5k = 10k | -A hauler (0.6 e/t), -0.1 decay, +1 e/t to ctl | ~12k t (~14 h) |
-| RCL5 | 2nd tower | 5k | defense only | — |
+| RCL5 | 2nd tower at **27,6** (north, 17:52) | 5k | east approach 540-600 dmg (was 150) | — |
 | RCL6 | 10 ext, link hub, terminal, extractor, mineral trunk | ~10k ext + 5k link + 100k terminal | storage-centric logistics; ~-1 e/t haul | terminal no direct e/t payback; build after storage >30k |
 | RCL7 | spawn 32,32 + 10 ext (200 cap each) | 15k + 20k | 2nd spawn, no queue blocking (38% upgrader queue_blocked now) | — |
 | RCL7 | swap 5 temp ext near Spawn2 → v3b slots | 5×3k | haul -0.1 e/t | long; low priority, storage >50k |
@@ -54,3 +54,17 @@ miners 5W (6W after RCL5 to absorb travel/latency). Reserver paid by home (exist
 ## Ownership / implementation now
 Immediate steps (upkeep trim, W47N7 road, links at RCL5, rampart site removal) are owned by the two active workers. All RCL4 structures
 already exist. No extra code deployed by this plan; it is a doc commit only.
+
+## Tower slots (Misaki 17:52, tools/w47n8_tower_plan.py)
+North approach = tiles y<=2 from which an enemy can hit a seal wall (east segment x24-31, west x8-11). Tower dmg 600 at r<=5 -> 150 at r>=20.
+| slot | when | east approach min/avg | west min/avg | haul | notes |
+|---|---|---|---|---|---|
+| 33,35 (built) | RCL3-4 | 150 / 150 | 150 / 150 | 3 steps storage | core tower; kept, never destroyed (covers breaches into the hub) |
+| 34,31 (old RCL5 plan) | — | 150 / 150 | 150 / 150 | beside storage | moved to RCL8 |
+| **27,6** | **RCL5 (tower 2)** | **540 / 588** | 180 / 270 | 5 steps from source A container 26,11 (27 from storage) | swamp tile, off every road/post; r>=4 from all y<=2 tiles (enemy RA outside the seal cannot hit it) |
+| **22,7** | RCL7 (tower 3) | 390 / 526 | 330 / 420 | 4 from 26,11 | covers both seal segments |
+| 34,31, 36,31, 36,33 | RCL8 | core | | hub | |
+ORDER.tower = 27,6 / 33,35 / 22,7 / 34,31 / 36,31 / 36,33 (layout.js + w47n8_plan3b.py). At RCL5: 33,35 + 27,6 -> east 690 min vs the
+squad's 228 heal. Haulers refill towers via fillTarget (tower > 200 free); source A container 26,11 is the nearest stock.
+Relocation of 33,35 at RCL4 is NOT planned: RCL4 allows 1 tower, so moving means destroying the only tower (5k rebuild, 0 towers
+for ~300-500 ticks) under an active threat. RCL5 (ETA 10-20 ~07:00) adds 27,6 with zero gap.
