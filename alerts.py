@@ -12,6 +12,11 @@ except ImportError:
     if sys.executable == _py: raise
     os.execv(_py, [_py] + sys.argv)
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), 'tools')); import db
+# 14:23 north watch (W47N8/W47N9/W48N9 via API) feeds alert_state before we read it; best effort, never blocks the alert check
+if '--ack' not in sys.argv and '--no-scan' not in sys.argv:
+    import subprocess
+    try: subprocess.run([sys.executable, os.path.join(os.path.dirname(os.path.abspath(__file__)), 'tools', 'north_watch.py'), '--quiet'], timeout=90)
+    except Exception as ex: print('north_watch failed:', str(ex)[:120])
 c = db.connect()
 st = {e: {'severity': sev, 'first': f, 'latest': l, 'acked': ak, 'ended': en, 'seen': seen.astimezone().strftime('%F %T')}
       for e, sev, f, l, ak, en, seen in c.execute('SELECT episode, severity, first, latest, acked, ended, seen FROM alert_state').fetchall()}

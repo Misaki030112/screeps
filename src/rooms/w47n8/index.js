@@ -50,7 +50,12 @@ function spawnRun(spawn) {
   // 04:47: base 3 (was 2): with 2 haulers and 0 sites RCL3 fell ~22 -> ~7.5 e/t (t83731005..1169), ctl cont 0-114 while source conts
   // rose to 633/1000; the surplus 3rd only spawned after loose passed 1200, so the ctl ran dry every cycle
   if (!want && n('w8hauler') < 3) want = 'w8hauler';
-  else if (!want && n('w8upgrader') < (sites ? 2 : 3)) want = 'w8upgrader';
+  // 14:23 threat mode: walls/core ramparts to 50k ahead of upgrading; 1 upgrader keeps the controller safe (2 if downgrade < 10k)
+  const thr = TH.on(), wtgt = TH.wallTarget(C.WALL_TARGET[(room.controller || {}).level] || 0);
+  const wallsLow = thr && room.find(FIND_STRUCTURES, { filter: s => ((s.structureType === STRUCTURE_WALL && C.SEAL.some(([x, y]) => s.pos.x === x && s.pos.y === y)) || (s.structureType === STRUCTURE_RAMPART && s.my)) && s.hits < wtgt }).length > 0;
+  if (!want && wallsLow && n('w8upgrader') < (room.controller.ticksToDowngrade < 10000 ? 2 : 1)) want = 'w8upgrader';
+  else if (!want && wallsLow && n('w8builder') < 3) want = 'w8builder';
+  else if (!want && !wallsLow && n('w8upgrader') < (sites ? 2 : 3)) want = 'w8upgrader';
   // 10:40: rhaulers sat last in the queue, so with 4 builders + 6 sites on the single Spawn2 all 6 (spawned in one burst at RCL3) aged out
   // together: 0 alive t~83735970-6045 while W47N7 conts hit 2000/2000 + ~1.2k dropped. Keep a floor of 2 ahead of builders/surplus.
   const r7m = Memory.ops && Memory.ops.r7, ours7 = r7m && r7m.by === 'Misaki' && (r7m.endTime || 0) > Game.time + 200;
@@ -86,7 +91,7 @@ function spawnRun(spawn) {
     // were queue_blocked ~100/113 samples and 5 upgraders ~75/69-tick windows (creep_motion 0.25h); builds ~7.5 e/t + RCL3 ~6 e/t
     // 23:10: 6th above 3k: loose 2763 -> 3048 in ~95t (11,43 at 1690) while hub builders sat queue_blocked ~70% of ticks and the ctl cont ran down to 137 (RCL3 ~4 e/t)
     // 21:10: 5th above 2.5k: source conts rose 894/820 -> 1194/1320 in 161t while the ctl cont fell 1984 -> 1386 (haul-bound, not WORK-bound)
-    else if (n('w8upgrader') < Math.min(6, (sites ? 2 : 3) + Math.floor(Math.max(0, loose + hubIdle - 600) / 600))
+    else if (!wallsLow && n('w8upgrader') < Math.min(6, (sites ? 2 : 3) + Math.floor(Math.max(0, loose + hubIdle - 600) / 600))
       && _.sum(cs.filter(c => c.memory.role === 'w8upgrader'), c => _.filter(c.body, p => p.type === WORK).length) < 24) want = 'w8upgrader'; // 21:20: 16->24 WORK; income ~20 local + ~13 W47N7 remote, ctl cont 1984/2000 full with 4x4W upgraders (WORK-bound)
   }
   // 5b) strip fillers (v3b): one per strip with >=4 built extensions, once the hub storage exists
@@ -99,7 +104,7 @@ function spawnRun(spawn) {
   // 6) wall builder from surplus (19:18): 1 builder while a seal wall is below target and spawn is full
   // 19:31: 2 while >1500 loose energy piles (2.8k at 19:30 with the ctl container full and upgraders at the WORK cap)
   if (!want && room.energyAvailable === cap && n('w8builder') < (looseE(room) > 1500 ? 2 : 1)) {
-    const tgt = C.WALL_TARGET[room.controller.level] || 0;
+    const tgt = wtgt;
     if (room.find(FIND_STRUCTURES, { filter: s => s.structureType === STRUCTURE_WALL && s.hits < tgt && C.SEAL.some(([x, y]) => s.pos.x === x && s.pos.y === y) }).length) want = 'w8builder';
   }
   // 7) W47N7 remote (after all local roles): only while home's reserve7 holds the reservation for us
@@ -126,7 +131,8 @@ function placeSeal(room) {
     room.createConstructionSite(x, y, STRUCTURE_WALL);
   }
 }
-const L = require('./layout'); // v3b (approved 20:11): ORDER per type nearest-core first; STRIPS with filler stand
+const L = require('./layout');
+const TH = require('./threat'); // v3b (approved 20:11): ORDER per type nearest-core first; STRIPS with filler stand
 const PRIO = ['spawn', 'extension', 'tower', 'container', 'storage', 'link', 'terminal', 'extractor', 'lab', 'factory', 'powerSpawn', 'nuker', 'observer', 'road', 'rampart'];
 const isTemp = s => L.TEMP_EXT.some(([x, y]) => s.pos.x === x && s.pos.y === y);
 function layoutRun(room) {
@@ -174,6 +180,7 @@ function layoutRun(room) {
 const PARTS = (c, t) => c.body.reduce((n, p) => n + (p.type === t && p.hits > 0 ? 1 : 0), 0);
 const tdmg = r => (r <= 5 ? 600 : r >= 20 ? 150 : 600 - (r - 5) * 30);
 function towerRun(room) {
+  TH.mark(room); TH.mark(Game.rooms[C.REMOTE.room]);
   const towers = room.find(FIND_MY_STRUCTURES, { filter: s => s.structureType === STRUCTURE_TOWER });
   if (!towers.length) return;
   const h = room.find(FIND_HOSTILE_CREEPS);

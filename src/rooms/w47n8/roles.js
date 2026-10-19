@@ -103,7 +103,7 @@ function pickTile(c, tiles, key) {
 // repair lifted a wall past the others (walls within 200 hits), even walking over with 2 energy left. Now: sticky per-creep
 // target kept until it is 500 above the weakest; new picks are the closest wall within 500 of the weakest.
 function wallJob(room, c) {
-  const tgt = C.WALL_TARGET[room.controller.level] || 0;
+  const tgt = TH.wallTarget(C.WALL_TARGET[room.controller.level] || 0);
   // 14:09: core ramparts (spawn/tower/storage) share the seal target; a fresh rampart (<5k) is lifted first
   const ws = room.find(FIND_STRUCTURES, { filter: s => (s.structureType === STRUCTURE_WALL && s.hits < tgt && C.SEAL.some(([x, y]) => s.pos.x === x && s.pos.y === y))
     || (s.structureType === STRUCTURE_RAMPART && s.my && s.hits < tgt) });
@@ -120,6 +120,7 @@ function wallJob(room, c) {
 // ---- W47N7 remote (only while reserved by us) ----
 const RM = C.REMOTE;
 const LAY = require('./layout');
+const TH = require('./threat');
 const ROADSET = new Set(require('./roads').ROADS.concat(require('../../layouts/w8link').W47N8).map(([x, y]) => x * 50 + y)); // deprecated roads are never repaired (09:13)
 // w8filler: owns one v3b strip; refills from hub storage, walks its 1-tile-wide strip road, parks at the strip's filler stand
 function fillerRun(c) {
@@ -220,6 +221,11 @@ const R = {
     else if (r > 3 && t.pos.y >= 5) go(c, t.pos.x, t.pos.y, 3);
   },
   w8rminer(c) {
+    // 14:23: armed hostiles in W47N7 / W47N8 north -> hold inside the W47N8 base (loaded haulers still unload there), resume when clear
+    if (TH.flee() && (c.memory.role === 'w8rminer' || !c.store[E] || c.room.name !== C.ROOM)) {
+      if (c.room.name !== C.ROOM || !c.pos.inRangeTo(C.SPAWN[0], C.SPAWN[1], 5)) c.moveTo(new RoomPosition(C.SPAWN[0], C.SPAWN[1], C.ROOM), { range: 4, reusePath: 20 });
+      return;
+    }
     const S = RM.sources[c.memory.si | 0], [x, y] = S.stand;
     if (c.room.name !== RM.room) return rgo(c, x, y, 0);
     const src = c.room.lookForAt(LOOK_SOURCES, S.src[0], S.src[1])[0];
@@ -237,6 +243,11 @@ const R = {
     if (src) c.harvest(src);
   },
   w8rhauler(c) {
+    // 14:23: armed hostiles in W47N7 / W47N8 north -> hold inside the W47N8 base (loaded haulers still unload there), resume when clear
+    if (TH.flee() && (c.memory.role === 'w8rminer' || !c.store[E] || c.room.name !== C.ROOM)) {
+      if (c.room.name !== C.ROOM || !c.pos.inRangeTo(C.SPAWN[0], C.SPAWN[1], 5)) c.moveTo(new RoomPosition(C.SPAWN[0], C.SPAWN[1], C.ROOM), { range: 4, reusePath: 20 });
+      return;
+    }
     toggle(c);
     // one-off sign of W47N7 with home's text (22:21): only while it differs, one hauler at a time, then back to work
     if (c.room.name === RM.room && c.room.controller) {
@@ -287,6 +298,9 @@ const R = {
     const all = c.room.find(FIND_MY_CONSTRUCTION_SITES);
     // north seal walls first (1 energy each, Misaki 17:08), x8-11 before x24-31; then the spawn/extension sites
     const seal = all.filter(s => s.structureType === STRUCTURE_WALL).sort((a, b) => (a.pos.x <= 11 ? 0 : 1) - (b.pos.x <= 11 ? 0 : 1));
+    // 14:23 threat mode: seal walls + core ramparts to 50k before other sites (seal wall sites still first)
+    const tj = !seal[0] && TH.on() && wallJob(c.room, c);
+    if (tj) { if (!c.pos.inRangeTo(tj, 3)) go(c, tj.pos.x, tj.pos.y, 3); else c.repair(tj); return; }
     const site = seal[0] || c.pos.findClosestByRange(all);
     if (site) { if (!c.pos.inRangeTo(site, 3)) go(c, site.pos.x, site.pos.y, 3); else c.build(site); return; }
     // 19:31: urgent road/container repair (<10%; container 11,43 at 18% = 2k ticks of decay left pulled the builder off the walls) -> seal walls to WALL_TARGET[rcl], lowest first -> maintenance (<60%).
@@ -294,7 +308,7 @@ const R = {
     const rr = f => c.pos.findClosestByRange(FIND_STRUCTURES, { filter: s => (s.structureType === STRUCTURE_CONTAINER || (s.structureType === STRUCTURE_ROAD && ROADSET.has(s.pos.x * 50 + s.pos.y))) && s.hits < s.hitsMax * f });
     // CPU 13:10: sticky repair target, rescanned every 15 ticks or when done (was 2-3 FIND_STRUCTURES scans per builder per tick)
     let rep = c.memory.rj && Game.getObjectById(c.memory.rj);
-    if (!rep || Game.time >= (c.memory.rjt || 0) || rep.hits >= (rep.structureType === STRUCTURE_WALL ? (C.WALL_TARGET[c.room.controller.level] || 0) : rep.hitsMax * 0.95)) {
+    if (!rep || Game.time >= (c.memory.rjt || 0) || rep.hits >= (rep.structureType === STRUCTURE_WALL || rep.structureType === STRUCTURE_RAMPART ? TH.wallTarget(C.WALL_TARGET[c.room.controller.level] || 0) : rep.hitsMax * 0.95)) {
       rep = rr(0.1) || wallJob(c.room, c) || rr(0.6); c.memory.rj = rep ? rep.id : undefined; c.memory.rjt = Game.time + 15;
     }
     if (rep) {
