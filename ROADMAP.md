@@ -3,6 +3,14 @@
 Novice zone ends **2026-10-28 03:33 UTC+8**. Defence timeline: `docs/DEFENSE_NOVICE.md` (2026-10-16); detail `docs/DEFENSE.md` / geometry `docs/DEFENSE_PLAN.md`.
 **Safe mode: NEVER auto-activate** — alert Misaki.
 
+## 2026-10-20 02:3x two-room evaluation (45-min window 01:38-02:23 vs 00:53-01:38)
+
+- Home W46N8: upgrade 25.2 e/t (prev 25.2; model 1h 25.4 vs ideal 26.0, 98%). Storage 13.3k -> 15.05k (back at the floor after the replacement cohort). RCL6 560k/3.645M, RCL7 ETA ~10-26 02:00 UTC+8. Walls 142101 no loss (step-2 hold), ramparts 174k rising, 0 hostiles, no safe mode.
+- W47N8: upgrade **19.4 e/t (prev 29.6)** vs ideal 29.84. Two ctl-cont stalls (t83749050-100 and t83749490-575, ~85 t each, 0 progress). Root cause found live at t83749547: `sink()` filler buffer. Several haulers committed to storage at once while storage was below `F.reserve` (950), and the commitment was sticky. Storage went 648 -> 2752 while ctl cont 13,26 sat at 0 with 40 WORK idle. **Deployed 2c34346 (t83749572):** the buffer check counts loads already committed to storage and releases a storage commitment once the buffer is met (test `tests/w47n8_filler.js` (F) fails on the old code). Verified at t83749585: haulers heading to ctl cont, cont 500, progress moving again. RCL4 269.7k/405k, RCL5 ETA ~08:00-09:00.
+- Cross-room: CPU avg 13.1 (54.6 = deploy reset), bucket 10000, top section creep 8.5 of 10.7 total; Memory 33.7k; tests pass; DB lag 2 s.
+- **W47N8 patrol:** at the next replacement cohort (storage drawn below 950), confirm ctl cont 13,26 no longer runs dry while storage rises, and record upgrade e/t across the cohort. If it still stalls, the next lever is the w8hauler floor lead (TTL 75).
+- **Observability (either patrol):** the console listener stopped replying at ~20:58, 01:47 and 02:18, and each time the existing ws watchdog missed it. Candidate fix: also restart when no console line arrives for more than N s while q.py queries are outstanding. Do it in a quiet window; it is not urgent.
+
 ## 2026-10-20 01:4x two-room evaluation (45-min window 00:53-01:38 vs 00:08-00:53)
 
 - Home W46N8: controller progress **25.2 e/t** (prev 24.8; ideal 26.0, 97%). Buckets 31.2 / 21.4 / 26.0 / 26.0. Upgraders 14W1C2M + 14W (26 WORK, TTL 764/1072). Storage **15.0k -> 12.8k (-3.5 e/t; prev +0.7)**: spawn cohort (W45N7 rhaulers TTL 64/124/184/272 + 36-part W45N8 rhauler + queen/miner replacements); ferry holds at floor. Now just under the reserveE-2k (13k) upgrader cutoff, but no upgrader is due for ~760 t, so nothing stalls. RCL6 542k/3.645M, RCL7 ~10-26 03:00. Walls min 142101 (no loss), gates 173.1k (repair sawtooth), 0 hostiles, no safe mode.
