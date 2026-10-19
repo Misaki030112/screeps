@@ -145,3 +145,49 @@ Assumptions: upgrade stays ~21–23 e/t until RCL6; model net ~23 e/t after; wal
 - [x] RCL6 core + bank + wall step 1 (100k) before 10-28 (min 142.1k on 10-19)
 - [ ] 10-25 defence deadline review with Misaki (SM tree, guards, minerals, W45N7)
 - [ ] Wall step 2 (300k) — may finish after 10-28
+
+## 2026-10-20 00:0x strategy review: remote posture after novice end
+
+**Question:** When the three novice openings drop (10-28 03:33 UTC+8), what should W45N7 / W45N8 do on *player* contact — flee+pause (today), fight in the remote (Overmind-style), or abandon the remote until Misaki says otherwise?
+
+**Why now:** 20:5x mapped the openings (W45N7 x=49 ← Cody132 RCL7; W44N8 y=49 ← same; W47N9 x=49 ← drtk712 RCL8 via BustJetter). The 10-25 deadline review needs a remote answer. Remotes are the first rooms outsiders walk into; home N/S are terrain-closed.
+
+### Reference bots
+
+| Source | Player in outpost | NPC Invader | Notes |
+|---|---|---|---|
+| **Overmind** (`Overseer.handleOutpostDefense`) | `DirectiveOutpostDefense` — spawn combat overlords and *fight* | `DirectiveGuard` (SK rooms skip) | Miners can flee (sensitivity-tuned / often off); workers skip unsafe remotes; colony breach → terminal evacuate / abandon |
+| **TooAngel** | Reputation + retaliation; keeps defending fallen owned rooms | Remote `defender` role in the queue | Designed for multi-room GCL empires; not a "cheap disposable remote" doctrine |
+| **Screeps wiki (remote harvesting)** | Detect + respond (same loop as Invader at base) | Auto defender recommended | Treats player disruption as higher variance; no single recommended posture |
+
+### Our live FSM (already coded, `src/managers/threat.js`)
+
+- **Player** combat parts (ATTACK / RANGED_ATTACK / HEAL) in the remote, home, or via room → `WAIT` / `why=player` for **`playerPause=1500`** (~1.75 h). Never `THREAT`/`DEFEND`. Civilians flee home; remote spawn stops. TOUGH-only / MOVE scouts do **not** count (same idea as W47N8 decoy ignore).
+- **Solo NPC Invader** → fight with anti-Invader defender (`defend: true` on W45N8 and W45N7). Escalated Invader waves / cores → wait-out.
+- Tests: `tests/threat_fsm.js` ("player combat creep → WAIT 1500, not cleared by vision").
+
+### Cost math (why flee wins for *us*)
+
+| Event | Energy impact | Fight alternative |
+|---|---|---|
+| Pause both remotes 1500 t | ~11.4 e/t net deferred ≈ **17k** (~12 min RCL7) | One lost 1300 defender + bodies + possibly provoke Cody132/drtk712 |
+| Cody132 RCL7 / drtk712 RCL8 walk-through | Temporary; resume when clear | We cannot win a remote skirmish against RCL7–8 with home towers out of range |
+| Permanent abandon W45N7 | Lose ~4.5 e/t forever (~20% of upgrade) | Only if repeated harassment makes pause the steady state |
+
+Overmind fights in remotes because its combat stack and multi-colony logistics assume it can win or trade. We are 2 rooms on 20 CPU, upgrade-first through novice end, and the neighbours behind the openings out-RCL us. **Fighting in remotes would be a provocation with a negative EV.**
+
+### Recommended posture (proposal for Misaki — not executed)
+
+1. **Keep flee+pause on player combat** in W45N7 / W45N8 (and via). Do **not** add remote player-defenders. NPC Invader defender stays ON.
+2. **Do not permanently abandon** a remote on first contact — resume after the 1500 t WAIT (current). Revisit abandon only if the same player pauses a remote **≥3 times in 24 h** (harassment) — then ask Misaki before `Memory.remotes.<room>.off`.
+3. **Defend at home / W47N8 seals**, not in the remotes. Outer ring step 1 (142k) + towers + SM-alert is the real line; remotes are disposable income.
+4. **Alerting stays**: player remote pause is already `severity: high`; `neighbor_scan` flags combat in W45N7/W45N8 as NEW. No change needed for day-1.
+5. Optional later (not this run): if scouts with only MOVE spam pauses, tighten classify further; today COMBAT-parts filter already ignores TOUGH decoys.
+
+### Observability shipped this review
+
+`Memory.stats.remote.<room> = { st, why, until }` each tick (`src/managers/stats.js`) so patrol / q.py can see pause reason without digging `Memory.remote.*.th`.
+
+### Checklist add
+
+- [ ] Misaki confirms remote player posture before **10-25** deadline review (recommend: keep flee+pause; no remote player fight; no auto-abandon)

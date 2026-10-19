@@ -35,4 +35,12 @@ module.exports = { run(errors, alerts = []) {
   P.total = s.cpu; P.pre = (err.pre || [0])[0]; P.mem = (err.pre || [0, 0])[1];
   for (const k in P) E[k] = Math.round(((E[k] === undefined ? P[k] : E[k] * 0.98 + P[k] * 0.02)) * 1000) / 1000;
   err.prof = {};
+  // remote threat snapshot (strategy 2026-10-20 00:0x): st/why/until per CFG remote for q.py / Grafana
+  try {
+    const threat = require('./threat'), remote = require('./remote'), rem = s.remote || (s.remote = {});
+    for (const r of Object.keys(remote.CFG)) {
+      const th = threat.state(r);
+      rem[r] = { st: th.st, why: th.why || null, until: th.until || null };
+    }
+  } catch (e) { /* threat/remote may be mid-reload */ }
 } };

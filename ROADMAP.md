@@ -3,6 +3,14 @@
 Novice zone ends **2026-10-28 03:33 UTC+8**. Defence timeline: `docs/DEFENSE_NOVICE.md` (2026-10-16); detail `docs/DEFENSE.md` / geometry `docs/DEFENSE_PLAN.md`.
 **Safe mode: NEVER auto-activate** — alert Misaki.
 
+## 2026-10-20 00:0x strategy review: remote posture after novice end (`docs/DEFENSE_NOVICE.md`)
+
+- **Live:** home W46N8 RCL6 ~509k/3.645M, model upgrade 22.7 e/t (1h 21.1) vs ideal 21.8 → **RCL7 ~10-26 evening** (~163 h). Storage ~15k floor; walls 142101 (step 2 still post-RCL7); gates rising. W47N8 RCL4 ~219k/405k, live upgrade ~30 e/t (6h model 23.2) vs ideal 29.84 → **RCL5 ~10-20 07:30 UTC+8** (ideal 7.3 h / model 9.4 h). Tower 33,35; second at 24,8 on RCL5. Neighbors sev low (BustJetter 0 combat in W48N9; Evans 2×2RA2M). CPU ~13.2 avg, bucket 10000. Novice ends **10-28 03:33** (~8.1 d).
+- **Topic:** what remotes do when Cody132 / drtk712 path through the 10-28 openings. Overmind *fights* outpost player hostiles; TooAngel retaliates / keeps fallen rooms. Our FSM already **never fights players** in remotes (`playerPause=1500` WAIT) and only fights solo NPC Invaders — correct for us (RCL7–8 neighbours, 20 CPU, upgrade-first).
+- **Recommendation for Misaki (10-25 review):** keep flee+pause; no remote player-defenders; no auto-abandon (revisit only if ≥3 player pauses / 24 h on one remote). Defend at home / W47N8 seals.
+- **Shipped:** `Memory.stats.remote.<room>={st,why,until}` observability (`src/managers/stats.js`). No behaviour change.
+- **Priority shift:** elevate "remote player posture confirm" onto the **10-25 deadline review** checklist (was open note only). Wall step 2 still post-RCL7; W47N8 RCL5 tower 24,8 first tonight; market mineralCap still awaiting Misaki (22:4x).
+
 ## 2026-10-19 23:5x two-room evaluation (45-min window 23:05-23:50 vs 22:20-23:05)
 
 - Home W46N8: controller progress **20.5 e/t** (prev 23.3; ideal 21.8). Dip is one bucket, 23:09-23:18 at 13.8 e/t: upgrader turnover. New upgrader 83746723 (12W1C1M) got spot 29,30 while both old ones lived; the idle home hauler parked on **30,29** (2210 of 5100 t in 6h) so its path went through swamp 30,28 (~65 t at 1 MOVE). Walk-in 100 t vs 10-34 t usual, ctl container full (2000) meanwhile. Other buckets 23.0. Storage 15.9k -> 15.1k (14.7k live, spawn draw, known benign). RCL6 504.5k/3.645M, RCL7 ~10-26. Walls 142101 no loss, ramparts min 172.0k, 11 ramparts, sm 0.
@@ -158,6 +166,7 @@ Focus (Misaki 10-14): **W46N8 upgrade speed**; expansion (2nd account W47N8, W45
 7. Later: RCL6 terminal/extractor/labs; 2nd room (**approval required**).
 
 ## Log
+- 2026-10-20 00:0x strategy review: topic **remote posture after novice end** (`docs/DEFENSE_NOVICE.md`). Overmind fights outposts; we keep flee+pause (EV+). Shipped stats.remote snapshot. RCL5 ETA ~07:30, RCL7 ~10-26 evening.
 - 2026-10-19 21:4x strategy review: topic **W47N8 upgrade gap** (`docs/MODEL_W47N8.md`). 8.7 e/t gap decomposed; new cause = 5W remote rminers lose ~10% to container repair (repair blocks harvest); deployed 751c6e7/3ce6174 (6W + learned lead). RCL5 ETA 10-20 ~09:30-10:30, RCL7 ETA ~10-26 late.
 - 2026-10-19 19:5x strategy review: topic **W47N8 RCL5 transition** (`docs/PLAN_W47N8.md`). Tower 2 = 24,8 verified in code/test/doc/live; deployed 75f8265 (north tower fed from source A 26,11, filler core towers only; dormant until RCL5); link timing and hauler priority unchanged (reasoned); RCL5 ETA 10-20 ~06:30-09:15.
 - 2026-10-19 18:4x strategy review: topic **home RCL7 readiness** (`docs/RCL7.md`). 250k of the 305k RCL7 bill was idle (factory + 3 labs, no code); gated by plan.RCL7_INDUSTRY=false; home hauler kept at RCL7 for the mineral run. RCL7 ETA ~10-26/27, W47N8 RCL5 ETA ~10-20 evening (live ~16 e/t, 104.6k/405k).

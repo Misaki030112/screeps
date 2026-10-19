@@ -1,7 +1,7 @@
 # Strategy — W46N8 (home) + W45N8 (remote), 20 CPU, shard3
 
 Sources: Screeps docs (control, defense, invaders, CPU), screepers wiki, Overmind / TooAngel / Hivemind patterns.
-Last full refresh: **2026-10-19 strategy review** (CPU budget: `docs/CPU.md`); before that **2026-10-18 strategy review** (W47N8 hold / safe-mode mechanics: `docs/W47N8_HOLD.md`); before that **2026-10-17 strategy review** (neighbours: `docs/NEIGHBORS.md`); before that **2026-10-16 strategy review** (defence before novice end: `docs/DEFENSE_NOVICE.md`); prior: RCL6 readiness `docs/RCL6.md` (10-15), RCL5 `docs/RCL5.md` (10-14). Also `docs/DEFENSE.md`, `docs/DEFENSE_PLAN.md`, `docs/LAYOUT_V2.md`, `docs/REMOTE_W45N8.md`, `docs/MODEL.md`, `docs/DATA.md`.
+Last full refresh: **2026-10-20 00:0x strategy review** (remote posture after novice end: `docs/DEFENSE_NOVICE.md`); before that **2026-10-19** (CPU `docs/CPU.md`, market `docs/MARKET.md`); before that **2026-10-18 strategy review** (W47N8 hold / safe-mode mechanics: `docs/W47N8_HOLD.md`); before that **2026-10-17 strategy review** (neighbours: `docs/NEIGHBORS.md`); before that **2026-10-16 strategy review** (defence before novice end: `docs/DEFENSE_NOVICE.md`); prior: RCL6 readiness `docs/RCL6.md` (10-15), RCL5 `docs/RCL5.md` (10-14). Also `docs/DEFENSE.md`, `docs/DEFENSE_PLAN.md`, `docs/LAYOUT_V2.md`, `docs/REMOTE_W45N8.md`, `docs/MODEL.md`, `docs/DATA.md`.
 
 ## Principles
 
@@ -12,16 +12,16 @@ Last full refresh: **2026-10-19 strategy review** (CPU budget: `docs/CPU.md`); b
 5. **Growth after RCL4:** remote mining (W45N8 approved and live), then links; a 2nd room only with explicit Misaki approval (GCL 2 already allows a claim).
 6. **Major decisions need approval:** claim/expand, attack or provoke player neighbours, spend credits/pixels, activate safe mode, respawn.
 
-## Current state (2026-10-19 ~14:40 UTC+8)
+## Current state (2026-10-20 ~00:05 UTC+8)
 
 | | |
 |---|---|
-| Home | W46N8 **RCL6** 337k/3.645M at ~18.8 e/t → RCL7 ETA ~10-28; cap 2300, storage ~15k (reserve floor), gates min 163.7k, walls 142.1k, SM 5 available |
-| W47N8 | claimed 10-18; **RCL4** 48.6k/405k at ~10 e/t → RCL5 ~10-21; 20/20 ext, storage 35,32 built, 1 tower + core ramparts, threat mode; Spawn2; SM 3 available (unused); rooms independent (no home energy) |
-| Remote | W45N8 + W45N7 (home, ~9–10 e/t each, SAFE); W47N7 reserved by us, mined by W47N8 (2 rminers, 4 rhaulers) |
-| CPU | **11.7–14.2 avg of 20** (was 6.5–8.8 before W47N8), spikes ≤49, bucket ~10000, errors 0 — see `docs/CPU.md` |
-| GCL | 3 (3rd room allowed by GCL, but CPU-bound) |
-| Novice ends | **2026-10-28 03:33 UTC+8** (~8.5 days); BustJetter staged 4 armed creeps in W48N9 on 10-19 14:26 |
+| Home | W46N8 **RCL6** ~509k/3.645M at ~22–23 e/t → **RCL7 ~10-26 evening**; cap 2300, storage ~15k (reserve floor), gates min ~172k, walls 142.1k (step 2 post-RCL7), SM 5 available |
+| W47N8 | claimed 10-18; **RCL4** ~219k/405k at ~30 e/t live → **RCL5 ~10-20 07:30**; 20/20 ext, storage 35,32, tower 33,35 (RCL5 #2 at 24,8), seal walls 50k; Spawn2; SM 3 available; rooms independent |
+| Remote | W45N8 + W45N7 (home, SAFE; player = flee+pause 1500 t, NPC defender ON); W47N7 reserved, mined by W47N8 |
+| CPU | **~12–14 avg of 20**, bucket ~10000 — see `docs/CPU.md` |
+| GCL | 3 (3rd room CPU-bound) |
+| Novice ends | **2026-10-28 03:33 UTC+8** (~8.1 days); remote posture proposal in `docs/DEFENSE_NOVICE.md` 00:0x; BustJetter W48N9 quiet at last scan |
 
 Ideal vs actual: `tools/model.py` / Grafana. Remaining gap ≈ ctl-feed dead-bands (closing) and remote pauses; more upgrade needs more income (expansion — shelved).
 
