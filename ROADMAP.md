@@ -11,6 +11,14 @@ Novice zone ends **2026-10-28 03:33 UTC+8**. Defence timeline: `docs/DEFENSE_NOV
 - **W47N8 patrol, watch now (01:4x-02:10):** a w8builder (18 parts, ~1.3k e) spawned at t83748801 for road repair (roads 1.0-2.3k/5k hits, not urgent) right before the cohort: upgrader TTL 104, miner 125, hauler 170, rminer 200, hauler 245, miner 266, hauler 311 at t83748852 = ~250 spawn-ticks and ~7k e in ~300 t on one spawn with 1.3k storage. If a miner or the upgrader dies before its replacement, or the ctl container runs dry > 50 t: (a) gate W47N8 builder spawns for road-only repair behind pending replacements (roads above 20% can wait), and (b) pre-spawn part of the cohort 50-100 t earlier.
 - **Home patrol:** storage should bottom out ~10-11k after the 4 W45N7 rhauler replacements and the W45N7 reserver, then recover. If it is still < 13k when the next upgrader is due (~t83749600), check that the reserveE-2k cutoff is not dropping upgraders to 1.
 
+## 2026-10-20 01:4x strategy review: CPU budget for growth and sieges (`docs/CPU.md` "01:4x refresh")
+
+- **CPU now:** EMA total 10.5 (11.96 on 10-19 afternoon), 0.254 per creep for 34 creeps, bucket 10000. The real 10-19 W47N8 fight (1-6 hostiles) peaked at 19.6 with bucket min 9958, so fights of that size cost nothing lasting.
+- **Growth:** W47N8 RCL5 (links, 1800 cap) and home RCL7 (W45N7 rhaulers to cap) each trim ~0.5-0.75 CPU. A 3rd room (GCL 3 already allows it; GCL 4 ~10-25) adds ~5.5 → ~16 avg: it fits, but with only ~1.5-4 CPU left for fights. Proposal for Misaki: no 3rd room before the RCL5/RCL7 consolidation; CPU limit is 20 without a subscription unlock (her call).
+- **Siege budget after 10-28:** sustained 25 CPU empties the bucket in ~2.3 h, 30 CPU in ~70 min; then the tick is cut off mid-loop, and creeps ran in `Game.creeps` order. **Shipped 14db47e (deployed t83748940, dormant while bucket ≥ 2000):** `src/utils/cpuorder.js` runs combat creeps first, then queen/w8filler, then economy, and economy creeps skip the tick once used CPU is within 5 of `tickLimit`. `tests/cpu_order.js`, all tests pass, 0 new errors, bucket 10000.
+- **Observability:** new `cpu_prof` table (listener polls `Memory.stats.prof` every ~5 min, per-section CPU EMA with tick, bucket and commit). Listener restarted 01:47.
+- **Patrols:** if bucket ever drops below 5000, report `cpu_prof` by section and the creep count; below 2000 the low-bucket mode is active (economy creeps may skip ticks by design).
+
 ## 2026-10-20 00:5x two-room evaluation (45-min window 00:09-00:53 vs 23:23-00:08)
 
 - Home W46N8: controller progress **24.7 e/t** (prev 23.1; ideal now 26.0 incl W45N7). 15-min buckets 23.5 / 23.5 / 23.8 / **30.0** (00:45, 3 upgraders = 36 WORK during an overlap, drawing the ctl container 2000 -> 367). Storage 14.6k -> 15.1k (held floor 15k). RCL6 527k/3.645M, RCL7 ~10-26 01:00. **Step-2 hold verified:** walls min 142.1k / med 153.4k / max 162.5k, unchanged since 00:41; 0 builders; ramps min 172.8k.
