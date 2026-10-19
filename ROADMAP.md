@@ -3,6 +3,12 @@
 Novice zone ends **2026-10-28 03:33 UTC+8**. Defence timeline: `docs/DEFENSE_NOVICE.md` (2026-10-16); detail `docs/DEFENSE.md` / geometry `docs/DEFENSE_PLAN.md`.
 **Safe mode: NEVER auto-activate** — alert Misaki.
 
+## 2026-10-20 02:4x strategy review: home hauler at RCL6, console query size (`docs/MODEL.md` "02:4x")
+
+- **Home hauler: keep it.** 6 h data: it moved ~0.18 e/t (storage side to ctl container), 0 from source A (link 30,11 takes all). Removing it saves only ~0.3 e/t (~1.5 h off a ~5.5-day RCL7) and needs queen sizing, the mineral run and the emergency path decoupled first. Revisit at RCL7 sizing only if the O cycle is paused. The 23:5x open question is closed.
+- **Console query size (tools only, no deploy):** the server accepts 1001-char console expressions and refuses 1024 with `{'error': 'expression size is too large'}`. `tools/q.py` ignored that reply and waited ~65 s, so an oversized query looked like a stalled listener (the 02:18 restart; the 02:41 patrol suspected the same). q.py now checks the wrapped size locally (max 1000, about 890 chars of user expression) and raises any console error at once. **Patrols:** a `q.py: expression too large` or `console refused` message means split the query, not restart the listener. The listener watchdog idea below stays open only for a real no-reply on a small query.
+- Plan check: W47N8 RCL5 ~10-20 08:00-09:00 (tower 24,8 site first), home RCL7 ~10-26 02:00, both before novice end 10-28 03:33. No change to build orders, defence or CPU budget.
+
 ## 2026-10-20 02:3x two-room evaluation (45-min window 01:38-02:23 vs 00:53-01:38)
 
 - Home W46N8: upgrade 25.2 e/t (prev 25.2; model 1h 25.4 vs ideal 26.0, 98%). Storage 13.3k -> 15.05k (back at the floor after the replacement cohort). RCL6 560k/3.645M, RCL7 ETA ~10-26 02:00 UTC+8. Walls 142101 no loss (step-2 hold), ramparts 174k rising, 0 hostiles, no safe mode.

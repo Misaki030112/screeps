@@ -17,11 +17,22 @@ def check(expr):
     import subprocess
     r = subprocess.run(['node', '-e', 'new Function("return (" + process.argv[1] + ");")', expr], capture_output=True, text=True)
     if r.returncode: raise SystemExit('q.py: expression has a syntax error, not sent:\n' + next((l for l in r.stderr.splitlines() if 'Error' in l), r.stderr.strip()[-200:]))
+# Server cap on console expressions: 1001 chars accepted, 1024 refused with {'error': 'expression size is too large'}
+# (probed 2026-10-20 02:4x). q.py used to ignore that reply and wait ~65 s for a line that never comes, which patrols read as
+# a stalled listener (02:18 restart). Now the full wrapped expression is size-checked locally and any console error is raised.
+MAX_EXPR = 1000
+def send(expression):
+    if len(expression) > MAX_EXPR:
+        raise SystemExit(f'q.py: expression too large ({len(expression)} chars after wrapping, server max ~{MAX_EXPR}); '
+                         f'not sent. Split it into smaller queries.')
+    r = api.req('user/console', {'expression': expression, 'shard': api.SHARD})
+    if isinstance(r, dict) and r.get('error'): raise SystemExit('q.py: console refused the expression: ' + str(r['error']))
+    return r
 def q(expr, timeout=40):
     check(expr)
     tag = 'QQ' + str(time.time()).replace('.', '')
     wrapped = f"(function(){{try{{return ({expr});}}catch(e){{return 'ERR '+e.stack}}}})()"
-    api.req('user/console', {'expression': f"'{tag}'+JSON.stringify({{t:Game.time,v:{wrapped}}})", 'shard': api.SHARD})
+    send(f"'{tag}'+JSON.stringify({{t:Game.time,v:{wrapped}}})")
     end = time.time() + min(timeout, 25)
     while time.time() < end:
         for line in _tail().splitlines():
@@ -31,7 +42,7 @@ def q(expr, timeout=40):
                 except ValueError: end = 0; break
         time.sleep(1.5)
     tag = str(time.time())  # fallback: Memory._q via user/memory (rate-limited)
-    api.req('user/console', {'expression': f"Memory._q={{tag:'{tag}',t:Game.time,v:{wrapped}}}", 'shard': api.SHARD})
+    send(f"Memory._q={{tag:'{tag}',t:Game.time,v:{wrapped}}}")
     end = time.time() + timeout
     while time.time() < end:
         try:
