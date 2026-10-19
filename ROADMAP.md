@@ -3,6 +3,15 @@
 Novice zone ends **2026-10-28 03:33 UTC+8**. Defence timeline: `docs/DEFENSE_NOVICE.md` (2026-10-16); detail `docs/DEFENSE.md` / geometry `docs/DEFENSE_PLAN.md`.
 **Safe mode: NEVER auto-activate** — alert Misaki.
 
+## 2026-10-20 00:5x two-room evaluation (45-min window 00:09-00:53 vs 23:23-00:08)
+
+- Home W46N8: controller progress **24.7 e/t** (prev 23.1; ideal now 26.0 incl W45N7). 15-min buckets 23.5 / 23.5 / 23.8 / **30.0** (00:45, 3 upgraders = 36 WORK during an overlap, drawing the ctl container 2000 -> 367). Storage 14.6k -> 15.1k (held floor 15k). RCL6 527k/3.645M, RCL7 ~10-26 01:00. **Step-2 hold verified:** walls min 142.1k / med 153.4k / max 162.5k, unchanged since 00:41; 0 builders; ramps min 172.8k.
+- Upgraders live are all 12W1C1M (83748066 spawned 16 t before e1df502 went live). The first 14W1C2M is the replacement for 83746723 (TTL ~35 at t83748223).
+- W47N8: controller progress **25.6 e/t** (prev 29.5; ideal 29.84). Buckets 19.2 (00:00 cohort turnover, ctl cont dry ~70 t) / 29.9 / 26.6 (00:26-00:32 box pause in window) / 29.1. RCL4 237.5k/405k, **RCL5 ~10-20 07:35**. Storage 1.8k.
+- Cross-room: CPU avg 13.2, max 16.6, bucket min 9980; Memory 33.5k; tests pass; src clean; DB lag ~45 s; listener up (one big q.py console reply timed out, small ones fine).
+- **W47N8 patrol, watch:** the 00:0x cohort (2 miners, 3 haulers, 1 upgrader spawned t83747457-619) comes due again ~t83748950-83749120, about **01:50-02:05 UTC+8**. If the ctl container runs dry > 50 t again, propose staggering (pre-spawn some of the cohort 50-100 t earlier) rather than more bodies; RCL5 at ~07:35 changes the economy anyway.
+- **Home patrol:** confirm the next upgrader is 14W1C2M (17 parts) and walks in under ~60 t. With 2x14W, expect ~26 e/t once the ctl container buffer is spent.
+
 ## 2026-10-20 00:3x two-room evaluation (45-min window 23:50-00:35 vs 23:05-23:50)
 
 - Home W46N8: controller progress **23.4 e/t** (prev 20.5; ideal 21.8). Storage 14.8k -> 14.5k (15.2k live at t83748018), RCL6 519k/3.645M, RCL7 ~10-26 evening. Walls min 142.1k, gates 172.5k.
