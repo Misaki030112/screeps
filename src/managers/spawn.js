@@ -177,7 +177,9 @@ function rhTarget(C, m, storageE, paved) {
   return storageE >= 1300 ? Math.min(2, want) : 0;
 }
 // rminer lead = measured travel + spawn time + 10 (fixed 120 arrived ~3t after the old one died: born+121 vs ttl 118, 10-15 data)
-const rmLead = (C, c) => Math.min(c.memory.travel || C.travel || 110, C.travel ? C.travel + 60 : 160) + c.body.length * 3 + 10;
+// + 60 queue margin (patrol 10-19 23:3x): one home spawn. W45N8 order (lead 104) lost to a 72t queen by 7 ticks -> ~50t unmined;
+// W45N7 (lead 201) spawned 30t late behind the queue -> ~20t gap. Overlap costs ~0.02 e/t per remote (old miner stays on the tile).
+const rmLead = (C, c) => Math.min(c.memory.travel || C.travel || 110, C.travel ? C.travel + 60 : 160) + c.body.length * 3 + 10 + 60;
 const rmBody = cap => { const w = Math.min(6, Math.floor((Math.min(cap, 800) - 200) / 100)); return [].concat(rep(w, WORK), [CARRY], rep(3, MOVE)); };
 function remoteSpawn(room, go, avail) {
   const remote = require('./remote'), cap = room.energyCapacityAvailable;
