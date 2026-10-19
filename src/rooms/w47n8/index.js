@@ -248,8 +248,6 @@ function linkRun() {
   const a = linkAt(C.SOURCES[0].link), k = linkAt(C.CTL_LINK);
   if (a && k && !a.cooldown && a.store[RESOURCE_ENERGY] >= 400 && k.store.getFreeCapacity(RESOURCE_ENERGY) >= 400) a.transferEnergy(k);
 }
-function towerRun(room) {
-  TH.mark(room); TH.mark(Game.rooms[C.REMOTE.room]); linkRun();
 const D = require('./defense'), F = require('../../utils/focus');
 const SEAL_FIGHT = { x: 27, y: 3 }; // centre of the east seal: where a north squad has to break in
 // armed hostiles within reach (RA 3, ATTACK/WORK 1) of our creeps, our structures or the seal walls
@@ -276,6 +274,8 @@ function assessRun(room, towers, hs) {
   m.w8assess = { t: Game.time, spawn: r.spawn, why: r.why, at: [at.x, at.y] };
   if (r.advise) o.w8adv = { t: Game.time, advise: r.advise, why: r.why, n: force.length }; // safe mode is Misaki's call (alerts relay it)
 }
+function towerRun(room) {
+  TH.mark(room); TH.mark(Game.rooms[C.REMOTE.room]); linkRun();
   const towers = room.find(FIND_MY_STRUCTURES, { filter: s => s.structureType === STRUCTURE_TOWER });
   if (!towers.length) return;
   const h = room.find(FIND_HOSTILE_CREEPS).filter(x => !x.my);
