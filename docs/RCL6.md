@@ -16,6 +16,7 @@ the code does on the level-up night matters more than another model pass; the RC
 | R5 | `T.hauler = rcl>=6 && links>=3 ? 1 : …` | Miner A now fills link 30,11 → ctl link; the lone home hauler keeps waiting on container A (only link-full overflow) | ~0.7 e/t upkeep for little work — patrol to measure (`idle_by_reason`) and drop to 0 if idle > 70% |
 
 ## Mineral economics (why the terminal/labs can wait)
+- **Update 2026-10-19 22:4x:** the terminal, extractor and 3 labs are built (Misaki 10-18 09:30). Live market and stock numbers are in `docs/MARKET.md`.
 - Mineral **O (oxygen), density 2: 35,000 per 50,000-tick regen**. A 10W extractor miner (1 per WORK per 5 ticks) empties it in ~17.5k
   ticks → ~0.5 O/t average.
 - Market shard3 (read-only, 10-15): O avg 23.6–29.2 cr/day (5 days), best buy 32.0; energy avg 14–21 cr. 0.5 O/t ≈ 13 cr/t ≈ **0.9 e/t

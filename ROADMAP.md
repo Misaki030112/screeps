@@ -12,6 +12,17 @@ Novice zone ends **2026-10-28 03:33 UTC+8**. Defence timeline: `docs/DEFENSE_NOV
 - **Home patrol:** watch storage reclaim ≥15k; leave W45N7 haulers=5; do not touch strategy's mineralCap edit. Wall step 2 still post-RCL7.
 - **W47N8 patrol:** verify next rminer handoffs order with lead ≥200 (no ≥50 t unmined); then hauler sizing note (remote 13C / local 2×11) still deferred to RCL5. At RCL5: tower 24,8 only site first.
 
+## 2026-10-19 22:4x strategy review: market/minerals at home RCL6 (`docs/MARKET.md`)
+
+- **State:** home O **depleted**, regen about **10-21 20:30 UTC+8** (39k t). Stock **34.8k O** (storage 17.3k + terminal 17.5k). Terminal energy 0, **3 labs empty, no lab code**. **Credits 0** (never traded). W47N8 K 35k, no extractor until its RCL6.
+- **Cost of mining:** the last O cycle (10-18 10:11 to 10-19 07:57) took 11 mminers 12W3M ≈ **14.9k e, ~0.9 e/t** (4% of home upgrade) for 35k O that has no use yet.
+- **Market shard3 (thin, 17 O bids / 18 energy asks):** best O bid W20N0 27.5 x 13.9k at 0.58 e/unit transfer (others 23-27 at 0.73-0.86). Energy asks ~38 cr at 0.65 e/unit = **~107 cr per NET delivered energy**. The O -> credits -> energy round trip is **net negative (~-320 e per 1000 O)**. **Never buy energy from here.**
+- Reference bots: Overmind sells excess above 25k per resource (direct above 50k) and buys energy only with credits > 50k. TooAngel keeps 50k per mineral, caps extraction at 100k, sorts bids by transfer cost minus price.
+- **Shipped 9722c37 (deployed t83746389, dormant):** `Memory.ops.mineralCap` = no mminer while storage+terminal >= cap. Unset = unchanged. `tests/mineral_cap.js`. **Observability:** `tools/market.py` (read-only snapshot -> `state/market.json`). Console expressions are capped at ~1000 chars (`expression size is too large`), so the tool splits its queries.
+- **For Misaki:** (A) pause the next O cycle until RCL7 (`Memory.ops.mineralCap=30000`, ~+15k e to upgrade, ~40 min earlier RCL7; recommended) or keep mining. (B) sell O: hold (recommended until credits have a use) or sell the 13.9k W20N0 lot -> ~384k credits for ~8.1k e (~25 min RCL7 delay) as a post-10-28 emergency fund.
+- **Side check, storage dips below the 15k reserve (17:38/19:08/22:22): benign.** Since 18:00 every 15-min bucket shows 23.0-23.6 e/t upgrade (2x12W cap), with storage min 12.0-12.9k. Real upgrade stalls today: only 10:00-11:15 (1 upgrader), 13:00-13:30 (ctl container empty), 15:30 and 17:30-17:45 (joint-defence send). The reserve gate defers energy, it does not lose it: storage stays near 15k, so upgrade = income, and banked energy returns via the 3rd-upgrader EMA rule. No smoothing change. Now: storage 14.1k rising ~10 e/t, upgraders TTL 389/431, so they should be replaced above 15k (~23:10 UTC+8).
+- ETAs unchanged: home RCL6 485k/3.645M at ~23 e/t -> **RCL7 ~10-26 midday**. W47N8 RCL4 181k/405k at ~20-21 e/t -> **RCL5 ~10-20 11:00**.
+
 ## 2026-10-19 21:5x two-room evaluation (45-min window 21:12-21:57 vs 20:27-21:12)
 
 - Home W46N8: controller progress 21.9 e/t (prev 23.2; model 1h 22.2 vs ideal 21.8). Storage 16.1k -> 17.1k (+1.5 e/t), above the 15k floor. RCL6 468.7k/3.645M. Walls 41 min 142101 (no loss), ramparts 11 min 170.3k, 0 hostiles, no safe mode. Spawn utilisation 58% (2 rminer replacements in flight).
