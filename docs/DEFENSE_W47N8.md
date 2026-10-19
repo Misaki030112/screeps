@@ -54,3 +54,13 @@ and heads to Spawn2. From RCL5 (2nd tower 34,31) towers alone are expected to ho
 - **Seal repair under fire**: w8builders with energy repair the lowest seal wall an armed hostile can reach, standing within 3 of it on our
   side as far from enemy range as possible (`repairPick` / `repairStand`).
 - Sim: 17:34 pair (8RA+6RA) at the seal: tower + home 11RA11M win in ~15 t; pair + 2x7H: needs home + 1 local (planner picks it).
+
+## 2026-10-19 17:5x strategy review: tower 2 is the decisive step, so it is built first at RCL5
+- Sim F2/F3 above: with 2 towers the full unboosted squad loses to towers alone (Spawn2 47 t, north seal 60 t); with 1 tower it needs defenders.
+- Old layoutRun PRIO was spawn > extension > tower: at RCL5 the 10 new extensions (30k build, 6-site cap) went up first and tower 34,31
+  waited ~2-3 h behind them at W47N8's ~10-15 e/t build. Now spawn > tower > extension, and nothing new is queued while a tower site
+  stands (c7357bc, `tests/w47n8_tower_first.js` fails on the old order). Builders already pick the closest site; 34,31 is beside storage.
+- ETA (RCL4 96.2k/405k at tick 83742113, ~4.1 s/tick): RCL5 at live ~23 e/t ~10-20 09:00, at model ideal 29.6 ~10-20 05:45 (UTC+8);
+  tower 2 (5k) built ~0.5-1 h later. Until then the joint-defence roster (W47N8 + home 11RA11M) carries the 4-creep case.
+- Boost watch: north_watch sees UH (ATTACK x2) in W48N9 labs (97) and W47N9 (20). UH only helps the melee pair (10A/8A): 18A boosted
+  = 1080 dmg/t on a seal wall, 50k wall in ~46 t without repair. Ranged/heal parts are unaffected, so the tower verdicts stand.
