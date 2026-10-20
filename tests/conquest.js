@@ -78,4 +78,7 @@ Memory.ops.cq.cmd = 'retreat';
 assert.strictEqual(C.wantSpawn(room), null, 'retreat stops spawning');
 
 assert.strictEqual(C.STORAGE_FLOOR, 3100);
+// claim-era sites (spawn 15,18 / tower 14,28 / their ramparts) only on a fresh room; at RCL5 the W47N8 layout owns sites
+assert.strictEqual(C.claimSites({ level: 2 }), true, 'fresh claim places sites');
+assert.strictEqual(C.claimSites({ level: 5 }), false, 'RCL5: pioneers place no ramparts/sites');
 console.log('conquest tests ok');

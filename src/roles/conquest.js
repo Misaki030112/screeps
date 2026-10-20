@@ -20,6 +20,10 @@ const MINER_BODY = () => [].concat(Array(6).fill(WORK), Array(3).fill(MOVE)); //
 const SITE = [15, 18];
 const MINER_SPOTS = [[26, 11], [11, 43]], MINER_SRC = [[27, 11], [11, 44]];
 const STORAGE_FLOOR = 3100; // keep the 1300 defender reserve (same gate as the probe)
+// claim-era site placement (spawn 15,18 / tower 14,28 / ramparts on spawn+tower+ctl) only while the room is fresh (RCL<4). 10-20 19:5x:
+// pioneers sent during the spawn move re-placed a rampart at 14,28 (built at 1 hit) at RCL5 - W47N8's own layout owns sites now and
+// Misaki wants no new W47N8 ramparts.
+const claimSites = ctl => !!ctl && ctl.level < 4;
 const ROLES = ['cqsquad', 'cqbreaker', 'cqworker', 'cqhauler', 'cqatk', 'cqrh', 'cqminer'];
 
 const M = () => (Memory.ops = Memory.ops || {}, Memory.ops.cq = Memory.ops.cq || {});
@@ -264,7 +268,7 @@ function runWorker(c) {
 
   // build spawn then tower then ramparts around them + controller
   const sites = c.room.find(FIND_MY_CONSTRUCTION_SITES);
-  if (!sites.length) {
+  if (!sites.length && claimSites(ctl)) {
     // place spawn if missing
     if (!c.room.find(FIND_MY_SPAWNS).length && !sites.some(s => s.structureType === STRUCTURE_SPAWN)) {
       c.room.createConstructionSite(SPAWN_POS[0], SPAWN_POS[1], STRUCTURE_SPAWN);
@@ -512,7 +516,7 @@ function wantSpawn(room) {
 }
 function noteSpawned(name, role) { log({ ev: 'spawned', name, role }); }
 
-module.exports = {
+module.exports = { claimSites,
   run, danger, pickTarget, prio, dps, kiteStep, matrixFor, wantSpawn, guardWant, noteSpawned,
   SQUAD_BODY, BREAKER_BODY, WORKER_BODY, HAULER_BODY, ATK_BODY, RH_BODY, PATROL, FORBID, ROOM, HOME, MIN_Y, STORAGE_FLOOR, ROLES,
 };
