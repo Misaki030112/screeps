@@ -458,7 +458,9 @@ const R = {
     if (!sp8 && !seal[0] && mvb && mvb.force && mvb.phase === 'prep') { const [nx, ny] = require('./layout').ORDER.spawn[0];
       if (c.store[E] < c.store.getCapacity() / 2) { c.memory.w = false; getEnergy(c); return; }
       if (!c.pos.inRangeTo(nx, ny, 2)) go(c, nx, ny, 2); return; }
-    const site = sp8 || seal[0] || c.pos.findClosestByRange(all);
+    // 20:1x ext-phase relocation: new hub extension sites right after the spawn/seal sites
+    const ex8 = mvb && mvb.phase === 'ext' && c.pos.findClosestByRange(all.filter(s => s.structureType === STRUCTURE_EXTENSION));
+    const site = sp8 || seal[0] || ex8 || c.pos.findClosestByRange(all);
     if (site) { if (!c.pos.inRangeTo(site, 3)) go(c, site.pos.x, site.pos.y, 3); else c.build(site); return; }
     // 19:31: urgent road/container repair (<10%; container 11,43 at 18% = 2k ticks of decay left pulled the builder off the walls) -> seal walls to WALL_TARGET[rcl], lowest first -> maintenance (<60%).
     // With maintenance first the lone 2W builder spent 180 ticks on container 26,11 (87k/250k) + 22 roads and no wall left 1 hit.

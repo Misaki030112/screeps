@@ -279,7 +279,27 @@ function moveRun(room) {
     if (!sp.length && !room.lookForAt(LOOK_CONSTRUCTION_SITES, nx, ny).some(s => s.structureType === STRUCTURE_SPAWN)) m.site = room.createConstructionSite(nx, ny, STRUCTURE_SPAWN, 'Spawn2');
     return;
   }
-  if (m.phase === 'ext') { if (!L.TEMP_EXT.some(([x, y]) => room.lookForAt(LOOK_STRUCTURES, x, y).some(s => s.structureType === STRUCTURE_EXTENSION))) { m.phase = 'done'; m.t2 = Game.time; } else swapTemp(room, 3500); }
+  if (m.phase === 'ext') { if (!L.TEMP_EXT.some(([x, y]) => room.lookForAt(LOOK_STRUCTURES, x, y).some(s => s.structureType === STRUCTURE_EXTENSION))) { m.phase = 'done'; m.t2 = Game.time; } else extBatch(room, m); }
+}
+// 10-20 20:1x (Misaki: "move the whole base, not just the spawn"): ext phase no longer waits for storage > 3500 and one-at-a-time swaps.
+// The remaining west extensions (TEMP_EXT, farthest from storage first) are destroyed in one batch of <= EXT_BATCH and their
+// replacements are placed right away in the next unbuilt ORDER.extension slots near storage (sites are built from live income).
+// Guards: no hostile in room, spawn not mid-spawn, capacity after the batch >= EXT_CAP_MIN (filler/guard/miner bodies fit), and no
+// extension site still pending (next batch waits for the previous one). 50 e of stored energy per destroyed extension is lost.
+const EXT_BATCH = 5, EXT_CAP_MIN = 1300;
+function extBatch(room, m) {
+  const sp = room.find(FIND_MY_SPAWNS)[0];
+  if (!sp || sp.spawning || room.find(FIND_HOSTILE_CREEPS).length) return 0;
+  if (room.find(FIND_MY_CONSTRUCTION_SITES, { filter: s => s.structureType === STRUCTURE_EXTENSION }).length) return 0;
+  const [sx, sy] = L.ORDER.storage[0], d = p => Math.max(Math.abs(p.x - sx), Math.abs(p.y - sy));
+  const temp = L.TEMP_EXT.map(([x, y]) => room.lookForAt(LOOK_STRUCTURES, x, y).find(s => s.structureType === STRUCTURE_EXTENSION)).filter(Boolean).sort((a, b) => d(b.pos) - d(a.pos));
+  const tr = room.getTerrain(), free = L.ORDER.extension.filter(([x, y]) => !(tr.get(x, y) & 1) && !room.lookForAt(LOOK_STRUCTURES, x, y).length && !room.lookForAt(LOOK_CONSTRUCTION_SITES, x, y).length);
+  let n = Math.min(EXT_BATCH, temp.length, free.length, Math.floor((room.energyCapacityAvailable - EXT_CAP_MIN) / 50));
+  if (n <= 0) return 0;
+  let done = 0;
+  for (let i = 0; i < n; i++) if (temp[i].destroy() === OK) { room.createConstructionSite(free[i][0], free[i][1], STRUCTURE_EXTENSION); done++; }
+  m.batch = { n: done, t: Game.time, to: free.slice(0, done) };
+  return done;
 }
 // 10-20 17:0x (Misaki: storage 20k+ idle): banking only holds MOVE_E + 2k; above that upgraders/builders/repairs run as normal
 const BANK_HOLD = MOVE_E + 2000, banking = room => moving() && bankE(room) < BANK_HOLD;
@@ -448,4 +468,4 @@ function selfSufficient() {
   const r = Game.rooms[C.ROOM]; if (!r || !r.find(FIND_MY_SPAWNS).length) return false;
   return mine().some(c => c.memory.role === 'w8miner'); // Spawn2 + its own miner -> home stops cq pioneers/haulers (guard stays)
 }
-module.exports = { banking, BANK_HOLD, moveRun, moveReady, rampNeeded, homeWant, linkAt, linkRun, rampHold, swapTemp, energyOrder, ROOM: C.ROOM, spawnRun, layoutRun, towerRun, selfSufficient, bodyFor, rmLead8 };
+module.exports = { banking, BANK_HOLD, moveRun, moveReady, rampNeeded, homeWant, linkAt, linkRun, rampHold, swapTemp, extBatch, energyOrder, ROOM: C.ROOM, spawnRun, layoutRun, towerRun, selfSufficient, bodyFor, rmLead8 };

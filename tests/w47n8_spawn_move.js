@@ -39,5 +39,16 @@ const n = sites.length; W.moveRun(room); assert.strictEqual(sites.length, n, 'on
 mk('spawn', 34, 30); W.moveRun(room); assert.strictEqual(Memory.ops.w8move.phase, 'ext');
 const keep2 = S.filter(s => s.structureType === 'rampart' && W.rampNeeded(room, s)).map(s => s.pos.x + ',' + s.pos.y);
 assert.ok(!keep2.includes('15,18'), 'old spawn rampart decays after move');
+// ext phase: west temp exts relocate in one batch now, no storage gate (storage 256 live at 20:0x)
+room.getTerrain = () => ({ get: () => 0 }); room.storage.store.energy = 200;
+for (const [x, y] of L.TEMP_EXT) mk('extension', x, y);
+hostiles.push({}); W.moveRun(room); assert.strictEqual(S.filter(s => s.structureType === 'extension').length, 5, 'hostile: no destroy'); hostiles.pop();
+sites.push({ structureType: 'extension', pos: { x: 1, y: 1 } }); W.moveRun(room); assert.strictEqual(S.filter(s => s.structureType === 'extension').length, 5, 'pending ext site: wait'); sites.pop();
+room.energyCapacityAvailable = 1400; W.moveRun(room); assert.strictEqual(S.filter(s => s.structureType === 'extension').length, 3, 'cap floor 1300 -> only 2');
+room.energyCapacityAvailable = 1800; sites.length = 0; W.moveRun(room);
+assert.strictEqual(S.filter(s => s.structureType === 'extension').length, 0, 'rest destroyed');
+const es = sites.filter(s => s.structureType === 'extension');
+assert.strictEqual(es.length, 3); assert.ok(es.every(s => L.ORDER.extension.some(([x, y]) => x === s.pos.x && y === s.pos.y)), 'sites in hub ORDER slots');
+assert.ok(!es.some(s => [[33, 30], [33, 31], [35, 31], [39, 30]].some(([x, y]) => x === s.pos.x && y === s.pos.y)), 'spawn exits / slots kept free');
 W.moveRun(room); assert.strictEqual(Memory.ops.w8move.phase, 'done', 'no temp exts -> done');
 console.log('w47n8 spawn move ok');
