@@ -140,3 +140,15 @@ not placed). RCL6 still places the 10 extensions; RCL5 still places links 13,25 
 (a) hub link 33,34 -> ctl link 13,25 fed from storage (needs a hub manager; worth it only if haulers can't keep the ctl container fed);
 (b) terminal at W47N8 so home can `terminal.send` energy (cost ~3% at range 1) or minerals: only useful with a market/boost plan;
 (c) extractor + labs: needs mineral miner + lab code, and only matters for boosts after novice end.
+
+## Spawn relocation executed (Misaki order 10-20 13:39, supersedes decision (a))
+- Spawn2 15,18 -> hub 32,32 (under the existing 32,32 rampart). RCL5 = 1 spawn, so `moveRun` (index.js) destroys the old spawn and
+  places the 15k site next layout tick. Phases in `Memory.ops.w8move`: prep -> build -> ext -> done (`hold` = aborted).
+- prep fires only when: no hostiles, TH.on()/invasion() quiet, storage >= 16k, spawn idle + energy full, 2 miners + 2 haulers TTL>=500,
+  a builder TTL>=700. During prep/build upgraders are capped at 1 (bank). During build no other sites are placed.
+- ext: the 5 temp extensions (13,16 14,15 16,15 17,16 12,16) are destroyed one at a time (storage > 3.5k, energy full) into
+  v3b slots 27,36 30,26 32,26 37,38 39,38 (capacity dips 50 per swap, never more).
+- Ramparts: held only when necessary: gate 29,3, ramparts over spawn/storage/tower/terminal and hub spawn slot 32,32
+  (rampNeeded). Empty-slot ramparts 33,32 33,30 34,31 36,31 36,33 32,33 and old 15,18 (after the move) decay.
+- Roads (tools/w47n8_roads.py, spawn2 trunk replaced by tower 24,8 trunk; spawn-cluster traffic not kept): 128 -> 101 planned tiles,
+  35 dropped (decay, never dismantled), 8 added.

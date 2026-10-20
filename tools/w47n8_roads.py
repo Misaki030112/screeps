@@ -45,14 +45,15 @@ def trunk(goals, rng=1):
     while p in prev: path.append(p); p = prev[p]
     for q in path: target.add(q)
     return len(path)
-GOALS = [('ctl', [(13, 26)], 1), ('srcN', [(26, 11)], 1), ('spawn2', [(15, 18)], 1), ('exitS', [(18, 49), (19, 49)], 0), ('srcS', [(11, 43)], 1)]
+# 10-20 13:39 (Misaki): spawn moves to 32,32 -> no spawn2 trunk; tower 24,8 refill trunk instead (param spawn2=1 restores)
+GOALS = [('ctl', [(13, 26)], 1), ('srcN', [(26, 11)], 1)] + ([('spawn2', [(15, 18)], 1)] if P.get('spawn2') else [('tower2', [(24, 8)], 1)]) + [ ('exitS', [(18, 49), (19, 49)], 0), ('srcS', [(11, 43)], 1)]
 if MINERAL: GOALS.append(('mineral', [(37, 45)], 1))
 if P.get('order') == 'far': GOALS.sort(key=lambda g: -abs(g[1][0][0]-CX)-abs(g[1][0][1]-CY))
 added = {k: trunk(g, r) for k, g, r in GOALS}
 c = db.connect()
 tr = collections.Counter({(x, y): n for x, y, n in c.execute("select x,y,count(*) from creep_ticks where room='W47N8' and ts>now()-interval '24 hours' group by x,y")})
 keep = live & target
-hot = {p for p in live - target if tr[p] >= TRAFFIC_KEEP}
+hot = {p for p in live - target if tr[p] >= TRAFFIC_KEEP and (P.get('spawn2') or not (abs(p[0]-15) <= 6 and abs(p[1]-18) <= 6))}  # spawn-cluster traffic ends with the move
 target |= hot; keep |= hot
 dep = live - target; miss = target - live
 swamp_t = sum(1 for p in target if SW(*p))

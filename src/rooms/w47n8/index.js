@@ -127,7 +127,7 @@ function spawnRun(spawn) {
   const stock8 = () => looseE(room) + _.sum([C.CTL_CONT, C.HUB_CONT], ([x, y]) => _.sum(room.lookForAt(LOOK_STRUCTURES, x, y).filter(s => s.structureType === STRUCTURE_CONTAINER), s => s.store[RESOURCE_ENERGY]));
   if (!want && wallsLow && nUp() < (room.controller.ticksToDowngrade < 10000 || stock8() > 3000 ? 2 : 1)) want = 'w8upgrader';
   else if (!want && wallsLow && n('w8builder') < 3) want = 'w8builder';
-  else if (!want && !wallsLow && nUp() < (sites ? 2 : 3)) want = 'w8upgrader';
+  else if (!want && !wallsLow && nUp() < (moving() ? 1 : sites ? 2 : 3)) want = 'w8upgrader'; // 13:39 spawn move: bank for the 15k spawn
   // 14:55 model-driven (tools/model_w8.py -> Memory.ops.w8model): remote fleet sized by CARRY need = sum 10 x (rt x 1.1 + 4) / 50 over
   // both W47N7 sources (~52 at 14:55) instead of loose-pile thresholds (live 88 CARRY: rhaulers 82% moving/12% blocked, +1.8 e/t upkeep).
   // Floor (ahead of builders): 60% of need; full need + a backlog term (+16 CARRY per 2000 loose above 3000) in step 7.
@@ -164,7 +164,7 @@ function spawnRun(spawn) {
     // above 2k counts as stock (rhaulers now overflow there); WORK cap = model upw + 5 per 5k stored (max 40, 4 stands x 10W)
     const stor = room.storage ? room.storage.store[RESOURCE_ENERGY] : 0, bigBuild = siteRem(room) >= 3000;
     const wcap = Math.max(24, Math.min(40, (wm.upw || 0) + 5 * Math.floor(stor / 5000)));
-    if (!want && !wallsLow && nUp() < Math.min(6, (bigBuild ? 2 : 3) + Math.floor(Math.max(0, loose + hubIdle + Math.max(0, stor - 2000) - 600) / 600))
+    if (!want && !wallsLow && !moving() && nUp() < Math.min(6, (bigBuild ? 2 : 3) + Math.floor(Math.max(0, loose + hubIdle + Math.max(0, stor - 2000) - 600) / 600))
       && _.sum(cs.filter(c => c.memory.role === 'w8upgrader' && (c.spawning || !(c.ticksToLive <= 3 * (c.body || []).length + 60))), c => _.filter(c.body, p => p.type === WORK).length) + bodyFor('w8upgrader', cap).filter(p => p === WORK).length <= wcap + 5) want = 'w8upgrader'; // 15:55: a whole new body must fit (upw 31 made 4x10W = 40 WORK on ~30 e/t net) // 14:55: WORK cap = model net income (upw ~30) instead of fixed 24 // 21:20: 16->24 WORK; income ~20 local + ~13 W47N7 remote, ctl cont 1984/2000 full with 4x4W upgraders (WORK-bound)
   }
   // 6) wall builder from surplus (19:18): 1 builder while a seal wall is below target and spawn is full
@@ -208,9 +208,9 @@ const L = require('./layout');
 const TH = require('./threat'); // v3b (approved 20:11): ORDER per type nearest-core first; STRIPS with filler stand
 const PRIO = ['spawn', 'tower', 'extension', 'container', 'storage', 'link', 'terminal', 'extractor', 'lab', 'factory', 'powerSpawn', 'nuker', 'observer', 'road']; // no 'rampart' (17:15, see layoutRun)
 const isTemp = s => L.TEMP_EXT.some(([x, y]) => s.pos.x === x && s.pos.y === y);
-function swapTemp(room) {
+function swapTemp(room, minE = 50000) {
   const hub = room.lookForAt(LOOK_STRUCTURES, L.ORDER.spawn[0][0], L.ORDER.spawn[0][1]).some(s => s.structureType === STRUCTURE_SPAWN && s.my);
-  if (!hub || !room.storage || room.storage.store[RESOURCE_ENERGY] <= 50000 || room.energyAvailable < room.energyCapacityAvailable) return null;
+  if (!hub || !room.storage || room.storage.store[RESOURCE_ENERGY] <= minE || room.energyAvailable < room.energyCapacityAvailable) return null;
   if (room.find(FIND_MY_CONSTRUCTION_SITES, { filter: s => s.structureType === STRUCTURE_EXTENSION }).length || room.find(FIND_MY_CONSTRUCTION_SITES).length >= 5) return null;
   const temp = L.TEMP_EXT.map(([x, y]) => room.lookForAt(LOOK_STRUCTURES, x, y).find(s => s.structureType === STRUCTURE_EXTENSION)).find(Boolean);
   if (!temp) return null;
@@ -220,9 +220,41 @@ function swapTemp(room) {
   (Memory.ops = Memory.ops || {}).w8swap = { from: [temp.pos.x, temp.pos.y], to: slot, t: Game.time };
   return slot;
 }
+// 10-20 13:39 (Misaki order): relocate Spawn2 15,18 -> hub 32,32 (RCL5 allows 1 spawn: destroy, then build 15k site), then swap the
+// 5 temp extensions by Spawn2 into v3b ORDER slots one at a time. Memory.ops.w8move.phase: prep -> build -> ext -> done.
+// prep only fires when it is safe: no hostiles/threat mode, storage >= MOVE_E (whole spawn bill banked), spawn idle and full, both
+// miners + 2 haulers TTL >= 500, a builder TTL >= 700 (nobody needs a spawn during the ~300-500 t build). While in prep the room banks
+// (upgraders capped at 1). Abort = set phase 'hold' (prep never resumes on its own once held).
+const MOVE_E = 16000;
+function moveReady(room) {
+  const sp = room.find(FIND_MY_SPAWNS)[0], cs = mine(), ttl = (r, t) => cs.filter(c => c.memory.role === r && c.ticksToLive >= t).length;
+  const why = [];
+  if (!sp || sp.pos.x !== C.SPAWN[0] || sp.pos.y !== C.SPAWN[1]) why.push('spawn');
+  if (sp && sp.spawning) why.push('spawning');
+  if (room.find(FIND_HOSTILE_CREEPS).length || TH.on() || TH.invasion()) why.push('threat');
+  if (!room.storage || room.storage.store[RESOURCE_ENERGY] < MOVE_E) why.push('storage');
+  if (room.energyAvailable < room.energyCapacityAvailable) why.push('energy');
+  if (ttl('w8miner', 500) < 2 || ttl('w8hauler', 500) < 2 || ttl('w8builder', 700) < 1) why.push('ttl');
+  return why;
+}
+function moveRun(room) {
+  const o = (Memory.ops = Memory.ops || {}), m = o.w8move; if (!m || room.controller.level < 5) return;
+  const [nx, ny] = L.ORDER.spawn[0], sp = room.find(FIND_MY_SPAWNS);
+  if (m.phase === 'prep') { m.why = moveReady(room); if (m.why.length) return;
+    const old = sp[0]; if (old.destroy() === OK) { m.phase = 'build'; m.t0 = Game.time; } return; }
+  if (m.phase === 'build') {
+    if (sp.some(s => s.pos.x === nx && s.pos.y === ny)) { m.phase = 'ext'; m.t1 = Game.time; return; }
+    if (!sp.length && !room.lookForAt(LOOK_CONSTRUCTION_SITES, nx, ny).some(s => s.structureType === STRUCTURE_SPAWN)) m.site = room.createConstructionSite(nx, ny, STRUCTURE_SPAWN, 'Spawn2');
+    return;
+  }
+  if (m.phase === 'ext') { if (!L.TEMP_EXT.some(([x, y]) => room.lookForAt(LOOK_STRUCTURES, x, y).some(s => s.structureType === STRUCTURE_EXTENSION))) { m.phase = 'done'; m.t2 = Game.time; } else swapTemp(room, 3500); }
+}
+const moving = () => { const m = Memory.ops && Memory.ops.w8move; return !!m && (m.phase === 'prep' || m.phase === 'build'); };
 function layoutRun(room) {
   if (Game.time % 20) return;
   if (room.controller.level >= 2) placeSeal(room);
+  moveRun(room);
+  if (moving() && Memory.ops.w8move.phase === 'build') return;
   if (!room.find(FIND_MY_SPAWNS).length) return;
   const rcl = room.controller.level, ok = Memory.ops && Memory.ops.w8layout === 'approved';
   if (rcl >= 3) { const [hx, hy] = C.HUB_CONT; if (!room.lookForAt(LOOK_STRUCTURES, hx, hy).some(s => s.structureType === STRUCTURE_CONTAINER) && !room.lookForAt(LOOK_CONSTRUCTION_SITES, hx, hy).length) room.createConstructionSite(hx, hy, STRUCTURE_CONTAINER); }
@@ -274,8 +306,18 @@ const tdmg = r => (r <= 5 ? 600 : r >= 20 ? 150 : 600 - (r - 5) * 30);
 // up never: a fresh rampart's hold is what it had). Tower tops up one rampart once it is HOLD_SLACK below its hold (300 hits/100t decay,
 // ~0.03 e/t per rampart). Gone ramparts drop out of the map.
 const HOLD_SLACK = 1000;
+// 10-20 13:39 (Misaki): only NECESSARY ramparts are held: the gate (29,3), ramparts over a key structure (spawn, storage, tower,
+// terminal) and the hub spawn slot 32,32 (the relocated spawn lands under it). Empty-slot ramparts (33,32 33,30 34,31 36,31 36,33
+// 32,33) and the old Spawn2 rampart once Spawn2 is gone are left to decay.
+const KEY = ['spawn', 'storage', 'tower', 'terminal'];
+function rampNeeded(room, r) {
+  if (!r.pos) return true;
+  const { x, y } = r.pos;
+  if (isGate(x, y) || (x === L.ORDER.spawn[0][0] && y === L.ORDER.spawn[0][1])) return true;
+  return !room.lookForAt || room.lookForAt(LOOK_STRUCTURES, x, y).some(s => KEY.includes(s.structureType));
+}
 function rampHold(room) {
-  const rs = room.find(FIND_MY_STRUCTURES, { filter: s => s.structureType === STRUCTURE_RAMPART });
+  const rs = room.find(FIND_MY_STRUCTURES, { filter: s => s.structureType === STRUCTURE_RAMPART }).filter(r => rampNeeded(room, r));
   const o = (Memory.ops = Memory.ops || {}), h = (o.w8hold = o.w8hold || {}), live = {};
   for (const r of rs) live[r.id] = h[r.id] === undefined ? r.hits : h[r.id];
   o.w8hold = live;
@@ -366,4 +408,4 @@ function selfSufficient() {
   const r = Game.rooms[C.ROOM]; if (!r || !r.find(FIND_MY_SPAWNS).length) return false;
   return mine().some(c => c.memory.role === 'w8miner'); // Spawn2 + its own miner -> home stops cq pioneers/haulers (guard stays)
 }
-module.exports = { homeWant, linkAt, linkRun, rampHold, swapTemp, energyOrder, ROOM: C.ROOM, spawnRun, layoutRun, towerRun, selfSufficient, bodyFor, rmLead8 };
+module.exports = { moveRun, moveReady, rampNeeded, homeWant, linkAt, linkRun, rampHold, swapTemp, energyOrder, ROOM: C.ROOM, spawnRun, layoutRun, towerRun, selfSufficient, bodyFor, rmLead8 };
