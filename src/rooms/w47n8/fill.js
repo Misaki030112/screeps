@@ -55,12 +55,15 @@ function duty(room) {
   }
   DUTY = D; return D;
 }
+// hub duty (spawn/extensions the filler owns) still needs energy. 17:0x: towers wait only on these, not on Spawn2's far cluster
+// (haulers' job), which kept energyAvailable < cap so towers were never topped up by the filler.
+const hubNeedy = (room, D) => objs([].concat(...D.strip, D.point)).some(s => free(s) > 0);
 const free = s => (s && s.store ? s.store.getFreeCapacity(E) : 0);
 const needT = s => s.structureType === STRUCTURE_TOWER ? free(s) >= 300 : free(s) > 0;
 const objs = ids => ids.map(id => Game.getObjectById(id)).filter(Boolean);
 function source(room) {
   const st = room.storage, hc = room.lookForAt(LOOK_STRUCTURES, C.HUB_CONT[0], C.HUB_CONT[1]).find(s => s.structureType === STRUCTURE_CONTAINER);
-  return [st, hc].filter(s => s && s.store[E] > 0).sort((a, b) => b.store[E] - a.store[E]);
+  return [st, hc].filter(s => s && s.store[E] > 0); // 10-20 17:0x (Misaki): storage first, hub container only as fallback
 }
 const fillers = room => room.find(FIND_MY_CREEPS, { filter: c => c.memory.role === 'w8filler' });
 // filler can do its job: alive (not spawning) and holding energy or with energy to draw (else haulers keep filling the hub)
@@ -103,7 +106,7 @@ function run(c) {
     let best = null, bs = 1e9;
     for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) {
       const k = K(c.pos.x + dx, c.pos.y + dy), id = D.byKey[k], s = id && Game.getObjectById(id);
-      if (!s || !(s.structureType === STRUCTURE_TOWER ? free(s) >= 300 && room.energyAvailable === room.energyCapacityAvailable : free(s) > 0)) continue;
+      if (!s || !(s.structureType === STRUCTURE_TOWER ? free(s) >= 300 && !hubNeedy(room, D) : free(s) > 0)) continue;
       let sc = s.structureType === STRUCTURE_SPAWN ? -1e6 : s.structureType === STRUCTURE_TOWER ? 1e6 : 0;
       if (m.fs !== undefined && m.fs >= 0 && ROUTES[m.fs].ext[k]) sc += leave(m.fs, m.fd | 0, k) * 10;
       if (sc < bs) { bs = sc; best = s; }
@@ -152,7 +155,7 @@ function run(c) {
   for (const s of objs(D.point)) if (left(s) > 0) jobs.push({ p: s, cost: c.pos.getRangeTo(s) - 1 });
   // tower last: only with the spawn energy full. 19:5x: core towers only (<= TOWER_R of POST): RCL5 tower 24,8 is ~23 road tiles away
   // (~50 t round trip with the hub unattended); it is fed from source A's container 26,11 (roles.js northFeed)
-  if (!jobs.length && room.energyAvailable === room.energyCapacityAvailable) for (const s of objs(D.tower)) if (free(s) >= 300 && cheb([s.pos.x, s.pos.y], POST) <= TOWER_R) jobs.push({ p: s, cost: c.pos.getRangeTo(s) });
+  if (!jobs.length) for (const s of objs(D.tower)) if (free(s) >= 300 && cheb([s.pos.x, s.pos.y], POST) <= TOWER_R) jobs.push({ p: s, cost: c.pos.getRangeTo(s) });
   const j = jobs.reduce((a, x) => (!a || x.cost < a.cost ? x : a), null); // (no lodash: 3.10 in game, 4 in tests)
   if (j) {
     // short on energy for the job and beside the source: the withdraw above already ran; just go
@@ -163,7 +166,9 @@ function run(c) {
   }
   // hub full: Spawn2 cluster only while the spawn waits on energy and no hauler is heading there
   const fm = Memory.ops && Memory.ops.w8fm, waiting = fm && fm.wc && Game.time - fm.wc[2] >= 3;
-  if (waiting && !others.some(o => o.memory.fs === 'c')) {
+  // 10-20 17:0x (Misaki): the filler stays on the hub (it walked to 8,20 holding 850 while hub extensions were empty); Spawn2's
+  // cluster is the haulers' job and energyOrder() draws it last
+  if (C.FILL_CLUSTER && waiting && !others.some(o => o.memory.fs === 'c')) {
     const cl = objs(D.cluster).filter(s => free(s) > 0), claimed = new Set(room.find(FIND_MY_CREEPS, { filter: o => o.memory.ft }).map(o => o.memory.ft));
     if (cl.some(s => !claimed.has(s.id))) { m.fs = 'c'; return; }
   }

@@ -461,7 +461,7 @@ const R = {
     // CPU 13:10: sticky repair target, rescanned every 15 ticks or when done (was 2-3 FIND_STRUCTURES scans per builder per tick)
     let rep = c.memory.rj && Game.getObjectById(c.memory.rj);
     if (!rep || Game.time >= (c.memory.rjt || 0) || rep.hits >= (rep.structureType === STRUCTURE_WALL || rep.structureType === STRUCTURE_RAMPART ? TH.wallTarget(TH.planTarget(c.room.controller.level, C.WALL_TARGET[c.room.controller.level] || 0)) : rep.hitsMax * 0.95)) {
-      const mvp = Memory.ops && Memory.ops.w8move && Memory.ops.w8move.phase === 'prep'; // 15:5x: road/container upkeep paused while banking (only <10% urgent)
+      const mvp = require('./index').banking(c.room); // 15:5x: road/container upkeep paused while banking (only <10% urgent)
       rep = rr(0.1) || wallJob(c.room, c) || (mvp ? null : rr(0.6)); c.memory.rj = rep ? rep.id : undefined; c.memory.rjt = Game.time + 15;
     }
     if (rep) {
@@ -473,7 +473,7 @@ const R = {
     // instead of falling back to w8upgrader, which refilled from storage (3 x 6W = 18 e/t, about the whole W47N8 surplus once the north
     // line reached the 100k stage-1 cap), so the bank would never fill while the builders lived.
     const mv = Memory.ops && Memory.ops.w8move;
-    if (mv && mv.phase === 'prep') {
+    if (mv && mv.phase === 'prep' && require('./index').banking(c.room)) {
       const j = pickTile(c, C.UPG_EXTRA, 'xs');
       if (j >= 0) { c.memory.xs = j; if (!onTile(c, [C.UPG_EXTRA[j]])) go(c, C.UPG_EXTRA[j][0], C.UPG_EXTRA[j][1], 0); }
       return;

@@ -76,6 +76,10 @@ function spawnRun(spawn) {
   // are inside the base (same idea as home 'queen first' before joint defence).
   const inBase = !!(th && th.inBase && Game.time - th.t < 5);
   if (!inBase && FL.want(room, cs)) want = 'w8filler';
+  // 10-20 17:0x (Misaki: guard out fast on any threat): armed group at the W47N9 south rows (north_watch w8n9a, fresh) or any armed
+  // hostile in W47N8 -> keep 1 w8guard (roster may ask more in-room). Not replaced once the threat is gone.
+  const armedIn = room.find(FIND_HOSTILE_CREEPS).some(h => require('./defense').armed(h)), n9t = (Memory.ops || {}).w8n9a || 0;
+  if (!want && (armedIn || (n9t > 0 && Game.time - n9t < 60)) && !cs.some(c => c.memory.role === 'w8guard' && (c.spawning || c.ticksToLive > 3 * 50 + 30))) want = 'w8guard';
   if (!want && dGo) { want = !dOld && lg < (ro.w8m | 0) ? 'w8guard' : 'w8defender'; }
   // 18:04: roster >= 4 combat defenders -> one dedicated healer; local only when home can't send it (ro.hl 'w8')
   if (!want && !dOld && fresh && ro.hl === 'w8' && !_.some(Game.creeps, c => c.memory.role === 'w8healer')) want = 'w8healer';
@@ -134,7 +138,7 @@ function spawnRun(spawn) {
     && !cs.some(c => c.memory.role === 'w8builder' && (c.spawning || c.ticksToLive >= 700))) want = 'w8builder';
   if (!want && wallsLow && nUp() < (room.controller.ticksToDowngrade < 10000 || stock8() > 3000 ? 2 : 1)) want = 'w8upgrader';
   else if (!want && wallsLow && n('w8builder') < 3) want = 'w8builder';
-  else if (!want && !wallsLow && nUp() < (moving() ? (room.controller.ticksToDowngrade < 20000 ? 1 : 0) : sites ? 2 : 3)) want = 'w8upgrader'; // 15:5x: 0 upgraders while moving unless downgrade < 20k // 13:39 spawn move: bank for the 15k spawn
+  else if (!want && !wallsLow && nUp() < (banking(room) ? (room.controller.ticksToDowngrade < 20000 ? 1 : 0) : sites ? 2 : 3)) want = 'w8upgrader'; // 15:5x: 0 upgraders while moving unless downgrade < 20k // 13:39 spawn move: bank for the 15k spawn
   // 14:55 model-driven (tools/model_w8.py -> Memory.ops.w8model): remote fleet sized by CARRY need = sum 10 x (rt x 1.1 + 4) / 50 over
   // both W47N7 sources (~52 at 14:55) instead of loose-pile thresholds (live 88 CARRY: rhaulers 82% moving/12% blocked, +1.8 e/t upkeep).
   // Floor (ahead of builders): 60% of need; full need + a backlog term (+16 CARRY per 2000 loose above 3000) in step 7.
@@ -171,7 +175,7 @@ function spawnRun(spawn) {
     // above 2k counts as stock (rhaulers now overflow there); WORK cap = model upw + 5 per 5k stored (max 40, 4 stands x 10W)
     const stor = room.storage ? room.storage.store[RESOURCE_ENERGY] : 0, bigBuild = siteRem(room) >= 3000;
     const wcap = Math.max(24, Math.min(40, (wm.upw || 0) + 5 * Math.floor(stor / 5000)));
-    if (!want && !wallsLow && !moving() && nUp() < Math.min(6, (bigBuild ? 2 : 3) + Math.floor(Math.max(0, loose + hubIdle + Math.max(0, stor - 2000) - 600) / 600))
+    if (!want && !wallsLow && !banking(room) && nUp() < Math.min(6, (bigBuild ? 2 : 3) + Math.floor(Math.max(0, loose + hubIdle + Math.max(0, stor - 2000) - 600) / 600))
       && _.sum(cs.filter(c => c.memory.role === 'w8upgrader' && (c.spawning || !(c.ticksToLive <= 3 * (c.body || []).length + 60))), c => _.filter(c.body, p => p.type === WORK).length) + bodyFor('w8upgrader', cap).filter(p => p === WORK).length <= wcap + 5) want = 'w8upgrader'; // 15:55: a whole new body must fit (upw 31 made 4x10W = 40 WORK on ~30 e/t net) // 14:55: WORK cap = model net income (upw ~30) instead of fixed 24 // 21:20: 16->24 WORK; income ~20 local + ~13 W47N7 remote, ctl cont 1984/2000 full with 4x4W upgraders (WORK-bound)
   }
   // 6) wall builder from surplus (19:18): 1 builder while a seal wall is below target and spawn is full
@@ -265,6 +269,8 @@ function moveRun(room) {
   }
   if (m.phase === 'ext') { if (!L.TEMP_EXT.some(([x, y]) => room.lookForAt(LOOK_STRUCTURES, x, y).some(s => s.structureType === STRUCTURE_EXTENSION))) { m.phase = 'done'; m.t2 = Game.time; } else swapTemp(room, 3500); }
 }
+// 10-20 17:0x (Misaki: storage 20k+ idle): banking only holds MOVE_E + 2k; above that upgraders/builders/repairs run as normal
+const BANK_HOLD = MOVE_E + 2000, banking = room => moving() && bankE(room) < BANK_HOLD;
 const moving = () => { const m = Memory.ops && Memory.ops.w8move; return !!m && (m.phase === 'prep' || m.phase === 'build'); };
 function layoutRun(room) {
   if (Game.time % 20) return;
@@ -427,4 +433,4 @@ function selfSufficient() {
   const r = Game.rooms[C.ROOM]; if (!r || !r.find(FIND_MY_SPAWNS).length) return false;
   return mine().some(c => c.memory.role === 'w8miner'); // Spawn2 + its own miner -> home stops cq pioneers/haulers (guard stays)
 }
-module.exports = { moveRun, moveReady, rampNeeded, homeWant, linkAt, linkRun, rampHold, swapTemp, energyOrder, ROOM: C.ROOM, spawnRun, layoutRun, towerRun, selfSufficient, bodyFor, rmLead8 };
+module.exports = { banking, BANK_HOLD, moveRun, moveReady, rampNeeded, homeWant, linkAt, linkRun, rampHold, swapTemp, energyOrder, ROOM: C.ROOM, spawnRun, layoutRun, towerRun, selfSufficient, bodyFor, rmLead8 };

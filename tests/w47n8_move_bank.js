@@ -32,11 +32,15 @@ room.storage.store.energy = 4000; const b = run(); assert.notStrictEqual(b, 'w8b
 room.storage.store.energy = 13500; cr('w8builder', 1450); const c2 = run(); assert.notStrictEqual(c2, 'w8builder', 'fresh builder alive -> no extra');
 Memory.ops.w8move.phase = 'done'; delete Game.creeps.w8builder1450; const d = run(); assert.notStrictEqual(d, 'w8builder', 'not banking -> rule off');
 // (2) builder with nothing to build/repair: parks during prep (no upgrade, no storage withdraw); upgrades again once the move is done
-Memory.ops.w8move.phase = 'prep'; const acts = [];
+Memory.ops.w8move.phase = 'prep'; const acts = []; room.storage.store.energy = 10000; // below BANK_HOLD (11k)
 const bc = cr('w8builder', 1200, { id: 'b1', memory: { role: 'w8builder', home: 'W47N8', w: true }, store: Object.assign({ energy: 300 }, { getFreeCapacity: () => 0, getCapacity: () => 300 }),
   pos: Object.assign(pos(C.UPG_EXTRA[0][0], C.UPG_EXTRA[0][1]), { findClosestByRange: () => null }), fatigue: 0, owner: { username: 'Misaki030112' },
   upgradeController: () => acts.push('upgrade'), withdraw: () => acts.push('withdraw'), repair: () => acts.push('repair'), build: () => acts.push('build'), move: () => acts.push('move'), moveTo: () => acts.push('moveTo'), say() {} });
 room.controller.pos = pos(C.UPG_EXTRA[0][0] + 1, C.UPG_EXTRA[0][1]); room.controller.sign = { username: 'Misaki030112', text: require(path.join(__dirname, '..', 'src', 'utils', 'sign.js')).SIGN };
 RL.w8builder.run(bc); assert.ok(!acts.includes('upgrade') && !acts.includes('withdraw'), 'prep: idle builder parks, acts ' + acts);
+acts.length = 0; room.storage.store.energy = 20000; RL.w8builder.run(bc); assert.ok(acts.includes('upgrade'), '17:0x prep but bank above 11k: surplus spent, acts ' + acts);
 Memory.ops.w8move.phase = 'done'; acts.length = 0; RL.w8builder.run(bc); assert.ok(acts.includes('upgrade'), 'after move: fallback upgrade again, acts ' + acts);
+// 17:0x guard: armed group at W47N9 south (w8n9a fresh) -> w8guard queued; stale -> not
+Memory.ops.w8move.phase = 'done'; Memory.ops.w8n9a = Game.time - 10; const g = run(); assert.strictEqual(g, 'w8guard', 'border threat -> guard, got ' + g);
+Memory.ops.w8n9a = Game.time - 500; assert.notStrictEqual(run(), 'w8guard', 'stale border -> no guard');
 console.log('w47n8 move bank ok');
