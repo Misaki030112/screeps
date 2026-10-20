@@ -7,7 +7,29 @@ const F = require('./fill');
 const isFill = s => s && (s.structureType === STRUCTURE_EXTENSION || s.structureType === STRUCTURE_SPAWN);
 const fillXfer = (c, s) => { const a = Math.min(c.store[E], s.store.getFreeCapacity(E)); if (c.transfer(s, E) === 0) FM.xfer(c, a); };
 const isHub = s => s.pos.x === C.HUB_CONT[0] && s.pos.y === C.HUB_CONT[1];
-function home(c) { if (c.room.name !== C.ROOM) { c.moveTo(new RoomPosition(C.SPAWN[0], C.SPAWN[1], C.ROOM), { reusePath: 20 }); return false; } return true; }
+// 10-20 09:4x (Misaki "W47N7 的搬运不走 road"): native cross-room moveTo treats creeps as walls on every repath, so 4 rhaulers on the
+// 1-wide W47N7 road routed around each other onto plain (15C1W8M loaded = half speed off road; live samples 24,15 26,25 25,21 30,32).
+// W47N7 legs now use move.to (road matrix, creeps ignored, swap/shove when blocked) via the fixed N exit 18,0 <-> W47N8 18,49.
+const MV = require('../../utils/move');
+const EX7 = [18, 0], EX8 = [18, 49];
+function onBorder(c) { return c.pos.x === 0 || c.pos.x === 49 || c.pos.y === 0 || c.pos.y === 49; }
+function rmove(c, room, x, y, r) {
+  const R7 = C.REMOTE.room;
+  if (c.room.name === room) {
+    if (onBorder(c)) { delete c.memory._m; return c.move(c.pos.y === 0 ? BOTTOM : c.pos.y === 49 ? TOP : c.pos.x === 0 ? RIGHT : LEFT); }
+    return MV.to(c, x, y, r);
+  }
+  const ex = c.room.name === R7 && room === C.ROOM ? EX7 : c.room.name === C.ROOM && room === R7 ? EX8 : null;
+  if (!ex) return c.moveTo(new RoomPosition(x, y, room), { range: r, reusePath: 20 });
+  if (c.pos.x === ex[0] && c.pos.y === ex[1]) { delete c.memory._m; return c.move(ex[1] === 0 ? TOP : BOTTOM); }
+  return MV.to(c, ex[0], ex[1], 0);
+}
+function home(c) {
+  if (c.room.name === C.ROOM) return true;
+  if (c.room.name === C.REMOTE.room) rmove(c, C.ROOM, C.SPAWN[0], C.SPAWN[1], 1);
+  else c.moveTo(new RoomPosition(C.SPAWN[0], C.SPAWN[1], C.ROOM), { reusePath: 20 });
+  return false;
+}
 function getEnergy(c) {
   const drop = c.pos.findClosestByRange(FIND_DROPPED_RESOURCES, { filter: r => r.resourceType === E && r.amount >= 50 });
   const cont = c.pos.findClosestByRange(FIND_STRUCTURES, { filter: s => s.structureType === STRUCTURE_CONTAINER && s.store[E] >= 100
@@ -176,7 +198,7 @@ function rroadWork(c) {
   const r = c.pos.lookFor(LOOK_STRUCTURES).find(s => s.structureType === STRUCTURE_ROAD && s.hits < s.hitsMax * 0.8);
   if (r) c.repair(r);
 }
-function rgo(c, x, y, r) { return c.moveTo(new RoomPosition(x, y, RM.room), { range: r, reusePath: 20 }); }
+function rgo(c, x, y, r) { return rmove(c, RM.room, x, y, r); }
 const R = {
   w8miner(c) {
     if (!home(c)) return;
@@ -448,3 +470,4 @@ Object.defineProperty(module.exports, '_northFeed', { value: northFeed, enumerab
 Object.defineProperty(module.exports, '_sink', { value: sink, enumerable: false }); // tests only
 Object.defineProperty(module.exports, '_haulPick', { value: haulPick, enumerable: false }); // tests only
 Object.defineProperty(module.exports, '_wallJob', { value: wallJob, enumerable: false }); // tests only
+Object.defineProperty(module.exports, '_rmove', { value: rmove, enumerable: false }); // tests only
