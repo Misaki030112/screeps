@@ -3,6 +3,13 @@
 Novice zone ends **2026-10-28 03:33 UTC+8**. Defence timeline: `docs/DEFENSE_NOVICE.md` (2026-10-16); detail `docs/DEFENSE.md` / geometry `docs/DEFENSE_PLAN.md`.
 **Safe mode: NEVER auto-activate** — alert Misaki.
 
+## 2026-10-20 11:4x strategy review: road upkeep, who repairs what (`docs/ROADS.md` "Upkeep review")
+
+- **Found:** the home leg of the remote haul route (38,30 -> 48,15, shared by all 6 rhaulers) and the other road-plan tiles were in no layout plan, so towers skipped them, and the only other repairer (builders < 80%) is 0 while storage sits at the 15k floor. Live t83757409 they were at 34-52% (44,19 1700/5000); wear ~1.8 hits/t means a full road lasts ~3.3 h. The home spurs that decayed out this morning were the same gap.
+- **Shipped e3d66d7 (t83757442):** home towers repair road-plan tiles < 60% (800-energy combat floor kept). Live t83757480 44,19/45,18/46,17 at 5000 again, errors 0, bucket 10000. `tests/tower_route_roads.js`; all tests pass.
+- **Patrols:** home road-plan tiles should now stay >= 55%; W45N8 route tiles (out of tower range) rely on the route-road builder: the 13 sites should finish, then no tile < 20%. If the builder keeps failing, the next step is the W47N8 pattern (1 WORK on the W45N8 rhauler, repair in passing), documented, not shipped.
+- Plan check: home RCL6 ~712k/3.645M, RCL7 ETA ~10-27 (unchanged, before novice end 10-28 03:33); W47N8 RCL5 ~20k/1.215M during the extension/link build; CPU ~13, bucket 10000. No decision needed from Misaki.
+
 ## 2026-10-20 08:4x strategy review: RCL7 -> novice-end window (`docs/RCL7.md` "08:4x")
 
 - **RCL7 ETA ~10-26 23:00 - 10-27 11:00 UTC+8** (12 h 22.1 e/t; 1-2 h 20.6), 16-28 h before novice end 10-28 03:33. Post-RCL7 bill (spawn 2 + tower 3 + 10 ext + link ~55k, then wall step 2 ~69k) is ~6 h of surplus, so "step 2 after RCL7" (Misaki 10-19 20:51) still fits. No plan change.

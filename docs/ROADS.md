@@ -61,6 +61,33 @@ W45N8 only: when phase W45N8 is complete (`roads.paved('W45N8')`), rhauler body 
 8C8M, target `pavedHaulers` 2 → **1** (model: 16C8M paved rt 64, need 0.8). Upkeep 1.07 → 0.80 e/t (−0.27); W45N8 road decay+wear
 ≈ +0.25 e/t → about break-even, −1 creep, no swamp fatigue on the short haul. **W45N7: unchanged, 5× 8C8M** (`paved('W45N7')` is always false).
 
+## Upkeep review 2026-10-20 11:4x UTC+8 (strategy review; Misaki 10-20: remote roads must never decay away)
+
+Who keeps each road tile alive, after the road plan reached `done`:
+
+| tiles | repairer before | gap |
+|---|---|---|
+| home layout-plan roads (`P.any`) | towers < 60% (energy > 800) + builders < 80% | none |
+| home road-plan tiles (`roads.isHomeTile`: haul leg 38,30 -> 48,15, econ, wall trunks, w8link, KEEP) | builders < 80% only | **builders are 0 while storage sits at the 15k floor**, so nobody. Live t83757409: 44,19 1700/5000, 45,18 1700, 46,17 2000, 48,15 2400, 47,16 2600, 39,24 2500, 34,25 2200 (34-52%); home spurs 30,12/29,11/28,10/15,43 had already decayed out and were re-sited by 5dd9d59 |
+| W45N8 route + swamp7 | route-road builder (f5a2104/82eea5d/3bf3b89/08b7814) when a site is open or a tile < 30% | depends on that one builder spawning; being verified by the patrols |
+| W45N7 | none, by design (Misaki 10-17) | - |
+
+Wear dominates decay: a creep step costs 1 hit per body part (ROAD_WEAROUT), decay is 100 hits / 1000 t (x5 on swamp).
+The home haul leg carries every rhauler: W45N8 1x 36 parts (~2 passes / ~70 t) + W45N7 5x 16 parts (~2 passes / ~200 t)
+= ~1.8 hits/t wear + 0.1 decay per tile, so a full 5000-hit plain road lasts ~2700 t (~3.3 h). Energy is tiny (~0.02 e/t per
+tile, ~0.4 e/t for the whole leg); the problem was only that no repairer was assigned.
+
+- **Shipped e3d66d7 (deployed t83757442):** home towers also repair road-plan tiles below 60% (`tower.upkeep`), same 800-energy
+  combat floor. Live t83757480: 44,19 / 45,18 / 46,17 back at 5000 within ~40 t, tower moved on to 34,25; errors 0, bucket 10000.
+  Tower falloff at range 10-16 is ~45-65% of optimal (~45-55 hits per energy), fine for ~2 hits/t. `tests/tower_route_roads.js`.
+- **W45N8 (out of tower range):** keep the route-road builder for now. Expected cadence: a plain tile hits 30% ~2000 t after a
+  full repair on the 36-part leg, so roughly one 1000e builder life every few hours (~0.2-0.3 e/t incl. body). Patrols: confirm
+  the 13 re-sited W45N8 sites finish and no W45N8 route tile is ever < 20%.
+- **Candidate if the builder keeps failing (not shipped):** the W47N8 pattern (`rooms/w47n8/roles.js`, loaded w8rhaulers with 1 WORK
+  repair/build the road tile they stand on, no detour). For W45N8 that is +1 WORK on the rhauler (~+150e per 1500 t, ~0.1 e/t, plus
+  ~0.2 CPU per repair intent only when the tile is < ~80%) and removes the builder dependency entirely. TooAngel's carry creeps do the
+  same; Overmind instead runs a dedicated road-logistics worker per colony (our route-road builder).
+
 ## Patrol (state/next_iteration.json)
 Each patrol: read `Memory.roads` (phase, prog road/site/open/unseen, bad), confirm sites exist in the current phase room, builder count,
 storage trend, and that `walls.phase` is `roads`. Stuck >2 h in a phase (no prog change) → investigate (`bad` codes, vision, paused).
