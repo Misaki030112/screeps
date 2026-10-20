@@ -3,6 +3,11 @@
 Novice zone ends **2026-10-28 03:33 UTC+8**. Defence timeline: `docs/DEFENSE_NOVICE.md` (2026-10-16); detail `docs/DEFENSE.md` / geometry `docs/DEFENSE_PLAN.md`.
 **Safe mode: NEVER auto-activate** — alert Misaki.
 
+## 2026-10-21 02:4x strategy review: W47N8 RCL6 extensions vs the road cut (`docs/PLAN_W47N8.md` "RCL6 extensions")
+
+- **Found:** at RCL6 (~10-23) 4 of the 10 new W47N8 extensions would have gone to slots whose stand roads the v4 cut drops (27-28,25 / 38,37-38). Shipped a layout order change: RCL6 now fills slots next to kept roads (y35 row + x31 column, 6-9 path cost from storage vs 12-16). No roads added. RCL7 slots need a road re-plan first (only 2 served slots left).
+- **Plan check:** home RCL6 958k/3.645M at ~19-23 e/t -> RCL7 ~10-27 (unchanged, before novice end 10-28 03:33). W47N8 RCL5 259k/1.215M, ~22 e/t -> RCL6 ~10-23 midday. CPU ~13.6/20, bucket 10000. BustJetter W48N9 down to 1 unboosted healer at 01:50. No decision needed from Misaki.
+
 ## 2026-10-20 23:4x strategy review: W47N8 west seal is the thin side (`docs/DEFENSE_W47N8.md` "23:4x")
 
 - **Defence:** BustJetter's 21:45 peak (12 unboosted, 28 HEAL) loses to W47N8's 2 towers alone at the east seal (~64 HEAL break-even) and at the spawn, and still at the west seal x 8-11, but there the margin is thin (~36 HEAL). Border pre-assessment and alert verdicts now score the segment nearest the group, and intrusions at the new spawn 34,30 (was old Spawn2 15,18). Shipped, see doc.

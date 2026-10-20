@@ -171,3 +171,17 @@ prep fires ~16:30-17:30 UTC+8, 15k spawn build ~300-500 t -> hub spawn 32,32 ~17
 runs ~10 e/t (1 upgrader) during the bank, so the RCL6 ETA slips by about the banking time (~1.5 h).
 Test: `tests/w47n8_move_bank.js` (fails on the old code). Patrol check: builders parked (not upgrading) while `w8move.why` = ['storage'];
 storage rising ~15 e/t once walls are at 100k; one fresh builder appears near 13k.
+
+## RCL6 extensions after the move + road cut (2026-10-21 02:4x strategy review, tick ~83769925)
+Question: W47N8 RCL5 259k/1.215M, RCL6 ~10-23. What does layoutRun place at RCL6 now that the spawn sits at 34,30 and the road plan was cut
+to v4 (116 plan + 32 w8link tiles; 177 live roads, the rest decay)? Simulated `layoutRun` on the live structure list (/tmp/rcl6sim.js):
+- RCL6 places only the 10 extensions (terminal/extractor/labs/hub link still gated off, RCL6 gate above holds). Bill 30k, ~1.3k t at ~23 e/t.
+- **Gap found:** 4 of the 10 next ORDER slots (28,26, 37,39, 39,39, 27,24) have no neighbour on the v4 road plan: their stand tiles
+  27-28,25 (strip 4) and 38,37-38 (x38 strip below 38,36) were dropped by the drastic cut and are decaying. Queens would walk off-road to
+  refill them right when the refill priority matters most (Misaki: spawns never wait).
+- **Fix (layout.js order only, no road added):** unbuilt slots re-ordered stably so slots touching a kept road come first. RCL6 now takes
+  26,34 26,36 25,34 25,36 24,34 24,36 (y35 row, stand 24-28,35) + 30,25 32,25 30,24 32,24 (x31 column, stand 31,24-26); path cost from
+  storage 6-9 vs 12-16 before. Test `tests/w47n8_rcl6_ext_roads.js` (fails on old order); all tests pass.
+- **RCL7 note:** only 2 served slots remain (30,23 32,23). Before RCL7 (+10 ext, spawn 2 at 33,30) re-run the v4 road tool with the RCL7
+  slots as goals, or choose RCL7 slots next to kept roads; don't re-add strip 4 (y25) roads blindly.
+- Minor: plan road 18,49 (south exit tile) can never be placed (border tile), so layoutRun retries it each run; harmless, left as is.
