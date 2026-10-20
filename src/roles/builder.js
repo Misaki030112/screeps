@@ -22,6 +22,13 @@ function remoteRoadSite() {
   }
   return null;
 }
+// Route-road job: a W45N8 road site, or a route road below ROUTE_FIX. The floor-time road builder (spawn.js roadBuilder) is spawned
+// when a route road drops < 30%; it then works every route road < 50% (hysteresis) before home road sites, refilling from the remote
+// container. Strategy review 10-20 17:4x: remoteRefill only knew road SITES, so a builder spawned for W45N8 2,12 (swamp road 6000/
+// 25000 = 24%) got no energy at the 15k floor (defLow), built home road sites when storage blipped over 15k, idled 50t and recycled:
+// 7 builders spawned+recycled in ~1400t (7x 1000e through the extensions, 45t spawn time each = ~22% of Spawn1) and 2,12 kept decaying.
+const ROUTE_FIX = 0.5;
+function routeJob() { return remoteRoadSite() || require('../managers/roads').repairTarget(ROUTE_FIX); }
 function junkContainer(room, P) {
   // ownerless leftover containers not in the plan, empty, safe to dismantle
   return rc.all(room, STRUCTURE_CONTAINER).find(s => {
@@ -110,7 +117,7 @@ function pickSource(c, home, Ph, ctlSrc, fx, fy) {
 function remoteRefill(c, home) {
   const W = require('../managers/walls');
   if (!(W.defLow && W.defLow(home)) || (W.siege && W.siege(home))) return false;
-  const s = remoteRoadSite(), rm = s && s.pos.roomName, cfg = rm && remote.CFG[rm];
+  const s = routeJob(), rm = s && s.pos.roomName, cfg = rm && remote.CFG[rm];
   if (!cfg || !cfg.cont) return false;
   if (c.room.name !== rm) { if (c.store[RESOURCE_ENERGY] >= 100) { c.memory.working = true; return true; } hop(c, rm); return true; }
   const k = c.room.lookForAt(LOOK_STRUCTURES, cfg.cont[0], cfg.cont[1]).find(z => z.structureType === STRUCTURE_CONTAINER);
@@ -128,7 +135,7 @@ function hop(c, dest) {
   if (c.pos.x === ex && c.pos.y === ey) { c.move(ex === 49 ? RIGHT : ex === 0 ? LEFT : ey === 49 ? BOTTOM : TOP); return; }
   move.to(c, ex, ey, 0);
 }
-module.exports = { remoteRoadSite, remoteRefill, pickSource, hop, run(c) {
+module.exports = { ROUTE_FIX, routeJob, remoteRoadSite, remoteRefill, pickSource, hop, run(c) {
   const room = c.room, P = plan.get(c.memory.home || room.name) || plan.get(room.name);
   if (!P) return;
   if (c.memory.working && c.store[RESOURCE_ENERGY] === 0) { c.memory.working = false; }
@@ -208,13 +215,14 @@ module.exports = { remoteRoadSite, remoteRefill, pickSource, hop, run(c) {
   if (!c.memory.urgent) {
   // a new site (home OR remote road) outranks any repair. Live 00:05 swamp7: all 5 builders stuck on container 34,34 at 86% hits
   // (sticky clears at 90%, repairables pick at 80%) while W45N8 15,39/16,40/25,39 sat 0/1500 — line only checked home sites.
-  if (t && t.progress === undefined && !(c.memory.tcap && W.belowFloor(hm)) && (rc.sites(Game.rooms[c.memory.home] || room).length || remoteRoadSite())) t = null;
+  // (a route road repair in the remote stays sticky until 90%: re-picking every tick bounced between 2,12 and 12,10 ~10 tiles apart)
+  if (t && t.progress === undefined && t.pos.roomName === hm.name && !(c.memory.tcap && W.belowFloor(hm)) && (rc.sites(Game.rooms[c.memory.home] || room).length || remoteRoadSite())) t = null;
   // Stickiness must not skip a higher-priority site (patrol 10-14 22:40: tower 37,33 at 0 while extensions built).
   if (t && t.progress !== undefined) {
     const home = Game.rooms[c.memory.home] || room;
     if (rc.sites(home).some(s => (PRIO[s.structureType] ?? 9) < (PRIO[t.structureType] ?? 9))) t = null;
     // a held home road site yields to an open remote route road site too (same rule as the pick below; live 11:3x 28,10 kept it)
-    else if (t.structureType === STRUCTURE_ROAD && t.pos.roomName === home.name && remoteRoadSite()) t = null;
+    else if (t.structureType === STRUCTURE_ROAD && t.pos.roomName === home.name && routeJob()) t = null;
   }
   }
   if (!t) {
@@ -228,7 +236,7 @@ module.exports = { remoteRoadSite, remoteRefill, pickSource, hop, run(c) {
     // v2.2: home road sites (trunk and re-sited spurs) wait while a remote route road site is open. Patrol 10-20 11:2x: the
     // route-road builder refilled at the W45N8 container, walked home and built re-sited home spurs 30,12/29,11/28,10/15,43
     // for ~800t while the 13 W45N8 sites stayed 0 (Misaki: remote roads must never decay away). Non-road home sites still go first.
-    const rs = sites.some(s => s.structureType === STRUCTURE_ROAD) && remoteRoadSite();
+    const rs = sites.some(s => s.structureType === STRUCTURE_ROAD) && routeJob(); // route road < 50% too (17:4x)
     const pick = rs ? sites.filter(s => s.structureType !== STRUCTURE_ROAD) : sites;
     // v5: spread builders over far wall sites: a site another builder already holds costs +60 range
     const held = new Set(Object.values(Game.creeps).filter(x => x !== c && x.memory.role === 'builder').map(x => x.memory.t));
@@ -241,7 +249,7 @@ module.exports = { remoteRoadSite, remoteRefill, pickSource, hop, run(c) {
       if (junk) { c.memory.dismantle = junk.id; c.memory.working = false; delete c.memory.t; return; }
       const remoteSite = remoteRoadSite();
       if (remoteSite) t = remoteSite;
-      else if ((t = require('../managers/roads').repairTarget(0.3))) {} // remote route road near decay-out goes before home 80% top-ups (W45N8 roads lost 10-20)
+      else if ((t = require('../managers/roads').repairTarget(ROUTE_FIX))) {} // remote route road < 50% goes before home 80% top-ups (W45N8 roads lost 10-20)
       else {
         const hurt = repairables(home, P).filter(s => !held.has(s.id)); // one builder per road/container (live 03:55: all 5 on container 38,32)
         t = hurt.length ? _.min(hurt, s => s.hits / s.hitsMax) : null;
