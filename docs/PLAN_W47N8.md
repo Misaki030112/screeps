@@ -152,3 +152,22 @@ not placed). RCL6 still places the 10 extensions; RCL5 still places links 13,25 
   (rampNeeded). Empty-slot ramparts 33,32 33,30 34,31 36,31 36,33 32,33 and old 15,18 (after the move) decay.
 - Roads (tools/w47n8_roads.py, spawn2 trunk replaced by tower 24,8 trunk; spawn-cluster traffic not kept): 128 -> 101 planned tiles,
   35 dropped (decay, never dismantled), 8 added.
+
+## Spawn-move bank (2026-10-20 14:4x strategy review, tick 83760038, deployed 2255f96)
+The move (Spawn2 15,18 -> 32,32) fires from `w8move` phase `prep` only when storage >= MOVE_E (16k) and a builder with TTL >= 700 is alive
+(moveReady 'ttl'). Live t83759997: storage 816, north line 84.8k-93.6k (stage-1 cap 100k), 3 builders 6W TTL 616/1402/1496, 3 upgraders
+(two at TTL 39/84, so 1 after they expire; `moving()` caps upgraders at 1).
+Two problems the review found in the path to the move:
+1. **Builders spent the bank.** With 0 sites and the walls at the 100k cap, `w8builder` fell back to `w8upgrader`, which refills through
+   `getEnergy` and may withdraw from storage. 3 x 6 WORK = ~18 e/t, about the whole W47N8 surplus (model_w8 6h: harvest 38.7, upkeep 13.4,
+   1 upgrader 10), so storage would hover near the filler reserve until the builders died. Fix: during `prep` an idle builder parks on a
+   `UPG_EXTRA` tile and does nothing. It still repairs walls/roads/containers and builds sites first, and the fallback returns after the move.
+2. **No builder at the trigger.** Builders only spawn for sites, `wallsLow` or a wall below the plan target, none of which holds once the line
+   is at 100k (constructed walls don't decay). The fresh builders' TTL drops below 700 in ~800 t, about when the bank would fill, so prep
+   could stall on 'ttl' until the gate rampart decays under 90k by chance. Fix: in `prep`, once storage >= MOVE_E - 3000 and no builder has
+   TTL >= 700 (or is spawning), queue one w8builder (6W6C6M, 1200 e) ahead of upgraders.
+Expected timeline (estimate, ~4.3-5.7 s/tick): north line at 100k ~15-25 min after 14:45, then ~15 e/t net banking -> 16k after ~1000 t,
+prep fires ~16:30-17:30 UTC+8, 15k spawn build ~300-500 t -> hub spawn 32,32 ~17:30-18:30, then stage 3 (300k) from surplus. W47N8 upgrade
+runs ~10 e/t (1 upgrader) during the bank, so the RCL6 ETA slips by about the banking time (~1.5 h).
+Test: `tests/w47n8_move_bank.js` (fails on the old code). Patrol check: builders parked (not upgrading) while `w8move.why` = ['storage'];
+storage rising ~15 e/t once walls are at 100k; one fresh builder appears near 13k.

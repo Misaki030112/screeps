@@ -305,6 +305,7 @@ Focus (Misaki 10-14): **W46N8 upgrade speed**; expansion (2nd account W47N8, W45
 7. Later: RCL6 terminal/extractor/labs; 2nd room (**approval required**).
 
 ## Log
+- 2026-10-20 14:4x strategy review: topic **W47N8 spawn-move bank** (`docs/PLAN_W47N8.md` 'Spawn-move bank'). Two latent stalls: idle builders fell back to upgrading from storage (~18 e/t, the whole surplus once the north line hit 100k) and no builder with TTL >= 700 would exist when the bank filled. Deployed 2255f96 (park + fresh builder at MOVE_E-3k, test). Move ETA ~16:30-17:30 UTC+8, new spawn ~17:30-18:30; RCL6 ~10-24, home RCL7 ~10-27.
 - 2026-10-20 03:4x strategy review: topic **W47N8 RCL6 build bill** (`docs/PLAN_W47N8.md`). ~260k of idle terminal/labs/extractor/hub link would have been placed at RCL6; gated (7b0b0b4, dormant). RCL5 ~08:00, RCL6 ~10-22.
 - 2026-10-20 00:0x strategy review: topic **remote posture after novice end** (`docs/DEFENSE_NOVICE.md`). Overmind fights outposts; we keep flee+pause (EV+). Shipped stats.remote snapshot. RCL5 ETA ~07:30, RCL7 ~10-26 evening.
 - 2026-10-19 21:4x strategy review: topic **W47N8 upgrade gap** (`docs/MODEL_W47N8.md`). 8.7 e/t gap decomposed; new cause = 5W remote rminers lose ~10% to container repair (repair blocks harvest); deployed 751c6e7/3ce6174 (6W + learned lead). RCL5 ETA 10-20 ~09:30-10:30, RCL7 ETA ~10-26 late.
