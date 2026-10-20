@@ -5,6 +5,8 @@ U = {'u1': 'Misaki', 'u2': 'BustJetter'}
 objs = [{'type': 'creep', 'user': 'u1', 'body': [{'type': 'attack'}]}, {'type': 'creep', 'user': 'u2', 'body': [{'type': 'attack'}]}, {'type': 'spawn', 'user': 'u2'}]
 h = N.hostile_creeps(objs, U); assert [x['user'] for x in h] == ['u2'], h
 assert N.triggers('W48N9', [1, 2], []) and not N.triggers('W48N9', [1], [1]) and N.triggers('W47N9', [], [1]) and not N.triggers('W47N8', [1, 2], [])
+U['u3'] = 'Invader'; objs.append({'type': 'creep', 'user': 'u3', 'body': [{'type': 'attack'}]})
+assert len(N.hostile_creeps(objs, U, 'W48N9')) == 1 and len(N.hostile_creeps(objs, U, 'W47N8')) == 2 and len(N.hostile_creeps(objs, U)) == 2  # NPC ignored only in neighbour rooms
 print('north_watch ok')
 # 05:4x: verdict must count healers; 2RA (8/9) + 2 healers (7/5) at the seal: 1 tower r32 loses, +24,8 tower (r5) wins
 P = [{'ranged_attack': 8, 'move': 8}, {'ranged_attack': 9, 'move': 9}]

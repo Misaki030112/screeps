@@ -11,9 +11,11 @@ H = os.path.dirname(os.path.abspath(__file__)); sys.path.insert(0, os.path.join(
 import api, ingest
 ME = 'Misaki'; ROOMS = ['W47N8', 'W47N9', 'W48N9']; STATE = os.path.join(H, '..', 'state', 'north_watch.json')
 BOOST = ('UH', 'KO', 'LO', 'UH2O', 'KHO2', 'LHO2', 'XUH2O', 'XKHO2', 'XLHO2')
-def hostile_creeps(objs, U):
-    """creeps not owned by ME (our own never count as armed/drain/intrusion)"""
-    return [x for x in objs if x['type'] == 'creep' and U.get(x.get('user')) != ME]
+def hostile_creeps(objs, U, room=None):
+    """creeps not owned by ME (our own never count as armed/drain/intrusion); outside W47N8, NPC creeps are dropped too
+    (05:25 W48N9 Invader group, BustJetter's own NPC problem, raised a MEDIUM alert + threatN)"""
+    return [x for x in objs if x['type'] == 'creep' and U.get(x.get('user')) != ME and not (room and room != 'W47N8' and U.get(x.get('user')) in NPC)]
+NPC = ('Invader', 'Source Keeper')  # 10-21 05:4x strategy review: NPC creeps in the neighbour rooms stay in the room they spawned for, never trigger
 N9_NEAR_Y = 35  # W47N9 rows >= 35 face our north edge (W47N8 y=0); BustJetter's spawn/core sits around y 22-30
 def n9_near(armed): return any(i['pos'][1] >= N9_NEAR_Y for i in armed)
 def triggers(room, armed, drain): return (room == 'W47N9' and bool(armed or drain)) or (room == 'W48N9' and len(armed) >= 2)
@@ -49,7 +51,7 @@ def main():
     a9 = False
     for r in ROOMS:
         o = api.req(f'game/room-objects?room={r}&shard={api.SHARD}'); U = {k: v.get('username') for k, v in o.get('users', {}).items()}
-        cs = hostile_creeps(o['objects'], U)
+        cs = hostile_creeps(o['objects'], U, r)
         stock = collections.Counter()
         for x in o['objects']:
             if x['type'] in ('storage', 'terminal', 'lab') and U.get(x.get('user')) != ME:
@@ -57,6 +59,7 @@ def main():
                     if k in BOOST and v: stock[k] += v
         armed, drain, intr, heal = [], [], [], []
         if r == 'W47N8': TR[:] = seal_ranges(o['objects'], U); TRW[:] = seal_ranges(o['objects'], U, SEAL_WEST); TRS[:] = seal_ranges(o['objects'], U, SPAWN_PT)
+        npc = len(hostile_creeps(o['objects'], U)) - len(cs)
         for x in cs:
             b = collections.Counter(p['type'] for p in x['body']); boosted = any(p.get('boost') for p in x['body'])
             info = {'owner': U.get(x['user']), 'pos': [x['x'], x['y']], 'body': dict(b), 'boosted': boosted}
@@ -64,7 +67,7 @@ def main():
             if b['heal']: drain.append(info)  # 10-20 06:2x: TOUGH-only decoys ignored (Misaki: no influence on threat/roster sim)
             if b['heal']: heal.append(info)
             if r == 'W47N8' and (b['attack'] or b['ranged_attack'] or b['work'] or boosted): intr.append(info)
-        summary[r] = {'creeps': len(cs), 'armed': len(armed), 'drain': len(drain), 'boost': dict(stock)}
+        summary[r] = {'creeps': len(cs), 'armed': len(armed), 'drain': len(drain), 'npc': npc, 'boost': dict(stock)}
         def add(kind, cre, extra=None):
             own = (cre[0]['owner'] if cre else None) or '?'
             ep = f'north-{r}-{kind}-{tick // 1500}'

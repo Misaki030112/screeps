@@ -3,6 +3,12 @@
 Novice zone ends **2026-10-28 03:33 UTC+8**. Defence timeline: `docs/DEFENSE_NOVICE.md` (2026-10-16); detail `docs/DEFENSE.md` / geometry `docs/DEFENSE_PLAN.md`.
 **Safe mode: NEVER auto-activate** — alert Misaki.
 
+## 2026-10-21 05:4x strategy review: NPC Invaders in neighbour rooms (`tools/north_watch.py`)
+
+- **Found:** the 05:25 MEDIUM `north-W48N9-group-55848` was raised by an NPC Invader group in BustJetter's W48N9; north_watch counted any non-Misaki creep, so NPC creeps there also refreshed `w8threatN`. NPC Invaders stay in the room they spawn for, so this was alert noise (threat mode itself costs nothing now: walls 238k > the 100k floor).
+- **Shipped (box tool only, no game deploy):** outside W47N8, `hostile_creeps` drops `Invader` / `Source Keeper` creeps; summary shows `npc` count. W47N8 still counts everything. Test added to `tests/north_watch_test.py`. Live t83772394: W48N9 armed 3 (BustJetter's own) + npc 1, so this episode stays valid on BustJetter's creeps.
+- **Plan check:** home RCL6 1.016M/3.645M at ~22.7 e/t (4.35 s/tick) -> RCL7 ~10-27 02:00; O mining resumes ~10-21 20:37 (Misaki "开矿物线"), ~0.9 e/t -> ~10-27 08:00, still ~20 h before novice end 10-28 03:33. W47N8 RCL5 307k/1.215M, model ETA RCL6 ~10-23 09:00. CPU 11-13/20, bucket 10000. Open: W47N8 RCL7 extension roads (only 2 served slots), not urgent (~6 days out). No decision needed from Misaki.
+
 ## 2026-10-21 02:4x strategy review: W47N8 RCL6 extensions vs the road cut (`docs/PLAN_W47N8.md` "RCL6 extensions")
 
 - **Found:** at RCL6 (~10-23) 4 of the 10 new W47N8 extensions would have gone to slots whose stand roads the v4 cut drops (27-28,25 / 38,37-38). Shipped a layout order change: RCL6 now fills slots next to kept roads (y35 row + x31 column, 6-9 path cost from storage vs 12-16). No roads added. RCL7 slots need a road re-plan first (only 2 served slots left).
