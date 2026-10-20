@@ -452,6 +452,15 @@ const R = {
       if (c.store[E] < 20 && c.pos.getRangeTo(rep) > 6) { c.memory.w = false; getEnergy(c); return; } // don't walk a near-empty load across the room
       go(c, rep.pos.x, rep.pos.y, 3); return;
     }
+    // 10-20 14:4x strategy review: while the spawn move banks (Memory.ops.w8move prep, MOVE_E 16k in storage) an idle builder parks
+    // instead of falling back to w8upgrader, which refilled from storage (3 x 6W = 18 e/t, about the whole W47N8 surplus once the north
+    // line reached the 100k stage-1 cap), so the bank would never fill while the builders lived.
+    const mv = Memory.ops && Memory.ops.w8move;
+    if (mv && mv.phase === 'prep') {
+      const j = pickTile(c, C.UPG_EXTRA, 'xs');
+      if (j >= 0) { c.memory.xs = j; if (!onTile(c, [C.UPG_EXTRA[j]])) go(c, C.UPG_EXTRA[j][0], C.UPG_EXTRA[j][1], 0); }
+      return;
+    }
     R.w8upgrader(c);
   },
 };
