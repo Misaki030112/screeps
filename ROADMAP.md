@@ -3,6 +3,12 @@
 Novice zone ends **2026-10-28 03:33 UTC+8**. Defence timeline: `docs/DEFENSE_NOVICE.md` (2026-10-16); detail `docs/DEFENSE.md` / geometry `docs/DEFENSE_PLAN.md`.
 **Safe mode: NEVER auto-activate** — alert Misaki.
 
+## 2026-10-20 20:4x strategy review: API budget + RCL7 vs novice end (`docs/CPU.md` "20:4x")
+
+- **Memory API ran dry:** `GET user/memory` is 1440/day per account; the listener's CPU-profile poll alone used 864/day, so from ~19:55 to 20:47 every patrol/briefing memory read got HTTP 429. Fixed on the box (no game deploy): 1 read per 15 min, tick/bucket from the websocket. Every memory read is now logged to `metrics/api_memory.log`; next review: sum calls per caller over 24 h and move the biggest spender to a segment if the total is > ~1000/day.
+- **Plan check:** home RCL6 859k/3.645M. 6 h rate 18.2 e/t at 4.31 s/tick -> **RCL7 ~10-28 12:00, ~8 h after novice end (10-28 03:33)**; 24 h rate 20.2 -> ~10-27 15:00 (12 h before). The 6 h window carries the 9.5k home pioneer spend from the move (bug fixed 92ffd2b) and ticks slowed from ~4.2 to ~4.3 s. The post-RCL7 builds (spawn 2, tower 3, ~55k) before novice end no longer fit at the 6 h rate. Home defence at novice end therefore assumes RCL6: 2 towers, walls 142k, ramparts ~189k. W47N8 RCL5 161k/1.215M, RCL6 ~10-23 18:00 at 18.2 e/t.
+- **Watch:** if the next 6 h home rate stays < 20 e/t with no defence/pioneer spend, the remaining overhead levers are in the 17:4x list (W47N8 support, builds, towers); propose to Misaki, not ship.
+
 ## 2026-10-20 17:4x strategy review: home overhead + CPU (`docs/MODEL.md` "17:4x", `docs/CPU.md` "17:4x")
 
 - **Breakdown (ledger 1603 t + 6 h DB):** income 40.0 e/t, every source fully mined. 6 h: upgrade **18.8**, spawn bodies 16.3 gross (rhauler 4.5, reserver 2.75, upgrader 2.1, builder 1.7, queen 1.4, rminer 1.2, w8defender 0.85, miner 0.8, reserve7 0.75 until 11:5x, hauler 0.3), towers 2.6 roads (ledger upper bound) + 0.9 ramparts, build 1.8, remote containers 1.0, link 0.4, storage -0.2.

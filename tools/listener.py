@@ -178,15 +178,20 @@ def segment_poller():
         except Exception as ex: append('errors.log', f'{stamp()} [listener] segment poll {ex}')
         time.sleep(60)
         polls[0] += 1
-        if polls[0] % 5 == 0: prof_poll()
+        if polls[0] % PROF_EVERY == 0: prof_poll()
         if polls[0] % 10 == 0:  # creep audit + heatmaps every ~10 min (prune once a day)
             import subprocess
             subprocess.run([sys.executable, os.path.join(ROOT, 'tools', 'creep_audit.py')], capture_output=True, timeout=300)
+# GET user/memory is capped at 1440/day for the whole account (patrols, alerts and tools share it). 3 calls every 5 min here
+# were 864/day, so the budget ran out at ~19:55 on 10-20 (HTTP 429 for ~50 min, patrols blind). Now 1 call every 15 min
+# (96/day); tick and bucket come from the websocket STATS line, which is free (strategy review 10-20 20:4x, docs/CPU.md).
+PROF_EVERY = 15
 def prof_poll():
-    """Memory.stats.prof (per-section CPU EMA) -> cpu_prof every ~5 min; was only readable live (docs/CPU.md 2026-10-20)."""
+    """Memory.stats.prof (per-section CPU EMA) -> cpu_prof every ~15 min; was only readable live (docs/CPU.md 2026-10-20)."""
     try:
         from api import memory
-        p, t, b = memory('stats.prof') or {}, memory('stats.time'), memory('stats.bucket')
+        st = live.get('stats') or {}
+        p, t, b = memory('stats.prof') or {}, st.get('t'), st.get('b')
         ts, cm = utcnow(), ingest.commit()
         for k, v in p.items():
             if isinstance(v, (int, float)): ingest.put('cpu_prof', (ts, t, k, v, b, cm))

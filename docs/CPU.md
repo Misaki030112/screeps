@@ -106,3 +106,10 @@ Levers for home, ranked:
 3. Tower `repair()` on an already full `towerRep` (re-picked every 10 t): two wasted intents per tick, ~0.05 ms. It also makes the ledger
    `tr` overcount, so fix it together with a ledger pre-check (`target.hits < hitsMax`).
 4. Builder churn: done (e774b85).
+
+## 2026-10-20 20:4x strategy review: the HTTP API budget (memory reads)
+
+- **What broke:** `GET /api/user/memory` is capped at **1440 per day per account** (headers `X-RateLimit-Limit 1440`, `Remaining`, `Reset`; the window restarts from the first call after a reset, now ~20:47 UTC+8 daily). It ran out at ~19:55 on 10-20 and returned 429 until 20:47, so patrols, the briefing (remote delivered, road plan) and `listener prof poll` were blind for ~50 min during the W47N8 move. Other endpoints have their own caps (`user/code` GET 60/h, `user/memory-segment` GET 360/h); `game/time` and the websocket are not counted.
+- **Cause:** `tools/listener.py prof_poll` (added 14db47e, 10-20 01:45) made 3 memory reads every 5 min = **864/day, 60% of the budget**, leaving ~24/h for every routine and tool.
+- **Fix (box only, no game deploy):** prof_poll reads only `stats.prof`, every 15 min (96/day); tick and bucket come from the free websocket `STATS` line. Listener restarted 20:42, STATS ingest verified. `scripts/api.py memory()` now logs every call to `metrics/api_memory.log` (time, remaining, caller, path), so the next review can see which routine spends the rest. First logged call after reset: remaining 1439.
+- **If it runs out again:** move bulk reads to memory segments (360/h = 8640/day, the listener already polls segment 90 every 60 s) or the websocket `user:<id>/memory/<path>` subscription, rather than more `user/memory` GETs.
