@@ -75,14 +75,23 @@ function restCost(room, p, i) {
   return cost;
 }
 const DETOUR = 12; // stuck-2 path may cost at most this much more than the blocked rest; else wait for the stuck-4 swap
-function stationary(o) { const P = require('./plan').get(o.room.name); return !!(P && P.standing.has(o.pos.x * 50 + o.pos.y)) && ['miner', 'filler', 'manager', 'upgrader', 'rminer'].includes(o.memory && o.memory.role); }
+function stationary0(o) { const P = require('./plan').get(o.room.name); return !!(P && P.standing.has(o.pos.x * 50 + o.pos.y)) && ['miner', 'filler', 'manager', 'upgrader', 'rminer'].includes(o.memory && o.memory.role); }
+// 10-20: W47N8 / W47N7 have no plan: their miners on a configured stand are fixed too (never swapped/shoved off the container)
+function stationary(o) {
+  if (stationary0(o)) return true;
+  const r = o.memory && o.memory.role; if (r !== 'w8miner' && r !== 'w8rminer') return false;
+  const C = require('../rooms/w47n8/config'), L = r === 'w8miner' ? C.SOURCES : C.REMOTE.sources;
+  return L.some(S => S.stand[0] === o.pos.x && S.stand[1] === o.pos.y);
+}
 // costCallback for raw creep.moveTo calls (defender etc.): same foreign-site protection
 function foreignSites(rn, m) { const room = Game.rooms[rn]; if (room) for (const s of room.find(FIND_HOSTILE_CONSTRUCTION_SITES)) m.set(s.pos.x, s.pos.y, 255); return m; }
 module.exports = {
   foreignSites,
   invalidate(roomName) { const e = VER[roomName]; if (e) e.n = -1; },
   // returns true when in range (arrived)
-  to(c, x, y, range = 0) {
+  // opts.noDetour (10-20, W47N8/W47N7 haulers on 1-wide roads): no creep-avoiding repath at stuck 2, swap with our blocker from stuck 2 instead
+  to(c, x, y, range = 0, opts) {
+    const nd = !!(opts && opts.noDetour);
     const k = `${x},${y},${range}`;
     let m = c.memory._m;
     if (Math.max(Math.abs(c.pos.x - x), Math.abs(c.pos.y - y)) <= range) {
@@ -99,7 +108,7 @@ module.exports = {
     if (m && m.k === k) m.s = m.l === here ? (m.s || 0) + 1 : 0;
     const s = m && m.k === k ? m.s : 0;
     let i = m && m.k === k ? m.p.indexOf(here) : -1;
-    if (!m || m.k !== k || m.v !== v || (i < 0 && m.l !== here) || s === 2 || s === 8 || s >= 30 && s % 30 === 0) {
+    if (!m || m.k !== k || m.v !== v || (i < 0 && m.l !== here) || (s === 2 && !nd) || s === 8 || s >= 30 && s % 30 === 0) {
       const keep = m && m.k === k ? m : null;
       const why = !keep ? 'n' : s === 2 ? 's' : s === 8 ? 'x' : s >= 30 ? 'z' : m.v !== v ? 'v' : 'o';
       if (s === 8) { trace.stuck(c); const d = 1 + (Game.time % 8); c.move(d); }
@@ -126,7 +135,7 @@ module.exports = {
     m.l = here;
     if (!nxt) { delete c.memory._m; return false; }
     const [nx, ny] = dec(nxt), dir = c.pos.getDirectionTo(nx, ny);
-    if (s >= 4 && s < 8) { // swap with our own moving creep
+    if (s >= (nd ? 2 : 4) && s < 8) { // swap with our own moving creep
       const b = c.room.lookForAt(LOOK_CREEPS, nx, ny)[0];
       if (b && b.my && !stationary(b) && !b.fatigue) b.move(OPP[dir]);
     }
@@ -134,3 +143,4 @@ module.exports = {
     return false;
   },
 };
+Object.defineProperty(module.exports, '_stationary', { value: stationary, enumerable: false }); // tests only

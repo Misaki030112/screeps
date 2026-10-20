@@ -11,18 +11,18 @@ const isHub = s => s.pos.x === C.HUB_CONT[0] && s.pos.y === C.HUB_CONT[1];
 // 1-wide W47N7 road routed around each other onto plain (15C1W8M loaded = half speed off road; live samples 24,15 26,25 25,21 30,32).
 // W47N7 legs now use move.to (road matrix, creeps ignored, swap/shove when blocked) via the fixed N exit 18,0 <-> W47N8 18,49.
 const MV = require('../../utils/move');
-const EX7 = [18, 0], EX8 = [18, 49];
+const EX7 = [18, 0], EX8 = [18, 49], ND = { noDetour: true };
 function onBorder(c) { return c.pos.x === 0 || c.pos.x === 49 || c.pos.y === 0 || c.pos.y === 49; }
 function rmove(c, room, x, y, r) {
   const R7 = C.REMOTE.room;
   if (c.room.name === room) {
     if (onBorder(c)) { delete c.memory._m; return c.move(c.pos.y === 0 ? BOTTOM : c.pos.y === 49 ? TOP : c.pos.x === 0 ? RIGHT : LEFT); }
-    return MV.to(c, x, y, r);
+    return MV.to(c, x, y, r, ND);
   }
   const ex = c.room.name === R7 && room === C.ROOM ? EX7 : c.room.name === C.ROOM && room === R7 ? EX8 : null;
   if (!ex) return c.moveTo(new RoomPosition(x, y, room), { range: r, reusePath: 20 });
   if (c.pos.x === ex[0] && c.pos.y === ex[1]) { delete c.memory._m; return c.move(ex[1] === 0 ? TOP : BOTTOM); }
-  return MV.to(c, ex[0], ex[1], 0);
+  return MV.to(c, ex[0], ex[1], 0, ND);
 }
 function home(c) {
   if (c.room.name === C.ROOM) return true;
@@ -235,14 +235,14 @@ const R = {
     // nothing to fill: hand it to the emptiest w8upgrader/w8builder; never drop on the ground (Misaki rule), else wait
     const k = t || Game.rooms[C.ROOM].find(FIND_MY_CREEPS, { filter: x => (x.memory.role === 'w8upgrader' || x.memory.role === 'w8builder')
       && x.store.getFreeCapacity(E) > 0 }).sort((a, b) => a.store[E] - b.store[E])[0];
-    if (!k) return c.pos.inRangeTo(C.CTL[0], C.CTL[1], 4) || go(c, C.CTL[0], C.CTL[1], 4);
+    if (!k) return c.pos.inRangeTo(C.CTL[0], C.CTL[1], 4) || go8(c, C.CTL[0], C.CTL[1], 4);
     if (k.structureType === STRUCTURE_CONTAINER && k.pos.x === C.CTL_CONT[0] && k.pos.y === C.CTL_CONT[1] && !c.pos.isNearTo(k)) {
       // unload from a reserved tile (never the 13,25 dead end); both taken: wait within 2 (a range-0 path to an occupied tile wandered off)
       const room = Game.rooms[C.ROOM], f = C.CTL_HAUL.find(([x, y]) => !room.lookForAt(LOOK_CREEPS, x, y).length);
-      if (f) go(c, f[0], f[1], 0); else if (!c.pos.inRangeTo(k, 2)) go(c, k.pos.x, k.pos.y, 2);
+      if (f) go8(c, f[0], f[1], 0); else if (!c.pos.inRangeTo(k, 2)) go8(c, k.pos.x, k.pos.y, 2);
       return;
     }
-    if (!c.pos.isNearTo(k)) { if (isFill(k)) FM.walk(c); go(c, k.pos.x, k.pos.y); } else { if (isFill(k)) fillXfer(c, k); else c.transfer(k, E); delete c.memory.ft; }
+    if (!c.pos.isNearTo(k)) { if (isFill(k)) FM.walk(c); go8(c, k.pos.x, k.pos.y); } else { if (isFill(k)) fillXfer(c, k); else c.transfer(k, E); delete c.memory.ft; }
   },
   w8upgrader(c) {
     if (!home(c)) return;
