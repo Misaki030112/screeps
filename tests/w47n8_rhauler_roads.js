@@ -13,6 +13,11 @@ calls = []; rm(cr('W47N8', 15, 30), 'W47N7', 31, 34, 1); assert.deepStrictEqual(
 calls = []; rm(cr('W47N7', 25, 20), 'W47N7', 31, 34, 1); assert.deepStrictEqual(calls, [['to', 31, 34, 1]], 'in-room move.to');
 calls = []; rm(cr('W47N7', 18, 0), 'W47N7', 31, 34, 1); assert.deepStrictEqual(calls, [['move', 5]], 'just crossed: step in');
 calls = []; rm(cr('W47N6', 25, 25), 'W47N7', 31, 34, 1); assert.deepStrictEqual(calls, [['native']], 'other rooms: native');
+// 10-21: W46N8 -> W47N8 (home-sent joint defenders) via move.to to the fixed west exit 0,23, not native cross-room moveTo
+const hm = RL._home;
+calls = []; assert.strictEqual(hm(cr('W46N8', 35, 29)), false); assert.deepStrictEqual(calls, [['to', 0, 23, 0]], 'W46N8 -> W47N8 via 0,23');
+calls = []; assert.strictEqual(hm(cr('W47N8', 49, 23)), true); assert.deepStrictEqual(calls, [], 'in W47N8: role runs');
+calls = []; hm(cr('W45N8', 10, 10)); assert.deepStrictEqual(calls, [['native']], 'other rooms: native');
 console.log('w47n8 rhauler roads ok');
 // miners on their stand are stationary (never swapped); off-stand or other roles are not
 const st = MV._stationary, C = require(path.join(__dirname, '..', 'src', 'rooms', 'w47n8', 'config.js'));

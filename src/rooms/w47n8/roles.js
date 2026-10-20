@@ -24,9 +24,14 @@ function rmove(c, room, x, y, r) {
   if (c.pos.x === ex[0] && c.pos.y === ex[1]) { delete c.memory._m; return c.move(ex[1] === 0 ? TOP : BOTTOM); }
   return MV.to(c, ex[0], ex[1], 0, ND);
 }
+// 10-21 04:0x (2room patrol): home-sent joint defender w8defender83770598 took ~335 t (was ~35 t) from W46N8 spawn to W47N8:
+// native cross-room moveTo (creeps = walls, reusePath 20) flipped routes, 46,17 <-> 16,29, then ~175 t outside our tracked rooms
+// via the W45N8 side. Same fix as the W47N7 leg: move.to to the fixed W46N8 west exit 0,23 (enters W47N8 at 49,23).
+const EXH = [0, 23], HOME_R = 'W46N8';
 function home(c) {
   if (c.room.name === C.ROOM) return true;
   if (c.room.name === C.REMOTE.room) rmove(c, C.ROOM, C.SPAWN[0], C.SPAWN[1], 1);
+  else if (c.room.name === HOME_R) MV.to(c, EXH[0], EXH[1], 0, ND);
   else c.moveTo(new RoomPosition(C.SPAWN[0], C.SPAWN[1], C.ROOM), { reusePath: 20 });
   return false;
 }
@@ -505,3 +510,4 @@ Object.defineProperty(module.exports, '_sink', { value: sink, enumerable: false 
 Object.defineProperty(module.exports, '_haulPick', { value: haulPick, enumerable: false }); // tests only
 Object.defineProperty(module.exports, '_wallJob', { value: wallJob, enumerable: false }); // tests only
 Object.defineProperty(module.exports, '_rmove', { value: rmove, enumerable: false }); // tests only
+Object.defineProperty(module.exports, '_home', { value: home, enumerable: false }); // tests only
