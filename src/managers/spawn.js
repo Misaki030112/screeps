@@ -357,15 +357,21 @@ function run1(spawn, onWait) {
   // reserve hysteresis (13:06 trace: storage hovered at 15k; each crossing spawned up to 4 builders x 1600e which then starved at the
   // reserve, waiting_feed ~90%). Above the reserve, builders are sized to the SURPLUS: 1 per 4k over reserve+2k, none below +2k.
   // walls.siege (player combat inside home): one builder anyway, to repair the attacked barriers.
+  let roadBuilder = false; // route-road upkeep builder (below): capped body, does not cost an upgrader slot
   { const Wr = require('./walls'), dr = Wr.defReserve ? Wr.defReserve() : 0, war = Wr.siege(room);
     if (dr && room.storage && T.builder > 0 && !war) { const sur = room.storage.store[RESOURCE_ENERGY] - dr - 2000; T.builder = sur < 0 ? 0 : Math.min(T.builder, 1 + Math.floor(sur / 4000)); }
     if (war) T.builder = Math.min(T.builder, 1);
     const low = Wr.defLow && Wr.defLow(room);
     if (low) { if (!war) T.builder = 0; }
+    // Route-road upkeep (Misaki 10-20: remote roads must never decay away). Storage sits at the 15k floor (upgrade first ferries
+    // the surplus to ctl), so the surplus gate above zeroed every builder and 5dd9d59's re-placed W45N8 road sites (7.5k) had
+    // no builder at all (patrol 10-20 09:5x: builder 0, 13 sites 0/x). One small builder for remote road sites / route roads
+    // < 30%, even at the reserve; pickSource still never takes storage below reserveE.
+    if (!T.builder && !low && room.storage && rcl >= 6 && (require('../roles/builder').remoteRoadSite() || require('./roads').repairTarget(0.3))) { T.builder = 1; roadBuilder = true; }
     // A site no builder will work must not cost an upgrader slot ('sites ? 1 : 2' frees feed for a builder). Patrol 10-20 07:2x:
     // walls.js NW spur road 30,12 (0/300) sat with builder target 0 (storage at the 15k floor) -> upgrader target 1, the 2nd
     // 14W upgrader died unreplaced (~-8 e/t upgrade) against Misaki's 'upgrade first until RCL7'.
-    if (nSites && !T.builder && !(count.builder || 0)) T.upgrader = targets(room, count, backlog, m.ctlEma, 0).upgrader;
+    if (nSites && (roadBuilder || (!T.builder && !(count.builder || 0)))) T.upgrader = targets(room, count, backlog, m.ctlEma, 0).upgrader;
     if (low) {
       T.upgrader = defLowUpgraders(T.upgrader, room.storage ? room.storage.store[RESOURCE_ENERGY] : 0, dr, !!(Wr.stepHeld && Wr.stepHeld(room)), (room.controller.ticksToDowngrade || 0) < Wr.UP_SAFE); } }
   room.memory.roleTargets = T;
@@ -376,7 +382,8 @@ function run1(spawn, onWait) {
     // model's A->hub rt 28): 10/t x 66 = 660 carry -> one 14C7M road hauler (700, 1050e). 2x6C6M (600 carry) let
     // container A pile up to 1771/2000 (patrol 10-14 07:05) while upgraders sat waiting_feed ~50%.
     const buildMode = role === 'upgrader' && rcl >= 6 && rcl < 8 && require('./walls').phase(room) === 'roads';
-    const e = bodyEnergy(role, E, cap, avail, !!alive.hauler, !!room.storage, undefined, buildMode);
+    let e = bodyEnergy(role, E, cap, avail, !!alive.hauler, !!room.storage, undefined, buildMode);
+    if (role === 'builder' && roadBuilder) e = Math.min(e, 1000); // 5W5C5M: 7.5k of road sites, not an 11W at the floor
     // v5 link era (RCL6, 3 links): source A ships via link 30,11, the home hauler only clears container overflow / drops.
     // 14C7M sat waiting_pickup 66% and moved empty 89% (motion audit 02:50) -> 6C3M (450e, 300 carry).
     const linkEra = role === 'hauler' && rcl >= 6 && rc.all(room, STRUCTURE_LINK).length >= 3;
