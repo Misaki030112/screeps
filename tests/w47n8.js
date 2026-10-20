@@ -25,4 +25,8 @@ assert.strictEqual(run(full).role, 'w8upgrader');
 Object.assign(full, { e: mk('w8upgrader', 'W47N8'), f: mk('w8upgrader', 'W47N8') });
 assert.strictEqual(run(full, 3).role, 'w8builder');
 assert.strictEqual(W.selfSufficient(), false, 'no room visible -> not self-sufficient');
+Memory.ops = { w8move: { phase: 'build', t0: 4 } };
+assert.strictEqual(W.selfSufficient(), true, 'planned spawn move (build phase) -> no home pioneers');
+Memory.ops.w8move.phase = 'done'; assert.strictEqual(W.selfSufficient(), false, 'move done + no spawn visible -> pioneers allowed (real loss)');
+delete Memory.ops;
 console.log('w47n8 ok');

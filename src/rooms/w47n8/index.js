@@ -442,6 +442,9 @@ function homeWant(room) {
 }
 // self-sufficient = own spawn + a miner + a hauler alive (conquest.js stops sending cqworkers/cqhaulers)
 function selfSufficient() {
+  // 10-20 19:5x (Misaki: the spawn move is W47N8-only, no home support): our own planned move (old spawn destroyed by
+  // moveRun, phase 'build') is not a lost room -> home must not send cqminers/cqworkers (it sent 2+5 = 9.5k e on 10-20)
+  const mv = Memory.ops && Memory.ops.w8move; if (mv && mv.phase === 'build' && mv.t0) return true;
   const r = Game.rooms[C.ROOM]; if (!r || !r.find(FIND_MY_SPAWNS).length) return false;
   return mine().some(c => c.memory.role === 'w8miner'); // Spawn2 + its own miner -> home stops cq pioneers/haulers (guard stays)
 }
