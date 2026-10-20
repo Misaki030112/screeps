@@ -172,6 +172,32 @@ const cases = [
     delete P.any[34 * 50 + 34];
     delete RCFG.W45N8; delete Game.getObjectById;
   }],
+  ['storage at the 15k defense reserve: route-road builder refills from the remote container, not starved at home (10-20 10:2x)', () => {
+    RCFG.W45N8 = { cont: [13, 11], roads: [[3, 11]], live: true };
+    global.LOOK_STRUCTURES = 'structure'; global.Memory = { defense: { reserveE: 15000 } };
+    const k = cont(13, 11, 250000, 120), site = { id: 's3', pos: { roomName: 'W45N8', x: 3, y: 11 }, progress: 0, progressTotal: 300, structureType: 'road' };
+    Game.getObjectById = id => (id === 's3' ? site : null);
+    const R = { name: 'W45N8', lookForAt: (t, x, y) => (t === 'structure' && x === 13 && y === 11 ? [k] : t === 'constructionSite' && x === 3 && y === 11 ? [site] : []), find: () => [] };
+    Game.rooms.W45N8 = R;
+    const home = { name: 'W46N8', storage: { pos: { x: 37, y: 31, roomName: 'W46N8' }, store: { [RESOURCE_ENERGY]: 14900 } } };
+    Game.rooms.W46N8 = home;
+    W = { sites: [], roads: [], containers: [] };
+    const mk = e => ({ energy: e, [RESOURCE_ENERGY]: e, getCapacity: () => 250, getFreeCapacity: () => 250 - e, getUsedCapacity: () => e });
+    // at home, empty: walk to W45N8 (exit 49,14), never withdraw home storage below the reserve
+    let got = null;
+    const c = { room: home, memory: { role: 'builder', home: 'W46N8', working: false }, store: mk(0), pos: { x: 38, y: 30, roomName: 'W46N8', getRangeTo: () => 5 },
+      withdraw: t => { got = t; } };
+    B.run(c);
+    assert.deepStrictEqual(W.moved, [49, 14], 'must hop toward W45N8');
+    assert.strictEqual(got, null, 'must not touch storage at the reserve');
+    // in W45N8: withdraw from the remote container even below the old +400 rhauler hold
+    c.room = R; c.pos = { x: 12, y: 11, roomName: 'W45N8', getRangeTo: () => 1 }; B.run(c);
+    assert.strictEqual(got, k);
+    // container dry, 150 carried: go build instead of waiting
+    k.store[RESOURCE_ENERGY] = 10; c.store = mk(150); got = null; B.run(c);
+    assert.strictEqual(c.memory.working, true); assert.strictEqual(got, null);
+    delete RCFG.W45N8; delete Game.getObjectById; delete global.Memory;
+  }],
 ];
 let fail = 0;
 for (const [n, f] of cases) {

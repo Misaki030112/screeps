@@ -367,7 +367,9 @@ function run1(spawn, onWait) {
     // the surplus to ctl), so the surplus gate above zeroed every builder and 5dd9d59's re-placed W45N8 road sites (7.5k) had
     // no builder at all (patrol 10-20 09:5x: builder 0, 13 sites 0/x). One small builder for remote road sites / route roads
     // < 30%, even at the reserve; pickSource still never takes storage below reserveE.
-    if (!T.builder && !low && room.storage && rcl >= 6 && (require('../roles/builder').remoteRoadSite() || require('./roads').repairTarget(0.3))) { T.builder = 1; roadBuilder = true; }
+    // Not gated on defLow (patrol 10-20 10:2x: storage hovers 13.9-15.3k around the 15k floor, defLow true at every check, builder
+    // never spawned in 30 min); it refills from the remote container (builder.remoteRefill), only a deep drain (<reserve-3k) stops it.
+    if (!T.builder && room.storage && rcl >= 6 && room.storage.store[RESOURCE_ENERGY] >= dr - 3000 && (require('../roles/builder').remoteRoadSite() || require('./roads').repairTarget(0.3))) { T.builder = 1; roadBuilder = true; }
     // A site no builder will work must not cost an upgrader slot ('sites ? 1 : 2' frees feed for a builder). Patrol 10-20 07:2x:
     // walls.js NW spur road 30,12 (0/300) sat with builder target 0 (storage at the 15k floor) -> upgrader target 1, the 2nd
     // 14W upgrader died unreplaced (~-8 e/t upgrade) against Misaki's 'upgrade first until RCL7'.

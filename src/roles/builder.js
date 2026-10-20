@@ -104,6 +104,21 @@ function pickSource(c, home, Ph, ctlSrc, fx, fy) {
   if (!cands.length) cands = require('./hauler').pickups(home).filter(s => s.store[RESOURCE_ENERGY] >= c.store.getFreeCapacity() + 200);
   return cands.length ? _.max(cands, s => score(s) * (s === hubLink ? 1.5 : 1)) : null;
 }
+// Route-road builder at the 15k reserve (defLow: pickSource gives nothing). Misaki 10-20: remote roads must never decay away.
+// Refill from that remote's own container (its rhaulers sit ~80% waiting_pickup) instead of home storage; start building with
+// >=100 carried when the container is dry. Patrol 10-20 10:2x: 13 W45N8 road sites 0/7500, no builder could get energy.
+function remoteRefill(c, home) {
+  const W = require('../managers/walls');
+  if (!(W.defLow && W.defLow(home)) || (W.siege && W.siege(home))) return false;
+  const s = remoteRoadSite(), rm = s && s.pos.roomName, cfg = rm && remote.CFG[rm];
+  if (!cfg || !cfg.cont) return false;
+  if (c.room.name !== rm) { if (c.store[RESOURCE_ENERGY] >= 100) { c.memory.working = true; return true; } hop(c, rm); return true; }
+  const k = c.room.lookForAt(LOOK_STRUCTURES, cfg.cont[0], cfg.cont[1]).find(z => z.structureType === STRUCTURE_CONTAINER);
+  if (!k) return false;
+  if (k.store[RESOURCE_ENERGY] < 50 && c.store[RESOURCE_ENERGY] >= 100) { c.memory.working = true; return true; }
+  if (move.to(c, k.pos.x, k.pos.y, 1) && k.store[RESOURCE_ENERGY] >= 50) c.withdraw(k, RESOURCE_ENERGY); else trace.why(c, 'u');
+  return true;
+}
 // one step along a remote's fixed exits toward room `dest` (home <-> remote, either direction)
 function hop(c, dest) {
   const rm = remote.CFG[dest] ? dest : c.room.name, R = remote.CFG[rm] ? remote.route(rm) : null;
@@ -113,7 +128,7 @@ function hop(c, dest) {
   if (c.pos.x === ex && c.pos.y === ey) { c.move(ex === 49 ? RIGHT : ex === 0 ? LEFT : ey === 49 ? BOTTOM : TOP); return; }
   move.to(c, ex, ey, 0);
 }
-module.exports = { remoteRoadSite, pickSource, hop, run(c) {
+module.exports = { remoteRoadSite, remoteRefill, pickSource, hop, run(c) {
   const room = c.room, P = plan.get(c.memory.home || room.name) || plan.get(room.name);
   if (!P) return;
   if (c.memory.working && c.store[RESOURCE_ENERGY] === 0) { c.memory.working = false; }
@@ -147,6 +162,7 @@ module.exports = { remoteRoadSite, pickSource, hop, run(c) {
       const k = room.lookForAt(LOOK_STRUCTURES, RC.cont[0], RC.cont[1]).find(s => s.structureType === STRUCTURE_CONTAINER);
       if (k && k.store[RESOURCE_ENERGY] >= c.store.getFreeCapacity() + 400) { if (move.to(c, k.pos.x, k.pos.y, 1)) c.withdraw(k, RESOURCE_ENERGY); return; }
     }
+    if (remoteRefill(c, Game.rooms[c.memory.home] || room)) return;
     let src = c.memory.src && Game.getObjectById(c.memory.src);
     if (!src || (src.store ? src.store[RESOURCE_ENERGY] : src.amount) < 50) {
       const home = Game.rooms[c.memory.home] || room;
