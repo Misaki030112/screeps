@@ -90,3 +90,19 @@ FROM cpu_prof GROUP BY 1,2`. The gap noted above is closed.
 
 **Levers, re-ranked:** (1) RCL5/RCL7 body consolidation (no code beyond normal sizing); (2) W45N7 rhaulers to cap at RCL7;
 (3) `mem` 0.37 trim; (4) w8spawn throttle dropped from the list (already ~0.1).
+
+## 2026-10-20 17:4x strategy review: per-role CPU, the creep-count lever
+
+`cpu_prof` 6 h: total **11.49** ms (room_stats 13.35 on STATS ticks), creep 8.98, mem 0.39, remote 0.33, w8spawn 0.30, spawn 0.17,
+towers 0.16 + 0.16, alerts 0.15, trace 0.15; bucket min 9963. `creep_cpu` 6 h, ms per tick by role. Home and remotes 4.4: rhauler 1.42 (6 creeps,
+0.24 each), **queen 0.79 (2, 0.39 each: highest per creep, rp100 14.8 repaths)**, miner 0.56, rminer 0.52, upgrader 0.48, reserver 0.28,
+builder 0.21 (mostly the spawn/recycle churn, fixed e774b85), hauler 0.16. W47N8 4.3: wrhauler 1.10, wbuilder 0.81, whauler 0.70, wupgrader 0.52.
+
+Levers for home, ranked:
+1. **W45N7 rhaulers 5x 8C8M -> 2x 20C20M** (same 40 CARRY/40 MOVE, same 4000 e per cohort, cap 2300 already allows it): -3 creeps, about
+   **-0.7 ms (~6%)** at zero energy cost. Risks: the container has ~3 free neighbours, the rhGap stagger and the 120-t spawn time on lead 140, and lumpier
+   deliveries. Ship it as a patrol-watched trial (rollback = one constant), not blind. Proposed, not shipped.
+2. Queen repath (rp100 14.8 vs rhauler 4.3): sticky fill order / cached paths, ~0.1-0.2 ms.
+3. Tower `repair()` on an already full `towerRep` (re-picked every 10 t): two wasted intents per tick, ~0.05 ms. It also makes the ledger
+   `tr` overcount, so fix it together with a ledger pre-check (`target.hits < hitsMax`).
+4. Builder churn: done (e774b85).

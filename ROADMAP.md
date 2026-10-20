@@ -3,6 +3,16 @@
 Novice zone ends **2026-10-28 03:33 UTC+8**. Defence timeline: `docs/DEFENSE_NOVICE.md` (2026-10-16); detail `docs/DEFENSE.md` / geometry `docs/DEFENSE_PLAN.md`.
 **Safe mode: NEVER auto-activate** — alert Misaki.
 
+## 2026-10-20 17:4x strategy review: home overhead + CPU (`docs/MODEL.md` "17:4x", `docs/CPU.md` "17:4x")
+
+- **Breakdown (ledger 1603 t + 6 h DB):** income 40.0 e/t, every source fully mined. 6 h: upgrade **18.8**, spawn bodies 16.3 gross (rhauler 4.5, reserver 2.75, upgrader 2.1, builder 1.7, queen 1.4, rminer 1.2, w8defender 0.85, miner 0.8, reserve7 0.75 until 11:5x, hauler 0.3), towers 2.6 roads (ledger upper bound) + 0.9 ramparts, build 1.8, remote containers 1.0, link 0.4, storage -0.2.
+- **Gap to the 26.2 ideal is overhead, not loss:** towers ~+1.5 over the model (the W45N8 haul leg is repaired at 10-14 range, 44-60 hits/e), builds +1.9, W47N8 defence/reserve7 +1.6, queens +1.1 (Misaki's sizing), upgrader bodies +0.7, cohort timing +0.9. Corrected ceiling with no build or defence spend: ~23. Upgraders are energy-bound at the 15k floor, so each extra spend comes out of upgrade 1:1.
+- **Bug found and fixed: e774b85 (t83762681) + a263131 (t83762716).** The floor-time road builder spawned for W45N8 route road 2,12 (24%) could not refill for a repair job. It recycled after 50 t and was respawned, 7 times in ~1400 t (7x1000 e through the extensions, ~22% of Spawn1 time), and 2,12 never got repaired. Now the builder refills at the W45N8 container, works route roads < 50% first and keeps the repair sticky. With a builder alive and T.builder 0, the upgrader target stays at 2. `tests/builder_route_repair.js` fails on the old code; all tests pass. Live t83762731: 2,12 6000 -> 16000, roleTargets upgrader 2 / builder 0, errors 0, bucket 9997.
+- **Fleets:** rhaulers are not oversized in energy (W45N7 8C8M wait 14-24%, W45N8 24C12M 32-45%, both remotes deliver ~9-10 e/t). The home hauler stays (salvage + mineral). The queen pair stays (Misaki).
+- **Proposed next (CPU):** W45N7 rhaulers 5x8C8M -> 2x20C20M (same parts and energy, -3 creeps ~ -0.7 ms) as a watched trial; queen repath (rp100 14.8); tower full-target repair intents + ledger `tr` pre-check.
+- **Patrol watch:** `builder` spawn names should no longer come < 300 t apart; W45N8 route roads min >= 30%; roleTargets.upgrader 2 while home road sites wait.
+- **Plan check:** home RCL6 817k/3.645M. **RCL7 ETA ~10-28 01:30 at the 6 h 18.7 e/t, only ~2 h before novice end 10-28 03:33**; ~10-27 08:00 at the 24 h 20.8; ~10-27 03:00 at 21.5. W47N8 RCL5 101k/1.215M, RCL6 ~10-24 09:00 at 14.8 e/t (6 h, move prep), ~10-23 11:00 at 20. CPU 11.5 avg (13.3 stats ticks) of 20, bucket 10000.
+
 ## 2026-10-20 11:4x strategy review: road upkeep, who repairs what (`docs/ROADS.md` "Upkeep review")
 
 - **Found:** the home leg of the remote haul route (38,30 -> 48,15, shared by all 6 rhaulers) and the other road-plan tiles were in no layout plan, so towers skipped them, and the only other repairer (builders < 80%) is 0 while storage sits at the 15k floor. Live t83757409 they were at 34-52% (44,19 1700/5000); wear ~1.8 hits/t means a full road lasts ~3.3 h. The home spurs that decayed out this morning were the same gap.

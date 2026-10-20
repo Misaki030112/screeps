@@ -82,3 +82,65 @@ Question: home "ideal" is 26.0 e/t but hours rarely exceed ~25 and the 24 h aver
   is small (~0.1 e/t); the point is moving ~1.3 e/t off home (≈ 8k t ≈ 9-10 h earlier RCL7) onto W47N8 (≈ 2-3 h later RCL6 ~10-22, which adds no tower).
   tests/reserve7_owner.js. Revert = one commit if Misaki prefers W47N8 RCL6 first.
 - Not changed: queen pair (Misaki's call), rhaulers (64 CARRY vs need ~65; idle 84% waiting_pickup is remote containers near-empty, not overcapacity of note).
+
+## 2026-10-20 17:4x strategy review: home overhead + CPU
+
+Question: home upgrades ~18.8 e/t against a flow ideal of 26.2 and the 04:4x "realistic ceiling" of 23.3. Where does the rest go, are the
+hauler fleets oversized, and what is the cheapest safe cut? Data: `Memory.ledger` (t0 83760934, 1603 t to t83762537, 15:4x-17:3x),
+`room_stats` / `creep_ticks` / `idle_by_reason` / `creep_cpu` / `cpu_prof` for 6 h (t83757400-83762600, 5200 t, 4.18 s/t).
+
+**Income (ledger, harvested):** source A 10.00, B 10.00, W45N8 9.92, W45N7 10.11 = **40.0 e/t**. Regen waste 0.08. Every source is fully mined.
+
+**Where it goes, 1603-t ledger window (e/t):**
+
+| Sink | e/t | Note |
+|---|---|---|
+| upgrade | 19.25 | room_stats progress (ledger `up` says 16.79: about 13% undercount, open measurement issue) |
+| spawn bodies, gross | 19.65 | rhauler 3.62, reserver 3.24, **builder 4.37**, upgrader 2.90, queen 1.50, rminer 1.50, w8defender 1.37, miner 0.87, hauler 0.28 |
+| ...of which recycled back | -3.5 | 6 builders recycled at TTL ~1300-1450 (tombstones picked up by the home hauler) |
+| towers: roads/containers `tr` | 2.62 | **upper bound**: the hook counts every OK `repair()`, the engine charges nothing on a full target (see below) |
+| towers: ramparts `tw` | 0.86 | decay top-up of the `rampHW` ratchet (~17 ramparts x 3 hits/t) |
+| build `b` | 1.78 | home road sites |
+| remote container repair | 1.00 | 0.5 each (decay 0.5/t, as modelled) |
+| link loss | 0.38 | |
+| storage + ctl container | -1.5 | 15.15k -> 14.1k, ctl container 1.4k -> 0 |
+
+Balance: 40.0 + 1.5 + 3.5 = 45.0 in vs ~45.5 out, closed to ~0.5 e/t.
+
+**Six-hour picture (5200 t):** upgrade **18.80**, storage -0.18. Spawn gross 16.3 e/t: rhauler 4.46, reserver 2.75, upgrader 2.09,
+builder 1.73 (~0.5 net), queen 1.38, rminer 1.23, w8defender 0.85, miner 0.81, reserve7 0.75 (home-paid until t83758200; W47N8 pays now), hauler 0.26.
+Steady-state bodies for today's fleet: rhauler 3.87 + reserver ~2.5 + upgrader 2.07 + queen 1.60 + rminer 1.07 + miner 0.93 + hauler 0.30 = **12.3 e/t**.
+
+**Gap 26.2 -> 18.8 (7.4 e/t), item by item against the flow model:**
+- Towers about +1.3 to +2.9 over the modelled 0.56 (roads 0.23 + ramparts 0.33). Since e3d66d7 (11:4x) towers also keep the W45N8 haul leg 38,30->48,15
+  above 60%. That leg is 10-14 tiles from towers 36,29/37,33, so a repair yields 44-60 hits/e, against 100 for a creep. The ledger figure is
+  inflated: `towerRep` is re-picked only every 10 ticks, and both towers keep calling `repair()` on a road that is already full (the engine skips it at no cost).
+  Closing the balance puts the real tower spend at ~1.5-2 e/t.
+- Builds plus builder bodies about +1.9 (b 1.78 + net builder bodies ~0.5, minus the 0.4 builder-lite in the model). This includes the **builder churn** below.
+- W47N8 support +1.6 (w8defender 0.85 joint defence, reserve7 0.75 until t83758200). Now ~0.85 and only while the north camp lasts.
+- Queens +1.0..1.2 (2x 16C8M = 1.6 vs 0.43 modelled; Misaki's refill-speed sizing, kept).
+- Upgrader bodies +0.7 (2-3x 14W1C2M vs the 1300/1500/12 fold).
+- Spawn cohorts +0.9 (rhauler/reserver lives bunched in the 6 h window; this shifts energy in time and loses none).
+Sum ~9.0 against 7.4 + the -0.2 storage change. The ~1.5 surplus is the tower overcount.
+**Root cause, not 4 e/t of loss:** the 23.3 ceiling assumed model tower upkeep (0.56) and no build or defence spend. Correct it for
+reserve7 leaving home (+1.3 -> 24.6), then subtract real towers (~-1.5), build (-1.8), W47N8 defence (-0.85) and cohorts plus builder churn (-1.4).
+That gives ~19. Upgraders are energy-bound at the 15k floor, so every non-upgrade spend comes straight out of upgrade.
+
+**Builder churn (bug, shipped e774b85 + a263131):** spawn.js spawns one 5W5C5M "road builder" at the 15k floor when a W45N8 route road is
+< 30% (`roads.repairTarget(0.3)`; W45N8 2,12 swamp road 6000/25000 = 24%). `builder.remoteRefill` only refilled at the remote container
+for road **sites**, so for a **repair** job the builder got nothing at defLow. It idled 50 t next to the spawn (`waiting_feed`) and recycled,
+then spawn.js spawned the next one. That happened 7 times in ~1400 t (builder83761171 ... 83762373, lives 18-213 t): 7 x 1000 e cycled through the
+extensions, ~45 t of Spawn1 each (~22% of the only home spawn), builder CPU ~0.2 ms/t. Meanwhile 2,12 kept decaying, against
+Misaki's "remote roads must never decay away". Fix: `routeJob()` = W45N8 road site or route road < 50%. The builder refills at the W45N8
+container for it, route roads < 50% go before home road sites, and a remote repair target stays sticky until 90%. The spawn trigger
+stays at 30%, which gives hysteresis. Companion fix: with a builder alive but `T.builder` 0, the "sites ? 1 : 2" rule no longer drops the upgrader target to 1.
+Live: 2,12 went 6000 -> 16000 in ~50 t (t83762731), roleTargets upgrader 2 / builder 0, errors 0. Expected: about +0.3-0.5 e/t (recycle loss and
+refill churn), ~0.15-0.2 ms CPU, ~20% of Spawn1 time freed, route road kept. Builder churn shows up in patrols as `builder` spawn names < 300 t apart.
+
+**Fleet checks (6 h idle_by_reason, per creep):**
+- W45N7 rhaulers 5x 8C8M: moving 70-79%, `waiting_pickup` 14-24%. The W45N8 24C12M: moving 47-54%, waiting 32-45%. Both remotes deliver
+  ~9-10 e/t, which is near full. The "83% idle" figure counted only idle reasons; as a share of all ticks, waiting is ~21%. **Not oversized in energy terms.** Trimming
+  W45N8 to 16C8M saves only ~0.4 e/t, and with 800 carry container 13,11 reached 1891/2000 on 10-18. Kept.
+- Home hauler 6C3M: waiting 69%, 0.3 e/t, 0.16 ms. It is the creep that picked up the recycled builders' tombstones (300 per trip at 34,30) and
+  the mineral container. Kept; the spawn-on-demand idea (02:4x) still stands for RCL7.
+- Queens x2 (16C8M): target_full 29%, moving 48%, working 19%; energy_fill 0.83. A 3rd is not needed, and 2 -> 1 is Misaki's call (refill speed).
