@@ -18,7 +18,7 @@ module.exports.loop = function () {
   const newAlerts = [];
   for (const n in Memory.creeps) if (!Game.creeps[n]) delete Memory.creeps[n];
   for (const n in Game.spawns) { const sp = Game.spawns[n]; if (sp.room.name === W8.ROOM) err.wrap('w8spawn', () => W8.spawnRun(sp)); else err.wrap('spawn ' + n, () => spawnMgr.run(sp)); }
-  for (const n in Game.rooms) { const r = Game.rooms[n]; if (r.controller && r.controller.my && n === W8.ROOM) { err.wrap('w8layout', () => W8.layoutRun(r)); err.wrap('w8tower', () => W8.towerRun(r)); continue; } if (r.controller && r.controller.my) { err.wrap('layout ' + n, () => layout.run(r)); err.wrap('tower ' + n, () => tower.run(r)); err.wrap('links ' + n, () => links.run(r)); err.wrap('alerts ' + n, () => newAlerts.push(...(alerts.run(r) || []))); } }
+  for (const n in Game.rooms) { const r = Game.rooms[n]; if (r.controller && r.controller.my && n === W8.ROOM) { err.wrap('w8layout', () => W8.layoutRun(r)); err.wrap('w8tower', () => W8.towerRun(r)); continue; } if (r.controller && r.controller.my) { err.wrap('layout ' + n, () => layout.run(r)); err.wrap('tower ' + n, () => tower.run(r)); err.wrap('links ' + n, () => links.run(r)); err.wrap('labs ' + n, () => require('./managers/labs').run(r)); err.wrap('alerts ' + n, () => newAlerts.push(...(alerts.run(r) || []))); } }
   err.wrap('remote', () => remote.run());
   err.wrap('roads', () => require('./managers/roads').run()); // RCL6 road plan (docs/ROADS.md), no-op below RCL6
   for (const n in Game.rooms) { const r = Game.rooms[n]; if (remote.CFG[n]) err.wrap('alerts ' + n, () => newAlerts.push(...(alerts.run(r) || []))); }

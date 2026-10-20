@@ -56,3 +56,11 @@ It has no effect before ~10-21 20:30 in any case, because the mineral is deplete
 - A. Next O cycle (from ~10-21 20:30 UTC+8): pause it until RCL7 (`mineralCap 30000`, recommended, ~+15k energy to upgrade), or keep mining (default).
 - B. Sell O: none (default, recommended until there is a credit use), or sell the best lot only (~13.9k O -> ~384k credits for ~8.1k energy) as an emergency credit fund for after 10-28.
 - No energy buying in any case (~107 credits per net energy).
+
+## Lab scaffold + boost path (2026-10-20 21:0x, Misaki "开矿物线")
+Live t83765239: terminal, extractor, container 41,24, mminer, hauler mineral run and 3 labs (34,22 out; 33,21 + 35,21 in, all range <= 2)
+already stand since 10-18. O 34,848 in stock, mineral regen ~10-21 20:37. Credits 0.
+`src/managers/labs.js` (tests/labs.js) runs the reaction only with `Memory.ops.labs = { W46N8: 'KO' }`; `task()` (terminal<->lab
+moves) is not wired to a carrier yet. Off = zero cost.
+Prices (sell, shard3): K 14.95 (hist 18.7), L 148, U 15.7, H 144, KO 44.9 (500 only), LO 157, UH 15.5 (327 only), OH 686.
+Realistic: sell O for credits -> buy K -> KO (ranged x2 via RANGED_ATTACK boost) with our own O. 1 KO = 1 K + 1 O; boost = 30 KO + 20 e per part.
