@@ -225,13 +225,16 @@ function swapTemp(room, minE = 50000) {
 // prep only fires when it is safe: no hostiles/threat mode, storage >= MOVE_E (whole spawn bill banked), spawn idle and full, both
 // miners + 2 haulers TTL >= 500, a builder TTL >= 700 (nobody needs a spawn during the ~300-500 t build). While in prep the room banks
 // (upgraders capped at 1). Abort = set phase 'hold' (prep never resumes on its own once held).
-const MOVE_E = 16000;
+const MOVE_E = 16000, N9_QUIET = 150; // ~one north_watch scan (10 min ~ 140 t)
 function moveReady(room) {
   const sp = room.find(FIND_MY_SPAWNS)[0], cs = mine(), ttl = (r, t) => cs.filter(c => c.memory.role === r && c.ticksToLive >= t).length;
   const why = [];
   if (!sp || sp.pos.x !== C.SPAWN[0] || sp.pos.y !== C.SPAWN[1]) why.push('spawn');
   if (sp && sp.spawning) why.push('spawning');
-  if (room.find(FIND_HOSTILE_CREEPS).length || TH.on() || TH.invasion()) why.push('threat');
+  // 10-20 14:0x (Misaki ordered the move today): TH.on() never clears while W48N9 holds >=2 armed (north_watch refreshes w8threatN), so
+  // gate only on real proximity: hostiles in W47N8, invasion(), or armed creeps in W47N9 (north_watch w8n9a) within N9_QUIET ticks.
+  const n9 = (Memory.ops || {}).w8n9a || 0;
+  if (room.find(FIND_HOSTILE_CREEPS).length || TH.invasion() || (n9 > 0 && Game.time - n9 < N9_QUIET)) why.push('threat');
   if (!room.storage || room.storage.store[RESOURCE_ENERGY] < MOVE_E) why.push('storage');
   if (room.energyAvailable < room.energyCapacityAvailable) why.push('energy');
   if (ttl('w8miner', 500) < 2 || ttl('w8hauler', 500) < 2 || ttl('w8builder', 700) < 1) why.push('ttl');

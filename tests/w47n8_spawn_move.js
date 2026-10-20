@@ -28,7 +28,9 @@ Memory.ops.w8move = { phase: 'prep' };
 W.moveRun(room); assert.strictEqual(Memory.ops.w8move.phase, 'prep'); assert.ok(Memory.ops.w8move.why.includes('storage') && Memory.ops.w8move.why.includes('ttl'));
 room.storage.store.energy = 17000; cr('w8miner', 1400); hostiles.push({});
 W.moveRun(room); assert.deepStrictEqual(Memory.ops.w8move.why, ['threat'], 'hostile blocks');
-hostiles.pop(); W.moveRun(room); assert.strictEqual(Memory.ops.w8move.phase, 'build'); assert.ok(!S.includes(sp), 'old spawn destroyed');
+hostiles.pop(); Memory.ops.w8n9a = Game.time - 50; W.moveRun(room); assert.deepStrictEqual(Memory.ops.w8move.why, ['threat'], 'armed in W47N9 recently blocks');
+Memory.ops.w8n9a = Game.time - 200; Memory.ops.w8threatN = Game.time; // W48N9 camp keeps TH.on(), must not block
+W.moveRun(room); assert.strictEqual(Memory.ops.w8move.phase, 'build'); assert.ok(!S.includes(sp), 'old spawn destroyed');
 W.moveRun(room); assert.ok(sites.some(s => s.structureType === 'spawn' && s.pos.x === 32 && s.pos.y === 32), 'site at 32,32');
 const n = sites.length; W.moveRun(room); assert.strictEqual(sites.length, n, 'one site only');
 mk('spawn', 32, 32); W.moveRun(room); assert.strictEqual(Memory.ops.w8move.phase, 'ext');
