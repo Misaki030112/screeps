@@ -461,7 +461,8 @@ const R = {
     // CPU 13:10: sticky repair target, rescanned every 15 ticks or when done (was 2-3 FIND_STRUCTURES scans per builder per tick)
     let rep = c.memory.rj && Game.getObjectById(c.memory.rj);
     if (!rep || Game.time >= (c.memory.rjt || 0) || rep.hits >= (rep.structureType === STRUCTURE_WALL || rep.structureType === STRUCTURE_RAMPART ? TH.wallTarget(TH.planTarget(c.room.controller.level, C.WALL_TARGET[c.room.controller.level] || 0)) : rep.hitsMax * 0.95)) {
-      rep = rr(0.1) || wallJob(c.room, c) || rr(0.6); c.memory.rj = rep ? rep.id : undefined; c.memory.rjt = Game.time + 15;
+      const mvp = Memory.ops && Memory.ops.w8move && Memory.ops.w8move.phase === 'prep'; // 15:5x: road/container upkeep paused while banking (only <10% urgent)
+      rep = rr(0.1) || wallJob(c.room, c) || (mvp ? null : rr(0.6)); c.memory.rj = rep ? rep.id : undefined; c.memory.rjt = Game.time + 15;
     }
     if (rep) {
       if (c.pos.inRangeTo(rep, 3)) { c.repair(rep); return; }

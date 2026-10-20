@@ -28,7 +28,7 @@ cr('w8hauler', 1000); cr('w8hauler', 1001); cr('w8hauler', 1002); cr('w8filler',
 Memory.ops.w8move = { phase: 'prep' };
 const run = () => { out.length = 0; try { W.spawnRun(spawn); } catch (e) { out.push('ERR ' + e.message); } return out[0]; };
 const a = run(); assert.strictEqual(a, 'w8builder', 'prep near MOVE_E, builder TTL 650 -> fresh builder queued, got ' + a);
-room.storage.store.energy = 9000; const b = run(); assert.notStrictEqual(b, 'w8builder', 'bank far from MOVE_E -> no builder yet');
+room.storage.store.energy = 4000; const b = run(); assert.notStrictEqual(b, 'w8builder', 'bank far from MOVE_E -> no builder yet');
 room.storage.store.energy = 13500; cr('w8builder', 1450); const c2 = run(); assert.notStrictEqual(c2, 'w8builder', 'fresh builder alive -> no extra');
 Memory.ops.w8move.phase = 'done'; delete Game.creeps.w8builder1450; const d = run(); assert.notStrictEqual(d, 'w8builder', 'not banking -> rule off');
 // (2) builder with nothing to build/repair: parks during prep (no upgrade, no storage withdraw); upgrades again once the move is done

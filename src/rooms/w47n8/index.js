@@ -130,11 +130,11 @@ function spawnRun(spawn) {
   // 10-20 14:4x strategy review: moveReady needs a builder with TTL >= 700, but with 0 sites and the north line at the stage-1 cap
   // nothing spawns one, so the move could stall on 'ttl' after the bank fills. Queue one once storage is within 3k of MOVE_E.
   const mv8 = Memory.ops && Memory.ops.w8move;
-  if (!want && mv8 && mv8.phase === 'prep' && room.storage && room.storage.store[RESOURCE_ENERGY] >= MOVE_E - 3000
+  if (!want && mv8 && mv8.phase === 'prep' && room.storage && bankE(room) >= MOVE_E - 3000
     && !cs.some(c => c.memory.role === 'w8builder' && (c.spawning || c.ticksToLive >= 700))) want = 'w8builder';
   if (!want && wallsLow && nUp() < (room.controller.ticksToDowngrade < 10000 || stock8() > 3000 ? 2 : 1)) want = 'w8upgrader';
   else if (!want && wallsLow && n('w8builder') < 3) want = 'w8builder';
-  else if (!want && !wallsLow && nUp() < (moving() ? 1 : sites ? 2 : 3)) want = 'w8upgrader'; // 13:39 spawn move: bank for the 15k spawn
+  else if (!want && !wallsLow && nUp() < (moving() ? (room.controller.ticksToDowngrade < 20000 ? 1 : 0) : sites ? 2 : 3)) want = 'w8upgrader'; // 15:5x: 0 upgraders while moving unless downgrade < 20k // 13:39 spawn move: bank for the 15k spawn
   // 14:55 model-driven (tools/model_w8.py -> Memory.ops.w8model): remote fleet sized by CARRY need = sum 10 x (rt x 1.1 + 4) / 50 over
   // both W47N7 sources (~52 at 14:55) instead of loose-pile thresholds (live 88 CARRY: rhaulers 82% moving/12% blocked, +1.8 e/t upkeep).
   // Floor (ahead of builders): 60% of need; full need + a backlog term (+16 CARRY per 2000 loose above 3000) in step 7.
@@ -232,7 +232,10 @@ function swapTemp(room, minE = 50000) {
 // prep only fires when it is safe: no hostiles/threat mode, storage >= MOVE_E (whole spawn bill banked), spawn idle and full, both
 // miners + 2 haulers TTL >= 500, a builder TTL >= 700 (nobody needs a spawn during the ~300-500 t build). While in prep the room banks
 // (upgraders capped at 1). Abort = set phase 'hold' (prep never resumes on its own once held).
-const MOVE_E = 16000, N9_QUIET = 150; // ~one north_watch scan (10 min ~ 140 t)
+// 10-20 15:5x (Misaki: move ASAP): bank 16k -> 9k in storage + hub container. The 15k site is built from the bank plus live income
+// (W47N8 + W47N7 ~20-25 e/t keeps flowing through haulers while no spawn exists): ~6k / 22 e/t ~ 280 t extra build time.
+const MOVE_E = 9000, N9_QUIET = 150; // ~one north_watch scan (10 min ~ 140 t)
+const bankE = room => (room.storage ? room.storage.store[RESOURCE_ENERGY] : 0) + _.sum(room.lookForAt(LOOK_STRUCTURES, C.HUB_CONT[0], C.HUB_CONT[1]).filter(s => s.structureType === STRUCTURE_CONTAINER), s => s.store[RESOURCE_ENERGY]);
 function moveReady(room) {
   const sp = room.find(FIND_MY_SPAWNS)[0], cs = mine(), ttl = (r, t) => cs.filter(c => c.memory.role === r && c.ticksToLive >= t).length;
   const why = [];
@@ -242,7 +245,7 @@ function moveReady(room) {
   // gate only on real proximity: hostiles in W47N8, invasion(), or armed creeps in W47N9 (north_watch w8n9a) within N9_QUIET ticks.
   const n9 = (Memory.ops || {}).w8n9a || 0;
   if (room.find(FIND_HOSTILE_CREEPS).length || TH.invasion() || (n9 > 0 && Game.time - n9 < N9_QUIET)) why.push('threat');
-  if (!room.storage || room.storage.store[RESOURCE_ENERGY] < MOVE_E) why.push('storage');
+  if (!room.storage || bankE(room) < MOVE_E) why.push('storage');
   if (room.energyAvailable < room.energyCapacityAvailable) why.push('energy');
   if (ttl('w8miner', 500) < 2 || ttl('w8hauler', 500) < 2 || ttl('w8builder', 700) < 1) why.push('ttl');
   return why;
