@@ -284,12 +284,12 @@ function moveRun(room) {
 // 10-20 20:1x (Misaki: "move the whole base, not just the spawn"): ext phase no longer waits for storage > 3500 and one-at-a-time swaps.
 // The remaining west extensions (TEMP_EXT, farthest from storage first) are destroyed in one batch of <= EXT_BATCH and their
 // replacements are placed right away in the next unbuilt ORDER.extension slots near storage (sites are built from live income).
-// Guards: no hostile in room, spawn not mid-spawn, capacity after the batch >= EXT_CAP_MIN (filler/guard/miner bodies fit), and no
+// Guards: no hostile in room, capacity after the batch >= EXT_CAP_MIN (filler/guard/miner bodies fit), and no
 // extension site still pending (next batch waits for the previous one). 50 e of stored energy per destroyed extension is lost.
 const EXT_BATCH = 5, EXT_CAP_MIN = 1300;
 function extBatch(room, m) {
   const sp = room.find(FIND_MY_SPAWNS)[0];
-  if (!sp || sp.spawning || room.find(FIND_HOSTILE_CREEPS).length) return 0;
+  if (!sp || room.find(FIND_HOSTILE_CREEPS).length) return 0; // spawning is fine: its energy is already paid
   if (room.find(FIND_MY_CONSTRUCTION_SITES, { filter: s => s.structureType === STRUCTURE_EXTENSION }).length) return 0;
   const [sx, sy] = L.ORDER.storage[0], d = p => Math.max(Math.abs(p.x - sx), Math.abs(p.y - sy));
   const temp = L.TEMP_EXT.map(([x, y]) => room.lookForAt(LOOK_STRUCTURES, x, y).find(s => s.structureType === STRUCTURE_EXTENSION)).filter(Boolean).sort((a, b) => d(b.pos) - d(a.pos));
