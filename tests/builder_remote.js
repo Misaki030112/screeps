@@ -172,6 +172,29 @@ const cases = [
     delete P.any[34 * 50 + 34];
     delete RCFG.W45N8; delete Game.getObjectById;
   }],
+  ['home spur road sites wait while a W45N8 route road site is open (10-20 11:2x)', () => {
+    RCFG.W45N8 = { cont: [13, 11], roads: [[3, 11]], live: true };
+    global.LOOK_STRUCTURES = 'structure'; global.WORK = 'work';
+    const site = { id: 's4', pos: { roomName: 'W45N8', x: 3, y: 11 }, progress: 0, progressTotal: 300, structureType: STRUCTURE_ROAD };
+    const spur = { id: 'h1', pos: { roomName: 'W46N8', x: 28, y: 10 }, progress: 0, progressTotal: 1500, structureType: STRUCTURE_ROAD };
+    Game.getObjectById = id => (id === 's4' ? site : id === 'h1' ? spur : null);
+    Game.rooms.W45N8 = { name: 'W45N8', lookForAt: (t, x, y) => (t === LOOK_CONSTRUCTION_SITES && x === 3 && y === 11 ? [site] : []), find: () => [site] };
+    const home = { name: 'W46N8', storage: { pos: { x: 37, y: 31, roomName: 'W46N8' }, store: { [RESOURCE_ENERGY]: 15200 } } };
+    Game.rooms.W46N8 = home;
+    W = { sites: [spur], roads: [], containers: [] };
+    const store = { energy: 250, [RESOURCE_ENERGY]: 250, getCapacity: () => 250, getFreeCapacity: () => 0, getUsedCapacity: () => 250 };
+    const c = { room: home, memory: { role: 'builder', home: 'W46N8', working: true }, store, pos: { x: 38, y: 30, roomName: 'W46N8', getRangeTo: () => 10 },
+      build: () => { W.built = true; return 0; }, repair: () => 0, getActiveBodyparts: () => 5 };
+    B.run(c);
+    assert.strictEqual(c.memory.t, 's4', 'remote route road site before a home spur road site');
+    assert.deepStrictEqual(W.moved, [49, 14], 'must hop toward W45N8');
+    // a home extension site still outranks the remote road
+    const ext = { id: 'e1', pos: { roomName: 'W46N8', x: 30, y: 30 }, progress: 0, progressTotal: 3000, structureType: STRUCTURE_EXTENSION };
+    Game.getObjectById = id => (id === 'e1' ? ext : id === 's4' ? site : null);
+    W.sites = [spur, ext]; c.memory.t = undefined; B.run(c);
+    assert.strictEqual(c.memory.t, 'e1');
+    delete RCFG.W45N8; delete Game.getObjectById;
+  }],
   ['storage at the 15k defense reserve: route-road builder refills from the remote container, not starved at home (10-20 10:2x)', () => {
     RCFG.W45N8 = { cont: [13, 11], roads: [[3, 11]], live: true };
     global.LOOK_STRUCTURES = 'structure'; global.Memory = { defense: { reserveE: 15000 } };

@@ -223,9 +223,11 @@ module.exports = { remoteRoadSite, remoteRefill, pickSource, hop, run(c) {
     const fj = W.belowFloor(home) && W.repairJob(home, c.pos, new Set(Object.values(Game.creeps).filter(x => x !== c && x.memory.role === 'builder').map(x => x.memory.t)));
     if (fj && !sites.some(s => s.structureType === STRUCTURE_WALL || s.structureType === STRUCTURE_RAMPART)) { t = Game.getObjectById(fj.id); c.memory.tcap = fj.cap; c.memory.t = t && t.id; }
     if (!t) {
-    // v2.2: trunk road sites (placed in parallel) wait while an economic remote road site is open
-    const RDm = require('../managers/roads'), rs = sites.some(s => s.structureType === STRUCTURE_ROAD && RDm.isTrunkTile && RDm.isTrunkTile(s.pos.x, s.pos.y)) && remoteRoadSite();
-    const pick = rs ? sites.filter(s => !(s.structureType === STRUCTURE_ROAD && RDm.isTrunkTile(s.pos.x, s.pos.y))) : sites;
+    // v2.2: home road sites (trunk and re-sited spurs) wait while a remote route road site is open. Patrol 10-20 11:2x: the
+    // route-road builder refilled at the W45N8 container, walked home and built re-sited home spurs 30,12/29,11/28,10/15,43
+    // for ~800t while the 13 W45N8 sites stayed 0 (Misaki: remote roads must never decay away). Non-road home sites still go first.
+    const rs = sites.some(s => s.structureType === STRUCTURE_ROAD) && remoteRoadSite();
+    const pick = rs ? sites.filter(s => s.structureType !== STRUCTURE_ROAD) : sites;
     // v5: spread builders over far wall sites: a site another builder already holds costs +60 range
     const held = new Set(Object.values(Game.creeps).filter(x => x !== c && x.memory.role === 'builder').map(x => x.memory.t));
     if (pick.length) t = _.min(pick, s => (PRIO[s.structureType] ?? 9) * 100 + (s.pos.roomName === c.pos.roomName ? c.pos.getRangeTo(s) : 50) + (held.has(s.id) ? 60 : 0));
