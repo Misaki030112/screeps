@@ -22,11 +22,20 @@ function mkRoom(rcl, wallHits, sites) {
     find: (k, o) => { const a = k === FIND_STRUCTURES ? walls : k === FIND_MY_CONSTRUCTION_SITES ? sites : []; return o && o.filter ? a.filter(o.filter) : a; },
     lookForAt: () => [] };
 }
-let room = mkRoom(5, 50001, [{ id: 'tw', structureType: STRUCTURE_TOWER, pos: mkPos(24, 8) }]); Game.rooms.W47N8 = room;
+let room = mkRoom(5, 100001, [{ id: 'tw', structureType: STRUCTURE_TOWER, pos: mkPos(24, 8) }]); Game.rooms.W47N8 = room;
 assert.ok(TH.on(), 'threat mode on (fresh w8threatN)');
-assert.strictEqual(TH.urgentTarget(), 50000, 'urgent wall target under threat = 50k floor');
-assert.strictEqual(R._wallJob(room, null, TH.urgentTarget()), null, 'RCL5 seal walls at 50k: nothing urgent');
-assert.ok(R._wallJob(room, null), 'RCL5 seal walls below 100k still a (surplus) job');
+assert.strictEqual(TH.urgentTarget(), 100000, 'urgent wall target under threat = 100k floor (Misaki 10-20)');
+assert.strictEqual(R._wallJob(room, null, TH.urgentTarget()), null, 'RCL5 seal walls at 100k: nothing urgent');
+assert.ok(R._wallJob(room, null), 'move done/absent: walls below 300k are a (surplus) job (stage 3)');
+Memory.ops.w8move = { phase: 'prep' };
+assert.strictEqual(R._wallJob(room, null), null, 'stage 2: spawn move pending -> walls held at 100k');
+assert.strictEqual(TH.planTarget(5, 100000), 100000); assert.strictEqual(TH.planTarget(6, 300000), 100000);
+Memory.ops.w8move.phase = 'done';
+assert.strictEqual(TH.planTarget(5, 100000), 300000); assert.strictEqual(TH.planTarget(6, 300000), 300000); assert.strictEqual(TH.planTarget(4, 50000), 50000);
+// gate rampart 29,3 follows the same staged target
+{ const gr = mkRoom(5, 300000, []); const g = { id: 'g', structureType: STRUCTURE_RAMPART, hits: 150000, pos: mkPos(29, 3) }; const f0 = gr.find;
+  gr.find = (k, o) => k === FIND_STRUCTURES ? [g].filter(o.filter) : f0(k, o); assert.ok(R._wallJob(gr, null) === g, 'gate rampart raised to 300k after move'); }
+delete Memory.ops.w8move;
 // builder with energy at RCL5 under threat: builds tower 24,8 instead of raising walls to 100k
 let built = null, repaired = null;
 const c = { name: 'b1', id: 'b1', room, pos: mkPos(24, 10), memory: { role: 'w8builder', w: true }, store: { energy: 100, getFreeCapacity: () => 0 },
@@ -34,10 +43,10 @@ const c = { name: 'b1', id: 'b1', room, pos: mkPos(24, 10), memory: { role: 'w8b
 R.w8builder.run(c);
 assert.ok(built && built.id === 'tw' && !repaired, 'builder builds tower 24,8 first under threat at RCL5 (built=' + (built && built.id) + ' repaired=' + (repaired && repaired.id) + ')');
 // below the 50k floor the walls still go first under threat
-room = mkRoom(5, 30000, [{ id: 'tw', structureType: STRUCTURE_TOWER, pos: mkPos(24, 8) }]); Game.rooms.W47N8 = room; built = repaired = null;
+room = mkRoom(5, 60000, [{ id: 'tw', structureType: STRUCTURE_TOWER, pos: mkPos(24, 8) }]); Game.rooms.W47N8 = room; built = repaired = null;
 c.room = room; c.memory = { role: 'w8builder', w: true }; c.pos = mkPos(25, 5);
 R.w8builder.run(c);
-assert.ok(repaired && !built, 'seal walls under 50k still go ahead of sites under threat');
+assert.ok(repaired && !built, 'seal walls under 100k still go ahead of sites under threat');
 // spawn side: wall mode (1-2 upgraders) uses the floor, not the RCL target
 const idx = require('fs').readFileSync(path.join(d, 'index.js'), 'utf8');
 assert.ok(/const wallsLow = [^\n]*TH\.urgentTarget\(\)/.test(idx), 'wallsLow threshold uses TH.urgentTarget()');

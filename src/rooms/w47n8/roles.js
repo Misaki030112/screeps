@@ -158,7 +158,7 @@ function pickTile(c, tiles, key) {
 // repair lifted a wall past the others (walls within 200 hits), even walking over with 2 energy left. Now: sticky per-creep
 // target kept until it is 500 above the weakest; new picks are the closest wall within 500 of the weakest.
 function wallJob(room, c, cap) {
-  const tgt = Math.min(cap === undefined ? Infinity : cap, TH.wallTarget(C.WALL_TARGET[room.controller.level] || 0));
+  const tgt = Math.min(cap === undefined ? Infinity : cap, TH.wallTarget(TH.planTarget(room.controller.level, C.WALL_TARGET[room.controller.level] || 0)));
   // 17:15: seal walls only. Core ramparts (14:09) are no longer raised by builders (Misaki: development first, as in home).
   const ws = room.find(FIND_STRUCTURES, { filter: s => (s.structureType === STRUCTURE_WALL || (s.structureType === STRUCTURE_RAMPART && (C.GATE || []).some(([x, y]) => s.pos.x === x && s.pos.y === y))) && s.hits < tgt && C.SEAL.some(([x, y]) => s.pos.x === x && s.pos.y === y) });
   if (!ws.length) { if (c) delete c.memory.wt; return null; }
@@ -444,7 +444,7 @@ const R = {
     const rr = f => c.pos.findClosestByRange(FIND_STRUCTURES, { filter: s => (s.structureType === STRUCTURE_CONTAINER || (s.structureType === STRUCTURE_ROAD && ROADSET.has(s.pos.x * 50 + s.pos.y))) && s.hits < s.hitsMax * f });
     // CPU 13:10: sticky repair target, rescanned every 15 ticks or when done (was 2-3 FIND_STRUCTURES scans per builder per tick)
     let rep = c.memory.rj && Game.getObjectById(c.memory.rj);
-    if (!rep || Game.time >= (c.memory.rjt || 0) || rep.hits >= (rep.structureType === STRUCTURE_WALL || rep.structureType === STRUCTURE_RAMPART ? TH.wallTarget(C.WALL_TARGET[c.room.controller.level] || 0) : rep.hitsMax * 0.95)) {
+    if (!rep || Game.time >= (c.memory.rjt || 0) || rep.hits >= (rep.structureType === STRUCTURE_WALL || rep.structureType === STRUCTURE_RAMPART ? TH.wallTarget(TH.planTarget(c.room.controller.level, C.WALL_TARGET[c.room.controller.level] || 0)) : rep.hitsMax * 0.95)) {
       rep = rr(0.1) || wallJob(c.room, c) || rr(0.6); c.memory.rj = rep ? rep.id : undefined; c.memory.rjt = Game.time + 15;
     }
     if (rep) {

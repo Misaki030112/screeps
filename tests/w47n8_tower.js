@@ -32,7 +32,7 @@ const R = h => ({ name: 'W47N8', find: () => h });
 TH.mark(R([{ owner: { username: 'BustJetter' }, pos: { y: 1 }, body: body({ tough: 14, move: 14 }) }]));
 assert.strictEqual(TH.on(), false, 'TOUGH-only decoy -> no threat (Misaki 10-19)');
 TH.mark(R([{ owner: { username: 'BustJetter' }, pos: { y: 1 }, body: body({ heal: 7, move: 7 }) }]));
-assert.strictEqual(TH.on(), true, 'healer group -> threat'); assert.strictEqual(TH.wallTarget(10000), 50000); assert.strictEqual(TH.flee(), false, 'unarmed tanks do not trigger flee');
+assert.strictEqual(TH.on(), true, 'healer group -> threat'); assert.strictEqual(TH.wallTarget(10000), 100000); assert.strictEqual(TH.flee(), false, 'unarmed tanks do not trigger flee');
 TH.mark(R([{ owner: { username: 'BustJetter' }, pos: { y: 5 }, body: body({ attack: 10, move: 10 }) }])); assert.strictEqual(TH.flee(), true, 'armed in north -> flee');
 Game.time += 21; assert.strictEqual(TH.flee(), false, 'flee clears after 20 quiet ticks');
 Game.time += 1500; assert.strictEqual(TH.on(), false, 'threat reverts after 1500 quiet ticks');

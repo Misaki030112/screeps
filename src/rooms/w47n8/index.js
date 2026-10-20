@@ -117,7 +117,7 @@ function spawnRun(spawn) {
   let body7 = null;
   if (!want) { const w7 = require('../../roles/reserve7').wantSpawn(C.ROOM); if (w7) { want = 'reserve7'; body7 = w7.body; mem = w7.mem; } }
   // 14:23 threat mode: seal walls to 50k ahead of upgrading; 1 upgrader keeps the controller safe (2 if downgrade < 10k)
-  const thr = TH.on(), wtgt = TH.wallTarget(C.WALL_TARGET[(room.controller || {}).level] || 0);
+  const thr = TH.on(), wtgt = TH.wallTarget(TH.planTarget((room.controller || {}).level || 0, C.WALL_TARGET[(room.controller || {}).level] || 0));
   // 15:45 hysteresis: core ramparts decay 300/100t, so a strict '< 50k' gate re-entered wall mode (1-2 upgraders, +builders) ~100 ticks
   // after every top-up. Wall mode starts below 90% of target; builders still repair to the full target (wallJob).
   // 17:15: seal walls only (ramparts no longer part of the wall raise)
