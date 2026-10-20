@@ -188,6 +188,9 @@ const cases = [
     B.run(c);
     assert.strictEqual(c.memory.t, 's4', 'remote route road site before a home spur road site');
     assert.deepStrictEqual(W.moved, [49, 14], 'must hop toward W45N8');
+    // a builder already holding the home spur (sticky) drops it for the remote site
+    c.memory.t = 'h1'; W.moved = null; B.run(c);
+    assert.strictEqual(c.memory.t, 's4', 'sticky home spur yields to the remote route road site');
     // a home extension site still outranks the remote road
     const ext = { id: 'e1', pos: { roomName: 'W46N8', x: 30, y: 30 }, progress: 0, progressTotal: 3000, structureType: STRUCTURE_EXTENSION };
     Game.getObjectById = id => (id === 'e1' ? ext : id === 's4' ? site : null);

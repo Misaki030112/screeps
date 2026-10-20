@@ -213,6 +213,8 @@ module.exports = { remoteRoadSite, remoteRefill, pickSource, hop, run(c) {
   if (t && t.progress !== undefined) {
     const home = Game.rooms[c.memory.home] || room;
     if (rc.sites(home).some(s => (PRIO[s.structureType] ?? 9) < (PRIO[t.structureType] ?? 9))) t = null;
+    // a held home road site yields to an open remote route road site too (same rule as the pick below; live 11:3x 28,10 kept it)
+    else if (t.structureType === STRUCTURE_ROAD && t.pos.roomName === home.name && remoteRoadSite()) t = null;
   }
   }
   if (!t) {
