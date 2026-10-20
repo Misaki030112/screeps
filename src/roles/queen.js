@@ -129,7 +129,9 @@ function storageFloor(room) {
   // wall step held (walls.stepHeld, home RCL6): no builder spends the fund, so it is not reserved in storage; the ferry keeps the
   // defense reserve (Memory.defense.reserveE) and storage above it goes to the controller (Misaki 10-19 20:51 "keep upgrading first").
   if (W.stepHeld && W.stepHeld(room)) return Math.max(base, W.defReserve());
-  return base + W.reserved(room);
+  // Not held (home RCL7+, or threat): reserve + wall fund, and never below reserveE. Step 2 drains the 50k fund to 0 and the floor
+  // fell to 1300, so the ferry would empty storage under the 15k defence reserve in peacetime (strategy review 10-20 08:4x).
+  return Math.max(base + W.reserved(room), W.defReserve ? W.defReserve() : 0);
 }
 
 function standby(c, room, P) {
