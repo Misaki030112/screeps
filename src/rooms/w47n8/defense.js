@@ -76,6 +76,9 @@ function sim(enemy, towerR, def, nDef, o = {}) {
     const tgt = E.slice().sort((a, b) => cls(a) - cls(b) || a.hits - b.hits).find(x => F.effective(x, fire + ra) - hp > 0);
     let ed = E.reduce((s, x) => s + live(x, 'ranged_attack'), 0) * 10; mel += up; if (mel >= 1) { mel -= 1; ed += E.reduce((s, x) => s + atkPow(x, o.atkBoost), 0); }
     if (tgt) { if (fire) { energy -= 10 * towerR.length; burnt += 10 * towerR.length; } hit(tgt, Math.min(tgt.hits, F.effective(tgt, fire + ra))); }
+    // 10-20 15:25 (Misaki): our melee guards only hit enemies that come to them (catchable); outside the seal only the one on gate 29,3 reaches
+    const G = U.filter(x => live(x, 'attack')), mt = G.length && E.filter(x => x.hits > 0 && catchable(x)).sort((a, b) => cls(a) - cls(b) || a.hits - b.hits)[0];
+    if (mt) { const n = o.inside ? G.length : 1, dm = G.slice(0, n).reduce((s2, x) => s2 + 30 * live(x, 'attack'), 0); hit(mt, Math.min(mt.hits, F.effective(mt, dm))); }
     if (U.length && ed) { const v = U.reduce((a, b) => (b.hits < a.hits ? b : a)); hit(v, Math.min(v.hits, ed));
       // 18:04: all our HEAL (dedicated healer + self-heal parts) goes to the most-hurt defenders first (healer stands adjacent)
       let hp2 = U.reduce((s, d) => s + (d.hits > 0 ? 12 * live(d, 'heal') : 0), 0);
@@ -116,6 +119,36 @@ function postTile(tx, idx = 0, avoid = []) {
   const [x, y] = t.length ? t[Math.min(t.length - 1, idx)] : seg[0]; return { x, y };
 }
 const dcls = cls;
+// 10-20 15:25 (Misaki): melee guard. Catchable = comes to us or can't outrun us: has ATTACK/WORK (must touch the wall/gate) or is slow
+// (MOVE < half its body). MOVE-balanced RA kiters are never catchable.
+const catchable = c => live(c, 'attack') + live(c, 'work') > 0 || (live(c, 'ranged_attack') + live(c, 'heal') > 0 && 2 * live(c, 'move') < c.body.length);
+const GATE = { x: 29, y: 3 }, GHOLD = { x: 29, y: 4 };
+// 2 TOUGH + ATTACK:MOVE 2:1 (full speed on road; it mostly stands on the gate). 1800 -> 2T 16A 9M = 480 dmg/t (vs 9RA9M 90).
+function meleeBody(e) {
+  for (let a = 25; a >= 1; a--) { const t = a >= 4 ? 2 : 0, m = Math.ceil((a + t) / 2);
+    if (t + a + m <= 50 && 10 * t + 80 * a + 50 * m <= e) return Array(t).fill('tough').concat(Array(a).fill('attack'), Array(m).fill('move')); }
+  return ['attack', 'move'];
+}
+// guard (pure). me {pos,hits,hitsMax,hurt}, hs hostiles, o {focus, towers, healer} -> {hurt, hit, move:'retreat'|'approach'|'sally'|'post'|'hold', goal}
+//  - hits any adjacent eligible hostile (towers' focus first, else healer > ranged > melee, lowest hp); TOUGH-only decoys ignored
+//  - HP rule 60/90 (retreat to the healer, else nearest tower); inside the seal: chase the top armed intruder
+//  - outside: stand ON gate rampart 29,3 when hostiles are near it; sally only at a catchable target within 4 of the gate (not
+//    at kiters), back onto the gate when it is gone; quiet: hold 29,4
+function guardPlan(me, hs, o = {}) {
+  const hurt = me.hits < me.hitsMax * 0.6 ? true : me.hits >= me.hitsMax * 0.9 ? false : !!me.hurt;
+  const elig = hs.filter(h => armed(h) || live(h, 'heal')), ord = (a, b) => cls(a) - cls(b) || a.hits - b.hits;
+  const adj = elig.filter(h => rng(h.pos, me.pos) <= 1), f = o.focus && adj.find(h => h.id === o.focus);
+  const r = (move, goal) => ({ hurt, hit: f || adj.sort(ord)[0] || null, move, goal });
+  const towers = o.towers || [];
+  if (hurt && o.healer) return r('retreat', o.healer);
+  if (hurt && towers.length) return r('retreat', towers.reduce((a, t) => (rng(t, me.pos) < rng(a, me.pos) ? t : a)));
+  const inside = elig.filter(h => inBase(h) && armed(h)).sort(ord);
+  if (inside.length) return rng(inside[0].pos, me.pos) <= 1 ? r('hold', null) : r('approach', inside[0].pos);
+  const s = elig.filter(h => !inBase(h) && catchable(h) && rng(h.pos, GATE) <= 4).sort(ord)[0];
+  if (s && !elig.some(h => !catchable(h) && live(h, 'ranged_attack') >= 6 && rng(h.pos, s.pos) <= 3 && rng(h.pos, GATE) > 1))
+    return rng(s.pos, me.pos) <= 1 ? r('hold', null) : r('sally', s.pos);
+  const g = elig.length ? GATE : GHOLD; return rng(g, me.pos) === 0 ? r('hold', null) : r('post', g);
+}
 function defPlan(me, hs, o = {}) {
   const hurt = me.hits < me.hitsMax * 0.6 ? true : me.hits >= me.hitsMax * 0.9 ? false : !!me.hurt;
   const elig = hs.filter(h => inBase(h) || armed(h) || live(h, 'heal'));
@@ -183,16 +216,17 @@ const raBody = (e, max = 25) => { const k = Math.max(1, Math.min(max, Math.floor
 const MAXH = 4, MAXL = 4, HEAL_AT = 4; // Misaki 17:56: home max 4, W47N8 local max 4
 function plan(o) {
   const fighters = o.force.filter(c => live(c, 'attack') + live(c, 'ranged_attack') > 0);
-  if (!fighters.length) return { home: 0, w8: 0, win: true, why: 'unarmed', advise: '' };
-  const hb = raBody(o.homeCap || 0), wb = raBody(o.w8Cap || 0, 12), base = o.homeOk ? 1 : 0;
+  if (!fighters.length) return { home: 0, w8: 0, w8m: 0, win: true, why: 'unarmed', advise: '' };
+  const hb = raBody(o.homeCap || 0), wb = raBody(o.w8Cap || 0, 12), mb = meleeBody(o.w8Cap || 0), base = o.homeOk ? 1 : 0;
   const wins = defs => { const r = defs.length ? sim(o.force, o.towerR, defs, 0, o) : sim(o.force, o.towerR, wb, 0, o); return r.result === 'win' && !r.lost; };
   // 18:04 (Misaki): a roster of >= 4 combat defenders always includes one dedicated healer (home at max cap if home is safe, else local),
   // counted in the sim
   const hh = o.homeOk ? healBody(o.homeCap || 0) : healBody(o.w8Cap || 0, 12), hl = o.homeOk ? 'home' : 'w8';
   for (let h = base; h <= (o.homeOk ? MAXH : 0); h++)
-    for (let n = 0; n <= MAXL; n++) { const four = h + n >= HEAL_AT, defs = Array(h).fill(hb).concat(Array(n).fill(wb)).concat(four ? [hh] : []);
-      if (wins(defs)) return { home: h, w8: n, hl: four ? hl : '', win: true, why: h > base ? 'extra home' : 'win', advise: '' }; }
-  return { home: base, w8: 0, hl: '', win: false, why: 'unwinnable', advise: o.inside ? 'safemode' : '' };
+    for (let n = 0; n <= MAXL; n++) for (let m = 0; m <= (o.noMelee ? 0 : n); m++) { // 15:25: m of the n local are melee guards (fewest creeps first, ranged preferred)
+      const four = h + n >= HEAL_AT, defs = Array(h).fill(hb).concat(Array(n - m).fill(wb), Array(m).fill(mb)).concat(four ? [hh] : []);
+      if (wins(defs)) return { home: h, w8: n, w8m: m, hl: four ? hl : '', win: true, why: h > base ? 'extra home' : 'win', advise: '' }; }
+  return { home: base, w8: 0, w8m: 0, hl: '', win: false, why: 'unwinnable', advise: o.inside ? 'safemode' : '' };
 }
 // ---- seal repair under fire (Misaki 17:36): walls an armed hostile can reach (RA 3 / ATTACK, WORK 1); lowest first
 function repairPick(walls, hs) {
@@ -209,4 +243,4 @@ function repairStand(wall, hs, open = () => true) {
 }
 // body summary {attack:n,...} (tools/north_watch.py) -> body list in the worst-case order (tough, move, work parts last)
 function fromCounts(b) { const out = []; for (const t of ['tough', 'move', 'attack', 'ranged_attack', 'heal', 'work', 'claim', 'carry']) for (let i = 0; i < (b[t] | 0); i++) out.push({ type: t, hits: 100 }); return { body: out, hits: out.length * 100 }; }
-module.exports = { SAFE_HY, hSafe, HEAL_AT, healBody, healPlan, HIDLE, MAXH, MAXL, healAct, segSplit, atkPow, towerPick, sim, assess, defPlan, postTile, POSTS, IDLE, plan, raBody, repairPick, repairStand, COVER, RECYCLE, fromCounts, cls, armed, inBase, FLOOR, SEAL_Y };
+module.exports = { catchable, meleeBody, guardPlan, GATE, GHOLD, SAFE_HY, hSafe, HEAL_AT, healBody, healPlan, HIDLE, MAXH, MAXL, healAct, segSplit, atkPow, towerPick, sim, assess, defPlan, postTile, POSTS, IDLE, plan, raBody, repairPick, repairStand, COVER, RECYCLE, fromCounts, cls, armed, inBase, FLOOR, SEAL_Y };

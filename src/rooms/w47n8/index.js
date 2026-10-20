@@ -8,6 +8,7 @@ function mine() { return _.filter(Game.creeps, c => c.memory.home === C.ROOM); }
 function bodyFor(role, e) {
   // 17:34 (Misaki joint defence): RA+MOVE only, no HEAL (towers heal on our ground; HP rule 60%/90% in defense.defPlan)
   if (role === 'w8defender') return require('./defense').raBody(e, 12);
+  if (role === 'w8guard') return require('./defense').meleeBody(e); // 10-20 15:25 melee gate guard
   if (role === 'w8healer') return require('./defense').healBody(e, 12); // 18:04 local healer (joint roster >= 4)
   if (role === 'w8filler') return FL.body(e, Game.rooms[C.ROOM]); // 17:4x 2C:1M, carry ~75% of the hub spawn energy (fill.js)
   if (role === 'w8rminer') { // 20:22: old formula priced 4W1C3M=600 at cap 550, so it never spawned; now the biggest that fits, trimming MOVE first
@@ -67,14 +68,15 @@ function spawnRun(spawn) {
   // never feed an unwinnable fight (Memory.ops.w8adv advises safe mode instead). Memory.ops.w8defOld = 1 restores the old trigger.
   // 17:34 joint defence: Memory.ops.w8roster (assessRun -> defense.plan) = local defenders + 1 home defender (src W46N8, spawned by home)
   const ro = Memory.ops && Memory.ops.w8roster, dOld = Memory.ops && Memory.ops.w8defOld, fresh = ro && Game.time - ro.t < 20;
-  const local = cs.filter(c => c.memory.role === 'w8defender' && !c.memory.jd).length;
+  const local = cs.filter(c => (c.memory.role === 'w8defender' || c.memory.role === 'w8guard') && !c.memory.jd).length;
+  const lg = cs.filter(c => c.memory.role === 'w8guard').length;
   const dGo = dOld ? ((th && th.inBase && Game.time - th.t < 5) || TH.invasion()) && local < 2 : !!(fresh && local < Math.min(D.MAXL, ro.w8)); // 17:56: up to 4 local
   // 10-20 07:4x (2room eval): the hub filler died while Spawn2 made 2 local defenders (threat outside the room) and its replacement
   // waited ~70 t behind them. Refill speed is defence reaction speed (Misaki 10-19), so a due filler goes first unless armed hostiles
   // are inside the base (same idea as home 'queen first' before joint defence).
   const inBase = !!(th && th.inBase && Game.time - th.t < 5);
   if (!inBase && FL.want(room, cs)) want = 'w8filler';
-  if (!want && dGo) { want = 'w8defender'; }
+  if (!want && dGo) { want = !dOld && lg < (ro.w8m | 0) ? 'w8guard' : 'w8defender'; }
   // 18:04: roster >= 4 combat defenders -> one dedicated healer; local only when home can't send it (ro.hl 'w8')
   if (!want && !dOld && fresh && ro.hl === 'w8' && !_.some(Game.creeps, c => c.memory.role === 'w8healer')) want = 'w8healer';
   // 1) miners per source: keep >=5 WORK (10 e/t) on each source. Replace at TTL<60; and since the first w8miners were 2 WORK
@@ -364,7 +366,7 @@ function assessRun(room, towers, hs) {
   const hr = Game.rooms[HOME], homeOk = !!hr && !require('../../managers/home').active(hr);
   const r = D.plan({ force, towerR: tr, inside, homeOk, homeCap: hr ? hr.energyCapacityAvailable : 0, w8Cap: room.energyCapacityAvailable || 300,
     towerE: Math.min(...towers.map(t => t.store[RESOURCE_ENERGY])), atkBoost: o.w8uh > 0 ? 'UH' : '', meleeUptime: inside ? 1 : 0 }); // 17:58: UH stock north -> boosted melee; melee only reaches us inside the seal
-  o.w8roster = { t: Game.time, home: r.home, w8: r.w8, hl: r.hl || '', why: r.why };
+  o.w8roster = { t: Game.time, home: r.home, w8: r.w8, w8m: r.w8m | 0, hl: r.hl || '', why: r.why };
   m.w8assess = { t: Game.time, spawn: r.w8 > 0, why: r.why, at: [at.x, at.y] };
   if (r.advise) o.w8adv = { t: Game.time, advise: r.advise, why: r.why, n: force.length }; // safe mode is Misaki's call (alerts relay it)
 }

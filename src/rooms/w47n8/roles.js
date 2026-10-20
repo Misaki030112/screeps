@@ -310,6 +310,22 @@ const R = {
   // 18:04 (Misaki) dedicated healer (HEAL+MOVE) in a joint roster of >= 4 defenders: behind the defenders, heals the most-hurt (heal at 1,
   // rangedHeal at 3), HP rule 60/90 like defenders, never crosses the seal. 10-20 07:31 (Misaki): waits at a safe spot >= 4 tiles inside
   // the seal (HIDLE, y=8, off road), goes out only to heal a hurt friendly from a tile out of enemy reach, then walks back.
+  // 10-20 15:25 (Misaki) melee gate guard (defense.guardPlan): stands on gate rampart 29,3, hits what comes adjacent, sallies only at
+  // catchable targets near the gate (dismantlers/melee/slow), HP rule 60/90, never leaves W47N8 (exit row blocked)
+  w8guard(c) {
+    if (!home(c)) return;
+    const D = require('./defense'), room = c.room, hs = room.find(FIND_HOSTILE_CREEPS).filter(x => !x.my), mem = c.memory;
+    const cb = (rn, m) => { if (rn !== C.ROOM) return false; for (let i = 0; i < 50; i++) { m.set(i, 0, 255); m.set(0, i, 255); m.set(49, i, 255); m.set(i, 49, 255); } return m; };
+    const towers = room.find(FIND_MY_STRUCTURES, { filter: s => s.structureType === STRUCTURE_TOWER }).map(t => t.pos), th = room.memory.threat8;
+    const p = D.guardPlan({ pos: c.pos, hits: c.hits, hitsMax: c.hitsMax, hurt: mem.hurt }, hs, { focus: th && th.id, towers,
+      healer: (room.find(FIND_MY_CREEPS, { filter: x => x.memory.role === 'w8healer' && x.getActiveBodyparts(HEAL) > 0 })[0] || {}).pos });
+    mem.hurt = p.hurt;
+    if (p.hit) c.attack(p.hit);
+    const mv = (pos, r) => c.moveTo(pos.x, pos.y, { range: r, maxRooms: 1, reusePath: 2, costCallback: cb });
+    if (p.move === 'retreat') return c.pos.inRangeTo(p.goal.x, p.goal.y, 1) || mv(p.goal, 1);
+    if (p.move === 'approach' || p.move === 'sally') return mv(p.goal, 1);
+    if (p.move === 'post') return mv(p.goal, 0);
+  },
   w8healer(c) {
     if (!home(c)) return;
     const D = require('./defense'), room = c.room, hs = room.find(FIND_HOSTILE_CREEPS).filter(x => !x.my), mem = c.memory;
