@@ -14,7 +14,16 @@ function growthPaused(s, rcl, time) {
   return s.structureType === STRUCTURE_RAMPART && prev > 0 && s.hits >= prev && time % 5 !== 0;
 }
 const PEACE_HEAL_E = 200; // 18:00 peacetime heal energy floor
-module.exports = { growthPaused, run(room) {
+// Road/container upkeep (<60%): planned tiles, plus at home the road-plan tiles (managers/roads isHomeTile: W45N8 haul leg
+// 38,30->48,15, econ, wall trunks, w8link). Those were in no layout plan, so only builders repaired them, and builders are 0 while
+// storage sits at the 15k floor: strategy review 10-20 11:4x found the shared W45N8/W45N7 haul leg at 34-52% (44,19 1700/5000,
+// ~2 hits/t wear from 6 rhaulers) and 30,12/29,11/28,10 had already decayed out (Misaki 10-20: remote roads must never decay away).
+function upkeep(P, roomName, s) {
+  if (s.hits >= s.hitsMax * 0.6) return false;
+  if (P.any[plan.key(s.pos.x, s.pos.y)]) return true;
+  return s.structureType === STRUCTURE_ROAD && roomName === 'W46N8' && require('./roads').isHomeTile(s.pos.x, s.pos.y);
+}
+module.exports = { growthPaused, upkeep, run(room) {
   const towers = rc.all(room, STRUCTURE_TOWER);
   if (!towers.length) return;
   if (room.memory.drain && Game.time % 100 === 0 && !room.find(FIND_HOSTILE_CREEPS).length) require('../utils/focus').track(room.memory.drain, [], Game.time);
@@ -47,8 +56,7 @@ module.exports = { growthPaused, run(room) {
     // v4 gate ramparts: towers only keep them alive (FLOOR); hits steps are builder work from the wall fund (managers/walls.js)
     const W = require('./walls');
     const cand = rc.all(room, STRUCTURE_RAMPART).filter(s => s.hits < (W.planned(P, s.pos.x, s.pos.y, STRUCTURE_RAMPART) ? Math.min(RAMPART_FLOOR, target) : target) && plan.rampartWanted(P, room, s.pos.x, s.pos.y))
-      .concat(rc.all(room, STRUCTURE_ROAD).concat(rc.all(room, STRUCTURE_CONTAINER))
-        .filter(s => P.any[plan.key(s.pos.x, s.pos.y)] && s.hits < s.hitsMax * 0.6));
+      .concat(rc.all(room, STRUCTURE_ROAD).concat(rc.all(room, STRUCTURE_CONTAINER)).filter(s => upkeep(P, room.name, s)));
     // Misaki 20:12: ramparts must never decay, independent of the storage reserve. Ratchet a high-water floor (>=150k, capped at
     // the RCL target) and let towers (energy > 600) top up any rampart below it; decay costs ~3 hits/t per rampart (tiny).
     const rs = rc.all(room, STRUCTURE_RAMPART);
