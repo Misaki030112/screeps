@@ -14,6 +14,8 @@ BOOST = ('UH', 'KO', 'LO', 'UH2O', 'KHO2', 'LHO2', 'XUH2O', 'XKHO2', 'XLHO2')
 def hostile_creeps(objs, U):
     """creeps not owned by ME (our own never count as armed/drain/intrusion)"""
     return [x for x in objs if x['type'] == 'creep' and U.get(x.get('user')) != ME]
+N9_NEAR_Y = 35  # W47N9 rows >= 35 face our north edge (W47N8 y=0); BustJetter's spawn/core sits around y 22-30
+def n9_near(armed): return any(i['pos'][1] >= N9_NEAR_Y for i in armed)
 def triggers(room, armed, drain): return (room == 'W47N9' and bool(armed or drain)) or (room == 'W48N9' and len(armed) >= 2)
 SEAL_FIGHT = (27, 3)  # centre of the east seal (src/rooms/w47n8/index.js SEAL_FIGHT)
 def seal_ranges(objs, U):
@@ -71,7 +73,7 @@ def main():
         rise = {k: v - prev.get(k, 0) for k, v in stock.items() if v - prev.get(k, 0) >= 300}
         if prev and rise: add('boost', [], {'owner': (U.get(next((x.get('user') for x in o['objects'] if x['type'] == 'controller' and x.get('user')), None)) or '?'), 'rise': rise})
         if triggers(r, armed, drain): threatN = True  # W47N9 armed/drain, or W48N9 >=2 armed (Misaki 14:27)
-        if r == 'W47N9' and armed: a9 = True  # 10-20 14:0x: any armed creep in W47N9 -> w8n9a (spawn-move gate)
+        if r == 'W47N9' and n9_near(armed): a9 = True  # 10-20 14:0x w8n9a (spawn-move gate); 14:3x patrol: only armed in W47N9's south part (BustJetter's own RCL6 base keeps an 8RA8M guard at 28,30, which held the gate shut)
         if r == 'W47N9' and len(armed) >= 2: invN = True  # 14:46 armed group at the W47N9 border -> border defenders
         if r == 'W47N9': g9 = list({id(i): i for i in armed + drain}.values()); n9 = [i['body'] for i in g9][:12]; x9 = round(sum(i['pos'][0] for i in g9) / len(g9)) if g9 else 29  # 17:3x: bodies + mean x for the in-game assessment / staging
         st[r] = {'tick': tick, 'boost': dict(stock)}

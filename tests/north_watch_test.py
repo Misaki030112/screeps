@@ -15,3 +15,6 @@ assert N.verdict(P + H, tr=[32, 5]).startswith('towers win'), N.verdict(P + H, t
 T = [{'type': 'tower', 'user': 'u1', 'x': 33, 'y': 35}, {'type': 'tower', 'user': 'u1', 'x': 24, 'y': 8}, {'type': 'tower', 'user': 'u2', 'x': 27, 'y': 4}]
 assert N.seal_ranges(T, U) == [32, 5], N.seal_ranges(T, U)
 print('north_watch verdict ok')
+# 14:3x: spawn-move gate w8n9a only for armed creeps near our border (W47N9 y >= 35), not BustJetter's home guard at 28,30
+assert not N.n9_near([{'pos': [28, 30]}]) and N.n9_near([{'pos': [28, 30]}, {'pos': [29, 44]}]) and not N.n9_near([])
+print('north_watch n9_near ok')
