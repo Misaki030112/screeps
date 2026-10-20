@@ -121,7 +121,7 @@ function spawnRun(spawn) {
   // 15:45 hysteresis: core ramparts decay 300/100t, so a strict '< 50k' gate re-entered wall mode (1-2 upgraders, +builders) ~100 ticks
   // after every top-up. Wall mode starts below 90% of target; builders still repair to the full target (wallJob).
   // 17:15: seal walls only (ramparts no longer part of the wall raise)
-  const wallsLow = thr && room.find(FIND_STRUCTURES, { filter: s => s.structureType === STRUCTURE_WALL && C.SEAL.some(([x, y]) => s.pos.x === x && s.pos.y === y) && s.hits < Math.min(wtgt, TH.urgentTarget()) * 0.9 }).length > 0; // 06:3x: threat floor only, RCL target from surplus
+  const wallsLow = thr && room.find(FIND_STRUCTURES, { filter: s => (s.structureType === STRUCTURE_WALL || (s.structureType === STRUCTURE_RAMPART && isGate(s.pos.x, s.pos.y))) && C.SEAL.some(([x, y]) => s.pos.x === x && s.pos.y === y) && s.hits < Math.min(wtgt, TH.urgentTarget()) * 0.9 }).length > 0; // 06:3x: threat floor only, RCL target from surplus
   // 15:10 model: under the wall raise 1 upgrader (10 WORK of ~30 e/t net) left ~8k idle in containers (ctl/hub 1.5k+1.6k, W47N8 sources
   // 2.3k, W47N7 2.8k) while builders spent ~13 e/t; a 2nd upgrader while >3000 sits in local piles + ctl/hub conts (stock covers the gap)
   const stock8 = () => looseE(room) + _.sum([C.CTL_CONT, C.HUB_CONT], ([x, y]) => _.sum(room.lookForAt(LOOK_STRUCTURES, x, y).filter(s => s.structureType === STRUCTURE_CONTAINER), s => s.store[RESOURCE_ENERGY]));
@@ -191,8 +191,14 @@ function spawnRun(spawn) {
   if (avail < cost) { FM.wait(want, cost, avail); return; }
   if (spawn.spawnCreep(body, want + Game.time, { memory: Object.assign({ role: want, home: C.ROOM, born: Game.time, v2: 1 }, mem), energyStructures: energyOrder(room) }) === 0) FM.spent(cost);
 }
+const isGate = (x, y) => (C.GATE || []).some(([a, b]) => a === x && b === y);
 function placeSeal(room) {
   for (const [x, y] of C.SEAL) {
+    if (isGate(x, y)) { // rampart gate (13:30): never re-wall; rampart site only once the old wall is gone
+      const st = room.lookForAt(LOOK_STRUCTURES, x, y);
+      if (!st.some(s => s.structureType === STRUCTURE_WALL || s.structureType === STRUCTURE_RAMPART) && !room.lookForAt(LOOK_CONSTRUCTION_SITES, x, y).length) room.createConstructionSite(x, y, STRUCTURE_RAMPART);
+      continue;
+    }
     if (room.lookForAt(LOOK_STRUCTURES, x, y).some(s => s.structureType === STRUCTURE_WALL)) continue;
     if (room.lookForAt(LOOK_CONSTRUCTION_SITES, x, y).length) continue;
     room.createConstructionSite(x, y, STRUCTURE_WALL);
@@ -225,7 +231,7 @@ function layoutRun(room) {
   // (previous swap done), the replacement tile is clear and the site budget has room (this run's PRIO loop / the next places it).
   // Spawn2 is kept.
   if (ok && rcl >= 7) swapTemp(room);
-  for (const s of room.find(FIND_MY_CONSTRUCTION_SITES, { filter: s => s.structureType === STRUCTURE_RAMPART })) s.remove(); // 17:15, see below
+  for (const s of room.find(FIND_MY_CONSTRUCTION_SITES, { filter: s => s.structureType === STRUCTURE_RAMPART && !isGate(s.pos.x, s.pos.y) })) s.remove(); // 17:15, see below
   let sites = room.find(FIND_MY_CONSTRUCTION_SITES, { filter: s => s.structureType !== STRUCTURE_RAMPART }).length; if (sites >= 6) return;
   // 03:05 west<->hub link road (missing from v3b plan): loaded 10C5M rhaulers sat 7-10 ticks on unroaded swamp 22,34 (fatigue 70)
   // between road 15,33 and strip road 24,35; queued ahead of the plan roads since every hub trip crosses it
@@ -273,6 +279,7 @@ function rampHold(room) {
   const o = (Memory.ops = Memory.ops || {}), h = (o.w8hold = o.w8hold || {}), live = {};
   for (const r of rs) live[r.id] = h[r.id] === undefined ? r.hits : h[r.id];
   o.w8hold = live;
+  const g = rs.find(r => r.pos && isGate(r.pos.x, r.pos.y) && r.hits < (C.GATE_TOWER || 0)); if (g) return g; // 13:30 gate ramp-up
   return rs.find(r => r.hits < live[r.id] - HOLD_SLACK) || null;
 }
 // 17:20 RCL5 links (parent-approved plan): source A link 26,12 -> ctl link 13,25 (3% loss) replaces ~25-tile hauling of source A.

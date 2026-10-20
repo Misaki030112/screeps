@@ -4,10 +4,13 @@ const d = path.join(__dirname, '..', 'src', 'rooms', 'w47n8');
 const idx = fs.readFileSync(path.join(d, 'index.js'), 'utf8'), roles = fs.readFileSync(path.join(d, 'roles.js'), 'utf8');
 const prio = idx.match(/const PRIO = \[([^\]]*)\]/)[1];
 assert.ok(!/rampart/.test(prio), 'no rampart in PRIO');
-assert.ok(!/createConstructionSite\([^)]*STRUCTURE_RAMPART/.test(idx), 'no rampart site creation');
-assert.ok(/FIND_MY_CONSTRUCTION_SITES, \{ filter: s => s\.structureType === STRUCTURE_RAMPART \}\)\) s\.remove\(\)/.test(idx), 'unbuilt rampart sites removed');
-const wl = idx.match(/const wallsLow = [^\n]*/)[0]; assert.ok(!/RAMPART/.test(wl), 'wall mode ignores ramparts');
-const wj = roles.slice(roles.indexOf('function wallJob'), roles.indexOf('// ---- W47N7 remote')); assert.ok(!/RAMPART/.test(wj), 'wallJob seal walls only');
+// 10-20 13:30 exception: only the C.GATE tile (29,3) gets a rampart site; everything else stays rampart-free
+const C8 = require(path.join(d, 'config.js')); assert.deepStrictEqual(C8.GATE, [[29, 3]], 'single gate');
+assert.strictEqual((idx.match(/createConstructionSite\([^)]*STRUCTURE_RAMPART/g) || []).length, 1, 'one rampart site call (gate)');
+assert.ok(/if \(isGate\(x, y\)\) \{[^\n]*\n[^\n]*\n[^\n]*STRUCTURE_RAMPART/.test(idx), 'rampart site only in the gate branch');
+assert.ok(/STRUCTURE_RAMPART && !isGate\(s\.pos\.x, s\.pos\.y\) \}\)\) s\.remove\(\)/.test(idx), 'unbuilt non-gate rampart sites removed');
+const wl = idx.match(/const wallsLow = [^\n]*/)[0]; assert.ok(!/RAMPART/.test(wl.replace(/STRUCTURE_RAMPART && isGate/g, '')), 'wall mode: gate rampart only');
+const wj = roles.slice(roles.indexOf('function wallJob'), roles.indexOf('// ---- W47N7 remote')); assert.ok(!/RAMPART/.test(wj.replace(/STRUCTURE_RAMPART && \(C\.GATE/g, '').replace(/STRUCTURE_WALL \|\| s\.structureType === STRUCTURE_RAMPART\) && s\.pos\.y === 3/, '').replace(/rep\.structureType === STRUCTURE_RAMPART/, '')), 'wallJob seal walls + gate only');
 console.log('w47n8 no rampart ok');
 // rampHold: first-seen hits become the hold; repair only once 1000 below it; never raised beyond
 Object.assign(global, { _: require('lodash'), FIND_MY_STRUCTURES: 1, STRUCTURE_RAMPART: 'rampart', Memory: {}, Game: { time: 1, rooms: {}, creeps: {} } });
