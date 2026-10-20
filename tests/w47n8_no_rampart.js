@@ -6,9 +6,10 @@ const prio = idx.match(/const PRIO = \[([^\]]*)\]/)[1];
 assert.ok(!/rampart/.test(prio), 'no rampart in PRIO');
 // 10-20 13:30 exception: only the C.GATE tile (29,3) gets a rampart site; everything else stays rampart-free
 const C8 = require(path.join(d, 'config.js')); assert.deepStrictEqual(C8.GATE, [[29, 3]], 'single gate');
-assert.strictEqual((idx.match(/createConstructionSite\([^)]*STRUCTURE_RAMPART/g) || []).length, 1, 'one rampart site call (gate)');
+// 10-20 15:5x second exception: the spawn-move target slot (34,30) gets its rampart before the spawn site (necessary rampart)
+assert.strictEqual((idx.match(/createConstructionSite\([^)]*STRUCTURE_RAMPART/g) || []).length, 2, 'rampart site calls: gate + spawn slot');
 assert.ok(/if \(isGate\(x, y\)\) \{[^\n]*\n[^\n]*\n[^\n]*STRUCTURE_RAMPART/.test(idx), 'rampart site only in the gate branch');
-assert.ok(/STRUCTURE_RAMPART && !isGate\(s\.pos\.x, s\.pos\.y\) \}\)\) s\.remove\(\)/.test(idx), 'unbuilt non-gate rampart sites removed');
+assert.ok(/STRUCTURE_RAMPART && !isGate\(s\.pos\.x, s\.pos\.y\) && !\(s\.pos\.x === L\.ORDER\.spawn\[0\]\[0\] && s\.pos\.y === L\.ORDER\.spawn\[0\]\[1\]\) \}\)\) s\.remove\(\)/.test(idx), 'unbuilt non-gate rampart sites removed');
 const wl = idx.match(/const wallsLow = [^\n]*/)[0]; assert.ok(!/RAMPART/.test(wl.replace(/STRUCTURE_RAMPART && isGate/g, '')), 'wall mode: gate rampart only');
 const wj = roles.slice(roles.indexOf('function wallJob'), roles.indexOf('// ---- W47N7 remote')); assert.ok(!/RAMPART/.test(wj.replace(/STRUCTURE_RAMPART && \(C\.GATE/g, '').replace(/STRUCTURE_WALL \|\| s\.structureType === STRUCTURE_RAMPART\) && s\.pos\.y === 3/, '').replace(/rep\.structureType === STRUCTURE_RAMPART/, '')), 'wallJob seal walls + gate only');
 console.log('w47n8 no rampart ok');
