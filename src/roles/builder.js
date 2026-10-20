@@ -221,6 +221,7 @@ module.exports = { remoteRoadSite, pickSource, hop, run(c) {
       if (junk) { c.memory.dismantle = junk.id; c.memory.working = false; delete c.memory.t; return; }
       const remoteSite = remoteRoadSite();
       if (remoteSite) t = remoteSite;
+      else if ((t = require('../managers/roads').repairTarget(0.3))) {} // remote route road near decay-out goes before home 80% top-ups (W45N8 roads lost 10-20)
       else {
         const hurt = repairables(home, P).filter(s => !held.has(s.id)); // one builder per road/container (live 03:55: all 5 on container 38,32)
         t = hurt.length ? _.min(hurt, s => s.hits / s.hitsMax) : null;

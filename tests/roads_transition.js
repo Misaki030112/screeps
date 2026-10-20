@@ -42,6 +42,8 @@ const cases = [
     while (Memory.roads.phase === 'home' && g++ < 300) { finishSites(home); tick(50); } assert.strictEqual(Memory.roads.phase, 'swamp7'); assert.ok(!R.done());
     tick(50); assert.strictEqual(W8.sites.size, 3);
     while (Memory.roads.phase === 'swamp7' && g++ < 400) { finishSites(W8); tick(50); } assert.strictEqual(W8.roads.size, 15); assert.strictEqual(Memory.roads.phase, 'done'); assert.ok(R.done() && !R.paved('W45N7')); }],
+  ['done: decayed W45N8 roads re-sited (maintain); paused skips', () => { ['3,11', '7,9', '15,39'].forEach(k => W8.roads.delete(k)); paused = true; tick(200); assert.strictEqual(W8.sites.size, 0);
+    paused = false; tick(200); assert.ok(W8.sites.has('3,11') && W8.sites.has('7,9') && W8.sites.has('15,39')); assert.strictEqual(Memory.roads.phase, 'done'); finishSites(W8); }],
   ['v1 migrate: phase home -> haul once', () => { Memory.roads = { phase: 'home', t: 1 }; tick(50); assert.ok(Memory.roads.v2 && Memory.roads.log.some(l => l[0] === 'v2') && Memory.roads.phase !== 'home'); }],
   ['off pauses; bad phase resets to core; RCL drop no-op', () => { Memory.roads = { phase: 'home', off: true, t: 1, v2: true }; const n = home.sites.size; tick(100); assert.strictEqual(home.sites.size, n);
     Memory.roads = { phase: 'W45N7', t: 1, v2: true }; tick(50); assert.notStrictEqual(Memory.roads.phase, 'W45N7');

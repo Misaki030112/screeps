@@ -82,7 +82,8 @@ function run() {
   placeW8Link(home);
   const m = mem(); if (PHASES.indexOf(m.phase) < 0) { console.log(`ROADS bad phase ${m.phase} -> core`); m.phase = 'core'; } // console typo guard
   if (!m.v2) migrate(m, home); // one-shot: v1 'home' (trunks first) -> v2 'haul'; drop untouched (0-progress) trunk sites
-  if (m.off || m.phase === 'done') return;
+  if (m.off) return;
+  if (m.phase === 'done') return maintain(m, home); // decay re-placement (W45N8 roads vanished 10-20: 13/15 tiles gone, no re-site after 'done')
   if (Game.time % (m.idle ? 10 : 50) && m.t) return; // replan every 10t while a phase has no open sites left to place // m.t: last run tick (first run immediately)
   m.t = Game.time;
   const P = require('../utils/plan').get(HOME), T = tiles(P);
@@ -114,6 +115,17 @@ function run() {
     const rv = Game.rooms[r].createConstructionSite(x, y, STRUCTURE_ROAD);
     if (rv === OK) perRoom[r] = (perRoom[r] || 0) + 1; else (m.bad = m.bad || {})[r + ':' + x + ':' + y] = rv;
   }
+}
+// After 'done': every 100t re-site any planned tile whose road decayed away (remote decay + no repair -> road removed).
+function maintain(m, home) {
+  if (Game.time % 100 !== 63) return;
+  const T = tiles(require('../utils/plan').get(HOME)), R = require('./remote'), perRoom = {}, open = [];
+  for (const p of ['haul', 'W45N8', 'econ', 'swamp7', 'home']) for (const t of T[p]) {
+    if (t[0] !== HOME && R.paused(t[0])) continue; const v = look(t[0], t[1], t[2]);
+    if (v === 'site') perRoom[t[0]] = (perRoom[t[0]] || 0) + 1; else if (v === 'open') open.push(t); }
+  m.maint = { t: Game.time, open: open.length };
+  for (const [r, x, y] of open) { if ((perRoom[r] || 0) >= BATCH) continue;
+    if (Game.rooms[r].createConstructionSite(x, y, STRUCTURE_ROAD) === OK) perRoom[r] = (perRoom[r] || 0) + 1; }
 }
 function migrate(m, home) {
   m.v2 = true; if (m.phase !== 'home') return;
