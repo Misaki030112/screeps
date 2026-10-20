@@ -12,6 +12,11 @@ Object.assign(global, { _: require('lodash'), FIND_MY_STRUCTURES: 10, FIND_STRUC
   STRUCTURE_STORAGE: 'storage', STRUCTURE_WALL: 'constructedWall', STRUCTURE_LINK: 'link', RESOURCE_ENERGY: 'energy', LOOK_STRUCTURES: 'ls', LOOK_CREEPS: 'lcr', LOOK_SOURCES: 'lso',
   LOOK_CONSTRUCTION_SITES: 'lc', OK: 0, ERR_NOT_IN_RANGE: -9, WORK: 'work', CARRY: 'carry', MOVE: 'move', ATTACK: 'attack', RANGED_ATTACK: 'ranged_attack', HEAL: 'heal', CLAIM: 'claim', TOUGH: 'tough',
   BODYPART_COST: { work: 100, carry: 50, move: 50 }, Memory: { ops: {} }, Game: { time: 1, rooms: {}, creeps: {}, getObjectById: id => OBJ[id] } });
+// fill.js moves in-room through utils/move.js (10-21: creep-ignoring road path + swap); the mini engine has no PathFinder, so
+// move.to is stood in by the engine moveTo below (same goal + range; this sim has no other creeps on the hub roads)
+{ const Module = require('module'), mp = path.join(ROOT, 'src/utils/move.js'), mm = new Module(mp); mm.filename = mp; mm.loaded = true;
+  mm.exports = { to: (c, x, y, r = 0) => { if (Math.max(Math.abs(c.pos.x - x), Math.abs(c.pos.y - y)) <= r) return true; c.moveTo(new RoomPosition(x, y), { range: r }); return false; }, foreignSites: (rn, m) => m, invalidate() {} };
+  require.cache[mp] = mm; }
 const F = require(path.join(ROOT, 'src/rooms/w47n8/fill.js')), L = require(path.join(ROOT, 'src/rooms/w47n8/layout.js'));
 const sum = (a, f) => a.reduce((t, x) => t + f(x), 0), K = (x, y) => x * 50 + y, cheb = (a, b) => Math.max(Math.abs(a.x - b.x), Math.abs(a.y - b.y));
 // ---------- static route checks

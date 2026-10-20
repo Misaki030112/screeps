@@ -90,7 +90,12 @@ function want(room, cs) {
   const k = D.cap > 2500 ? 2 : 1, lead = 3 * body(room.energyCapacityAvailable, room).length + 40;
   return cs.filter(c => c.memory.role === 'w8filler' && (c.spawning || c.ticksToLive > lead)).length < k;
 }
-const go = (c, x, y, r) => c.moveTo(new RoomPosition(x, y, C.ROOM), { range: r, reusePath: 15, maxRooms: 1 });
+// 10-21 03:3x patrol: vanilla moveTo treated the haulers parked on the 1-wide hub passage (32,29 / 33,33) as walls; the filler,
+// holding 1050 with 29 of 30 extensions empty, walked strip 1 -> strip 2 entry 31,28 around the whole room (24,34 -> 16,32 ->
+// 8,20 -> 24,14 -> 29,20, ~80 t vs 7 tiles) while the spawn sat at 150/1800. In-room moves now use move.to (road matrix, creeps
+// ignored, swap/shove our own blocker from stuck 2), like the W47N8 haulers.
+const MV = require('../../utils/move'), ND = { noDetour: true };
+const go = (c, x, y, r) => (c.room.name === C.ROOM ? MV.to(c, x, y, r, ND) : c.moveTo(new RoomPosition(x, y, C.ROOM), { range: r, reusePath: 15, maxRooms: 1 }));
 // leave index of an extension when sweeping strip i in direction d (0 = from road[0], 1 = from road[end])
 const leave = (i, d, k) => { const a = ROUTES[i].ext[k]; return d ? -a[0] : a[1]; };
 const reach = (i, d, k) => { const a = ROUTES[i].ext[k]; return d ? -a[1] : a[0]; };
