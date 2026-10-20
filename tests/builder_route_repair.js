@@ -86,6 +86,10 @@ const cases = [
     assert.strictEqual(W.retired, true);
   }],
 ];
+cases.push(['spawn.js: an alive builder does not cost an upgrader slot when the room wants no builder (route builder at the floor)', () => {
+  const sp = require('fs').readFileSync(src('managers/spawn.js'), 'utf8');
+  assert.ok(sp.includes('if (nSites && (roadBuilder || !T.builder)) T.upgrader = targets('), 'old rule kept upgrader at 1 while the road builder lived');
+}]);
 let fail = 0;
 for (const [n, f] of cases) { try { f(); console.log('ok   ' + n); } catch (e) { fail++; console.log('FAIL ' + n + '\n     ' + e.message); } }
 process.exit(fail ? 1 : 0);

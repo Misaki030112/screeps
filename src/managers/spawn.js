@@ -373,7 +373,10 @@ function run1(spawn, onWait) {
     // A site no builder will work must not cost an upgrader slot ('sites ? 1 : 2' frees feed for a builder). Patrol 10-20 07:2x:
     // walls.js NW spur road 30,12 (0/300) sat with builder target 0 (storage at the 15k floor) -> upgrader target 1, the 2nd
     // 14W upgrader died unreplaced (~-8 e/t upgrade) against Misaki's 'upgrade first until RCL7'.
-    if (nSites && (roadBuilder || (!T.builder && !(count.builder || 0)))) T.upgrader = targets(room, count, backlog, m.ctlEma, 0).upgrader;
+    // Strategy review 10-20 17:4x: also when the room wants no builder (T.builder 0) but one is still alive. The road builder (e774b85)
+    // now lives until the W45N8 route roads are >= 50%; once the worst passed 30% roadBuilder went false while it was alive, and the
+    // 'sites ? 1 : 2' rule dropped roleTargets.upgrader 2 -> 1 (live t83762698) for a builder that is not working the home sites.
+    if (nSites && (roadBuilder || !T.builder)) T.upgrader = targets(room, count, backlog, m.ctlEma, 0).upgrader;
     if (low) {
       T.upgrader = defLowUpgraders(T.upgrader, room.storage ? room.storage.store[RESOURCE_ENERGY] : 0, dr, !!(Wr.stepHeld && Wr.stepHeld(room)), (room.controller.ticksToDowngrade || 0) < Wr.UP_SAFE); } }
   room.memory.roleTargets = T;
