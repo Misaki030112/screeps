@@ -3,6 +3,12 @@
 Novice zone ends **2026-10-28 03:33 UTC+8**. Defence timeline: `docs/DEFENSE_NOVICE.md` (2026-10-16); detail `docs/DEFENSE.md` / geometry `docs/DEFENSE_PLAN.md`.
 **Safe mode: NEVER auto-activate** — alert Misaki.
 
+## 2026-10-20 08:4x strategy review: RCL7 -> novice-end window (`docs/RCL7.md` "08:4x")
+
+- **RCL7 ETA ~10-26 23:00 - 10-27 11:00 UTC+8** (12 h 22.1 e/t; 1-2 h 20.6), 16-28 h before novice end 10-28 03:33. Post-RCL7 bill (spawn 2 + tower 3 + 10 ext + link ~55k, then wall step 2 ~69k) is ~6 h of surplus, so "step 2 after RCL7" (Misaki 10-19 20:51) still fits. No plan change.
+- **Shipped cd9c423 (t83754849, dormant until RCL7):** the queen ferry floor never drops below `Memory.defense.reserveE` (15k). Without it, step 2 drains the 50k wall fund to 0 and the floor fell to 1300, so storage would have been ferried to ~1.3k right around novice end. `tests/queen_floor_rcl7.js` fails on old code; all tests pass; live floor 15000, errors 0.
+- **Home patrol at RCL7:** storage >= 15k after the fund runs out, builders on step 2 while storage > 17k, tower 3 in the first site batch.
+
 ## 2026-10-20 07:4x two-room evaluation (45-min window 06:53-07:36, t83753270-83753880, vs 06:13-06:53)
 
 - **W47N8:** upgrade **25.0 e/t (prev 17.9)** vs ideal 29.84 (84%), the hauler-cohort dip has recovered as predicted. Model 1h 22.3 / 6h 23.5. RCL4 374.5k/405k, **RCL5 ETA ~09:05 UTC+8**. Spawn energy fill fell to 0.62 (prev 0.88): threatN re-set t83753753 (north group 2x 6RA6M + 4 healers, outside our rooms) -> 2 local w8defenders + 1 home 22-part w8defender, and the hub filler died meanwhile with its replacement held ~70 t behind the 2 local defenders.
