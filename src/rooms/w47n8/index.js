@@ -227,7 +227,7 @@ function swapTemp(room, minE = 50000) {
   (Memory.ops = Memory.ops || {}).w8swap = { from: [temp.pos.x, temp.pos.y], to: slot, t: Game.time };
   return slot;
 }
-// 10-20 13:39 (Misaki order): relocate Spawn2 15,18 -> hub 32,32 (RCL5 allows 1 spawn: destroy, then build 15k site), then swap the
+// 10-20 13:39 (Misaki order): relocate Spawn2 15,18 -> 34,30 (was 32,32, see layout.js) (RCL5 allows 1 spawn: destroy, then build 15k site), then swap the
 // 5 temp extensions by Spawn2 into v3b ORDER slots one at a time. Memory.ops.w8move.phase: prep -> build -> ext -> done.
 // prep only fires when it is safe: no hostiles/threat mode, storage >= MOVE_E (whole spawn bill banked), spawn idle and full, both
 // miners + 2 haulers TTL >= 500, a builder TTL >= 700 (nobody needs a spawn during the ~300-500 t build). While in prep the room banks
@@ -253,7 +253,10 @@ function moveReady(room) {
 function moveRun(room) {
   const o = (Memory.ops = Memory.ops || {}), m = o.w8move; if (!m || room.controller.level < 5) return;
   const [nx, ny] = L.ORDER.spawn[0], sp = room.find(FIND_MY_SPAWNS);
-  if (m.phase === 'prep') { m.why = moveReady(room); if (m.why.length) return;
+  if (m.phase === 'prep') { // 15:5x: rampart over the new slot first (1 hit site, builders finish it fast); the spawn site may sit on a rampart
+    const ramp = room.lookForAt(LOOK_STRUCTURES, nx, ny).some(s => s.structureType === STRUCTURE_RAMPART);
+    if (!ramp && !room.lookForAt(LOOK_CONSTRUCTION_SITES, nx, ny).length) room.createConstructionSite(nx, ny, STRUCTURE_RAMPART);
+    m.why = moveReady(room); if (!ramp) m.why.push('rampart'); if (m.why.length) return;
     const old = sp[0]; if (old.destroy() === OK) { m.phase = 'build'; m.t0 = Game.time; } return; }
   if (m.phase === 'build') {
     if (sp.some(s => s.pos.x === nx && s.pos.y === ny)) { m.phase = 'ext'; m.t1 = Game.time; return; }
@@ -276,7 +279,7 @@ function layoutRun(room) {
   // (previous swap done), the replacement tile is clear and the site budget has room (this run's PRIO loop / the next places it).
   // Spawn2 is kept.
   if (ok && rcl >= 7) swapTemp(room);
-  for (const s of room.find(FIND_MY_CONSTRUCTION_SITES, { filter: s => s.structureType === STRUCTURE_RAMPART && !isGate(s.pos.x, s.pos.y) })) s.remove(); // 17:15, see below
+  for (const s of room.find(FIND_MY_CONSTRUCTION_SITES, { filter: s => s.structureType === STRUCTURE_RAMPART && !isGate(s.pos.x, s.pos.y) && !(s.pos.x === L.ORDER.spawn[0][0] && s.pos.y === L.ORDER.spawn[0][1]) })) s.remove(); // 17:15, see below
   let sites = room.find(FIND_MY_CONSTRUCTION_SITES, { filter: s => s.structureType !== STRUCTURE_RAMPART }).length; if (sites >= 6) return;
   // 03:05 west<->hub link road (missing from v3b plan): loaded 10C5M rhaulers sat 7-10 ticks on unroaded swamp 22,34 (fatigue 70)
   // between road 15,33 and strip road 24,35; queued ahead of the plan roads since every hub trip crosses it

@@ -29,8 +29,8 @@ Game.rooms.W47N8 = room; const hc = { id: 'h', memory: {}, room: Object.assign({
 const ft = RL._fill ? RL._fill(hc) : null;
 if (RL._fill) assert.ok(!(ft.pos.x === 15 && ft.pos.y === 18) && !L.TEMP_EXT.some(([x, y]) => ft.pos.x === x && ft.pos.y === y), 'hauler fills hub first: ' + JSON.stringify(ft.pos));
 // (2) swap gates
-const hubSpawn = () => mk('spawn', 32, 32);
-assert.strictEqual(W.swapTemp(room), null, 'no hub spawn 32,32 -> no swap');
+const hubSpawn = () => mk('spawn', 34, 30);
+assert.strictEqual(W.swapTemp(room), null, 'no hub spawn 34,30 -> no swap');
 hubSpawn(); room.storage.store.energy = 40000; assert.strictEqual(W.swapTemp(room), null, 'storage <= 50k -> no swap');
 room.storage.store.energy = 60000; room.energyAvailable = 5000; assert.strictEqual(W.swapTemp(room), null, 'spawn energy not full -> no swap');
 room.energyAvailable = 5600; sites.push({ structureType: 'extension', pos: pos(1, 1) }); assert.strictEqual(W.swapTemp(room), null, 'pending extension site -> wait');
@@ -38,8 +38,8 @@ sites.length = 0;
 const slot = W.swapTemp(room); assert.deepStrictEqual(slot, L.ORDER.extension[45], 'next unbuilt v3b slot');
 assert.ok(S.find(s => s.pos.x === L.TEMP_EXT[0][0] && s.pos.y === L.TEMP_EXT[0][1]).dead, 'first temp ext destroyed (one at a time)');
 assert.strictEqual(S.filter(s => s.dead).length, 1, 'only one'); assert.ok(!spawn2.dead, 'Spawn2 kept');
-// (3) RCL7 layout places hub spawn 32,32 first when missing
+// (3) RCL7 layout places hub spawn 34,30 first when missing
 S.splice(S.indexOf(S.find(s => s.structureType === 'spawn' && s.pos.x === 32)), 1); sites.length = 0; Game.time = 2000;
 for (const x of [24, 25, 26, 27, 28, 29, 30, 31, 8, 9, 10, 11]) mk('constructedWall', x, 3); mk('container', 33, 33);
-W.layoutRun(room); assert.ok(sites.some(s => s.structureType === 'spawn' && s.pos.x === 32 && s.pos.y === 32), 'RCL7: spawn site 32,32 placed');
+W.layoutRun(room); assert.ok(sites.some(s => s.structureType === 'spawn' && s.pos.x === 34 && s.pos.y === 30), 'RCL7: spawn site 34,30 placed');
 console.log('w47n8 spawn order ok');
