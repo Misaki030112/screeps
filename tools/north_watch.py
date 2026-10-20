@@ -18,19 +18,29 @@ N9_NEAR_Y = 35  # W47N9 rows >= 35 face our north edge (W47N8 y=0); BustJetter's
 def n9_near(armed): return any(i['pos'][1] >= N9_NEAR_Y for i in armed)
 def triggers(room, armed, drain): return (room == 'W47N9' and bool(armed or drain)) or (room == 'W48N9' and len(armed) >= 2)
 SEAL_FIGHT = (27, 3)  # centre of the east seal (src/rooms/w47n8/index.js SEAL_FIGHT)
-def seal_ranges(objs, U):
+SEAL_WEST = (10, 3)   # 10-20 23:4x: centre of the west seal x 8-11 (towers r32 + r13-16 = ~460 dps vs ~750 at the east seal)
+SPAWN_PT = (34, 30)   # Spawn2 after the 10-20 move (was 15,18 -> fallback r19); 'inside' verdicts are scored here
+SEG_X = 18           # seal segment split: mean x < 18 -> west seal, else east (same as src/rooms/w47n8/index.js sealAt)
+def seal_ranges(objs, U, pt=SEAL_FIGHT):
     """ranges from our live W47N8 towers to the seal fight point (RCL5 adds 24,8 -> r5); [] when none seen"""
-    return [max(abs(x['x'] - SEAL_FIGHT[0]), abs(x['y'] - SEAL_FIGHT[1])) for x in objs if x['type'] == 'tower' and U.get(x.get('user')) == ME]
+    return [max(abs(x['x'] - pt[0]), abs(x['y'] - pt[1])) for x in objs if x['type'] == 'tower' and U.get(x.get('user')) == ME]
 def verdict(bodies, inside=False, tr=None):
     """towers-only / towers + 2 defenders outcome at the seal (tr = live tower ranges, RCL4 fallback 1 tower r32; inside: at Spawn2, r19).
     bodies must include the group's healers (05:4x: healers were left out, so 2RA+2H read 'towers win' while the sim says towers lose). Advice only."""
     import combat_sim as S
     mk = lambda: [S.Cr(str(i), S.body(**{k: v for k, v in b.items() if k in ('tough', 'move', 'attack', 'ranged_attack', 'heal')})) for i, b in enumerate(bodies)]
-    tr = [19] if inside else (tr or [32])
+    tr = (tr or [19]) if inside else (tr or [32])
     a, d = S.fight(mk(), tr, 0), S.fight(mk(), tr, 2)
     v = 'towers win' if a['result'] == 'win' else 'towers+2 defenders win' if d['result'] == 'win' else 'unwinnable' + (' -> recommend safe mode to Misaki if it pushes past the seal' if not inside else ' inside -> recommend safe mode to Misaki')
     return f"{v} (towers {a['result']}, +2def {d['result']})"
 TR = []  # live W47N8 tower ranges to SEAL_FIGHT, filled from the W47N8 scan (first in ROOMS)
+TRW, TRS = [], []  # same to SEAL_WEST / SPAWN_PT
+def verdict_at(bodies, inside=False, mean_x=None):
+    """10-20 23:4x: score both seal segments (the west one is the thin side) and the spawn for intrusions; nearer segment first."""
+    if inside: return verdict(bodies, inside=True, tr=TRS or None)
+    e, w = verdict(bodies, tr=TR or None), verdict(bodies, tr=TRW or None)
+    if e == w: return e
+    return f'west seal: {w}; east seal: {e}' if mean_x is not None and mean_x < SEG_X else f'east seal: {e}; west seal: {w}'
 def main():
     global st, invN
     st = json.load(open(STATE)) if os.path.exists(STATE) else {}
@@ -46,7 +56,7 @@ def main():
                 for k, v in (x.get('store') or {}).items():
                     if k in BOOST and v: stock[k] += v
         armed, drain, intr, heal = [], [], [], []
-        if r == 'W47N8': TR[:] = seal_ranges(o['objects'], U)
+        if r == 'W47N8': TR[:] = seal_ranges(o['objects'], U); TRW[:] = seal_ranges(o['objects'], U, SEAL_WEST); TRS[:] = seal_ranges(o['objects'], U, SPAWN_PT)
         for x in cs:
             b = collections.Counter(p['type'] for p in x['body']); boosted = any(p.get('boost') for p in x['body'])
             info = {'owner': U.get(x['user']), 'pos': [x['x'], x['y']], 'body': dict(b), 'boosted': boosted}
@@ -64,7 +74,8 @@ def main():
             if cre and kind in ('intrusion', 'group'):  # 17:3x: combat-model verdict for Misaki (tools/combat_sim.py); 05:4x: + same-room healers, live tower ranges
                 sup = [c for c in heal if c not in cre and any(max(abs(c['pos'][0] - g['pos'][0]), abs(c['pos'][1] - g['pos'][1])) <= 3 for g in cre)]  # healers escorting the group (<=3 tiles), not the room's own
                 if sup: a['support'] = len(sup)
-                try: a['verdict'] = verdict([c['body'] for c in cre + sup], inside=(kind == 'intrusion'), tr=TR)
+                mx = sum(c['pos'][0] for c in cre) / len(cre) if r != 'W48N9' else None  # W48N9 x says nothing about the segment
+                try: a['verdict'] = verdict_at([c['body'] for c in cre + sup], inside=(kind == 'intrusion'), mean_x=mx)
                 except Exception as ex: a['verdict'] = 'sim error ' + str(ex)[:60]
             alerts.append((a, ingest.alert_state(a, None)))
         if intr: add('intrusion', intr)

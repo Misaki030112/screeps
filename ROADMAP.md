@@ -3,6 +3,12 @@
 Novice zone ends **2026-10-28 03:33 UTC+8**. Defence timeline: `docs/DEFENSE_NOVICE.md` (2026-10-16); detail `docs/DEFENSE.md` / geometry `docs/DEFENSE_PLAN.md`.
 **Safe mode: NEVER auto-activate** — alert Misaki.
 
+## 2026-10-20 23:4x strategy review: W47N8 west seal is the thin side (`docs/DEFENSE_W47N8.md` "23:4x")
+
+- **Defence:** BustJetter's 21:45 peak (12 unboosted, 28 HEAL) loses to W47N8's 2 towers alone at the east seal (~64 HEAL break-even) and at the spawn, and still at the west seal x 8-11, but there the margin is thin (~36 HEAL). Border pre-assessment and alert verdicts now score the segment nearest the group, and intrusions at the new spawn 34,30 (was old Spawn2 15,18). Shipped, see doc.
+- **Plan check:** home 6 h upgrade 19.6 e/t (18:00-24:00), but the two dips are explained spend (19-20h move pioneers, 22h W45N7 Invader defender); clean hours 23.3 / 25.9 are at the ~23 ceiling, so the 20:4x watch does not trigger and no lever is proposed. RCL6 904k/3.645M: RCL7 ~10-27 06:00 at 22 e/t, ~10-27 21:00 at 20 e/t (4.37 s/tick), i.e. 6-22 h before novice end; home defence at novice end still assumes RCL6. W47N8 RCL5 199k/1.215M, ~22-26 e/t now that the wall-stage builders aged out, RCL6 ~10-23 morning. Storage 2.4k is above the filler buffer (cap + 200), so refills are not starved.
+- **API budget follow-up (20:4x):** 18 memory reads in 2 h 40 min (listener 96/day + patrol tools), projected < 200/day of 1440; no segment move needed. Item closed.
+
 ## 2026-10-20 20:4x strategy review: API budget + RCL7 vs novice end (`docs/CPU.md` "20:4x")
 
 - **Memory API ran dry:** `GET user/memory` is 1440/day per account; the listener's CPU-profile poll alone used 864/day, so from ~19:55 to 20:47 every patrol/briefing memory read got HTTP 429. Fixed on the box (no game deploy): 1 read per 15 min, tick/bucket from the websocket. Every memory read is now logged to `metrics/api_memory.log`; next review: sum calls per caller over 24 h and move the biggest spender to a segment if the total is > ~1000/day.

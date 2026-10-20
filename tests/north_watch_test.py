@@ -14,6 +14,15 @@ assert N.verdict(P + H).startswith('towers+2 defenders win'), N.verdict(P + H)
 assert N.verdict(P + H, tr=[32, 5]).startswith('towers win'), N.verdict(P + H, tr=[32, 5])
 T = [{'type': 'tower', 'user': 'u1', 'x': 33, 'y': 35}, {'type': 'tower', 'user': 'u1', 'x': 24, 'y': 8}, {'type': 'tower', 'user': 'u2', 'x': 27, 'y': 4}]
 assert N.seal_ranges(T, U) == [32, 5], N.seal_ranges(T, U)
+assert N.seal_ranges(T, U, N.SEAL_WEST) == [32, 14], N.seal_ranges(T, U, N.SEAL_WEST)
+assert N.seal_ranges(T, U, N.SPAWN_PT) == [5, 22], N.seal_ranges(T, U, N.SPAWN_PT)
+# 23:4x: BustJetter's 21:45 W48N9 group (3 melee, 3x6RA, 28 HEAL) + 2 more 4H healers (36 HEAL): east seal holds, west seal needs defenders
+B = [{'tough': 5, 'move': 15, 'attack': 10}, {'tough': 4, 'move': 12, 'attack': 8}, {'tough': 6, 'move': 18, 'attack': 12}] + [{'ranged_attack': 6, 'move': 6}] * 3 \
+    + [{'heal': h, 'move': h} for h in (4, 4, 4, 5, 6, 5, 4, 4)]
+N.TR[:], N.TRW[:], N.TRS[:] = [32, 5], [32, 16], [5, 22]
+v = N.verdict_at(B, mean_x=10); assert v.startswith('west seal: towers+2') and 'east seal: towers win' in v, v
+v = N.verdict_at(B, mean_x=None); assert v.startswith('east seal: towers win'), v
+assert N.verdict_at(B, inside=True).startswith('towers win'), N.verdict_at(B, inside=True)
 print('north_watch verdict ok')
 # 14:3x: spawn-move gate w8n9a only for armed creeps near our border (W47N9 y >= 35), not BustJetter's home guard at 28,30
 assert not N.n9_near([{'pos': [28, 30]}]) and N.n9_near([{'pos': [28, 30]}, {'pos': [29, 44]}]) and not N.n9_near([])

@@ -389,6 +389,9 @@ function linkRun() {
 }
 const D = require('./defense'), F = require('../../utils/focus');
 const SEAL_FIGHT = { x: 27, y: 3 }; // centre of the east seal: where a north squad has to break in
+// 10-20 23:4x strategy review: the west seal (x 8-11) is the thin side, towers r32 + r13-16 (~460 dps vs ~750 east): the 21:45 W48N9
+// group (28 HEAL) is held there by towers alone, ~36 HEAL is not. Border pre-assessment scores the segment nearest the announced group.
+const SEAL_WEST = { x: 10, y: 3 }, sealAt = x => (typeof x === 'number' && x < 18 ? SEAL_WEST : SEAL_FIGHT);
 // armed hostiles within reach (RA 3, ATTACK/WORK 1) of our creeps, our structures or the seal walls
 function hurtingSet(room, hs) {
   const s = new Set(); hs = hs.filter(D.armed); if (!hs.length) return s; // drain tanks only: skip the structure scan (CPU)
@@ -405,8 +408,8 @@ function assessRun(room, towers, hs) {
   if (m.w8assess && Game.time - m.w8assess.t < 10) return; // up to 5x5 sims (<=600 t each): cached 10 ticks
   let force, at;
   if (inRoom.length) { force = hs.filter(h => D.armed(h) || PARTS(h, HEAL)); at = inRoom.reduce((a, h) => (h.pos.y > a.pos.y ? h : a)).pos; }
-  else if (Array.isArray(o.w8invNb) && o.w8invNb.length) { force = o.w8invNb.map(D.fromCounts); at = SEAL_FIGHT; }
-  else force = [D.fromCounts({ ranged_attack: 8, move: 8 }), D.fromCounts({ ranged_attack: 6, move: 6 })], at = SEAL_FIGHT; // no body data: assume the 17:34 pair
+  else if (Array.isArray(o.w8invNb) && o.w8invNb.length) { force = o.w8invNb.map(D.fromCounts); at = sealAt(o.w8invNx); }
+  else force = [D.fromCounts({ ranged_attack: 8, move: 8 }), D.fromCounts({ ranged_attack: 6, move: 6 })], at = sealAt(o.w8invNx); // no body data: assume the 17:34 pair
   const inside = inRoom.some(h => h.pos.y > D.SEAL_Y);
   const tr = towers.map(t => Math.max(Math.abs(t.pos.x - at.x), Math.abs(t.pos.y - at.y)));
   // 17:34 joint planner (defense.plan): one place decides the W46N8 + W47N8 roster; home only if home itself is not threatened
@@ -468,4 +471,4 @@ function selfSufficient() {
   const r = Game.rooms[C.ROOM]; if (!r || !r.find(FIND_MY_SPAWNS).length) return false;
   return mine().some(c => c.memory.role === 'w8miner'); // Spawn2 + its own miner -> home stops cq pioneers/haulers (guard stays)
 }
-module.exports = { banking, BANK_HOLD, moveRun, moveReady, rampNeeded, homeWant, linkAt, linkRun, rampHold, swapTemp, extBatch, energyOrder, ROOM: C.ROOM, spawnRun, layoutRun, towerRun, selfSufficient, bodyFor, rmLead8 };
+module.exports = { sealAt, banking, BANK_HOLD, moveRun, moveReady, rampNeeded, homeWant, linkAt, linkRun, rampHold, swapTemp, extBatch, energyOrder, ROOM: C.ROOM, spawnRun, layoutRun, towerRun, selfSufficient, bodyFor, rmLead8 };
