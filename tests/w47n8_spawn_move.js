@@ -21,6 +21,9 @@ const keep = S.filter(s => s.structureType === 'rampart' && W.rampNeeded(room, s
 assert.deepStrictEqual(keep, ['15,18', '29,3', '34,30', '33,35', '35,32'].sort(), 'necessary ramparts: ' + keep);
 const r36 = S.find(s => s.id === 'rampart36,31'); r36.hits = 1000; Memory.ops.w8hold = { [r36.id]: 40000 };
 assert.ok(W.rampHold(room) === null, 'unneeded decayed rampart not repaired');
+const r34 = S.find(s => s.id === 'rampart34,30'); r34.hits = 1; Memory.ops.w8hold = { [r34.id]: 1 };
+assert.strictEqual(W.rampHold(room), r34, 'fresh 1-hit spawn-slot rampart is ramped up (else it decays away)');
+r34.hits = 40000; Memory.ops.w8hold = {};
 // creeps
 const cr = (role, ttl) => { Game.creeps[role + ttl + Math.random()] = { memory: { role, home: 'W47N8' }, ticksToLive: ttl }; };
 cr('w8miner', 900); cr('w8miner', 300); cr('w8hauler', 800); cr('w8hauler', 800); cr('w8builder', 1000);

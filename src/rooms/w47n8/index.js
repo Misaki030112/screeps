@@ -337,7 +337,10 @@ function rampHold(room) {
   const o = (Memory.ops = Memory.ops || {}), h = (o.w8hold = o.w8hold || {}), live = {};
   for (const r of rs) live[r.id] = h[r.id] === undefined ? r.hits : h[r.id];
   o.w8hold = live;
-  const g = rs.find(r => r.pos && isGate(r.pos.x, r.pos.y) && r.hits < (C.GATE_TOWER || 0)); if (g) return g; // 13:30 gate ramp-up
+  // 13:30 gate ramp-up; 10-20 16:5x patrol: also the spawn-slot rampart (L.ORDER.spawn[0]). It is built at 1 hit and its hold was 1,
+  // so it decayed away every ~100 t (seen t83761858-862) and the relocated spawn would have stood uncovered. Same 20k tower floor (~200 e).
+  const slot = (x, y) => x === L.ORDER.spawn[0][0] && y === L.ORDER.spawn[0][1];
+  const g = rs.find(r => r.pos && (isGate(r.pos.x, r.pos.y) || slot(r.pos.x, r.pos.y)) && r.hits < (C.GATE_TOWER || 0)); if (g) return g;
   return rs.find(r => r.hits < live[r.id] - HOLD_SLACK) || null;
 }
 // 17:20 RCL5 links (parent-approved plan): source A link 26,12 -> ctl link 13,25 (3% loss) replaces ~25-tile hauling of source A.
