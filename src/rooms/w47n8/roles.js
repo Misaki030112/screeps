@@ -199,6 +199,7 @@ function rroadWork(c) {
   if (r) c.repair(r);
 }
 function rgo(c, x, y, r) { return rmove(c, RM.room, x, y, r); }
+const go8 = (c, x, y, r = 1) => rmove(c, C.ROOM, x, y, r); // rhauler legs inside W47N8 too (same 1-wide trunk, 14,35-38 plain lane seen live)
 const R = {
   w8miner(c) {
     if (!home(c)) return;
@@ -377,7 +378,7 @@ const R = {
         const l7 = Memory.ops && Memory.ops.w8lo7, B = C.SOURCES[1].stand;
         if (l7 && Game.time - l7.t < 50 && l7.v < 800 && c.pos.inRangeTo(B[0], B[1], 4)) {
           const kb = c.room.lookForAt(LOOK_STRUCTURES, B[0], B[1]).find(s => s.structureType === STRUCTURE_CONTAINER && s.store[E] >= 500);
-          if (kb) return c.pos.isNearTo(kb) ? c.withdraw(kb, E) : go(c, B[0], B[1]);
+          if (kb) return c.pos.isNearTo(kb) ? c.withdraw(kb, E) : go8(c, B[0], B[1]);
         }
       }
       if (c.room.name !== RM.room) return rgo(c, 25, 25, 20);
@@ -413,8 +414,8 @@ const R = {
       const adj = c.pos.findInRange(FIND_MY_STRUCTURES, 1, { filter: s => (s.structureType === STRUCTURE_EXTENSION || s.structureType === STRUCTURE_SPAWN) && s.store.getFreeCapacity(E) > 0 })[0];
       if (adj) fillXfer(c, adj);
     }
-    if (!t) return go(c, C.CTL[0], C.CTL[1], 3);
-    if (!c.pos.isNearTo(t)) { if (isFill(t)) FM.walk(c); go(c, t.pos.x, t.pos.y); } else { if (isFill(t)) fillXfer(c, t); else c.transfer(t, E); delete c.memory.ft; }
+    if (!t) return go8(c, C.CTL[0], C.CTL[1], 3);
+    if (!c.pos.isNearTo(t)) { if (isFill(t)) FM.walk(c); go8(c, t.pos.x, t.pos.y); } else { if (isFill(t)) fillXfer(c, t); else c.transfer(t, E); delete c.memory.ft; }
   },
   w8builder(c) {
     if (!home(c)) return; toggle(c);

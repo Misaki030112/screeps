@@ -32,6 +32,7 @@ console.log('w47n8 flow ok');
     pos: Object.assign(pos(21, 33), { isNearTo: o => Math.max(Math.abs(21 - o.pos.x), Math.abs(33 - o.pos.y)) <= 1,
       findInRange: (t, r, o) => [adjE, farE].filter(s => Math.max(Math.abs(21 - s.pos.x), Math.abs(33 - s.pos.y)) <= r).filter(o.filter) }),
     transfer: (t) => log.push('tr ' + t.id), moveTo: (p) => log.push('mv ' + p.x + ',' + p.y) };
+  require(path.join(__dirname, '..', 'src', 'utils', 'move.js')).to = (cc, x, y) => { cc.moveTo({ x, y }); return false; }; // rhauler legs use utils/move (10-20)
   RL.w8rhauler.run(c);
   assert.deepStrictEqual(log, ['tr ' + adjE.id, 'mv 35,32'], 'top-up adjacent ext, move on to storage: ' + log);
   R.energyAvailable = 200; log.length = 0; RL.w8rhauler.run(c);
