@@ -79,7 +79,8 @@ function spawnRun(spawn) {
   // 10-20 17:0x (Misaki: guard out fast on any threat): armed group at the W47N9 south rows (north_watch w8n9a, fresh) or any armed
   // hostile in W47N8 -> keep 1 w8guard (roster may ask more in-room). Not replaced once the threat is gone.
   const armedIn = room.find(FIND_HOSTILE_CREEPS).some(h => require('./defense').armed(h)), n9t = (Memory.ops || {}).w8n9a || 0;
-  if (!want && (armedIn || (n9t > 0 && Game.time - n9t < 60)) && !cs.some(c => c.memory.role === 'w8guard' && (c.spawning || c.ticksToLive > 3 * 50 + 30))) want = 'w8guard';
+  const fmv = Memory.ops && Memory.ops.w8move && Memory.ops.w8move.force && ['prep', 'build'].includes(Memory.ops.w8move.phase);
+  if (!want && (armedIn || fmv || (n9t > 0 && Game.time - n9t < 60)) && !cs.some(c => c.memory.role === 'w8guard' && (c.spawning || c.ticksToLive > 3 * 50 + 30))) want = 'w8guard';
   if (!want && dGo) { want = !dOld && lg < (ro.w8m | 0) ? 'w8guard' : 'w8defender'; }
   // 18:04: roster >= 4 combat defenders -> one dedicated healer; local only when home can't send it (ro.hl 'w8')
   if (!want && !dOld && fresh && ro.hl === 'w8' && !_.some(Game.creeps, c => c.memory.role === 'w8healer')) want = 'w8healer';
@@ -247,8 +248,17 @@ function moveReady(room) {
   if (sp && sp.spawning) why.push('spawning');
   // 10-20 14:0x (Misaki ordered the move today): TH.on() never clears while W48N9 holds >=2 armed (north_watch refreshes w8threatN), so
   // gate only on real proximity: hostiles in W47N8, invasion(), or armed creeps in W47N9 (north_watch w8n9a) within N9_QUIET ticks.
-  const n9 = (Memory.ops || {}).w8n9a || 0;
-  if (room.find(FIND_HOSTILE_CREEPS).length || TH.invasion() || (n9 > 0 && Game.time - n9 < N9_QUIET)) why.push('threat');
+  // 10-20 18:1x (Misaki order: move at 19:30 despite the W47N9 border): Memory.ops.w8move.force = 1 skips ONLY the W47N9 (w8n9a) check.
+  // Forced moves additionally need: north line >= 100k, both towers >= 700, a builder within 3 of the new slot, a w8guard alive.
+  const n9 = (Memory.ops || {}).w8n9a || 0, mv = (Memory.ops || {}).w8move || {}, force = !!mv.force;
+  if (room.find(FIND_HOSTILE_CREEPS).length || TH.invasion() || (!force && n9 > 0 && Game.time - n9 < N9_QUIET)) why.push('threat');
+  if (force) {
+    const [nx, ny] = L.ORDER.spawn[0];
+    if (room.find(FIND_STRUCTURES, { filter: s => (s.structureType === STRUCTURE_WALL || s.structureType === STRUCTURE_RAMPART) && C.SEAL.some(([x, y]) => s.pos.x === x && s.pos.y === y) && s.hits < 100000 }).length) why.push('walls');
+    if (room.find(FIND_MY_STRUCTURES, { filter: s => s.structureType === STRUCTURE_TOWER && s.store[RESOURCE_ENERGY] < 700 }).length) why.push('towers');
+    if (!cs.some(c => c.memory.role === 'w8builder' && !c.spawning && c.pos.inRangeTo(nx, ny, 3) && c.store[RESOURCE_ENERGY] > 0)) why.push('builderpos');
+    if (!cs.some(c => c.memory.role === 'w8guard')) why.push('guard');
+  }
   if (!room.storage || bankE(room) < MOVE_E) why.push('storage');
   if (room.energyAvailable < room.energyCapacityAvailable) why.push('energy');
   if (ttl('w8miner', 500) < 2 || ttl('w8hauler', 500) < 2 || ttl('w8builder', 700) < 1) why.push('ttl');
@@ -257,6 +267,8 @@ function moveReady(room) {
 function moveRun(room) {
   const o = (Memory.ops = Memory.ops || {}), m = o.w8move; if (!m || room.controller.level < 5) return;
   const [nx, ny] = L.ORDER.spawn[0], sp = room.find(FIND_MY_SPAWNS);
+  // 18:1x: forced move, armed hostile inside W47N8 before the destroy -> hold (Misaki restarts it: phase 'prep')
+  if (m.phase === 'prep' && m.force && room.find(FIND_HOSTILE_CREEPS).some(h => D.armed(h))) { m.phase = 'hold'; m.held = Game.time; m.why = ['armed-in-room']; return; }
   if (m.phase === 'prep') { // 15:5x: rampart over the new slot first (1 hit site, builders finish it fast); the spawn site may sit on a rampart
     const ramp = room.lookForAt(LOOK_STRUCTURES, nx, ny).some(s => s.structureType === STRUCTURE_RAMPART);
     if (!ramp && !room.lookForAt(LOOK_CONSTRUCTION_SITES, nx, ny).length) room.createConstructionSite(nx, ny, STRUCTURE_RAMPART);

@@ -453,7 +453,12 @@ const R = {
     // 14:23 threat mode: seal walls to 50k before other sites (seal wall sites still first)
     const tj = !seal[0] && TH.on() && wallJob(c.room, c, TH.urgentTarget()); // 06:3x: only up to the 50k floor ahead of sites (tower 24,8 first at RCL5)
     if (tj) { if (!c.pos.inRangeTo(tj, 3)) go(c, tj.pos.x, tj.pos.y, 3); else c.repair(tj); return; }
-    const site = seal[0] || c.pos.findClosestByRange(all);
+    // 18:1x spawn move: the new spawn site goes first; forced prep: idle builders wait loaded beside the new slot
+    const mvb = Memory.ops && Memory.ops.w8move, sp8 = all.find(s => s.structureType === STRUCTURE_SPAWN);
+    if (!sp8 && !seal[0] && mvb && mvb.force && mvb.phase === 'prep') { const [nx, ny] = require('./layout').ORDER.spawn[0];
+      if (c.store[E] < c.store.getCapacity() / 2) { c.memory.w = false; getEnergy(c); return; }
+      if (!c.pos.inRangeTo(nx, ny, 2)) go(c, nx, ny, 2); return; }
+    const site = sp8 || seal[0] || c.pos.findClosestByRange(all);
     if (site) { if (!c.pos.inRangeTo(site, 3)) go(c, site.pos.x, site.pos.y, 3); else c.build(site); return; }
     // 19:31: urgent road/container repair (<10%; container 11,43 at 18% = 2k ticks of decay left pulled the builder off the walls) -> seal walls to WALL_TARGET[rcl], lowest first -> maintenance (<60%).
     // With maintenance first the lone 2W builder spent 180 ticks on container 26,11 (87k/250k) + 22 roads and no wall left 1 hit.
