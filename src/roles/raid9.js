@@ -102,8 +102,11 @@ function travel(c, slot) {
 }
 function run(c) {
   const P = M(), k = c.memory.k | 0, slot = slotOf(k);
-  const tr = Game.rooms[TARGET], sm = tr && tr.controller && tr.controller.safeMode;
-  if (sm) { P.safe = Game.time; if (c.room.name === TARGET && (c.pos.y === 49)) return c.move(BOTTOM); return travel(c, slot); } // the only retreat
+  const tr = Game.rooms[TARGET];
+  if (tr && tr.controller && tr.controller.safeMode) P.safeUntil = Game.time + tr.controller.safeMode;
+  // remembered: once we retreat we lose vision of W47N9, so never re-enter while its safe mode may still run (no border bounce)
+  const sm = P.safeUntil && Game.time < P.safeUntil;
+  if (sm) { P.safe = P.safe || Game.time; if (c.room.name === TARGET && (c.pos.y === 49)) return c.move(BOTTOM); return travel(c, slot); } // the only retreat
   if (c.room.name === TARGET) {
     const w = world(c.room), p = pick(c.pos, w), t = p && Game.getObjectById(p.id);
     const hp = c.getActiveBodyparts(HEAL) ? healPlan(c, squad(c)) : null;
