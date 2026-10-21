@@ -115,6 +115,23 @@ function stageVia(c, C) {
   }
   move.to(c, ex[0], ex[1], 2); return true;
 }
+// Via gate (patrol 10-21 21:5x): W45N7 stayed SAFE while W45N8 (its only way in) had a solo Invader in THREAT, so the
+// replacement rminer83785547 walked past it and was shot to 30/1000. While any via remote is not SAFE: creeps at home stay
+// home (work there), loaded rhaulers in the remote hold there instead of walking out, empty ones skip via-staging; creeps
+// already in the via room carry on. Kill switch: Memory.remotes.viaGateOff = true.
+// pure: viaGate(viaUnsafe, where 'home'|'via'|'remote', full) -> 'home' | 'hold' | 'nostage' | null
+function viaGate(viaUnsafe, where, full) {
+  if (!viaUnsafe) return null;
+  if (where === 'home') return full ? null : 'home';
+  if (where === 'remote') return full ? 'hold' : 'nostage';
+  return null;
+}
+function viaGateOf(c, C, full) {
+  if (!C.via || (Memory.remotes || {}).viaGateOff) return null;
+  const unsafe = C.via.some(v => remote.CFG[v] && !threat.safe(v));
+  const where = c.room.name === C.home ? 'home' : c.room.name === c.memory.remote ? 'remote' : 'via';
+  return viaGate(unsafe, where, full);
+}
 const HOME = { rhauler: 'hauler', rminer: 'builder' };
 function flee(c) {
   const C = remote.CFG[c.memory.remote];
@@ -126,6 +143,7 @@ function flee(c) {
 const roles = {
   rminer(c) {
     const C = remote.CFG[c.memory.remote]; if (remote.paused(c.memory.remote, 'rminer')) return flee(c);
+    if (viaGateOf(c, C, false) === 'home') return flee(c);
     // travel = ticks to reach range 1 of the container (the old miner still sits on it; measuring on the tile itself
     // added the wait: 83654755 adjacent at ~+65, on tile +130 -> lead drifting to the 160 cap, ~50-100t overlap)
     if (c.memory.travel === undefined && c.ticksToLive && c.room.name === c.memory.remote && c.pos.isNearTo(C.cont[0], C.cont[1])) { const t = 1500 - c.ticksToLive; c.memory.travel = t >= 0 && t <= 300 ? t : 110; }
@@ -146,6 +164,12 @@ const roles = {
   },
   rhauler(c) {
     const C = remote.CFG[c.memory.remote]; if (remote.paused(c.memory.remote, 'rhauler')) return flee(c);
+    const vg = viaGateOf(c, C, !!c.memory.full);
+    if (vg === 'home') return flee(c);
+    if (vg === 'hold') { require('../utils/trace').why(c, 'p'); // off the border (else bounced into the via room) and clear of the container
+      if (c.pos.x === 0 || c.pos.x === 49 || c.pos.y === 0 || c.pos.y === 49) { delete c.memory._m; c.move(stepIn(c)); }
+      else if (Math.max(Math.abs(c.pos.x - C.cont[0]), Math.abs(c.pos.y - C.cont[1])) <= 2) awayFrom(c, C.cont[0], C.cont[1]);
+      return; }
     if (c.memory.working && !c.memory.full && c.room.name === C.home && c.store[RESOURCE_ENERGY] > 0) return require('./hauler').run(c); // finish a home job after a pause
     c.memory.working = false;
     if (!c.memory.full && c.store.getFreeCapacity() === 0) { c.memory.full = true; c.memory.load = c.store[RESOURCE_ENERGY]; }
@@ -167,7 +191,7 @@ const roles = {
     if (c.room.name === C.home && c.ticksToLive && c.ticksToLive < (c.memory.rt || C.rt || 200) + 40) { c.memory.home = C.home; return require('./hauler').run(c); }
     if (c.room.name === C.home && !c.memory.dep) c.memory.dep = Game.time;
     if (c.room.name === c.memory.remote && c.pos.x > 0 && c.pos.x < 49) { const sv = S.pick(c); if (sv) { if (move.to(c, sv.pos.x, sv.pos.y, 1)) S.take(c, sv); return; } }
-    if (stageVia(c, C)) return;
+    if (vg !== 'nostage' && stageVia(c, C)) return;
     if (!go(c, c.memory.remote, C.cont[0], C.cont[1], 1)) return;
     if (yieldToMiner(c, C)) return;
     const drop = c.pos.findInRange(FIND_DROPPED_RESOURCES, 2).find(r => r.resourceType === RESOURCE_ENERGY && r.amount >= 30);
@@ -178,6 +202,7 @@ const roles = {
   },
   reserver(c) {
     const C = remote.CFG[c.memory.remote]; if (remote.paused(c.memory.remote)) return flee(c);
+    if (viaGateOf(c, C, false) === 'home') return flee(c);
     if (!go(c, c.memory.remote, C.ctl[0], C.ctl[1], 1)) return;
     const ct = c.room.controller; if (!ct) return;
     if (ct.reservation && ct.reservation.username !== c.owner.username) return; // never attackController
@@ -290,4 +315,4 @@ roles.rscout = function (c) {
   if (remote.paused(c.memory.remote)) return flee(c);
   go(c, c.memory.remote, x, y, 1);
 };
-module.exports = { repairNow, inward, stageOut, STAGE, viaTake, VIA_KEEP, rminer: { run: roles.rminer }, rhauler: { run: roles.rhauler }, reserver: { run: roles.reserver }, defender: { run: roles.defender }, rscout: { run: roles.rscout } };
+module.exports = { viaGate, repairNow, inward, stageOut, STAGE, viaTake, VIA_KEEP, rminer: { run: roles.rminer }, rhauler: { run: roles.rhauler }, reserver: { run: roles.reserver }, defender: { run: roles.defender }, rscout: { run: roles.rscout } };

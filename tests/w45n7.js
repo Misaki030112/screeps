@@ -75,4 +75,12 @@ ok('via keeps reserve: exact edge', viaTake(VIA_KEEP + 400, 400) && !viaTake(VIA
 ok('via low: no take', !viaTake(900, 400));
 ok('no free capacity: no take', !viaTake(2000, 0));
 ok('unknown container: no take', !viaTake(undefined, 400));
-console.log(`w45n7 + stageOut + viaTake: ${n} ok`);
+// 7) via gate: W45N8 under threat -> W45N7 creeps don't walk through it
+const { viaGate } = require(src('roles/remote.js'));
+ok('via safe: no gate', viaGate(false, 'home', false) === null && viaGate(false, 'remote', true) === null);
+ok('via unsafe: empty at home stays home', viaGate(true, 'home', false) === 'home');
+ok('via unsafe: loaded at home delivers', viaGate(true, 'home', true) === null);
+ok('via unsafe: loaded in remote holds', viaGate(true, 'remote', true) === 'hold');
+ok('via unsafe: empty in remote works, no staging', viaGate(true, 'remote', false) === 'nostage');
+ok('via unsafe: in via room carries on', viaGate(true, 'via', false) === null && viaGate(true, 'via', true) === null);
+console.log(`w45n7 + stageOut + viaTake + viaGate: ${n} ok`);
