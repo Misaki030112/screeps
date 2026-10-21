@@ -3,7 +3,7 @@
 // spawns/towers, then economy; and once used CPU nears tickLimit, the rest skip this tick (an idle tick) so the
 // script is never hard-terminated with defenders unrun and stats/report unwritten.
 const LOW = 2000, MARGIN = 5;
-const PRI = { guard: 0, defender: 0, w8defender: 0, w8healer: 0, w8guard: 0, cqsquad: 0, cqbreaker: 0, cqatk: 0, cqquad: 0,
+const PRI = { guard: 0, defender: 0, w8defender: 0, w8healer: 0, w8guard: 0, cqsquad: 0, cqbreaker: 0, cqatk: 0, cqquad: 0, raid9: 0,
   queen: 1, w8filler: 1 };
 const pri = c => { const p = PRI[c.memory.role]; return p === undefined ? 2 : p; };
 module.exports = {

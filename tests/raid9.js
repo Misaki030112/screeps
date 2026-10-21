@@ -1,0 +1,39 @@
+// raid9 targeting priority + one-shot spawn gate. node tests/raid9.js
+const assert = require('assert'), path = require('path');
+Object.assign(global, { _: require('lodash'), TOUGH: 'tough', ATTACK: 'attack', MOVE: 'move', RANGED_ATTACK: 'ranged_attack', HEAL: 'heal', Memory: {}, Game: { time: 1 } });
+const R = require(path.join(__dirname, '..', 'src', 'roles', 'raid9.js'));
+const P = (x, y) => ({ x, y });
+const me = P(25, 45);
+const tower = { id: 'T', pos: P(34, 28), structureType: 'tower', hits: 3000 };
+const spawn = { id: 'S', pos: P(26, 29), structureType: 'spawn', hits: 5000 };
+const ext = { id: 'E', pos: P(20, 40), structureType: 'extension', hits: 1000 };
+const road = { id: 'R', pos: P(25, 44), structureType: 'road', hits: 1000 };
+const feeder = { id: 'F', pos: P(35, 30), energy: 800, hits: 1700 };
+const emptyNearTower = { id: 'X', pos: P(33, 28), energy: 0, hits: 100 };
+const farCarrier = { id: 'C', pos: P(10, 10), energy: 800, hits: 100 };
+// 1) energy-carrying creep within 3 of a tower beats spawn
+assert.deepStrictEqual(R.pick(me, { creeps: [farCarrier, emptyNearTower, feeder], structs: [tower, spawn, ext, road] }), { id: 'F', pri: 1 });
+// 2) no feeder -> spawn
+assert.deepStrictEqual(R.pick(me, { creeps: [farCarrier, emptyNearTower], structs: [tower, spawn, ext, road] }), { id: 'S', pri: 2 });
+// 3) spawn dead -> creep near a structure close to us first, else structures (tower first), roads ignored
+const worker = { id: 'W', pos: P(21, 41), energy: 0, hits: 500 };
+assert.deepStrictEqual(R.pick(P(22, 42), { creeps: [worker], structs: [tower, ext, road] }), { id: 'W', pri: 3 });
+assert.deepStrictEqual(R.pick(me, { creeps: [worker], structs: [tower, ext, road] }), { id: 'T', pri: 3 });
+assert.deepStrictEqual(R.pick(me, { creeps: [], structs: [ext, road] }), { id: 'E', pri: 3 });
+assert.deepStrictEqual(R.pick(me, { creeps: [farCarrier], structs: [road] }), { id: 'C', pri: 4 });
+assert.strictEqual(R.pick(me, { creeps: [], structs: [road] }), null);
+// ranged mass
+assert.ok(R.useMass(P(5, 5), [{ pos: P(5, 7) }, { pos: P(7, 7) }, { pos: P(8, 8) }]));
+assert.ok(!R.useMass(P(5, 5), [{ pos: P(5, 8) }]));
+// bodies within home cap 2300
+const cost = { tough: 10, attack: 80, move: 50, ranged_attack: 150, heal: 250 }, c = b => b.reduce((a, p) => a + cost[p], 0);
+assert.ok(c(R.MELEE()) <= 2300 && c(R.RANGED()) <= 2300 && R.MELEE().length <= 50);
+// spawn gate: off -> null; 4 total, m r m r, never more
+const room = { name: 'W46N8' };
+assert.strictEqual(R.wantSpawn(room), null);
+Memory.ops = { w47n9: { on: true } };
+const kinds = [];
+for (let i = 0; i < 6; i++) { const w = R.wantSpawn(room); if (!w) break; kinds.push(w.mem.kind); R.noteSpawned(); }
+assert.deepStrictEqual(kinds, ['m', 'r', 'm', 'r']);
+assert.strictEqual(R.wantSpawn({ name: 'W47N8' }), null);
+console.log('raid9 ok');

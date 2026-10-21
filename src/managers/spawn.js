@@ -340,6 +340,11 @@ function run1(spawn, onWait) {
     if (avail < _.sum(b, p => BODYPART_COST[p])) return ERR_NOT_ENOUGH_ENERGY;
     const rv = spawn.spawnCreep(b, name, { memory: { role: 'probe', home: room.name, born: Game.time }, directions: birthDirs(spawn, 'probe') });
     if (rv === OK) PR.noteSpawned(name); return rv; }
+  // 2b1) one-off W47N9 raid (roles/raid9.js, Memory.ops.w47n9.on; Misaki 10-21): storage floor ignored, queen/hold handled above
+  { const RD = require('../roles/raid9'), w = RD.wantSpawn(room); if (w) {
+    if (avail < _.sum(w.body, p => BODYPART_COST[p])) return ERR_NOT_ENOUGH_ENERGY;
+    const rv = spawn.spawnCreep(w.body, 'raid9_' + Game.time, { memory: w.mem, directions: birthDirs(spawn, 'raid9') });
+    if (rv === OK) RD.noteSpawned(); return rv; } }
   // 2b2) refill staff before heavy conquest bodies: a 2nd 16C8M queen (1200) cuts the 2300e refill gap roughly in half
   if ((count.queen || 0) < 2 && !(count.filler || 0) && room.energyCapacityAvailable >= 1300) {
     const rQ = go('queen', B.queen(bodyEnergy('queen', E, cap, avail, !!alive.hauler, !!room.storage)));
