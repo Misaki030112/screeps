@@ -27,3 +27,6 @@
 
 ## 监控
 `python3 tools/w45n7_watch.py`：预定、container 工地进度、W45N7 creep 位置、spawn、错误。
+
+## 02:4x (2026-10-22) rhauler birth spacing
+5 rhaulers, 1500 TTL -> ideal spacing 300t. Fixed `rhGap: 60` let post-raid respawns stay bunched (TTLs 955/895/835/752/684 at t83789510), giving a ~4k e spawn burst every lifetime and a home storage floor dip. `rhGapSteady: 240` (spawn.js remoteSpawn) applies when <=1 hauler is missing; >=2 missing falls back to 60 for fast refill. Expected to converge within one lifetime (~1500t, ~1.8 h).
