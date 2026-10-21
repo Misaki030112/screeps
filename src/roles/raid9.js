@@ -33,6 +33,16 @@ function useMass(me, inR) {
   if (inR.length >= 3) return true;
   return _.sum(inR, h => { const r = rng(me, h.pos); return r <= 1 ? 10 : r === 2 ? 4 : 1; }) > 10;
 }
+// pure: heal plan. me/mates = {id,pos,hits,hitsMax}; mates excludes me. Only damaged ones count; lowest hits ratio wins (self included).
+// -> null | { id, ratio, mode: 'heal' (adjacent/self) | 'ranged' (range 2-3) | 'far' }
+const HEAL_URGENT = 0.6;
+function healPlan(me, mates) {
+  const hurt = [me].concat(mates || []).filter(x => x.hits < x.hitsMax);
+  if (!hurt.length) return null;
+  const t = hurt.reduce((a, x) => x.hits / x.hitsMax < a.hits / a.hitsMax ? x : a), r = t === me ? 0 : rng(me.pos, t.pos);
+  return { id: t.id, ratio: t.hits / t.hitsMax, mode: r <= 1 ? 'heal' : r <= 3 ? 'ranged' : 'far', pos: t.pos };
+}
+function squad(c) { return c.room.find(FIND_MY_CREEPS).filter(x => x !== c && x.memory.role === 'raid9'); }
 function world(room) {
   const hc = room.find(FIND_HOSTILE_CREEPS);
   return {
@@ -41,7 +51,7 @@ function world(room) {
     hc,
   };
 }
-function strike(c, t, w) {
+function strike(c, t, w, hp) {
   const melee = c.getActiveBodyparts(ATTACK) > 0, ra = c.getActiveBodyparts(RANGED_ATTACK) > 0;
   if (melee) {
     if (t && c.pos.isNearTo(t)) c.attack(t);
@@ -50,6 +60,10 @@ function strike(c, t, w) {
       if (adj) c.attack(adj);
     }
   }
+  const hr = hp && c.getActiveBodyparts(HEAL) ? hp : null, ht = hr && (hr.id === c.id ? c : Game.getObjectById(hr.id));
+  // heal() never blocks ranged attacks; rangedHeal does, so only spend the tick on it when the ally is badly hurt
+  if (ht && hr.mode === 'heal') c.heal(ht);
+  else if (ht && hr.mode === 'ranged' && (hr.ratio < HEAL_URGENT || !ra)) { c.rangedHeal(ht); return; }
   if (ra) {
     const inR = w.hc.filter(h => c.pos.inRangeTo(h, 3));
     if (useMass(c.pos, inR)) c.rangedMassAttack();
@@ -57,7 +71,6 @@ function strike(c, t, w) {
     else if (inR.length) c.rangedAttack(_.min(inR, h => h.hits));
     else { const s = c.pos.findInRange(FIND_HOSTILE_STRUCTURES, 3).find(s => s.structureType !== STRUCTURE_CONTROLLER); if (s) c.rangedAttack(s); }
   }
-  if (c.getActiveBodyparts(HEAL) && !melee) c.heal(c); // heal and ranged attack run in the same tick
 }
 function travel(c, slot) {
   const b = c.pos.x === 0 || c.pos.x === 49 || c.pos.y === 0 || c.pos.y === 49;
@@ -78,8 +91,11 @@ function run(c) {
   if (sm) { P.safe = Game.time; if (c.room.name === TARGET && (c.pos.y === 49)) return c.move(BOTTOM); return travel(c, slot); } // the only retreat
   if (c.room.name === TARGET) {
     const w = world(c.room), p = pick(c.pos, w), t = p && Game.getObjectById(p.id);
-    strike(c, t, w);
+    const hp = c.getActiveBodyparts(HEAL) ? healPlan(c, squad(c)) : null;
+    strike(c, t, w, hp);
     if (c.pos.y === 49) return c.move(TOP);
+    // badly hurt ally out of reach and no feeder/spawn duty pinning us: go to them
+    if (hp && hp.mode === 'far' && hp.ratio < HEAL_URGENT && !(p && p.pri <= 2)) return c.moveTo(hp.pos, { range: 1, reusePath: 2, maxRooms: 1 });
     if (!t) return;
     const r = c.getActiveBodyparts(ATTACK) ? 1 : (p.pri === 1 || p.pri === 4 ? 3 : 2);
     if (c.pos.inRangeTo(t, r)) return;
@@ -88,8 +104,8 @@ function run(c) {
     return;
   }
   // en route / staging: fight anything hostile adjacent/in range on the way, no chasing
-  const w = { hc: c.room.find(FIND_HOSTILE_CREEPS) }; if (w.hc.length) strike(c, null, w);
-  else if (c.getActiveBodyparts(HEAL) && c.hits < c.hitsMax) c.heal(c);
+  const hp = c.getActiveBodyparts(HEAL) ? healPlan(c, squad(c)) : null;
+  const w = { hc: c.room.find(FIND_HOSTILE_CREEPS) }; if (w.hc.length || hp) strike(c, null, w, hp);
   if (P.go) {
     if (c.room.name === STAGE) { if (c.pos.y === 0) return c.move(TOP); return c.moveTo(new RoomPosition(30, 48, TARGET), { reusePath: 5 }); }
     return travel(c, slot);
@@ -107,4 +123,4 @@ function wantSpawn(room) {
   return { role: 'raid9', body: kind === 'm' ? MELEE() : RANGED(), mem: { role: 'raid9', home: HOME, k: n, kind, born: Game.time } };
 }
 function noteSpawned() { const P = M(); P.n = (P.n | 0) + 1; }
-module.exports = { run, pick, useMass, wantSpawn, noteSpawned, MELEE, RANGED, RALLY };
+module.exports = { run, pick, useMass, healPlan, wantSpawn, noteSpawned, MELEE, RANGED, RALLY };

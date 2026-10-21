@@ -36,4 +36,14 @@ const kinds = [];
 for (let i = 0; i < 6; i++) { const w = R.wantSpawn(room); if (!w) break; kinds.push(w.mem.kind); R.noteSpawned(); }
 assert.deepStrictEqual(kinds, ['m', 'r', 'm', 'r']);
 assert.strictEqual(R.wantSpawn({ name: 'W47N8' }), null);
+// heal plan: nobody hurt -> null; lowest ratio wins incl. self; range modes
+const H = (id, x, y, hits, hitsMax = 1000) => ({ id, pos: P(x, y), hits, hitsMax });
+const meH = H('me', 10, 10, 1000);
+assert.strictEqual(R.healPlan(meH, [H('a', 11, 10, 1000)]), null);
+assert.deepStrictEqual(R.healPlan(H('me', 10, 10, 900), [H('a', 11, 10, 1000)]).id, 'me');
+assert.strictEqual(R.healPlan(H('me', 10, 10, 900), [H('a', 11, 10, 1000)]).mode, 'heal');
+assert.strictEqual(R.healPlan(H('me', 10, 10, 900), [H('a', 11, 11, 500)]).id, 'a');
+assert.strictEqual(R.healPlan(meH, [H('a', 11, 11, 500)]).mode, 'heal');
+assert.strictEqual(R.healPlan(meH, [H('a', 13, 10, 500)]).mode, 'ranged');
+assert.strictEqual(R.healPlan(meH, [H('a', 20, 10, 500), H('b', 12, 10, 700)]).mode, 'far');
 console.log('raid9 ok');
