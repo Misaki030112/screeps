@@ -185,6 +185,12 @@ function spawnRun(spawn) {
     const tgt = wtgt;
     if (room.find(FIND_STRUCTURES, { filter: s => s.structureType === STRUCTURE_WALL && s.hits < tgt && C.SEAL.some(([x, y]) => s.pos.x === x && s.pos.y === y) }).length) want = 'w8builder';
   }
+  // 10-21 11:2x patrol: with 0 sites and the seal at cap no builder spawned, so nothing repaired the kept roads.js network (27 of 116
+  // below 30%, link road 14,35/15,34 at 300 hits, about 3k ticks from vanishing). 1 maintenance builder while a kept road/container is < 20%.
+  if (!want && room.energyAvailable === cap && !n('w8builder') && Game.time % 50 === 0) {
+    const keep = new Set(require('./roads').ROADS.map(([x, y]) => x * 50 + y));
+    if (room.find(FIND_STRUCTURES, { filter: s => (s.structureType === STRUCTURE_CONTAINER || (s.structureType === STRUCTURE_ROAD && keep.has(s.pos.x * 50 + s.pos.y))) && s.hits < s.hitsMax * 0.2 }).length) want = 'w8builder';
+  }
   // 7) W47N7 remote (after all local roles): only while home's reserve7 holds the reservation for us
   if (!want && ours7) {
     // 02:16: 3 rhaulers fell behind 2 reserved sources (~20 e/t): W47N7 had 31,34 full 2000 + 5871 dropped, 18,17 at 1138.
