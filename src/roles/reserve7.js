@@ -24,12 +24,24 @@ function wantSpawn(from = 'W46N8') {
   if (from === W8 ? !w8 : w8 && !(ours && left < FALLBACK)) return null;
   return { role: 'reserve7', body: [CLAIM, CLAIM, MOVE, MOVE], mem: { role: 'reserve7', home: from, v2: 1, born: Game.time } };
 }
+// 10-21 10:1x (Misaki "最短路肉眼可见"): native cross-room moveTo treats creeps as walls; w8filler parked at 34,32 and the hauler on the
+// 1-wide 33,33-32,35 lane made Spawn2's reserver route north to 20,14 and out at 17,49 (~84 t vs 61 t). Now: move.to (creeps ignored,
+// swap our blocker) to fixed exits: W46N8 west 0,23 -> W47N8 south 27,49 (PathFinder roads-only best: 26/27 = 61 t, 18 = 75 t) -> W47N7.
+const MV = require('../utils/move'), ND = { noDetour: true }, EXITS = { W46N8: [0, 23, 7], W47N8: [27, 49, 5] };
+function walk(c) {
+  const b = c.pos.x === 0 || c.pos.x === 49 || c.pos.y === 0 || c.pos.y === 49, ex = EXITS[c.room.name];
+  if (c.room.name === ROOM) { if (b) { delete c.memory._m; return c.move(c.pos.y === 0 ? BOTTOM : c.pos.y === 49 ? TOP : c.pos.x === 0 ? RIGHT : LEFT); } return MV.to(c, CTL[0], CTL[1], 1, ND); }
+  if (!ex) return c.moveTo(new RoomPosition(CTL[0], CTL[1], ROOM), { range: 1, reusePath: 20 });
+  if (c.pos.x === ex[0] && c.pos.y === ex[1]) { delete c.memory._m; return c.move(ex[2]); }
+  if (b) { delete c.memory._m; return c.move(c.pos.x === 49 ? LEFT : c.pos.x === 0 ? RIGHT : c.pos.y === 0 ? BOTTOM : TOP); }
+  return MV.to(c, ex[0], ex[1], 0, ND);
+}
 function run(c) {
   seen();
-  if (c.room.name !== ROOM || !c.pos.isNearTo(CTL[0], CTL[1])) return c.moveTo(new RoomPosition(CTL[0], CTL[1], ROOM), { range: 1, reusePath: 20 });
+  if (c.room.name !== ROOM || !c.pos.isNearTo(CTL[0], CTL[1])) return walk(c);
   const ctl = c.room.controller, res = ctl.reservation;
   if (res && res.username !== c.owner.username) return; // wait: foreign reservation still active (no attackController)
   c.reserveController(ctl);
   { const S = require('../utils/sign'); if (S.needs(ctl, c.owner.username) && c.pos.isNearTo(ctl)) c.signController(ctl, S.SIGN); } // same sign as home (22:19)
 }
-module.exports = { run, wantSpawn, w8Ready, ROOM, W8_CAP, FALLBACK };
+module.exports = { run, walk, EXITS, wantSpawn, w8Ready, ROOM, W8_CAP, FALLBACK };
