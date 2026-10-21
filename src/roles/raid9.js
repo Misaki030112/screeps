@@ -8,6 +8,10 @@ const RALLY = [[30, 1], [31, 1], [30, 2], [31, 2]];
 const MELEE = () => [].concat(Array(2).fill(TOUGH), Array(16).fill(ATTACK), Array(18).fill(MOVE)); // 2200
 const RANGED = () => [].concat(Array(10).fill(RANGED_ATTACK), Array(11).fill(MOVE), [HEAL]);       // 2300
 const KINDS = ['m', 'r', 'm', 'r'];
+// formation (Misaki 14:1x): melee front row y=1 (nearest north exit), ranged behind y=2
+const slotOf = k => (k | 0) % 2 === 0 ? RALLY[((k | 0) >> 1) % 2] : RALLY[2 + (((k | 0) >> 1) % 2)];
+const isMelee = x => ((x.memory.k | 0) % 2) === 0;
+const ND = { noDetour: true }; // swap through our own creeps, never deadlock
 const M = () => { const o = Memory.ops || (Memory.ops = {}); return o.w47n9 || (o.w47n9 = {}); };
 const rng = (a, b) => Math.max(Math.abs(a.x - b.x), Math.abs(a.y - b.y));
 const SKIP = new Set(['road', 'container', 'controller', 'constructedWall', 'rampart', 'extractor', 'keeperLair', 'portal', 'source', 'mineral']);
@@ -81,12 +85,18 @@ function travel(c, slot) {
   }
   if (c.room.name === STAGE) {
     if (b && c.pos.x === 49) { delete c.memory._m; return c.move(LEFT); }
-    return MV.to(c, slot[0], slot[1], 0);
+    // ranged hold 2 rows back until both melee stand on the front row, so they never block the melee path
+    if (!isMelee(c)) {
+      const ml = _.filter(Game.creeps, x => x.memory.role === 'raid9' && isMelee(x));
+      const ready = ml.every(x => x.room.name === STAGE && x.pos.x === slotOf(x.memory.k)[0] && x.pos.y === slotOf(x.memory.k)[1]);
+      if (!ready && !(c.pos.x === slot[0] && c.pos.y === slot[1])) return MV.to(c, slot[0], slot[1] + 2, 0, ND);
+    }
+    return MV.to(c, slot[0], slot[1], 0, ND);
   }
   return c.moveTo(new RoomPosition(slot[0], slot[1], STAGE), { reusePath: 10 });
 }
 function run(c) {
-  const P = M(), k = c.memory.k | 0, slot = RALLY[k % 4];
+  const P = M(), k = c.memory.k | 0, slot = slotOf(k);
   const tr = Game.rooms[TARGET], sm = tr && tr.controller && tr.controller.safeMode;
   if (sm) { P.safe = Game.time; if (c.room.name === TARGET && (c.pos.y === 49)) return c.move(BOTTOM); return travel(c, slot); } // the only retreat
   if (c.room.name === TARGET) {
@@ -99,21 +109,26 @@ function run(c) {
     if (!t) return;
     const r = c.getActiveBodyparts(ATTACK) ? 1 : (p.pri === 1 || p.pri === 4 ? 3 : 2);
     if (c.pos.inRangeTo(t, r)) return;
-    const rv = c.moveTo(t, { range: r, reusePath: 3, maxRooms: 1 });
-    if (rv === ERR_NO_PATH) c.moveTo(t, { range: r, reusePath: 3, maxRooms: 1, ignoreDestructibleStructures: true }); // walled in: walk into ramparts and hit them (opportunity)
+    MV.to(c, t.pos.x, t.pos.y, r, ND); // our swap-capable mover: squad never deadlocks itself
     return;
   }
   // en route / staging: fight anything hostile adjacent/in range on the way, no chasing
   const hp = c.getActiveBodyparts(HEAL) ? healPlan(c, squad(c)) : null;
   const w = { hc: c.room.find(FIND_HOSTILE_CREEPS) }; if (w.hc.length || hp) strike(c, null, w, hp);
   if (P.go) {
-    if (c.room.name === STAGE) { if (c.pos.y === 0) return c.move(TOP); return c.moveTo(new RoomPosition(30, 48, TARGET), { reusePath: 5 }); }
+    if (c.room.name === STAGE) {
+      if (c.pos.y === 0) return c.move(TOP);
+      // melee step in first; ranged follow once no melee is left in the staging room (1 tile behind)
+      if (!isMelee(c) && _.some(Game.creeps, x => x.memory.role === 'raid9' && isMelee(x) && x.room.name === STAGE)) return;
+      if (MV.to(c, slot[0], 0, 0, ND)) return c.move(TOP);
+      return;
+    }
     return travel(c, slot);
   }
   travel(c, slot);
   // all alive raiders on their rally tiles -> go (once)
   const all = _.filter(Game.creeps, x => x.memory.role === 'raid9');
-  if (all.length >= 4 && all.every(x => x.room.name === STAGE && x.pos.x === RALLY[(x.memory.k | 0) % 4][0] && x.pos.y === RALLY[(x.memory.k | 0) % 4][1])) P.go = Game.time;
+  if (all.length >= 4 && all.every(x => x.room.name === STAGE && x.pos.x === slotOf(x.memory.k)[0] && x.pos.y === slotOf(x.memory.k)[1])) P.go = Game.time;
 }
 // home spawn hook: only W46N8, only while ops.w47n9.on and fewer than 4 spawned in total (deaths are not replaced)
 function wantSpawn(room) {
@@ -123,4 +138,4 @@ function wantSpawn(room) {
   return { role: 'raid9', body: kind === 'm' ? MELEE() : RANGED(), mem: { role: 'raid9', home: HOME, k: n, kind, born: Game.time } };
 }
 function noteSpawned() { const P = M(); P.n = (P.n | 0) + 1; }
-module.exports = { run, pick, useMass, healPlan, wantSpawn, noteSpawned, MELEE, RANGED, RALLY };
+module.exports = { slotOf, run, pick, useMass, healPlan, wantSpawn, noteSpawned, MELEE, RANGED, RALLY };

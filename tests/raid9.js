@@ -47,3 +47,5 @@ assert.strictEqual(R.healPlan(meH, [H('a', 11, 11, 500)]).mode, 'heal');
 assert.strictEqual(R.healPlan(meH, [H('a', 13, 10, 500)]).mode, 'ranged');
 assert.strictEqual(R.healPlan(meH, [H('a', 20, 10, 500), H('b', 12, 10, 700)]).mode, 'far');
 console.log('raid9 ok');
+// formation: melee k0/k2 front row y=1, ranged k1/k3 behind y=2
+assert.deepStrictEqual([0,1,2,3].map(R.slotOf), [[30,1],[30,2],[31,1],[31,2]]);
