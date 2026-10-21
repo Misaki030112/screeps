@@ -202,7 +202,9 @@ def watchdog(ws):
         time.sleep(30)
         if time.time() - last_stats[0] > STALE_S:
             append('errors.log', f'{stamp()} [listener] no STATS for {int(time.time()-last_stats[0])}s, reconnecting')
-            ws.close(); os._exit(0)
+            # 10-21 12:5x: ws.close() on a dead socket blocked the watchdog (stalls ran 396 s / 747 s instead of ~180-210 s,
+            # 12:34-12:47 blind window hid an Invader raid on W47N8). Exit first; the OS closes the socket, run_listener.sh relaunches.
+            os._exit(0)
 def on_open(ws): ws.send('auth ' + TOKEN)
 def on_error(ws, e): append('errors.log', f'{stamp()} [listener] ws error {e}')
 if __name__ == '__main__':
