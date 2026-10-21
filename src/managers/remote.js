@@ -16,7 +16,7 @@ const CFG = { W45N8: { home: 'W46N8', src: [14, 12], cont: [13, 11], ctl: [7, 36
   // site (never step on it: foreign sites are 255 in utils/move matrix + `avoid` here). No roads now (P5 after RCL6, ask first).
   W45N7: { home: 'W46N8', via: ['W45N8'], src: [21, 16], cont: [21, 15], ctl: [6, 40], avoid: [[22, 15]],
     exits: { 'W46N8>W45N8': [49, 21], 'W45N8>W45N7': [21, 49], 'W45N7>W45N8': [21, 0], 'W45N8>W46N8': [0, 21] },
-    park: [46, 21], lead: 140, travel: 150, rt: 230, haulers: 5, rhGap: 60, scout: [19, 12], defend: true,
+    park: [46, 21], lead: 140, travel: 150, rt: 230, haulers: 5, rhGap: 60, rhGapSteady: 240, scout: [19, 12], defend: true,
     // haulers 6->5 (patrol 10-16 20:15): 1h audit rhaulers 46-82% waiting_pickup, cont.e=0; ff260a1 W45N8 borrow kept. Revert to 6 if W45N7+W45N8 delivered drops >0.5/t.
     threat: { readyTimeout: 250, defendTimeout: 650 } } }; // ~150t further than W45N8
 // route helpers: rooms home -> via... -> remote; exit tile for leaving `from` towards `to`

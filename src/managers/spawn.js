@@ -215,11 +215,16 @@ function remoteSpawn(room, go, avail) {
     // got replaced ~214t after death behind a queen+rminer (patrol 10-19 16:52: cont 13,11 at 2000, ~1.7k overflow). 16 parts -> 120 unchanged.
     const live = role => mineR(role).filter(c => c.spawning || c.ticksToLive > (role === 'reserver' ? resLead : role === 'rminer' ? rmLead(C, c) : c.body.length * 3 + 72 + lead)).length;
     const rhAll = mineR('rhauler'), target = rhTarget(C, m, room.storage ? room.storage.store[RESOURCE_ENERGY] : 0, rhPaved(r));
-    const gapOk = !C.rhGap || Game.time - (m.lastRh || 0) >= C.rhGap;
+    // rhGapSteady (strategy review 10-22 02:4x): births stay >= rhGapSteady apart while at most one rhauler is missing, so a
+    // post-raid respawn cluster (W45N7 5 TTLs within 271t at t83789510, gap 60) spreads out toward 1500/5 over one lifetime
+    // instead of re-spawning as a ~4k e burst that drops home storage below the floor every cycle. With >=2 missing the old
+    // short rhGap applies (refill fast after a wipe).
+    const rhLiveN = live('rhauler'), rhGapT = (C.rhGapSteady && rhLiveN >= target - 1) ? C.rhGapSteady : C.rhGap;
+    const gapOk = !rhGapT || Game.time - (m.lastRh || 0) >= rhGapT;
     const next = remoteNext({
       nRes: mineR('reserver').filter(c => c.spawning || (c.ticksToLive || 1500) > 30 + lead).length,
       wantRes: (res > 0 && res < 800 && !C.via) ? 2 : 1, // overlap rebuilds buffer while CLAIM1-only; W45N7 is CLAIM2-only (+1/t each), no 2nd 1300 up front
-      res, avail, cap, rmLive: live('rminer'), rhLive: gapOk ? live('rhauler') : 99, rhAll: rhAll.length, rhTarget: target, claim2Only: !!C.via,
+      res, avail, cap, rmLive: live('rminer'), rhLive: gapOk ? rhLiveN : 99, rhAll: rhAll.length, rhTarget: target, claim2Only: !!C.via,
     });
     if (next === 'reserver') return go('reserver', reserverBody(avail), { remote: r });
     // rminer 6W: repair (50 hits/t container decay, 1 tick in 10 at 5W) blocks harvest in the same tick, so 5W harvested ~9/t
