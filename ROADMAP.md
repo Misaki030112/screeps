@@ -3,6 +3,10 @@
 Novice zone ends **2026-10-28 03:33 UTC+8**. Defence timeline: `docs/DEFENSE_NOVICE.md` (2026-10-16); detail `docs/DEFENSE.md` / geometry `docs/DEFENSE_PLAN.md`.
 **Safe mode: NEVER auto-activate** — alert Misaki.
 
+## 2026-10-21 08:4x strategy review: Memory API budget check
+- **Closed:** `metrics/api_memory.log` 20:47-08:13 (11.4 h) = 97 `GET user/memory` calls (q.py 49, listener stats.prof 20, defense/remote status 20, misc 8) ~ 205/day vs 1440/day limit; server quota left 1343. No HTTP 429 since 20:41. No caller needs moving to a segment; re-check only if a new tool polls memory.
+- **Plan check:** home RCL6 1.073M/3.645M, 6h model ~23.3 e/t -> RCL7 ~10-26 midday-evening, O cycle from ~20:37 adds ~6 h, still before novice end 10-28 03:33. W47N8 RCL5 364k/1.215M, model ETA RCL6 ~10-23 06:00 (46 h). CPU 13.3, bucket 10000, 0 errors. Still open: W47N8 RCL7 extension roads (~6+ days out). No decision for Misaki.
+
 ## 2026-10-21 05:4x strategy review: NPC Invaders in neighbour rooms (`tools/north_watch.py`)
 
 - **Found:** the 05:25 MEDIUM `north-W48N9-group-55848` was raised by an NPC Invader group in BustJetter's W48N9; north_watch counted any non-Misaki creep, so NPC creeps there also refreshed `w8threatN`. NPC Invaders stay in the room they spawn for, so this was alert noise (threat mode itself costs nothing now: walls 238k > the 100k floor).
