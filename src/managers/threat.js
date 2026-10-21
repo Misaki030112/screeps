@@ -131,9 +131,13 @@ function sense(r) {
       o.core = rm.find(FIND_HOSTILE_STRUCTURES).some(s => s.structureType === STRUCTURE_INVADER_CORE);
       // our creep hurt with no Invader visible => someone else (player) did it
       // our creep LOST hits this tick with no Invader visible => someone else (player) did it (old damage is ignored)
-      for (const x of _.filter(Game.creeps, x => x.memory.remote === r && x.room.name === r)) { if (!o.inv.length && x.memory.role !== 'defender' && x.hits < (x.memory._h || x.hitsMax)) o.hurtNoInv = true; x.memory._h = x.hits; }
     }
   }
+  // hits sample refreshed every tick wherever the creep is; only a drop between two CONSECUTIVE ticks both spent
+  // inside r counts (damage taken in W45N8 / en route was misread as a player attack in r and paused it 1500t)
+  for (const x of _.filter(Game.creeps, x => x.memory.remote === r)) { const xm = x.memory, here = x.room.name === r;
+    if (here && room && !o.inv.length && xm.role !== 'defender' && xm._hr === r && xm._ht === Game.time - 1 && x.hits < xm._h) o.hurtNoInv = true;
+    xm._h = x.hits; xm._hr = x.room.name; xm._ht = Game.time; }
   const d = th.def && Game.creeps[th.def];
   o.def = !th.def ? 'none' : !d ? 'dead' : d.spawning ? 'spawning' : 'out';
   if (o.def === 'dead' && th.recycling === th.def) o.def = 'none'; // recycled by us, not killed
