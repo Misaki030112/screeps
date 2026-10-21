@@ -126,3 +126,8 @@ Every transition prints `INCIDENT {json}` (ev threat/spawn_start/defend/arrive/c
 - Observed intervals: W45N7 10.3k and 10.5k ticks, W45N8 8.5k ticks, about 100k harvested each. All solo smallMelee, one boosted (consistent with 50% boost).
 - Open-source cron (`screeps/backend-local lib/cronjobs.js`): only rooms with no Invader inside; needs a live invader core (level>0) in the sector; `checkExit` drops sides whose neighbour controller has a user or reservation; with no side left the room is skipped and the counter is **not** reset. Owned RCL>=4 rooms get `big` raids.
 - Official server mismatch: W47N8 (all four neighbours owned/reserved) got a big raid from the W47N9 side at 12:34 on 10-21. So the rule on the official server is different. W47N7 (exits only to W47N8 ours / W47N6 owned) has had 0 raids in about 2 days at ~20 e/t. invader_watch resets will settle which rooms really reset and raid.
+
+## 05:4x (2026-10-22): silent resets settle the raid-proof question
+invader_watch: home (~103k, t~83791720) and W47N7 (~102k, t~83790600) reset with no Invader; counter resets at ~100k even when no
+exit is valid, matching open-source checkExit. Raid-proof: W46N8, W47N7 (while neighbours stay owned/reserved). W47N8 raided at
+12:34 from the north edge, so it has a valid exit; next reset due ~10-22 05:30-06:40 confirms. Remotes ~2 raids/day each as before.
