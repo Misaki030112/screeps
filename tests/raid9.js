@@ -51,3 +51,8 @@ console.log('raid9 ok');
 assert.deepStrictEqual([0,1,2,3].map(R.slotOf), [[30,1],[30,2],[31,1],[31,2]]);
 assert.deepStrictEqual(R.pick(me, { creeps: [{ id: 'D', pos: P(25, 43), armed: true, hits: 500 }], structs: [spawn] }), { id: 'D', pri: 1 });
 assert.deepStrictEqual(R.pick(me, { creeps: [{ id: 'D', pos: P(25, 30), armed: true, hits: 500 }], structs: [spawn] }), { id: 'S', pri: 2 });
+// garrison (after W47N9 safe mode): melee hug wall row y=4, ranged y=5, gate 29,3/29,4 and road 28,4 free, all distinct
+{ const gs = [0, 1, 2, 3].map(R.gSlotOf);
+  assert.deepStrictEqual(gs, [[30, 4], [30, 5], [31, 4], [31, 5]]);
+  for (const g of gs) assert.ok(!(g[0] === 29 && g[1] <= 4) && !(g[0] === 28 && g[1] === 4));
+  assert.strictEqual(new Set(gs.map(String)).size, 4); }

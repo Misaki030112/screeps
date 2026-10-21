@@ -103,8 +103,27 @@ function travel(c, slot) {
   }
   return c.moveTo(new RoomPosition(slot[0], slot[1], STAGE), { reusePath: 10 });
 }
+// Misaki 10-21 14:3x: after W47N9 safe mode, garrison INSIDE the W47N8 north wall until old age; never re-enter W47N9.
+// wall y=3, gate rampart 29,3 -> 29,4 -> road 28,4 stay free. melee hug the wall at 30,4/31,4, ranged one row behind 30,5/31,5 (shoot over the wall).
+const GARRISON = [[30, 4], [31, 4], [30, 5], [31, 5]];
+const gSlotOf = k => (k | 0) % 2 === 0 ? GARRISON[((k | 0) >> 1) % 2] : GARRISON[2 + (((k | 0) >> 1) % 2)];
+function garrison(c) {
+  const g = gSlotOf(c.memory.k);
+  const hp = c.getActiveBodyparts(HEAL) ? healPlan(c, squad(c)) : null;
+  const w = { hc: c.room.find(FIND_HOSTILE_CREEPS) };
+  if (w.hc.length || hp) {
+    const ra = c.getActiveBodyparts(RANGED_ATTACK) > 0;
+    const t = w.hc.length ? _.min(w.hc.filter(h => c.pos.inRangeTo(h, ra ? 3 : 1)), h => h.hits) : null;
+    strike(c, t && t.id ? t : null, w, hp);
+  }
+  if (c.room.name === TARGET) return c.pos.y === 49 ? c.move(BOTTOM) : MV.to(c, 30, 49, 0, ND);
+  if (c.room.name !== STAGE) return travel(c, g);
+  if (c.pos.x === g[0] && c.pos.y === g[1]) return;
+  return MV.to(c, g[0], g[1], 0, ND);
+}
 function run(c) {
   const P = M(), k = c.memory.k | 0, slot = slotOf(k);
+  if (P.garrison || P.safe) return garrison(c); // safe mode seen once = op over, garrison for good
   const tr = Game.rooms[TARGET];
   if (tr && tr.controller && tr.controller.safeMode) P.safeUntil = Game.time + tr.controller.safeMode;
   // remembered: once we retreat we lose vision of W47N9, so never re-enter while its safe mode may still run (no border bounce)
@@ -150,4 +169,4 @@ function wantSpawn(room) {
   return { role: 'raid9', body: kind === 'm' ? MELEE() : RANGED(), mem: { role: 'raid9', home: HOME, k: n, kind, born: Game.time } };
 }
 function noteSpawned() { const P = M(); P.n = (P.n | 0) + 1; }
-module.exports = { slotOf, run, pick, useMass, healPlan, wantSpawn, noteSpawned, MELEE, RANGED, RALLY };
+module.exports = { slotOf, gSlotOf, GARRISON, run, pick, useMass, healPlan, wantSpawn, noteSpawned, MELEE, RANGED, RALLY };
