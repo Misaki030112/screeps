@@ -119,3 +119,10 @@ Every transition prints `INCIDENT {json}` (ev threat/spawn_start/defend/arrive/c
 
 ### Tests (run by `scripts/check.js`, i.e. on every deploy)
 `tests/threat_fsm.js` 24 cases (every row above + purity + gate). `tests/defender_duel.js` now drives the role through the real `step()` on W45N8 terrain.
+
+
+## 23:5x (2026-10-21) raid cadence and counter observability
+- In-game `Source.invaderHarvested` is undefined (only the web API's room-objects has it), so `Memory.remote.<r>.invaderHarvested` is always null. Use `tools/invader_watch.py` (`metrics/invader_counters.jsonl`, cron every 30 min).
+- Observed intervals: W45N7 10.3k and 10.5k ticks, W45N8 8.5k ticks, about 100k harvested each. All solo smallMelee, one boosted (consistent with 50% boost).
+- Open-source cron (`screeps/backend-local lib/cronjobs.js`): only rooms with no Invader inside; needs a live invader core (level>0) in the sector; `checkExit` drops sides whose neighbour controller has a user or reservation; with no side left the room is skipped and the counter is **not** reset. Owned RCL>=4 rooms get `big` raids.
+- Official server mismatch: W47N8 (all four neighbours owned/reserved) got a big raid from the W47N9 side at 12:34 on 10-21. So the rule on the official server is different. W47N7 (exits only to W47N8 ours / W47N6 owned) has had 0 raids in about 2 days at ~20 e/t. invader_watch resets will settle which rooms really reset and raid.
