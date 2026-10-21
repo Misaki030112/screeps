@@ -14,8 +14,8 @@ const kiter = fc({ ranged_attack: 8, move: 8 }), mel = fc({ tough: 4, attack: 8,
 assert.ok(!D.catchable(kiter) && D.catchable(mel) && D.catchable(dis) && D.catchable(slow) && !D.catchable(dec));
 const P = (pos, b, id) => Object.assign({ id: id || 'h' + pos.x + pos.y, pos, hits: b.hits }, b);
 const me = { pos: { x: 29, y: 4 }, hits: 2700, hitsMax: 2700 }, T = { towers: [{ x: 24, y: 8 }] };
-// quiet -> hold 29,4; hostiles near -> gate
-assert.strictEqual(D.guardPlan(me, [], T).move, 'hold');
+// quiet -> off-lane hold 29,5 (29,4 blocked the gate path); hostiles near -> gate
+assert.deepStrictEqual(D.guardPlan(me, [], T).goal, D.GHOLD); assert.strictEqual(D.guardPlan({ pos: { x: 29, y: 5 }, hits: 1, hitsMax: 1 }, [], T).move, 'hold');
 assert.deepStrictEqual(D.guardPlan(me, [P({ x: 20, y: 1 }, kiter)], T).goal, D.GATE);
 // kiter by the gate: no sally, stays on gate
 const onGate = Object.assign({}, me, { pos: { x: 29, y: 3 } });

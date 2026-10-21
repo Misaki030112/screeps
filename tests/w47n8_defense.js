@@ -171,7 +171,7 @@ console.log('w47n8 defense ok');
   const bp = (o) => { const b = []; for (const t in o) for (let i = 0; i < o[t]; i++) b.push({ type: t, hits: 100 }); return b; };
   A.deepStrictEqual(D3.healBody(1800, 12).filter(x => x === 'heal').length, 6); A.strictEqual(D3.healBody(10000, 25).length, 50);
   for (let i = 0; i < 8; i++) { const q = D3.defPlan({ pos: { x: 20, y: 10 }, hits: 1, hitsMax: 1 }, [], { towers: [{ x: 33, y: 35 }], quiet: 1e6, idx: i });
-    A.ok(q.goal && q.goal.y === 5 && q.move === 'post', 'idle tile y=5 idx ' + i); }
+    A.ok(q.goal && (q.goal.y === 5 || q.goal.y === 4) && q.move === 'post', 'idle tile y=4/5 idx ' + i); }
   // roster >= 4 -> healer included, counted in the sim
   const squad = [bp({ ranged_attack: 2, move: 2 }), bp({ ranged_attack: 2, move: 2 }), bp({ attack: 10, move: 10 }), bp({ attack: 10, move: 10 })].map(b => ({ body: b }))
     .concat(Array.from({ length: 4 }, () => ({ body: bp({ heal: 5, move: 5 }) })));

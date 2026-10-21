@@ -110,7 +110,7 @@ function assess(force, towerR, def, o = {}) {
 //  - nothing hostile: idle by the north wall (18:04: never recycle; live out TTL, still respond if the enemy returns)
 const COVER = 8, RECYCLE = 100;
 const POSTS = { west: [[8, 4], [9, 4], [10, 4], [11, 4]], east: [[24, 4], [25, 4], [26, 4], [28, 4], [29, 4], [30, 4], [31, 4]] }; // cached wall-back tiles (y=4, inside the seal; 27,4 swamp)
-const IDLE = [[28, 5], [29, 5], [25, 5], [30, 5], [26, 5], [31, 5], [24, 5], [27, 5]]; // 17:53: no hostiles -> near the east wall middle, plain, off roads
+const IDLE = [[28, 5], [25, 5], [24, 5], [25, 4], [24, 4], [26, 4], [23, 4]]; // no hostiles -> near the east wall, never gate 29,3 / 29,4, roads (26/27,5, 28,4) or 29,5 (guard) / 30-31,4-5 (raid9 garrison)
 // dynamic station (Misaki 17:53): the wall-back tile nearest target x, defender idx takes the idx-th nearest (adjacent tiles, no
 // stacking); tiles in `avoid` (builders repairing, other creeps) are skipped. Always y=4, i.e. inside the seal.
 function postTile(tx, idx = 0, avoid = []) {
@@ -122,7 +122,7 @@ const dcls = cls;
 // 10-20 15:25 (Misaki): melee guard. Catchable = comes to us or can't outrun us: has ATTACK/WORK (must touch the wall/gate) or is slow
 // (MOVE < half its body). MOVE-balanced RA kiters are never catchable.
 const catchable = c => live(c, 'attack') + live(c, 'work') > 0 || (live(c, 'ranged_attack') + live(c, 'heal') > 0 && 2 * live(c, 'move') < c.body.length);
-const GATE = { x: 29, y: 3 }, GHOLD = { x: 29, y: 4 };
+const GATE = { x: 29, y: 3 }, GHOLD = { x: 29, y: 5 }; // 10-21: quiet hold off the gate lane (29,4 blocked traffic); 2 steps to the gate
 // 2 TOUGH + ATTACK:MOVE 2:1 (full speed on road; it mostly stands on the gate). 1800 -> 2T 16A 9M = 480 dmg/t (vs 9RA9M 90).
 function meleeBody(e) {
   for (let a = 25; a >= 1; a--) { const t = a >= 4 ? 2 : 0, m = Math.ceil((a + t) / 2);
