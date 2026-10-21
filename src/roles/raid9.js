@@ -76,6 +76,11 @@ function strike(c, t, w, hp) {
     else { const s = c.pos.findInRange(FIND_HOSTILE_STRUCTURES, 3).find(s => s.structureType !== STRUCTURE_CONTROLLER); if (s) c.rangedAttack(s); }
   }
 }
+function exitX(room, x0) {
+  const T = room.getTerrain(); let best = x0, bd = 99;
+  for (let x = 1; x < 49; x++) if (!(T.get(x, 0) & TERRAIN_MASK_WALL) && Math.abs(x - x0) < bd) { bd = Math.abs(x - x0); best = x; }
+  return best;
+}
 function travel(c, slot) {
   const b = c.pos.x === 0 || c.pos.x === 49 || c.pos.y === 0 || c.pos.y === 49;
   if (c.room.name === HOME) {
@@ -120,7 +125,8 @@ function run(c) {
       if (c.pos.y === 0) return c.move(TOP);
       // melee step in first; ranged follow once no melee is left in the staging room (1 tile behind)
       if (!isMelee(c) && _.some(Game.creeps, x => x.memory.role === 'raid9' && isMelee(x) && x.room.name === STAGE)) return;
-      if (MV.to(c, slot[0], 0, 0, ND)) return c.move(TOP);
+      const ex = exitX(c.room, slot[0]); // rally x=30/31 on y=0 are walls: nearest open north exit tile
+      if (MV.to(c, ex, 0, 0, ND)) return c.move(TOP);
       return;
     }
     return travel(c, slot);
