@@ -40,3 +40,12 @@ trend NEW: W48N9 16 combat > 48h max 15; ... # real change
 ```
 
 Real changes = above the room's 48 h max, any combat creep in W47N8/W47N7, or boosted parts. Page Misaki on `trend NEW`, not on bare "high".
+
+## 2026-10-21 14:4x strategy review: BustJetter after the W47N9 probe raid (t83779880)
+
+Live `game/room-objects` read (no Memory quota):
+- **W47N9 safe mode ends t83799469** (~19.6k ticks, at 4.4-4.6 s/tick ~ **10-22 14:45-15:45 UTC+8**). safeModeAvailable 4. RCL6 992k. Until then nothing of ours can hurt anything in W47N9; their creeps can still leave it, and in W47N8 our towers work as normal, so W47N8 defence math (`docs/DEFENSE_W47N8.md`) is unchanged.
+- **Response so far is economic, not military.** W47N9: 11 creeps, all haulers/workers (0 ATTACK/RANGED/HEAL), towers 654/465, storage 7.8k, **terminal 29.6k** energy, ramparts max 27.6k (weak), 3 construction sites. W48N9 storage fell 93k -> 56.6k in ~1 h while its towers sit at 1/8: energy is being shipped by terminal into W47N9 to refill towers and rebuild. W48N9 ramparts 79-92k, 21 creeps, none combat.
+- **Our garrison** (raid9 2 melee + 2 ranged, inside the W47N8 north wall since 3d38834) has TTL 704-944 -> gone ~15:40-16:00 UTC+8 today, not respawned. After that W47N8 is back to towers + guard logic only.
+- **Read:** no sign of retaliation yet; the window to watch is the next ~24 h of safe mode (they can stage freely) and right after it ends. Neighbor scan already flags any combat creep in W47N9/W48N9 and in the approach rooms; no new tooling needed.
+- **Decision for Misaki (not taken):** whether anything follows the probe after safe mode ends ~10-22 15:00. Default: nothing, defend only.

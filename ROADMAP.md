@@ -3,6 +3,11 @@
 Novice zone ends **2026-10-28 03:33 UTC+8**. Defence timeline: `docs/DEFENSE_NOVICE.md` (2026-10-16); detail `docs/DEFENSE.md` / geometry `docs/DEFENSE_PLAN.md`.
 **Safe mode: NEVER auto-activate** — alert Misaki.
 
+## 2026-10-21 14:4x strategy review: BustJetter after the W47N9 raid (`docs/NEIGHBORS.md` "14:4x")
+- **Found:** W47N9 safe mode ends t83799469 (~10-22 14:45-15:45 UTC+8). BustJetter's answer so far is economic: 0 combat creeps in W47N9/W48N9, W48N9 storage 93k -> 56.6k shipped by terminal (W47N9 terminal 29.6k), W47N9 towers refilled 654/465. Our raid9 garrison in W47N8 expires ~15:40-16:00 today (no respawn). No code change; neighbor scan already covers combat creeps.
+- **Plan check (tick slowed to ~4.5 s):** home RCL6 1.171M/3.645M, 10 h rate 21.1 e/t (incl. Invader pauses + raid spawning) -> RCL7 ~10-27 17:00-20:00, only ~8-10 h before novice end 10-28 03:33 (was "early morning"); the O cycle could eat that margin. Home defence at novice end already assumes RCL6, so no plan change. W47N8 RCL5 487k/1.215M at 24.2 e/t -> RCL6 ~10-23 04:00 (unchanged). CPU bucket 10000. W47N8 maintenance audit (Misaki 14:08) is the parent's open item, not touched here.
+- **Open for Misaki:** any follow-up on W47N9 after its safe mode ends (default: defend only).
+
 ## 2026-10-21 11:4x strategy review: W47N8 observability (two long-open low items closed)
 - **Shipped ae0503f (deployed t83777326):** `room_stats.ctl` now filled for W47N8 from `rooms/w47n8/config` CTL_CONT 13,26 (was NULL, live 1817 at t83777338), and W47N8 roles get real trace idle defaults (w8upgrader u waiting_feed, w8hauler/w8rhauler p waiting_pickup, w8miner/w8rminer e, w8filler f, w8builder n, w8defender/guard/healer t parked_threat) instead of falling through to 'q' queue_blocked. `tests/trace_w8_defaults.js` (fails on the old trace). 0 new errors, bucket 10000.
 - **Patrols:** from now on W47N8 "queue_blocked" in the audit means real blocking; expect it to mostly turn into waiting_pickup/waiting_feed. Historical 1h/6h windows still mix old codes for ~6 h.
