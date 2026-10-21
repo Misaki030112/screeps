@@ -21,6 +21,9 @@ function pick(me, w) {
   const towers = w.structs.filter(s => s.structureType === 'tower');
   const feeders = w.creeps.filter(h => h.energy > 0 && towers.some(t => rng(t.pos, h.pos) <= 3));
   if (feeders.length) return { id: _.min(feeders, h => rng(me, h.pos) * 1e5 + h.hits).id, pri: 1 };
+  // armed defenders within 3 threaten the squad: kill them first (small, quick), weakest first
+  const armed = w.creeps.filter(h => h.armed && rng(me, h.pos) <= 3);
+  if (armed.length) return { id: _.min(armed, h => h.hits).id, pri: 1 };
   const sp = w.structs.filter(s => s.structureType === 'spawn');
   if (sp.length) return { id: _.min(sp, s => rng(me, s.pos)).id, pri: 2 };
   const st = w.structs.filter(s => !SKIP.has(s.structureType));
@@ -50,7 +53,7 @@ function squad(c) { return c.room.find(FIND_MY_CREEPS).filter(x => x !== c && x.
 function world(room) {
   const hc = room.find(FIND_HOSTILE_CREEPS);
   return {
-    creeps: hc.map(h => ({ id: h.id, pos: h.pos, energy: (h.store && h.store[RESOURCE_ENERGY]) || 0, hits: h.hits })),
+    creeps: hc.map(h => ({ id: h.id, pos: h.pos, energy: (h.store && h.store[RESOURCE_ENERGY]) || 0, hits: h.hits, armed: h.getActiveBodyparts(ATTACK) + h.getActiveBodyparts(RANGED_ATTACK) > 0 })),
     structs: room.find(FIND_HOSTILE_STRUCTURES).map(s => ({ id: s.id, pos: s.pos, structureType: s.structureType, hits: s.hits })),
     hc,
   };
