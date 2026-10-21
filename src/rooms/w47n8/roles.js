@@ -185,7 +185,7 @@ const ROADSET = new Set(require('./roads').ROADS.concat(require('../../layouts/w
 // 15:55 (Misaki "路断了"): W47N7 haul roads were never in any plan/repair list (laid by the old conquest builders), so 20 of ~39
 // decayed to 30-570 hits and the rest vanished. remote_roads.js = shortest path cont -> N exit (tools/w47n7_roads.py).
 // rminer places missing sites (<=3 open, every 50t); loaded rhaulers with a WORK part build/repair in passing (no detour).
-const RROADS = require('./remote_roads').ROADS;
+const RROADS = require('./remote_roads').ROADS, RRSET = new Set(RROADS.map(([x, y]) => x * 50 + y));
 let rrT = 0;
 function rroadSites(room) {
   if (Game.time % 50 || !room || rrT === Game.time) return; rrT = Game.time; // any rminer in W47N7, once per tick
@@ -200,8 +200,11 @@ function rroadWork(c) {
   if (c.room.name !== RM.room || !c.store[E] || !c.getActiveBodyparts(WORK)) return;
   const site = c.pos.findInRange(FIND_MY_CONSTRUCTION_SITES, 3, { filter: s => s.structureType === STRUCTURE_ROAD })[0];
   if (site) return c.build(site);
-  const r = c.pos.lookFor(LOOK_STRUCTURES).find(s => s.structureType === STRUCTURE_ROAD && s.hits < s.hitsMax * 0.8);
-  if (r) c.repair(r);
+  // 15:2x patrol: underfoot-only repair lost to decay on swamp tiles (19,16 at 4200/25000: one 100-hit pass per trip < 500/1000t
+  // swamp decay). Also top up the lowest planned road within range 3 below 50% (repair reaches 3 tiles, still no detour).
+  const r = c.pos.lookFor(LOOK_STRUCTURES).find(s => s.structureType === STRUCTURE_ROAD && s.hits < s.hitsMax * 0.8)
+    || _.min(c.pos.findInRange(FIND_STRUCTURES, 3, { filter: s => s.structureType === STRUCTURE_ROAD && s.hits < s.hitsMax * 0.5 && RRSET.has(s.pos.x * 50 + s.pos.y) }), s => s.hits / s.hitsMax);
+  if (r && r !== Infinity) c.repair(r);
 }
 function rgo(c, x, y, r) { return rmove(c, RM.room, x, y, r); }
 const go8 = (c, x, y, r = 1) => rmove(c, C.ROOM, x, y, r); // rhauler legs inside W47N8 too (same 1-wide trunk, 14,35-38 plain lane seen live)
