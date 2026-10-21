@@ -1,8 +1,10 @@
 // Writes Memory.stats each tick; keeps last 20 errors.
 const plan = require('../utils/plan'), rc = require('../utils/roomcache');
 function ctlEnergy(r) {
-  const P = plan.get(r.name); if (!P || !P.pos.controllerContainer) return null;
-  const k = rc.at(r, P.pos.controllerContainer[0], P.pos.controllerContainer[1], STRUCTURE_CONTAINER);
+  // W47N8 has no home-style plan: its ctl container comes from rooms/w47n8/config (strategy 10-21 11:4x, room_stats.ctl was NULL)
+  const W = require('../rooms/w47n8/config'), P = r.name === W.ROOM ? null : plan.get(r.name);
+  const xy = r.name === W.ROOM ? W.CTL_CONT : P && P.pos.controllerContainer; if (!xy) return null;
+  const k = rc.at(r, xy[0], xy[1], STRUCTURE_CONTAINER);
   return k ? k.store[RESOURCE_ENERGY] : null;
 }
 module.exports = { run(errors, alerts = []) {
