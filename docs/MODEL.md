@@ -144,3 +144,11 @@ refill churn), ~0.15-0.2 ms CPU, ~20% of Spawn1 time freed, route road kept. Bui
 - Home hauler 6C3M: waiting 69%, 0.3 e/t, 0.16 ms. It is the creep that picked up the recycled builders' tombstones (300 per trip at 34,30) and
   the mineral container. Kept; the spawn-on-demand idea (02:4x) still stands for RCL7.
 - Queens x2 (16C8M): target_full 29%, moving 48%, working 19%; energy_fill 0.83. A 3rd is not needed, and 2 -> 1 is Misaki's call (refill speed).
+
+
+## 2026-10-21 17:4x: home upgrade gap by hour
+Hourly `room_stats` (W46N8, progress delta per tick; ctl = avg controller container energy):
+quiet hours 10-21 00-08: 22.7 23.4 24.7 19.8 25.8 19.4 25.0 22.8 25.8 (mean 23.3, ctl 280-900).
+event hours: 11:00 14.3 (ctl 43, W45N7 Invader pause), 14:00 9.3 (ctl 0, raid9 spawns), 16:00 19.0 (ctl 40, turnover).
+12 h model: measured 21.0 vs expected 26.1; storage delta -0.01 e/t; overhead_live 8.74 vs ideal 6.64.
+Reading: storage pinned at the 15k floor means upgrade = income - upkeep - event spend. A low hour is the floor rule letting upgraders absorb a spawn burst, which is energy-neutral (the energy is upgraded later). Floor-rule changes cannot raise the long-run rate; only lower overhead or fewer spend events can.
