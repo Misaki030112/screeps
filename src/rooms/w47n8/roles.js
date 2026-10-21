@@ -477,7 +477,7 @@ const R = {
     let rep = c.memory.rj && Game.getObjectById(c.memory.rj);
     if (!rep || Game.time >= (c.memory.rjt || 0) || rep.hits >= (rep.structureType === STRUCTURE_WALL || rep.structureType === STRUCTURE_RAMPART ? TH.wallTarget(TH.planTarget(c.room.controller.level, C.WALL_TARGET[c.room.controller.level] || 0)) : rep.hitsMax * 0.95)) {
       const mvp = require('./index').banking(c.room); // 15:5x: road/container upkeep paused while banking (only <10% urgent)
-      rep = rr(0.1) || wallJob(c.room, c) || (mvp ? null : rr(0.6)); c.memory.rj = rep ? rep.id : undefined; c.memory.rjt = Game.time + 15;
+      rep = rr(0.1) || wallJob(c.room, c) || (mvp ? null : rr(0.25) || rr(0.6)); // 10-21 22:5x: kept road 13,37 at 14% (wear ~0.44/t) while the builder walked to 25,12 at 92%: <25% first c.memory.rj = rep ? rep.id : undefined; c.memory.rjt = Game.time + 15;
     }
     if (rep) {
       if (c.pos.inRangeTo(rep, 3)) { c.repair(rep); return; }
