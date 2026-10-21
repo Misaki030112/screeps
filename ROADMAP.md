@@ -3,6 +3,12 @@
 Novice zone ends **2026-10-28 03:33 UTC+8**. Defence timeline: `docs/DEFENSE_NOVICE.md` (2026-10-16); detail `docs/DEFENSE.md` / geometry `docs/DEFENSE_PLAN.md`.
 **Safe mode: NEVER auto-activate** — alert Misaki.
 
+## 2026-10-21 20:4x strategy review: plan check, O cycle timing, W47N8 RCL6 readiness
+- **Plan check (tick 83784701, ~4.37 s/tick over the last 2.1k ticks):** home RCL6 1.275M/3.645M, 6 h model ~21 e/t -> ~113k t -> RCL7 ~10-27 ~10:00 UTC+8 (+~5 h for the O cycle), ~12-17 h before novice end 10-28 03:33; unchanged band. W47N8 RCL5 610k/1.215M at 26-30 e/t (live upgrade near the 30 cap) -> RCL6 ~10-22 21:00-10-23 01:00 (earlier than the 17:4x 02-03h). CPU ~13, bucket 10000, hostiles 0, storage home 15.0k (the 20:2x below-floor dip recovered, watch closed), W47N8 2.3k.
+- **O cycle:** home mineral is at 0, regen in 721 t (~21:35 UTC+8, not 20:37 as first estimated; tick slowdown). Stock O 35.0k (storage 17.3k + terminal 17.7k). Proposal (A) pause the next O cycle until RCL7 (`Memory.ops.mineralCap`) still waits on Misaki; gain stays small (~40 min of RCL7).
+- **W47N8 RCL6 readiness:** re-checked against the 02:4x simulation: RCL6 places only the 10 extensions (30k, kept-road slots first); terminal/extractor/labs/hub link stay gated off (`RCL6_MINERALS=false`, `HUB_LINK=false`). Tower count stays 2 at RCL6. No change needed before the level-up.
+- **Watch:** W47N9 safe mode ends ~10-22 15:00 UTC+8, first window in which BustJetter can field boosted groups after our raid (UH/KO stock seen; 19:53 group 2x6RA3M + 3A2M stayed in W47N9). Neighbor scan and attack alert already cover it. No deploy, no decision for Misaki.
+
 ## 2026-10-21 17:4x strategy review: why home upgrades ~21 e/t, not 26 (`docs/MODEL.md` "17:4x")
 - **Found:** 30 h of hourly `room_stats` show the gap is spend events, not a structural leak. Quiet hours (10-21 00-08) average 23.3 e/t (peaks 25-26); the low hours line up with spending: 11:00 14.3 (W45N7 Invader pause, ctl container avg 43), 14:00 9.3 (raid9 spawning, ctl 0), 09-10 18-20 (defender spawn), 16:00 19.0 (fleet turnover). Storage sits at the 15k floor all day (min 12-14k, max 15-17k), so 12 h storage delta is ~0: everything above upkeep is already upgraded. The rest of the quiet-hour gap (23.3 vs 26.0) is live overhead 8.7 vs model ideal 6.6 e/t.
 - **Closed:** the 10-20 04:4x floor-rule candidate (bank only src R/remote below the floor, keep src A feeding upgraders). With storage delta ~0 it only moves when energy is upgraded, not how much, so it gains nothing before RCL7. Not proposed.
