@@ -50,7 +50,10 @@ function placeW8Link(home) {
   let n = 0;
   for (const [x, y] of W8LINK) { if (n >= 3) break; if (look(HOME, x, y) === 'open' && home.createConstructionSite(x, y, STRUCTURE_ROAD) === OK) n++; }
 }
-function isHomeTile(x, y) { if (W8LINK.some(([a, b]) => a === x && b === y)) return true; const P = require('../utils/plan').get(HOME); const T = tiles(P); return KEEP.some(([a, b]) => a === x && b === y) || [].concat(T.haul, T.econ, T.home).some(([, a, b]) => a === x && b === y); }
+function isHomeTile(x, y) { if (W8LINK.some(([a, b]) => a === x && b === y)) return true; const P = require('../utils/plan').get(HOME); const T = tiles(P); return KEEP.some(([a, b]) => a === x && b === y) || [].concat(T.haul, T.econ, T.home).some(([, a, b]) => a === x && b === y)
+  // 10-21 (Misaki: home roads decay away): wall-phase repair spurs (NW 28,10-30,12, S 16,42-13,45, W 7,29, S 18,44) and BR/TL gate
+  // trunks are placed by walls.placeSites but were in no upkeep list -> only builders (0 at the storage floor) repaired them.
+  || require('./walls').planned(P, x, y, STRUCTURE_ROAD); }
 function isRouteTile(r, x, y) { const T = memo.t || tiles(require('../utils/plan').get(HOME)); return [].concat(T.haul, T.econ, T.home, T.W45N8, T.swamp7).some(([rm, a, b]) => rm === r && a === x && b === y); }
 function mem() { return (Memory.roads = Memory.roads || { phase: 'core' }); }
 function M() { return typeof Memory === 'undefined' ? undefined : Memory.roads; }
@@ -124,6 +127,7 @@ function maintain(m, home) {
     if (t[0] !== HOME && R.paused(t[0])) continue; const v = look(t[0], t[1], t[2]);
     if (v === 'site') perRoom[t[0]] = (perRoom[t[0]] || 0) + 1; else if (v === 'open') open.push(t); }
   m.maint = { t: Game.time, open: open.length };
+  delete m.bad; // stale placement errors from the build phases (W46N8:49:14 -7 = exit tile, filtered since; entry never cleared)
   for (const [r, x, y] of open) { if ((perRoom[r] || 0) >= BATCH) continue;
     if (Game.rooms[r].createConstructionSite(x, y, STRUCTURE_ROAD) === OK) perRoom[r] = (perRoom[r] || 0) + 1; }
 }

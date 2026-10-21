@@ -2,7 +2,7 @@
 // Strategy review 2026-10-20 11:4x: haul leg 44,19..48,15 / 39,24 at 34-52% with no repairer; old filter (P.any only) skipped them.
 const path = require('path'), assert = require('assert');
 const src = p => path.join(__dirname, '..', 'src', p);
-Object.assign(global, { Memory: {}, _: require('lodash'), STRUCTURE_ROAD: 'road', STRUCTURE_CONTAINER: 'container', STRUCTURE_RAMPART: 'rampart', STRUCTURE_TOWER: 'tower', RESOURCE_ENERGY: 'energy' });
+Object.assign(global, { Memory: {}, _: require('lodash'), STRUCTURE_ROAD: 'road', STRUCTURE_CONTAINER: 'container', STRUCTURE_RAMPART: 'rampart', STRUCTURE_TOWER: 'tower', STRUCTURE_WALL: 'constructedWall', RESOURCE_ENERGY: 'energy' });
 const plan = require(src('utils/plan.js')), T = require(src('managers/tower.js'));
 const P = plan.get('W46N8');
 const road = (x, y, hits) => ({ structureType: 'road', pos: { x, y }, hits, hitsMax: 5000 });
@@ -15,4 +15,8 @@ assert.ok(!T.upkeep(P, 'W47N8', road(44, 19, 100)), 'home road-plan tiles never 
 assert.ok(!T.upkeep(P, 'W46N8', road(2, 2, 100)), 'off-plan leftover road still left to decay');
 const k = Object.keys(P.any).map(Number).find(i => P.any[i].type === 'road'), px = Math.floor(k / 50), py = k % 50;
 assert.ok(T.upkeep(P, 'W46N8', road(px, py, 1000)), 'layout-plan road still repaired');
+// 10-21: wall-phase spurs / BR+TL gate trunks (walls.placeSites) decayed with no repairer (30,12 2700, 16,42 2800, 15,43 2800)
+Object.assign(global, { STRUCTURE_WALL: 'constructedWall' });
+for (const [x, y] of [[30, 12], [29, 11], [28, 10], [16, 42], [15, 43], [14, 44], [41, 23], [42, 25], [43, 26], [29, 13], [28, 14]])
+  assert.ok(T.upkeep(P, 'W46N8', road(x, y, 2700)), `wall spur/trunk ${x},${y} at 54% is a tower repair candidate`);
 console.log('tower route roads ok');
