@@ -31,7 +31,7 @@ elif not pend: print('No pending alerts.')
 else:
     for k, v in sorted(pend.items(), key=lambda kv: kv[1]['latest']['tick']):
         a = v['latest']; f = v['first']
-        print(f"[{v['severity'].upper()}] {k}  owner={a['owner']}  room={a['room']}  ticks {f['tick']}..{a['tick']}  {'ENDED' if v['ended'] else 'ONGOING'}  first seen {v['seen']} UTC+8")
+        print(f"[{v['severity'].upper()}] {k}  owner={a.get('owner') or f.get('owner')}  room={a.get('room') or f.get('room')}  ticks {f['tick']}..{a['tick']}  {'ENDED' if v['ended'] else 'ONGOING'}  first seen {v['seen']} UTC+8")
         print(f"    creeps={f.get('creeps', a.get('maxCreeps'))} body={f.get('body') or a.get('body')} totalDamage={a.get('totalDamage')} hitLoss={a.get('structureHitLoss')} damaged={a.get('damaged')}")
 rank = max([{'low': 1, 'medium': 2, 'high': 2}.get(v['severity'], 1) for v in pend.values()] or [0])
 sys.exit(rank)
