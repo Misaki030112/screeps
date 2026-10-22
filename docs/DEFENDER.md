@@ -131,3 +131,8 @@ Every transition prints `INCIDENT {json}` (ev threat/spawn_start/defend/arrive/c
 invader_watch: home (~103k, t~83791720) and W47N7 (~102k, t~83790600) reset with no Invader; counter resets at ~100k even when no
 exit is valid, matching open-source checkExit. Raid-proof: W46N8, W47N7 (while neighbours stay owned/reserved). W47N8 raided at
 12:34 from the north edge, so it has a valid exit; next reset due ~10-22 05:30-06:40 confirms. Remotes ~2 raids/day each as before.
+
+## 11:4x (2026-10-22): W47N8 counter reset silently, W47N8 joins the raid-proof list
+- `metrics/invader_counters.jsonl`: W47N8 120.6k at t83792153 (06:00 UTC+8) -> 1.8k at t83792551 (06:30). `room_stats` for W47N8 has 40 samples (~every 12 t) over t83792100-83792600, all `hostiles 0`; no `alert_state`/`events` row for a W47N8 Invader; patrols 06:2x/06:5x hostiles 0. So the counter reset and no raid spawned, exactly like home (05:30) and W47N7 (04:32).
+- Conclusion: the 10-21 12:34 W47N8 raid was a one-off. W46N8, W47N7 and W47N8 are raid-proof while their neighbours stay owned/reserved (W47N9 BustJetter, W48N8 Evans_702, W47N6 yousukeman3, W45N8 reserved by us). **Re-open trigger:** any neighbour of W47N8 losing its owner (W47N9 or W48N8 unclaimed) makes that exit valid again.
+- Remotes still raid on schedule: W45N8 reset at t~83795700 with the 10:16 Invader (consistent); W45N7 88.4k at 11:30, next raid due ~0-4k t (~11:30-16:30 UTC+8), on-demand defender covers it.

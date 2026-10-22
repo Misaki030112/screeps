@@ -3,6 +3,10 @@
 Novice zone ends **2026-10-28 03:33 UTC+8**. Defence timeline: `docs/DEFENSE_NOVICE.md` (2026-10-16); detail `docs/DEFENSE.md` / geometry `docs/DEFENSE_PLAN.md`.
 **Safe mode: NEVER auto-activate** — alert Misaki.
 
+## 2026-10-22 11:4x strategy review: W47N8 raid-proof settled, home RCL7 now lands at novice end (`docs/DEFENDER.md` "11:4x")
+- **Settled (05:4x open item):** W47N8 invader counter reset 120.6k -> 1.8k between 06:00 and 06:30 with 0 hostiles in 40 room_stats samples and no alert. The 10-21 12:34 raid was a one-off; W47N8 joins home and W47N7 on the raid-proof list. Re-open only if W47N9 or W48N8 loses its owner. W45N7 raid due ~11:30-16:30 (88.4k), normal on-demand response.
+- **Plan check (t83796660, tick slowed to 4.53 s):** home RCL6 1.524M/3.645M at 20.5 e/t (6 h) -> 103.5k t -> RCL7 ~10-27 22:00 UTC+8 before the O cycle, ~10-28 03:00 with it, i.e. **at novice end (10-28 03:33), margin ~0-5 h** (was 7-12 h at 05:4x; slower ticks + invader pauses). Home defence at novice end already assumes RCL6, so tower 3 (RCL7) is a bonus, not a requirement. The only cheap lever left is the pending mineralCap proposal (pause the next O cycle until RCL7, ~+15k energy ~ +2-3 h of RCL7); asked Misaki again. W47N8 RCL5 910.6k/1.215M at 25.7 e/t -> RCL6 ~10-23 04:00 (10 extensions only). CPU ~12.7, bucket 10000. Docs only, no deploy.
+
 ## 2026-10-22 08:4x strategy review: W47N8 vs BustJetter after W47N9 safe mode ends (`docs/DEFENSE_W47N8.md` "08:4x")
 - **Found (combat_sim, north seal, towers only, tower energy 820):** the W48N9 group seen at 07:46 (2x 6RA3M + 3A2M, UH/KO in stock) dies in 6-9 ticks boosted or not; adding healers, the 2 RCL5 towers still win up to 10 healers (6H each) and lose only at >= 11 (~66 HEAL parts; their largest stack seen was ~16). North wall 300k would take ~700 t to breach. W47N9 towers 162/130, storage 0. **No change before 15:00.** Re-check trigger: >= 6 healers or LO/GO boosts seen north.
 - **Closed (20:4x Memory API item):** `metrics/api_memory.log` last 24 h = 178 of 1440 reads (q.py 62, remote_status 42, listener 34); remaining 1370 at 08:41. No segment move needed.
