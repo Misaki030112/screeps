@@ -93,3 +93,21 @@ Model examples (RCL4, tower r32): pair 8RA+6RA -> home 1, local 0; pair + 2x7H -
 - **Sim (`tools/combat_sim.py`, all healers stacked, pessimistic):** 21:45 group vs towers alone: east seal win 32 t / 620 e; spawn win 32 t; **west seal r14 win 47 t / 920 e, r16 win 59 t / 1160 e**. Break-even towers-only: east ~64 HEAL, **west ~36 HEAL** (2 more 4H healers than the peak). West with 2 local defenders holds well past that. Seal wall 134k vs 1080 dps: ~124 t unrepaired, ~206 t with tower repair.
 - **Gap fixed:** the in-game border pre-assessment (`assessRun`, from the north_watch W47N9 signal) and the alert verdict always scored the east seal, and the alert's "inside" verdict still used old Spawn2 15,18 (1 tower r19). Now `sealAt(w8invNx)` picks the segment nearest the announced group (x < 18 = west) and north_watch reports both segments when they differ (nearer first; W48N9 groups get both) and scores intrusions at the new spawn 34,30. Once hostiles are inside W47N8 the planner already used their real position, so this only moves the defender decision earlier (~100 t: spawn + walk to the west posts) and fixes what Misaki reads in alerts. `tests/w47n8_seal_west.js`, `tests/north_watch_test.py`.
 - **Not proposed:** a 3rd tower only comes at RCL7 (22,7 in the plan: r12 to the west seal). Nothing to ask Misaki; the existing towers+2-defenders rule covers the west side.
+
+## 2026-10-22 08:4x strategy review: W47N8 vs BustJetter after W47N9 safe mode ends (~10-22 15:00 UTC+8)
+Question: BustJetter has 3 armed creeps massing in W48N9 since 07:46 (2x 6RA3M + 1x 3A2M, no HEAL) with UH 104 / KO 11 in
+stock there (UH 20 in W47N9). W47N9's safe mode ends ~15:00 today. Does W47N8 (RCL5, towers 24,8 + 33,35, north wall 300k,
+towers kept 800-1000 by the >200-free refill rule) need anything before then?
+
+Method: `tools/combat_sim.py` `fight()` at the north seal 29,3 (tower ranges 5 / 32), towers only (0 defenders), tower energy
+820 (the low end of the refill sawtooth). Boost modelled by doubling RA/ATTACK part counts (pessimistic: also doubles their hp).
+- Seen group, unboosted / boosted: win in 6 / 7 ticks, 100-120 tower energy. Core: 4-6 t. Spawn2 area: 6-9 t.
+- Same group + N healers (6H6M each), boosted: 1-3 healers win in 9-13 t; 4-10 healers still win (15-50 t, 280-980 energy);
+  **the towers only lose at >= 11 healers (~66 HEAL parts)**. BustJetter's largest stack seen (10-16) had ~16 HEAL parts.
+- Their damage on the 300k north wall: ~420/t boosted, ~700 t to breach, i.e. far longer than they live under the towers.
+- W47N9 itself: towers 162/130, storage 0 at the 07:42 scan, so a follow-up from W47N9 has little energy behind it.
+
+Conclusion: no change. Towers alone beat the visible force with a wide margin; the on-demand defender (inBase only) and
+W47N7 flee (`w8flee`, armed hostiles in W47N7 or W47N8 y<=10) cover the remote. Tower 820-1000 is the normal refill band,
+not a threat-posture leak (refill triggers at free > 200). Re-check only if the neighbour scan shows >= 6 healers or LO/GO
+(heal / tough) boosts in W48N9/W47N9. Safe mode stays Misaki's button.
