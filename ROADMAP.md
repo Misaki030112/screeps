@@ -3,6 +3,13 @@
 Novice zone ends **2026-10-28 03:33 UTC+8** (past as of 10-29). Defence timeline: `docs/DEFENSE_NOVICE.md` (2026-10-16); detail `docs/DEFENSE.md` / geometry `docs/DEFENSE_PLAN.md`.
 **Safe mode: NEVER auto-activate** — alert Misaki.
 
+## 2026-10-29 14:4x strategy review: KO boost pipeline (docs only; siege-safe)
+- **Chose:** RCL7 mineral mining + lab/boost pipeline for W46N8 (Misaki ask) over fortification deep-dive — walls still blocked by `reserveE=15k` + raid energy; docs don't fight the W47N9 assault.
+- **Findings (`docs/MINERAL_DEFENSE_ROADMAP.md` §4):** 3 labs = REACT|BOOST mutex (`ops.labsMode`); KO = 0.5/t (REACTION_TIME 10); boost = 30 mineral + 20 e per part; Overmind EvolutionChamber / TooAngel patterns cropped to single-room + adjacent terminal (W47N8→W46N8 send ~33 e/1k). Main K path = wait colony RCL7 → mine K → send home → react to ≥900 KO → then `managers/boost.js` for defender RA first. Market path closed (credits 0; no auto deal). Do **not** open `RCL6_MINERALS` / `ops.labs` / boost code mid-siege.
+- **Reprioritise:** (1) finish W47N9 assault / SM drain; (2) W47N8 RCL7 → tower3+spawn2; (3) storage≥20k → minerals+K send; (4) KO stockpile ≥900 → boost defenders; (5) then walls (drop reserveE when remotes SAFE & raid done). Fortification stays in §2 of mineral doc — no new wall code now.
+- **Docs:** `docs/MINERAL_DEFENSE_ROADMAP.md` §4; `docs/STRATEGY.md` current state (was stale RCL6/RCL4). **No code / no deploy** (combat LIVE; deploy.lock free but practice = docs-only).
+- **Plan check (t~83937890):** home RCL7 418k/10.9M stor~16.8k; W47N8 2.645M/3.645M → RCL7 ~10-31夜～11-01; CPU~12 bucket 10k; raid LIVE ops n≥5 deploy 4d36ed8; BJ SM 4 unused. No Misaki decision (attack already authorized; mineral timeline is autonomous after RCL7).
+
 ## 2026-10-29 11:4x strategy review: W47N8 RCL6→RCL7 upgrade bottleneck (`docs/MODEL_W47N8.md` "11:4x")
 - **Found:** live upgrade ~23.8 vs link-aware ideal ~30.2 (gap ~6.4). Harvest 38.5/40 is fine; A→ctl links are live. Gap = waste_other ~2.8–3.4 (tower/stock, by design) + fleet upkeep ~+2–3 (local HMAX floor 3 keeps 30 CARRY vs link-era need 9) + mild waiting_feed 15%. Not a missing hub→ctl link.
 - **Shipped (tools only, no game deploy):** `tools/model_w8.py` now detects live A/CTL links and writes `Memory.ops.w8model = {lcarry≈9, rcarry≈49, upw≈31, links:true}`; Grafana ideal uses the link-aware flow; `PROG` includes RCL6/7 so ETA to next level is positive (~42 h ideal / ~53 h actual).

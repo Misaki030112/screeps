@@ -1,13 +1,14 @@
-# 矿物线 + 强化 + 城防路线图（2026-10-29 12:4x live）
+# 矿物线 + 强化 + 城防路线图（2026-10-29 12:4x；**14:4x boost 管线深化**）
 
-Live tick ~83936205。**不自动交易、不开 safe mode。** 数字来自 `tools/market.py` + console query。
+Live refresh 14:41 UTC+8 tick ~83937890。**不自动交易、不开 safe mode。** 数字来自 `tools/market.py` + websocket live + console。
+围攻 W47N9 期间：只写文档/路线，不部署 boost 代码。
 
 ## 0. 现状（实测）
 
 ### W46N8 home RCL7
 | 项 | 值 |
 |---|---|
-| 进度 | ~400.4k / 10.9M |
+| 进度 | ~418k / 10.9M（14:41） |
 | 矿物 | **O** @40,24 余 **10136**（正在采）；extractor cd 4；容器 41,24 |
 | 库存 | storage O **17324** + terminal O **112476** ≈ **129.8k O**；另有战利品 GO127 KO32 ZH38 UH15 |
 | terminal | 有，能量 **0**；credits **0** |
@@ -21,12 +22,12 @@ Live tick ~83936205。**不自动交易、不开 safe mode。** 数字来自 `to
 ### W47N8 colony RCL6
 | 项 | 值 |
 |---|---|
-| 进度 | **2.616M / 3.645M**（余 ~1.029M） |
+| 进度 | **2.645M / 3.645M**（余 ~1.000M；model_w8 6h upgrade ~19.7 → ETA RCL7 ~**61 h ≈ 10-31 夜～11-01**） |
 | 矿物 | **K** **35000** @37,45 **未采**；extractor **已有**（Misaki 自有，layout 门控后未拆） |
 | terminal / labs | **无**（`config.RCL6_MINERALS=false`，正确） |
 | storage | ~**1.2k** energy |
 | 城防 | 墙 11 面 min **300001**（= RCL6 `WALL_TARGET`）；rampart 4 面 min **~20k**（北门 GATE）；塔 2；Spawn2 only |
-| ETA RCL7 | 按 ~15–23 e/t → 约 **10-31 上午～下午**（storage 紧时偏慢） |
+| ETA RCL7 | model actual ~19.7 e/t → ~**10-31 夜～11-01**；ideal 30 → ~40 h（围攻 divert 拖慢） |
 
 ### 代码/开关
 - `plan.RCL6_MINERALS=true`（home 矿物基建已齐）；`plan.RCL7_INDUSTRY=false`（factory+labs4–6 不落点）
@@ -120,7 +121,76 @@ Console 开反应（有 K 入库后）：`Memory.ops.labs = { W46N8: 'KO' }`
 | RCL7 后 | `w47n8/config.js` `RCL6_MINERALS=true` | config | storage≥20k |
 | RCL7 后 | W47N8 mminer / mineral 容器站位 | roles + layout | 与上同步 |
 | 有 K 后 | `Memory.ops.labs={W46N8:'KO'}` | Memory | — |
-| 有 KO 后 | boostCreep 接线 | 新 `managers/boost.js` + spawn/roles | — |
+| KO≥900 后 | boostCreep 接线（§4 状态机） | 新 `managers/boost.js` + defender 族 | 围攻结束后 |
 | 更晚 | `RCL7_INDUSTRY=true` | `plan.js` | 有 T2/factory 需求 |
 
 **明确不做：** 市场 deal；自动 safe mode；把密钥写进仓。
+
+---
+
+## 4. Boost 管线设计（strategy 14:4x · Overmind/TooAngel + Screeps docs）
+
+**为何现在深挖矿物/强化而不是城防：** 围攻中 `reserveE=15k` + 邻居 HIGH 已锁死修墙预算；改城防代码会抢 spawn/能量。矿物管线可纯文档落地，且 Misaki 已要矿物+强化计划。城防仍按 §2，RCL7/围攻后再推墙。
+
+### 4.1 常量（docs.screeps.com）
+| 常量 | 值 | 含义 |
+|---|---|---|
+| `LAB_BOOST_MINERAL` | **30** | 强化 1 个身体部件消耗的化合物 |
+| `LAB_BOOST_ENERGY` | **20** | 同时消耗能量 |
+| `LAB_REACTION_AMOUNT` | **5** | 每次反应产出 |
+| `REACTION_TIME.KO` | **10** | T1 KO 冷却 → 净产 **0.5 KO/t**（单 output lab） |
+| `LAB_MINERAL_CAPACITY` | 3000 | 一满罐 KO ≈ 强化 **100** 个 RA 部件 |
+| terminal 邻房 | W46N8↔W47N8 dist **1** | 传 1000 矿 ≈ **33** 能量（几乎免费） |
+
+### 4.2 参考 bot 模式（裁剪到我们 3 lab）
+- **Overmind EvolutionChamber：** creep/overlord `requestBoost` → 预留 product lab → 终端网补矿 → `Tasks.getBoosted`；反应队列与 boost 抢 lab 时 **boost 优先预留**。多房间终端网 + 市场买缺矿（我们 credits=0，市场支路关闭）。
+- **TooAngel：** 本房矿存到 terminal 高水位（~100–500k），他矿 ~1k 够反应；专用 mineral creep 填 lab；**出生前订 boost，出生后自动去 lab**。
+- **我们的裁剪（3 lab，无多房网）：** 同一时刻只做一件事 —— `REACT` 或 `BOOST`，用 `Memory.ops.labsMode` 切换（默认 REACT）。不能像 RCL8 十 lab 那样边产边强化。
+
+### 4.3 推荐状态机（`managers/boost.js` 待写，围攻后再写）
+```
+Memory.ops.labs = { W46N8: 'KO' }     # 已有：开反应
+Memory.ops.labsMode = 'react'|'boost' # 新增：三 lab 互斥
+Memory.ops.boost = {                  # 新增：排队
+  // creepName: { compound: 'KO', parts: 'ranged_attack' }
+}
+```
+1. **REACT：** 现有 `labs.js`：ins=[33,21],[35,21] 装 K/O，out=34,22 `runReaction`；hauler `labRun` 已接 `task()`。
+2. **切 BOOST：** 停反应 → hauler 清空三 lab → 把 KO+能量灌进 **out lab（34,22）**（或任一邻接 spawn 的 lab）→ 目标 creep 站邻格 `lab.boostCreep(creep)`。
+3. **谁先强化：** `defender` / `rdef` / `w8defender` 的 **RANGED_ATTACK** 部件（KO ×2）→ 有存量后再考虑 `raid9` RA；**不**强化平民直到 KO 库存 ≥ 一次满编防守（建议门槛 **900 KO** ≈ 30 RA 部件）。
+4. **TTL 门槛（Overmind）：** `ticksToLive < 0.2 * lifetime` 则跳过强化，避免浪费。
+
+### 4.4 产量与库存账
+| 目标 | KO 需求 | K+O | 反应时间（0.5/t） | 墙钟（~4.3 s/t） |
+|---|---|---|---|---|
+| 试跑 10 RA | 300 | 300+300 | 600 t | ~43 min |
+| 防守门槛 30 RA | 900 | 900+900 | 1800 t | ~2.2 h |
+| 满罐 100 RA | 3000 | 3000+3000 | 6000 t | ~7.2 h |
+
+W47N8 本轮 **K 35000** 采完 → 邻房 send 回家 → 可产 **35000 KO**（O 库存 ~130k 足够）。一轮 K 够强化约 **1166** 个 RA 部件，远超近期作战需求。
+
+### 4.5 K 获取路径（无市场）
+1. **主路径（推荐，零 credits）：** 等 W47N8 **RCL7** → tower3+spawn2（~20k）→ storage≥20k → 翻 `RCL6_MINERALS=true`（terminal+3labs+矿容器 ~255k）→ mminer 采 K → `terminal.send('W46N8', K, n)`（33 e/1k）→ home `Memory.ops.labs={W46N8:'KO'}`。
+2. **市场捷径（需 Misaki 批）：** 卖部分 O 换 credits 再买 K。当前 O 买单 ~18–21、K 买单极差；**不自动 deal**。围攻期不做。
+3. **Loot：** terminal 里 UH15/KO32/ZH38/GO127 —— 只够单次试验，不够常备。
+
+### 4.6 与围攻/RCL 的时序（14:41）
+| 何时 | 做什么 | 不做 |
+|---|---|---|
+| **现在（围攻 LIVE）** | 保持采 O 或设 `mineralCap=50000` 省 ~0.9 e/t；文档+路线 | 不写 boost 代码、不开 `ops.labs`、不开 W47N8 矿物、不卖矿 |
+| W47N8 → RCL7（~10-31/11-01） | 立刻 tower3(22,7)+spawn2；修 GATE ramp≥100k | 仍不开矿物直到 storage≥20k |
+| storage 稳住后 | `RCL6_MINERALS=true` + mminer；K→home | 不开 `RCL7_INDUSTRY` |
+| K≥1000 @ home terminal | `ops.labs={W46N8:'KO'}`；产到 ≥900 | 不切 BOOST 直到门槛 |
+| KO≥900 | 实现 `boost.js`；defender 线先强化 | 不强化 upgrader/builder |
+
+### 4.7 代码清单补丁（相对 §3）
+| 优先级 | 改动 | 何时 |
+|---|---|---|
+| 文档 ✅ | 本节 | 14:4x |
+| 运行时可选 | `mineralCap=50000`（O 已 ≫ Overmind 25k 过剩线） | 围攻能量紧时由巡逻/父代理设 |
+| RCL7+storage | W47N8 矿物线 + send K | 自动按路线，不逐项问 Misaki |
+| 有 K | 开 `ops.labs` KO 反应 | Memory |
+| KO≥900 | **新建** `src/managers/boost.js` + spawn 后 hook（defender 族）+ 测试 | 单独 PR；围攻结束后 |
+| 更晚 | labs4–6 / T2（KHO2 需 OH+H）/ factory | `RCL7_INDUSTRY` |
+
+** fortification 提醒（不阻塞矿物）：** home 墙仍卡在 STEPS 142k→300k，因 `reserveE=15k`；W47N8 GATE ramp ~20k→100k 等殖民地有盈余。邻居 HIGH 解除或围攻结束后再降 reserveE。

@@ -1,7 +1,7 @@
 # Strategy — W46N8 (home) + W45N8 (remote), 20 CPU, shard3
 
 Sources: Screeps docs (control, defense, invaders, CPU), screepers wiki, Overmind / TooAngel / Hivemind patterns.
-Last full refresh: **2026-10-20 00:0x strategy review** (remote posture after novice end: `docs/DEFENSE_NOVICE.md`); before that **2026-10-19** (CPU `docs/CPU.md`, market `docs/MARKET.md`); before that **2026-10-18 strategy review** (W47N8 hold / safe-mode mechanics: `docs/W47N8_HOLD.md`); before that **2026-10-17 strategy review** (neighbours: `docs/NEIGHBORS.md`); before that **2026-10-16 strategy review** (defence before novice end: `docs/DEFENSE_NOVICE.md`); prior: RCL6 readiness `docs/RCL6.md` (10-15), RCL5 `docs/RCL5.md` (10-14). Also `docs/DEFENSE.md`, `docs/DEFENSE_PLAN.md`, `docs/LAYOUT_V2.md`, `docs/REMOTE_W45N8.md`, `docs/MODEL.md`, `docs/DATA.md`.
+Last full refresh: **2026-10-29 14:4x strategy review** (mineral/boost §4; state catch-up); before that **2026-10-20 00:0x** (remote posture after novice end: `docs/DEFENSE_NOVICE.md`); before that **2026-10-19** (CPU `docs/CPU.md`, market `docs/MARKET.md`); before that **2026-10-18 strategy review** (W47N8 hold / safe-mode mechanics: `docs/W47N8_HOLD.md`); before that **2026-10-17 strategy review** (neighbours: `docs/NEIGHBORS.md`); before that **2026-10-16 strategy review** (defence before novice end: `docs/DEFENSE_NOVICE.md`); prior: RCL6 readiness `docs/RCL6.md` (10-15), RCL5 `docs/RCL5.md` (10-14). Also `docs/DEFENSE.md`, `docs/DEFENSE_PLAN.md`, `docs/LAYOUT_V2.md`, `docs/REMOTE_W45N8.md`, `docs/MODEL.md`, `docs/DATA.md`.
 
 ## Principles
 
@@ -12,18 +12,20 @@ Last full refresh: **2026-10-20 00:0x strategy review** (remote posture after no
 5. **Growth after RCL4:** remote mining (W45N8 approved and live), then links; a 2nd room only with explicit Misaki approval (GCL 2 already allows a claim).
 6. **Major decisions need approval:** claim/expand, attack or provoke player neighbours, spend credits/pixels, activate safe mode, respawn.
 
-## Current state (2026-10-20 ~00:05 UTC+8)
+## Current state (2026-10-29 ~14:41 UTC+8)
 
 | | |
 |---|---|
-| Home | W46N8 **RCL6** ~596k/3.645M at ~22 e/t (realistic ceiling ~23, docs/MODEL.md 04:4x) → **RCL7 ~10-27 01:00 (10-26 late with reserve7 moved to W47N8)**; cap 2300, storage ~15k (reserve floor), gates min ~172k, walls 142.1k (step 2 post-RCL7), SM 5 available |
-| W47N8 | claimed 10-18; **RCL4** ~219k/405k at ~30 e/t live → **RCL5 ~10-20 07:30**; 20/20 ext, storage 35,32, tower 33,35 (RCL5 #2 at 24,8), seal walls 50k; Spawn2; SM 3 available; rooms independent |
-| Remote | W45N8 + W45N7 (home, SAFE; player = flee+pause 1500 t, NPC defender ON); W47N7 reserved, mined by W47N8 |
-| CPU | **~12–14 avg of 20**, bucket ~10000 — see `docs/CPU.md` |
-| GCL | 3 (3rd room CPU-bound) |
-| Novice ends | **2026-10-28 03:33 UTC+8** (~8.1 days); remote posture proposal in `docs/DEFENSE_NOVICE.md` 00:0x; BustJetter W48N9 quiet at last scan |
+| Home | W46N8 **RCL7** ~418k/10.9M; storage ~16–17k (floor 15k recovering); ramp min ~331k↑ walls STEP 142.1k (stuck — `reserveE=15k`); towers 3; terminal+extractor+3 labs live; O~130k mined, **labs dormant**; SM avail |
+| W47N8 | **RCL6** 2.645M/3.645M; upgrade ~19.7 e/t (ideal ~30.2) → **RCL7 ~61 h ≈ 10-31 夜～11-01**; towers 2 (tower3+spawn2 wait RCL7); `RCL6_MINERALS=false`; K 35k unmined |
+| Assault | **W47N9 LIVE** (Misaki authorized): consume BustJetter SM or flatten; deploy `4d36ed8`; ops.n rising; SM avail 4 unused at last patrol |
+| Remote | W45N8 + W45N7 (home); W47N7 (colony); defend reserved on hostiles |
+| CPU | **~11–13 / 20**, bucket ~10000 — `docs/CPU.md` |
+| GCL | 3 (3rd room CPU-bound; no claim without Misaki) |
+| Novice | **ended 2026-10-28 03:33 UTC+8** |
+| Next industry | mineral+boost pipeline `docs/MINERAL_DEFENSE_ROADMAP.md` §4 — **hold until W47N8 RCL7 + storage≥20k**; no market deals |
 
-Ideal vs actual: `tools/model.py` / Grafana. Remaining gap ≈ ctl-feed dead-bands (closing) and remote pauses; more upgrade needs more income (expansion — shelved).
+Ideal vs actual: `tools/model.py` / `tools/model_w8.py` / Grafana. Home RCL7 done; colony upgrade slowed by raid divert + HMAX floor.
 
 ## Phases
 
