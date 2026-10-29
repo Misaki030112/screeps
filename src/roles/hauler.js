@@ -91,7 +91,7 @@ function labRun(c, room) {
   const labs = room.find(FIND_MY_STRUCTURES).filter(s => s.structureType === STRUCTURE_LAB);
   const t = L.task(room, labs);
   if (held) {
-    const want = t && held === t.res ? Game.getObjectById(t.to) : room.terminal;
+    const want = (t && held === t.res ? Game.getObjectById(t.to) : null) || room.terminal;
     if (want && move.to(c, want.pos.x, want.pos.y, 1)) c.transfer(want, held);
     return true;
   }

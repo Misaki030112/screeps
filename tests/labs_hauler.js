@@ -29,8 +29,6 @@ const room = {
 };
 const H = require(src('roles/hauler.js'));
 const creep = (store = {}) => {
-  const st = Object.assign({ getFreeCapacity() { return 300 - Object.keys(this).filter(k => k !== 'getFreeCapacity' && k !== 'getCapacity').reduce((a, k) => a + (typeof this[k] === 'number' ? this[k] : 0), 0); }, getCapacity: () => 300 }, store);
-  // simplify: store as plain object with methods attached after
   const s = Object.assign({}, store);
   s.getCapacity = () => 300;
   s.getFreeCapacity = () => 300 - Object.keys(store).reduce((a, k) => a + store[k], 0);
@@ -48,7 +46,12 @@ assert.strictEqual(H.labRun(c1, room), true, 'loads K into input lab');
 assert.deepStrictEqual(c1.got, [['w', 't', 'K']]);
 const c2 = creep({ K: 100 });
 assert.strictEqual(H.labRun(c2, room), true, 'delivers held K to lab a');
-assert.ok(c2.got[0][0] === 't' && c2.got[0][2] === 'K');
+assert.ok(c2.got[0][0] === 't' && c2.got[0][1] === 'a' && c2.got[0][2] === 'K');
+const gone = OBJS.a; delete OBJS.a;
+const cMiss = creep({ K: 100 });
+assert.strictEqual(H.labRun(cMiss, room), true, 'missing lab id still runs');
+assert.deepStrictEqual(cMiss.got, [['t', term.id, 'K']], 'held K aimed at a missing lab dumps to terminal');
+OBJS.a = gone;
 const c3 = creep({ energy: 50 });
 assert.strictEqual(H.labRun(c3, room), false, 'carrying energy: skip');
 console.log('labs hauler ok');
