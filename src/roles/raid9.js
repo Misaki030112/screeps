@@ -147,10 +147,12 @@ function armedParts(creeps) {
   for (const h of creeps) n += (h.attack | 0) + (h.ranged | 0);
   return n;
 }
+// Sustained SM-burn (Misaki): do not flee on a single mid-size defender wave.
+// Only auto-flee when hostile ATTACK+RA parts are overwhelming (~boosted squad).
 function overrun(room) {
   return armedParts(room.find(FIND_HOSTILE_CREEPS).map(h => ({
     attack: h.getActiveBodyparts(ATTACK), ranged: h.getActiveBodyparts(RANGED_ATTACK),
-  }))) >= 12;
+  }))) >= 40;
 }
 // North lip of STAGE, or already inside TARGET. Exact rally slots are not required.
 function inAssaultZone(c) {
