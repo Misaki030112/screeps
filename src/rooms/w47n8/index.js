@@ -90,10 +90,12 @@ function spawnRun(spawn) {
   if (!want && room.controller && room.controller.level >= 4 && room.name) {
     const TG = require('../../managers/threat'), g = TG.wantDefender(room.name);
     if ((g && TG.armed(g)) || TG.energyHold(room.name)) {
-      const body = require('../../managers/spawn').B.defender(1300), cost = _.sum(body, p => BODYPART_COST[p]);
+      const ord = require('../../managers/spawn').defenderOrder(g), body = ord.body, cost = _.sum(body, p => BODYPART_COST[p]);
       if (g && TG.armed(g) && avail >= cost) {
         const name = 'rdef' + Game.time;
-        const rv = spawn.spawnCreep(body, name, { memory: { role: 'defender', home: room.name, remote: g, born: Game.time, v2: 1 }, energyStructures: energyOrder(room) });
+        const mem = { role: 'defender', home: room.name, remote: g, born: Game.time, v2: 1 };
+        if (ord.core) mem.core = 1;
+        const rv = spawn.spawnCreep(body, name, { memory: mem, energyStructures: energyOrder(room) });
         if (rv === OK) { TG.noteSpawn(g, name); FM.spent(cost); return; }
         // spawnCreep failed (busy name, RCL, etc.): do not eat the tick; economy below still runs
       } else if (!cs.some(c => c.memory.role === 'w8filler' || c.memory.role === 'w8hauler')) want = 'w8filler';

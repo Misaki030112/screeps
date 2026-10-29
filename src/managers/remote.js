@@ -54,6 +54,11 @@ function pickHome(room, owned) {
   }
   return best;
 }
+function seeCore(r) {
+  if (!r || r === 'W47N9' || typeof Game === 'undefined' || !Game.rooms) return false;
+  const room = Game.rooms[r];
+  return !!(room && room.find && room.find(FIND_HOSTILE_STRUCTURES).some(s => s && s.structureType === STRUCTURE_INVADER_CORE));
+}
 let cfgT = -1, cfgCache = null;
 function cfgFor(r) {
   if (CFG[r]) return CFG[r];
@@ -63,12 +68,12 @@ function cfgFor(r) {
   const st = ((Memory.remote || {})[r] || {}).th;
   const busy = st && st.st && st.st !== 'SAFE';
   let out = null;
-  if (GUARD[r] && (busy || (typeof threat.reservedByUs === 'function' && threat.reservedByUs(r)))) out = GUARD[r];
+  if (GUARD[r] && (busy || seeCore(r) || (typeof threat.reservedByUs === 'function' && threat.reservedByUs(r)))) out = GUARD[r];
   else {
     const g = Memory.ops && Memory.ops.resRooms && Memory.ops.resRooms[r];
     const homeOk = g && g.home && g.home !== 'W47N9' && r !== 'W47N9';
     const live = homeOk && g.until > Game.time;
-    if (homeOk && (live || busy)) {
+    if (homeOk && (live || busy || seeCore(r))) {
       const home = g.home, x = g.x || 25, y = g.y || 25;
       out = { home, guardOnly: true, dynamic: true, defend: true, cont: [x, y], src: [x, y],
         park: home === 'W47N8' ? [16, 20] : [46, 21], spawn: home === 'W47N8' ? 'Spawn2' : 'Spawn1',

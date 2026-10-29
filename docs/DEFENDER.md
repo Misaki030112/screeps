@@ -14,7 +14,7 @@ Gate (code, `src/managers/threat.js armed()`, unit-tested): flag AND RCL≥4 wit
 | Boosts | **50%** chance for small raids: TOUGH GO (takes 70%), ATTACK UH ×2, RA KO ×2, HEAL LO ×2, WORK ZH. Boosted melee = 60 + 20 /t adjacent. |
 | Life | 1500 ticks; they never leave the room (pathing maxRooms 1); in an **unowned** room they do not suicide, they hunt our creeps then hit structures. |
 | Today | One smallMelee 13:40–14:40 (≈ tick 83613200+); our container (13,11) was **destroyed** during the pause (needs 5 000 energy to rebuild). |
-| Invader cores | Level-0 cores (100k hits, no creeps) appear in unowned rooms of the sector and attack/hold reservations. This defender (50 dmg/t) is **not** for cores (2000 ticks). A core needs a separate melee buster (10 ATTACK + 10 MOVE = 1300, 300 dmg/t ⇒ ≈340 ticks); not built, decide when one appears. |
+| Invader cores | Level-0 cores (100k hits, no creeps) in a reserved or configured remote (W45N8, W45N7, W47N7, …) are a fight. Melee buster **10 ATTACK + 10 MOVE = 1300**, 300 dmg/t, `ceil(100000/300) = 334` ticks once adjacent. The ranged kite body is not used. Players are never a target. W47N9 is never a target. After the core dies the reserver reclaims. |
 
 ## 2. Cost model (RCL4, ≈3.9 s/tick, ≈22 150 ticks/day)
 **Body: 5 RANGED_ATTACK + 6 MOVE + 1 HEAL = 1300 energy, 12 parts, spawn 36 ticks.** Damage 50/t at range 1–3, self-heal 12/t, 1200 hp, speed 1 tile/t on plain/road (swamp 1/5).
@@ -70,7 +70,7 @@ The exit camp is a trap at equal speed (no kiting room): the defender fights nex
 ## 5. Not done / later
 - Healer pairs and 2+ raids (≈10%): need 2 defenders or a 1800+ body (RCL5). Skipped for now.
 - Optional cheap win independent of the defender: don't flee at first sight; Invaders spawn ≥30 tiles away, so remote creeps could keep working until an Invader is within ~8 tiles. Not implemented (more logic, needs testing).
-- Invader core buster (see §1).
+- Invader core buster ships (§1, §6): lone core → THREAT `core` → 10 ATTACK + 10 MOVE. Creep Invaders stay on the ranged kite.
 
 
 ## 6. Response pipeline = one state machine per remote (`src/managers/threat.js`)
@@ -79,14 +79,14 @@ Rules: **one pure function** `step(state, obs, cfg, tick) -> {state, events}` de
 ```mermaid
 stateDiagram-v2
   [*] --> SAFE
-  SAFE --> THREAT: solo NPC Invader, no HEAL, <3 RA, TTL>=300, gate ok (armed, bucket>=3000, <4 spawns/day, 0 deaths/day)
-  SAFE --> WAIT: gate closed / short TTL / escalated / player / core
-  THREAT --> DEFEND: defender out of spawn
-  THREAT --> SAFE: Invader gone (dead or projected TTL<=0) = cancel
+  SAFE --> THREAT: solo NPC Invader (no HEAL, <3 RA, TTL>=300) OR a lone invader core, gate ok (armed, bucket>=3000, <4 spawns/day, 0 deaths/day)
+  SAFE --> WAIT: gate closed / short TTL / escalated / player
+  THREAT --> DEFEND: defender or core buster out of spawn
+  THREAT --> SAFE: threat gone (dead or projected TTL<=0) = cancel
   THREAT --> WAIT: 200 ticks without spawn (timeout) / escalated / short TTL
-  DEFEND --> SAFE: vision, no Invader for 10 ticks (killed)
-  DEFEND --> WAIT: defender died / expired / escalated / 450-tick timeout
-  WAIT --> SAFE: timer (last TTL+80; players 1500) or vision shows clear (not for players) / core gone
+  DEFEND --> SAFE: vision, threat gone (killed). Core: structure missing.
+  DEFEND --> WAIT: defender died / expired / escalated / creep 450-tick timeout / core 1000-tick timeout
+  WAIT --> SAFE: timer (last TTL+80; players 1500) or vision shows clear (not for players)
   SAFE --> WAIT: player combat creep or our creep losing hits with no Invader (any state)
 ```
 Effects of each state (read by consumers): SAFE = remote works. THREAT = remote creeps at home park; spawn: defender first, while collecting 1300 only queen may spawn (miners held too — cuts the ~31t energy wait); haulers fill extensions to 100%; upgraders pause withdrawals until spawn starts (with or without storage); builders keep 1300 in storage. DEFEND = defender engages (kite at 3, heal self, <60% hp home to tower, back ≥95%). Any other state = defender recycles at Spawn1 (≈1000 refund); remote creeps stay home.
@@ -104,8 +104,9 @@ Effects of each state (read by consumers): SAFE = remote works. THREAT = remote 
 | Spawn busy / renewing / energy short | THREAT holds non-critical spawns; `readyTimeout` 200 → WAIT (wait-out = old behaviour). Spawning defender never times out. |
 | Energy drained by repeated waves | `maxPerDay=4` spawns / 22k ticks; builders keep a 1300 storage reserve while armed. |
 | CPU bucket low | bucket<3000 → wait-out (`cpu`). |
-| Invader core in remote | WAIT `core`, rechecked every 500 ticks, never attacked (needs separate buster + your decision). |
-| Reservation lost / flipped (core or player) | Reserver never `attackController`; core → WAIT core; player → WAIT player. Reservation simply rebuilds after SAFE. |
+| Invader core in a remote we defend | THREAT `core` → spawn 10 ATTACK + 10 MOVE (1300). Walk adjacent and `attack` the core only. WAIT only when a spawn gate fails (energy / cpu / budget / deaths) or the fight times out. Blind travel keeps the fight (no TTL to project). |
+| Players, including next to a core | WAIT `player` 1500. The buster never targets a creep. A solo NPC Invader still uses the ranged kite, even if a core is also up. |
+| Reservation lost / flipped (core or player) | Reserver never `attackController`. A core in a configured remote (or W47N7) is still busted after it eats the reservation; then the reserver reclaims. Player → WAIT player. W47N9 is never armed and never pathed into to fight. |
 | Short-TTL Invader (<300) | WAIT `short_ttl` (not worth 280 net energy). |
 | No vision (everyone fled) | Last sighting carried with projected TTL; WAIT timers run without vision. |
 | Global reset / Memory loss | State lives in `Memory.remote[r].th`; missing → SAFE, re-detected next tick (pure step, no heap state). |
@@ -118,7 +119,7 @@ Effects of each state (read by consumers): SAFE = remote works. THREAT = remote 
 Every transition prints `INCIDENT {json}` (ev threat/spawn_start/defend/arrive/cleared/cancel/wait/resume, why, inv count, TTL, `dur` since start, `inc` id) → listener → table `incidents`; view `incident_summary` gives ticks_to_spawn / dispatch / arrive, paused_ticks, outcome, energy_lost_est (paused × 6 e/t). Grafana: "Remote threat incidents" table + "Remote threat FSM state" timeline.
 
 ### Tests (run by `scripts/check.js`, i.e. on every deploy)
-`tests/threat_fsm.js` 24 cases (every row above + purity + gate). `tests/defender_duel.js` now drives the role through the real `step()` on W45N8 terrain.
+`tests/threat_fsm.js` (every row above + purity + gate, including core → fight). `tests/core_buster.js` checks the 10 ATTACK + 10 MOVE body and that the role attacks only the core. `tests/defender_duel.js` drives the ranged kite through the real `step()` on W45N8 terrain.
 
 
 ## 23:5x (2026-10-21) raid cadence and counter observability

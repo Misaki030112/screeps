@@ -3,9 +3,11 @@
 //   step(s,o) : (state, obs, cfg, t) -> {s, ev} (pure, unit-tested in tests/threat_fsm.js)
 //   roles / spawn / remote manager only READ: state(r), holding(home), wantDefender(home), armed(r).
 // States: SAFE -> THREAT (solo NPC Invader, OR any combat hostile in a room we currently reserve) -> DEFEND -> SAFE
-//         any -> WAIT (wait-out: players on the route/home, unreserved escalation, core, gate, timeouts, defender died) -> SAFE
+//         any -> WAIT (wait-out: players on the route/home, unreserved escalation, gate, timeouts, defender died) -> SAFE
 // A room is "reserved" when its controller reservation is still ours (Memory.remote[r].res, projected from m.seen),
-// Memory.ops.r7 says we hold W47N7, or Memory.ops.resRooms lists it. Cores are never attacked. W47N9 is never a target.
+// Memory.ops.r7 says we hold W47N7, or Memory.ops.resRooms lists it.
+// An invader core in a remote we defend is a fight (melee buster), not a wait-out. WAIT only when a spawn gate fails.
+// Players outrank a core (the buster never targets a creep). W47N9 is never a target.
 const S = { SAFE: 'SAFE', THREAT: 'THREAT', DEFEND: 'DEFEND', WAIT: 'WAIT' };
 const DEF = {
   minTtl: 300,        // solo Invader must have >= this TTL left to be worth 1300 energy
@@ -14,7 +16,8 @@ const DEF = {
   clearTicks: 10,     // vision with no Invader for this long = cleared
   waitBuffer: 80,     // WAIT on NPCs = last TTL + buffer
   playerPause: 1500,  // WAIT on players (never fight players)
-  coreRecheck: 500,   // invader core: re-check (needs vision) — never auto-attacked
+  coreRecheck: 500,   // legacy/blind core wait: look again (a live core with the gate open goes THREAT instead)
+  coreDefendTimeout: 1000, // DEFEND on a core: travel + ceil(100000/300)=334 melee ticks; creep defendTimeout is too short
   maxPerDay: 4,       // defender spawns per 22k ticks (repeated waves cannot drain the economy)
   dayTicks: 22000,
   maxDeaths: 1,       // after a defender death in 1 day: wait-out only
@@ -32,14 +35,17 @@ const cfg = r => Object.assign({}, DEF, (roomCfg(r) || {}).threat || {});
 // ---------- pure core ----------
 // 'guard' = combat hostiles inside a room we currently reserve (players, dismantlers, or an escalated Invader wave).
 // Route/home players stay 'player' (do not march a remote defender into our own base or a blocked highway).
-// Solo Invader is unchanged. Cores are never a fight. Short-TTL Invaders stay a wait-out (not worth a 1300 spawn).
+// Solo Invader is unchanged (ranged kite). A lone invader core is its own fight (melee buster).
+// Players outrank a core: never deploy the buster into a player. Short-TTL Invaders stay a wait-out.
 function classify(o, c) {
-  if (o.core) return 'core';
   const routeP = (o.players || 0) > (o.hereP || 0); // players counted outside the remote room itself
   if (routeP) return 'player';
+  if (o.core && ((o.hereP || 0) > 0 || (o.players || 0) > 0)) return 'player';
   if (o.reserved && ((o.hereP || 0) > 0 || (o.work || 0) > 0)) return 'guard';
-  if (o.hurtNoInv || (o.players || 0) > 0) return 'player';
+  if ((o.hurtNoInv && !o.core) || (o.players || 0) > 0) return 'player';
   const inv = o.inv || [];
+  // combat creeps keep the solo/guard/escalated paths; the core is busted once they are gone
+  if (o.core && !inv.length) return 'core';
   if (!inv.length) return 'none';
   if (inv.length === 1 && !inv[0].heal && !inv[0].ranged3) return inv[0].ttl >= c.minTtl ? 'solo' : 'short';
   return o.reserved ? 'guard' : 'invader'; // too many / healer / 3xRA: fight only while we still hold the room
@@ -62,26 +68,29 @@ function step(s, o, c, t) {
   if (o.vis) {
     if ((o.inv || []).length) { s.last = o.inv; s.seen = t; delete s.gone; } else { s.last = null; s.gone = s.gone || t; }
     if ((o.hereP || 0) + (o.work || 0) > 0) { s.foes = (o.hereP || 0) + (o.work || 0); s.foeSeen = t; } else s.foes = 0;
+    if (o.core && o.corePos) s.corePos = o.corePos.slice();
+    else if (!o.core) delete s.corePos;
   } else {
     const extra = {};
     if (s.last) extra.inv = s.last.map(i => Object.assign({}, i, { ttl: i.ttl - (t - s.seen) })).filter(i => i.ttl > 0);
     if (s.foes && t - (s.foeSeen || 0) < (c.foeMemory || 200)) extra.hereP = Math.max(o.hereP || 0, s.foes);
-    if (extra.inv || extra.hereP) o = Object.assign({}, o, extra);
+    // core has no TTL: keep the fight alive while the buster travels (everyone else fled, so no vision)
+    if (s.mission === 'core' && (s.st === S.THREAT || s.st === S.DEFEND)) { extra.core = true; if (s.corePos) extra.corePos = s.corePos; }
+    if (extra.inv || extra.hereP || extra.core) o = Object.assign({}, o, extra);
   }
   const k = classify(o, c), maxTtl = Math.max(0, ...(o.inv || []).map(i => i.ttl));
   const waitNpc = why => go(S.WAIT, why, { until: s.until = t + maxTtl + c.waitBuffer });
-  if (k === 'player' && !(s.st === S.WAIT && s.why === 'player')) { go(S.WAIT, 'player', { until: s.until = t + c.playerPause }); return { s, ev }; }
-  if (k === 'core' && !(s.st === S.WAIT && s.why === 'core')) { go(S.WAIT, 'core', { until: s.until = t + c.coreRecheck }); return { s, ev }; }
+  if (k === 'player' && !(s.st === S.WAIT && s.why === 'player')) { delete s.mission; go(S.WAIT, 'player', { until: s.until = t + c.playerPause }); return { s, ev }; }
   switch (s.st) {
     case S.SAFE:
-      if (k === 'solo' || k === 'guard') { const g = gateReason(o, c); if (g) waitNpc(g); else { s.inc = t; delete s.recycling; go(S.THREAT, k, { inv: o.inv }); } }
+      if (k === 'solo' || k === 'guard' || k === 'core') { const g = gateReason(o, c); if (g) { if (k === 'core') s.mission = 'core'; waitNpc(g); } else { s.inc = t; delete s.recycling; s.mission = k; go(S.THREAT, k, { inv: o.inv }); } }
       else if (k === 'invader') waitNpc('escalated');
       else if (k === 'short') waitNpc('short_ttl');
       break;
     case S.THREAT:
       if (k === 'none') go(S.SAFE, 'gone');
       else if (!o.armed) waitNpc('gate'); // disarmed mid-THREAT: wait out, any defender recycles
-      else if (k !== 'solo' && k !== 'guard') waitNpc(k === 'short' ? 'short_ttl' : 'escalated');
+      else if (k !== 'solo' && k !== 'guard' && k !== 'core') waitNpc(k === 'short' ? 'short_ttl' : 'escalated');
       else if (o.def === 'out') go(S.DEFEND, 'dispatched');
       else if (o.def !== 'spawning' && t - s.since > c.readyTimeout) waitNpc('timeout');
       break;
@@ -90,39 +99,39 @@ function step(s, o, c, t) {
       else if (o.def === 'dead') waitNpc('defender_died');
       else if (o.def === 'none') waitNpc('defender_expired');
       else if (k === 'none' && o.vis && t - s.gone >= c.clearTicks) go(S.SAFE, 'killed');
-      else if (k === 'none' && !o.vis && !(o.inv || []).length) go(S.SAFE, 'gone'); // foe memory expired, nothing left to project
+      else if (k === 'none' && !o.vis && !(o.inv || []).length && s.mission !== 'core') go(S.SAFE, 'gone'); // foe memory expired, nothing left to project
+      else if (s.mission === 'core' && k !== 'core' && k !== 'none') waitNpc(k === 'short' ? 'short_ttl' : 'escalated'); // melee body does not duel creeps
       else if (k === 'invader') waitNpc('escalated');
-      else if (k !== 'guard' && t - s.since > c.defendTimeout) waitNpc('defend_timeout'); // a reserved-room guard stays while hostiles remain
+      else if (k === 'core' && t - s.since > (c.coreDefendTimeout || 1000)) waitNpc('defend_timeout');
+      else if (k !== 'guard' && k !== 'core' && t - s.since > c.defendTimeout) waitNpc('defend_timeout'); // a reserved-room guard stays while hostiles remain
       break;
     case S.WAIT:
-      // coreRecheck: with vision keep waiting while the core stands; WITHOUT vision a forever-extend left remotes
-      // paused (no creeps → no vision → never core_gone). On timer expiry with no vision, resume (SAFE) so a
-      // reserver/rminer looks again; sense re-enters WAIT if the core is still there. Never auto-attack cores.
+      // legacy why=core (pre-buster): a visible core re-arms into THREAT the same tick; blind, keep the recheck
+      // so a reserver/rminer looks again instead of pausing forever with no vision.
       if (s.why === 'core') {
-        if (o.vis && !o.core) go(S.SAFE, 'core_gone');
-        else if (t >= s.until) {
-          if (!o.vis) go(S.SAFE, 'core_recheck');
-          else s.until = t + c.coreRecheck;
-        }
+        if (o.vis && o.core) { s.mission = 'core'; const g = gateReason(o, c); if (g) { s.why = g; s.until = Math.max(s.until || 0, t + c.coreRecheck); } else s.why = 'gate'; }
+        else if (!o.vis && t < (s.until || 0)) break;
+        else { go(S.SAFE, o.vis ? 'core_gone' : 'core_recheck'); break; }
       }
-      // a spawn gate (gate/cpu/budget/deaths) cleared while a solo Invader or a reserved-room guard is still needed
-      else if (GATES.includes(s.why) && !gateReason(o, c) && (k === 'solo' || k === 'guard')) {
-        delete s.until; s.inc = t; delete s.recycling; go(S.THREAT, k, { inv: o.inv }); }
+      // a spawn gate (gate/cpu/budget/deaths) cleared while a solo, a guard, or a core is still needed
+      if (s.st === S.WAIT && GATES.includes(s.why) && !gateReason(o, c) && (k === 'solo' || k === 'guard' || k === 'core')) {
+        delete s.until; s.inc = t; delete s.recycling; s.mission = k; go(S.THREAT, k, { inv: o.inv }); }
       // player-on-the-route WAIT, or an escalated wait, becomes a guard once the hostiles are inside a room we reserve
       else if (k === 'guard' && !gateReason(o, c)) {
-        delete s.until; s.inc = t; delete s.recycling; go(S.THREAT, 'guard', { inv: o.inv }); }
+        delete s.until; s.inc = t; delete s.recycling; s.mission = 'guard'; go(S.THREAT, 'guard', { inv: o.inv }); }
       else if (s.why !== 'player' && o.vis && k === 'none') go(S.SAFE, 'clear_seen');
       else if (t >= s.until) go(S.SAFE, 'timer');
       break;
   }
-  if (s.st === S.SAFE) { delete s.inc; delete s.until; delete s.foes; delete s.foeSeen; }
+  if (s.st === S.SAFE) { delete s.inc; delete s.until; delete s.foes; delete s.foeSeen; delete s.mission; delete s.corePos; }
   return { s, ev };
 }
 // resumeEarly (W45N8 review): in DEFEND with our defender in the room and the target <15% hp (or already dead, waiting
 // clearTicks), rminer/rhauler go back early. Sticky until a target is back above 30% (healed) or the state leaves DEFEND.
 const EARLY = { on: 0.15, off: 0.3, roles: ['rminer', 'rhauler'] };
 function earlyNext(s, defIn) {
-  if (s.st !== S.DEFEND || !defIn) return false;
+  // a core has no creep `last` entry; vacuous every() would resume miners the tick the buster arrives
+  if (s.st !== S.DEFEND || !defIn || s.mission === 'core') return false;
   const inv = s.last || [], f = i => i.hitsMax ? i.hits / i.hitsMax : 1;
   if (inv.some(i => f(i) >= EARLY.off)) return false;
   return !!s.early || inv.every(i => f(i) < EARLY.on);
@@ -172,9 +181,19 @@ function armed(r) { // code-level enable gate: flag AND RCL4 stable AND (CLAIM2 
   if (_.some(Game.creeps, x => x.memory.role === 'reserver' && x.memory.remote === r && x.getActiveBodyparts(CLAIM) >= 2)) m.claim2 = Game.time;
   // A live reservation outlasts the reserver creep. Holding the room is enough; CLAIM2-within-1500t still counts on its own.
   const held = (!!m.claim2 && Game.time - m.claim2 < 1500) || reservedByUs(r);
+  // A core in a room we are configured to defend still counts after it has eaten the reservation
+  // (otherwise the bust can never start, and a mid-fight drop would abort it). W47N9 is never armed.
+  const th = m.th || {};
+  const coreJob = th.mission === 'core' && (th.st === S.THREAT || th.st === S.DEFEND || (th.st === S.WAIT && GATES.includes(th.why)));
+  let coreHere = false;
+  if (!held && !coreJob && (C.defend || m.defend) && r !== 'W47N9') {
+    const rm = Game.rooms[r];
+    if (rm && rm.find) coreHere = rm.find(FIND_HOSTILE_STRUCTURES).some(s => s && s.structureType === STRUCTURE_INVADER_CORE);
+  }
+  const keep = held || coreJob || coreHere;
   // only the energy readiness is missing (flag on, RCL ok, room held): spawn.js may hold to collect the 1300 (energyHold)
-  m.needE = !ready && !!hm.rcl4Since && Game.time - hm.rcl4Since >= c.stableTicks && held;
-  return !!(stable && held);
+  m.needE = !ready && !!hm.rcl4Since && Game.time - hm.rcl4Since >= c.stableTicks && keep;
+  return !!(stable && keep);
 }
 function body(h, t) { return h.body.some(p => p.type === t && p.hits > 0); }
 function sense(r) {
@@ -194,7 +213,9 @@ function sense(r) {
       o.work = hs.filter(h => h.body.some(p => p.type === 'work' && p.hits > 0) && !h.body.some(p => COMBAT.includes(p.type) && p.hits > 0)).length;
       o.inv = hs.filter(h => h.owner.username === 'Invader' && h.body.some(p => COMBAT.includes(p.type) && p.hits > 0)).map(h => ({ x: h.pos.x, y: h.pos.y, ttl: h.ticksToLive || 1500,
         heal: body(h, HEAL), ranged3: h.getActiveBodyparts(RANGED_ATTACK) >= 3, hits: h.hits, hitsMax: h.hitsMax, boosted: h.body.some(p => p.boost) }));
-      o.core = rm.find(FIND_HOSTILE_STRUCTURES).some(s => s.structureType === STRUCTURE_INVADER_CORE);
+      const cores = rm.find(FIND_HOSTILE_STRUCTURES).filter(s => s.structureType === STRUCTURE_INVADER_CORE);
+      o.core = cores.length > 0;
+      if (o.core && cores[0].pos) o.corePos = [cores[0].pos.x, cores[0].pos.y];
       // our creep hurt with no Invader visible => someone else (player) did it
       // our creep LOST hits this tick with no Invader visible => someone else (player) did it (old damage is ignored)
     }
@@ -234,8 +255,8 @@ function run(r) {
   if (s.def2 && !Game.creeps[s.def2]) delete s.def2;
   if (s.st !== S.DEFEND || (s.def && s.def2)) delete s.need2;
   if (!s.def && s.def2) { s.def = s.def2; delete s.def2; }
-  // adopt a patrolling defender (roles/remote patrol, Memory.defense.remotePatrol) instead of spawning a new one
-  if (s.st === S.THREAT && !s.def) { const p = adoptable(r); if (p) { s.def = p.name; p.memory.remote = r; p.memory.patrol = false;
+  // adopt a patrolling ranged defender instead of spawning a new one. A core needs ATTACK parts; do not adopt the kite body.
+  if (s.st === S.THREAT && !s.def && s.mission !== 'core' && s.why !== 'core') { const p = adoptable(r); if (p) { s.def = p.name; p.memory.remote = r; p.memory.patrol = false;
     console.log('INCIDENT ' + JSON.stringify({ remote: r, tick: Game.time, inc: s.inc || null, state: s.st, ev: 'adopt', def: p.name, ttl: p.ticksToLive })); } }
   m.th = s;
   return s;
@@ -254,7 +275,8 @@ function remotesOf(home) {
   }
   return names;
 }
-module.exports = { S, DEF, cfg, classify, step, sense, run, state, armed, ourName, reservedByUs, roomCfg,
+function coreMission(r) { const t = state(r); return t.mission === 'core' && (t.st === S.THREAT || t.st === S.DEFEND); }
+module.exports = { S, DEF, cfg, classify, step, sense, run, state, armed, ourName, reservedByUs, roomCfg, coreMission,
   // remote creeps stay home unless SAFE
   safe: (r, role) => state(r).st === S.SAFE || (!!role && EARLY.roles.includes(role) && !!state(r).early),
   earlyNext, EARLY,
@@ -272,7 +294,7 @@ module.exports = { S, DEF, cfg, classify, step, sense, run, state, armed, ourNam
   energyHold: home => remotesOf(home).some(r => { const t = state(r), m = (Memory.remote || {})[r] || {};
     if (!(t.st === S.WAIT && t.why === 'gate' && m.needE)) return false;
     const solo = (t.last || []).length === 1 && !t.last[0].heal && !t.last[0].ranged3;
-    return solo || (t.foes || 0) > 0; // reserved-room hostiles waiting only on the 1300 energy
+    return solo || (t.foes || 0) > 0 || t.mission === 'core'; // core bust uses the same 1300
   }),
   // storage energy reserved for defence (builders must not go below it)
   reserve: home => remotesOf(home).some(r => ((Memory.remote || {})[r] || {}).armed) ? DEF.reserve : 0,
