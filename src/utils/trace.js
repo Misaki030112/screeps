@@ -15,7 +15,9 @@ const DEF = { miner: 'e', rminer: 'e', mminer: 'e', hauler: 'p', rhauler: 'p', u
 const WHY = {}, POS = {};
 const WORKF = { harvest: c => 2 * c.getActiveBodyparts(WORK), upgradeController: c => c.getActiveBodyparts(WORK), build: c => 5 * c.getActiveBodyparts(WORK),
   repair: c => c.getActiveBodyparts(WORK), transfer: c => c.store.getUsedCapacity(), withdraw: c => c.store.getFreeCapacity(), pickup: c => c.store.getFreeCapacity(),
-  reserveController: c => c.getActiveBodyparts(CLAIM), drop: () => 0 };
+  reserveController: c => c.getActiveBodyparts(CLAIM),
+  // attackController must wrap too — else Invader reclaim (28d8443) looks like queue_blocked (patrol 05:5x)
+  attackController: c => c.getActiveBodyparts(CLAIM), claimController: c => c.getActiveBodyparts(CLAIM), drop: () => 0 };
 function wrap() {
   if (wrapped) return; wrapped = true;
   for (const f in WORKF) { const o = Creep.prototype[f]; if (!o) continue;
