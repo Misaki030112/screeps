@@ -215,6 +215,9 @@ module.exports = { ROUTE_FIX, routeJob, remoteRoadSite, remoteRefill, pickSource
     if (dk) { t = dk; c.memory.t = dk.id; c.memory.tcap = W.DECAY_CAP; c.memory.urgent = 1; }
   }
   if (!c.memory.urgent) {
+  // fundSpend wall step outranks sticky home road/container top-ups (live 17:4x builder glued to road 28,14 @66%)
+  if (t && t.progress === undefined && !c.memory.tcap && W.fundSpend && W.fundSpend(hm)
+      && (t.structureType === STRUCTURE_ROAD || t.structureType === STRUCTURE_CONTAINER)) t = null;
   // a new site (home OR remote road) outranks any repair. Live 00:05 swamp7: all 5 builders stuck on container 34,34 at 86% hits
   // (sticky clears at 90%, repairables pick at 80%) while W45N8 15,39/16,40/25,39 sat 0/1500 — line only checked home sites.
   // (a route road repair in the remote stays sticky until 90%: re-picking every tick bounced between 2,12 and 12,10 ~10 tiles apart)
@@ -253,11 +256,19 @@ module.exports = { ROUTE_FIX, routeJob, remoteRoadSite, remoteRefill, pickSource
       if (remoteSite) t = remoteSite;
       else if ((t = require('../managers/roads').repairTarget(ROUTE_FIX))) {} // remote route road < 50% goes before home 80% top-ups (W45N8 roads lost 10-20)
       else {
-        const hurt = repairables(home, P).filter(s => !held.has(s.id)); // one builder per road/container (live 03:55: all 5 on container 38,32)
-        t = hurt.length ? _.min(hurt, s => s.hits / s.hitsMax) : null;
-        if (!t) t = require('../managers/roads').repairTarget(); // remote route roads < 50% (docs/ROADS.md)
-        const job = !t && require('../managers/walls').repairJob(home, c.pos, new Set(Object.values(Game.creeps).filter(x => x !== c && x.memory.role === 'builder').map(x => x.memory.t))); // v4 barrier hits step (lowest first, +10k chunks)
-        if (job) { t = Game.getObjectById(job.id); c.memory.tcap = job.cap; }
+        // Peacetime fundSpend (strategy 17:4x): wall STEP outranks home road/container 80% top-ups so the 50k fund
+        // actually lands on barriers (live t83940388: builder sat on road 28,14 @3.3k while walls stuck 142101).
+        // Critical remote roads (ROUTE_FIX) and sites still win above.
+        const taken = new Set(Object.values(Game.creeps).filter(x => x !== c && x.memory.role === 'builder').map(x => x.memory.t));
+        const wallFirst = W.fundSpend && W.fundSpend(home) && W.repairJob(home, c.pos, taken);
+        if (wallFirst) { t = Game.getObjectById(wallFirst.id); c.memory.tcap = wallFirst.cap; }
+        else {
+          const hurt = repairables(home, P).filter(s => !held.has(s.id)); // one builder per road/container (live 03:55: all 5 on container 38,32)
+          t = hurt.length ? _.min(hurt, s => s.hits / s.hitsMax) : null;
+          if (!t) t = require('../managers/roads').repairTarget(); // remote route roads < 50% (docs/ROADS.md)
+          const job = !t && W.repairJob(home, c.pos, taken); // v4 barrier hits step (lowest first, +10k chunks)
+          if (job) { t = Game.getObjectById(job.id); c.memory.tcap = job.cap; }
+        }
       }
     }
     c.memory.t = t ? t.id : undefined;

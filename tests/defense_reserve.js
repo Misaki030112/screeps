@@ -34,5 +34,6 @@ assert.ok(typeof W.fundSpend === 'function');
 assert.strictEqual(W.fundSpend(null), false);
 assert.strictEqual(W.fundSpend({ storage: { store: { energy: 14000 } } }), false); // no name/memory
 assert.ok(require('fs').readFileSync(path.join(__dirname, '..', 'src', 'roles', 'builder.js'), 'utf8').includes('Wd.fundSpend && Wd.fundSpend(home)'));
+assert.ok(require('fs').readFileSync(path.join(__dirname, '..', 'src', 'roles', 'builder.js'), 'utf8').includes('wallFirst = W.fundSpend'));
 console.log('fundSpend export ok');
 console.log('fund wall builder ok');
