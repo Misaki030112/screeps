@@ -1,7 +1,7 @@
 # 矿物线 + 强化 + 城防路线图（2026-10-29 12:4x；14:4x boost；17:4x fundSpend；**23:4x fortify hardening**）
 
 Live refresh **23:50 UTC+8** tick ~83945055。**不自动交易、不开 safe mode。**
-围攻已中止；`walls.fundSpend` 仍在推家墙 174k→300k；**23:4x** 补齐 home lab rampart 布局缺口（三 lab 曾裸奔 500 hits）。boost 代码仍等殖民地 RCL7+storage。
+围攻已中止；`walls.fundSpend` 仍在推家墙 **~230k→300k**（05:4x ETA ~6 h）；**23:4x** lab ramparts live ~600k；**05:4x** W45N7 Invader-res reclaim。boost 代码仍等殖民地 RCL7+storage。W47N8 seal 300k，spawn2/tower soft ramps ~20–50k 待抬。
 
 ## 0. 现状（实测）
 

@@ -206,11 +206,21 @@ const roles = {
     if (viaGateOf(c, C, false) === 'home') return flee(c);
     if (!go(c, c.memory.remote, C.ctl[0], C.ctl[1], 1)) return;
     const ct = c.room.controller; if (!ct) return;
-    if (ct.reservation && ct.reservation.username !== c.owner.username) return; // never attackController
+    // After an Invader-core kill the NPC reservation can linger ~1–2k ticks; harvest is ERR_NOT_OWNER until it
+    // ends. attackController(-1 tick/CLAIM) clears Invader only — never a player (diplomacy; same as reserve7).
+    const act = reserverAct({ ours: c.owner.username, resUser: ct.reservation && ct.reservation.username });
+    if (act === 'attackInvader') { c.attackController(ct); return; }
+    if (act === 'wait') return;
     c.reserveController(ct);
     const S = require('../utils/sign'); if (S.needs(ct, c.owner.username)) c.signController(ct, S.SIGN);
   },
 };
+// pure: reserverAct({ ours, resUser }) -> 'reserve' | 'attackInvader' | 'wait'
+function reserverAct(o) {
+  if (!o.resUser || o.resUser === o.ours) return 'reserve';
+  if (o.resUser === 'Invader') return 'attackInvader';
+  return 'wait';
+}
 // Melee core buster (memory.core). Walk to the invader core and attack it. Never targets a creep:
 // players stay diplomacy, NPC invaders stay on the ranged kite body. W47N9 is never a fight.
 // pure: coreAct({room, remote, fighting, edge, hasCore, range}) -> action
@@ -371,4 +381,4 @@ roles.rscout = function (c) {
   if (remote.paused(c.memory.remote)) return flee(c);
   go(c, c.memory.remote, x, y, 1);
 };
-module.exports = { viaGate, repairNow, inward, stageOut, STAGE, viaTake, VIA_KEEP, coreAct, rminer: { run: roles.rminer }, rhauler: { run: roles.rhauler }, reserver: { run: roles.reserver }, defender: { run: roles.defender }, rscout: { run: roles.rscout } };
+module.exports = { viaGate, repairNow, inward, stageOut, STAGE, viaTake, VIA_KEEP, coreAct, reserverAct, rminer: { run: roles.rminer }, rhauler: { run: roles.rhauler }, reserver: { run: roles.reserver }, defender: { run: roles.defender }, rscout: { run: roles.rscout } };

@@ -3,6 +3,13 @@
 Novice zone ends **2026-10-28 03:33 UTC+8** (past as of 10-29). Defence timeline: `docs/DEFENSE_NOVICE.md` (2026-10-16); detail `docs/DEFENSE.md` / geometry `docs/DEFENSE_PLAN.md`.
 **Safe mode: NEVER auto-activate** — alert Misaki.
 
+## 2026-10-30 05:4x strategy review: W45N7 post-core Invader-reservation reclaim
+- **Chose:** W45N7 reclaim after Invader-core kill (live SAFE why=killed but harvest ERR_NOT_OWNER) over rehashing STATIONARY_FILL / fundSpend / RCL7 day-of.
+- **Findings (`docs/REMOTE_W45N7.md` 05:4x):** (1) Core dead since ~04:27; Invader reservation still ~1.4k ticks; container gone; rminer harvest −1. (2) Reserver early-returned on any foreign res (`never attackController`) — sat adjacent idle. (3) `attackController` clears Invader at −1/CLAIM (+ natural −1) → ~30–35 min with one 2CLAIM vs ~1.6 h wait. (4) Overmind ReservingOverlord does not attackController; conquest/TooAngel-style reclaim does; **reserve7 stays never-attack** (BJ neighbour). (5) Abandoned `fhl` spawn@13,10 — ignore (propose only). (6) W47N8 seal 300k; soft ramps spawn2 ~20k / towers ~50k.
+- **Shipped:** `reserverAct` Invader-only attackController + `tests/reserver_invader.js`; deploy this run. Docs STRATEGY/REMOTE_W45N7/ROADMAP.
+- **Reprioritise:** (1) home walls→300k fundSpend (~6 h); (2) **W45N7 reclaim** (attackController → reserve → container); (3) W47N8 RCL7 → tower3+spawn2 (factory OFF); (4) raise colony soft ramps; (5) colony storage≥20k → minerals+K; (6) KO≥900 → boost; (7) barriers→1M; (8) STATIONARY_FILL at RCL8. Defend-only W47N9.
+- **Plan check (t~83949850):** home RCL7 ~581k/10.9M stor~14.5k walls~230k fund~37.7k labs~600k; W47N8 2.902M/3.645M (~40h) towers 2; CPU~9–15 bucket 10k; remotes W45N7 Invader res reclaiming; deploy was 46f1804 → this SHA. No major Misaki decision (fhl spawn ignore; no claim/attack/credits/SM).
+
 ## 2026-10-30 02:4x strategy review: STATIONARY_FILL readiness at home RCL7 (keep queens)
 - **Chose:** whether to enable `plan.STATIONARY_FILL` now (home RCL7, 4 links live) vs leave dual queens — open since RCL5 link-plan A and DEFENSE_PLAN stand-tile re-eval “at RCL7”.
 - **Findings (`docs/RCL7.md` 02:4x):** (1) Enabling sets `T.queen=0`, `T.filler=4` (stamp **A** only of 12 stands), `T.manager=1`, `T.hauler=0` at 4 links — stamps B/C + storage→ctl ferry drop (RCL5 G1–G3). (2) Stamp A/C filler links are RCL8 (`l6 35,26` / `l5 30,25`); live l4@32,34 is stamp B and sits at E=0 under queens. (3) Flipping also swaps LINK_PLAN → v2 json links (hub/ctl thrash risk). (4) Overmind keeps mobile queens through mid-game; bunker manager is RCL8, not a queen replacement at first RCL7. (5) Lab ramparts from 23:4x succeeded (~423k); walls 197k→300k fundSpend ~12–18 h; W47N8 RCL7 ~10-31 21:45 Asia/Hong_Kong.

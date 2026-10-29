@@ -19,7 +19,7 @@
 - 目标：`utils/focus.pickDef` 净伤害，奶妈优先；3 个以上在 2 格内用 rangedMassAttack；快死的目标坚持打。
 - 走位：近战保持 3 格风筝（避沼泽、不来回掉头），纯远程直接压到 3 格。
 - 打不过（`focus.canWin` 判负）：`threat.request2` 申请第二个防守兵，先退到集合点等队友再一起上。
-- 只打 NPC（owner Invader），不打玩家；不碰 Invader core（FSM WAIT core）。
+- 只打 NPC（owner Invader），不打玩家；**Invader core 用近战 buster 打掉**（deploy 46f1804 / #9；不再 WAIT core）。
 
 ## 回滚开关（控制台，无需部署）
 - `Memory.remotes = Memory.remotes || {}; Memory.remotes.W45N7 = { off: true }` → 不再出生，现有 creep 回家干活。
@@ -30,3 +30,20 @@
 
 ## 02:4x (2026-10-22) rhauler birth spacing
 5 rhaulers, 1500 TTL -> ideal spacing 300t. Fixed `rhGap: 60` let post-raid respawns stay bunched (TTLs 955/895/835/752/684 at t83789510), giving a ~4k e spawn burst every lifetime and a home storage floor dip. `rhGapSteady: 240` (spawn.js remoteSpawn) applies when <=1 hauler is missing; >=2 missing falls back to 60 for fast refill. Expected to converge within one lifetime (~1500t, ~1.8 h).
+
+
+## 05:4x (2026-10-30) post-core reclaim — Invader reservation + attackController
+
+**Live after core kill (t~83949840, ~05:40 Asia/Hong_Kong):** threat `SAFE why=killed` since 83948805; **Invader reservation still ~1.4k ticks**; container gone (`cont=null`, sites 0); rminer on stand harvest → **ERR_NOT_OWNER (-1)**; 2CLAIM reserver sat adjacent and did nothing (`never attackController`).
+
+**Also present:** abandoned `fhl` spawn at 13,10 (5k/5k). Far from source 21,16 — **ignore** (not ours, not Invader; dismantling a player structure needs Misaki). Neighbor scan shows `res:Invader`, combat 0.
+
+**Findings:**
+1. Screeps docs / wiki: lesser Invader cores reserve with priority; after the core dies the **reservation timer still decays at 1/tick**. Harvest stays blocked until it hits 0 (or is attacked).
+2. `attackController`: −1 reservation tick per CLAIM part per tick (plus natural −1). One 2CLAIM reserver → ~3/tick clear (~460 t from 1.4k ≈ **~30–35 min** Asia/Hong_Kong vs ~1.6 h wait-out). Two adjacent → faster. Energy already spent on the bodies.
+3. Overmind `ReservingOverlord` only `Tasks.reserve` / sign — no attackController on foreign res. TooAngel / conquest bots do attackController when reclaiming. Our **reserve7 (W47N7)** correctly keeps `NEVER attackController` (BustJetter neighbour). Home remotes may clear **Invader only**.
+4. Container: rminer rebuilds once we own the reservation again (site at 21,15; avoid BustJetter 22,15). Haulers stay gated on container ≥60%.
+
+**Shipped:** `reserverAct` — `attackInvader` when `reservation.username === 'Invader'`, else `wait` on any other foreign (players), `reserve` when ours/none. `tests/reserver_invader.js`. reserve7 unchanged.
+
+**Patrol watch:** W45N7 Invader `ticksToEnd` falling ≥2–3/tick while a reserver is adjacent; harvest OK after 0; container site then hits; delivered resumes ~10 e/t. Kill switch: restore the old early-return on foreign reservation in `roles/remote.js`.
