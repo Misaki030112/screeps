@@ -18,10 +18,14 @@ function buildZones(room) {
   // fillers[0..3]=stamp A, [4..7]=B, [8..11]=C; manager with A (spawn side)
   const A = P.pos.fillers.slice(0, 4).concat([P.pos.manager]);
   const B = P.pos.fillers.slice(4); // B+C
+  // Escape hatch (patrol 2026-10-29 20:25): filler stops 31,33 and 31,35 became fully enclosed by
+  // extensions+Spawn3+link after RCL7 stamp growth. Queens parked there (range-0) could transfer but
+  // PathFinder could not leave (all 8 neighbours cost 255) -> spawn drained to ~0 with 18k in storage.
+  const hasEscape = (x, y) => N8.some(([dx, dy]) => walkable(x + dx, y + dy));
   const mk = (tiles) => {
     const st = [], covered = new Set();
     for (const [x, y] of tiles) {
-      if (!walkable(x, y)) continue;
+      if (!walkable(x, y) || !hasEscape(x, y)) continue;
       const ids = [];
       for (const [dx, dy] of N8) {
         const e = at[(x + dx) * 50 + y + dy];
@@ -212,12 +216,26 @@ function parkOrDump(c, room, P, st) {
   const [x, y] = P.pos.fillers[0]; move.to(c, x, y, 0); require('../utils/trace').why(c, 'f');
 }
 
-module.exports = { fillRoute, storageFloor, buildZones, zoneDeficit, myStops, run(c) {
+function canEscape(c) {
+  const at = rc.get(c.room).at;
+  const walkable = (x, y) => { const e = at[x * 50 + y]; return !e || Object.keys(e).every(t => t === 'road' || t === 'container' || t === 'rampart'); };
+  return N8.some(([dx, dy]) => walkable(c.pos.x + dx, c.pos.y + dy));
+}
+function freeTrapped(c) {
+  // Empty + walled in: recycle at adjacent spawn (returns energy) else suicide. Never leave a queen stuck with spawn dry.
+  if ((c.store[RESOURCE_ENERGY] || 0) > 0) return false;
+  if (canEscape(c)) return false;
+  const sp = c.pos.findInRange(FIND_MY_SPAWNS, 1)[0];
+  if (sp) { sp.recycleCreep(c); return true; }
+  c.suicide(); return true;
+}
+module.exports = { fillRoute, storageFloor, buildZones, zoneDeficit, myStops, canEscape, run(c) {
   const room = c.room, P = plan.get(room.name);
   room.memory.queenAlive = Game.time;
   if (c.memory.working && c.store[RESOURCE_ENERGY] === 0) c.memory.working = false;
   if (!c.memory.working && c.store.getFreeCapacity() === 0) c.memory.working = true;
   if (!c.memory.working && require('../utils/salvage').retire(c, 25)) return;
+  if (freeTrapped(c)) return;
 
   const st = myStops(c, room);
   const deficit = zoneDeficit(st);
