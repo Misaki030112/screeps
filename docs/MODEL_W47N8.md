@@ -99,3 +99,36 @@ read 6W miners waiting for regen as lost harvest: 35.2 → 38.2 for the same win
 **Verify (w8patrol):** after each replacement, W47N7 source energy at ttr < 30 should be ~0; `Memory.ops.w8rlead` ~45–75; no rminer gap.
 Remaining levers in order: (1) roads finish → build 2.5 → ~0.5 by itself; (2) hauler sizing at natural replacement (~+1.3, roadmap);
 (3) RCL5 links (non-divertible ctl feed). With (1)+fix: ~24–25 e/t → RCL5 ~10-20 09:30–10:30 UTC+8 (ideal 9.3 h).
+
+## 2026-10-29 11:4x strategy review: RCL6→RCL7 upgrade ~24 vs ideal ~30
+
+**Question:** why is W47N8 stuck at ~23–24 e/t while the link-aware model says ~30, and what safe lever closes the gap?
+
+**Live (tick ~83935480, 6 h window ~1970 t, cov 0.55):** RCL6 2.605M/3.645M, storage ~2.5k, ctl cont 13,26 ~1.1k, towers 2, sites 0.
+Links **live and transferring**: A 26,12 → ctl 13,25 (both hold energy; hauler pickup at A = 0, link-meter artifact).
+| stage | ideal (linkA→ctl) | actual |
+|---|---|---|
+| harvest (4 sources) | 40 | 38.5 |
+| upgrade | 30.2 | 23.8 |
+| upkeep (excl. home-paid reserve7) | ~6.5 | 10.8 |
+| build/repair | ~0.7 | 1.1 |
+| waste_other (decay/tower/stock) | ~1.7 | 2.8 |
+| local CARRY need / live | **9** (B only) | **30** (3×10C) |
+| remote CARRY need / live | 48.6 | 60 |
+| wupgrader waiting_feed | — | 0.15 |
+| delivered haulers ctl / hub | 75/25 mix | 15.5 / 18.1 |
+
+**Gap ~6.4 e/t, accounted for:**
+1. **waste_other ~2.8–3.4** — tower rampHold / road repair + container stock swings under the north-seal defense posture. By design at RCL6 with wall 300k; not a routing bug. TooAngel feeds the controller from storage beside the upgrader; we already have the Screeps-docs pattern (source-A link → ctl link), so architecture is fine.
+2. **Fleet upkeep +2–3 vs ideal** — local haul stuck at 3×10C (HMAX floor 3) even though link-era need is ~9 CARRY + ~10 refill ≈ 2 haulers; remote 60 vs 48.6. Mild.
+3. **waiting_feed 15%** — ctl is fed (cont ~1k, link draining) but not saturated; remotes still dump hub-first (hub delivered 18 > ctl 15). Not starving; hub→ctl link (gated `HUB_LINK=false`) stays optional.
+
+**Root cause found (observability / spawn feed):** `tools/model_w8.py` wrote `Memory.ops.w8model.lcarry` from the **no-link** flow F4 (~22, still prices A haul) even after A→ctl links existed. Spawn `HMAX = max(3, min(4, ceil((lcarry+10)/10)+1))` therefore never saw the link-era need. Fixed this review: when both links are live, Memory gets `lcarry≈9`, `upw≈31`, `links:true` from the link-aware flow; Grafana `w8.upgrade` ideal also switches. **HMAX floor of 3 is unchanged** (game code) — dropping it to 2 when `linkAt(A)` would save ~0.5 e/t; propose for a later patrol with a unit test, not shipped here.
+
+**Plan recalibration (no Misaki decision):**
+- Steady RCL6 upgrade under current defense: **~23–24 e/t** (not 30). Trimmed (HMAX→2 + quieter waste): ~26. Ideal 30 only with zero tower/stock waste.
+- Remaining 1.04M at 23.8 e/t × 4.36 s/t ≈ **53 h → ~2026-10-31 16:00 UTC+8**; at 26 ≈ 48 h; at 30 ≈ 42 h.
+- RCL7 gate unchanged: layoutRun places tower#3 (22,7) + spawn#2 (33,30) automatically; no early place (ERR_RCL_NOT_ENOUGH confirmed).
+- Do **not** enable `HUB_LINK` / minerals yet; waiting_feed is mild and storage is thin (~2k).
+
+**Verify (next model_w8 / w8patrol):** `Memory.ops.w8model.links === true` and `lcarry` ~9; live local CARRY still 30 until HMAX floor drops; upgrade stays ~23–25 while waste_other ~3.

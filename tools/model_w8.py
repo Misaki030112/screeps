@@ -17,7 +17,14 @@ COST = {'move': 50, 'work': 100, 'carry': 50, 'attack': 80, 'ranged_attack': 150
 CONG, LINK_LOSS = 1.10, 0.03
 CTL_CONT, HUB, SPAWN = (13, 26), (33, 33), (15, 18)
 SRC = {'A': (ROOM, (26, 11)), 'B': (ROOM, (11, 43)), 'R1': (REM, (18, 17)), 'R2': (REM, (31, 34))}
-PROG = {4: 405000, 5: 1215000}
+# Live link tiles (config CTL_LINK 13,25 + source-A 26,12). When both exist, Memory.ops.w8model
+# must use the link-aware flow (A carry=0), not the no-link F4 (which still prices A haul).
+LINK_A, LINK_CTL = (26, 12), (13, 25)
+
+def live_links(objs):
+    tiles = {(x['x'], x['y']) for x in objs.get(ROOM, {}).get('objects', []) if x.get('type') == 'link'}
+    return LINK_A in tiles and LINK_CTL in tiles
+PROG = {4: 405000, 5: 1215000, 6: 3645000, 7: 10935000}
 
 def terrain(room):
     p = os.path.join(ROOT, 'data', f'terrain_{room}.txt')
@@ -180,23 +187,30 @@ def main():
     M.update(flow_rcl4=F4, flow_rcl5=best5, live=live, stores=st)
     if not a.no_db:
         A = actuals(a.hours); M['actual'] = A
-    rem = PROG.get(M['rcl'], 0) - M['progress']
+    rem = max(0, PROG.get(M['rcl'], 0) - M['progress'])
     tick_s = (M.get('actual') or {}).get('tick_s') or 4.2
-    M['eta_rcl5_h'] = {'ideal': round(rem / F4['upgrade'] * tick_s / 3600, 1), 'actual': round(rem / M['actual']['upgrade'] * tick_s / 3600, 1) if M.get('actual', {}).get('upgrade') else None}
+    # eta_rcl5_h kept as key for Grafana; at RCL6+ it is hours to the next level (PROG[rcl]).
+    ideal_up = (best5['upgrade'] if best5 and live_links(objs) else F4['upgrade']) if rem else None
+    M['eta_rcl5_h'] = {'ideal': round(rem / ideal_up * tick_s / 3600, 1) if ideal_up else None,
+                       'actual': round(rem / M['actual']['upgrade'] * tick_s / 3600, 1) if M.get('actual', {}).get('upgrade') and rem else None}
     os.makedirs(os.path.join(ROOT, 'metrics'), exist_ok=True)
     json.dump(M, open(os.path.join(ROOT, 'metrics', 'model_w47n8.json'), 'w'), indent=1, default=str)
     A = M.get('actual', {})
     P = A.get('pickup', {})
-    rows = [('w8.upgrade', F4['upgrade'], A.get('upgrade'), 'e/t'), ('w8.net', F4['net'], None, 'e/t'),
-            ('w8.carry_local', F4['carry_local'], live['carry_local'], 'CARRY'), ('w8.carry_remote', F4['carry_remote'], live['carry_remote'], 'CARRY'),
-            ('w8.upgrader_work', F4['upgrader_work'], live['upgrader_work'], 'WORK'), ('w8.upgrade_rcl5', best5['upgrade'], None, 'e/t'),
+    # 2026-10-29 11:4x strategy: when A→ctl links are live, spawn must see link-era lcarry (~9, B only),
+    # not F4's no-link ~22 (A haul still priced). Ideal upgrade/Grafana row also switches to best5.
+    use = best5 if (best5 and live_links(objs)) else F4
+    rows = [('w8.upgrade', use['upgrade'], A.get('upgrade'), 'e/t'), ('w8.net', use['net'], None, 'e/t'),
+            ('w8.carry_local', use['carry_local'], live['carry_local'], 'CARRY'), ('w8.carry_remote', use['carry_remote'], live['carry_remote'], 'CARRY'),
+            ('w8.upgrader_work', use['upgrader_work'], live['upgrader_work'], 'WORK'), ('w8.upgrade_rcl5', best5['upgrade'], None, 'e/t'),
             ('w8.eta_rcl5_h', M['eta_rcl5_h']['ideal'], M['eta_rcl5_h']['actual'], 'h')]
-    for k in SRC: rows.append((f'w8.src_{k}', F4['sources'][k]['net'] + F4['sources'][k]['hauler_e'] + F4['sources'][k]['miner_e'], P.get(k), 'e/t'))
+    for k in SRC: rows.append((f'w8.src_{k}', use['sources'][k]['net'] + use['sources'][k]['hauler_e'] + use['sources'][k]['miner_e'], P.get(k), 'e/t'))
     if not a.no_db:
         write_db(rows)
         # feed the spawn rules (src/rooms/w47n8/index.js): remote CARRY need and upgrader WORK cap; read back (Misaki: verify writes)
         import subprocess
-        v = json.dumps({'rcarry': round(F4['carry_remote']), 'lcarry': round(F4['carry_local']), 'upw': F4['upgrader_work'], 't': None})
+        v = json.dumps({'rcarry': round(use['carry_remote']), 'lcarry': round(use['carry_local']), 'upw': use['upgrader_work'],
+                        'links': bool(use is best5), 't': None})
         expr = f"(Memory.ops.w8model=Object.assign({v},{{t:Game.time}}),JSON.stringify(Memory.ops.w8model))"
         r = subprocess.run([sys.executable, os.path.join(ROOT, 'tools', 'q.py'), expr], capture_output=True, text=True, timeout=60)
         print(' Memory.ops.w8model <-', (r.stdout or r.stderr).strip()[:200])

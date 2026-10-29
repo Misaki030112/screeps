@@ -1,7 +1,13 @@
 # Roadmap (priority order) — see docs/STRATEGY.md for phases
 
-Novice zone ends **2026-10-28 03:33 UTC+8**. Defence timeline: `docs/DEFENSE_NOVICE.md` (2026-10-16); detail `docs/DEFENSE.md` / geometry `docs/DEFENSE_PLAN.md`.
+Novice zone ends **2026-10-28 03:33 UTC+8** (past as of 10-29). Defence timeline: `docs/DEFENSE_NOVICE.md` (2026-10-16); detail `docs/DEFENSE.md` / geometry `docs/DEFENSE_PLAN.md`.
 **Safe mode: NEVER auto-activate** — alert Misaki.
+
+## 2026-10-29 11:4x strategy review: W47N8 RCL6→RCL7 upgrade bottleneck (`docs/MODEL_W47N8.md` "11:4x")
+- **Found:** live upgrade ~23.8 vs link-aware ideal ~30.2 (gap ~6.4). Harvest 38.5/40 is fine; A→ctl links are live. Gap = waste_other ~2.8–3.4 (tower/stock, by design) + fleet upkeep ~+2–3 (local HMAX floor 3 keeps 30 CARRY vs link-era need 9) + mild waiting_feed 15%. Not a missing hub→ctl link.
+- **Shipped (tools only, no game deploy):** `tools/model_w8.py` now detects live A/CTL links and writes `Memory.ops.w8model = {lcarry≈9, rcarry≈49, upw≈31, links:true}`; Grafana ideal uses the link-aware flow; `PROG` includes RCL6/7 so ETA to next level is positive (~42 h ideal / ~53 h actual).
+- **Propose (not shipped):** drop W47N8 `HMAX` floor from 3→2 when `linkAt(SOURCES[0].link)` — ~0.5 e/t; needs a unit test. Keep `HUB_LINK=false` / `RCL6_MINERALS=false`.
+- **Plan check (t~83935480):** home RCL7 383k/10.9M, storage oscillating at 15k floor (defLow; remotes just recovered from WAIT + W45N7 Invader). W47N8 RCL6 2.605M/3.645M → RCL7 ~10-31 16:00 UTC+8 at 23.8 e/t. Tower#3/spawn#2 wait RCL7. Novice ended 10-28. CPU ~11–13, bucket 10k. No Misaki decision.
 
 ## 2026-10-22 11:4x strategy review: W47N8 raid-proof settled, home RCL7 now lands at novice end (`docs/DEFENDER.md` "11:4x")
 - **Settled (05:4x open item):** W47N8 invader counter reset 120.6k -> 1.8k between 06:00 and 06:30 with 0 hostiles in 40 room_stats samples and no alert. The 10-21 12:34 raid was a one-off; W47N8 joins home and W47N7 on the raid-proof list. Re-open only if W47N9 or W48N8 loses its owner. W45N7 raid due ~11:30-16:30 (88.4k), normal on-demand response.
