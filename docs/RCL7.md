@@ -55,3 +55,47 @@ mineralRun). Mineral mining would have stopped silently at RCL7 (mminer spawns o
   held true, errors 0). `tests/queen_floor_rcl7.js` fails on the old code (2/6).
 - **RCL7 patrol watch (added):** storage must stay >= 15k after the fund runs out; builders on step 2 while storage > 17k; tower 3 built
   in the first site batch.
+
+## 2026-10-30 02:4x — STATIONARY_FILL readiness at home RCL7 (keep queens)
+
+**Question:** flip `plan.STATIONARY_FILL` to true now that home is RCL7 with 4 links?
+
+**Answer: NO.** Keep dual-queen regime through walls→300k and W47N8 RCL7. Re-evaluate at RCL8 (links l5/l6) or after an explicit hybrid design (manager + keep queens).
+
+### Live (t83947497, Asia/Hong_Kong 02:50)
+- `STATIONARY_FILL=false`; dual queens; 1 home hauler; manager 0; fillers 0.
+- Links (LINK_PLAN A): hub 37,29 (799), ctl 30,31 (776), srcA 30,11 (800), **l4 stamp-B 32,34 (0)** — unused under queens.
+- Storage ~11k (fundSpend FLOOR 5k / reserveE 15k tug); walls.fund ~42.9k; wall min ~197k → 300k.
+
+### What enabling does today (`spawn.targets` + `plan.js`)
+| Effect | Detail |
+|---|---|
+| `fillersOn` | `STATIONARY_FILL && rcl>=5 && links>=2` → **true** |
+| Queens | `T.queen = 0` — both queens recycled; **storage→ctl ferry dies** unless manager+ctl link path already carries it |
+| Fillers | `T.filler = 4` — assigned to first 4 `positions.fillers` (stamp **A** only: 34,25/34,27/36,25/36,27) |
+| Manager | `T.manager = 1` at 36,30 |
+| Hauler | with 4 links + flag on → `T.hauler = 0` (mineral run disappears) |
+| Link plan | drops LINK_PLAN override; uses v2 json links (35,26 / 30,11 / 30,31 / …) — **site churn risk** vs live hub/ctl coords |
+| Stamp containers | RCL7 K-tile 30,27 would re-enter the plan |
+
+### Gaps vs a working stationary network
+1. **Coverage:** 12 filler stand tiles across stamps A/B/C; code only spawns **4** (stamp A). Stamps B/C (20+ extensions + tower 2 / spawn 2) lose queen service with nothing to replace it — same G1–G3 failure mode as docs/RCL5.md.
+2. **Stamp links incomplete until RCL8:** LINK_PLAN puts stamp-C link **l5 30,25** and stamp-A link **l6 35,26** at RCL8. Live l4@32,34 is stamp B only and sits at E=0 under queens.
+3. **Ferry:** queens are still the only reliable storage→ctl path under fundSpend / defLow. Manager alone does not inherit the queen standby ferry.
+4. **Overmind / TooAngel:** Hatchery keeps **mobile queens** (QueenOverlord) through mid-game; bunker “manager” is RCL8 logistics, not a drop-in for killing queens at first RCL7. Stationary fast-fillers appear in bunker designs with **per-stamp** link+container pairs and enough CARRY bodies — we have neither the body count nor the link set yet.
+5. **Stand-tile ramparts:** DEFENSE_PLAN 10-15 left 13 empty stands decaying while flag off. Re-eval at RCL7: **still leave decaying** (flag stays off). Revisit only when STATIONARY_FILL actually turns on.
+
+### Preconditions to flip (checklist — all required)
+- [ ] `T.filler` covers all served stamps (or hybrid: keep ≥1 queen for B/C + ferry)
+- [ ] Stamp A + C filler links live (RCL8 l5/l6) **or** redesigned LINK_PLAN that does not thrash hub/ctl
+- [ ] Manager (or equivalent) proven to replace storage→ctl ferry under fundSpend / reserveE
+- [ ] Mineral hauler path preserved (or mminer→terminal transfer coded) so `T.hauler` can go 0 safely
+- [ ] Gate test + sim: spawn refill ≥90%, upgrade not collapsing to ~10 e/t, no link site thrash
+- [ ] Misaki not required for the flip once checklist green (standing “continue roadmap”); still **propose** if hybrid changes spawn economy materially
+
+### Reprioritise (unchanged order, stationary deferred)
+1. Home walls min → **300k** (fundSpend; ETA ~12–18 h Asia/Hong_Kong from ~02:50)
+2. W47N8 RCL7 (~**2026-10-31 21:45** Asia/Hong_Kong at ~22 e/t) → tower3@22,7 + spawn2@33,30; factory OFF
+3. Lab ramparts → raise toward RCL targets (sites already placed 23:4x; live ~423k covering 3 labs)
+4. Colony storage ≥20k → minerals + K send; then KO≥900 → boost
+5. Barriers →1M; **then** STATIONARY_FILL / hybrid at RCL8

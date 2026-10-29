@@ -244,6 +244,7 @@ The 13 v2 ramparts on filler/manager stand tiles ((34,25) (34,27) (36,25) (36,27
   an approved defense gate, or a stand tile only when STATIONARY_FILL is on). Not dismantled: they decay out in ~22k ticks.
 - Saves ~0.39 e/t upkeep plus ~4.4k (RCL5 target) / ~30k (RCL6 target) growth. Also blocks the later empty-tile v2 ramparts.
 - **Re-evaluate at RCL7** (or whenever STATIONARY_FILL is re-enabled).
+- **2026-10-30 02:4x re-eval (home now RCL7):** STATIONARY_FILL stays **false** (`docs/RCL7.md`). Stand-tile ramparts still cover nothing useful — **continue leave-to-decay**, do not repair, do not dismantle. Next re-eval when the STATIONARY_FILL checklist in `docs/RCL7.md` is green (likely RCL8).
 
 
 ## Implementation (2026-10-16, `src/managers/walls.js`, inert until phase `build`)

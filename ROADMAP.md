@@ -3,6 +3,13 @@
 Novice zone ends **2026-10-28 03:33 UTC+8** (past as of 10-29). Defence timeline: `docs/DEFENSE_NOVICE.md` (2026-10-16); detail `docs/DEFENSE.md` / geometry `docs/DEFENSE_PLAN.md`.
 **Safe mode: NEVER auto-activate** — alert Misaki.
 
+## 2026-10-30 02:4x strategy review: STATIONARY_FILL readiness at home RCL7 (keep queens)
+- **Chose:** whether to enable `plan.STATIONARY_FILL` now (home RCL7, 4 links live) vs leave dual queens — open since RCL5 link-plan A and DEFENSE_PLAN stand-tile re-eval “at RCL7”.
+- **Findings (`docs/RCL7.md` 02:4x):** (1) Enabling sets `T.queen=0`, `T.filler=4` (stamp **A** only of 12 stands), `T.manager=1`, `T.hauler=0` at 4 links — stamps B/C + storage→ctl ferry drop (RCL5 G1–G3). (2) Stamp A/C filler links are RCL8 (`l6 35,26` / `l5 30,25`); live l4@32,34 is stamp B and sits at E=0 under queens. (3) Flipping also swaps LINK_PLAN → v2 json links (hub/ctl thrash risk). (4) Overmind keeps mobile queens through mid-game; bunker manager is RCL8, not a queen replacement at first RCL7. (5) Lab ramparts from 23:4x succeeded (~423k); walls 197k→300k fundSpend ~12–18 h; W47N8 RCL7 ~10-31 21:45 Asia/Hong_Kong.
+- **Shipped:** docs + `tests/stationary_fill_gate.js` (flag stays false; queen regime targets). **No game deploy / no flag flip.**
+- **Reprioritise:** (1) home walls→300k fundSpend; (2) W47N8 RCL7 → tower3+spawn2 (factory OFF); (3) raise lab ramps; (4) colony storage≥20k → minerals+K; (5) KO≥900 → boost; (6) barriers→1M; (7) **STATIONARY_FILL / hybrid only at RCL8** after checklist in `docs/RCL7.md`. Defend-only W47N9. Stand-tile ramparts: still leave decaying.
+- **Plan check (t83947497):** home RCL7 ~566k/10.9M stor~11k walls~197k fund~42.9k labs ramp~423k; W47N8 2.848M/3.645M (~43h) towers 2; CPU~10–14 bucket 10k; remotes Invader WAIT foes 0; deploy 8073dbb; GCL4. No major Misaki decision.
+
 ## 2026-10-29 23:4x strategy review: dual-room fortification hardening (lab ramparts)
 - **Chose:** fortification hardening across W46N8+W47N8 (Misaki minerals+fortify ask; distinct from 17:4x fundSpend mechanism and 20:4x factory gate).
 - **Findings (`docs/MINERAL_DEFENSE_ROADMAP.md` §2):** (1) **3 home labs naked at 500 hits** — layout RCL6 listed labs but only terminal rampart; boost pipeline one WORK from gone. (2) Overmind RCL7 barrierHits=1M / fortifyDutyThreshold=500k vs our STEPS+50k fund. (3) W47N8 GATE@29,3 already **300301**; patrol "~20k GATE" was spawn-slot `GATE_TOWER` floor misread. (4) Walls min 174401→300k via fundSpend slower than 17:4x 2–4h (~2 e/t observed → ~12–30 h). (5) Soft-target matrix: spawn/tower/storage/terminal covered; labs were the gap; extractor outside seal OK.
