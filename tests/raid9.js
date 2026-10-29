@@ -11,10 +11,12 @@ const road = { id: 'R', pos: P(25, 44), structureType: 'road', hits: 1000 };
 const feeder = { id: 'F', pos: P(35, 30), energy: 800, hits: 1700 };
 const emptyNearTower = { id: 'X', pos: P(33, 28), energy: 0, hits: 100 };
 const farCarrier = { id: 'C', pos: P(10, 10), energy: 800, hits: 100 };
-// 1) energy-carrying creep within 3 of a tower beats spawn
-assert.deepStrictEqual(R.pick(me, { creeps: [farCarrier, emptyNearTower, feeder], structs: [tower, spawn, ext, road] }), { id: 'F', pri: 1 });
-// 2) no feeder -> spawn
-assert.deepStrictEqual(R.pick(me, { creeps: [farCarrier, emptyNearTower], structs: [tower, spawn, ext, road] }), { id: 'S', pri: 2 });
+// 1) spawn beats tower-feeder (do not chase west while spawn stands)
+assert.deepStrictEqual(R.pick(me, { creeps: [farCarrier, emptyNearTower, feeder], structs: [tower, spawn, ext, road] }), { id: 'S', pri: 1 });
+// 2) no feeder still spawn
+assert.deepStrictEqual(R.pick(me, { creeps: [farCarrier, emptyNearTower], structs: [tower, spawn, ext, road] }), { id: 'S', pri: 1 });
+// 2b) spawn dead -> feeder becomes priority
+assert.deepStrictEqual(R.pick(me, { creeps: [farCarrier, emptyNearTower, feeder], structs: [tower, ext, road] }), { id: 'F', pri: 2 });
 // 3) spawn dead -> creep near a structure close to us first, else structures (tower first), roads ignored
 const worker = { id: 'W', pos: P(21, 41), energy: 0, hits: 500 };
 assert.deepStrictEqual(R.pick(P(22, 42), { creeps: [worker], structs: [tower, ext, road] }), { id: 'W', pri: 3 });
@@ -50,7 +52,7 @@ console.log('raid9 ok');
 // formation: melee k0/k2 front row y=1, ranged k1/k3 behind y=2
 assert.deepStrictEqual([0,1,2,3].map(R.slotOf), [[30,1],[30,2],[31,1],[31,2]]);
 assert.deepStrictEqual(R.pick(me, { creeps: [{ id: 'D', pos: P(25, 43), armed: true, hits: 500 }], structs: [spawn] }), { id: 'D', pri: 1 });
-assert.deepStrictEqual(R.pick(me, { creeps: [{ id: 'D', pos: P(25, 30), armed: true, hits: 500 }], structs: [spawn] }), { id: 'S', pri: 2 });
+assert.deepStrictEqual(R.pick(me, { creeps: [{ id: 'D', pos: P(25, 30), armed: true, hits: 500 }], structs: [spawn] }), { id: 'S', pri: 1 });
 // garrison (after W47N9 safe mode): melee hug wall row y=4, ranged y=5, gate 29,3/29,4 and road 28,4 free, all distinct
 { const gs = [0, 1, 2, 3].map(R.gSlotOf);
   assert.deepStrictEqual(gs, [[30, 4], [30, 5], [31, 4], [31, 5]]);

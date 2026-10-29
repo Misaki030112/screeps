@@ -2,7 +2,8 @@
 // Spawn from HOME W46N8 (2 melee + 2 ranged, storage floor ignored), walk W46N8 west 0,23 -> W47N8 rally 30,1/31,1/30,2/31,2,
 // all 4 present -> enter W47N9 together (melee first). One-shot: never respawned.
 // Retreat: (1) W47N9 safe mode, (2) overrun = hostile ATTACK+RA parts >=12, (3) last raider alive after n>=4, (4) manual abort/garrison.
-// Targets each tick: (1) hostile creeps carrying energy within 3 of a tower, (2) spawn, (3) structures (+ creeps near structures), rest.
+// Targets each tick: (1) adjacent armed, (2) spawn (rampart on tile eats hits), (3) tower-feeders only after spawn dead, (4) structures (+ creeps near), rest.
+// Misaki 10-29 live: do NOT chase tower feeders west while spawn still stands — hard-focus spawn rampart.
 // Restart: replace Memory.ops.w47n9 with { on:true, n:0 } — leftover safe/garrison from a prior wave forces garrison.
 const MV = require('../utils/move');
 const TARGET = 'W47N9', STAGE = 'W47N8', HOME = 'W46N8';
@@ -20,14 +21,16 @@ const SKIP = new Set(['road', 'container', 'controller', 'constructedWall', 'ram
 
 // pure: world = { creeps:[{id,pos,energy,hits}], structs:[{id,pos,structureType,hits}] }; returns { id, pri } or null
 function pick(me, w) {
-  const towers = w.structs.filter(s => s.structureType === 'tower');
-  const feeders = w.creeps.filter(h => h.energy > 0 && towers.some(t => rng(t.pos, h.pos) <= 3));
-  if (feeders.length) return { id: _.min(feeders, h => rng(me, h.pos) * 1e5 + h.hits).id, pri: 1 };
-  // armed defenders within 3 threaten the squad: kill them first (small, quick), weakest first
+  // armed defenders within 3 threaten the squad: peel them, weakest first (do not chase farther)
   const armed = w.creeps.filter(h => h.armed && rng(me, h.pos) <= 3);
   if (armed.length) return { id: _.min(armed, h => h.hits).id, pri: 1 };
+  // primary assault: spawn — attack() on spawn damages covering rampart on the same tile
   const sp = w.structs.filter(s => s.structureType === 'spawn');
-  if (sp.length) return { id: _.min(sp, s => rng(me, s.pos)).id, pri: 2 };
+  if (sp.length) return { id: _.min(sp, s => rng(me, s.pos)).id, pri: 1 };
+  // only after spawn is gone: interrupt tower refill
+  const towers = w.structs.filter(s => s.structureType === 'tower');
+  const feeders = w.creeps.filter(h => h.energy > 0 && towers.some(t => rng(t.pos, h.pos) <= 3));
+  if (feeders.length) return { id: _.min(feeders, h => rng(me, h.pos) * 1e5 + h.hits).id, pri: 2 };
   const st = w.structs.filter(s => !SKIP.has(s.structureType));
   const near = w.creeps.filter(h => st.some(s => rng(s.pos, h.pos) <= 2));
   // creeps near structures interfere (repair/refill), kill them when close; else nearest structure (towers first)
@@ -163,7 +166,7 @@ function run(c) {
     const hp = c.getActiveBodyparts(HEAL) ? healPlan(c, squad(c)) : null;
     strike(c, t, w, hp);
     if (c.pos.y === 49) return c.move(TOP);
-    // badly hurt ally out of reach and no feeder/spawn duty pinning us: go to them
+    // badly hurt ally out of reach and no spawn/feeder duty pinning us: go to them
     if (hp && hp.mode === 'far' && hp.ratio < HEAL_URGENT && !(p && p.pri <= 2)) return c.moveTo(hp.pos, { range: 1, reusePath: 2, maxRooms: 1 });
     if (!t) return;
     const r = c.getActiveBodyparts(ATTACK) ? 1 : (p.pri === 1 || p.pri === 4 ? 3 : 2);
