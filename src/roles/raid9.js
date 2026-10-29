@@ -1,53 +1,59 @@
-// W47N9 raid (Misaki 2026-10-21 probe; 2026-10-29 flatten-or-burn-SM). Memory.ops.w47n9 = { on, n, go, safe, safeUntil, flee, garrison }.
-// Spawn from HOME W46N8 (2 melee + 2 ranged, storage floor ignored), walk W46N8 west 0,23 -> W47N8 rally 30,1/31,1/30,2/31,2,
-// all 4 present -> enter W47N9 together (melee first). One-shot: never respawned.
-// Retreat: (1) W47N9 safe mode, (2) overrun = hostile ATTACK+RA parts >=12, (3) last raider alive after n>=4, (4) manual abort/garrison.
-// Targets each tick: (1) spawn (rampart on tile eats hits; siege path ignores destructibles), (2) feeders/armed after spawn dead, (3) structures (+ creeps near), rest.
-// Misaki 10-29 live: hard-focus spawn rampart — no feeder/armed path diversions while spawn stands.
-// Restart: replace Memory.ops.w47n9 with { on:true, n:0 } — leftover safe/garrison from a prior wave forces garrison.
+// W47N9 sustained assault (Misaki 2026-10-29): breach@(39,42) → towers → creeps → structures; force SM.
+// Memory.ops.w47n9 = { on, n, go, safe, safeUntil, flee, garrison }.
+// Continuous waves: while on && !safe/garrison/flee, keep WAVE living (2 melee + 2 ranged + 2 heal) from HOME and colony STAGE.
+// Do NOT auto-activate our safe mode. Manual abort: tools/raid9.py abort.
 const MV = require('../utils/move');
 const TARGET = 'W47N9', STAGE = 'W47N8', HOME = 'W46N8';
-const RALLY = [[30, 1], [31, 1], [30, 2], [31, 2]];
+const WAVE = 6; // 2m + 2r + 2h
+const NEED = { m: 2, r: 2, h: 2 };
+// Staging near SE approach: north exits ~x38–41 → enter south of W47N9, push to breach 39,42
+const RALLY = {
+  m: [[38, 1], [39, 1]],
+  r: [[38, 2], [39, 2]],
+  h: [[40, 2], [41, 2]],
+};
+const BREACH = { x: 39, y: 42 };
 const MELEE = () => [].concat(Array(2).fill(TOUGH), Array(16).fill(ATTACK), Array(18).fill(MOVE)); // 2200
 const RANGED = () => [].concat(Array(10).fill(RANGED_ATTACK), Array(11).fill(MOVE), [HEAL]);       // 2300
-const KINDS = ['m', 'r', 'm', 'r'];
-// formation (Misaki 14:1x): melee front row y=1 (nearest north exit), ranged behind y=2
-const slotOf = k => (k | 0) % 2 === 0 ? RALLY[((k | 0) >> 1) % 2] : RALLY[2 + (((k | 0) >> 1) % 2)];
-const isMelee = x => ((x.memory.k | 0) % 2) === 0;
-const ND = { noDetour: true }; // swap through our own creeps, never deadlock
+const HEALER = () => [].concat(Array(7).fill(HEAL), Array(7).fill(MOVE));                         // 2100 (colony RCL6 cap)
+const BODY = { m: MELEE, r: RANGED, h: HEALER };
+const ND = { noDetour: true };
 const M = () => { const o = Memory.ops || (Memory.ops = {}); return o.w47n9 || (o.w47n9 = {}); };
 const rng = (a, b) => Math.max(Math.abs(a.x - b.x), Math.abs(a.y - b.y));
 const SKIP = new Set(['road', 'container', 'controller', 'constructedWall', 'rampart', 'extractor', 'keeperLair', 'portal', 'source', 'mineral']);
+const isMelee = x => x.memory.kind === 'm';
+const isHeal = x => x.memory.kind === 'h';
+const slotOf = (k, kind) => {
+  const row = RALLY[kind || 'm'] || RALLY.m;
+  const idx = (k | 0) % row.length;
+  return row[idx];
+};
+const allRaid = () => _.filter(Game.creeps, x => x.memory.role === 'raid9');
+const raidActive = P => P && P.on === true && !P.safe && !P.garrison && !P.flee && !(P.safeUntil && Game.time < P.safeUntil);
 
-// pure: world = { creeps:[{id,pos,energy,hits}], structs:[{id,pos,structureType,hits}] }; returns { id, pri } or null
+// pure: world = { creeps:[{id,pos,energy,hits,armed}], structs:[{id,pos,structureType,hits}] }
+// Priority (Misaki): (1) barrier near 39,42 (2) towers (3) hostile creeps (4) other structures
 function pick(me, w) {
-  // primary assault: spawn — attack() on spawn damages covering rampart on the same tile.
-  // Adjacent trash is peeled by strike() opportunity only — never divert path off spawn (Misaki 10-29).
-  const sp = w.structs.filter(s => s.structureType === 'spawn');
-  if (sp.length) return { id: _.min(sp, s => rng(me, s.pos)).id, pri: 1 };
-  // only after spawn is gone: interrupt tower refill
-  const towers = w.structs.filter(s => s.structureType === 'tower');
-  const feeders = w.creeps.filter(h => h.energy > 0 && towers.some(t => rng(t.pos, h.pos) <= 3));
-  if (feeders.length) return { id: _.min(feeders, h => rng(me, h.pos) * 1e5 + h.hits).id, pri: 2 };
-  // armed left near us after spawn dead: peel before other structures
-  const armed = w.creeps.filter(h => h.armed && rng(me, h.pos) <= 3);
-  if (armed.length) return { id: _.min(armed, h => h.hits).id, pri: 2 };
-  const st = w.structs.filter(s => !SKIP.has(s.structureType));
-  const near = w.creeps.filter(h => st.some(s => rng(s.pos, h.pos) <= 2));
-  // creeps near structures interfere (repair/refill), kill them when close; else nearest structure (towers first)
-  const cNear = near.filter(h => rng(me, h.pos) <= 3);
-  if (cNear.length) return { id: _.min(cNear, h => h.hits).id, pri: 3 };
-  if (st.length) return { id: _.min(st, s => rng(me, s.pos) - (s.structureType === 'tower' ? 20 : 0)).id, pri: 3 };
-  if (w.creeps.length) return { id: _.min(w.creeps, h => rng(me, h.pos)).id, pri: 4 };
+  const barriers = (w.structs || []).filter(s =>
+    (s.structureType === 'rampart' || s.structureType === 'constructedWall')
+    && rng(s.pos, BREACH) <= 2);
+  if (barriers.length) return { id: _.min(barriers, s => rng(me, s.pos) * 1e6 + s.hits).id, pri: 1 };
+  const towers = (w.structs || []).filter(s => s.structureType === 'tower');
+  if (towers.length) return { id: _.min(towers, s => rng(me, s.pos)).id, pri: 2 };
+  const creeps = w.creeps || [];
+  if (creeps.length) {
+    const armed = creeps.filter(h => h.armed);
+    const pool = armed.length ? armed : creeps;
+    return { id: _.min(pool, h => rng(me, h.pos) * 1e5 + h.hits).id, pri: 3 };
+  }
+  const st = (w.structs || []).filter(s => !SKIP.has(s.structureType));
+  if (st.length) return { id: _.min(st, s => rng(me, s.pos) - (s.structureType === 'spawn' ? 5 : 0)).id, pri: 4 };
   return null;
 }
-// pure: ranged choice given in-range enemies {pos} -> 'mass' when 3+ within 3 (or mass dmg beats single 10/part)
 function useMass(me, inR) {
   if (inR.length >= 3) return true;
   return _.sum(inR, h => { const r = rng(me, h.pos); return r <= 1 ? 10 : r === 2 ? 4 : 1; }) > 10;
 }
-// pure: heal plan. me/mates = {id,pos,hits,hitsMax}; mates excludes me. Only damaged ones count; lowest hits ratio wins (self included).
-// -> null | { id, ratio, mode: 'heal' (adjacent/self) | 'ranged' (range 2-3) | 'far' }
 const HEAL_URGENT = 0.6;
 function healPlan(me, mates) {
   const hurt = [me].concat(mates || []).filter(x => x.hits < x.hitsMax);
@@ -69,17 +75,16 @@ function strike(c, t, w, hp) {
   if (melee) {
     if (t && c.pos.isNearTo(t)) c.attack(t);
     else {
-      // siege: when primary is a structure, smash adjacent rampart/wall BEFORE peeling creeps
       const adjS = c.pos.findInRange(FIND_HOSTILE_STRUCTURES, 1).find(s => s.structureType !== STRUCTURE_CONTROLLER);
       const adjC = w.hc.find(h => c.pos.isNearTo(h));
+      // while breaching/towers: smash adjacent rampart/wall before peeling creeps
       const adj = (t && t.structureType && adjS) ? adjS : (adjC || adjS);
       if (adj) c.attack(adj);
     }
   }
   const hr = hp && c.getActiveBodyparts(HEAL) ? hp : null, ht = hr && (hr.id === c.id ? c : Game.getObjectById(hr.id));
-  // heal() never blocks ranged attacks; rangedHeal does, so only spend the tick on it when the ally is badly hurt
   if (ht && hr.mode === 'heal') c.heal(ht);
-  else if (ht && hr.mode === 'ranged' && (hr.ratio < HEAL_URGENT || !ra)) { c.rangedHeal(ht); return; }
+  else if (ht && hr.mode === 'ranged' && (hr.ratio < HEAL_URGENT || !ra || isHeal(c))) { c.rangedHeal(ht); return; }
   if (ra) {
     const inR = w.hc.filter(h => c.pos.inRangeTo(h, 3));
     if (useMass(c.pos, inR)) c.rangedMassAttack();
@@ -93,6 +98,7 @@ function exitX(room, x0) {
   for (let x = 1; x < 49; x++) if (!(T.get(x, 0) & TERRAIN_MASK_WALL) && Math.abs(x - x0) < bd) { bd = Math.abs(x - x0); best = x; }
   return best;
 }
+function creepSlot(c) { return slotOf(c.memory.k, c.memory.kind); }
 function travel(c, slot) {
   const b = c.pos.x === 0 || c.pos.x === 49 || c.pos.y === 0 || c.pos.y === 49;
   if (c.room.name === HOME) {
@@ -102,20 +108,21 @@ function travel(c, slot) {
   }
   if (c.room.name === STAGE) {
     if (b && c.pos.x === 49) { delete c.memory._m; return c.move(LEFT); }
-    // ranged hold 2 rows back until both melee stand on the front row, so they never block the melee path
+    // ranged + heal hold back until living melee are on front row
     if (!isMelee(c)) {
-      const ml = _.filter(Game.creeps, x => x.memory.role === 'raid9' && isMelee(x));
-      const ready = ml.every(x => x.room.name === STAGE && x.pos.x === slotOf(x.memory.k)[0] && x.pos.y === slotOf(x.memory.k)[1]);
-      if (!ready && !(c.pos.x === slot[0] && c.pos.y === slot[1])) return MV.to(c, slot[0], slot[1] + 2, 0, ND);
+      const ml = allRaid().filter(isMelee);
+      const ready = ml.length > 0 && ml.every(x => {
+        const s = creepSlot(x);
+        return x.room.name === STAGE && x.pos.x === s[0] && x.pos.y === s[1];
+      });
+      if (!ready && !(c.pos.x === slot[0] && c.pos.y === slot[1])) return MV.to(c, slot[0], Math.min(49, slot[1] + 1), 0, ND);
     }
     return MV.to(c, slot[0], slot[1], 0, ND);
   }
   return c.moveTo(new RoomPosition(slot[0], slot[1], STAGE), { reusePath: 10 });
 }
-// Misaki 10-21 14:3x: after W47N9 safe mode, garrison INSIDE the W47N8 north wall until old age; never re-enter W47N9.
-// wall y=3, gate rampart 29,3 -> 29,4 -> road 28,4 stay free. melee hug the wall at 30,4/31,4, ranged one row behind 30,5/31,5 (shoot over the wall).
-const GARRISON = [[30, 4], [31, 4], [30, 5], [31, 5]];
-const gSlotOf = k => (k | 0) % 2 === 0 ? GARRISON[((k | 0) >> 1) % 2] : GARRISON[2 + (((k | 0) >> 1) % 2)];
+const GARRISON = [[30, 4], [31, 4], [30, 5], [31, 5], [32, 5], [29, 5]];
+const gSlotOf = k => GARRISON[(k | 0) % GARRISON.length];
 function garrison(c) {
   const g = gSlotOf(c.memory.k);
   const hp = c.getActiveBodyparts(HEAL) ? healPlan(c, squad(c)) : null;
@@ -125,13 +132,11 @@ function garrison(c) {
     const t = w.hc.length ? _.min(w.hc.filter(h => c.pos.inRangeTo(h, ra ? 3 : 1)), h => h.hits) : null;
     strike(c, t && t.id ? t : null, w, hp);
   }
-  if (c.room.name === TARGET) return c.pos.y === 49 ? c.move(BOTTOM) : MV.to(c, 30, 49, 0, ND);
+  if (c.room.name === TARGET) return c.pos.y === 49 ? c.move(BOTTOM) : MV.to(c, 39, 49, 0, ND);
   if (c.room.name !== STAGE) return travel(c, g);
   if (c.pos.x === g[0] && c.pos.y === g[1]) return;
   return MV.to(c, g[0], g[1], 0, ND);
 }
-// stop-loss: W48N9-style reinforce. Parts = ATTACK + RANGED_ATTACK on hostiles in room.
-// >=12 (~two 6RA or one heavy melee) => flee to garrison. A lone 7H healer does NOT trip this.
 function armedParts(creeps) {
   let n = 0;
   for (const h of creeps) n += (h.attack | 0) + (h.ranged | 0);
@@ -142,41 +147,61 @@ function overrun(room) {
     attack: h.getActiveBodyparts(ATTACK), ranged: h.getActiveBodyparts(RANGED_ATTACK),
   }))) >= 12;
 }
+// regroup: clear go so next wave rallies before re-entering
+function maybeRegroup(P, alive) {
+  if (!raidActive(P)) return;
+  if (alive.length === 0) { delete P.go; return; }
+  const inT = alive.filter(c => c.room.name === TARGET).length;
+  if (P.go && inT === 0 && alive.length < WAVE) delete P.go;
+}
 function run(c) {
-  const P = M(), k = c.memory.k | 0, slot = slotOf(k);
-  if (P.garrison || P.safe || P.flee) return garrison(c); // SM burned, overrun flee, or manual abort
+  const P = M(), kind = c.memory.kind || 'm', slot = creepSlot(c);
+  if (P.garrison || P.safe || P.flee) return garrison(c);
   const tr = Game.rooms[TARGET];
   if (tr && tr.controller && tr.controller.safeMode) P.safeUntil = Game.time + tr.controller.safeMode;
-  // remembered: once we retreat we lose vision of W47N9, so never re-enter while its safe mode may still run (no border bounce)
   const sm = P.safeUntil && Game.time < P.safeUntil;
   if (sm) { P.safe = P.safe || Game.time; if (c.room.name === TARGET && (c.pos.y === 49)) return c.move(BOTTOM); return travel(c, slot); }
-  // flank dump: leave before the squad is deleted; SM goal already failed/succeeded separately
   if (c.room.name === TARGET && overrun(c.room)) {
     P.flee = P.flee || { t: Game.time, why: 'overrun' };
     P.garrison = true;
     if (c.pos.y === 49) return c.move(BOTTOM);
-    return MV.to(c, 30, 49, 0, ND);
+    return MV.to(c, 39, 49, 0, ND);
   }
-  // last creep standing with mates dead: fall back (one-shot op, no respawn)
-  const alive = _.filter(Game.creeps, x => x.memory.role === 'raid9');
-  if (c.room.name === TARGET && alive.length <= 1 && (P.n | 0) >= 4) {
-    P.flee = P.flee || { t: Game.time, why: 'last' };
-    P.garrison = true;
+  // no last-man abort — continuous waves replace fallen; lone units fall back to stage to wait
+  const alive = allRaid();
+  maybeRegroup(P, alive);
+  if (c.room.name === TARGET && alive.length <= 1 && !P.go) {
     if (c.pos.y === 49) return c.move(BOTTOM);
-    return MV.to(c, 30, 49, 0, ND);
+    return MV.to(c, 39, 49, 0, ND);
   }
   if (c.room.name === TARGET) {
     const w = world(c.room), p = pick(c.pos, w), t = p && Game.getObjectById(p.id);
     const hp = c.getActiveBodyparts(HEAL) ? healPlan(c, squad(c)) : null;
+    // dedicated healers: heal first, stay near hurt melee / breach
+    if (isHeal(c)) {
+      if (hp && hp.mode === 'heal') { c.heal(hp.id === c.id ? c : Game.getObjectById(hp.id)); }
+      else if (hp && hp.mode === 'ranged') { c.rangedHeal(Game.getObjectById(hp.id)); }
+      else if (hp && hp.mode === 'far') return c.moveTo(hp.pos, { range: 1, reusePath: 2, maxRooms: 1 });
+      // shadow nearest melee or breach
+      const ml = alive.filter(isMelee).filter(x => x.room.name === TARGET);
+      const anchor = ml.length ? _.min(ml, x => rng(c.pos, x.pos)) : null;
+      if (anchor && !c.pos.inRangeTo(anchor, 2)) return MV.to(c, anchor.pos.x, anchor.pos.y, 1, ND);
+      if (!c.pos.inRangeTo(BREACH.x, BREACH.y, 3)) {
+        delete c.memory._m;
+        return c.moveTo(new RoomPosition(BREACH.x, BREACH.y, TARGET), { range: 3, reusePath: 5, maxRooms: 1, ignoreDestructibleStructures: true, ignoreCreeps: true });
+      }
+      return;
+    }
     strike(c, t, w, hp);
     if (c.pos.y === 49) return c.move(TOP);
-    // badly hurt ally out of reach and no spawn/feeder duty pinning us: go to them
     if (hp && hp.mode === 'far' && hp.ratio < HEAL_URGENT && !(p && p.pri <= 2)) return c.moveTo(hp.pos, { range: 1, reusePath: 2, maxRooms: 1 });
-    if (!t) return;
-    const r = c.getActiveBodyparts(ATTACK) ? 1 : (p.pri === 1 || p.pri === 4 ? 3 : 2);
+    if (!t) {
+      // no target yet: push toward breach then towers area
+      delete c.memory._m;
+      return c.moveTo(new RoomPosition(BREACH.x, BREACH.y, TARGET), { range: 1, reusePath: 5, maxRooms: 1, ignoreDestructibleStructures: true, ignoreCreeps: true });
+    }
+    const r = c.getActiveBodyparts(ATTACK) ? 1 : (p.pri === 1 || p.pri === 3 ? 3 : 2);
     if (c.pos.inRangeTo(t, r)) return;
-    // siege structures: hold on adjacent rampart/wall and smash; else path ignoring destructibles
-    // (walking onto enemy rampart always fails — must 强拆 the edge first). Creep chases still use MV.
     if (t.structureType) {
       const edge = c.pos.findInRange(FIND_HOSTILE_STRUCTURES, 1).find(s => s.structureType === STRUCTURE_RAMPART || s.structureType === STRUCTURE_WALL);
       if (edge) return;
@@ -184,34 +209,48 @@ function run(c) {
       c.moveTo(t, { range: r, reusePath: 5, maxRooms: 1, ignoreDestructibleStructures: true, ignoreCreeps: true, swampCost: 5 });
       return;
     }
-    MV.to(c, t.pos.x, t.pos.y, r, ND); // our swap-capable mover: squad never deadlocks itself
+    MV.to(c, t.pos.x, t.pos.y, r, ND);
     return;
   }
-  // en route / staging: fight anything hostile adjacent/in range on the way, no chasing
   const hp = c.getActiveBodyparts(HEAL) ? healPlan(c, squad(c)) : null;
   const w = { hc: c.room.find(FIND_HOSTILE_CREEPS) }; if (w.hc.length || hp) strike(c, null, w, hp);
   if (P.go) {
     if (c.room.name === STAGE) {
       if (c.pos.y === 0) return c.move(TOP);
-      // melee step in first; ranged follow once no melee is left in the staging room (1 tile behind)
-      if (!isMelee(c) && _.some(Game.creeps, x => x.memory.role === 'raid9' && isMelee(x) && x.room.name === STAGE)) return;
-      const ex = exitX(c.room, slot[0]); // rally x=30/31 on y=0 are walls: nearest open north exit tile
+      if (!isMelee(c) && _.some(allRaid(), x => isMelee(x) && x.room.name === STAGE)) return;
+      const ex = exitX(c.room, slot[0]);
       if (MV.to(c, ex, 0, 0, ND)) return c.move(TOP);
       return;
     }
     return travel(c, slot);
   }
   travel(c, slot);
-  // all alive raiders on their rally tiles -> go (once)
-  const all = _.filter(Game.creeps, x => x.memory.role === 'raid9');
-  if (all.length >= 4 && all.every(x => x.room.name === STAGE && x.pos.x === slotOf(x.memory.k)[0] && x.pos.y === slotOf(x.memory.k)[1])) P.go = Game.time;
+  const all = allRaid();
+  if (all.length >= WAVE && all.every(x => {
+    const s = creepSlot(x);
+    return x.room.name === STAGE && x.pos.x === s[0] && x.pos.y === s[1];
+  })) P.go = Game.time;
 }
-// home spawn hook: only W46N8, only while ops.w47n9.on and fewer than 4 spawned in total (deaths are not replaced)
 function wantSpawn(room) {
-  const P = Memory.ops && Memory.ops.w47n9; if (!P || P.on !== true || room.name !== HOME) return null;
-  const n = P.n | 0; if (n >= 4) return null;
-  const kind = KINDS[n];
-  return { role: 'raid9', body: kind === 'm' ? MELEE() : RANGED(), mem: { role: 'raid9', home: HOME, k: n, kind, born: Game.time } };
+  const P = Memory.ops && Memory.ops.w47n9;
+  if (!raidActive(P)) return null;
+  if (room.name !== HOME && room.name !== STAGE) return null;
+  const alive = allRaid();
+  if (alive.length >= WAVE) return null;
+  const have = _.countBy(alive, c => c.memory.kind || 'm');
+  let kind = null;
+  for (const k of ['m', 'r', 'h']) if ((have[k] || 0) < NEED[k]) { kind = k; break; }
+  if (!kind) return null;
+  const used = new Set(alive.filter(c => c.memory.kind === kind).map(c => c.memory.k | 0));
+  let slot = 0; while (used.has(slot)) slot++;
+  return { role: 'raid9', body: BODY[kind](), mem: { role: 'raid9', home: room.name, k: slot, kind, born: Game.time } };
 }
 function noteSpawned() { const P = M(); P.n = (P.n | 0) + 1; }
-module.exports = { slotOf, gSlotOf, GARRISON, run, pick, useMass, healPlan, armedParts, overrun, wantSpawn, noteSpawned, MELEE, RANGED, RALLY };
+function pauseCivilians() {
+  const P = Memory.ops && Memory.ops.w47n9;
+  return !!(P && P.on === true && !P.safe && !P.garrison && !P.flee);
+}
+module.exports = {
+  slotOf, gSlotOf, GARRISON, BREACH, WAVE, NEED, run, pick, useMass, healPlan, armedParts, overrun,
+  wantSpawn, noteSpawned, pauseCivilians, MELEE, RANGED, HEALER, RALLY, raidActive,
+};

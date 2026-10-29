@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Manual control for W47N9 raid9 (src/roles/raid9.js, docs/RAID_W47N9.md).
   python3 tools/raid9.py status   room-objects intel + Memory.ops.w47n9 + living raid9
-  python3 tools/raid9.py arm      RESET Memory.ops.w47n9={on:true,n:0} and start spawning (NEEDS APPROVAL)
+  python3 tools/raid9.py arm      RESET Memory.ops.w47n9={on:true,n:0}; continuous waves until SM/abort (NEEDS APPROVAL)
   python3 tools/raid9.py abort    on=false, garrison=true (stop spawn; living fall back to W47N8 wall)
 Does NOT deploy code. arm writes Memory only — do not run without Misaki/parent approval.
 """
@@ -88,7 +88,7 @@ def status():
 
 def arm():
     """Fresh wave: wipe prior safe/garrison/flee/go/n."""
-    print('WARNING: arming will spawn 2 melee + 2 ranged from W46N8 (~9000E).', file=sys.stderr)
+    print('WARNING: arming continuous waves: 2m+2r+2h (~13200E/wave) from W46N8+W47N8 until SM/abort.', file=sys.stderr)
     print(setm('ops.w47n9', {'on': True, 'n': 0}))
 
 def abort():
