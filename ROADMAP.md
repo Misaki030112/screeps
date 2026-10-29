@@ -3,6 +3,13 @@
 Novice zone ends **2026-10-28 03:33 UTC+8** (past as of 10-29). Defence timeline: `docs/DEFENSE_NOVICE.md` (2026-10-16); detail `docs/DEFENSE.md` / geometry `docs/DEFENSE_PLAN.md`.
 **Safe mode: NEVER auto-activate** — alert Misaki.
 
+## 2026-10-29 20:4x strategy review: W47N8 RCL7 day-of (factory gate + spur roads)
+- **Chose:** W47N8 RCL6→7 day-of path (placement order, energy bill, road coverage) over rehashing mineral/boost (14:4x) or fundSpend (17:4x). ETA RCL7 ~11-01; 02:4x already flagged "only 2 served RCL7 slots" and it was never fixed.
+- **Findings (`docs/PLAN_W47N8.md` "RCL7 day-of"):** first tick places **spawn@33,30 + tower@22,7** only (towerSite holds extensions — correct). After those stand: 10 ext then **factory@35,30 (100k)** unless gated. Minerals/hub link stay off. 8/10 RCL7 ext slots orphaned from v4 roads; tower3@22,7 has no adjacent plan road (northFeed range 4 of 26,11 still works). Screeps RCL7 unlocks factory; Overmind-style bots defer industry until logistics+defense stable — same as home `plan.RCL7_INDUSTRY`.
+- **Shipped:** `config.RCL7_INDUSTRY=false` (zeros factory/powerSpawn/nuker/observer); `roads.js` +11 spurs (strip4 bridge 27–30,25; x38 37–40; tower3 24,7/23,7/22,8) → 127 roads, one network, all 10 RCL7 slots + tower3 served; day-of bill **~53k** not ~153k; `tests/w47n8_rcl7_gate.js` + roads_connected wired into check.js. Deploy this run.
+- **Reprioritise:** (1) home walls 163k→300k via fundSpend (unchanged); (2) W47N8 RCL7 → **tower3+spawn2 first**, then 10 ext + spur roads, **factory stays OFF**; (3) colony storage≥20k → minerals+K send; (4) KO≥900 → boost; (5) barriers →1M. Defend-only W47N9.
+- **Plan check (t~83942750):** home RCL7 ~503k/10.9M stor~16.8k walls min 163601 ramp~341k; W47N8 2.740M/3.645M stor~2.9k towers 2/2 sites[]; remotes SAFE; CPU~10-14 bucket 10k; neighbors BustJetter towers strong combat 0. No major Misaki decision (autonomous structure placement; no claim/attack/credits/SM).
+
 ## 2026-10-29 17:4x strategy review: peacetime wall fundSpend (post W47N9 abort)
 - **Chose:** fortification / hardening over mineral/boost (done 14:4x) and W47N8 RCL6→7 path — assault abort unlocked civilian walls, but live builder still starved at `reserveE=15k` with `walls.fund=50k` and min hits stuck at STEP **142101** (next STEPS[7]=300k). W47N8 barriers already at 300k; home is the gap.
 - **Root cause:** 2523dd6 only spawned a fund-backed builder when `!defLow`; supply-follows-demand pins storage at/under 15k, so `budgetE=0`, `pickSource` null, builder `waiting_feed` → recycle. Dropping `Memory.defense.reserveE` (docs suggestion) still leaves queen/upgrade fighting the fund; better: spend the dedicated fund like siege.

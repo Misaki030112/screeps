@@ -185,3 +185,29 @@ to v4 (116 plan + 32 w8link tiles; 177 live roads, the rest decay)? Simulated `l
 - **RCL7 note:** only 2 served slots remain (30,23 32,23). Before RCL7 (+10 ext, spawn 2 at 33,30) re-run the v4 road tool with the RCL7
   slots as goals, or choose RCL7 slots next to kept roads; don't re-add strip 4 (y25) roads blindly.
 - Minor: plan road 18,49 (south exit tile) can never be placed (border tile), so layoutRun retries it each run; harmless, left as is.
+
+## RCL7 day-of (2026-10-29 20:4x strategy review, tick ~83942750)
+Question: the moment W47N8 hits RCL7 (~11-01 at ~20 e/t; live 2.740M/3.645M), what does `layoutRun` place, in what order, and are the new tiles road-served?
+
+**Sim (`/tmp/rcl7sim.js` on live structure list + CONTROLLER_STRUCTURES):**
+1. **First tick (sites budget 6, towerSite holds extensions):** `spawn@33,30` + `tower@22,7` only. Correct — same PRIO as RCL5 tower-first doctrine (`docs/DEFENSE_W47N8.md`).
+2. **After spawn2 + tower3 built:** 10 extensions (ORDER slots 40–49: 30,23 32,23 28,26 37,39 39,39 27,24 27,26 28,24 37,40 39,40) then **`factory@35,30` (100k)**.
+3. Minerals / hub link stay gated (`RCL6_MINERALS` / `HUB_LINK` still false). Live already has an extractor (Misaki-placed); gate only blocks new terminal/labs.
+
+**Trap (same class as RCL6 gate 03:4x / home `plan.RCL7_INDUSTRY`):** Screeps RCL7 unlocks factory (100k). No W47N8 factory/lab code exists; placing it would steal ~5k t of upgrade (~6–7 h at ~20 e/t) and hold upgraders via `siteRem`. Home already gates factory via `plan.RCL7_INDUSTRY=false` (`docs/RCL7.md`).
+
+**Road gap (flagged 10-21 02:4x, never fixed):** of the 10 RCL7 extension slots only **2** (30,23 32,23) touched the v4 road plan. Orphans: strip4 (27–28,24/26) and x38 strip (37/39,39–40). Queens would walk plain/swamp to refill the new 100-cap extensions right when spawn energy matters most.
+
+**Tower3 northFeed:** `22,7` is range **4** of source-A stand `26,11` (edge of `northFeed` ≤4), so the miner overflow → 26,11 → short haul path still works once tower3 dips under 600. Live roads stop at x25; spur `24,7`/`23,7`/`22,8` gives an adjacent road without sitting on the tower tile.
+
+**Shipped:**
+- `config.RCL7_INDUSTRY=false` → layout zeros `factory` / `powerSpawn` / `nuker` / `observer` (RCL8-safe).
+- `roads.js` +11 spur tiles (127 total, still one 8-connected network): strip4 bridge `27–30,25`; x38 `38,37–40`; tower3 `24,7`/`23,7`/`22,8` (~3.3k e).
+- Day-of energy bill ≈ **53k** (spawn 15k + tower 5k + 10×3k + roads 3.3k), not 153k.
+- Tests: `tests/w47n8_rcl7_gate.js` (fails on old code), `w47n8_roads_connected.js` wired into `scripts/check.js`.
+
+**Day-of ops (autonomous, no Misaki decision):**
+1. Let layout place spawn2 + tower3 first; do not flip `RCL7_INDUSTRY` / `RCL6_MINERALS` / `HUB_LINK`.
+2. After those two stand, extensions + spur roads fill in; storage will be thin (~3k today) so builders pull from source overflow / ctl — expect upgrade to dip for a few hours.
+3. Minerals / K→home send wait until **storage ≥20k** after tower3+spawn2 (`docs/MINERAL_DEFENSE_ROADMAP.md` §B).
+4. Seal `planTarget` stays STAGE3 **300k** (WALL_TARGET[7]=1M unused); raise later via surplus after minerals, not on day-of.

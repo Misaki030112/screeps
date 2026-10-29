@@ -57,6 +57,8 @@ Live refresh 17:45 UTC+8 tick ~83940354。**不自动交易、不开 safe mode�
 Loot 里已有微量 UH/KO/ZH —— 只够试验，不够常备强化。
 
 ### 阶段 B · W47N8 刚到 RCL7（先基建后矿物）
+> 20:4x：`RCL7_INDUSTRY=false` 已写入殖民地 config——**不造 factory@35,30（100k）**；day-of 仅 spawn2@33,30 + tower3@22,7 + 10 ext + spur roads（~53k）。详见 `docs/PLAN_W47N8.md` "RCL7 day-of"。
+
 顺序（能量从紧到松）：
 1. **tower3 + spawn2**（~20k）—— 立刻提升殖民地火力与产能
 2. 北门 rampart 抬到 ≥100k，seal 墙按 `WALL_TARGET[7]=1M` 慢慢涨（只花盈余）

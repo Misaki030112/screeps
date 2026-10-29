@@ -1,7 +1,7 @@
 # Strategy — W46N8 (home) + W45N8 (remote), 20 CPU, shard3
 
 Sources: Screeps docs (control, defense, invaders, CPU), screepers wiki, Overmind / TooAngel / Hivemind patterns.
-Last full refresh: **2026-10-29 17:4x strategy review** (fortify fundSpend; post-assault); before that **2026-10-29 14:4x** (mineral/boost §4); before that **2026-10-20 00:0x** (remote posture after novice end: `docs/DEFENSE_NOVICE.md`); before that **2026-10-19** (CPU `docs/CPU.md`, market `docs/MARKET.md`); before that **2026-10-18 strategy review** (W47N8 hold / safe-mode mechanics: `docs/W47N8_HOLD.md`); before that **2026-10-17 strategy review** (neighbours: `docs/NEIGHBORS.md`); before that **2026-10-16 strategy review** (defence before novice end: `docs/DEFENSE_NOVICE.md`); prior: RCL6 readiness `docs/RCL6.md` (10-15), RCL5 `docs/RCL5.md` (10-14). Also `docs/DEFENSE.md`, `docs/DEFENSE_PLAN.md`, `docs/LAYOUT_V2.md`, `docs/REMOTE_W45N8.md`, `docs/MODEL.md`, `docs/DATA.md`.
+Last full refresh: **2026-10-29 20:4x strategy review** (W47N8 RCL7 day-of gate + spur roads); before that **2026-10-29 17:4x** (fortify fundSpend); before that **2026-10-29 14:4x** (mineral/boost §4); before that **2026-10-20 00:0x** (remote posture after novice end: `docs/DEFENSE_NOVICE.md`); before that **2026-10-19** (CPU `docs/CPU.md`, market `docs/MARKET.md`); before that **2026-10-18 strategy review** (W47N8 hold / safe-mode mechanics: `docs/W47N8_HOLD.md`); before that **2026-10-17 strategy review** (neighbours: `docs/NEIGHBORS.md`); before that **2026-10-16 strategy review** (defence before novice end: `docs/DEFENSE_NOVICE.md`); prior: RCL6 readiness `docs/RCL6.md` (10-15), RCL5 `docs/RCL5.md` (10-14). Also `docs/DEFENSE.md`, `docs/DEFENSE_PLAN.md`, `docs/LAYOUT_V2.md`, `docs/REMOTE_W45N8.md`, `docs/MODEL.md`, `docs/DATA.md`.
 
 ## Principles
 
@@ -12,20 +12,20 @@ Last full refresh: **2026-10-29 17:4x strategy review** (fortify fundSpend; post
 5. **Growth after RCL4:** remote mining (W45N8 approved and live), then links; a 2nd room only with explicit Misaki approval (GCL 2 already allows a claim).
 6. **Major decisions need approval:** claim/expand, attack or provoke player neighbours, spend credits/pixels, activate safe mode, respawn.
 
-## Current state (2026-10-29 ~17:45 UTC+8)
+## Current state (2026-10-29 ~20:50 UTC+8)
 
 | | |
 |---|---|
-| Home | W46N8 **RCL7** ~464k/10.9M; storage ~14–15k at `reserveE=15k`; ramp gates ~336k / core ~1M; walls STEP **142101** → next **300k** (fund=50k; peacetime `walls.fundSpend` spends fund down to FLOOR 5k); towers 3; terminal+extractor+3 labs live; O mined, **labs dormant**; SM avail |
-| W47N8 | **RCL6** ~2.685M/3.645M (~960k left, ~2.5–3 d at ~15–20 e/t → **RCL7 ~11-01**); walls+GATE already **300k**; towers 2 (tower3@22,7 + spawn2@33,30 wait RCL7); stor ~0.8–2.5k; `RCL6_MINERALS=false` |
-| Assault | **ABORTED** 2026-10-29 (~15:31): Misaki "算了撤退" — defend-only W47N9, keep mining O (no mineralCap), resume civilian building both rooms |
-| Remote | W45N8 + W45N7 (home); W47N7 (colony); defend reserved on hostiles; remotes SAFE at last patrol |
-| CPU | **~12–14 / 20**, bucket ~10000 — `docs/CPU.md` |
+| Home | W46N8 **RCL7** ~503k/10.9M; storage ~16–17k at `reserveE=15k`; ramp min ~340k; walls STEP **163601** → next **300k** (fundSpend live; peacetime FLOOR 5k); towers 3; terminal+extractor+3 labs live; O mined, **labs dormant**; SM avail |
+| W47N8 | **RCL6** ~2.740M/3.645M (~905k left, ~**RCL7 ~11-01** at ~20 e/t); walls+GATE **300k**; towers 2; tower3@22,7 + spawn2@33,30 wait RCL7; stor ~2.9k; `RCL6_MINERALS=false` `HUB_LINK=false` **`RCL7_INDUSTRY=false`** (factory gated) |
+| Assault | **ABORTED** 2026-10-29 (~15:31): defend-only W47N9, keep mining O (no mineralCap), civilian building both rooms |
+| Remote | W45N8 + W45N7 (home); W47N7 (colony); defend reserved on hostiles; remotes SAFE |
+| CPU | **~10–14 / 20**, bucket ~10000 — `docs/CPU.md` |
 | GCL | 3 (3rd room CPU-bound; no claim without Misaki) |
 | Novice | **ended 2026-10-28 03:33 UTC+8** |
-| Next industry | mineral+boost `docs/MINERAL_DEFENSE_ROADMAP.md` §4 — **hold until W47N8 RCL7 + storage≥20k**; fortify step first via fundSpend; no market deals |
+| Next industry | W47N8 RCL7 day-of → tower3+spawn2+10ext+spur roads (~53k, factory gated) → storage≥20k → minerals+K send (`docs/MINERAL_DEFENSE_ROADMAP.md`); home walls continue via fundSpend; no market deals |
 
-Ideal vs actual: `tools/model.py` / `tools/model_w8.py` / Grafana. Post-abort priority: home walls 142k→300k, then colony RCL7 → tower3/spawn2 → minerals.
+Ideal vs actual: `tools/model.py` / `tools/model_w8.py` / Grafana. Priority: home walls→300k; colony RCL7 → tower3/spawn2 (factory OFF) → minerals.
 
 ## Phases
 
