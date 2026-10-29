@@ -51,8 +51,11 @@ assert.strictEqual(R.healPlan(meH, [H('a', 20, 10, 500), H('b', 12, 10, 700)]).m
 console.log('raid9 ok');
 // formation: melee k0/k2 front row y=1, ranged k1/k3 behind y=2
 assert.deepStrictEqual([0,1,2,3].map(R.slotOf), [[30,1],[30,2],[31,1],[31,2]]);
-assert.deepStrictEqual(R.pick(me, { creeps: [{ id: 'D', pos: P(25, 43), armed: true, hits: 500 }], structs: [spawn] }), { id: 'D', pri: 1 });
+// spawn always beats adjacent armed (strike peels trash; do not divert)
+assert.deepStrictEqual(R.pick(me, { creeps: [{ id: 'D', pos: P(25, 43), armed: true, hits: 500 }], structs: [spawn] }), { id: 'S', pri: 1 });
 assert.deepStrictEqual(R.pick(me, { creeps: [{ id: 'D', pos: P(25, 30), armed: true, hits: 500 }], structs: [spawn] }), { id: 'S', pri: 1 });
+// after spawn dead, adjacent armed is peeled
+assert.deepStrictEqual(R.pick(me, { creeps: [{ id: 'D', pos: P(25, 43), armed: true, hits: 500 }], structs: [tower] }), { id: 'D', pri: 2 });
 // garrison (after W47N9 safe mode): melee hug wall row y=4, ranged y=5, gate 29,3/29,4 and road 28,4 free, all distinct
 { const gs = [0, 1, 2, 3].map(R.gSlotOf);
   assert.deepStrictEqual(gs, [[30, 4], [30, 5], [31, 4], [31, 5]]);
