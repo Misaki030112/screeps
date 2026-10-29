@@ -61,6 +61,7 @@ function spawnRun(spawn) {
   const cap = room.energyCapacityAvailable, avail = room.energyAvailable;
   const sites = room.find(FIND_MY_CONSTRUCTION_SITES).length;
   let want = null, mem = {};
+  const raidPause = require('../../roles/raid9').pauseCivilians();
   // 0) defender (Misaki 14:09): only when an armed hostile is inside the sealed base (towerRun sets threat8.inBase); max 2
   const th = room.memory && room.memory.threat8;
   // 14:46 (Misaki): also on an invasion move (armed hostiles entering W47N8, or an armed group at the W47N9 border); max 2, stays in W47N8
@@ -119,6 +120,16 @@ function spawnRun(spawn) {
   if (!want && cs.filter(c => c.memory.role === 'w8hauler' && (c.spawning || c.ticksToLive > 75)).length < 3) want = 'w8hauler';
   // 17:4x (Misaki: spawn must never wait for energy): hub filler right after miners + the hauler floor, replaced ahead of death (fill.js)
   if (!want && FL.want(room, cs)) want = 'w8filler';
+  // Misaki 10-29: continuous W47N9 assault from colony spawn (after economy floor)
+  if (!want) {
+    const RD = require('../../roles/raid9'), w = RD.wantSpawn(room);
+    if (w) {
+      const cost = _.sum(w.body, p => BODYPART_COST[p]);
+      if (avail < cost) { FM.wait('raid9', cost, avail); return; }
+      const rv = spawn.spawnCreep(w.body, 'raid9_' + Game.time, { memory: w.mem, energyStructures: energyOrder(room) });
+      if (rv === OK) { RD.noteSpawned(); FM.spent(cost); return; }
+    }
+  }
   // 10-20 03:4x (w8patrol): rminer replacements sat behind the 3rd upgrader (after a defender + 2-hauler burst): W47N7 src 18,17 unmined
   // from t83750522 with the other rminer at TTL 123 < lead. Income before sinks: W47N7 rminers come right after the filler.
   // 10:40: rhaulers sat last in the queue, so with 4 builders + 6 sites on the single Spawn2 all 6 (spawned in one burst at RCL3) aged out
@@ -151,10 +162,10 @@ function spawnRun(spawn) {
   // nothing spawns one, so the move could stall on 'ttl' after the bank fills. Queue one once storage is within 3k of MOVE_E.
   const mv8 = Memory.ops && Memory.ops.w8move;
   if (!want && mv8 && mv8.phase === 'prep' && room.storage && bankE(room) >= MOVE_E - 3000
-    && !cs.some(c => c.memory.role === 'w8builder' && (c.spawning || c.ticksToLive >= 700))) want = 'w8builder';
-  if (!want && wallsLow && nUp() < (room.controller.ticksToDowngrade < 10000 || stock8() > 3000 ? 2 : 1)) want = 'w8upgrader';
-  else if (!want && wallsLow && n('w8builder') < 3) want = 'w8builder';
-  else if (!want && !wallsLow && nUp() < (banking(room) ? (room.controller.ticksToDowngrade < 20000 ? 1 : 0) : sites ? 2 : 3)) want = 'w8upgrader'; // 15:5x: 0 upgraders while moving unless downgrade < 20k // 13:39 spawn move: bank for the 15k spawn
+    && !raidPause && !cs.some(c => c.memory.role === 'w8builder' && (c.spawning || c.ticksToLive >= 700))) want = 'w8builder';
+  if (!want && wallsLow && nUp() < (raidPause ? 1 : (room.controller.ticksToDowngrade < 10000 || stock8() > 3000 ? 2 : 1))) want = 'w8upgrader';
+  else if (!want && !raidPause && wallsLow && n('w8builder') < 3) want = 'w8builder';
+  else if (!want && !wallsLow && nUp() < (raidPause ? 1 : (banking(room) ? (room.controller.ticksToDowngrade < 20000 ? 1 : 0) : sites ? 2 : 3))) want = 'w8upgrader'; // 15:5x: 0 upgraders while moving unless downgrade < 20k // 13:39 spawn move: bank for the 15k spawn
   // 14:55 model-driven (tools/model_w8.py -> Memory.ops.w8model): remote fleet sized by CARRY need = sum 10 x (rt x 1.1 + 4) / 50 over
   // both W47N7 sources (~52 at 14:55) instead of loose-pile thresholds (live 88 CARRY: rhaulers 82% moving/12% blocked, +1.8 e/t upkeep).
   // Floor (ahead of builders): 60% of need; full need + a backlog term (+16 CARRY per 2000 loose above 3000) in step 7.
@@ -171,10 +182,10 @@ function spawnRun(spawn) {
   if (!want && sites && looseE(room) > 2500 && n('w8hauler') < HMAX) want = 'w8hauler';
   // 04:10: size by remaining build work, not site count: 3 cheap road sites (~900 left) brought a 4th builder while the ctl cont sat at 0,
   // wbuilder idle 0.69 (6h) and 4 upgraders energy-starved
-  else if (!want && sites && n('w8builder') < (siteRem(room) >= 3000 ? 4 : siteRem(room) >= 1200 ? 2 : 1)) want = 'w8builder'; // 17:20: 1 for a small backlog (2 road sites ~480 kept 3x 6W builders, 2.4 e/t upkeep) // 17:05: Spawn2 sat idle at 300/300 with 5 ext sites
+  else if (!want && !raidPause && sites && n('w8builder') < (siteRem(room) >= 3000 ? 4 : siteRem(room) >= 1200 ? 2 : 1)) want = 'w8builder'; // 17:20: 1 for a small backlog (2 road sites ~480 kept 3x 6W builders, 2.4 e/t upkeep) // 17:05: Spawn2 sat idle at 300/300 with 5 ext sites
   // 5) surplus (17:52: 1.8k energy lying on the ground/in source containers, spenders only ~7 WORK of 20 e/t income):
   // +1 hauler above 1200 loose (max 3), +1 upgrader per 600 loose above 600 (max 6)
-  if (!want) {
+  if (!want && !raidPause) {
     const loose = looseE(room);
     // 03:20 hub container energy counts toward upgraders once no sites near the hub use it (2000 full + ctl 652, Spawn2 idle 718/800,
     // only 2 upgraders = 12 WORK for ~40 e/t local+W47N7 income; RCL3 ~14.6 e/t)
@@ -196,13 +207,13 @@ function spawnRun(spawn) {
   }
   // 6) wall builder from surplus (19:18): 1 builder while a seal wall is below target and spawn is full
   // 19:31: 2 while >1500 loose energy piles (2.8k at 19:30 with the ctl container full and upgraders at the WORK cap)
-  if (!want && room.energyAvailable === cap && n('w8builder') < (looseE(room) > 1500 ? 2 : 1)) {
+  if (!want && !raidPause && room.energyAvailable === cap && n('w8builder') < (looseE(room) > 1500 ? 2 : 1)) {
     const tgt = wtgt;
     if (room.find(FIND_STRUCTURES, { filter: s => s.structureType === STRUCTURE_WALL && s.hits < tgt && C.SEAL.some(([x, y]) => s.pos.x === x && s.pos.y === y) }).length) want = 'w8builder';
   }
   // 10-21 11:2x patrol: with 0 sites and the seal at cap no builder spawned, so nothing repaired the kept roads.js network (27 of 116
   // below 30%, link road 14,35/15,34 at 300 hits, about 3k ticks from vanishing). 1 maintenance builder while a kept road/container is < 20%.
-  if (!want && room.energyAvailable === cap && !n('w8builder') && Game.time % 50 === 0) {
+  if (!want && !raidPause && room.energyAvailable === cap && !n('w8builder') && Game.time % 50 === 0) {
     const keep = new Set(require('./roads').ROADS.map(([x, y]) => x * 50 + y));
     if (room.find(FIND_STRUCTURES, { filter: s => (s.structureType === STRUCTURE_CONTAINER || (s.structureType === STRUCTURE_ROAD && keep.has(s.pos.x * 50 + s.pos.y))) && s.hits < s.hitsMax * 0.2 }).length) want = 'w8builder';
   }

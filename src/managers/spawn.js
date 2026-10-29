@@ -390,6 +390,12 @@ function run1(spawn, onWait) {
     if (low) {
       T.upgrader = defLowUpgraders(T.upgrader, room.storage ? room.storage.store[RESOURCE_ENERGY] : 0, dr, !!(Wr.stepHeld && Wr.stepHeld(room)), (room.controller.ticksToDowngrade || 0) < Wr.UP_SAFE); } }
   room.memory.roleTargets = T;
+  // Misaki 10-29 W47N9 assault: divert spawn away from nonessential builders/extra upgraders
+  if (require('../roles/raid9').pauseCivilians()) {
+    T.builder = 0;
+    T.upgrader = Math.min(T.upgrader || 0, 1);
+    room.memory.roleTargets = T;
+  }
   const homeRole = role => {
     const mem = {};
     if (role === 'filler') { const used = new Set(mine.filter(c => c.memory.role === 'filler').map(c => c.memory.spot.join())); mem.spot = P.pos.fillers.slice(0, 4).find(s => !used.has(s.join())); }
