@@ -123,7 +123,7 @@ Links **live and transferring**: A 26,12 → ctl 13,25 (both hold energy; hauler
 2. **Fleet upkeep +2–3 vs ideal** — local haul stuck at 3×10C (HMAX floor 3) even though link-era need is ~9 CARRY + ~10 refill ≈ 2 haulers; remote 60 vs 48.6. Mild.
 3. **waiting_feed 15%** — ctl is fed (cont ~1k, link draining) but not saturated; remotes still dump hub-first (hub delivered 18 > ctl 15). Not starving; hub→ctl link (gated `HUB_LINK=false`) stays optional.
 
-**Root cause found (observability / spawn feed):** `tools/model_w8.py` wrote `Memory.ops.w8model.lcarry` from the **no-link** flow F4 (~22, still prices A haul) even after A→ctl links existed. Spawn `HMAX = max(3, min(4, ceil((lcarry+10)/10)+1))` therefore never saw the link-era need. Fixed this review: when both links are live, Memory gets `lcarry≈9`, `upw≈31`, `links:true` from the link-aware flow; Grafana `w8.upgrade` ideal also switches. **HMAX floor of 3 is unchanged** (game code) — dropping it to 2 when `linkAt(A)` would save ~0.5 e/t; propose for a later patrol with a unit test, not shipped here.
+**Root cause found (observability / spawn feed):** `tools/model_w8.py` wrote `Memory.ops.w8model.lcarry` from the **no-link** flow F4 (~22, still prices A haul) even after A→ctl links existed. Spawn `HMAX = max(3, min(4, ceil((lcarry+10)/10)+1))` therefore never saw the link-era need. Fixed this review: when both links are live, Memory gets `lcarry≈9`, `upw≈31`, `links:true` from the link-aware flow; Grafana `w8.upgrade` ideal also switches. **HMAX floor dropped to 2 when `Memory.ops.w8model.links`** (patrol 2026-10-29 15:54, post-raid abort): saves ~0.5–1.5 e/t local hauler upkeep; pre-link rooms keep floor 3. Unit test covers both.
 
 **Plan recalibration (no Misaki decision):**
 - Steady RCL6 upgrade under current defense: **~23–24 e/t** (not 30). Trimmed (HMAX→2 + quieter waste): ~26. Ideal 30 only with zero tower/stock waste.
@@ -131,4 +131,4 @@ Links **live and transferring**: A 26,12 → ctl 13,25 (both hold energy; hauler
 - RCL7 gate unchanged: layoutRun places tower#3 (22,7) + spawn#2 (33,30) automatically; no early place (ERR_RCL_NOT_ENOUGH confirmed).
 - Do **not** enable `HUB_LINK` / minerals yet; waiting_feed is mild and storage is thin (~2k).
 
-**Verify (next model_w8 / w8patrol):** `Memory.ops.w8model.links === true` and `lcarry` ~9; live local CARRY still 30 until HMAX floor drops; upgrade stays ~23–25 while waste_other ~3.
+**Verify (next model_w8 / w8patrol):** `Memory.ops.w8model.links === true` and `lcarry` ~9; local CARRY should fall toward ~20 (2×10C) as the 3rd hauler ages out; upgrade target ~24–26 while waste_other ~3.

@@ -19,9 +19,14 @@ assert.strictEqual(run({ a: mk('w8miner', 'W47N8', { si: 0 }), b: mk('w8miner', 
 // home creeps (home W46N8) are not counted
 assert.strictEqual(run({ a: mk('miner', 'W46N8'), b: mk('w8miner', 'W46N8', { si: 0 }) }).role, 'w8miner');
 const full = { a: mk('w8miner', 'W47N8', { si: 0 }), b: mk('w8miner', 'W47N8', { si: 1 }), c: mk('w8hauler', 'W47N8'), d: mk('w8hauler', 'W47N8') };
-assert.strictEqual(run(full).role, 'w8hauler', 'base hauler quota is 3');
+assert.strictEqual(run(full).role, 'w8hauler', 'base hauler quota is 3 without links');
 full.g = mk('w8hauler', 'W47N8');
 assert.strictEqual(run(full).role, 'w8upgrader');
+// 10-29: links:true drops floor to 2 — with 2 haulers skip to upgrader
+Memory.ops = { w8model: { links: true, lcarry: 9, rcarry: 49, upw: 31 } };
+const linked = { a: mk('w8miner', 'W47N8', { si: 0 }), b: mk('w8miner', 'W47N8', { si: 1 }), c: mk('w8hauler', 'W47N8'), d: mk('w8hauler', 'W47N8') };
+assert.strictEqual(run(linked).role, 'w8upgrader', 'links:true hauler floor is 2');
+delete Memory.ops;
 Object.assign(full, { e: mk('w8upgrader', 'W47N8'), f: mk('w8upgrader', 'W47N8') });
 assert.strictEqual(run(full, 3).role, 'w8builder');
 assert.strictEqual(W.selfSufficient(), false, 'no room visible -> not self-sufficient');

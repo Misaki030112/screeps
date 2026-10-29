@@ -117,7 +117,9 @@ function spawnRun(spawn) {
   // rose to 633/1000; the surplus 3rd only spawned after loose passed 1200, so the ctl ran dry every cycle
   // 17:15: count only haulers that outlive a replacement (15-part body 45t spawn + ~30t walk): the 5-hauler cohort aged out together
   // to 2 (one at TTL 155) before the floor fired; ctl cont 13,26 at 0 with 3 upgraders empty while 11,43 rose to 1450 (t83741650)
-  if (!want && cs.filter(c => c.memory.role === 'w8hauler' && (c.spawning || c.ticksToLive > 75)).length < 3) want = 'w8hauler';
+  // 10-29 patrol: with A→ctl links (Memory.ops.w8model.links) local CARRY need ~9; floor 3 kept 30 CARRY idle. Drop to 2 when links.
+  const hFloor = (Memory.ops && Memory.ops.w8model && Memory.ops.w8model.links) ? 2 : 3;
+  if (!want && cs.filter(c => c.memory.role === 'w8hauler' && (c.spawning || c.ticksToLive > 75)).length < hFloor) want = 'w8hauler';
   // 17:4x (Misaki: spawn must never wait for energy): hub filler right after miners + the hauler floor, replaced ahead of death (fill.js)
   if (!want && FL.want(room, cs)) want = 'w8filler';
   // Misaki 10-29: continuous W47N9 assault from colony spawn (after economy floor)
@@ -173,7 +175,8 @@ function spawnRun(spawn) {
   // 15:55 model: local CARRY need = lcarry (~20, source->ctl) + ~10 for extension refills (spawn upkeep ~10 e/t over ~45t hub trips) = ~30
   // = 3 x 10C5M. The loose-pile surplus rule had grown it to 5-6 haulers (50-60 CARRY): the piles were sink-bound (ctl cont 2000 full,
   // 1-2 upgraders under the wall rule), so extra haulers only cost upkeep. Max 4 (one spare for stock/storage moves).
-  const HMAX = Math.max(3, Math.min(4, Math.ceil(((wm.lcarry || 20) + 10) / 10) + 1));
+  // 10-29 patrol: with A→ctl links + w8filler, local need ~9 CARRY (1x10C); floor/cap 2. Pre-link keeps old 3–4.
+  const HMAX = wm.links ? 2 : Math.max(3, Math.min(4, Math.ceil(((wm.lcarry || 20) + 10) / 10) + 1));
   const rCarry = (ttl) => cs.filter(c => c.memory.role === 'w8rhauler' && (c.spawning || c.ticksToLive > ttl)).reduce((a, c) => a + c.body.filter(p => p.type === CARRY).length, 0);
   if (!want && ours7 && lo7 > 1000 && n('w8rminer') && rCarry(150) < rNeed * (lo7 > 3000 ? 1 : 0.6)) want = 'w8rhauler';
   // 12:00: local loose ~2.9k (source conts 1090/2000) with hub 0 while spawn waited on a 1000-cost 4th builder (have 3). Surplus
