@@ -40,9 +40,11 @@ module.exports = { run(errors, alerts = []) {
   // remote threat snapshot (strategy 2026-10-20 00:0x): st/why/until per CFG remote for q.py / Grafana
   try {
     const threat = require('./threat'), remote = require('./remote'), rem = s.remote || (s.remote = {});
-    for (const r of Object.keys(remote.CFG)) {
+    const names = Object.keys(remote.CFG);
+    if (remote.guardRooms) for (const r of remote.guardRooms()) if (names.indexOf(r) < 0) names.push(r);
+    for (const r of names) {
       const th = threat.state(r);
-      rem[r] = { st: th.st, why: th.why || null, until: th.until || null };
+      rem[r] = { st: th.st, why: th.why || null, until: th.until || null, reserved: !!(threat.reservedByUs && threat.reservedByUs(r)) };
     }
   } catch (e) { /* threat/remote may be mid-reload */ }
 } };

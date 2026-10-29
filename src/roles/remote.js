@@ -32,6 +32,7 @@ function go(c, room, x, y, range, rr) {
   const R = remote.route(rm), i = R.indexOf(c.room.name), j = R.indexOf(room);
   if (i < 0 || j < 0) { c.moveTo(new RoomPosition(x, y, room), { range, reusePath: 20, costCallback: move.foreignSites }); return false; } // off-route (should not happen)
   const nxt = R[i + Math.sign(j - i)], ex = remote.exitTile(rm, c.room.name, nxt);
+  if (!ex) { c.moveTo(new RoomPosition(x, y, room), { range, reusePath: 20, costCallback: rn => (rn === 'W47N9' ? false : undefined) }); return false; } // dynamic reserved room: never path through W47N9
   if (c.pos.x === ex[0] && c.pos.y === ex[1]) { c.move(OFF(ex[0], ex[1])); return false; }
   move.to(c, ex[0], ex[1], 0); return false;
 }
@@ -248,10 +249,18 @@ function patrol(c) {
 const act = (c, t) => c.body.filter(p => p.type === t && p.hits > 0).length;
 function threatInfo(c) { return { hits: c.hits, ra: act(c, RANGED_ATTACK), heal: act(c, HEAL) }; }
 roles.defender = function (c) {
-  // Reads the FSM only (managers/threat.js); never decides about players/escalation itself.
-  const rm = c.memory.remote, C = remote.CFG[rm], th = threat.state(rm), K = threat.cfg(rm);
-  const inRoom = !!remote.CFG[c.room.name] || (C.via || []).includes(c.room.name);
-  const inv = inRoom ? c.room.find(FIND_HOSTILE_CREEPS).filter(h => h.owner.username === 'Invader') : [];
+  // Reads the FSM only (managers/threat.js); the FSM decides when to fight.
+  // While engaged in the assigned room, every combat hostile is a target (not only Invader). Patrol shots stay Invader-only.
+  // Never operates in W47N9 (defend-only; do not attack that room).
+  if (c.room.name === 'W47N9') { if (c.pos.y >= 48) c.move(BOTTOM); else c.moveTo(new RoomPosition(c.pos.x, 49, 'W47N9'), { range: 0, maxRooms: 1 }); return; }
+  const rm = c.memory.remote, C = (remote.cfgFor && remote.cfgFor(rm)) || remote.CFG[rm], th = threat.state(rm), K = threat.cfg(rm);
+  if (!C || rm === 'W47N9') return;
+  const inAssigned = c.room.name === rm;
+  const inRoom = inAssigned || !!(remote.CFG && remote.CFG[c.room.name]) || (C.via || []).includes(c.room.name);
+  // Invaders stay targets until dead (the last part is often MOVE). Other hostiles only while a combat part is live.
+  const armedFoe = h => h.owner.username === 'Invader' || h.body.some(p => (p.type === 'attack' || p.type === 'ranged_attack' || p.type === 'heal' || p.type === 'work') && p.hits > 0);
+  const fightingNow = (th.def === c.name || th.def2 === c.name) && (th.st === threat.S.DEFEND || th.st === threat.S.THREAT);
+  const inv = inRoom ? c.room.find(FIND_HOSTILE_CREEPS).filter(h => (inAssigned && fightingNow) ? armedFoe(h) : h.owner.username === 'Invader') : [];
   // heal: hurt -> self; Invader within 4 -> pre-heal (damage lands this tick)
   if (c.hits < c.hitsMax || inv.some(h => c.pos.inRangeTo(h, 4))) c.heal(c);
   const here = c.room.name === rm;
@@ -259,7 +268,7 @@ roles.defender = function (c) {
   const fighting = mine && (th.st === threat.S.DEFEND || th.st === threat.S.THREAT);
   if (c.ticksToLive < 10) threat.noteRecycle(rm, c.name); // natural death (patrol to TTL) is not a combat loss
   // patrol until TTL instead of recycling (FSM adopts us for the next THREAT); the old TTL<80 recycle stays when patrol is off
-  if (!fighting && patrolOn() && !c.memory.hurt) {
+  if (!fighting && patrolOn() && !c.memory.hurt && !C.guardOnly && !C.dynamic) {
     c.memory.patrol = true; delete c.memory.lk;
     const t = inv.find(h => c.pos.inRangeTo(h, 3)); if (t) c.rangedAttack(t); // passing Invader: shoot, but don't chase (FSM decides)
     return patrol(c);
@@ -275,7 +284,8 @@ roles.defender = function (c) {
     const R = remote.route(rm), ri = R.indexOf(c.room.name), ex = ri > 0 ? remote.exitTile(rm, c.room.name, R[ri - 1]) : null;
     const m = inRoom && !edge && inv.find(h => meleeOf(h) && c.pos.inRangeTo(h, 3));
     if (m && ex && !c.pos.inRangeTo(ex[0], ex[1], 1)) return kite(c, m, true);
-    if (c.room.name !== C.home || c.pos.x >= 48) { const sp = Game.spawns[C.spawn || 'Spawn1']; return go(c, C.home, sp ? sp.pos.x : 35, sp ? sp.pos.y : 28, 1); }
+    if (c.room.name !== C.home || c.pos.x >= 48) { const sp = Game.spawns[C.spawn || 'Spawn1'];
+      return go(c, C.home, sp ? sp.pos.x : (C.spawn ? (C.park || [35, 28])[0] : 35), sp ? sp.pos.y : (C.spawn ? (C.park || [35, 28])[1] : 28), 1); }
     if (c.memory.hurt && !c.memory.recycle) { const [px, py] = C.park || [33, 26]; return move.to(c, px, py, 1); } // tower heals it
     const sp = c.pos.findClosestByRange(FIND_MY_SPAWNS); if (!sp) return;
     if (c.pos.isNearTo(sp)) { threat.noteRecycle(rm, c.name); sp.recycleCreep(c); } else move.to(c, sp.pos.x, sp.pos.y, 1);

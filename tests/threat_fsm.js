@@ -72,6 +72,48 @@ it('step is pure (does not mutate input state)', () => { const s = { st: 'SAFE',
 it('disarmed mid-THREAT/DEFEND -> WAIT gate (defender recycles)', () => {
   assert.deepStrictEqual(run([[1, { inv: solo() }], [2, { inv: solo(), armed: false, def: 'spawning' }]]).states, ['THREAT', 'WAIT']);
   assert.deepStrictEqual(run([[1, { inv: solo() }], [2, { inv: solo(), def: 'out' }], [3, { inv: solo(), armed: false, def: 'out' }]]).states, ['THREAT', 'DEFEND', 'WAIT']); });
+it('player inside a room we reserve -> THREAT guard, then DEFEND (not a 1500 wait)', () => {
+  const r = run([[1, { reserved: true, hereP: 1, players: 1 }], [2, { reserved: true, hereP: 1, players: 1, def: 'out' }]]);
+  assert.strictEqual(r.states[0], 'THREAT'); assert.strictEqual(r.evs[0], 'threat:guard'); assert.strictEqual(r.s.st, 'DEFEND');
+});
+it('player only on the route or in the colony -> still WAIT player, even if the remote is reserved', () => {
+  assert.strictEqual(run([[1, { reserved: true, hereP: 0, players: 1 }]]).s.why, 'player');
+});
+it('escalated invaders in a reserved room -> guard; unreserved stays wait-out', () => {
+  assert.strictEqual(run([[1, { reserved: true, inv: solo().concat(solo()) }]]).s.why, 'guard');
+  assert.strictEqual(run([[1, { inv: solo().concat(solo()) }]]).s.why, 'escalated');
+});
+it('dismantler (WORK, no attack) in a reserved room -> guard', () => {
+  assert.strictEqual(run([[1, { reserved: true, work: 1 }]]).s.why, 'guard');
+});
+it('guard stays DEFEND past defendTimeout while hostiles remain', () => {
+  const r = run([[1, { reserved: true, hereP: 1, players: 1 }], [2, { reserved: true, hereP: 1, players: 1, def: 'out' }], [900, { reserved: true, hereP: 1, players: 1, def: 'out' }]]);
+  assert.strictEqual(r.s.st, 'DEFEND');
+});
+it('invader core is never a guard target', () => {
+  assert.strictEqual(run([[1, { reserved: true, core: true, hereP: 1, players: 1 }]]).s.why, 'core');
+});
+it('short-TTL invader stays wait-out even when the room is reserved', () => {
+  assert.strictEqual(run([[1, { reserved: true, inv: solo(200) }]]).s.why, 'short_ttl');
+});
+it('solo invader in a reserved room keeps the solo path', () => {
+  assert.strictEqual(run([[1, { reserved: true, inv: solo() }]]).evs[0], 'threat:solo');
+});
+it('no vision keeps a reserved-room guard alive so the defender can arrive', () => {
+  const r = run([[1, { reserved: true, hereP: 2, players: 2 }], [80, { vis: false, reserved: true, def: 'out' }]]);
+  assert.strictEqual(r.states[0], 'THREAT'); assert.strictEqual(r.s.st, 'DEFEND');
+});
+it('lost vision longer than foeMemory drops the guard', () => {
+  const r = run([[1, { reserved: true, hereP: 1, players: 1, def: 'out' }], [2, { reserved: true, hereP: 1, players: 1, def: 'out' }], [250, { vis: false, reserved: true, def: 'out' }]]);
+  assert.strictEqual(r.states[1], 'DEFEND'); assert.strictEqual(r.s.st, 'SAFE');
+});
+it('pickHome never sends a guard at W47N9; W47N7 homes on W47N8', () => {
+  const R = require(path.join(__dirname, '..', 'src/managers/remote.js'));
+  assert.strictEqual(R.pickHome('W47N7', ['W46N8', 'W47N8']), 'W47N8');
+  assert.strictEqual(R.pickHome('W47N9', ['W47N8', 'W46N8']), null);
+  assert.strictEqual(R.pickHome('W45N8', ['W46N8', 'W47N8']), 'W46N8');
+  assert.strictEqual(R.pickHome('W43N8', ['W46N8']), null); // distance 3, out of range
+});
 // armed() gate in Game context
 it('armed(): flag + RCL4 stable 1500t + full + CLAIM2 reserver', () => {
   const home = { controller: { level: 4 }, energyCapacityAvailable: 1300, energyAvailable: 0, memory: { lastFull: 0 } };
@@ -91,6 +133,20 @@ it('armed(): flag + RCL4 stable 1500t + full + CLAIM2 reserver', () => {
   home.storage = null; home.memory.lastFull = 4900; assert.strictEqual(T.armed('W45N8'), true); // recently near-full still counts
   delete Memory.defense; assert.strictEqual(T.armed('W45N8'), true); // default ON (Misaki 10:39: keep remote anti-Invader)
   Memory.defense = { remoteDefender: false }; assert.strictEqual(T.armed('W45N8'), false); // explicit off still works
+});
+it('armed() while the controller is still reserved by us, with no CLAIM2 creep', () => {
+  const home = { controller: { level: 5 }, energyCapacityAvailable: 1800, energyAvailable: 200, memory: { lastFull: 100 }, storage: { store: { energy: 2000 } } };
+  global.Memory = { username: 'Misaki', remote: { W45N8: { res: { username: 'Misaki', ticksToEnd: 900 }, seen: 8000 } }, creeps: {}, defense: { remoteDefender: true }, ops: {} };
+  global.Game = { time: 8000, rooms: { W46N8: home, W47N8: home }, creeps: {} };
+  const R = require(path.join(__dirname, '..', 'src/managers/remote.js')); R.CFG.W45N8.defend = true;
+  assert.strictEqual(T.armed('W45N8'), true, 'reservation alone keeps the defender armed');
+  Memory.remote.W45N8.res = { username: 'Cody132', ticksToEnd: 900 };
+  assert.strictEqual(T.armed('W45N8'), false, 'foreign reservation does not arm');
+  Memory.ops.r7 = { by: 'Misaki', endTime: 9000 };
+  assert.strictEqual(T.armed('W47N7'), true, 'W47N7 reservation (ops.r7) arms the colony defender');
+  Memory.ops.r7.by = 'BustJetter';
+  assert.strictEqual(T.armed('W47N7'), false, 'someone else holding W47N7 does not arm us');
+  assert.strictEqual(T.reservedByUs('W47N9'), false);
 });
 for (const [n, f] of cases) { try { f(); pass++; console.log('ok   ' + n); } catch (e) { console.log('FAIL ' + n + '\n     ' + e.message); } }
 console.log(`${pass}/${cases.length} passed`); if (pass !== cases.length) process.exit(1);
