@@ -206,33 +206,52 @@ function run(c) {
   if (c.room.name === TARGET) {
     const w = world(c.room), p = pick(c.pos, w), t = p && Game.getObjectById(p.id);
     const hp = c.getActiveBodyparts(HEAL) ? healPlan(c, squad(c)) : null;
-    // dedicated healers: heal first, stay near hurt melee / breach
+    const mlHere = alive.filter(isMelee).filter(x => x.room.name === TARGET);
+    // Support (ranged/heal) must not stand closer to BREACH than melee — clear the lane.
+    const yieldLane = () => {
+      if (isMelee(c) || !mlHere.length) return false;
+      const myD = rng(c.pos, BREACH);
+      if (!_.some(mlHere, m => rng(m.pos, BREACH) > myD)) return false;
+      delete c.memory._m;
+      // step south (higher y = back toward entry) to let melee pass north
+      c.moveTo(c.pos.x, Math.min(49, c.pos.y + 2), { reusePath: 0, maxRooms: 1, ignoreCreeps: true, swampCost: 5 });
+      return true;
+    };
+    // dedicated healers: heal first, stay behind melee
     if (isHeal(c)) {
       if (hp && hp.mode === 'heal') { c.heal(hp.id === c.id ? c : Game.getObjectById(hp.id)); }
       else if (hp && hp.mode === 'ranged') { c.rangedHeal(Game.getObjectById(hp.id)); }
       else if (hp && hp.mode === 'far') return c.moveTo(hp.pos, { range: 1, reusePath: 2, maxRooms: 1 });
-      // shadow nearest melee or breach
-      const ml = alive.filter(isMelee).filter(x => x.room.name === TARGET);
-      const anchor = ml.length ? _.min(ml, x => rng(c.pos, x.pos)) : null;
-      if (anchor && !c.pos.inRangeTo(anchor, 2)) return MV.to(c, anchor.pos.x, anchor.pos.y, 1, ND);
-      if (!c.pos.inRangeTo(BREACH.x, BREACH.y, 3)) {
+      if (yieldLane()) return;
+      const anchor = mlHere.length ? _.min(mlHere, x => rng(c.pos, x.pos)) : null;
+      if (anchor) {
+        // prefer 1–2 tiles behind melee (farther from BREACH / higher y)
+        const by = Math.min(49, Math.max(anchor.pos.y, anchor.pos.y + 1));
+        if (!c.pos.inRangeTo(anchor.pos.x, by, 1)) return MV.to(c, anchor.pos.x, by, 1, ND);
+        return;
+      }
+      if (!c.pos.inRangeTo(BREACH.x, BREACH.y, 4)) {
         delete c.memory._m;
-        return c.moveTo(new RoomPosition(BREACH.x, BREACH.y, TARGET), { range: 3, reusePath: 5, maxRooms: 1, ignoreDestructibleStructures: true, ignoreCreeps: true });
+        return c.moveTo(new RoomPosition(BREACH.x, BREACH.y, TARGET), { range: 4, reusePath: 5, maxRooms: 1, ignoreDestructibleStructures: true, ignoreCreeps: true });
       }
       return;
     }
     strike(c, t, w, hp);
     if (c.pos.y === 49) return c.move(TOP);
     if (hp && hp.mode === 'far' && hp.ratio < HEAL_URGENT && !(p && p.pri <= 2)) return c.moveTo(hp.pos, { range: 1, reusePath: 2, maxRooms: 1 });
+    // ranged: shoot then yield if blocking melee
+    if (!isMelee(c) && yieldLane()) return;
     if (!t) {
-      // no target yet: push toward breach then towers area
       delete c.memory._m;
-      return c.moveTo(new RoomPosition(BREACH.x, BREACH.y, TARGET), { range: 1, reusePath: 5, maxRooms: 1, ignoreDestructibleStructures: true, ignoreCreeps: true });
+      return c.moveTo(new RoomPosition(BREACH.x, BREACH.y, TARGET), { range: isMelee(c) ? 1 : 3, reusePath: 5, maxRooms: 1, ignoreDestructibleStructures: true, ignoreCreeps: true });
     }
-    const r = c.getActiveBodyparts(ATTACK) ? 1 : (p.pri === 1 || p.pri === 3 ? 3 : 2);
+    const r = isMelee(c) ? 1 : (p.pri === 1 || p.pri === 3 ? 3 : 2);
     if (c.pos.inRangeTo(t, r)) return;
     if (t.structureType) {
-      const edge = c.pos.findInRange(FIND_HOSTILE_STRUCTURES, 1).find(s => s.structureType === STRUCTURE_RAMPART || s.structureType === STRUCTURE_WALL);
+      // only hold on the pick target / breach barrier — not random adjacent ramparts
+      const edge = c.pos.findInRange(FIND_HOSTILE_STRUCTURES, 1).find(s =>
+        (s.structureType === STRUCTURE_RAMPART || s.structureType === STRUCTURE_WALL)
+        && (s.id === t.id || rng(s.pos, BREACH) <= 2));
       if (edge) return;
       delete c.memory._m;
       c.moveTo(t, { range: r, reusePath: 5, maxRooms: 1, ignoreDestructibleStructures: true, ignoreCreeps: true, swampCost: 5 });
