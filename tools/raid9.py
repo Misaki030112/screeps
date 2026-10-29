@@ -3,6 +3,8 @@
   python3 tools/raid9.py status   room-objects intel + Memory.ops.w47n9 + living raid9
   python3 tools/raid9.py arm      RESET Memory.ops.w47n9={on:true,n:0}; continuous waves until SM/abort (NEEDS APPROVAL)
   python3 tools/raid9.py abort    on=false, garrison=true (stop spawn; living fall back to W47N8 wall)
+go is set in-game once ≥2 melee, or ≥2 melee+ranged, are on the W47N8 north lip (y≤3) or already in W47N9.
+Healers do not have to stand on rally slots. go clears only when W47N9 is empty and no melee/ranged remain on that lip.
 Does NOT deploy code. arm writes Memory only — do not run without Misaki/parent approval.
 """
 import sys, os, json, time, collections

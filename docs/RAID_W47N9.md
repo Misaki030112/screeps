@@ -24,9 +24,9 @@ Code: `src/roles/raid9.js`，控制 `tools/raid9.py`，测试 `tests/raid9.js`�
 | **合计 / 波** | | **~13200** | **6** |
 
 - 出兵：**W46N8 与 W47N8 均可**（`wantSpawn` 两边）；存活不足 WAVE 且 `on` 且未 SM/garrison 时自动补员。  
-- 集结：W47N8 北口偏东 `38–41,y=1–2`（近战前排、远程/治疗后排），齐 6 再进。  
+- 集结：W47N8 北口一带（`y≤3`：出口、近战 `y=1`、远程/治疗 `y=2`、后排一格）。**≥2 近战**，或 **≥2 近战+远程**，已在该带或已在 W47N9，即设 `go` 推向破口 (39,42)。治疗不必站上精确槽；已在目标房的 creep **不退回** STAGE。  
 - 进房：近战先，远程/治疗跟；治疗贴近战回血。  
-- **一波死光不停止**；清空 `go` 后下一波再集结。SM / overrun / `abort` 才停。
+- **减员不因此清 `go`**。房内还有人，或北口还有近战/远程，就保持 `go`。目标房已空且北口没有近战/远程（只剩治疗不算）才清 `go`，让新一波重新凑够战斗单位再进。SM / overrun / `abort` 才停。
 
 `Memory.ops.w47n9` 标志：
 
@@ -34,7 +34,7 @@ Code: `src/roles/raid9.js`，控制 `tools/raid9.py`，测试 `tests/raid9.js`�
 |---|---|
 | `on` | 造兵总开关 |
 | `n` | 累计已造数量（统计） |
-| `go` | 本波已齐员出发 tick |
+| `go` | 突击出发 tick。北口或目标房内凑够战斗单位即置位；目标房已空且北口没有近战/远程才清除 |
 | `safe` / `safeUntil` | 对方 SM → 撤回 garrison，不再造 |
 | `flee` / `garrison` | overrun 或 `abort` |
 | （隐式）`pauseCivilians` | `on && !safe && !garrison && !flee` 时 home/colony 停 builder、upgrader 压到 1 |
@@ -46,6 +46,8 @@ Code: `src/roles/raid9.js`，控制 `tools/raid9.py`，测试 `tests/raid9.js`�
 | W47N9 safe mode | 烧 SM 成功；garrison；停造 |
 | 房内敌 ATTACK+RA ≥12 | flee → garrison |
 | `raid9.py abort` | 停造 + garrison |
+| 减员，但房内还有人或北口还有近战/远程 | **保持 go**，继续打；不要求回精确槽 |
+| 目标房已空，且北口没有近战/远程 | 清 `go`，新一波凑够 ≥2 战斗单位再进 |
 | 单波阵亡 | **继续补下一波**（不因此 abort） |
 
 ## 启动

@@ -85,4 +85,86 @@ assert.deepStrictEqual(R.slotOf(0, 'h'), [40, 2]);
 // overrun
 assert.ok(R.armedParts([{ attack: 0, ranged: 6 }, { attack: 0, ranged: 6 }]) >= 12);
 assert.ok(R.armedParts([{ attack: 0, ranged: 6 }]) < 12);
+// launch / regroup. creep = kind, room, x, y
+const cr = (kind, room, x, y) => ({ memory: { role: 'raid9', kind }, room: { name: room }, pos: { x, y } });
+assert.strictEqual(R.NEAR_EXIT, 3);
+assert.strictEqual(R.LAUNCH, 2);
+assert.ok(R.inAssaultZone(cr('m', 'W47N8', 10, 1)));
+assert.ok(R.inAssaultZone(cr('h', 'W47N8', 41, R.NEAR_EXIT)));
+assert.ok(R.inAssaultZone(cr('h', 'W47N9', 39, 45)));
+assert.ok(!R.inAssaultZone(cr('m', 'W47N8', 38, R.NEAR_EXIT + 1)));
+assert.ok(!R.inAssaultZone(cr('m', 'W46N8', 38, 1)));
+// preferred: two melee on the lip, not on exact slots; healers still home / already in TARGET
+{
+  const alive = [cr('m', 'W47N8', 10, 1), cr('m', 'W47N8', 12, 1), cr('r', 'W46N8', 20, 20), cr('h', 'W47N9', 39, 45)];
+  assert.ok(R.assaultReady(alive));
+  assert.ok(!R.shouldRegroup(alive));
+}
+// one melee + one ranged on the lip is enough; a healer off-slot does not block
+assert.ok(R.assaultReady([cr('m', 'W47N8', 38, 1), cr('r', 'W47N8', 5, 2), cr('h', 'W46N8', 1, 1)]));
+// two ranged on the hold-back row
+assert.ok(R.assaultReady([cr('r', 'W47N8', 38, 3), cr('r', 'W47N8', 39, 3)]));
+// melee already in TARGET + ranged on the lip: do not require the melee to return to a slot
+assert.ok(R.assaultReady([cr('m', 'W47N9', 39, 42), cr('r', 'W47N8', 38, 2)]));
+// healers on exact slots do not count; one combat is not a wave
+assert.ok(!R.assaultReady([cr('m', 'W47N8', 38, 1), cr('h', 'W47N8', 40, 2), cr('h', 'W47N8', 41, 2)]));
+// combat still walking up (south of the lip / still home) does not launch
+assert.ok(!R.assaultReady([cr('m', 'W47N8', 38, 4), cr('m', 'W47N8', 39, 4), cr('r', 'W46N8', 10, 10)]));
+// old gate: healer already in TARGET used to block "all 6 on exact slots"
+{
+  const alive = [
+    cr('m', 'W47N8', 38, 1), cr('m', 'W47N8', 39, 1),
+    cr('r', 'W47N8', 38, 2), cr('r', 'W47N8', 39, 2),
+    cr('h', 'W47N8', 40, 2), cr('h', 'W47N9', 39, 44),
+  ];
+  assert.ok(R.assaultReady(alive));
+  Game.time = 100;
+  const P = { on: true };
+  R.syncGo(P, alive);
+  assert.strictEqual(P.go, 100);
+}
+// live stall: 4 parked on y=1, short of WAVE, not on exact x — still launch
+{
+  Game.time = 100;
+  const P = { on: true };
+  R.syncGo(P, [cr('m', 'W47N8', 37, 1), cr('m', 'W47N8', 36, 1), cr('r', 'W47N8', 40, 1), cr('h', 'W47N8', 41, 1)]);
+  assert.strictEqual(P.go, 100);
+}
+// one death, others still in the room or on the lip: keep go (even if alive < WAVE and target is briefly empty)
+{
+  const P = { on: true, go: 50 };
+  R.syncGo(P, [cr('m', 'W47N9', 39, 43), cr('h', 'W47N8', 40, 2), cr('r', 'W46N8', 10, 10)]);
+  assert.strictEqual(P.go, 50);
+  const parked = { on: true, go: 50 };
+  R.syncGo(parked, [cr('m', 'W47N8', 38, 1), cr('r', 'W47N8', 39, 1), cr('h', 'W47N8', 41, 1)]);
+  assert.strictEqual(parked.go, 50);
+}
+// assault force gone (home / deep stage only, healers alone on the lip, or nobody left): clear go
+{
+  const P = { on: true, go: 50 };
+  R.syncGo(P, [cr('m', 'W46N8', 10, 10), cr('r', 'W47N8', 25, 20)]);
+  assert.ok(!P.go);
+  const healers = { on: true, go: 50 };
+  R.syncGo(healers, [cr('h', 'W47N8', 40, 2), cr('h', 'W47N8', 41, 1)]);
+  assert.ok(!healers.go);
+  const dead = { on: true, go: 50 };
+  R.syncGo(dead, []);
+  assert.ok(!dead.go);
+}
+// a creep still inside TARGET holds go, including a lone healer — do not abandon the breach
+{
+  const P = { on: true, go: 50 };
+  R.syncGo(P, [cr('h', 'W47N9', 39, 44), cr('m', 'W46N8', 10, 10)]);
+  assert.strictEqual(P.go, 50);
+}
+// safe / garrison do not launch; an existing go timestamp is not refreshed while the wave holds
+{
+  Game.time = 100;
+  const held = { on: true, garrison: true };
+  R.syncGo(held, [cr('m', 'W47N8', 38, 1), cr('m', 'W47N8', 39, 1)]);
+  assert.ok(!held.go);
+  const stamped = { on: true, go: 40 };
+  R.syncGo(stamped, [cr('m', 'W47N8', 38, 1), cr('m', 'W47N8', 39, 1)]);
+  assert.strictEqual(stamped.go, 40);
+}
 console.log('raid9 ok');

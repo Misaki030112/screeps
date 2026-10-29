@@ -1,6 +1,8 @@
 // W47N9 sustained assault (Misaki 2026-10-29): breach@(39,42) → towers → creeps → structures; force SM.
 // Memory.ops.w47n9 = { on, n, go, safe, safeUntil, flee, garrison }.
 // Continuous waves: while on && !safe/garrison/flee, keep WAVE living (2 melee + 2 ranged + 2 heal) from HOME and colony STAGE.
+// go: ≥2 melee, or ≥2 melee+ranged, on the STAGE north lip or already in TARGET. Healers need not be on slots.
+// Creeps already in TARGET stay. Clear go only when TARGET is empty and no melee/ranged remain on that lip.
 // Do NOT auto-activate our safe mode. Manual abort: tools/raid9.py abort.
 const MV = require('../utils/move');
 const TARGET = 'W47N9', STAGE = 'W47N8', HOME = 'W46N8';
@@ -12,6 +14,9 @@ const RALLY = {
   r: [[38, 2], [39, 2]],
   h: [[40, 2], [41, 2]],
 };
+// North lip of STAGE: exit y=0, melee row y=1, ranged/heal row y=2, one-tile hold-back y=3. Any x.
+const NEAR_EXIT = 3;
+const LAUNCH = 2; // combat creeps (melee and/or ranged) on the lip or already in TARGET
 const BREACH = { x: 39, y: 42 };
 const MELEE = () => [].concat(Array(2).fill(TOUGH), Array(16).fill(ATTACK), Array(18).fill(MOVE)); // 2200
 const RANGED = () => [].concat(Array(10).fill(RANGED_ATTACK), Array(11).fill(MOVE), [HEAL]);       // 2300
@@ -147,12 +152,40 @@ function overrun(room) {
     attack: h.getActiveBodyparts(ATTACK), ranged: h.getActiveBodyparts(RANGED_ATTACK),
   }))) >= 12;
 }
-// regroup: clear go so next wave rallies before re-entering
-function maybeRegroup(P, alive) {
+// North lip of STAGE, or already inside TARGET. Exact rally slots are not required.
+function inAssaultZone(c) {
+  if (!c || !c.room || !c.pos) return false;
+  if (c.room.name === TARGET) return true;
+  return c.room.name === STAGE && c.pos.y <= NEAR_EXIT;
+}
+// Preferred pair is two melee. Any two of melee+ranged also launches. Healers never count.
+function assaultReady(creeps) {
+  let melee = 0, combat = 0;
+  for (const c of creeps || []) {
+    const k = (c.memory && c.memory.kind) || 'm';
+    if ((k !== 'm' && k !== 'r') || !inAssaultZone(c)) continue;
+    combat++;
+    if (k === 'm') melee++;
+  }
+  if (melee >= LAUNCH) return true;
+  return combat >= LAUNCH;
+}
+const combatKind = c => { const k = (c.memory && c.memory.kind) || 'm'; return k === 'm' || k === 'r'; };
+// Fresh wave only: nobody left in TARGET, and no melee/ranged still on the lip.
+// One death while others are in the room or combat is still staging does not clear go.
+// Healers alone on the lip are not an assault force.
+function shouldRegroup(alive) {
+  if (!alive || !alive.length) return true;
+  for (const c of alive) {
+    if (c.room && c.room.name === TARGET) return false;
+    if (combatKind(c) && inAssaultZone(c)) return false;
+  }
+  return true;
+}
+function syncGo(P, alive) {
   if (!raidActive(P)) return;
-  if (alive.length === 0) { delete P.go; return; }
-  const inT = alive.filter(c => c.room.name === TARGET).length;
-  if (P.go && inT === 0 && alive.length < WAVE) delete P.go;
+  if (P.go && shouldRegroup(alive)) delete P.go;
+  else if (!P.go && assaultReady(alive)) P.go = Game.time;
 }
 function run(c) {
   const P = M(), kind = c.memory.kind || 'm', slot = creepSlot(c);
@@ -167,13 +200,9 @@ function run(c) {
     if (c.pos.y === 49) return c.move(BOTTOM);
     return MV.to(c, 39, 49, 0, ND);
   }
-  // no last-man abort — continuous waves replace fallen; lone units fall back to stage to wait
+  // Continuous waves replace the fallen. Creeps already in TARGET stay on the breach.
   const alive = allRaid();
-  maybeRegroup(P, alive);
-  if (c.room.name === TARGET && alive.length <= 1 && !P.go) {
-    if (c.pos.y === 49) return c.move(BOTTOM);
-    return MV.to(c, 39, 49, 0, ND);
-  }
+  syncGo(P, alive);
   if (c.room.name === TARGET) {
     const w = world(c.room), p = pick(c.pos, w), t = p && Game.getObjectById(p.id);
     const hp = c.getActiveBodyparts(HEAL) ? healPlan(c, squad(c)) : null;
@@ -225,11 +254,6 @@ function run(c) {
     return travel(c, slot);
   }
   travel(c, slot);
-  const all = allRaid();
-  if (all.length >= WAVE && all.every(x => {
-    const s = creepSlot(x);
-    return x.room.name === STAGE && x.pos.x === s[0] && x.pos.y === s[1];
-  })) P.go = Game.time;
 }
 function wantSpawn(room) {
   const P = Memory.ops && Memory.ops.w47n9;
@@ -253,4 +277,5 @@ function pauseCivilians() {
 module.exports = {
   slotOf, gSlotOf, GARRISON, BREACH, WAVE, NEED, run, pick, useMass, healPlan, armedParts, overrun,
   wantSpawn, noteSpawned, pauseCivilians, MELEE, RANGED, HEALER, RALLY, raidActive,
+  NEAR_EXIT, LAUNCH, inAssaultZone, assaultReady, shouldRegroup, syncGo,
 };
