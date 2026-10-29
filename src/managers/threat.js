@@ -73,7 +73,16 @@ function step(s, o, c, t) {
       else if (t - s.since > c.defendTimeout) waitNpc('defend_timeout');
       break;
     case S.WAIT:
-      if (s.why === 'core') { if (o.vis && !o.core) go(S.SAFE, 'core_gone'); else if (t >= s.until) s.until = t + c.coreRecheck; }
+      // coreRecheck: with vision keep waiting while the core stands; WITHOUT vision a forever-extend left remotes
+      // paused (no creeps → no vision → never core_gone). On timer expiry with no vision, resume (SAFE) so a
+      // reserver/rminer looks again; sense re-enters WAIT if the core is still there. Never auto-attack cores.
+      if (s.why === 'core') {
+        if (o.vis && !o.core) go(S.SAFE, 'core_gone');
+        else if (t >= s.until) {
+          if (!o.vis) go(S.SAFE, 'core_recheck');
+          else s.until = t + c.coreRecheck;
+        }
+      }
       // a spawn gate (gate/cpu/budget/deaths) cleared while a solo Invader is still here: arm and fight (do not wait out the whole TTL)
       else if (GATES.includes(s.why) && !gateReason(o, c) && k === 'solo') {
         delete s.until; s.inc = t; delete s.recycling; go(S.THREAT, 'solo', { inv: o.inv }); }

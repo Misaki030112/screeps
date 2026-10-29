@@ -29,7 +29,7 @@ const cases = [
   ['storage 20000 calm: latch build, extras allowed', () => { const m = {}; assert.strictEqual(up({ storage: 20000, mem: m }), 3); assert.strictEqual(m.walls.why, 'bank'); }],
   ['latched: dip below 20k never re-banks', () => { const m = { walls: { started: 5 } }; assert.strictEqual(up({ storage: 1000, ema: 1500, mem: m }), 2); }],
   ['storage 25k but remote threat holding: keep banking', () => { const m = {}; assert.strictEqual(up({ storage: 25000, holding: true, mem: m }), 1); assert.ok(!m.walls); }],
-  ['storage 25k but hostile in home: keep banking', () => { const m = {}; assert.strictEqual(up({ storage: 25000, hostiles: [player], mem: m }), 1); assert.ok(!m.walls); }],
+  ['storage 25k but hostile in home: keep banking', () => { Date.now = () => WL.NOVICE_END - 1; const m = {}; assert.strictEqual(up({ storage: 25000, hostiles: [player], mem: m }), 1); assert.ok(!m.walls); Date.now = now; }],
   ['early start after novice end: player combat creep in home', () => { Date.now = () => WL.NOVICE_END; const m = {}; assert.strictEqual(WL.phase(room({ storage: 100, hostiles: [player], mem: m })), 'build'); assert.strictEqual(m.walls.why, 'player'); Date.now = now; }],
   ['before novice end: player creep does not start walls early', () => { Date.now = () => WL.NOVICE_END - 1; assert.strictEqual(WL.phase(room({ storage: 100, hostiles: [player] })), 'bank'); Date.now = now; }],
   ['novice end = 2026-10-28 03:33 UTC+8', () => assert.strictEqual(new Date(WL.NOVICE_END).toISOString(), '2026-10-27T19:33:00.000Z')],

@@ -52,9 +52,18 @@ it('defender dies -> WAIT defender_died (deaths counter then blocks today)', () 
 });
 it('defender recycled (TTL) mid-fight -> WAIT defender_expired', () => assert.strictEqual(run([[1, { inv: solo() }], [40, { def: 'out', inv: solo() }], [80, { def: 'none', inv: solo() }]]).s.why, 'defender_expired'));
 it('fight too long -> WAIT defend_timeout', () => assert.strictEqual(run([[1, { inv: solo() }], [40, { def: 'out', inv: solo() }], [500, { def: 'out', inv: solo(900) }]]).s.why, 'defend_timeout'));
-it('invader core -> WAIT core; extended while core visible; SAFE when gone', () => {
-  const r = run([[1, { core: true }], [600, { core: true }], [700, { vis: false }], [1200, { vis: false }], [1300, { core: false }]]);
-  assert.deepStrictEqual(r.states, ['WAIT', 'WAIT', 'WAIT', 'WAIT', 'SAFE']); assert.strictEqual(r.evs.pop(), 'resume:core_gone');
+it('invader core -> WAIT; stay WAIT while core visible past recheck; SAFE when gone', () => {
+  const r = run([[1, { core: true }], [600, { core: true }], [1100, { core: true }], [1200, { core: false }]]);
+  assert.deepStrictEqual(r.states, ['WAIT', 'WAIT', 'WAIT', 'SAFE']); assert.strictEqual(r.evs.pop(), 'resume:core_gone');
+});
+it('invader core WAIT: timer expiry without vision -> SAFE core_recheck (regain vision)', () => {
+  // after t=600 extend until=1100; at 1100 with no vision resume so remotes can look again
+  const r = run([[1, { core: true }], [600, { core: true }], [700, { vis: false }], [1100, { vis: false }]]);
+  assert.deepStrictEqual(r.states, ['WAIT', 'WAIT', 'WAIT', 'SAFE']); assert.strictEqual(r.evs.pop(), 'resume:core_recheck');
+});
+it('invader core: SAFE recheck then core still there -> WAIT again', () => {
+  const r = run([[1, { core: true }], [600, { core: true }], [1100, { vis: false }], [1150, { core: true }]]);
+  assert.deepStrictEqual(r.states, ['WAIT', 'WAIT', 'SAFE', 'WAIT']); assert.strictEqual(r.s.why, 'core');
 });
 it('WAIT on NPC ends early when vision shows the room clear', () => assert.deepStrictEqual(run([[1, { inv: solo(), armed: false }], [500, { inv: [] }]]).states, ['WAIT', 'SAFE']));
 it('WAIT timer ends without vision', () => assert.deepStrictEqual(run([[1, { inv: solo(100), armed: false }], [180, { vis: false }], [182, { vis: false }]]).states, ['WAIT', 'WAIT', 'SAFE']));
