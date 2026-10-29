@@ -380,6 +380,11 @@ function run1(spawn, onWait) {
     // Not gated on defLow (patrol 10-20 10:2x: storage hovers 13.9-15.3k around the 15k floor, defLow true at every check, builder
     // never spawned in 30 min); it refills from the remote container (builder.remoteRefill), only a deep drain (<reserve-3k) stops it.
     if (!T.builder && room.storage && rcl >= 6 && room.storage.store[RESOURCE_ENERGY] >= dr - 3000 && (require('../roles/builder').remoteRoadSite() || require('./roads').repairTarget(0.3))) { T.builder = 1; roadBuilder = true; }
+    // Fund-backed wall step (patrol 10-29 17:2x): surplus gate zeros builders while storage hovers at reserveE..+2k
+    // (supply-follows-demand), but walls.fund is full (50k) and wantBuilder true — home walls stuck at STEP 142101 for hours
+    // (next STEPS[7]=300k). Mirror roadBuilder: 1 builder when fund wants repair and not defLow; pickSource still never
+    // takes storage below reserveE.
+    if (!T.builder && !low && Wr.wantBuilder(room)) { T.builder = 1; }
     // A site no builder will work must not cost an upgrader slot ('sites ? 1 : 2' frees feed for a builder). Patrol 10-20 07:2x:
     // walls.js NW spur road 30,12 (0/300) sat with builder target 0 (storage at the 15k floor) -> upgrader target 1, the 2nd
     // 14W upgrader died unreplaced (~-8 e/t upgrade) against Misaki's 'upgrade first until RCL7'.

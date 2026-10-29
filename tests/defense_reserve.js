@@ -25,3 +25,6 @@ console.log('siege exemption ok');
 // route-road upkeep (patrol 10-20 09:5x): one capped builder for remote road sites even at the reserve, without costing an upgrader
 assert.ok(sp.includes("repairTarget(0.3))) { T.builder = 1; roadBuilder = true; }") && sp.includes('store[RESOURCE_ENERGY] >= dr - 3000 &&') && sp.includes('(roadBuilder || !T.builder)') && sp.includes("role === 'builder' && roadBuilder) e = Math.min(e, 1000)"));
 console.log('road upkeep builder ok');
+// fund-backed wall builder at the reserve (patrol 10-29 17:2x): wantBuilder keeps 1 builder when surplus gate would zero it
+assert.ok(sp.includes('!T.builder && !low && Wr.wantBuilder(room)) { T.builder = 1; }'));
+console.log('fund wall builder ok');
