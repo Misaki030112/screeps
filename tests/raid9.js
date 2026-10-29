@@ -56,3 +56,10 @@ assert.deepStrictEqual(R.pick(me, { creeps: [{ id: 'D', pos: P(25, 30), armed: t
   assert.deepStrictEqual(gs, [[30, 4], [30, 5], [31, 4], [31, 5]]);
   for (const g of gs) assert.ok(!(g[0] === 29 && g[1] <= 4) && !(g[0] === 28 && g[1] === 4));
   assert.strictEqual(new Set(gs.map(String)).size, 4); }
+// overrun stop-loss threshold (Misaki 10-29 flank)
+assert.strictEqual(R.armedParts([]), 0);
+assert.strictEqual(R.armedParts([{ attack: 7, ranged: 0 }]), 7); // healer-only body counted 0 attack in live; 7A alone <12
+assert.ok(R.armedParts([{ attack: 0, ranged: 6 }, { attack: 0, ranged: 6 }]) >= 12);
+assert.ok(R.armedParts([{ attack: 14, ranged: 0 }]) >= 12);
+assert.ok(R.armedParts([{ attack: 0, ranged: 6 }]) < 12);
+console.log('raid9 overrun ok');

@@ -1,7 +1,9 @@
-// One-off probing raid on BustJetter W47N9 (Misaki 2026-10-21 13:3x). Memory.ops.w47n9 = { on, n (spawned count), go (tick), done }.
+// W47N9 raid (Misaki 2026-10-21 probe; 2026-10-29 flatten-or-burn-SM). Memory.ops.w47n9 = { on, n, go, safe, safeUntil, flee, garrison }.
 // Spawn from HOME W46N8 (2 melee + 2 ranged, storage floor ignored), walk W46N8 west 0,23 -> W47N8 rally 30,1/31,1/30,2/31,2,
-// all 4 present -> enter W47N9 together. One-shot: never respawned. NO retreat unless W47N9 controller.safeMode is active.
+// all 4 present -> enter W47N9 together (melee first). One-shot: never respawned.
+// Retreat: (1) W47N9 safe mode, (2) overrun = hostile ATTACK+RA parts >=12, (3) last raider alive after n>=4, (4) manual abort/garrison.
 // Targets each tick: (1) hostile creeps carrying energy within 3 of a tower, (2) spawn, (3) structures (+ creeps near structures), rest.
+// Restart: replace Memory.ops.w47n9 with { on:true, n:0 } — leftover safe/garrison from a prior wave forces garrison.
 const MV = require('../utils/move');
 const TARGET = 'W47N9', STAGE = 'W47N8', HOME = 'W46N8';
 const RALLY = [[30, 1], [31, 1], [30, 2], [31, 2]];
@@ -121,14 +123,41 @@ function garrison(c) {
   if (c.pos.x === g[0] && c.pos.y === g[1]) return;
   return MV.to(c, g[0], g[1], 0, ND);
 }
+// stop-loss: W48N9-style reinforce. Parts = ATTACK + RANGED_ATTACK on hostiles in room.
+// >=12 (~two 6RA or one heavy melee) => flee to garrison. A lone 7H healer does NOT trip this.
+function armedParts(creeps) {
+  let n = 0;
+  for (const h of creeps) n += (h.attack | 0) + (h.ranged | 0);
+  return n;
+}
+function overrun(room) {
+  return armedParts(room.find(FIND_HOSTILE_CREEPS).map(h => ({
+    attack: h.getActiveBodyparts(ATTACK), ranged: h.getActiveBodyparts(RANGED_ATTACK),
+  }))) >= 12;
+}
 function run(c) {
   const P = M(), k = c.memory.k | 0, slot = slotOf(k);
-  if (P.garrison || P.safe) return garrison(c); // safe mode seen once = op over, garrison for good
+  if (P.garrison || P.safe || P.flee) return garrison(c); // SM burned, overrun flee, or manual abort
   const tr = Game.rooms[TARGET];
   if (tr && tr.controller && tr.controller.safeMode) P.safeUntil = Game.time + tr.controller.safeMode;
   // remembered: once we retreat we lose vision of W47N9, so never re-enter while its safe mode may still run (no border bounce)
   const sm = P.safeUntil && Game.time < P.safeUntil;
-  if (sm) { P.safe = P.safe || Game.time; if (c.room.name === TARGET && (c.pos.y === 49)) return c.move(BOTTOM); return travel(c, slot); } // the only retreat
+  if (sm) { P.safe = P.safe || Game.time; if (c.room.name === TARGET && (c.pos.y === 49)) return c.move(BOTTOM); return travel(c, slot); }
+  // flank dump: leave before the squad is deleted; SM goal already failed/succeeded separately
+  if (c.room.name === TARGET && overrun(c.room)) {
+    P.flee = P.flee || { t: Game.time, why: 'overrun' };
+    P.garrison = true;
+    if (c.pos.y === 49) return c.move(BOTTOM);
+    return MV.to(c, 30, 49, 0, ND);
+  }
+  // last creep standing with mates dead: fall back (one-shot op, no respawn)
+  const alive = _.filter(Game.creeps, x => x.memory.role === 'raid9');
+  if (c.room.name === TARGET && alive.length <= 1 && (P.n | 0) >= 4) {
+    P.flee = P.flee || { t: Game.time, why: 'last' };
+    P.garrison = true;
+    if (c.pos.y === 49) return c.move(BOTTOM);
+    return MV.to(c, 30, 49, 0, ND);
+  }
   if (c.room.name === TARGET) {
     const w = world(c.room), p = pick(c.pos, w), t = p && Game.getObjectById(p.id);
     const hp = c.getActiveBodyparts(HEAL) ? healPlan(c, squad(c)) : null;
@@ -169,4 +198,4 @@ function wantSpawn(room) {
   return { role: 'raid9', body: kind === 'm' ? MELEE() : RANGED(), mem: { role: 'raid9', home: HOME, k: n, kind, born: Game.time } };
 }
 function noteSpawned() { const P = M(); P.n = (P.n | 0) + 1; }
-module.exports = { slotOf, gSlotOf, GARRISON, run, pick, useMass, healPlan, wantSpawn, noteSpawned, MELEE, RANGED, RALLY };
+module.exports = { slotOf, gSlotOf, GARRISON, run, pick, useMass, healPlan, armedParts, overrun, wantSpawn, noteSpawned, MELEE, RANGED, RALLY };
