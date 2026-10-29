@@ -81,6 +81,26 @@ function mineralRun(c, room, P) {
   if (move.to(c, mm[0], mm[1], 1)) { c.withdraw(k, r); delete c.memory.mr; }
   return true;
 }
+// Lab logistics (docs/MINERAL_DEFENSE_ROADMAP.md): empty home hauler runs managers/labs.task when Memory.ops.labs is set.
+// Dormant with no flag / no terminal / no reagents — same cost as before. After mineralRun so the O container still drains first.
+function labRun(c, room) {
+  if (room.name !== c.memory.home || !room.terminal) return false;
+  if (c.store[RESOURCE_ENERGY] > 0 || c.memory.working) return false;
+  const L = require('../managers/labs'); if (!L.cfg(room)) { delete c.memory.lr; return false; }
+  const held = Object.keys(c.store).find(r => r !== RESOURCE_ENERGY && c.store[r] > 0);
+  const labs = room.find(FIND_MY_STRUCTURES).filter(s => s.structureType === STRUCTURE_LAB);
+  const t = L.task(room, labs);
+  if (held) {
+    const want = t && held === t.res ? Game.getObjectById(t.to) : room.terminal;
+    if (want && move.to(c, want.pos.x, want.pos.y, 1)) c.transfer(want, held);
+    return true;
+  }
+  if (!t) { delete c.memory.lr; return false; }
+  const src = Game.getObjectById(t.from); if (!src) return false;
+  c.memory.lr = 1;
+  if (move.to(c, src.pos.x, src.pos.y, 1)) { c.withdraw(src, t.res); delete c.memory.lr; }
+  return true;
+}
 // Build hold (walls.noUpgrade): hub -> controller link is off, so source A's energy (link 30,11) piles up in the hub link and
 // the source-A container next to the link stays near empty. The home hauler's fixed pickup becomes the hub link, waited on
 // from the manager tile (hub + storage both in range 1), so the queen no longer leaves stamp A to drain it
@@ -91,9 +111,10 @@ function hubPickup(room) {
   return R.hub && R.sources.length ? R.hub : null;
 }
 function homeHauler(room) { return Object.values(Game.creeps || {}).some(x => x.memory.role === 'hauler' && (x.memory.home || x.room.name) === room.name); }
-module.exports = { pickups, handoff, ctlLow, mineralRun, hubPickup, homeHauler, idlePark, run(c) {
+module.exports = { pickups, handoff, ctlLow, mineralRun, labRun, hubPickup, homeHauler, idlePark, run(c) {
   const room = c.room, P = plan.get(room.name);
   if (mineralRun(c, room, P)) return;
+  if (labRun(c, room)) return;
   if (room.name === c.memory.home && salvage.dump(c)) return; // Invader loot (minerals) -> storage first
   if (c.memory.working && c.store[RESOURCE_ENERGY] === 0) { c.memory.working = false; delete c.memory.dst; delete c.memory.fl; }
   if (!c.memory.working && c.store.getFreeCapacity() === 0) c.memory.working = true;
