@@ -84,6 +84,22 @@ function spawnRun(spawn) {
   if (!want && dGo) { want = !dOld && lg < (ro.w8m | 0) ? 'w8guard' : 'w8defender'; }
   // 18:04: roster >= 4 combat defenders -> one dedicated healer; local only when home can't send it (ro.hl 'w8')
   if (!want && !dOld && fresh && ro.hl === 'w8' && !_.some(Game.creeps, c => c.memory.role === 'w8healer')) want = 'w8healer';
+  // Reserved remote of this colony (W47N7, plus any other room we currently reserve next door).
+  // Same `defender` role / threat FSM as W45N8. Local seal defence above still wins. Never W47N9.
+  if (!want && room.controller && room.controller.level >= 4 && room.name) {
+    const TG = require('../../managers/threat'), g = TG.wantDefender(room.name);
+    if ((g && TG.armed(g)) || TG.energyHold(room.name)) {
+      const body = require('../../managers/spawn').B.defender(1300), cost = _.sum(body, p => BODYPART_COST[p]);
+      if (g && TG.armed(g) && avail >= cost) {
+        const name = 'rdef' + Game.time;
+        const rv = spawn.spawnCreep(body, name, { memory: { role: 'defender', home: room.name, remote: g, born: Game.time, v2: 1 }, energyStructures: energyOrder(room) });
+        if (rv === OK) { TG.noteSpawn(g, name); FM.spent(cost); }
+        return;
+      }
+      if (!cs.some(c => c.memory.role === 'w8filler' || c.memory.role === 'w8hauler')) want = 'w8filler';
+      else { FM.wait('defender', cost, avail); return; }
+    }
+  }
   // 1) miners per source: keep >=5 WORK (10 e/t) on each source. Replace at TTL<60; and since the first w8miners were 2 WORK
   // (cap 300) and would run at 40% for ~1000 ticks, add a bigger one once cap allows (17:25), counting any cqminer still there.
   for (let i = 0; i < C.SOURCES.length && !want; i++) {

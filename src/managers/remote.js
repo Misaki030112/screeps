@@ -9,7 +9,8 @@ const CFG = { W45N8: { home: 'W46N8', src: [14, 12], cont: [13, 11], ctl: [7, 36
   // where fleeing remote creeps wait at home while paused: plain tiles off every fixed route/plan tile, near the exit route
   park: [46, 21],
   // anti-Invader defender (docs/DEFENDER.md). Flag ON, but threat.armed() only arms it when RCL4 has been stable 1500 ticks
-  // (cap>=1300, full within 300t) AND a CLAIM>=2 reserver is alive. Thresholds: threat.DEF, per-room override `threat: {...}`.
+  // (cap>=1300, full within 300t) AND (a CLAIM>=2 reserver was seen within 1500t OR we still hold the reservation).
+  // Thresholds: threat.DEF, per-room override `threat: {...}`.
   defend: true },
   // W45N7 (Misaki approved 2026-10-16 14:39; plan /workspace/w45n7_ops_plan_cn.md, docs/REMOTE_W45N7.md). Reached only through
   // W45N8's south exit. Source 21,16 has exactly two open neighbours: 21,15 (OUR container) and 22,15 = BustJetter's container
@@ -20,18 +21,96 @@ const CFG = { W45N8: { home: 'W46N8', src: [14, 12], cont: [13, 11], ctl: [7, 36
     // haulers 6->5 (patrol 10-16 20:15): 1h audit rhaulers 46-82% waiting_pickup, cont.e=0; ff260a1 W45N8 borrow kept. Revert to 6 if W45N7+W45N8 delivered drops >0.5/t.
     threat: { readyTimeout: 250, defendTimeout: 650 } } }; // ~150t further than W45N8
 // route helpers: rooms home -> via... -> remote; exit tile for leaving `from` towards `to`
-function route(r) { const C = CFG[r]; return [C.home].concat(C.via || [], [r]); }
-function exitTile(r, from, to) { const C = CFG[r]; if (C.exits) return C.exits[from + '>' + to];
+function route(r) { const C = cfgFor(r) || CFG[r]; return C ? [C.home].concat(C.via || [], [r]) : [r]; }
+function exitTile(r, from, to) { const C = cfgFor(r) || CFG[r]; if (!C) return null; if (C.exits) return C.exits[from + '>' + to] || null;
+  if (C.exitHome == null) return null;
   return from === C.home ? C.exitHome : C.exitRemote; }
 // rollback switch (no redeploy): Memory.remotes.<room>.off = true -> no spawns, remote creeps work at home
 function off(r) { return !!(((Memory.remotes || {})[r] || {}).off); }
 // Threat handling lives in ./threat (one state machine per remote). This file: config, bookkeeping, roads, ALERT lines.
+// Rooms we reserve that are NOT mined by this manager (W47N7 is mined by W47N8) still get the same defender FSM.
+// guardOnly: no rminer/rhauler/reserver from home spawn, no home-builder road adoption. W47N9 is never listed.
+const GUARD = { W47N7: { home: 'W47N8', guardOnly: true, defend: true, src: [17, 17], cont: [24, 14], ctl: [38, 26],
+  park: [16, 20], spawn: 'Spawn2',
+  exits: { 'W47N8>W47N7': [18, 49], 'W47N7>W47N8': [18, 0] },
+  threat: { readyTimeout: 280, defendTimeout: 800 } } };
 const threat = require('./threat');
 function mem(r) { return (Memory.remote = Memory.remote || {})[r] = Memory.remote[r] || {}; }
+function parseRoom(name) {
+  const m = /^([WE])(\d+)([NS])(\d+)$/.exec(name); if (!m) return null;
+  return { x: (m[1] === 'W' ? -1 : 1) * +m[2], y: (m[3] === 'N' ? 1 : -1) * +m[4] };
+}
+// Nearest owned room within 2, preferring an orthogonal neighbour. W47N9 is never a home and never a target.
+function pickHome(room, owned) {
+  if (!room || room === 'W47N9') return null;
+  const a = parseRoom(room); if (!a) return null;
+  let best = null, bd = 99, orth = false;
+  for (const n of owned || []) {
+    if (!n || n === room || n === 'W47N9') continue;
+    const b = parseRoom(n); if (!b) continue;
+    const dx = Math.abs(a.x - b.x), dy = Math.abs(a.y - b.y), d = Math.max(dx, dy), o = dx === 0 || dy === 0;
+    if (!d || d > 2) continue;
+    if (d < bd || (d === bd && o && !orth)) { best = n; bd = d; orth = o; }
+  }
+  return best;
+}
+let cfgT = -1, cfgCache = null;
+function cfgFor(r) {
+  if (CFG[r]) return CFG[r];
+  const t = typeof Game !== 'undefined' ? Game.time : 0;
+  if (cfgT !== t) { cfgT = t; cfgCache = Object.create(null); }
+  if (Object.prototype.hasOwnProperty.call(cfgCache, r)) return cfgCache[r];
+  const st = ((Memory.remote || {})[r] || {}).th;
+  const busy = st && st.st && st.st !== 'SAFE';
+  let out = null;
+  if (GUARD[r] && (busy || (typeof threat.reservedByUs === 'function' && threat.reservedByUs(r)))) out = GUARD[r];
+  else {
+    const g = Memory.ops && Memory.ops.resRooms && Memory.ops.resRooms[r];
+    const live = g && g.until > Game.time && g.home && g.home !== 'W47N9' && r !== 'W47N9';
+    if (live || (busy && g)) {
+      const home = g.home, x = g.x || 25, y = g.y || 25;
+      out = { home, guardOnly: true, dynamic: true, defend: true, cont: [x, y], src: [x, y],
+        park: home === 'W47N8' ? [16, 20] : [46, 21], spawn: home === 'W47N8' ? 'Spawn2' : 'Spawn1',
+        threat: { readyTimeout: 300, defendTimeout: 800 } };
+    }
+  }
+  cfgCache[r] = out;
+  return out;
+}
+function guardRooms() {
+  const out = Object.keys(GUARD);
+  const map = (Memory.ops && Memory.ops.resRooms) || {};
+  for (const r in map) if (!CFG[r] && !GUARD[r] && r !== 'W47N9') out.push(r);
+  return out;
+}
+// Visible controllers we reserve, besides CFG / GUARD. Defender pathing refuses W47N9.
+function refreshReservations() {
+  cfgT = -1; // spawn may have cached cfgFor before this tick's reservation scan
+  if (typeof Game === 'undefined' || !Game.rooms) return;
+  const who = typeof threat.ourName === 'function' ? threat.ourName() : ''; if (!who) return;
+  const owned = [];
+  for (const h in Game.rooms) if (Game.rooms[h].controller && Game.rooms[h].controller.my) owned.push(h);
+  const seen = Object.create(null);
+  for (const n in Game.rooms) {
+    if (n === 'W47N9' || CFG[n] || GUARD[n]) continue;
+    const room = Game.rooms[n], ct = room.controller;
+    if (!ct || ct.my || !ct.reservation || ct.reservation.username !== who || !(ct.reservation.ticksToEnd > 0)) continue;
+    const home = pickHome(n, owned); if (!home) continue;
+    seen[n] = 1;
+    const o = Memory.ops || (Memory.ops = {});
+    const rec = o.resRooms || (o.resRooms = {});
+    rec[n] = { by: who, until: Game.time + ct.reservation.ticksToEnd, home, x: ct.pos ? ct.pos.x : 25, y: ct.pos ? ct.pos.y : 25, seen: Game.time };
+  }
+  const rec = Memory.ops && Memory.ops.resRooms; if (!rec) return;
+  for (const n in rec) {
+    const st = ((Memory.remote || {})[n] || {}).th, busy = st && st.st && st.st !== 'SAFE';
+    if (!seen[n] && !busy && (rec[n].until || 0) <= Game.time) delete rec[n];
+  }
+}
 function paused(r, role) { return off(r) || !threat.safe(r, role); } // role: rminer/rhauler may resume early (threat.EARLY)
 function defendOn(r) { return threat.armed(r); }
 function placeRoads(r) {
-  const C = CFG[r], room = Game.rooms[r]; if (!room || !C.roads) return;
+  const C = CFG[r], room = Game.rooms[r]; if (!C || !room || !C.roads) return;
   for (const [x, y] of C.roads) {
     if (room.lookForAt(LOOK_STRUCTURES, x, y).some(s => s.structureType === STRUCTURE_ROAD)) continue;
     if (room.lookForAt(LOOK_CONSTRUCTION_SITES, x, y).some(s => s.structureType === STRUCTURE_ROAD)) continue;
@@ -39,26 +118,35 @@ function placeRoads(r) {
   }
 }
 function check(r) {
-  const C = CFG[r], m = mem(r), was = threat.state(r).st, th = threat.run(r);
+  const C = cfgFor(r);
+  if (!C) { const m = (Memory.remote || {})[r]; if (m && m.armed) m.armed = false; return; }
+  const m = mem(r), was = threat.state(r).st, th = threat.run(r);
   if (th.st !== threat.S.SAFE && (was === threat.S.SAFE || Game.time % 50 === 0)) {
     if (was === threat.S.SAFE) m.pauseStart = Game.time;
     const inv = th.last || [];
-    console.log('ALERT ' + JSON.stringify({ episode: `remote-${r}-${m.pauseStart}`, tick: Game.time, room: r, owner: th.why === 'player' ? 'player' : 'Invader',
-      severity: th.why === 'player' ? 'high' : 'medium', creeps: inv.length, remote: r, state: th.st, why: th.why, invOnly: th.why !== 'player',
+    console.log('ALERT ' + JSON.stringify({ episode: `remote-${r}-${m.pauseStart}`, tick: Game.time, room: r, owner: th.why === 'player' ? 'player' : th.why === 'guard' ? 'hostile' : 'Invader',
+      severity: th.why === 'player' || th.why === 'guard' ? 'high' : 'medium', creeps: inv.length, remote: r, state: th.st, why: th.why, invOnly: th.why !== 'player' && th.why !== 'guard',
       action: th.st === 'THREAT' ? 'defender requested' : th.st === 'DEFEND' ? 'defender engaging' : `remote paused (${th.why})`, positions: inv.slice(0, 5).map(h => [h.x, h.y]) }));
   }
   if (th.st === threat.S.SAFE && was !== threat.S.SAFE) console.log('ALERT ' + JSON.stringify({ episode: `remote-${r}-${m.pauseStart}`, tick: Game.time, room: r, severity: 'low', remote: r, ended: true, action: 'remote resumed' }));
   const room = Game.rooms[r];
   if (room) {
     const ct = room.controller; m.res = ct && ct.reservation ? ct.reservation : null;
-    const k = room.lookForAt(LOOK_STRUCTURES, C.cont[0], C.cont[1]).find(s => s.structureType === STRUCTURE_CONTAINER);
-    m.cont = k ? { id: k.id, e: k.store[RESOURCE_ENERGY], hits: k.hits } : null; m.seen = Game.time;
-    const site = !k && room.lookForAt(LOOK_CONSTRUCTION_SITES, C.cont[0], C.cont[1]).find(s => s.my && s.structureType === STRUCTURE_CONTAINER);
-    m.siteProg = site ? site.progress : (k ? 5000 : 0);
-    const src = room.lookForAt(LOOK_SOURCES, C.src[0], C.src[1])[0];
-    if (src) m.invaderHarvested = src.invaderHarvested;
-    if (!paused(r)) placeRoads(r);
+    if (C.cont) {
+      const k = room.lookForAt(LOOK_STRUCTURES, C.cont[0], C.cont[1]).find(s => s.structureType === STRUCTURE_CONTAINER);
+      m.cont = k ? { id: k.id, e: k.store[RESOURCE_ENERGY], hits: k.hits } : null;
+      const site = !k && room.lookForAt(LOOK_CONSTRUCTION_SITES, C.cont[0], C.cont[1]).find(s => s.my && s.structureType === STRUCTURE_CONTAINER);
+      m.siteProg = site ? site.progress : (k ? 5000 : 0);
+    }
+    m.seen = Game.time;
+    if (C.src) { const src = room.lookForAt(LOOK_SOURCES, C.src[0], C.src[1])[0]; if (src) m.invaderHarvested = src.invaderHarvested; }
+    if (!C.guardOnly && !paused(r)) placeRoads(r);
     if (C.avoid) for (const [x, y] of C.avoid) { const f = room.lookForAt(LOOK_CONSTRUCTION_SITES, x, y).find(s => !s.my); m.foreign = f ? f.progress : null; } // watch only
   }
 }
-module.exports = { CFG, route, exitTile, off, paused, mem, defendOn, run() { for (const r in CFG) check(r); } };
+module.exports = { CFG, GUARD, route, exitTile, off, paused, mem, defendOn, cfgFor, guardRooms, pickHome, run() {
+  refreshReservations();
+  const done = Object.create(null);
+  for (const r in CFG) { done[r] = 1; check(r); }
+  for (const r of guardRooms()) if (!done[r]) check(r);
+} };
