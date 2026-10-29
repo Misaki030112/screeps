@@ -22,6 +22,7 @@ console.log(`checks passed: ${fs.readdirSync(DIST).length} modules; sim 600 tick
 // threat FSM unit tests (incl. the code-level enable gate armed()) + defender duel on real terrain driven by the real FSM
 execSync('node ' + path.join(__dirname, '..', 'tests', 'defender_energy_hold.js'), { stdio: 'pipe' });
 execSync('node ' + path.join(__dirname, '..', 'tests', 'threat_fsm.js'), { stdio: 'pipe' });
+execSync('node ' + path.join(__dirname, '..', 'tests', 'core_buster.js'), { stdio: 'pipe' });
 execSync('node ' + path.join(__dirname, '..', 'tests', 'reserved_guard_spawn.js'), { stdio: 'pipe' });
 execSync('node ' + path.join(__dirname, '..', 'tests', 'defender_duel.js'), { stdio: 'pipe' });
 execSync('node ' + path.join(__dirname, '..', 'tests', 'kite.js'), { stdio: 'pipe' });

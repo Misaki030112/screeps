@@ -52,18 +52,64 @@ it('defender dies -> WAIT defender_died (deaths counter then blocks today)', () 
 });
 it('defender recycled (TTL) mid-fight -> WAIT defender_expired', () => assert.strictEqual(run([[1, { inv: solo() }], [40, { def: 'out', inv: solo() }], [80, { def: 'none', inv: solo() }]]).s.why, 'defender_expired'));
 it('fight too long -> WAIT defend_timeout', () => assert.strictEqual(run([[1, { inv: solo() }], [40, { def: 'out', inv: solo() }], [500, { def: 'out', inv: solo(900) }]]).s.why, 'defend_timeout'));
-it('invader core -> WAIT; stay WAIT while core visible past recheck; SAFE when gone', () => {
-  const r = run([[1, { core: true }], [600, { core: true }], [1100, { core: true }], [1200, { core: false }]]);
-  assert.deepStrictEqual(r.states, ['WAIT', 'WAIT', 'WAIT', 'SAFE']); assert.strictEqual(r.evs.pop(), 'resume:core_gone');
+it('lone invader core -> THREAT core -> DEFEND -> SAFE when the core is gone', () => {
+  const r = run([[1, { core: true, corePos: [9, 42] }], [20, { core: true, def: 'spawning' }], [80, { core: true, def: 'out' }], [400, { core: true, def: 'out' }], [401, { core: false, def: 'out' }]]);
+  assert.deepStrictEqual(r.states, ['THREAT', 'THREAT', 'DEFEND', 'DEFEND', 'SAFE']);
+  assert.strictEqual(r.evs[0], 'threat:core');
+  assert.strictEqual(r.s.st, 'SAFE');
+  assert.deepStrictEqual(r.evs.filter(e => e === 'cleared:killed'), ['cleared:killed']);
 });
-it('invader core WAIT: timer expiry without vision -> SAFE core_recheck (regain vision)', () => {
-  // after t=600 extend until=1100; at 1100 with no vision resume so remotes can look again
-  const r = run([[1, { core: true }], [600, { core: true }], [700, { vis: false }], [1100, { vis: false }]]);
-  assert.deepStrictEqual(r.states, ['WAIT', 'WAIT', 'WAIT', 'SAFE']); assert.strictEqual(r.evs.pop(), 'resume:core_recheck');
+it('core fight keeps THREAT/DEFEND with no vision while the buster is travelling', () => {
+  const r = run([[1, { core: true, corePos: [9, 42] }], [40, { vis: false, def: 'spawning' }], [90, { vis: false, def: 'out' }], [200, { vis: false, def: 'out' }]]);
+  assert.deepStrictEqual(r.states, ['THREAT', 'THREAT', 'DEFEND', 'DEFEND']);
+  assert.strictEqual(r.s.mission, 'core');
 });
-it('invader core: SAFE recheck then core still there -> WAIT again', () => {
-  const r = run([[1, { core: true }], [600, { core: true }], [1100, { vis: false }], [1150, { core: true }]]);
-  assert.deepStrictEqual(r.states, ['WAIT', 'WAIT', 'SAFE', 'WAIT']); assert.strictEqual(r.s.why, 'core');
+it('core with a closed spawn gate -> WAIT that gate, then THREAT when it opens', () => {
+  const closed = run([[1, { core: true, armed: false }]]);
+  assert.strictEqual(closed.s.st, 'WAIT'); assert.strictEqual(closed.s.why, 'gate'); assert.strictEqual(closed.s.mission, 'core');
+  assert.strictEqual(run([[1, { core: true, bucket: 1000 }]]).s.why, 'cpu');
+  assert.strictEqual(run([[1, { core: true, spawnsDay: C.maxPerDay }]]).s.why, 'budget');
+  assert.strictEqual(run([[1, { core: true, deathsDay: 1 }]]).s.why, 'deaths');
+  const re = run([[1, { core: true, armed: false }], [30, { core: true, armed: true }]]);
+  assert.deepStrictEqual(re.states, ['WAIT', 'THREAT']); assert.strictEqual(re.s.mission, 'core');
+});
+it('core fight outlasts the creep defendTimeout and stops on coreDefendTimeout', () => {
+  const r = run([[1, { core: true }], [10, { core: true, def: 'out' }], [600, { core: true, def: 'out' }], [10 + C.coreDefendTimeout + 1, { core: true, def: 'out' }]]);
+  assert.strictEqual(r.states[2], 'DEFEND'); assert.strictEqual(r.s.st, 'WAIT'); assert.strictEqual(r.s.why, 'defend_timeout');
+});
+it('player creeps outrank a core: WAIT player, never a core buster and never a guard', () => {
+  const r = run([[1, { reserved: true, core: true, hereP: 1, players: 1 }]]);
+  assert.strictEqual(r.s.st, 'WAIT'); assert.strictEqual(r.s.why, 'player');
+  assert.strictEqual(run([[1, { core: true, players: 1, hereP: 0 }]]).s.why, 'player'); // player on the route
+});
+it('solo invader still takes the ranged path when a core is also present', () => {
+  assert.strictEqual(run([[1, { core: true, inv: solo() }]]).evs[0], 'threat:solo');
+  assert.notStrictEqual(run([[1, { core: true, inv: solo() }]]).s.mission, 'core');
+});
+it('legacy WAIT why=core with vision re-arms to THREAT; blind timer still resumes', () => {
+  const live = { st: 'WAIT', since: 1, why: 'core', until: 5000 };
+  const seen = run([[10, { core: true }]], live);
+  assert.strictEqual(seen.s.st, 'THREAT'); assert.strictEqual(seen.s.mission, 'core');
+  const blind = run([[100, { vis: false }], [5000, { vis: false }]], { st: 'WAIT', since: 1, why: 'core', until: 5000 });
+  assert.deepStrictEqual(blind.states, ['WAIT', 'SAFE']); assert.strictEqual(blind.evs.pop(), 'resume:core_recheck');
+  const gone = run([[10, { core: false }]], { st: 'WAIT', since: 1, why: 'core', until: 5000 });
+  assert.strictEqual(gone.s.st, 'SAFE'); assert.strictEqual(gone.evs.pop(), 'resume:core_gone');
+});
+it('core DEFEND does not early-resume miners (no creep HP to read)', () => {
+  assert.strictEqual(T.earlyNext({ st: 'DEFEND', mission: 'core', last: null }, true), false);
+  assert.strictEqual(T.earlyNext({ st: 'DEFEND', mission: 'solo', last: null }, true), true);
+});
+it('energyHold collects 1300 while a core is waiting on the energy gate', () => {
+  global.Memory = { remote: { W45N7: { needE: true, th: { st: 'WAIT', why: 'gate', mission: 'core' } } } };
+  global.Game = global.Game || { time: 1, rooms: {}, creeps: {} };
+  assert.strictEqual(T.energyHold('W46N8'), true);
+  Memory.remote.W45N7.th.mission = 'solo'; Memory.remote.W45N7.th.last = [];
+  assert.strictEqual(T.energyHold('W46N8'), false);
+});
+it('a player appearing mid core fight aborts to WAIT player', () => {
+  const r = run([[1, { core: true }], [20, { core: true, def: 'out' }], [30, { core: true, def: 'out', hereP: 1, players: 1 }]]);
+  assert.strictEqual(r.states[1], 'DEFEND'); assert.strictEqual(r.s.st, 'WAIT'); assert.strictEqual(r.s.why, 'player');
+  assert.notStrictEqual(r.s.mission, 'core');
 });
 it('WAIT on NPC ends early when vision shows the room clear', () => assert.deepStrictEqual(run([[1, { inv: solo(), armed: false }], [500, { inv: [] }]]).states, ['WAIT', 'SAFE']));
 it('WAIT timer ends without vision', () => assert.deepStrictEqual(run([[1, { inv: solo(100), armed: false }], [180, { vis: false }], [182, { vis: false }]]).states, ['WAIT', 'WAIT', 'SAFE']));
@@ -90,8 +136,9 @@ it('guard stays DEFEND past defendTimeout while hostiles remain', () => {
   const r = run([[1, { reserved: true, hereP: 1, players: 1 }], [2, { reserved: true, hereP: 1, players: 1, def: 'out' }], [900, { reserved: true, hereP: 1, players: 1, def: 'out' }]]);
   assert.strictEqual(r.s.st, 'DEFEND');
 });
-it('invader core is never a guard target', () => {
-  assert.strictEqual(run([[1, { reserved: true, core: true, hereP: 1, players: 1 }]]).s.why, 'core');
+it('invader core is not a guard target when players are present', () => {
+  assert.strictEqual(run([[1, { reserved: true, core: true, hereP: 1, players: 1 }]]).s.why, 'player');
+  assert.notStrictEqual(run([[1, { reserved: true, core: true, hereP: 1, players: 1 }]]).s.st, 'THREAT');
 });
 it('short-TTL invader stays wait-out even when the room is reserved', () => {
   assert.strictEqual(run([[1, { reserved: true, inv: solo(200) }]]).s.why, 'short_ttl');
@@ -147,6 +194,23 @@ it('armed() while the controller is still reserved by us, with no CLAIM2 creep',
   Memory.ops.r7.by = 'BustJetter';
   assert.strictEqual(T.armed('W47N7'), false, 'someone else holding W47N7 does not arm us');
   assert.strictEqual(T.reservedByUs('W47N9'), false);
+});
+it('armed() busts a core in a configured remote after the reservation is gone; W47N9 stays dark', () => {
+  const home = { controller: { level: 5 }, energyCapacityAvailable: 1800, energyAvailable: 200, memory: { lastFull: 100 }, storage: { store: { energy: 2000 } }, find: () => [] };
+  const coreRoom = { name: 'W45N7', find: t => t === FIND_HOSTILE_STRUCTURES ? [{ structureType: STRUCTURE_INVADER_CORE, pos: { x: 9, y: 42 } }] : [] };
+  global.Memory = { username: 'Misaki', remote: { W45N7: {} }, creeps: {}, defense: { remoteDefender: true }, ops: {} };
+  global.Game = { time: 88000, cpu: { bucket: 10000 }, rooms: { W46N8: home, W45N7: coreRoom, W47N9: coreRoom }, creeps: {} };
+  const R = require(path.join(__dirname, '..', 'src/managers/remote.js'));
+  assert.strictEqual(T.armed('W45N7'), true, 'configured remote with a core stays armed without a reservation');
+  coreRoom.find = () => [];
+  assert.strictEqual(T.armed('W45N7'), false, 'no core and no reservation does not arm');
+  coreRoom.find = t => t === FIND_HOSTILE_STRUCTURES ? [{ structureType: STRUCTURE_INVADER_CORE, pos: { x: 9, y: 42 } }] : [];
+  Game.time = 88001;
+  Game.rooms.W47N7 = { name: 'W47N7', find: coreRoom.find };
+  assert.ok(R.cfgFor('W47N7'), 'W47N7 core keeps the guard config after the reservation drops');
+  assert.strictEqual(R.cfgFor('W47N9'), null, 'W47N9 is never a core target');
+  assert.strictEqual(T.reservedByUs('W47N9'), false);
+  assert.strictEqual(T.armed('W47N9'), false);
 });
 for (const [n, f] of cases) { try { f(); pass++; console.log('ok   ' + n); } catch (e) { console.log('FAIL ' + n + '\n     ' + e.message); } }
 console.log(`${pass}/${cases.length} passed`); if (pass !== cases.length) process.exit(1);

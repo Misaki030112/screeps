@@ -23,6 +23,8 @@ const REMOTE_ROLES = new Set(['rminer', 'rhauler', 'reserver', 'defender', 'rsco
 const B = {
   // anti-Invader: 5 RANGED_ATTACK + 6 MOVE + 1 HEAL = 1300 (RCL4 full cap); 50 dmg/t at range 3, 12 hp/t self-heal
   defender: e => e >= 1300 ? [].concat(rep(5, RANGED_ATTACK), rep(6, MOVE), [HEAL]) : [].concat(rep(3, RANGED_ATTACK), rep(4, MOVE)),
+  // melee core buster: 10 ATTACK + 10 MOVE = 1300. 30 dmg × 10 = 300/t; 100k core dies in ceil(100000/300) = 334 ticks adjacent.
+  coreBuster: e => { const n = Math.max(0, Math.min(25, Math.floor(e / 130))); return [].concat(rep(n, ATTACK), rep(n, MOVE)); },
   harvester: e => { const n = Math.max(1, Math.min(5, Math.floor(e / 200))); return [].concat(rep(n, WORK), rep(n, CARRY), rep(n, MOVE)); },
   miner: (e, carry) => { const c = carry ? 1 : 0; const w = Math.max(2, Math.min(5, Math.floor((e - 50 - c * 50) / 100)));
     const m = Math.max(1, Math.min(3, Math.floor((e - w * 100 - c * 50) / 50))); return [].concat(rep(w, WORK), rep(c, CARRY), rep(m, MOVE)); },
@@ -270,7 +272,13 @@ function spawnOrder(count, T, nSites) {
     ? ['queen', 'hauler', 'upgrader', 'REMOTE', 'filler', 'manager', 'builder', 'mminer']
     : ['queen', 'hauler', 'REMOTE', 'filler', 'manager', 'upgrader', 'builder', 'mminer'];
 }
-module.exports = { defLowUpgraders, rhTarget, birthDirs, targets, mineralCapped, rhaulerNeed, remoteNext, retiring, B, reserverBody, nearFull, bodyEnergy, spawnOrder, run(spawn) {
+// Body + memory flag for the remote defender. Core missions get the melee buster; creep fights stay ranged.
+function defenderOrder(remote) {
+  const threat = require('./threat');
+  const core = threat.coreMission && threat.coreMission(remote) ? 1 : 0;
+  return { body: core ? B.coreBuster(1300) : B.defender(1300), core };
+}
+module.exports = { defLowUpgraders, rhTarget, birthDirs, targets, mineralCapped, rhaulerNeed, remoteNext, retiring, B, defenderOrder, reserverBody, nearFull, bodyEnergy, spawnOrder, run(spawn) {
   // spawn-wait metric (Misaki 10-18 09:30: zero spawn idle due to refill). Memory.stats.sw[room] cumulative ticks:
   //   busy = spawning; wait = a creep was wanted, cost <= cap but energyAvailable < cost (refill wait); idle = nothing wanted.
   //   last = [role, cost, avail] of the latest wait.
@@ -309,7 +317,10 @@ function run1(spawn, onWait) {
   // Holding ends the tick noteSpawn sets th.def (wantDefender/holding go false → upgraders resume).
   const threat = require('./threat'), want = threat.wantDefender(room.name);
   if (want && rcl >= 4 && threat.armed(want)) {
-    if (avail >= 1300) { const name = 'defender' + Game.time, rv = spawn.spawnCreep(B.defender(1300), name, { memory: { role: 'defender', home: room.name, remote: want, born: Game.time }, directions: birthDirs(spawn, 'defender') });
+    const ord = defenderOrder(want);
+    if (avail >= 1300) { const name = 'defender' + Game.time, mem = { role: 'defender', home: room.name, remote: want, born: Game.time };
+      if (ord.core) mem.core = 1;
+      const rv = spawn.spawnCreep(ord.body, name, { memory: mem, directions: birthDirs(spawn, 'defender') });
       if (rv === OK) threat.noteSpawn(want, name); return rv; }
     if (!(alive.queen || 0) && !(alive.filler || 0)) return go('queen', B.queen(Math.max(300, avail)));
     return ERR_BUSY; // reserve energyAvailable for the defender; home guards (off) never reach here while want is set

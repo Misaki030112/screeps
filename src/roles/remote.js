@@ -211,7 +211,50 @@ const roles = {
     const S = require('../utils/sign'); if (S.needs(ct, c.owner.username)) c.signController(ct, S.SIGN);
   },
 };
-// Anti-NPC defender (docs/DEFENDER.md). Spawned on demand; engages owner 'Invader' only (never players); kites melee at range 3,
+// Melee core buster (memory.core). Walk to the invader core and attack it. Never targets a creep:
+// players stay diplomacy, NPC invaders stay on the ranged kite body. W47N9 is never a fight.
+// pure: coreAct({room, remote, fighting, edge, hasCore, range}) -> action
+function coreAct(o) {
+  if (o.room === 'W47N9' || o.remote === 'W47N9') return 'leave';
+  if (!o.fighting) return 'recycle';
+  if (o.room !== o.remote) return 'travel';
+  if (o.edge) return 'stepin';
+  if (!o.hasCore) return 'hold';
+  return o.range <= 1 ? 'attack' : 'approach';
+}
+function coreBuster(c) {
+  const rm = c.memory.remote;
+  if (c.room.name === 'W47N9' || rm === 'W47N9') {
+    if (c.pos.y >= 48) c.move(BOTTOM); else c.moveTo(new RoomPosition(c.pos.x, 49, 'W47N9'), { range: 0, maxRooms: 1 });
+    return;
+  }
+  const C = (remote.cfgFor && remote.cfgFor(rm)) || remote.CFG[rm];
+  if (!C) return;
+  const th = threat.state(rm);
+  const fighting = (th.def === c.name || th.def2 === c.name) && (th.st === threat.S.DEFEND || th.st === threat.S.THREAT);
+  const edge = c.pos.x === 0 || c.pos.x === 49 || c.pos.y === 0 || c.pos.y === 49;
+  let core = null;
+  if (c.room.name === rm && c.room.find) core = c.room.find(FIND_HOSTILE_STRUCTURES).find(s => s.structureType === STRUCTURE_INVADER_CORE) || null;
+  if (core) c.memory.cp = [core.pos.x, core.pos.y];
+  const cp = c.memory.cp || th.corePos || C.cont;
+  const range = core ? Math.max(Math.abs(c.pos.x - core.pos.x), Math.abs(c.pos.y - core.pos.y)) : 99;
+  const act = coreAct({ room: c.room.name, remote: rm, fighting, edge, hasCore: !!core, range });
+  if (act === 'attack') { if (c.body.some(p => p.type === ATTACK && p.hits > 0)) c.attack(core); return; }
+  if (act === 'approach' || act === 'hold') { if (cp) move.to(c, cp[0], cp[1], 1); return; }
+  if (act === 'stepin') { delete c.memory._m; c.move(stepIn(c)); return; }
+  if (act === 'travel') return go(c, rm, cp[0], cp[1], 1);
+  if (c.ticksToLive < 10) threat.noteRecycle(rm, c.name);
+  if (c.room.name !== C.home || edge) {
+    const sp = Game.spawns && Game.spawns[C.spawn || 'Spawn1'];
+    const x = sp ? sp.pos.x : (C.park || [35, 28])[0], y = sp ? sp.pos.y : (C.park || [35, 28])[1];
+    return go(c, C.home, x, y, 1);
+  }
+  const sp = c.pos.findClosestByRange && c.pos.findClosestByRange(FIND_MY_SPAWNS); if (!sp) return;
+  if (c.pos.isNearTo(sp)) { threat.noteRecycle(rm, c.name); sp.recycleCreep(c); }
+  else move.to(c, sp.pos.x, sp.pos.y, 1);
+}
+// Anti-NPC defender (docs/DEFENDER.md). Spawned on demand; creep Invaders are kited at range 3 (never players).
+// A memory.core creep is the melee buster above and does not use this kite path.
 // closes to 3 on pure ranged; target = utils/focus.pickDef (net damage, healers first, mass attack on 3+ within 2, sticky on dying).
 // Retreats home (<60% hp: tower heals it) or when it cannot win (focus.canWin) -> asks the FSM for a 2nd defender (threat.request2)
 // and waits at the rally point until the partner is near. After the fight (Memory.defense.remotePatrol, default ON) it patrols
@@ -255,6 +298,7 @@ roles.defender = function (c) {
   // While engaged in the assigned room, every combat hostile is a target (not only Invader). Patrol shots stay Invader-only.
   // Never operates in W47N9 (defend-only; do not attack that room).
   if (c.room.name === 'W47N9') { if (c.pos.y >= 48) c.move(BOTTOM); else c.moveTo(new RoomPosition(c.pos.x, 49, 'W47N9'), { range: 0, maxRooms: 1 }); return; }
+  if (c.memory.core) return coreBuster(c);
   const rm = c.memory.remote, C = (remote.cfgFor && remote.cfgFor(rm)) || remote.CFG[rm], th = threat.state(rm), K = threat.cfg(rm);
   if (!C || rm === 'W47N9') return;
   const inAssigned = c.room.name === rm;
@@ -327,4 +371,4 @@ roles.rscout = function (c) {
   if (remote.paused(c.memory.remote)) return flee(c);
   go(c, c.memory.remote, x, y, 1);
 };
-module.exports = { viaGate, repairNow, inward, stageOut, STAGE, viaTake, VIA_KEEP, rminer: { run: roles.rminer }, rhauler: { run: roles.rhauler }, reserver: { run: roles.reserver }, defender: { run: roles.defender }, rscout: { run: roles.rscout } };
+module.exports = { viaGate, repairNow, inward, stageOut, STAGE, viaTake, VIA_KEEP, coreAct, rminer: { run: roles.rminer }, rhauler: { run: roles.rhauler }, reserver: { run: roles.reserver }, defender: { run: roles.defender }, rscout: { run: roles.rscout } };
