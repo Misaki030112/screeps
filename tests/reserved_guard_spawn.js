@@ -46,4 +46,24 @@ spawned = null;
 Memory.remote.W47N7.th = { st: 'SAFE', since: 5000 };
 W.spawnRun(spawn);
 assert.notStrictEqual(spawned && spawned.role, 'defender', 'SAFE reservation does not spawn a defender, got ' + (spawned && spawned.role));
+// failed rdef must not eat the tick
+Game.time = 5100;
+Memory.remote.W47N7.th = { st: 'THREAT', since: 4900, why: 'guard', foes: 1, foeSeen: 5090 };
+spawned = null;
+spawn.spawnCreep = (b, name, o) => { spawned = { role: o.memory.role, remote: o.memory.remote }; return o.memory.role === 'defender' ? -10 : 0; };
+W.spawnRun(spawn);
+assert.strictEqual(spawned.role, 'w8miner', 'failed rdef falls through to economy, got ' + (spawned && spawned.role));
+assert.ok(!Memory.remote.W47N7.th.def, 'failed spawn does not noteSpawn');
+// resRooms without a real home must not build a cfg that crashes armed()
+const R = require(path.join(__dirname, '..', 'src', 'managers', 'remote.js'));
+Game.time = 5200;
+Memory.ops.resRooms = { W48N7: { by: 'Misaki', until: 1 }, W48N6: { by: 'Misaki', until: 99999, home: 'W47N9', x: 25, y: 25 } };
+Memory.remote.W48N7 = { th: { st: 'THREAT', since: 1 } };
+Memory.remote.W48N6 = { th: { st: 'DEFEND', since: 1 } };
+assert.strictEqual(R.cfgFor('W48N7'), null, 'busy resRooms entry with no home');
+assert.strictEqual(R.cfgFor('W48N6'), null, 'home W47N9 is refused');
+assert.strictEqual(T.armed('W48N7'), false);
+Memory.remote.W45N8 = { res: { username: 'Misaki', ticksToEnd: 50 }, seen: 0 };
+Game.time = 100;
+assert.strictEqual(T.reservedByUs('W45N8'), false, 'seen 0 is a real timestamp');
 console.log('reserved guard spawn ok');

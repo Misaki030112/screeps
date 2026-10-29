@@ -66,8 +66,9 @@ function cfgFor(r) {
   if (GUARD[r] && (busy || (typeof threat.reservedByUs === 'function' && threat.reservedByUs(r)))) out = GUARD[r];
   else {
     const g = Memory.ops && Memory.ops.resRooms && Memory.ops.resRooms[r];
-    const live = g && g.until > Game.time && g.home && g.home !== 'W47N9' && r !== 'W47N9';
-    if (live || (busy && g)) {
+    const homeOk = g && g.home && g.home !== 'W47N9' && r !== 'W47N9';
+    const live = homeOk && g.until > Game.time;
+    if (homeOk && (live || busy)) {
       const home = g.home, x = g.x || 25, y = g.y || 25;
       out = { home, guardOnly: true, dynamic: true, defend: true, cont: [x, y], src: [x, y],
         park: home === 'W47N8' ? [16, 20] : [46, 21], spawn: home === 'W47N8' ? 'Spawn2' : 'Spawn1',

@@ -144,7 +144,7 @@ function reservedByUs(r) {
   const who = ourName(); if (!who || r === 'W47N9') return false;
   const m = (Memory.remote || {})[r] || {}, res = m.res;
   if (res && res.username) {
-    const left = (res.ticksToEnd | 0) - (Game.time - (m.seen || Game.time));
+    const left = (res.ticksToEnd | 0) - (Game.time - (m.seen != null ? m.seen : Game.time));
     if (left > 0) return res.username === who;
   }
   const p = Memory.ops && Memory.ops.r7;

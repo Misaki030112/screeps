@@ -93,10 +93,9 @@ function spawnRun(spawn) {
       if (g && TG.armed(g) && avail >= cost) {
         const name = 'rdef' + Game.time;
         const rv = spawn.spawnCreep(body, name, { memory: { role: 'defender', home: room.name, remote: g, born: Game.time, v2: 1 }, energyStructures: energyOrder(room) });
-        if (rv === OK) { TG.noteSpawn(g, name); FM.spent(cost); }
-        return;
-      }
-      if (!cs.some(c => c.memory.role === 'w8filler' || c.memory.role === 'w8hauler')) want = 'w8filler';
+        if (rv === OK) { TG.noteSpawn(g, name); FM.spent(cost); return; }
+        // spawnCreep failed (busy name, RCL, etc.): do not eat the tick; economy below still runs
+      } else if (!cs.some(c => c.memory.role === 'w8filler' || c.memory.role === 'w8hauler')) want = 'w8filler';
       else { FM.wait('defender', cost, avail); return; }
     }
   }
