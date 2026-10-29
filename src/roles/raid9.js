@@ -2,8 +2,8 @@
 // Spawn from HOME W46N8 (2 melee + 2 ranged, storage floor ignored), walk W46N8 west 0,23 -> W47N8 rally 30,1/31,1/30,2/31,2,
 // all 4 present -> enter W47N9 together (melee first). One-shot: never respawned.
 // Retreat: (1) W47N9 safe mode, (2) overrun = hostile ATTACK+RA parts >=12, (3) last raider alive after n>=4, (4) manual abort/garrison.
-// Targets each tick: (1) adjacent armed, (2) spawn (rampart on tile eats hits), (3) tower-feeders only after spawn dead, (4) structures (+ creeps near), rest.
-// Misaki 10-29 live: do NOT chase tower feeders west while spawn still stands — hard-focus spawn rampart.
+// Targets each tick: (1) spawn (rampart on tile eats hits; siege path ignores destructibles), (2) feeders/armed after spawn dead, (3) structures (+ creeps near), rest.
+// Misaki 10-29 live: hard-focus spawn rampart — no feeder/armed path diversions while spawn stands.
 // Restart: replace Memory.ops.w47n9 with { on:true, n:0 } — leftover safe/garrison from a prior wave forces garrison.
 const MV = require('../utils/move');
 const TARGET = 'W47N9', STAGE = 'W47N8', HOME = 'W46N8';
@@ -21,16 +21,17 @@ const SKIP = new Set(['road', 'container', 'controller', 'constructedWall', 'ram
 
 // pure: world = { creeps:[{id,pos,energy,hits}], structs:[{id,pos,structureType,hits}] }; returns { id, pri } or null
 function pick(me, w) {
-  // armed defenders within 3 threaten the squad: peel them, weakest first (do not chase farther)
-  const armed = w.creeps.filter(h => h.armed && rng(me, h.pos) <= 3);
-  if (armed.length) return { id: _.min(armed, h => h.hits).id, pri: 1 };
-  // primary assault: spawn — attack() on spawn damages covering rampart on the same tile
+  // primary assault: spawn — attack() on spawn damages covering rampart on the same tile.
+  // Adjacent trash is peeled by strike() opportunity only — never divert path off spawn (Misaki 10-29).
   const sp = w.structs.filter(s => s.structureType === 'spawn');
   if (sp.length) return { id: _.min(sp, s => rng(me, s.pos)).id, pri: 1 };
   // only after spawn is gone: interrupt tower refill
   const towers = w.structs.filter(s => s.structureType === 'tower');
   const feeders = w.creeps.filter(h => h.energy > 0 && towers.some(t => rng(t.pos, h.pos) <= 3));
   if (feeders.length) return { id: _.min(feeders, h => rng(me, h.pos) * 1e5 + h.hits).id, pri: 2 };
+  // armed left near us after spawn dead: peel before other structures
+  const armed = w.creeps.filter(h => h.armed && rng(me, h.pos) <= 3);
+  if (armed.length) return { id: _.min(armed, h => h.hits).id, pri: 2 };
   const st = w.structs.filter(s => !SKIP.has(s.structureType));
   const near = w.creeps.filter(h => st.some(s => rng(s.pos, h.pos) <= 2));
   // creeps near structures interfere (repair/refill), kill them when close; else nearest structure (towers first)
@@ -171,6 +172,13 @@ function run(c) {
     if (!t) return;
     const r = c.getActiveBodyparts(ATTACK) ? 1 : (p.pri === 1 || p.pri === 4 ? 3 : 2);
     if (c.pos.inRangeTo(t, r)) return;
+    // siege structures: ignore rampart/wall cost so PathFinder is not incomplete when the core is ringed
+    // (creeps walk into the edge, then strike() opportunity + attack(target) 强拆). Creep chases still use MV.
+    if (t.structureType) {
+      delete c.memory._m;
+      c.moveTo(t, { range: r, reusePath: 5, maxRooms: 1, ignoreDestructibleStructures: true, ignoreCreeps: true, swampCost: 5 });
+      return;
+    }
     MV.to(c, t.pos.x, t.pos.y, r, ND); // our swap-capable mover: squad never deadlocks itself
     return;
   }
