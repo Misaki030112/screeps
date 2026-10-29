@@ -93,8 +93,8 @@ function waitNear(c, t, P) {
 function storeFloor(home) { const r = require('../managers/threat').reserve(home.name);
   return home.controller && home.controller.level >= 6 ? Math.max(r, require('../managers/walls').FLOOR) : r; }
 function pickSource(c, home, Ph, ctlSrc, fx, fy) {
-  const Wd = require('../managers/walls'), war = !!(Wd.siege && Wd.siege(home));
-  if (!war && Wd.defLow && Wd.defLow(home)) return null; // defense reserve banking: builders take nothing (siege: repair anyway)
+  const Wd = require('../managers/walls'), war = !!(Wd.siege && Wd.siege(home)) || !!(Wd.fundSpend && Wd.fundSpend(home));
+  if (!war && Wd.defLow && Wd.defLow(home)) return null; // defense reserve banking: builders take nothing (siege/fundSpend: repair anyway)
   const reserve = war ? storeFloor(home) : Math.max(storeFloor(home), Wd.defReserve ? Wd.defReserve() : 0);
   const amt = s => s.store ? s.store[RESOURCE_ENERGY] : s.amount;
   // build hold: hub link 37,29 too (queen only drains it when the room is full; live 23:40 hub 799 stuck -> source link 30,11 blocked)
@@ -189,7 +189,9 @@ module.exports = { ROUTE_FIX, routeJob, remoteRoadSite, remoteRefill, pickSource
         // builder would sit at waiting_feed for its whole life (live 13:26 10-18: 4 builders 84% waiting_feed). Recycle after
         // 50t grace: energy back into the bank; the surplus hysteresis respawns builders once the bank lifts.
         const Wb = require('../managers/walls');
-        if (!c.memory.remote && Wb.defLow && Wb.defLow(home) && (c.memory.nb = (c.memory.nb || 0) + 1) > 50 && require('../utils/salvage').retire(c, 1500)) return;
+        // fundSpend/siege: builder is supposed to draw storage down to FLOOR — don't recycle on a brief empty tick
+        if (!c.memory.remote && Wb.defLow && Wb.defLow(home) && !(Wb.siege && Wb.siege(home)) && !(Wb.fundSpend && Wb.fundSpend(home))
+          && (c.memory.nb = (c.memory.nb || 0) + 1) > 50 && require('../utils/salvage').retire(c, 1500)) return;
         const tw = c.memory.t && Game.getObjectById(c.memory.t);
         if (tw) waitNear(c, tw, Ph); trace.why(c, 'u'); return; // no energy anywhere: starved, not no_task
       }

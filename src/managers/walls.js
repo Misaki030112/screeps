@@ -110,7 +110,28 @@ function fund(room) {
 // v5 (Misaki 02:2x "storage can go down to ~5k while the ring closes"): during the wall phase the spendable budget is the fund OR
 // storage above FLOOR, whichever is larger (upgrading is held, so storage surplus is wall energy).
 const FLOOR = 5000;
-function budgetE(room) { const e = room.storage ? room.storage.store[RESOURCE_ENERGY] : 0; if (defLow(room)) return 0; return Math.max(fund(room), e - Math.max(FLOOR, defReserve())); }
+// Peacetime fund-backed wall step (strategy 17:4x post W47N9 abort): when walls.fund wants the next STEP and there is no
+// remote/home player threat, treat the fund as spendable even under reserveE (same 5k tower cushion as siege). Without this,
+// supply-follows-demand pins storage at reserveE, budgetE/pickSource freeze, and walls stay stuck at STEP 142101 despite
+// fund=50k (live 10-29 after 2523dd6: builder spawned on a blip then starved waiting_feed).
+function fundSpend(room) {
+  if (!room || !room.storage || !room.name || !room.memory) return false;
+  if (typeof FIND_HOSTILE_CREEPS === 'undefined') return false; // node unit tests without Game stubs
+  if (siege(room)) return false; // siege path already lifts the gates
+  if (threat(room)) return false; // Invader/player pressure: keep banking at reserveE
+  if (fund(room) < 3000) return false;
+  const P = plan().get(room.name);
+  if (!defense(P) || phase(room) !== 'build') return false;
+  const B = barriers(room, P), tgt = target(room, B);
+  if (!tgt || stepHeld(room, tgt)) return false;
+  return B.some(s => eff(s) < tgt);
+}
+function budgetE(room) {
+  const e = room.storage ? room.storage.store[RESOURCE_ENERGY] : 0;
+  if (defLow(room) && !fundSpend(room)) return 0;
+  const floor = fundSpend(room) ? FLOOR : Math.max(FLOOR, defReserve());
+  return Math.max(fund(room), e - floor);
+}
 // v5 hit floor (Misaki 02:29 "no red 1-hit walls"): while any barrier is below FLOOR_HITS the repair job outranks road sites.
 const FLOOR_HITS = 10000;
 function belowFloor(room) { const P = plan().get(room.name); if (!defense(P) || phase(room) !== 'build') return false;
@@ -221,4 +242,4 @@ function noUpgrade(room) {
   const B = barriers(room, P); return !ringClosed(room, P) || !B.length || _.min(B.map(eff)) < HOLD_TO;
 }
 const HOLD_TO = 100000;
-module.exports = { stepHeld, HOLD_STEP, siege, defReserve, defLow, SLACK, FLOOR_HITS, belowFloor, FLOOR, budgetE, WALL_CAP, ringClosed, UP_SAFE, DECAY_FLOOR, DECAY_CAP, decaying, noUpgrade, START, NOVICE_END, phase, planned, STEPS, target, barriers, fund, spend, reserved, repairJob, wantBuilder, placeSites, lists };
+module.exports = { stepHeld, HOLD_STEP, siege, fundSpend, defReserve, defLow, SLACK, FLOOR_HITS, belowFloor, FLOOR, budgetE, WALL_CAP, ringClosed, UP_SAFE, DECAY_FLOOR, DECAY_CAP, decaying, noUpgrade, START, NOVICE_END, phase, planned, STEPS, target, barriers, fund, spend, reserved, repairJob, wantBuilder, placeSites, lists };

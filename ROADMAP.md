@@ -3,10 +3,19 @@
 Novice zone ends **2026-10-28 03:33 UTC+8** (past as of 10-29). Defence timeline: `docs/DEFENSE_NOVICE.md` (2026-10-16); detail `docs/DEFENSE.md` / geometry `docs/DEFENSE_PLAN.md`.
 **Safe mode: NEVER auto-activate** — alert Misaki.
 
+## 2026-10-29 17:4x strategy review: peacetime wall fundSpend (post W47N9 abort)
+- **Chose:** fortification / hardening over mineral/boost (done 14:4x) and W47N8 RCL6→7 path — assault abort unlocked civilian walls, but live builder still starved at `reserveE=15k` with `walls.fund=50k` and min hits stuck at STEP **142101** (next STEPS[7]=300k). W47N8 barriers already at 300k; home is the gap.
+- **Root cause:** 2523dd6 only spawned a fund-backed builder when `!defLow`; supply-follows-demand pins storage at/under 15k, so `budgetE=0`, `pickSource` null, builder `waiting_feed` → recycle. Dropping `Memory.defense.reserveE` (docs suggestion) still leaves queen/upgrade fighting the fund; better: spend the dedicated fund like siege.
+- **Shipped:** `walls.fundSpend(room)` — peacetime, no remote/home player threat, fund≥3k, barriers below next STEP, not stepHeld → `budgetE` uses FLOOR 5k (not reserveE); spawn keeps 1 builder under defLow; builder `pickSource` treats fundSpend like siege; no bank-recycle while fundSpend. Overmind analog: `fortifyDutyThreshold` 500k / RCL7 `barrierHits` 1M — we use a 50k earmarked fund + 5k tower cushion instead of waiting for 500k assets.
+- **Cost/ETA:** 41 walls × ~(300k−142k)/100 ≈ **~65k e**; at ~5–10 e/t builder spend ≈ **2–4 h** peacetime; storage may oscillate 5k–15k while fund drains; upgrade slows under defLow (accepted).
+- **Reprioritise:** (1) home walls 142k→300k via fundSpend; (2) W47N8 RCL7 → tower3+spawn2; (3) colony storage≥20k → minerals+K send; (4) KO≥900 → boost defenders; (5) home barriers →1M. Mineral/boost code still waits RCL7+storage. Defend-only W47N9.
+- **Docs:** `docs/STRATEGY.md` state; `docs/MINERAL_DEFENSE_ROADMAP.md` §2 fortify; this entry. **Deploy** fundSpend (walls/spawn/builder + tests).
+- **Plan check (t~83940354):** home RCL7 464k/10.9M stor~14.2k fund=50k; W47N8 2.685M/3.645M stor~2.3k walls/GATE 300k; CPU~13 bucket 10k; hostiles 0; raid aborted. No major Misaki decision (fortify autonomous; no claim/attack/credits/SM).
+
 ## 2026-10-29 14:4x strategy review: KO boost pipeline (docs only; siege-safe)
 - **Chose:** RCL7 mineral mining + lab/boost pipeline for W46N8 (Misaki ask) over fortification deep-dive — walls still blocked by `reserveE=15k` + raid energy; docs don't fight the W47N9 assault.
 - **Findings (`docs/MINERAL_DEFENSE_ROADMAP.md` §4):** 3 labs = REACT|BOOST mutex (`ops.labsMode`); KO = 0.5/t (REACTION_TIME 10); boost = 30 mineral + 20 e per part; Overmind EvolutionChamber / TooAngel patterns cropped to single-room + adjacent terminal (W47N8→W46N8 send ~33 e/1k). Main K path = wait colony RCL7 → mine K → send home → react to ≥900 KO → then `managers/boost.js` for defender RA first. Market path closed (credits 0; no auto deal). Do **not** open `RCL6_MINERALS` / `ops.labs` / boost code mid-siege.
-- **Reprioritise:** (1) finish W47N9 assault / SM drain; (2) W47N8 RCL7 → tower3+spawn2; (3) storage≥20k → minerals+K send; (4) KO stockpile ≥900 → boost defenders; (5) then walls (drop reserveE when remotes SAFE & raid done). Fortification stays in §2 of mineral doc — no new wall code now.
+- **Reprioritise (superseded 17:4x):** was finish assault then minerals then walls. Assault aborted; walls advanced via fundSpend; mineral timeline unchanged after colony RCL7.
 - **Docs:** `docs/MINERAL_DEFENSE_ROADMAP.md` §4; `docs/STRATEGY.md` current state (was stale RCL6/RCL4). **No code / no deploy** (combat LIVE; deploy.lock free but practice = docs-only).
 - **Plan check (t~83937890):** home RCL7 418k/10.9M stor~16.8k; W47N8 2.645M/3.645M → RCL7 ~10-31夜～11-01; CPU~12 bucket 10k; raid LIVE ops n≥5 deploy 4d36ed8; BJ SM 4 unused. No Misaki decision (attack already authorized; mineral timeline is autonomous after RCL7).
 

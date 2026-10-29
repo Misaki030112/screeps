@@ -1,7 +1,7 @@
-# 矿物线 + 强化 + 城防路线图（2026-10-29 12:4x；**14:4x boost 管线深化**）
+# 矿物线 + 强化 + 城防路线图（2026-10-29 12:4x；14:4x boost；**17:4x fortify fundSpend**）
 
-Live refresh 14:41 UTC+8 tick ~83937890。**不自动交易、不开 safe mode。** 数字来自 `tools/market.py` + websocket live + console。
-围攻 W47N9 期间：只写文档/路线，不部署 boost 代码。
+Live refresh 17:45 UTC+8 tick ~83940354。**不自动交易、不开 safe mode。**
+围攻已于 ~15:31 中止（Misaki「算了撤退」）：defend-only W47N9，恢复两房基建；本轮部署 peacetime `walls.fundSpend`（墙 142k→300k），boost 代码仍等殖民地 RCL7+storage。
 
 ## 0. 现状（实测）
 
@@ -91,18 +91,18 @@ Console 开反应（有 K 入库后）：`Memory.ops.labs = { W46N8: 'KO' }`
 ### Home W46N8
 | 阶段 | 目标 | 备注 |
 |---|---|---|
-| 现在 | 环墙 min→**300k**，外门 rampart→**1M** | STEPS[7]；fund 满但 **reserveE=15k** 常令 `budgetE=0` |
-| 稳后 | 全屏障 **1M** | 约需再投六位数能量；和平期 rate 0.10×23≈2.3 e/t 很慢 |
-| 姿态 | 3 塔满能；SM×6 **永不自动**；remoteDefender on | 对 BustJetter：**defend-only** W47N9 |
+| 现在 | 环墙 min→**300k**（STEPS[7]） | **✅ 17:4x `walls.fundSpend`**：和平且无外矿/本房玩家威胁时，fund≥3k 且屏障未到 STEP → 按 siege 同款 FLOOR **5k** 花 fund（不必降 `reserveE`）。约 65k e / 2–4 h。有威胁则退回 banking。 |
+| 稳后 | 全屏障 **1M** | Overmind RCL7 `barrierHits=1M` / `fortifyDutyThreshold=500k`；我们用 50k 专款 + 5k 塔垫，再慢慢抬 |
+| 姿态 | 3 塔满能；SM **永不自动**；remoteDefender on | BustJetter：**defend-only** W47N9（围攻已中止） |
 
-**建议（运行时，非本 PR）：** 外矿平稳、无玩家压境时，把 `Memory.defense.reserveE` 降到 **10000** 或临时删掉，让 builder 吃 fund 把墙推到 300k；有警报再加回 15k。
+**已落地（本 PR）：** `fundSpend` + spawn 1 builder under defLow + builder pickSource/recycle 豁免。`reserveE=15k` 保留作威胁期银行。
 
 ### Colony W47N8
 | 阶段 | 目标 |
 |---|---|
-| RCL6 现在 | seal 墙保持 ≥300k；GATE rampart 从 ~20k → **≥100k**（塔已 GATE_TOWER 20k） |
-| RCL7 当天 | tower3 + spawn2；`WALL_TARGET` 升到 1M（config 已按 RCL 索引） |
-| 之后 | 关键 hub/spawn/storage/tower 补 rampart（layout ORDER.rampart）；仍不主动打 BustJetter |
+| RCL6 现在 | seal 墙 + GATE **已 ≥300k**（live 17:4x）；保持不掉 |
+| RCL7 当天 | tower3(22,7) + spawn2(33,30)；`WALL_TARGET`→1M |
+| 之后 | 关键 hub/spawn/storage/tower 补 rampart；仍不主动打 BustJetter |
 
 ### 外矿 / 预订
 - 已有：home `defender`（预订房敌情）+ W47N7 `rdef`（#1）
@@ -177,7 +177,7 @@ W47N8 本轮 **K 35000** 采完 → 邻房 send 回家 → 可产 **35000 KO**�
 ### 4.6 与围攻/RCL 的时序（14:41）
 | 何时 | 做什么 | 不做 |
 |---|---|---|
-| **现在（围攻 LIVE）** | 保持采 O 或设 `mineralCap=50000` 省 ~0.9 e/t；文档+路线 | 不写 boost 代码、不开 `ops.labs`、不开 W47N8 矿物、不卖矿 |
+| **现在（围攻已中止）** | 采 O（无 mineralCap）；home 墙 fundSpend→300k；殖民地冲 RCL7 | 不写 boost 代码、不开 `ops.labs`、不开 W47N8 矿物、不卖矿 |
 | W47N8 → RCL7（~10-31/11-01） | 立刻 tower3(22,7)+spawn2；修 GATE ramp≥100k | 仍不开矿物直到 storage≥20k |
 | storage 稳住后 | `RCL6_MINERALS=true` + mminer；K→home | 不开 `RCL7_INDUSTRY` |
 | K≥1000 @ home terminal | `ops.labs={W46N8:'KO'}`；产到 ≥900 | 不切 BOOST 直到门槛 |
@@ -193,4 +193,4 @@ W47N8 本轮 **K 35000** 采完 → 邻房 send 回家 → 可产 **35000 KO**�
 | KO≥900 | **新建** `src/managers/boost.js` + spawn 后 hook（defender 族）+ 测试 | 单独 PR；围攻结束后 |
 | 更晚 | labs4–6 / T2（KHO2 需 OH+H）/ factory | `RCL7_INDUSTRY` |
 
-** fortification 提醒（不阻塞矿物）：** home 墙仍卡在 STEPS 142k→300k，因 `reserveE=15k`；W47N8 GATE ramp ~20k→100k 等殖民地有盈余。邻居 HIGH 解除或围攻结束后再降 reserveE。
+** fortification（17:4x）：** home 墙经 `fundSpend` 推进 142k→300k（不必降 reserveE）；W47N8 屏障已 300k。矿物/boost 仍不阻塞，等殖民地 RCL7+storage≥20k。

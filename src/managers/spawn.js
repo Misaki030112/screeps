@@ -368,11 +368,11 @@ function run1(spawn, onWait) {
   // reserve, waiting_feed ~90%). Above the reserve, builders are sized to the SURPLUS: 1 per 4k over reserve+2k, none below +2k.
   // walls.siege (player combat inside home): one builder anyway, to repair the attacked barriers.
   let roadBuilder = false; // route-road upkeep builder (below): capped body, does not cost an upgrader slot
-  { const Wr = require('./walls'), dr = Wr.defReserve ? Wr.defReserve() : 0, war = Wr.siege(room);
-    if (dr && room.storage && T.builder > 0 && !war) { const sur = room.storage.store[RESOURCE_ENERGY] - dr - 2000; T.builder = sur < 0 ? 0 : Math.min(T.builder, 1 + Math.floor(sur / 4000)); }
-    if (war) T.builder = Math.min(T.builder, 1);
+  { const Wr = require('./walls'), dr = Wr.defReserve ? Wr.defReserve() : 0, war = Wr.siege(room), fundWall = !!(Wr.fundSpend && Wr.fundSpend(room));
+    if (dr && room.storage && T.builder > 0 && !war && !fundWall) { const sur = room.storage.store[RESOURCE_ENERGY] - dr - 2000; T.builder = sur < 0 ? 0 : Math.min(T.builder, 1 + Math.floor(sur / 4000)); }
+    if (war || fundWall) T.builder = Math.min(Math.max(T.builder, 1), 1);
     const low = Wr.defLow && Wr.defLow(room);
-    if (low) { if (!war) T.builder = 0; }
+    if (low) { if (!war && !fundWall) T.builder = 0; }
     // Route-road upkeep (Misaki 10-20: remote roads must never decay away). Storage sits at the 15k floor (upgrade first ferries
     // the surplus to ctl), so the surplus gate above zeroed every builder and 5dd9d59's re-placed W45N8 road sites (7.5k) had
     // no builder at all (patrol 10-20 09:5x: builder 0, 13 sites 0/x). One small builder for remote road sites / route roads
@@ -380,11 +380,9 @@ function run1(spawn, onWait) {
     // Not gated on defLow (patrol 10-20 10:2x: storage hovers 13.9-15.3k around the 15k floor, defLow true at every check, builder
     // never spawned in 30 min); it refills from the remote container (builder.remoteRefill), only a deep drain (<reserve-3k) stops it.
     if (!T.builder && room.storage && rcl >= 6 && room.storage.store[RESOURCE_ENERGY] >= dr - 3000 && (require('../roles/builder').remoteRoadSite() || require('./roads').repairTarget(0.3))) { T.builder = 1; roadBuilder = true; }
-    // Fund-backed wall step (patrol 10-29 17:2x): surplus gate zeros builders while storage hovers at reserveE..+2k
-    // (supply-follows-demand), but walls.fund is full (50k) and wantBuilder true — home walls stuck at STEP 142101 for hours
-    // (next STEPS[7]=300k). Mirror roadBuilder: 1 builder when fund wants repair and not defLow; pickSource still never
-    // takes storage below reserveE.
-    if (!T.builder && !low && Wr.wantBuilder(room)) { T.builder = 1; }
+    // Fund-backed wall step (patrol 10-29 17:2x + strategy 17:4x fundSpend): surplus gate zeros builders while storage
+    // hovers at reserveE; fundSpend lifts reserveE for 1 builder down to FLOOR (5k) so STEP 142k→300k can finish.
+    if (!T.builder && (!low || fundWall) && Wr.wantBuilder(room)) { T.builder = 1; }
     // A site no builder will work must not cost an upgrader slot ('sites ? 1 : 2' frees feed for a builder). Patrol 10-20 07:2x:
     // walls.js NW spur road 30,12 (0/300) sat with builder target 0 (storage at the 15k floor) -> upgrader target 1, the 2nd
     // 14W upgrader died unreplaced (~-8 e/t upgrade) against Misaki's 'upgrade first until RCL7'.
