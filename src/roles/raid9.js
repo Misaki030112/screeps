@@ -68,8 +68,11 @@ function strike(c, t, w, hp) {
   const melee = c.getActiveBodyparts(ATTACK) > 0, ra = c.getActiveBodyparts(RANGED_ATTACK) > 0;
   if (melee) {
     if (t && c.pos.isNearTo(t)) c.attack(t);
-    else { // target of opportunity: adjacent creep, else adjacent non-road structure (incl. ramparts in the way)
-      const adj = w.hc.find(h => c.pos.isNearTo(h)) || c.pos.findInRange(FIND_HOSTILE_STRUCTURES, 1).find(s => s.structureType !== STRUCTURE_CONTROLLER);
+    else {
+      // siege: when primary is a structure, smash adjacent rampart/wall BEFORE peeling creeps
+      const adjS = c.pos.findInRange(FIND_HOSTILE_STRUCTURES, 1).find(s => s.structureType !== STRUCTURE_CONTROLLER);
+      const adjC = w.hc.find(h => c.pos.isNearTo(h));
+      const adj = (t && t.structureType && adjS) ? adjS : (adjC || adjS);
       if (adj) c.attack(adj);
     }
   }
@@ -172,9 +175,11 @@ function run(c) {
     if (!t) return;
     const r = c.getActiveBodyparts(ATTACK) ? 1 : (p.pri === 1 || p.pri === 4 ? 3 : 2);
     if (c.pos.inRangeTo(t, r)) return;
-    // siege structures: ignore rampart/wall cost so PathFinder is not incomplete when the core is ringed
-    // (creeps walk into the edge, then strike() opportunity + attack(target) 强拆). Creep chases still use MV.
+    // siege structures: hold on adjacent rampart/wall and smash; else path ignoring destructibles
+    // (walking onto enemy rampart always fails — must 强拆 the edge first). Creep chases still use MV.
     if (t.structureType) {
+      const edge = c.pos.findInRange(FIND_HOSTILE_STRUCTURES, 1).find(s => s.structureType === STRUCTURE_RAMPART || s.structureType === STRUCTURE_WALL);
+      if (edge) return;
       delete c.memory._m;
       c.moveTo(t, { range: r, reusePath: 5, maxRooms: 1, ignoreDestructibleStructures: true, ignoreCreeps: true, swampCost: 5 });
       return;
