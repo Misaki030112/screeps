@@ -45,6 +45,22 @@ function matrix(roomName, avoidCreeps) {
     // v5: exit tiles cost 50 so a ranged goal (repair range 3) never ends ON an exit (live 03:00: builder repairing NE wall 47,11
     // from 49,14 = W45N8 exit -> gets bounced into W45N8 and back). Range-0 exit walks (hop) still reach them.
     for (let i = 0; i < 50; i++) for (const [x, y] of [[0, i], [49, i], [i, 0], [i, 49]]) if (m.get(x, y) < 50) m.set(x, y, 50);
+    // Dead-end walkables (patrol 2026-10-29 20:25): roads/containers enclosed by 255 neighbours
+    // (e.g. W46N8 31,33 and 31,35 after RCL7 stamp). PathFinder otherwise routes onto them and the
+    // creep can never leave; queen freeTrapped then suicides in a spawn loop. Block the tile itself.
+    const N8m = [[-1,-1],[0,-1],[1,-1],[-1,0],[1,0],[-1,1],[0,1],[1,1]];
+    const T = room.getTerrain();
+    const esc = (x, y) => N8m.some(([dx, dy]) => {
+      const nx = x + dx, ny = y + dy;
+      if (nx < 0 || nx > 49 || ny < 0 || ny > 49) return false;
+      if (T.get(nx, ny) === TERRAIN_MASK_WALL) return false;
+      return m.get(nx, ny) < 255;
+    });
+    for (const s of room.find(FIND_STRUCTURES)) {
+      if (s.structureType !== STRUCTURE_ROAD && s.structureType !== STRUCTURE_CONTAINER) continue;
+      const { x, y } = s.pos;
+      if (m.get(x, y) < 255 && !esc(x, y)) m.set(x, y, 255);
+    }
     e = CM[roomName] = { v, m };
   }
   if (!avoidCreeps) return e.m;
