@@ -1,33 +1,33 @@
-# 矿物线 + 强化 + 城防路线图（2026-10-29 12:4x；14:4x boost；**17:4x fortify fundSpend**）
+# 矿物线 + 强化 + 城防路线图（2026-10-29 12:4x；14:4x boost；17:4x fundSpend；**23:4x fortify hardening**）
 
-Live refresh 17:45 UTC+8 tick ~83940354。**不自动交易、不开 safe mode。**
-围攻已于 ~15:31 中止（Misaki「算了撤退」）：defend-only W47N9，恢复两房基建；本轮部署 peacetime `walls.fundSpend`（墙 142k→300k），boost 代码仍等殖民地 RCL7+storage。
+Live refresh **23:50 UTC+8** tick ~83945055。**不自动交易、不开 safe mode。**
+围攻已中止；`walls.fundSpend` 仍在推家墙 174k→300k；**23:4x** 补齐 home lab rampart 布局缺口（三 lab 曾裸奔 500 hits）。boost 代码仍等殖民地 RCL7+storage。
 
 ## 0. 现状（实测）
 
 ### W46N8 home RCL7
 | 项 | 值 |
 |---|---|
-| 进度 | ~418k / 10.9M（14:41） |
+| 进度 | ~546k / 10.9M（23:50） |
 | 矿物 | **O** @40,24 余 **10136**（正在采）；extractor cd 4；容器 41,24 |
 | 库存 | storage O **17324** + terminal O **112476** ≈ **129.8k O**；另有战利品 GO127 KO32 ZH38 UH15 |
 | terminal | 有，能量 **0**；credits **0** |
-| labs | **3**（34,22 / 33,21 / 35,21），空，500 hits；`Memory.ops.labs` **未设** → `labs.js` dormant |
+| labs | **3**（34,22 / 33,21 / 35,21），空；**23:4x 已规划 lab 位 rampart**（部署后落点；此前裸 500 hits）；`Memory.ops.labs` **未设** → dormant |
 | factory | **0**（`plan.RCL7_INDUSTRY=false`） |
 | spawns / towers | Spawn1+Spawn3；**3 塔**能量 ~900–950 |
-| 墙 | 41 面墙 min **142101**（下一阶 STEPS[7]=**300k**→**1M**）；rampart 13 面 min **328501**（核心已 ~1M） |
-| 墙资金 | fund **50k** 封顶；`Memory.defense.reserveE=15000`，storage ~**14.8–15k** → 常触 `defLow`，和平期修墙几乎停 |
+| 墙 | 41 面墙 min **174401**（STEPS[7]=**300k**→**1M**；fundSpend fund~49.3k；ETA ~12–30 h）；structure ramp min ~345k（核心 ~1M） |
+| 墙资金 | fund ~**49.3k** / 50k 封顶；`reserveE=15000`；storage ~15k 振荡 → fundSpend 用 FLOOR 5k 继续推墙 |
 | mminer | 1 只在采；`mineralCap` **未设** |
 
 ### W47N8 colony RCL6
 | 项 | 值 |
 |---|---|
-| 进度 | **2.645M / 3.645M**（余 ~1.000M；model_w8 6h upgrade ~19.7 → ETA RCL7 ~**61 h ≈ 10-31 夜～11-01**） |
+| 进度 | **2.791M / 3.645M**（余 ~854k；6h ~23 e/t → ETA RCL7 ~**49 h ≈ 11-01**） |
 | 矿物 | **K** **35000** @37,45 **未采**；extractor **已有**（Misaki 自有，layout 门控后未拆） |
 | terminal / labs | **无**（`config.RCL6_MINERALS=false`，正确） |
-| storage | ~**1.2k** energy |
-| 城防 | 墙 11 面 min **300001**（= RCL6 `WALL_TARGET`）；rampart 4 面 min **~20k**（北门 GATE）；塔 2；Spawn2 only |
-| ETA RCL7 | model actual ~19.7 e/t → ~**10-31 夜～11-01**；ideal 30 → ~40 h（围攻 divert 拖慢） |
+| storage | ~**2.4k** energy |
+| 城防 | 墙 11 面 min **300001**；北门 GATE@29,3 **300301**（巡逻 "~20k" 实为 spawn 位 `GATE_TOWER` 地板）；塔 2；Spawn2 only |
+| ETA RCL7 | ~23 e/t → ~**11-01**（~49 h）；ideal ~30 → ~33 h |
 
 ### 代码/开关
 - `plan.RCL6_MINERALS=true`（home 矿物基建已齐）；`plan.RCL7_INDUSTRY=false`（factory+labs4–6 不落点）
@@ -88,27 +88,35 @@ Console 开反应（有 K 入库后）：`Memory.ops.labs = { W46N8: 'KO' }`
 
 ---
 
-## 2. 城防 / 加固分阶段
+## 2. 城防 / 加固分阶段（**23:4x hardening**）
+
+### 2.1 深挖结论（相对 Overmind / Screeps docs）
+- **Overmind：** RCL7 `barrierHits = 1M`，`fortifyDutyThreshold = 500k`（storage 够才全力抬墙）。我们用 **STEPS + 50k fund + fundSpend FLOOR 5k**，等价但更抠能量。
+- **软目标矩阵（home live 23:50）：** spawn/tower/storage/terminal **有** rampart；**3 labs 曾无规划 rampart → 裸 500 hits**（任何 WORK 都能秒拆 boost 管线）。extractor/links/containers 仍无（extractor 在环外，可接受）。
+- **W47N8：** seal 墙 + GATE@29,3 均已 **≥300k**。巡逻日志 "~20k GATE" 是 **spawn 位空 rampart 的 `GATE_TOWER=20k` 地板**，不是北门——已纠正。
+- **塔覆盖：** home 3 塔足够核心；殖民地 RCL7 当天落 tower3@22,7（北线）。不扩 4 塔直到 RCL8。
+- **优先级插入：** lab 盖板（廉价、立刻消除最软点）→ 环墙 300k → 殖民地 RCL7 tower3+spawn2 → 矿物 → 屏障 1M。
 
 ### Home W46N8
 | 阶段 | 目标 | 备注 |
 |---|---|---|
-| 现在 | 环墙 min→**300k**（STEPS[7]） | **✅ 17:4x `walls.fundSpend`**：和平且无外矿/本房玩家威胁时，fund≥3k 且屏障未到 STEP → 按 siege 同款 FLOOR **5k** 花 fund（不必降 `reserveE`）。约 65k e / 2–4 h。有威胁则退回 banking。 |
-| 稳后 | 全屏障 **1M** | Overmind RCL7 `barrierHits=1M` / `fortifyDutyThreshold=500k`；我们用 50k 专款 + 5k 塔垫，再慢慢抬 |
-| 姿态 | 3 塔满能；SM **永不自动**；remoteDefender on | BustJetter：**defend-only** W47N9（围攻已中止） |
+| **现在** | **lab@34,22 / 35,21 / 33,21 落 rampart** | **✅ 23:4x** 写入 `layouts/W46N8` RCL6(+7/8) rampart 列表；`layout.js` 自动落点；塔先抬到 `RAMPART_FLOOR` 5k（storage<reserve 时），有余粮再往 RCL 目标 |
+| 并行 | 环墙 min→**300k**（STEPS[7]） | **✅ 17:4x `walls.fundSpend`** 仍 live；min **174401**，fund ~49k；实测 ~2 e/t → ETA **~12–30 h**（慢于 17:4x 的 2–4 h 乐观估计，因 storage 贴 15k 地板） |
+| 稳后 | 全屏障 **1M** | Overmind RCL7 1M；我们 STEPS 下一档；structure ramp 已有 ~345k–1M |
+| 姿态 | 3 塔满能；SM **永不自动**；remoteDefender on | BustJetter：**defend-only** W47N9 |
 
-**已落地（本 PR）：** `fundSpend` + spawn 1 builder under defLow + builder pickSource/recycle 豁免。`reserveE=15k` 保留作威胁期银行。
+**已落地：** 17:4x fundSpend；**23:4x lab rampart 布局**（+ `tests/lab_ramparts.js`）。`reserveE=15k` 保留。
 
 ### Colony W47N8
 | 阶段 | 目标 |
 |---|---|
-| RCL6 现在 | seal 墙 + GATE **已 ≥300k**（live 17:4x）；保持不掉 |
-| RCL7 当天 | tower3(22,7) + spawn2(33,30)；`WALL_TARGET`→1M |
-| 之后 | 关键 hub/spawn/storage/tower 补 rampart；仍不主动打 BustJetter |
+| RCL6 现在 | seal 墙 + GATE **已 ≥300k**（live 确认 GATE 300301）；保持；spawn 位 rampart 维持 `GATE_TOWER` 20k 即可 |
+| RCL7 当天 | tower3(22,7) + spawn2(33,30)；`WALL_TARGET`→1M（盈余抬）；factory **OFF** |
+| 之后 | hub/spawn/storage/tower rampart 补齐；开矿物线后再给 labs 盖板；仍不主动打 BustJetter |
 
 ### 外矿 / 预订
 - 已有：home `defender`（预订房敌情）+ W47N7 `rdef`（#1）
-- 缺口：无主动观察 W47N9/W48N8（novis）；可继续 north_watch；不建议再扩兵种直到有 boost
+- 缺口：无主动观察 W47N9/W48N8（novis）；north_watch 继续；不扩兵种直到有 boost
 - 外矿容器被拆时按现有 builder/remote 逻辑重建即可
 
 ---

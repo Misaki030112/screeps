@@ -3,6 +3,13 @@
 Novice zone ends **2026-10-28 03:33 UTC+8** (past as of 10-29). Defence timeline: `docs/DEFENSE_NOVICE.md` (2026-10-16); detail `docs/DEFENSE.md` / geometry `docs/DEFENSE_PLAN.md`.
 **Safe mode: NEVER auto-activate** — alert Misaki.
 
+## 2026-10-29 23:4x strategy review: dual-room fortification hardening (lab ramparts)
+- **Chose:** fortification hardening across W46N8+W47N8 (Misaki minerals+fortify ask; distinct from 17:4x fundSpend mechanism and 20:4x factory gate).
+- **Findings (`docs/MINERAL_DEFENSE_ROADMAP.md` §2):** (1) **3 home labs naked at 500 hits** — layout RCL6 listed labs but only terminal rampart; boost pipeline one WORK from gone. (2) Overmind RCL7 barrierHits=1M / fortifyDutyThreshold=500k vs our STEPS+50k fund. (3) W47N8 GATE@29,3 already **300301**; patrol "~20k GATE" was spawn-slot `GATE_TOWER` floor misread. (4) Walls min 174401→300k via fundSpend slower than 17:4x 2–4h (~2 e/t observed → ~12–30 h). (5) Soft-target matrix: spawn/tower/storage/terminal covered; labs were the gap; extractor outside seal OK.
+- **Shipped:** lab coords added to RCL6/7/8 `rampart` lists in `src/layouts/W46N8.js` (+ data json); `tests/lab_ramparts.js`; deploy this run. Towers raise new ramparts to FLOOR 5k under reserve, then toward RCL target when funded.
+- **Reprioritise:** (1) **lab ramparts** (sites→5k); (2) home walls 174k→300k fundSpend; (3) W47N8 RCL7 → tower3+spawn2 (factory OFF); (4) colony storage≥20k → minerals+K send; (5) KO≥900 → boost; (6) barriers →1M. Defend-only W47N9.
+- **Plan check (t~83945055):** home RCL7 ~546k/10.9M stor~15.5k walls 174401 ramp~345k fund~49.3k; W47N8 2.791M/3.645M (~49h) walls+GATE 300k towers 2; CPU~12–16 bucket 10k; remotes SAFE hostiles 0; GCL4; deploy was 096b549 → this SHA. No major Misaki decision.
+
 ## 2026-10-29 20:4x strategy review: W47N8 RCL7 day-of (factory gate + spur roads)
 - **Chose:** W47N8 RCL6→7 day-of path (placement order, energy bill, road coverage) over rehashing mineral/boost (14:4x) or fundSpend (17:4x). ETA RCL7 ~11-01; 02:4x already flagged "only 2 served RCL7 slots" and it was never fixed.
 - **Findings (`docs/PLAN_W47N8.md` "RCL7 day-of"):** first tick places **spawn@33,30 + tower@22,7** only (towerSite holds extensions — correct). After those stand: 10 ext then **factory@35,30 (100k)** unless gated. Minerals/hub link stay off. 8/10 RCL7 ext slots orphaned from v4 roads; tower3@22,7 has no adjacent plan road (northFeed range 4 of 26,11 still works). Screeps RCL7 unlocks factory; Overmind-style bots defer industry until logistics+defense stable — same as home `plan.RCL7_INDUSTRY`.
