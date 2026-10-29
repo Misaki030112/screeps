@@ -218,7 +218,9 @@ const roles = {
 // W45N8 <-> W45N7 until TTL (lingers at the W45N8 south exit = the only way into W45N7); the FSM adopts it for the next THREAT.
 // opt.approaching: target closed in since last tick (kite holds at >=4 off swamp); c.memory.kd = last step (direction inertia)
 function kite(c, t, flee, approaching) {
-  const C = remote.CFG[c.memory.remote], R = remote.route(c.memory.remote), i = R.indexOf(c.room.name);
+  // GUARD/dynamic remotes (W47N7) live in cfgFor, not CFG — CFG-only blew up on C.avoid (live 10-29 ~19:24, rdef vs Invader).
+  const C = (remote.cfgFor && remote.cfgFor(c.memory.remote)) || remote.CFG[c.memory.remote] || {};
+  const R = remote.route(c.memory.remote), i = R.indexOf(c.room.name);
   const ex = i > 0 ? remote.exitTile(c.memory.remote, c.room.name, R[i - 1]) : null; // our way home from here
   let d = require('../utils/kite').step(c, t, flee, ex, { approaching, last: c.memory.kd });
   if (d && C.avoid && c.room.name === c.memory.remote) { const D = [null, [0, -1], [1, -1], [1, 0], [1, 1], [0, 1], [-1, 1], [-1, 0], [-1, -1]][d];
