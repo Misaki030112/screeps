@@ -103,8 +103,11 @@ function pickSource(c, home, Ph, ctlSrc, fx, fy) {
     .filter(s => s && s.store[RESOURCE_ENERGY] >= 50 + (s === home.storage ? reserve : 0));
   let loose = [];
   if (typeof FIND_DROPPED_RESOURCES !== 'undefined') {
-    loose = home.find(FIND_DROPPED_RESOURCES).filter(r => r.resourceType === RESOURCE_ENERGY && r.amount >= 100)
-      .concat(home.find(FIND_TOMBSTONES).filter(t => t.store[RESOURCE_ENERGY] >= 100));
+    // Skip fully enclosed piles (patrol 10-30 10:2x): RCL7 filler stamp left drop@31,33 with no walkable
+    // neighbour; builder sticky-src'd it and starved walls STEP→300k while storage sat above FLOOR.
+    const salv = require('../utils/salvage'), ok = o => salv.reachable(home, o.pos, c.pos);
+    loose = home.find(FIND_DROPPED_RESOURCES).filter(r => r.resourceType === RESOURCE_ENERGY && r.amount >= 100 && ok(r))
+      .concat(home.find(FIND_TOMBSTONES).filter(t => t.store[RESOURCE_ENERGY] >= 100 && ok(t)));
   }
   const score = s => Math.min(amt(s), c.store.getFreeCapacity() || 50) / (c.pos.getRangeTo(s) + 15);
   let cands = hub.concat(loose);
@@ -171,6 +174,8 @@ module.exports = { ROUTE_FIX, routeJob, remoteRoadSite, remoteRefill, pickSource
     }
     if (remoteRefill(c, Game.rooms[c.memory.home] || room)) return;
     let src = c.memory.src && Game.getObjectById(c.memory.src);
+    // Dropped/tomb sticky must stay reachable (same enclosed-pile rule as pickSource)
+    if (src && !src.store && !require('../utils/salvage').reachable(c.room, src.pos, c.pos)) { src = null; delete c.memory.src; }
     if (!src || (src.store ? src.store[RESOURCE_ENERGY] : src.amount) < 50) {
       const home = Game.rooms[c.memory.home] || room;
       const Ph = plan.get(home.name) || P;
