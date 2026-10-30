@@ -167,6 +167,27 @@ Once fundSpend is off and storage has recovered past the floor:
 ### What we did not change
 
 - No code behavior change beyond documenting the exit comment on `fundSpend`.
-- No auto-push to 1M; no mineral enable; no soft-rampart HP raise this run (topic A deferred).
+- No auto-push to 1M; no mineral enable; soft-rampart HP raise deferred to **14:4x** (see below).
 - Observability: patrol / model already expose `wmin`, `fundSpend`, storage; watch for `stepHeld` equivalent = walls min ≥300k + no job.
 
+## 2026-10-30 14:4x — colony soft-ramp staging (topic A)
+
+**Question:** before W47N8 RCL7 day-of (tower3+spawn2), should we raise soft KEY ramparts (spawn/tower/storage) from ~20–50k toward an Overmind-style barrier band, and to what target without starving upgrade?
+
+**Answer: YES — stage to 100k (not 500k).** Peacetime + storage≥5k; spawn/gate always; seal/GATE stay 300k.
+
+### Why 100k not Overmind 500k
+- Overmind `barrierHits[6]=500k` / `[7]=1M` with `fortifyDutyThreshold=500k` storage. Colony storage is ~0–3k; home ~15k under/around reserveE. A 500k soft target would burn tens of k e into ramps while ~560k e still sit on the RCL7 controller.
+- Hits cost: energy = hits/100. Spawn 20k→100k ≈800e; tower+storage ~50k→100k ≈1k e; **~1.8k e total** — a few minutes of surplus, not a multi-hour diversion.
+- Defense: 100k soft cover survives small Invader/probe pressure until towers engage; seal + GATE@29,3 already ≥300k handle the north line. BustJetter post-novice threat is seal/towers, not soft-ramp HP at 500k.
+- TooAngel continuous repairers would fight upgrade — we keep soft raise **gated** and hold-map never ratchets (decay-offset only above the soft floor).
+
+### Code (`src/rooms/w47n8/config.js`, `index.js` rampHold)
+- `GATE_TOWER` 20k→**100000** (spawn-slot + gate critical floor, always).
+- `SOFT_RAMP=100000`, `SOFT_MIN=5000`.
+- Soft path: peacetime (`!TH.on()`) + storage≥SOFT_MIN → raise lowest non-gate KEY soft ramp below SOFT_RAMP.
+- Observability: `Memory.ops.w8soft = { t, tgt, spawn, tower, stor, gate }`.
+- Tests: `tests/w47n8_no_rampart.js` soft staging; `w47n8_spawn_move.js` adjusted for GATE_TOWER band.
+
+### Reprioritise
+Soft ramps move **ahead of** day-of RCL7 placement in the post-hold sequence (still after walls hold + storage recover). Day-of order unchanged: tower3@22,7 + spawn2@33,30 + 10 ext + spur; factory OFF (`RCL7_INDUSTRY=false`).

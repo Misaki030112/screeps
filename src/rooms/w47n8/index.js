@@ -415,10 +415,33 @@ function rampHold(room) {
   const o = (Memory.ops = Memory.ops || {}), h = (o.w8hold = o.w8hold || {}), live = {};
   for (const r of rs) live[r.id] = h[r.id] === undefined ? r.hits : h[r.id];
   o.w8hold = live;
+  // Observability (14:4x): soft-ramp mins for patrol/strategy — spawn/tower/storage/gate hits + staging target.
+  const soft = (o.w8soft = { t: Game.time, tgt: C.SOFT_RAMP || 0 });
+  for (const r of rs) {
+    if (!r.pos) continue;
+    const { x, y } = r.pos;
+    if (isGate(x, y)) soft.gate = r.hits;
+    else if (x === L.ORDER.spawn[0][0] && y === L.ORDER.spawn[0][1]) soft.spawn = r.hits;
+    else if (room.lookForAt) {
+      const st = room.lookForAt(LOOK_STRUCTURES, x, y);
+      if (st.some(s => s.structureType === STRUCTURE_TOWER)) soft.tower = Math.min(soft.tower == null ? r.hits : soft.tower, r.hits);
+      if (st.some(s => s.structureType === STRUCTURE_STORAGE)) soft.stor = r.hits;
+    }
+  }
   // 13:30 gate ramp-up; 10-20 16:5x patrol: also the spawn-slot rampart (L.ORDER.spawn[0]). It is built at 1 hit and its hold was 1,
-  // so it decayed away every ~100 t (seen t83761858-862) and the relocated spawn would have stood uncovered. Same 20k tower floor (~200 e).
+  // so it decayed away every ~100 t (seen t83761858-862) and the relocated spawn would have stood uncovered.
+  // 14:4x: GATE_TOWER=100k (=SOFT_RAMP) — spawn/gate critical floor, always (defense).
   const slot = (x, y) => x === L.ORDER.spawn[0][0] && y === L.ORDER.spawn[0][1];
   const g = rs.find(r => r.pos && (isGate(r.pos.x, r.pos.y) || slot(r.pos.x, r.pos.y)) && r.hits < (C.GATE_TOWER || 0)); if (g) return g;
+  // 14:4x soft staging: peacetime + storage≥SOFT_MIN → raise KEY soft ramps (tower/storage/terminal; spawn covered above)
+  // toward SOFT_RAMP. Hold map still never ratchets up (decay-offset only above the soft floor). Cost ~1.8k e to 100k.
+  const softT = C.SOFT_RAMP || 0, softMin = C.SOFT_MIN || 0;
+  const storE = room.storage && room.storage.store ? (room.storage.store[RESOURCE_ENERGY] || 0) : 0;
+  if (softT > 0 && storE >= softMin && !TH.on()) {
+    const low = rs.filter(r => r.hits < softT && r.pos && !isGate(r.pos.x, r.pos.y))
+      .sort((a, b) => a.hits - b.hits)[0];
+    if (low) return low;
+  }
   return rs.find(r => r.hits < live[r.id] - HOLD_SLACK) || null;
 }
 // 17:20 RCL5 links (parent-approved plan): source A link 26,12 -> ctl link 13,25 (3% loss) replaces ~25-tile hauling of source A.
@@ -482,7 +505,7 @@ function towerRun(room) {
   for (const t of towers) {
     if (hurt && (!peace || t.store[RESOURCE_ENERGY] >= 200)) t.heal(hurt);
     else if (fire.has(t)) t.attack(p.h);
-    else if (t.store[RESOURCE_ENERGY] > 600) { // 17:20 (Misaki): built ramparts hold their current hits (decay offset only, never raised)
+    else if (t.store[RESOURCE_ENERGY] > 600) { // 17:20 hold/decay; 14:4x soft staging to SOFT_RAMP when storage≥SOFT_MIN (see rampHold)
       const r = rampHold(room);
       if (r) t.repair(r);
     }

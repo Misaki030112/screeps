@@ -10,7 +10,10 @@ module.exports = {
   SEAL: [24, 25, 26, 27, 28, 29, 30, 31, 8, 9, 10, 11].map(x => [x, 3]),
   // 10-20 13:30 (Misaki): 29,3 seal wall replaced by a rampart gate (our creeps pass, enemies don't). Only exception to
   // 'no new W47N8 ramparts'. Raised to the same WALL_TARGET as the seal walls; towers lift it to GATE_TOWER first.
-  GATE: [[29, 3]], GATE_TOWER: 20000,
+  // 14:4x strategy 2026-10-30: GATE_TOWER raised 20k→100k (spawn-slot critical floor = soft staging band). Soft KEY
+  // ramparts (spawn/tower/storage/terminal) climb to SOFT_RAMP when peacetime + storage≥SOFT_MIN; seal/GATE stay 300k.
+  GATE: [[29, 3]], GATE_TOWER: 100000,
+  SOFT_RAMP: 100000, SOFT_MIN: 5000,
   CTL: [15, 25], CTL_CONT: [13, 26],
   // 22:40 hub container on the v3b road tile 33,33 (range <=3 of 5 of the 6 RCL3 sites): 2W2C2M builders spent ~75 of every
   // ~85 ticks walking 100 energy from the source/ctl containers (~25 tiles, swamp 23,34-24,35) -> ~5 e/t into 18k of hub sites

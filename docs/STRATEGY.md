@@ -1,7 +1,7 @@
 # Strategy — W46N8 (home) + W45N8 (remote), 20 CPU, shard3
 
 Sources: Screeps docs (control, defense, invaders, CPU), screepers wiki, Overmind / TooAngel / Hivemind patterns.
-Last full refresh: **2026-10-30 11:4x strategy review** (post-300k fundSpend exit / energy reallocation); before that **2026-10-30 08:4x** (RCL7 peacetime hold at 300k / no auto 1M); before that **2026-10-30 05:4x** (W45N7 Invader-res reclaim via attackController); before that **2026-10-30 02:4x** (STATIONARY_FILL readiness — keep queens); before that **2026-10-29 23:4x** (lab ramparts); before that **2026-10-29 20:4x** (W47N8 RCL7 day-of gate + spur roads); before that **2026-10-29 17:4x** (fortify fundSpend); before that **2026-10-29 14:4x** (mineral/boost §4); before that **2026-10-20 00:0x** (remote posture after novice end: `docs/DEFENSE_NOVICE.md`); before that **2026-10-19** (CPU `docs/CPU.md`, market `docs/MARKET.md`); before that **2026-10-18 strategy review** (W47N8 hold / safe-mode mechanics: `docs/W47N8_HOLD.md`); before that **2026-10-17 strategy review** (neighbours: `docs/NEIGHBORS.md`); before that **2026-10-16 strategy review** (defence before novice end: `docs/DEFENSE_NOVICE.md`); prior: RCL6 readiness `docs/RCL6.md` (10-15), RCL5 `docs/RCL5.md` (10-14). Also `docs/DEFENSE.md`, `docs/DEFENSE_PLAN.md`, `docs/LAYOUT_V2.md`, `docs/REMOTE_W45N8.md`, `docs/MODEL.md`, `docs/DATA.md`.
+Last full refresh: **2026-10-30 14:4x strategy review** (W47N8 soft-ramp staging 100k); before that **2026-10-30 11:4x** (post-300k fundSpend exit / energy reallocation); before that **2026-10-30 08:4x** (RCL7 peacetime hold at 300k / no auto 1M); before that **2026-10-30 05:4x** (W45N7 Invader-res reclaim via attackController); before that **2026-10-30 02:4x** (STATIONARY_FILL readiness — keep queens); before that **2026-10-29 23:4x** (lab ramparts); before that **2026-10-29 20:4x** (W47N8 RCL7 day-of gate + spur roads); before that **2026-10-29 17:4x** (fortify fundSpend); before that **2026-10-29 14:4x** (mineral/boost §4); before that **2026-10-20 00:0x** (remote posture after novice end: `docs/DEFENSE_NOVICE.md`); before that **2026-10-19** (CPU `docs/CPU.md`, market `docs/MARKET.md`); before that **2026-10-18 strategy review** (W47N8 hold / safe-mode mechanics: `docs/W47N8_HOLD.md`); before that **2026-10-17 strategy review** (neighbours: `docs/NEIGHBORS.md`); before that **2026-10-16 strategy review** (defence before novice end: `docs/DEFENSE_NOVICE.md`); prior: RCL6 readiness `docs/RCL6.md` (10-15), RCL5 `docs/RCL5.md` (10-14). Also `docs/DEFENSE.md`, `docs/DEFENSE_PLAN.md`, `docs/LAYOUT_V2.md`, `docs/REMOTE_W45N8.md`, `docs/MODEL.md`, `docs/DATA.md`.
 
 ## Principles
 
@@ -12,20 +12,20 @@ Last full refresh: **2026-10-30 11:4x strategy review** (post-300k fundSpend exi
 5. **Growth after RCL4:** remote mining (W45N8 approved and live), then links; a 2nd room only with explicit Misaki approval (GCL 2 already allows a claim).
 6. **Major decisions need approval:** claim/expand, attack or provoke player neighbours, spend credits/pixels, activate safe mode, respawn.
 
-## Current state (2026-10-30 ~11:45 Asia/Hong_Kong)
+## Current state (2026-10-30 ~14:45 Asia/Hong_Kong)
 
 | | |
 |---|---|
-| Home | W46N8 **RCL7** ~638k/10.9M (~7–10 e/t under fundSpend); storage ~14k (FLOOR 5k tug vs reserveE 15k); walls min **~262k** → **300k** (fundSpend live, fund~35.5k; ETA **~1.5–2 h** → ~13:00–14:00 Asia/Hong_Kong); towers 3; spawns 2 live (cap 5600); terminal+extractor+3 labs; **lab/core ramps ~0.3–1.0M**; O mining live (deposit depleting), labs dormant; **`STATIONARY_FILL=false`** dual queens; SM avail 6 |
-| W47N8 | **RCL6** ~3.021M/3.645M (~624k left, **RCL7 ~2026-10-31 ~20:00** Asia/Hong_Kong at ~23 e/t ≈ **~32 h**); seal **300k**; soft ramps spawn ~20k / towers ~50k; towers 2; tower3@22,7 + spawn2@33,30 wait RCL7; stor ~0–2k; links live; `HUB_LINK=false` **`RCL7_INDUSTRY=false`** |
+| Home | W46N8 **RCL7** ~658k/10.9M; storage ~15–15.5k (near reserveE 15k); walls min **~274k** → **300k** (fundSpend live, fund~35.7k; ETA **~1–1.5 h**); towers 3; spawns 2; terminal+extractor+3 labs; lab/core ramps ~0.35–1.0M; O depleted (regen); labs dormant; **`STATIONARY_FILL=false`** dual queens; SM avail 6 |
+| W47N8 | **RCL6** ~3.087M/3.645M (~558k left, **RCL7 ~2026-10-31 ~18:00–20:00** Asia/Hong_Kong at ~23 e/t ≈ **~28 h**); seal **300k**; soft staging **14:4x** GATE_TOWER=SOFT_RAMP=**100k** (spawn~20k climbing / tower+stor~49k); towers 2; tower3+spawn2 wait RCL7; stor ~2–3k; `HUB_LINK=false` **`RCL7_INDUSTRY=false`** |
 | Assault | **ABORTED** 2026-10-29 (~15:31): defend-only W47N9, keep mining O (no mineralCap), civilian building both rooms |
-| Remote | W45N8/W45N7/W47N7 all **SAFE** (Misaki res); W45N7 core cleared + res reclaiming; BustJetter combat 0 (W48N9 cleared vs earlier) |
-| CPU | **~12–16 / 20**, bucket 10000 — `docs/CPU.md` |
+| Remote | W45N8/W47N7 **SAFE** (Misaki res); W45N7 SAFE post-core (killed@83957209; Invader res decaying, reclaim spawning); BustJetter combat 0 neighbor-only |
+| CPU | **~10–14 / 20**, bucket 10000 — `docs/CPU.md` |
 | GCL | **4** (3rd room still CPU-bound; no claim without Misaki) |
 | Novice | **ended 2026-10-28 03:33 Asia/Hong_Kong** |
-| Fortify | Lab cover ✅; walls→300k (then **08:4x hold**); **11:4x exit/reallocation** documented (fundSpend auto-off → storage→upgrade→colony→soft ramps→minerals→1M opt-in); colony soft ramps thin; STATIONARY_FILL deferred to RCL8 — `docs/RCL7.md` |
+| Fortify | Lab cover ✅; walls→300k (then **08:4x hold**); **11:4x exit**; **14:4x soft ramps 100k** live; STATIONARY_FILL deferred to RCL8 — `docs/RCL7.md` |
 
-Ideal vs actual: `tools/model.py` / `tools/model_w8.py` / Grafana. Priority: **walls→300k then hold + recover storage/upgrade** → colony RCL7 tower3+spawn2 (factory OFF) → raise soft ramps → minerals → barriers 1M (pushBarrier or storage-ready) → STATIONARY_FILL/hybrid at RCL8.
+Ideal vs actual: `tools/model.py` / `tools/model_w8.py` / Grafana. Priority: **walls→300k then hold + recover storage/upgrade** → colony soft ramps→100k → colony RCL7 tower3+spawn2 (factory OFF) → minerals → barriers 1M (pushBarrier or storage-ready) → STATIONARY_FILL/hybrid at RCL8.
 
 ## Phases
 

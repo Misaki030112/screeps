@@ -211,3 +211,7 @@ Question: the moment W47N8 hits RCL7 (~11-01 at ~20 e/t; live 2.740M/3.645M), wh
 2. After those two stand, extensions + spur roads fill in; storage will be thin (~3k today) so builders pull from source overflow / ctl — expect upgrade to dip for a few hours.
 3. Minerals / K→home send wait until **storage ≥20k** after tower3+spawn2 (`docs/MINERAL_DEFENSE_ROADMAP.md` §B).
 4. Seal `planTarget` stays STAGE3 **300k** (WALL_TARGET[7]=1M unused); raise later via surplus after minerals, not on day-of.
+
+## Soft-ramp staging (strategy 14:4x, 2026-10-30)
+
+Before RCL7 day-of tower3/spawn2, KEY soft ramparts (spawn/tower/storage) climb to **100k** (`GATE_TOWER` = `SOFT_RAMP`). Seal walls + GATE@29,3 stay at **300k**. Soft raise needs peacetime + colony storage ≥5k; spawn/gate always lift via GATE_TOWER. Cost ~1.8k e. See `docs/RCL7.md` 14:4x. Factory still gated (`RCL7_INDUSTRY=false`).

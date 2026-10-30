@@ -1,7 +1,7 @@
-# 矿物线 + 强化 + 城防路线图（2026-10-29 12:4x；14:4x boost；17:4x fundSpend；23:4x fortify；08:4x RCL7 hold 300k；**11:4x post-300k exit**）
+# 矿物线 + 强化 + 城防路线图（2026-10-29 12:4x；14:4x boost；17:4x fundSpend；23:4x fortify；08:4x RCL7 hold 300k；11:4x post-300k exit；**14:4x soft ramp 100k**）
 
-Live refresh **11:45 UTC+8 2026-10-30** tick ~83954890。**不自动交易、不开 safe mode。**
-围攻已中止；`walls.fundSpend` 推家墙 **~262k→300k**（ETA ~1.5–2 h）；**11:4x**：到 300k 后 fundSpend 自动关 → 回升 storage/升级 → 殖民地 RCL7 → soft ramp → 再开矿物（见 `docs/RCL7.md` 11:4x）。**23:4x** lab ramparts；**05:4x** W45N7 reclaim。boost 仍等殖民地 RCL7+storage。W47N8 seal 300k，spawn/tower soft ramps ~20–50k 待抬。
+Live refresh **14:45 UTC+8 2026-10-30** tick ~83957470。**不自动交易、不开 safe mode。**
+围攻已中止；`walls.fundSpend` 推家墙 **~274k→300k**（ETA ~1–1.5 h）；**11:4x** exit 仍有效；**14:4x**：殖民地 soft ramp `GATE_TOWER=SOFT_RAMP=100k`（spawn 常抬；KEY soft 和平+storage≥5k）。**23:4x** lab ramparts；**05:4x**/13:53 W45N7 core 已杀并 reclaim。boost 仍等殖民地 RCL7+storage。seal 300k 不变。
 
 ## 0. 现状（实测）
 
@@ -26,7 +26,7 @@ Live refresh **11:45 UTC+8 2026-10-30** tick ~83954890。**不自动交易、不
 | 矿物 | **K** **35000** @37,45 **未采**；extractor **已有**（Misaki 自有，layout 门控后未拆） |
 | terminal / labs | **无**（`config.RCL6_MINERALS=false`，正确） |
 | storage | ~**2.4k** energy |
-| 城防 | 墙 11 面 min **300001**；北门 GATE@29,3 **300301**（巡逻 "~20k" 实为 spawn 位 `GATE_TOWER` 地板）；塔 2；Spawn2 only |
+| 城防 | 墙 11 面 min **300001**；北门 GATE@29,3 **300301**（巡逻曾见 "~20k" 为旧 `GATE_TOWER=20k` 地板；14:4x 已抬到 100k）；塔 2；Spawn2 only |
 | ETA RCL7 | ~23 e/t → ~**11-01**（~49 h）；ideal ~30 → ~33 h |
 
 ### 代码/开关
@@ -112,7 +112,7 @@ Console 开反应（有 K 入库后）：`Memory.ops.labs = { W46N8: 'KO' }`
 ### Colony W47N8
 | 阶段 | 目标 |
 |---|---|
-| RCL6 现在 | seal 墙 + GATE **已 ≥300k**（live 确认 GATE 300301）；保持；spawn 位 rampart 维持 `GATE_TOWER` 20k 即可 |
+| RCL6 现在 | seal 墙 + GATE **已 ≥300k**（live 确认 GATE 300301）；保持；spawn 位 rampart 目标 `GATE_TOWER` **100k**（14:4x） |
 | RCL7 当天 | tower3(22,7) + spawn2(33,30)；`WALL_TARGET`→1M（盈余抬）；factory **OFF** |
 | 之后 | hub/spawn/storage/tower rampart 补齐；开矿物线后再给 labs 盖板；仍不主动打 BustJetter |
 

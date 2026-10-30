@@ -3,6 +3,13 @@
 Novice zone ends **2026-10-28 03:33 UTC+8** (past as of 10-29). Defence timeline: `docs/DEFENSE_NOVICE.md` (2026-10-16); detail `docs/DEFENSE.md` / geometry `docs/DEFENSE_PLAN.md`.
 **Safe mode: NEVER auto-activate** — alert Misaki.
 
+## 2026-10-30 14:4x strategy review: W47N8 colony soft-ramp staging (topic A)
+- **Chose:** colony soft ramparts staging band before RCL7 day-of (topic A deferred at 11:4x) — spawn/tower/storage ~20–50k vs Overmind-style barrier staging; home walls still climbing ~273k→300k.
+- **Findings (`docs/RCL7.md` 14:4x):** (1) Overmind `barrierHits[6]=500k` / `[7]=1M` + `fortifyDutyThreshold=500k` storage — we lack that storage and must not starve W47N8 upgrade (~560k e left). (2) Soft band **100k** (=GATE_TOWER) is enough for peacetime + small probe; seal/GATE stay 300k. (3) Cost ~1.8k e to lift KEY soft ramps to 100k — negligible vs remaining RCL7. (4) Soft raise gated: peacetime + `storage≥SOFT_MIN=5k`; spawn/gate always via GATE_TOWER. Hold map never ratchets up. (5) Live: W45N7 core killed@83957209 reclaiming Invader-res; hostiles 0; stor home~15k; W47N8 ~28h RCL7.
+- **Shipped:** `config.GATE_TOWER=100000`, `SOFT_RAMP=100000`, `SOFT_MIN=5000`; `rampHold` soft path + `Memory.ops.w8soft` observability; tests `w47n8_no_rampart` / `w47n8_spawn_move`. Deploy this run.
+- **Reprioritise:** (1) home walls→300k then **hold + recover storage≥15k**; (2) W47N8 soft ramps climb to 100k (this deploy, towers); (3) W47N8 RCL7 → tower3+spawn2 (factory OFF); (4) colony storage≥20k → minerals+K; (5) KO≥900 → boost; (6) barriers→1M via pushBarrier or later review; (7) STATIONARY_FILL at RCL8. Defend-only W47N9.
+- **Plan check (t~83957470):** home RCL7 ~658k/10.9M stor~15.5k walls min 273601 fund~35.7k; W47N8 3.087M/3.645M (~28h) soft spawn~20k tower/stor~49k GATE~296k; remotes SAFE (W45N7 Invader res decaying); CPU bucket 10k; deploy was 27e001b → this SHA. No major Misaki decision.
+
 ## 2026-10-30 11:4x strategy review: post-300k fundSpend exit / energy reallocation
 - **Chose:** what happens **after** peacetime walls hit HOLD_STEP_RCL7=300k — fundSpend exit criteria and how energy returns to storage/upgrade/colony without starving the 15k floor (topic B; distinct from 08:4x hold-vs-1M).
 - **Findings (`docs/RCL7.md` 11:4x):** (1) Exit is already automatic: `stepHeld` → `fundSpend=false` same tick; builders/repairJob off; queen floor back to reserveE; income banks storage. (2) Upgraders return via `defLowUpgraders(held=true)` when stor≥reserveE−UP_DIP (13k). (3) Overmind leaves fortify duty past threshold; TooAngel continuous repairers would fight recovery — we don't use them. (4) Live ~11:45: walls min~262k fund~35.5k ETA 300k ~1.5–2 h; stor~14k; W47N8 ~32 h RCL7; remotes SAFE; hostiles 0.

@@ -20,7 +20,17 @@ const room = { name: 'W47N8', energyAvailable: 1800, energyCapacityAvailable: 18
 const keep = S.filter(s => s.structureType === 'rampart' && W.rampNeeded(room, s)).map(s => s.pos.x + ',' + s.pos.y).sort();
 assert.deepStrictEqual(keep, ['15,18', '29,3', '34,30', '33,35', '35,32'].sort(), 'necessary ramparts: ' + keep);
 const r36 = S.find(s => s.id === 'rampart36,31'); r36.hits = 1000; Memory.ops.w8hold = { [r36.id]: 40000 };
+// GATE_TOWER=100k + soft: park needed ramps at band + soft off so only hold-decay could fire — must still skip r36
+for (const id of ['rampart29,3', 'rampart34,30', 'rampart15,18', 'rampart35,32', 'rampart33,35']) {
+  const r = S.find(s => s.id === id); if (r) r.hits = 100000;
+}
+room.storage.store.energy = 4999;
 assert.ok(W.rampHold(room) === null, 'unneeded decayed rampart not repaired');
+assert.notStrictEqual(W.rampHold(room), r36, 'unneeded never selected');
+room.storage.store.energy = 5000;
+for (const id of ['rampart29,3', 'rampart34,30', 'rampart15,18', 'rampart35,32', 'rampart33,35']) {
+  const r = S.find(s => s.id === id); if (r) r.hits = 40000;
+}
 const r34 = S.find(s => s.id === 'rampart34,30'); r34.hits = 1; Memory.ops.w8hold = { [r34.id]: 1 };
 assert.strictEqual(W.rampHold(room), r34, 'fresh 1-hit spawn-slot rampart is ramped up (else it decays away)');
 r34.hits = 40000; Memory.ops.w8hold = {};
