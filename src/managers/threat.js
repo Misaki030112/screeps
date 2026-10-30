@@ -262,6 +262,20 @@ function run(r) {
   // adopt a patrolling ranged defender instead of spawning a new one. A core needs ATTACK parts; do not adopt the kite body.
   if (s.st === S.THREAT && !s.def && s.mission !== 'core' && s.why !== 'core') { const p = adoptable(r); if (p) { s.def = p.name; p.memory.remote = r; p.memory.patrol = false;
     console.log('INCIDENT ' + JSON.stringify({ remote: r, tick: Game.time, inc: s.inc || null, state: s.st, ev: 'adopt', def: p.name, ttl: p.ticksToLive })); } }
+  // Core missions need a melee buster. A leftover ranged kite body (prior solo/patrol) kept as th.def
+  // flips THREAT→DEFEND via o.def==='out' and never spawns the buster — W45N7 core@83967273 sat at 100k
+  // while defender83966149 (0 ATTACK) parked at the container for ~200t (patrol 2026-10-31 ~01:55).
+  if ((s.st === S.THREAT || s.st === S.DEFEND) && s.mission === 'core' && s.def) {
+    const d = Game.creeps[s.def];
+    if (!d || !d.memory.core) {
+      if (d) { d.memory.patrol = true; }
+      const rejected = s.def;
+      delete s.def; delete s.arrived; delete s.need2;
+      if (s.def2 && Game.creeps[s.def2] && Game.creeps[s.def2].memory.core) { s.def = s.def2; delete s.def2; }
+      else { delete s.def2; if (s.st === S.DEFEND) { s.st = S.THREAT; s.since = Game.time; s.why = 'need_buster'; } }
+      console.log('INCIDENT ' + JSON.stringify({ remote: r, tick: Game.time, inc: s.inc || null, state: s.st, ev: 'reject_kite', def: rejected, ttl: d && d.ticksToLive }));
+    }
+  }
   m.th = s;
   return s;
 }
