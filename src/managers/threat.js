@@ -6,7 +6,8 @@
 //         any -> WAIT (wait-out: players on the route/home, unreserved escalation, gate, timeouts, defender died) -> SAFE
 // A room is "reserved" when its controller reservation is still ours (Memory.remote[r].res, projected from m.seen),
 // Memory.ops.r7 says we hold W47N7, or Memory.ops.resRooms lists it.
-// An invader core in a remote we defend is a fight (melee buster), not a wait-out. WAIT only when a spawn gate fails.
+// An invader core in a remote we defend is a fight (melee buster), not a wait-out. WAIT only when a spawn gate fails
+// (gate/cpu/deaths — not maxPerDay budget; cores must be fought so they cannot chew containers while mining is paused).
 // Players outrank a core (the buster never targets a creep). W47N9 is never a target.
 const S = { SAFE: 'SAFE', THREAT: 'THREAT', DEFEND: 'DEFEND', WAIT: 'WAIT' };
 const DEF = {
@@ -51,10 +52,12 @@ function classify(o, c) {
   return o.reserved ? 'guard' : 'invader'; // too many / healer / 3xRA: fight only while we still hold the room
 }
 const GATES = ['gate', 'cpu', 'budget', 'deaths']; // every reason gateReason() can return
-function gateReason(o, c) { // why we may not spawn a defender now ('' = ok)
+function gateReason(o, c, k) { // why we may not spawn a defender now ('' = ok); k = classify() kind
   if (!o.armed) return 'gate';
   if (o.bucket < c.minBucket) return 'cpu';
-  if ((o.spawnsDay || 0) >= c.maxPerDay) return 'budget';
+  // Invader cores persist until destroyed; maxPerDay WAIT pauses mining while they chew containers
+  // (Misaki: fight reserved-room cores — do not WAIT/budget them out). Wave Invaders still hit the cap.
+  if (k !== 'core' && (o.spawnsDay || 0) >= c.maxPerDay) return 'budget';
   if ((o.deathsDay || 0) >= c.maxDeaths) return 'deaths';
   return '';
 }
@@ -75,7 +78,8 @@ function step(s, o, c, t) {
     if (s.last) extra.inv = s.last.map(i => Object.assign({}, i, { ttl: i.ttl - (t - s.seen) })).filter(i => i.ttl > 0);
     if (s.foes && t - (s.foeSeen || 0) < (c.foeMemory || 200)) extra.hereP = Math.max(o.hereP || 0, s.foes);
     // core has no TTL: keep the fight alive while the buster travels (everyone else fled, so no vision)
-    if (s.mission === 'core' && (s.st === S.THREAT || s.st === S.DEFEND)) { extra.core = true; if (s.corePos) extra.corePos = s.corePos; }
+    // also project through WAIT(gate/cpu/budget/deaths) so a core stuck on maxPerDay re-arms without needing fresh vision
+    if (s.mission === 'core' && (s.st === S.THREAT || s.st === S.DEFEND || (s.st === S.WAIT && GATES.includes(s.why)))) { extra.core = true; if (s.corePos) extra.corePos = s.corePos; }
     if (extra.inv || extra.hereP || extra.core) o = Object.assign({}, o, extra);
   }
   const k = classify(o, c), maxTtl = Math.max(0, ...(o.inv || []).map(i => i.ttl));
@@ -83,7 +87,7 @@ function step(s, o, c, t) {
   if (k === 'player' && !(s.st === S.WAIT && s.why === 'player')) { delete s.mission; go(S.WAIT, 'player', { until: s.until = t + c.playerPause }); return { s, ev }; }
   switch (s.st) {
     case S.SAFE:
-      if (k === 'solo' || k === 'guard' || k === 'core') { const g = gateReason(o, c); if (g) { if (k === 'core') s.mission = 'core'; waitNpc(g); } else { s.inc = t; delete s.recycling; s.mission = k; go(S.THREAT, k, { inv: o.inv }); } }
+      if (k === 'solo' || k === 'guard' || k === 'core') { const g = gateReason(o, c, k); if (g) { if (k === 'core') s.mission = 'core'; waitNpc(g); } else { s.inc = t; delete s.recycling; s.mission = k; go(S.THREAT, k, { inv: o.inv }); } }
       else if (k === 'invader') waitNpc('escalated');
       else if (k === 'short') waitNpc('short_ttl');
       break;
@@ -109,15 +113,15 @@ function step(s, o, c, t) {
       // legacy why=core (pre-buster): a visible core re-arms into THREAT the same tick; blind, keep the recheck
       // so a reserver/rminer looks again instead of pausing forever with no vision.
       if (s.why === 'core') {
-        if (o.vis && o.core) { s.mission = 'core'; const g = gateReason(o, c); if (g) { s.why = g; s.until = Math.max(s.until || 0, t + c.coreRecheck); } else s.why = 'gate'; }
+        if (o.vis && o.core) { s.mission = 'core'; const g = gateReason(o, c, 'core'); if (g) { s.why = g; s.until = Math.max(s.until || 0, t + c.coreRecheck); } else s.why = 'gate'; }
         else if (!o.vis && t < (s.until || 0)) break;
         else { go(S.SAFE, o.vis ? 'core_gone' : 'core_recheck'); break; }
       }
       // a spawn gate (gate/cpu/budget/deaths) cleared while a solo, a guard, or a core is still needed
-      if (s.st === S.WAIT && GATES.includes(s.why) && !gateReason(o, c) && (k === 'solo' || k === 'guard' || k === 'core')) {
+      if (s.st === S.WAIT && GATES.includes(s.why) && !gateReason(o, c, k) && (k === 'solo' || k === 'guard' || k === 'core')) {
         delete s.until; s.inc = t; delete s.recycling; s.mission = k; go(S.THREAT, k, { inv: o.inv }); }
       // player-on-the-route WAIT, or an escalated wait, becomes a guard once the hostiles are inside a room we reserve
-      else if (k === 'guard' && !gateReason(o, c)) {
+      else if (k === 'guard' && !gateReason(o, c, k)) {
         delete s.until; s.inc = t; delete s.recycling; s.mission = 'guard'; go(S.THREAT, 'guard', { inv: o.inv }); }
       else if (s.why !== 'player' && o.vis && k === 'none') go(S.SAFE, 'clear_seen');
       else if (t >= s.until) go(S.SAFE, 'timer');
@@ -282,9 +286,9 @@ module.exports = { S, DEF, cfg, classify, step, sense, run, state, armed, ourNam
   earlyNext, EARLY,
   // first remote of this home that needs a defender spawned now
   wantDefender: home => remotesOf(home).find(r => (state(r).st === S.THREAT && !state(r).def) || (state(r).st === S.DEFEND && state(r).need2 && !state(r).def2)),
-  // defender could not win alone: ask for a 2nd one (counts against maxPerDay like any spawn)
+  // defender could not win alone: ask for a 2nd one (wave Invaders count against maxPerDay; cores exempt)
   request2(r) { const m = mem(r), th = m.th, c = cfg(r); if (!th || th.st !== S.DEFEND || th.need2 || th.def2) return;
-    if (hist(m, 'defSpawns', c).length >= c.maxPerDay) return; th.need2 = Game.time;
+    if (th.mission !== 'core' && hist(m, 'defSpawns', c).length >= c.maxPerDay) return; th.need2 = Game.time;
     console.log('INCIDENT ' + JSON.stringify({ remote: r, tick: Game.time, inc: th.inc || null, state: th.st, ev: 'need2', def: th.def })); },
   // home is collecting 1300 for a remote defender (clears once noteSpawn sets th.def): spawn holds all but queen,
   // haulers fill extensions to 100%, upgraders pause withdrawals (spawn/ext economy). Home guards use home.js, not this.

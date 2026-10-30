@@ -68,10 +68,20 @@ it('core with a closed spawn gate -> WAIT that gate, then THREAT when it opens',
   const closed = run([[1, { core: true, armed: false }]]);
   assert.strictEqual(closed.s.st, 'WAIT'); assert.strictEqual(closed.s.why, 'gate'); assert.strictEqual(closed.s.mission, 'core');
   assert.strictEqual(run([[1, { core: true, bucket: 1000 }]]).s.why, 'cpu');
-  assert.strictEqual(run([[1, { core: true, spawnsDay: C.maxPerDay }]]).s.why, 'budget');
   assert.strictEqual(run([[1, { core: true, deathsDay: 1 }]]).s.why, 'deaths');
   const re = run([[1, { core: true, armed: false }], [30, { core: true, armed: true }]]);
   assert.deepStrictEqual(re.states, ['WAIT', 'THREAT']); assert.strictEqual(re.s.mission, 'core');
+});
+it('core ignores maxPerDay budget (fight cores; do not WAIT while they chew containers)', () => {
+  const r = run([[1, { core: true, spawnsDay: C.maxPerDay }]]);
+  assert.strictEqual(r.s.st, 'THREAT'); assert.strictEqual(r.s.mission, 'core'); assert.strictEqual(r.evs[0], 'threat:core');
+  // solo Invader still hits the budget cap
+  assert.strictEqual(run([[1, { inv: solo(), spawnsDay: C.maxPerDay }]]).s.why, 'budget');
+});
+it('WAIT budget with mission=core re-arms to THREAT even without vision (projected core)', () => {
+  const stuck = { st: 'WAIT', since: 1, why: 'budget', mission: 'core', corePos: [10, 44], until: 5000 };
+  const r = run([[100, { vis: false, spawnsDay: C.maxPerDay }]], stuck);
+  assert.strictEqual(r.s.st, 'THREAT'); assert.strictEqual(r.s.mission, 'core');
 });
 it('core fight outlasts the creep defendTimeout and stops on coreDefendTimeout', () => {
   const r = run([[1, { core: true }], [10, { core: true, def: 'out' }], [600, { core: true, def: 'out' }], [10 + C.coreDefendTimeout + 1, { core: true, def: 'out' }]]);
