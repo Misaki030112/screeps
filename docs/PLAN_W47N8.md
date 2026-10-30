@@ -219,3 +219,6 @@ Before RCL7 day-of tower3/spawn2, KEY soft ramparts (spawn/tower/storage) climb 
 ## Day-of energy: no pre-bank (2026-10-30 20:4x strategy review)
 
 **Decision:** do **not** hold upgrade to pre-bank ~50k before RCL7. Spurs are already live → bill ≈ **50k**. Existing `siteRem≥3k → ≤4 builders` + 2 upgraders finishes spawn+tower in ~15–20 min and the full batch in ~2–3 h while the controller keeps receiving ~10–12 e/t. Pre-bank would slip RCL7 by ~1–2 h for no gain. Overmind/TooAngel also react to sites, not RCL banks. Observability: `Memory.ops.w8day`. Detail: `docs/RCL7.md` 20:4x.
+
+## 2026-10-30 23:4x — lean KO gate split
+`RCL6_MINERALS` now means **logistics only** (terminal + extractor + `MINERAL_CONT` 37,44 + MINERAL trunk). Colony labs gated by **`RCL6_LABS`** (default false). See `docs/MINERAL_DEFENSE_ROADMAP.md` §5. Do not flip either gate until RCL7 day-of + stor≥20k + w8mminer/send.

@@ -2,7 +2,7 @@
 const assert = require('assert'), path = require('path');
 const d = path.join(__dirname, '..', 'src/rooms/w47n8');
 const K = { LOOK_STRUCTURES: 'structure', LOOK_CONSTRUCTION_SITES: 'constructionSite', FIND_MY_SPAWNS: 112,
-  FIND_MY_CONSTRUCTION_SITES: 114, FIND_MY_STRUCTURES: 108, FIND_MY_CREEPS: 106, OK: 0,
+  FIND_MY_CONSTRUCTION_SITES: 114, FIND_MY_STRUCTURES: 108, FIND_MINERALS: 116, FIND_MY_CREEPS: 106, OK: 0,
   STRUCTURE_SPAWN: 'spawn', STRUCTURE_TOWER: 'tower', STRUCTURE_EXTENSION: 'extension', STRUCTURE_STORAGE: 'storage',
   STRUCTURE_RAMPART: 'rampart', STRUCTURE_WALL: 'wall', STRUCTURE_CONTAINER: 'container', STRUCTURE_LINK: 'link',
   STRUCTURE_TERMINAL: 'terminal', STRUCTURE_EXTRACTOR: 'extractor', STRUCTURE_LAB: 'lab', STRUCTURE_FACTORY: 'factory',
@@ -57,4 +57,14 @@ W.dayObs(mk(7, done, [], 0));
 assert.strictEqual(Memory.ops.w8day.why, 'done');
 assert.strictEqual(Memory.ops.w8day.bill, 0);
 assert.strictEqual(Memory.ops.w8day.missSpawn, 0);
+// 23:4x lean KO readiness obs
+W.dayObs(mk(6, base, [], 400000));
+const m = Memory.ops.w8min;
+assert.ok(m, 'w8min present');
+assert.strictEqual(m.minOk, 0);
+assert.strictEqual(m.labsOk, 0);
+assert.strictEqual(m.hasTerm, 0);
+assert.strictEqual(m.hasMinCont, 0);
+assert.ok(m.gaps.indexOf('gate') >= 0, 'gaps includes gate: ' + m.gaps);
+assert.strictEqual(m.why, 'gate');
 console.log('w47n8_dayobs ok');

@@ -3,6 +3,13 @@
 Novice zone ends **2026-10-28 03:33 UTC+8** (past as of 10-29). Defence timeline: `docs/DEFENSE_NOVICE.md` (2026-10-16); detail `docs/DEFENSE.md` / geometry `docs/DEFENSE_PLAN.md`.
 **Safe mode: NEVER auto-activate** — alert Misaki.
 
+## 2026-10-30 23:4x strategy review: W47N8 lean KO scaffolding (skip colony labs)
+- **Chose:** W47N8 mineral-line **code gap** before flipping `RCL6_MINERALS` — what must exist so K flows to home KO labs? (OUR ops; not neighbor scan.)
+- **Findings (`docs/MINERAL_DEFENSE_ROADMAP.md` §5):** (1) Mineral@37,45; walkable stands 37,44/38,44. (2) No mineral container in ORDER; no w8mminer/haul/send; comments admitted no mineral logic. (3) Colony 3 labs ~150k unnecessary — home already has 3 labs for KO. (4) Lean KO ≈ **105–110k** (terminal+extractor+minCont+trunk) vs old **255k**. (5) Bug: `roads.MINERAL` was **not** in `ROADS` — flipping gate never placed trunk; fixed via `baseRoads.concat(MINERAL)`. (6) Live t~83965320: home RCL7 ~7.2% stor~15k walls HOLD 300k; W47N8 ~89.7% ~17h RCL7 @~22 e/t; remotes SAFE; CPU~10–14.
+- **Shipped:** `MINERAL_CONT=[37,44]`; gate split `RCL6_MINERALS` (logistics) / `RCL6_LABS` (labs, default OFF); `Memory.ops.w8min` readiness obs; tests rcl6_gate lean-on + dayobs. **Gates stay false.** No w8mminer yet.
+- **Reprioritise:** (1) home HOLD 300k + stor≥15k / upgrade; (2) W47N8 RCL7 → tower3+spawn2 **reactive** (factory OFF); (3) colony stor≥20k → flip **`RCL6_MINERALS` only** (not labs) after w8mminer/send; (4) KO≥900 → boost; (5) barriers→1M later; (6) STATIONARY_FILL at RCL8. Defend-only W47N9.
+- **Plan check:** no major Misaki decision (scaffold autonomous; flip gate still propose-only).
+
 ## 2026-10-30 20:4x strategy review: W47N8 RCL7 day-of — no pre-bank (reactive siteRem)
 - **Chose:** whether to pre-bank ~50k colony storage before RCL7 day-of vs keep upgrade-first and let `siteRem` spawn builders (distinct from 20:4x factory gate / 14:4x–17:4x soft-ramp).
 - **Findings (`docs/RCL7.md` 20:4x, `docs/PLAN_W47N8.md`):** (1) Spurs DONE → bill ≈ **50k** (spawn+tower+10ext). (2) Existing spawn: sites → 2 upgraders + builders `siteRem≥3k→4` — reactive, matches Overmind/TooAngel. (3) Full batch ~2–3 h / first batch ~15–20 min; pre-bank delays RCL7 ~1–2 h. (4) Live t~83962645: soft COMPLETE; home walls 300001 EXIT; W47N8 ~21 h RCL7; stor home~13k colony~2k; CPU~12 bucket 10k; deploy was 60a9653.

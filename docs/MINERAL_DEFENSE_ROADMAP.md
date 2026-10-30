@@ -1,4 +1,4 @@
-# 矿物线 + 强化 + 城防路线图（2026-10-29 12:4x；14:4x boost；17:4x fundSpend；23:4x fortify；08:4x RCL7 hold 300k；11:4x post-300k exit；14:4x soft ramp 100k；**20:4x day-of 不预存**）
+# 矿物线 + 强化 + 城防路线图（2026-10-29 12:4x；14:4x boost；17:4x fundSpend；23:4x fortify；08:4x RCL7 hold 300k；11:4x post-300k exit；14:4x soft ramp 100k；20:4x day-of 不预存；**23:4x lean KO 脚手架**）
 
 Live refresh **20:45 UTC+8 2026-10-30** tick ~83962645。**不自动交易、不开 safe mode。**
 围攻已中止；home 墙 **HOLD 300k COMPLETE**（fundSpend EXIT）；殖民地 soft **COMPLETE ≥100k**；**20:4x** day-of **不预存**（spur 已齐，bill≈50k，siteRem 反应式建造）。boost 仍等殖民地 RCL7+storage≥20k。seal 300k 不变。
@@ -31,7 +31,7 @@ Live refresh **20:45 UTC+8 2026-10-30** tick ~83962645。**不自动交易、不
 
 ### 代码/开关
 - `plan.RCL6_MINERALS=true`（home 矿物基建已齐）；`plan.RCL7_INDUSTRY=false`（factory+labs4–6 不落点）
-- `w47n8.config.RCL6_MINERALS=false` / `HUB_LINK=false`
+- `w47n8.config.RCL6_MINERALS=false` / `RCL6_LABS=false` / `HUB_LINK=false`（23:4x lean KO）
 - `managers/labs.js`：反应 + `task()` 已有；**carrier 未接**（本 PR 接 hauler，仍需 `Memory.ops.labs`）
 - **无** `boostCreep` / 战斗预强化 spawn 代码
 - `Memory.defense.remoteDefender=true`（#1 已验 W47N7）
@@ -48,7 +48,7 @@ Live refresh **20:45 UTC+8 2026-10-30** tick ~83962645。**不自动交易、不
 
 | 做 | 不做 |
 |---|---|
-| 保持 home 采 O（或设 `Memory.ops.mineralCap=50000` 省 ~0.9 e/t，库存已远超实验室短期需求） | **不开** W47N8 `RCL6_MINERALS`（terminal+3labs+矿容器 ≈ **255k**，≈ 11–17k tick 升级，拖 RCL7 **半天+**） |
+| 保持 home 采 O（或设 `Memory.ops.mineralCap=50000` 省 ~0.9 e/t，库存已远超实验室短期需求） | **不开** W47N8 `RCL6_MINERALS`（lean KO ≈ **110k**；全开 labs 另 +150k，见 §5） |
 | 保持 `RCL7_INDUSTRY=false` | 不买矿、不卖 O（credits 0；买卖需你批） |
 | labs 代码保持 dormant | 不造 factory / labs4–6（+250k） |
 
@@ -64,7 +64,7 @@ Loot 里已有微量 UH/KO/ZH —— 只够试验，不够常备强化。
 顺序（能量从紧到松）：
 1. **tower3 + spawn2**（~20k）—— 立刻提升殖民地火力与产能
 2. 北门 rampart 抬到 ≥100k，seal 墙按 `WALL_TARGET[7]=1M` 慢慢涨（只花盈余）
-3. storage 稳住 ≥20k 后，再翻 **`RCL6_MINERALS=true`**：落 terminal + 3 labs + 矿物容器（extractor 已在）。约 **255k**，按殖民地净收入 ~20–30 e/t ≈ **0.5–1 天**
+3. storage 稳住 ≥20k 后，再翻 **`RCL6_MINERALS=true`**（**不开** `RCL6_LABS`）：落 terminal + 矿物容器 37,44 + trunk（extractor 已在）。约 **110k** ≈ **1–1.5 h**；见 §5 lean KO
 4. 接 W47N8 mminer（或复用 home 逻辑）采 K → terminal；用 send/transfer 把 K 运回 W46N8（或就地做 KO 若 labs 落在殖民地）
 
 **推荐反应链（基于实际矿种 O+K）：**
@@ -83,7 +83,7 @@ Console 开反应（有 K 入库后）：`Memory.ops.labs = { W46N8: 'KO' }`
 ### 机会成本粗算
 | 选项 | 能量 | 约等于 |
 |---|---|---|
-| 现在开 W47N8 矿物全套 | ~255k | 殖民地 RCL7 **晚 0.5–1 天** |
+| 现在开 W47N8 lean KO（无 labs） | ~110k | 仍拖 RCL7；等 day-of 后再开（§5） |
 | 现在开 home RCL7_INDUSTRY | ~250k | home 墙/升级再少半天；且无 factory 代码 |
 | 继续采满本轮 O（~10k 余） | ~4k creep 成本量级 | 可忽略；库存已 130k |
 | 墙 142k→300k（41 墙） | ~65k | 受 `reserveE` 卡住，见城防 |
@@ -130,8 +130,8 @@ Console 开反应（有 K 入库后）：`Memory.ops.labs = { W46N8: 'KO' }`
 | ✅ 本 PR | 规划文档 + hauler 执行 `labs.task`（dormant） | `docs/MINERAL_DEFENSE_ROADMAP.md`, `src/roles/hauler.js`, `tests/labs_hauler.js` | 现在 |
 | 运行时 | `mineralCap=50000`（可选） | Memory | 任意 |
 | 运行时 | 降 `reserveE` 修墙 | Memory | 外矿 SAFE 时 |
-| RCL7 后 | `w47n8/config.js` `RCL6_MINERALS=true` | config | storage≥20k |
-| RCL7 后 | W47N8 mminer / mineral 容器站位 | roles + layout | 与上同步 |
+| RCL7 后 | `w47n8/config.js` `RCL6_MINERALS=true`（**不开** `RCL6_LABS`） | config | storage≥20k + §5 checklist |
+| RCL7 后 | W47N8 w8mminer / haul / send（容器站位 **✅ 23:4x** `MINERAL_CONT=[37,44]`） | roles | 与上同步 |
 | 有 K 后 | `Memory.ops.labs={W46N8:'KO'}` | Memory | — |
 | KO≥900 后 | boostCreep 接线（§4 状态机） | 新 `managers/boost.js` + defender 族 | 围攻结束后 |
 | 更晚 | `RCL7_INDUSTRY=true` | `plan.js` | 有 T2/factory 需求 |
@@ -182,7 +182,7 @@ Memory.ops.boost = {                  # 新增：排队
 W47N8 本轮 **K 35000** 采完 → 邻房 send 回家 → 可产 **35000 KO**（O 库存 ~130k 足够）。一轮 K 够强化约 **1166** 个 RA 部件，远超近期作战需求。
 
 ### 4.5 K 获取路径（无市场）
-1. **主路径（推荐，零 credits）：** 等 W47N8 **RCL7** → tower3+spawn2（~20k）→ storage≥20k → 翻 `RCL6_MINERALS=true`（terminal+3labs+矿容器 ~255k）→ mminer 采 K → `terminal.send('W46N8', K, n)`（33 e/1k）→ home `Memory.ops.labs={W46N8:'KO'}`。
+1. **主路径（推荐，零 credits / lean KO §5）：** 等 W47N8 **RCL7** → tower3+spawn2（~20k）→ storage≥20k → 翻 **`RCL6_MINERALS=true`**（terminal+extractor+矿容器 37,44 + trunk ≈ **105k**；**`RCL6_LABS` 保持 false**）→ w8mminer 采 K → `terminal.send('W46N8', K, n)`（33 e/1k）→ home `Memory.ops.labs={W46N8:'KO'}`。殖民地 3 labs 延后。
 2. **市场捷径（需 Misaki 批）：** 卖部分 O 换 credits 再买 K。当前 O 买单 ~18–21、K 买单极差；**不自动 deal**。围攻期不做。
 3. **Loot：** terminal 里 UH15/KO32/ZH38/GO127 —— 只够单次试验，不够常备。
 
@@ -191,7 +191,7 @@ W47N8 本轮 **K 35000** 采完 → 邻房 send 回家 → 可产 **35000 KO**�
 |---|---|---|
 | **现在（围攻已中止）** | 采 O（无 mineralCap）；home 墙 fundSpend→300k；殖民地冲 RCL7 | 不写 boost 代码、不开 `ops.labs`、不开 W47N8 矿物、不卖矿 |
 | W47N8 → RCL7（~10-31/11-01） | 立刻 tower3(22,7)+spawn2；修 GATE ramp≥100k | 仍不开矿物直到 storage≥20k |
-| storage 稳住后 | `RCL6_MINERALS=true` + mminer；K→home | 不开 `RCL7_INDUSTRY` |
+| storage 稳住后 | `RCL6_MINERALS=true` + w8mminer；K→home；**不开** `RCL6_LABS` | 不开 `RCL7_INDUSTRY` |
 | K≥1000 @ home terminal | `ops.labs={W46N8:'KO'}`；产到 ≥900 | 不切 BOOST 直到门槛 |
 | KO≥900 | 实现 `boost.js`；defender 线先强化 | 不强化 upgrader/builder |
 
@@ -206,3 +206,58 @@ W47N8 本轮 **K 35000** 采完 → 邻房 send 回家 → 可产 **35000 KO**�
 | 更晚 | labs4–6 / T2（KHO2 需 OH+H）/ factory | `RCL7_INDUSTRY` |
 
 ** fortification（17:4x）：** home 墙经 `fundSpend` 推进 142k→300k（不必降 reserveE）；W47N8 屏障已 300k。矿物/boost 仍不阻塞，等殖民地 RCL7+storage≥20k。
+
+---
+
+## 5. Lean KO 脚手架（strategy **23:4x** · 2026-10-30 ~23:40 Asia/Hong_Kong）
+
+### 5.1 选了什么问题
+W47N8 在翻 `RCL6_MINERALS` **之前**，矿物线代码缺口有多大？是否必须同时落殖民地 3 labs？
+
+### 5.2 现状缺口（翻 gate 前）
+| 项 | 状态 | 注 |
+|---|---|---|
+| K 矿物 | @37,45（墙格） | 可走站位仅 **37,44 / 38,44**（plain） |
+| extractor | live（Misaki 已放） | layout ORDER 有 `extractor:[[37,45]]` |
+| terminal | **未放** | `RCL6_MINERALS=false` |
+| 矿物容器 | **未放**（ORDER 原先只有 ctl cont） | **23:4x** 加 `MINERAL_CONT=[37,44]`，随 minOk 落点 |
+| MINERAL trunk | roads.MINERAL=`[[36,43],[37,42],[37,44]]` **不在** ROADS 里 | **23:4x** layout 在 minOk 时 `baseRoads.concat(MINERAL)`（修了「翻 gate 也不铺 trunk」的旧 bug） |
+| 3 colony labs | ORDER 有；gate 默认关 | **23:4x 拆出 `RCL6_LABS=false`** |
+| w8mminer / haul / send | **无** | 下一 PR；home `mminer`/`hauler.mineralRun` 只认 home `plan.pos.mineralMiner` |
+| `Memory.ops.w8min` | **✅ 23:4x** | dayObs：gaps=`gate,terminal,extractor,minCont,miner,rcl,stor20k` |
+
+### 5.3 参考（Screeps docs / Overmind / TooAngel）
+- **terminal.send** 邻房 range1 ≈ **33 e / 1k** 矿 — K→home 几乎免费（docs.screeps.com Market）。
+- **Overmind** `storageBuffer` ~100k 才开工业；我们用更紧的 **colony stor≥20k**（升级优先后的恢复线）。
+- **TooAngel** 本房矿进 terminal 高水位、他矿 ~1k 够反应；反应/boost 抢 lab 时 boost 优先 — 我们 3 home labs 已够 T1 KO（§4）。
+- 殖民地再造 3 labs ≈ **150k** + 无反应代码 → 纯浪费；**lean KO = 物流到 home，反应留 home**。
+
+### 5.4 成本对比
+| 方案 | 结构 | 能量 | 相对 RCL7 后净收 ~20–30 e/t |
+|---|---|---|---|
+| **Lean KO（推荐）** | terminal 100k + extractor 5k + 矿容器 5k + trunk roads | ≈ **110k** | ~1–1.5 h |
+| Full（旧文档 255k） | 上 + 3 labs 150k | ≈ **260k** | ~0.5–1 天 |
+| 另：RCL7 day-of | spawn2+tower3+10ext | ≈ **50k**（`w8day.bill`） | 优先于矿物 |
+
+### 5.5 Gate 语义（23:4x）
+| Flag | 默认 | 打开后落点 |
+|---|---|---|
+| `RCL6_MINERALS` | false | terminal + extractor + `MINERAL_CONT` 37,44 + MINERAL trunk |
+| `RCL6_LABS` | false | 3 colony labs（ORDER lab[0..2]）；**KO 不需要** |
+| `HUB_LINK` | false | hub link 33,34（无关矿物） |
+| `RCL7_INDUSTRY` | false | factory / PS / nuker / observer |
+
+### 5.6 翻 `RCL6_MINERALS` 前 checklist（仍 **propose**；不自动翻）
+1. W47N8 **RCL7** + tower3 + spawn2 落完（`w8day.why=done`）
+2. colony storage **≥20k**（且 home 墙 HOLD 300k、home stor 稳在 ≥15k）
+3. **代码：** `w8mminer` 站 37,44 + 把 K 搬进 terminal + `terminal.send`→W46N8（尚未写）
+4. `Memory.ops.w8min.why` 只剩 `miner`/`stor20k` 类可解缺口
+5. **不**开 `RCL6_LABS` / `RCL7_INDUSTRY` / `ops.labs` / `mineralCap`（除非 Misaki 改口）
+
+### 5.7 本轮交付
+- config：`MINERAL`/`MINERAL_CONT`/`RCL6_LABS`
+- layout：minOk 落矿容器 + concat MINERAL roads；labs 独立 gate
+- obs：`Memory.ops.w8min`
+- tests：`w47n8_rcl6_gate` lean-on；`w47n8_dayobs` w8min
+- **未**翻任何 gate；**未**写 w8mminer；**未**设 mineralCap / ops.labs
+

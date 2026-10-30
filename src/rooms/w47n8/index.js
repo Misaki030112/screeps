@@ -371,6 +371,26 @@ function dayObs(room) {
   else if (need < 80000) why = 'near';
   o.w8day = { t: Game.time, rcl, need, siteRem: siteRemV, builders, upgraders, storE, bill,
     missSpawn: missSpawn ? 1 : 0, missTower: missTower ? 1 : 0, missExt, why };
+  // 23:4x strategy: lean KO readiness (docs/MINERAL_DEFENSE_ROADMAP.md §5). Dormant report only — gates stay false.
+  const [mx, my] = C.MINERAL_CONT || [37, 44];
+  const hasTerm = !!room.terminal;
+  const hasExt = room.find(FIND_MY_STRUCTURES, { filter: s => s.structureType === STRUCTURE_EXTRACTOR }).length > 0;
+  const hasMinCont = has(STRUCTURE_CONTAINER, mx, my);
+  const min = (typeof FIND_MINERALS !== 'undefined' ? room.find(FIND_MINERALS) : [])[0];
+  const kAmt = min && min.mineralType === 'K' ? (min.mineralAmount || 0) : 0;
+  const kTerm = hasTerm ? (room.terminal.store.K || 0) : 0;
+  const miners = _.filter(Game.creeps, c => inRoom(c) && (c.memory.role === 'w8mminer' || c.memory.role === 'mminer')).length;
+  const gaps = [];
+  if (!C.RCL6_MINERALS) gaps.push('gate');
+  if (!hasTerm) gaps.push('terminal');
+  if (!hasExt) gaps.push('extractor');
+  if (!hasMinCont) gaps.push('minCont');
+  if (!miners) gaps.push('miner'); // expected until w8mminer ships
+  if (rcl < 7) gaps.push('rcl');
+  if (storE < 20000) gaps.push('stor20k');
+  o.w8min = { t: Game.time, rcl, storE, kAmt, kTerm, hasTerm: hasTerm ? 1 : 0, hasExt: hasExt ? 1 : 0,
+    hasMinCont: hasMinCont ? 1 : 0, miners, minOk: C.RCL6_MINERALS ? 1 : 0, labsOk: C.RCL6_LABS ? 1 : 0,
+    gaps: gaps.join(','), why: gaps.length ? gaps[0] : 'ready' };
 }
 function layoutRun(room) {
   if (Game.time % 20) return;
@@ -391,14 +411,20 @@ function layoutRun(room) {
   // 03:05 west<->hub link road (missing from v3b plan): loaded 10C5M rhaulers sat 7-10 ticks on unroaded swamp 22,34 (fatigue 70)
   // between road 15,33 and strip road 24,35; queued ahead of the plan roads since every hub trip crosses it
   // 09:13 road audit: only the target network (roads.js: v3b spines + shared trunks + busy live roads) is placed
-  // 10-20 03:4x strategy review (docs/PLAN_W47N8.md "RCL6 gate"): with RCL6_MINERALS off, terminal (100k), extractor (5k), 3 labs (150k),
-  // the extractor trunk and, with HUB_LINK off, the hub link 33,34 (5k) are not placed: no W47N8 code uses any of them (no mineral miner,
-  // no lab/terminal logic, linkRun only moves A -> ctl), so they would idle 260k of energy (~8.7k t, ~10 h of upgrade at ~30 e/t).
+  // 10-20 03:4x strategy review (docs/PLAN_W47N8.md "RCL6 gate"): with RCL6_MINERALS off, terminal/extractor/mineral trunk stay
+  // unplaced (no mineral miner / send code yet). 23:4x split: RCL6_LABS gates the 3 colony labs separately (lean KO uses home labs).
   // 10-29 20:4x (docs/PLAN_W47N8.md "RCL7 day-of"): RCL7 unlocks factory 35,30 (100k); with RCL7_INDUSTRY off it is not placed (same trap
   // as home plan.RCL7_INDUSTRY). RCL8 powerSpawn/nuker/observer stay gated with it. Day-of bill = spawn2 + tower3 + 10 ext + spur roads.
-  const R8 = require('./roads'), minOk = !!C.RCL6_MINERALS, indOk = !!C.RCL7_INDUSTRY;
-  const O = ok ? Object.assign({}, L.ORDER, { link: [C.CTL_LINK, C.SOURCES[0].link].concat(C.HUB_LINK ? L.ORDER.link : []), road: (rcl >= 6 && minOk ? R8.ROADS : R8.ROADS.filter(([x, y]) => !R8.MINERAL.some(([a, b]) => a === x && b === y))).concat(require('../../layouts/w8link').W47N8) },
-    minOk ? {} : { terminal: [], extractor: [], lab: [] },
+  const R8 = require('./roads'), minOk = !!C.RCL6_MINERALS, labsOk = !!C.RCL6_LABS, indOk = !!C.RCL7_INDUSTRY;
+  const [mcx, mcy] = C.MINERAL_CONT || [37, 44];
+  const baseCont = (L.ORDER.container || []).filter(([x, y]) => !(x === mcx && y === mcy));
+  const cont = baseCont.concat(minOk ? [[mcx, mcy]] : []);
+  // MINERAL tiles live in roads.MINERAL, not ROADS (w47n8_roads_v4 keeps them separate). Concat when minOk so trunk actually places.
+  const baseRoads = R8.ROADS.filter(([x, y]) => !R8.MINERAL.some(([a, b]) => a === x && b === y));
+  const roads = (rcl >= 6 && minOk ? baseRoads.concat(R8.MINERAL) : baseRoads).concat(require('../../layouts/w8link').W47N8);
+  const O = ok ? Object.assign({}, L.ORDER, { container: cont, link: [C.CTL_LINK, C.SOURCES[0].link].concat(C.HUB_LINK ? L.ORDER.link : []), road: roads },
+    minOk ? {} : { terminal: [], extractor: [] },
+    labsOk ? {} : { lab: [] },
     indOk ? {} : { factory: [], powerSpawn: [], nuker: [], observer: [] }) : { extension: L.TEMP_EXT, container: L.ORDER.container };
   // 17:15 (Misaki "急着早 rampart 是为了什么" / "看看主房间"): no rampart placement here. The PRIO loop placed every v3b ORDER.rampart
   // tile at RCL4, incl. empty future spawn/terminal/tower slots (32,32 32,33 33,32 33,30 built; 34,31 36,31 36,33 sites), and

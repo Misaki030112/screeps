@@ -30,9 +30,15 @@ module.exports = {
   // 13,25 dropped from the stands (19:12): an upgrader walking in and the trapped hauler walking out swap-deadlocked on 13,26
   UPG_STAND: [[12, 25], [12, 26], [14, 26], [14, 27]], CTL_HAUL: [[13, 27], [12, 27]],
   UPG_EXTRA: [[15, 26], [15, 27], [15, 28], [16, 28], [14, 28]], // in range 3, off the hauler corridors (11,26-12,28 west, 13,28 south)
-  // RCL6 gate (10-20 03:4x strategy review, docs/PLAN_W47N8.md): terminal/extractor/labs + extractor trunk and the hub link 33,34 stay
-  // unplaced until code uses them and Misaki approves (same pattern as home plan.RCL6_MINERALS on 10-15). Flip to true to place them.
-  RCL6_MINERALS: false, HUB_LINK: false,
+  // K mineral @37,45 (wall tile). Only walkable harvest stands in range 1: 37,44 / 38,44 (plain). Container+mminer on 37,44
+  // (also in roads.MINERAL). Strategy 23:4x lean KO: home already has 3 labs — colony labs deferred (RCL6_LABS).
+  MINERAL: [37, 45], MINERAL_CONT: [37, 44],
+  // RCL6 gate (10-20 03:4x; **23:4x split** docs/MINERAL_DEFENSE_ROADMAP.md §5):
+  //   RCL6_MINERALS → terminal + extractor + mineral container 37,44 + MINERAL trunk roads (~105k + trunk)
+  //   RCL6_LABS     → 3 colony labs (~150k); default OFF — KO reacts on home W46N8 labs
+  //   HUB_LINK      → hub link 33,34 (unchanged)
+  // Flip RCL6_MINERALS only after RCL7 day-of + colony storage≥20k + w8mminer/haul/send code ready (see §5 checklist).
+  RCL6_MINERALS: false, RCL6_LABS: false, HUB_LINK: false,
   // RCL7 gate (10-29 20:4x strategy review, docs/PLAN_W47N8.md "RCL7 day-of"): factory 35,30 (100k) + RCL8 powerSpawn/nuker/observer stay
   // unplaced — no colony factory/lab code yet (same as home plan.RCL7_INDUSTRY). Flip when industry code exists.
   RCL7_INDUSTRY: false,

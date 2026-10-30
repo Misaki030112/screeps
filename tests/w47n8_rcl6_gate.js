@@ -1,9 +1,10 @@
-// 2026-10-20 03:4x strategy review: at RCL6 W47N8 must not place terminal / extractor / labs / extractor trunk / hub link 33,34
-// while config RCL6_MINERALS / HUB_LINK are off (no code uses them); extensions + the 2 planned links still go up.
+// 2026-10-20 03:4x strategy review (+23:4x lean KO split): at RCL6 W47N8 must not place terminal / extractor / labs /
+// mineral container 37,44 / extractor trunk / hub link 33,34 while RCL6_MINERALS / RCL6_LABS / HUB_LINK are off;
+// extensions + the 2 planned links still go up. Lean-on (minOk, !labsOk) places terminal+extractor+minCont, not labs.
 const assert = require('assert'), path = require('path');
 const d = path.join(__dirname, '..', 'src', 'rooms', 'w47n8');
 const K = { LOOK_STRUCTURES: 'structure', LOOK_CONSTRUCTION_SITES: 'constructionSite', FIND_MY_SPAWNS: 112, FIND_MY_CONSTRUCTION_SITES: 114,
-  FIND_MY_STRUCTURES: 108, OK: 0, ERR_RCL_NOT_ENOUGH: -14 };
+  FIND_MY_STRUCTURES: 108, FIND_MINERALS: 116, OK: 0, ERR_RCL_NOT_ENOUGH: -14 };
 const T = ['spawn', 'extension', 'road', 'wall', 'rampart', 'link', 'storage', 'tower', 'observer', 'powerSpawn', 'extractor', 'lab', 'terminal', 'container', 'nuker', 'factory'];
 for (const t of T) K['STRUCTURE_' + (t === 'powerSpawn' ? 'POWER_SPAWN' : t.toUpperCase())] = t;
 const CS = { spawn: [0, 1, 1, 1, 1, 1, 1, 2, 3], extension: [0, 0, 5, 10, 20, 30, 40, 50, 60], tower: [0, 0, 0, 1, 1, 2, 2, 3, 6], link: [0, 0, 0, 0, 0, 2, 3, 4, 6],
@@ -28,14 +29,26 @@ const roads = R.ROADS.filter(([x, y]) => !R.MINERAL.some(([a, b]) => a === x && 
 const base = [].concat(C.SEAL.map(([x, y]) => [x, y, 'wall']), [[15, 18, 'spawn'], [35, 32, 'storage'], [C.HUB_CONT[0], C.HUB_CONT[1], 'container'], [13, 26, 'container']],
   L.ORDER.extension.slice(0, 30).map(([x, y]) => [x, y, 'extension']), [[33, 35, 'tower'], [24, 8, 'tower'], [C.CTL_LINK[0], C.CTL_LINK[1], 'link'], [C.SOURCES[0].link[0], C.SOURCES[0].link[1], 'link']],
   roads.map(([x, y]) => [x, y, 'road']));
-assert.strictEqual(C.RCL6_MINERALS, false); assert.strictEqual(C.HUB_LINK, false);
+assert.strictEqual(C.RCL6_MINERALS, false); assert.strictEqual(C.RCL6_LABS, false); assert.strictEqual(C.HUB_LINK, false);
+assert.deepStrictEqual(C.MINERAL_CONT, [37, 44]);
 const placed = [];
 for (let i = 0; i < 6; i++) { const r = mkRoom(6, base.concat(placed.map(s => [s.pos.x, s.pos.y, s.structureType]))); W.layoutRun(r); placed.push(...r.sites); }
 const types = placed.map(s => s.structureType);
 for (const t of ['terminal', 'extractor', 'lab']) assert.ok(!types.includes(t), 'RCL6: no ' + t + ' site while RCL6_MINERALS is off, got ' + types);
 assert.ok(!placed.some(s => s.structureType === 'link'), 'RCL6: no hub link 33,34 while HUB_LINK is off');
 assert.ok(!placed.some(s => s.structureType === 'road' && R.MINERAL.some(([a, b]) => a === s.pos.x && b === s.pos.y)), 'RCL6: no extractor trunk road');
+assert.ok(!placed.some(s => s.structureType === 'container' && s.pos.x === 37 && s.pos.y === 44), 'RCL6: no mineral cont 37,44 while gate off');
 assert.strictEqual(types.filter(t => t === 'extension').length, 10, 'RCL6: the 10 new extensions still go up, got ' + types);
+// 23:4x lean-on: RCL6_MINERALS alone → terminal + extractor + minCont + trunk; labs stay off
+{ C.RCL6_MINERALS = true;
+  const lean = [];
+  for (let i = 0; i < 8; i++) { const r = mkRoom(6, base.concat(lean.map(s => [s.pos.x, s.pos.y, s.structureType]))); W.layoutRun(r); lean.push(...r.sites); }
+  const lt = lean.map(s => s.structureType);
+  assert.ok(lt.includes('terminal'), 'lean: terminal'); assert.ok(lt.includes('extractor'), 'lean: extractor');
+  assert.ok(lean.some(s => s.structureType === 'container' && s.pos.x === 37 && s.pos.y === 44), 'lean: mineral cont 37,44');
+  assert.ok(lean.some(s => s.structureType === 'road' && R.MINERAL.some(([a, b]) => a === s.pos.x && b === s.pos.y)), 'lean: mineral trunk');
+  assert.ok(!lt.includes('lab'), 'lean: no colony labs while RCL6_LABS off');
+  C.RCL6_MINERALS = false; }
 // RCL5 unchanged: both planned links are placed (ctl 13,25 + source A 26,12)
 { const b5 = base.filter(b => b[2] !== 'link'); const r = mkRoom(5, b5); W.layoutRun(r);
   const ls = r.sites.filter(s => s.structureType === 'link').map(s => s.pos.x + ',' + s.pos.y).sort();
