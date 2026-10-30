@@ -28,7 +28,7 @@ function run(room) {
   const surplus = room.storage ? storE - floor : 0;
   const ups = _.filter(Game.creeps, c => c.memory.role === 'upgrader' && (c.memory.home || c.room.name) === room.name && !c.spawning);
   const nUp = ups.length;
-  const work = _.sumBy(ups, c => c.getActiveBodyparts(WORK));
+  const work = ups.reduce((s, c) => s + c.getActiveBodyparts(WORK), 0);
   // Hungry = empty-ish carry AND neither ctl link nor container has energy (matches waiting_feed).
   const feedEmpty = (ctlLinkE == null || ctlLinkE === 0) && ctl === 0;
   const hungry = ups.filter(c => (c.store[RESOURCE_ENERGY] || 0) <= c.getActiveBodyparts(WORK) && feedEmpty).length;
