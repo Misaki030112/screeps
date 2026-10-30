@@ -1,7 +1,7 @@
-# 矿物线 + 强化 + 城防路线图（2026-10-29 12:4x；14:4x boost；17:4x fundSpend；23:4x fortify；08:4x RCL7 hold 300k；11:4x post-300k exit；**14:4x soft ramp 100k**）
+# 矿物线 + 强化 + 城防路线图（2026-10-29 12:4x；14:4x boost；17:4x fundSpend；23:4x fortify；08:4x RCL7 hold 300k；11:4x post-300k exit；14:4x soft ramp 100k；**20:4x day-of 不预存**）
 
-Live refresh **14:45 UTC+8 2026-10-30** tick ~83957470。**不自动交易、不开 safe mode。**
-围攻已中止；`walls.fundSpend` 推家墙 **~283k→300k**（ETA ~1 h）；**11:4x** exit 仍有效；**14:4x**/**17:4x**：殖民地 soft ramp `GATE_TOWER=SOFT_RAMP=100k`，`SOFT_MIN=0` + `!localOn`（spawn 已 100k；tower/storage 从 ~49k 分钟级爬完）。**23:4x** lab ramparts；**05:4x** W45N7 reclaim。boost 仍等殖民地 RCL7+storage。seal 300k 不变。
+Live refresh **20:45 UTC+8 2026-10-30** tick ~83962645。**不自动交易、不开 safe mode。**
+围攻已中止；home 墙 **HOLD 300k COMPLETE**（fundSpend EXIT）；殖民地 soft **COMPLETE ≥100k**；**20:4x** day-of **不预存**（spur 已齐，bill≈50k，siteRem 反应式建造）。boost 仍等殖民地 RCL7+storage≥20k。seal 300k 不变。
 
 ## 0. 现状（实测）
 
@@ -59,7 +59,7 @@ Live refresh **14:45 UTC+8 2026-10-30** tick ~83957470。**不自动交易、不
 Loot 里已有微量 UH/KO/ZH —— 只够试验，不够常备强化。
 
 ### 阶段 B · W47N8 刚到 RCL7（先基建后矿物）
-> 20:4x：`RCL7_INDUSTRY=false` 已写入殖民地 config——**不造 factory@35,30（100k）**；day-of 仅 spawn2@33,30 + tower3@22,7 + 10 ext + spur roads（~53k）。详见 `docs/PLAN_W47N8.md` "RCL7 day-of"。
+> 20:4x（10-29）：`RCL7_INDUSTRY=false`——**不造 factory@35,30（100k）**；day-of 仅 spawn2@33,30 + tower3@22,7 + 10 ext（spur 已齐 → bill≈**50k**）。**20:4x（10-30）：不预存**——保持 upgrade-first，`siteRem≥3k→≤4 builders`；详见 `docs/RCL7.md` 20:4x / `Memory.ops.w8day`。
 
 顺序（能量从紧到松）：
 1. **tower3 + spawn2**（~20k）—— 立刻提升殖民地火力与产能

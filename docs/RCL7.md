@@ -215,3 +215,24 @@ Hits remaining ≈ (100k−49k)×2 KEY ≈ 102k hits ≈ **~1k e**. Towers repai
 - No flip of `RCL6_MINERALS` / `RCL7_INDUSTRY` / `STATIONARY_FILL`.
 - Seal/GATE stay 300k; no Overmind 500k soft band; defend-only W47N9.
 
+## 2026-10-30 20:4x — W47N8 RCL7 day-of: pre-bank vs reactive siteRem
+
+**Question:** Should W47N8 pre-bank ~50k energy in storage before RCL7 so day-of spawn2+tower3+10ext finish without starving upgraders, or keep upgrade-first and let `siteRem` spawn builders reactively?
+
+**Answer: NO pre-bank. Stay upgrade-first; reactive `siteRem≥3k → ≤4 builders` + 2 upgraders already covers day-of.**
+
+### Evidence
+1. **Bill is ~50k, not ~153k.** Spur roads already live (patrol roads 139). Day-of = spawn2@33,30 (15k) + tower3@22,7 (5k) + 10×ext (30k). Factory still gated (`RCL7_INDUSTRY=false`).
+2. **Existing spawn path is reactive.** `spawnRun`: when sites exist, upgraders stay at **2** (not zeroed); builders scale `siteRem≥3000→4 / ≥1200→2 / else 1`. First-tick sites (spawn+tower) ≈20k → 4 builders immediately; after those stand, 10 ext sites keep the same cohort.
+3. **Throughput math.** Colony harvest ~30 e/t gross; 4×~6W builders ≈20–23 e/t build while 2 upgraders keep ~10–12 e/t on the controller. Full 50k ≈ **2–3 h** wall; first batch spawn+tower alone ≈ **15–20 min**. Pre-banking 50k at ~3 e/t surplus would delay RCL7 itself by **~1–2 h** — worse than the build dip.
+4. **Overmind / TooAngel.** Overmind fortifyDutyThreshold gates *walls* on storage, not RCL structure batches. TooAngel `checkForBuilder` spawns builders when construction sites exist — reactive, no RCL day-of bank. Same pattern we already run.
+5. **Live (t~83962645):** soft-ramp COMPLETE (`w8soft.why=ok` ≥100k); home walls HOLD 300001 fundSpend EXIT; W47N8 need ~438k ≈ **~21 h** @~23 e/t; colony stor ~0–3k (upgrade-first, expected). Spurs DONE.
+
+### Observability
+`Memory.ops.w8day` (layoutRun every 20 t): `{rcl,need,siteRem,builders,upgraders,storE,bill,missSpawn,missTower,missExt,why}` with `why∈{upgrade,near,dayof,done}`. Patrol/strategy can watch bill↓ without guessing.
+
+### What we did not change
+- No pre-bank threshold; no flip of `RCL6_MINERALS` / `RCL7_INDUSTRY` / `HUB_LINK` / `STATIONARY_FILL`.
+- Day-of order unchanged: spawn2 + tower3 first, then 10 ext; minerals after stor≥20k (`MINERAL_DEFENSE_ROADMAP` §B).
+- Defend-only W47N9; no claim/attack/credits/SM.
+

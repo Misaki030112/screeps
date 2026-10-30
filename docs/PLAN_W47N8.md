@@ -215,3 +215,7 @@ Question: the moment W47N8 hits RCL7 (~11-01 at ~20 e/t; live 2.740M/3.645M), wh
 ## Soft-ramp staging (strategy 14:4x, 2026-10-30)
 
 Before RCL7 day-of tower3/spawn2, KEY soft ramparts (spawn/tower/storage) climb to **100k** (`GATE_TOWER` = `SOFT_RAMP`). Seal walls + GATE@29,3 stay at **300k**. Soft raise: peacetime = `!threat.localOn()` (neighbor `w8threatN` does **not** block) + `SOFT_MIN=0` (17:4x — upgrade-first stor never hit the old 5k gate); spawn/gate always via GATE_TOWER. Cost ~1–1.8k e. See `docs/RCL7.md` 14:4x/17:4x. Factory still gated (`RCL7_INDUSTRY=false`).
+
+## Day-of energy: no pre-bank (2026-10-30 20:4x strategy review)
+
+**Decision:** do **not** hold upgrade to pre-bank ~50k before RCL7. Spurs are already live → bill ≈ **50k**. Existing `siteRem≥3k → ≤4 builders` + 2 upgraders finishes spawn+tower in ~15–20 min and the full batch in ~2–3 h while the controller keeps receiving ~10–12 e/t. Pre-bank would slip RCL7 by ~1–2 h for no gain. Overmind/TooAngel also react to sites, not RCL banks. Observability: `Memory.ops.w8day`. Detail: `docs/RCL7.md` 20:4x.

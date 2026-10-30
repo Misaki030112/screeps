@@ -1,0 +1,60 @@
+// 2026-10-30 20:4x strategy: dayObs fills Memory.ops.w8day (bill/miss*/why); no layout side effects required.
+const assert = require('assert'), path = require('path');
+const d = path.join(__dirname, '..', 'src/rooms/w47n8');
+const K = { LOOK_STRUCTURES: 'structure', LOOK_CONSTRUCTION_SITES: 'constructionSite', FIND_MY_SPAWNS: 112,
+  FIND_MY_CONSTRUCTION_SITES: 114, FIND_MY_STRUCTURES: 108, FIND_MY_CREEPS: 106, OK: 0,
+  STRUCTURE_SPAWN: 'spawn', STRUCTURE_TOWER: 'tower', STRUCTURE_EXTENSION: 'extension', STRUCTURE_STORAGE: 'storage',
+  STRUCTURE_RAMPART: 'rampart', STRUCTURE_WALL: 'wall', STRUCTURE_CONTAINER: 'container', STRUCTURE_LINK: 'link',
+  STRUCTURE_TERMINAL: 'terminal', STRUCTURE_EXTRACTOR: 'extractor', STRUCTURE_LAB: 'lab', STRUCTURE_FACTORY: 'factory',
+  STRUCTURE_ROAD: 'road', STRUCTURE_POWER_SPAWN: 'powerSpawn', STRUCTURE_NUKER: 'nuker', STRUCTURE_OBSERVER: 'observer', RESOURCE_ENERGY: 'energy',
+  ERR_RCL_NOT_ENOUGH: -14 };
+Object.assign(global, K, { _: require('lodash'), Memory: { ops: { w8layout: 'approved' } }, Game: { time: 42, rooms: {}, creeps: {} },
+  CONTROLLER_STRUCTURES: { spawn: [0,1,1,1,1,1,1,2,3], extension: [0,0,5,10,20,30,40,50,60], tower: [0,0,0,1,1,2,2,3,6],
+    link: [0,0,0,0,0,2,3,4,6], storage: [0,0,0,0,1,1,1,1,1], container: Array(9).fill(5), road: Array(9).fill(2500),
+    wall: [0,0,2500,2500,2500,2500,2500,2500,2500], rampart: [0,0,2500,2500,2500,2500,2500,2500,2500],
+    terminal: [0,0,0,0,0,0,1,1,1], extractor: [0,0,0,0,0,0,1,1,1], lab: [0,0,0,0,0,0,3,6,10], factory: [0,0,0,0,0,0,0,1,1],
+    powerSpawn: Array(8).fill(0).concat([1]), nuker: Array(8).fill(0).concat([1]), observer: Array(8).fill(0).concat([1]) } });
+const W = require(path.join(d, 'index.js')), L = require(path.join(d, 'layout'));
+function mk(rcl, built, creeps, progressLeft) {
+  const st = {}, sites = [];
+  for (const [x, y, t] of built) (st[x * 50 + y] = st[x * 50 + y] || []).push({ structureType: t, pos: { x, y } });
+  const pt = 3645000, p = pt - (progressLeft == null ? 400000 : progressLeft);
+  const room = {
+    name: 'W47N8',
+    lookForAt: (k, x, y) => k === LOOK_STRUCTURES ? (st[x * 50 + y] || []) : sites.filter(s => s.pos.x === x && s.pos.y === y),
+    find: (k, o) => {
+      let a = [];
+      if (k === FIND_MY_STRUCTURES) a = Object.values(st).flat();
+      else if (k === FIND_MY_CONSTRUCTION_SITES) a = sites;
+      else if (k === FIND_MY_SPAWNS) a = Object.values(st).flat().filter(s => s.structureType === 'spawn');
+      return o && o.filter ? a.filter(o.filter) : a;
+    },
+    controller: { level: rcl, progress: p, progressTotal: pt },
+    storage: { store: { energy: 2100 } },
+  };
+  Game.creeps = {};
+  (creeps || []).forEach((c, i) => { Game.creeps['c' + i] = Object.assign({ memory: { home: 'W47N8' }, room, pos: { roomName: 'W47N8' } }, c); });
+  return room;
+}
+const base = [[34, 30, 'spawn'], [35, 32, 'storage'], [33, 35, 'tower'], [24, 8, 'tower']]
+  .concat(L.ORDER.extension.slice(0, 40).map(([x, y]) => [x, y, 'extension']));
+// RCL6 mid: why=upgrade, bill = 15k+5k+30k = 50k
+W.dayObs(mk(6, base, [{ memory: { role: 'w8builder' } }, { memory: { role: 'w8upgrader' } }, { memory: { role: 'w8upgrader' } }, { memory: { role: 'w8upgrader' } }], 400000));
+let d0 = Memory.ops.w8day;
+assert.strictEqual(d0.why, 'upgrade');
+assert.strictEqual(d0.missSpawn, 1);
+assert.strictEqual(d0.missTower, 1);
+assert.strictEqual(d0.missExt, 10);
+assert.strictEqual(d0.bill, 50000);
+assert.strictEqual(d0.builders, 1);
+assert.strictEqual(d0.upgraders, 3);
+// near RCL7
+W.dayObs(mk(6, base, [], 50000));
+assert.strictEqual(Memory.ops.w8day.why, 'near');
+// RCL7 with spawn2+tower3+50ext done
+const done = base.concat([[33, 30, 'spawn'], [22, 7, 'tower']], L.ORDER.extension.slice(40, 50).map(([x, y]) => [x, y, 'extension']));
+W.dayObs(mk(7, done, [], 0));
+assert.strictEqual(Memory.ops.w8day.why, 'done');
+assert.strictEqual(Memory.ops.w8day.bill, 0);
+assert.strictEqual(Memory.ops.w8day.missSpawn, 0);
+console.log('w47n8_dayobs ok');

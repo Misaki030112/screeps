@@ -30,6 +30,7 @@ execSync('node ' + path.join(__dirname, '..', 'tests', 'w47n8_defense.js'), { st
 execSync('node ' + path.join(__dirname, '..', 'tests', 'w47n8_tower.js'), { stdio: 'pipe' });
 execSync('node ' + path.join(__dirname, '..', 'tests', 'w47n8_tower_first.js'), { stdio: 'pipe' });
 execSync('node ' + path.join(__dirname, '..', 'tests', 'w47n8_rcl7_gate.js'), { stdio: 'pipe' });
+execSync('node ' + path.join(__dirname, '..', 'tests', 'w47n8_dayobs.js'), { stdio: 'pipe' });
 execSync('node ' + path.join(__dirname, '..', 'tests', 'w47n8_roads_connected.js'), { stdio: 'pipe' });
 execSync('node ' + path.join(__dirname, '..', 'tests', 'queen_standby.js'), { stdio: 'pipe' });
 execSync('node ' + path.join(__dirname, '..', 'tests', 'hauler_fill_sticky.js'), { stdio: 'pipe' });

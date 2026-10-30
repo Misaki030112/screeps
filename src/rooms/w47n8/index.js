@@ -341,8 +341,40 @@ function extBatch(room, m) {
 // 10-20 17:0x (Misaki: storage 20k+ idle): banking only holds MOVE_E + 2k; above that upgraders/builders/repairs run as normal
 const BANK_HOLD = MOVE_E + 2000, banking = room => moving() && bankE(room) < BANK_HOLD;
 const moving = () => { const m = Memory.ops && Memory.ops.w8move; return !!m && (m.phase === 'prep' || m.phase === 'build'); };
+// 20:4x strategy: day-of readiness observability (no behavior change). Spurs already live →
+// remaining bill ≈ missing spawn2@33,30 + tower3@22,7 + (50−nExt)×3k. Reactive siteRem≥3k → ≤4 builders;
+// no pre-bank (see docs/RCL7.md "20:4x").
+function dayObs(room) {
+  const o = (Memory.ops = Memory.ops || {});
+  const rcl = room.controller.level;
+  const need = Math.max(0, (room.controller.progressTotal || 0) - (room.controller.progress || 0));
+  const sites = room.find(FIND_MY_CONSTRUCTION_SITES);
+  const siteRemV = _.sum(sites, s => (s.progressTotal || 0) - (s.progress || 0));
+  // Game.creeps (not FIND_MY_CREEPS) so layout unit stubs without that constant still run
+  const inRoom = c => c.memory && (c.memory.home === room.name || (c.room && c.room.name === room.name) || (c.pos && c.pos.roomName === room.name));
+  const builders = _.filter(Game.creeps, c => inRoom(c) && c.memory.role === 'w8builder').length;
+  const upgraders = _.filter(Game.creeps, c => inRoom(c) && c.memory.role === 'w8upgrader').length;
+  const storE = room.storage && room.storage.store ? (room.storage.store[RESOURCE_ENERGY] || 0) : 0;
+  const has = (typ, x, y) => room.lookForAt(LOOK_STRUCTURES, x, y).some(s => s.structureType === typ);
+  const [sx, sy] = L.ORDER.spawn[1], [tx, ty] = L.ORDER.tower[2];
+  const missSpawn = !has(STRUCTURE_SPAWN, sx, sy);
+  const missTower = !has(STRUCTURE_TOWER, tx, ty);
+  const nExt = room.find(FIND_MY_STRUCTURES, { filter: s => s.structureType === STRUCTURE_EXTENSION }).length;
+  const missExt = Math.max(0, 50 - nExt);
+  let bill = siteRemV;
+  if (missSpawn && !sites.some(s => s.structureType === STRUCTURE_SPAWN && s.pos.x === sx && s.pos.y === sy)) bill += 15000;
+  if (missTower && !sites.some(s => s.structureType === STRUCTURE_TOWER && s.pos.x === tx && s.pos.y === ty)) bill += 5000;
+  const extSites = sites.filter(s => s.structureType === STRUCTURE_EXTENSION).length;
+  bill += Math.max(0, missExt - extSites) * 3000;
+  let why = 'upgrade';
+  if (rcl >= 7) why = (missSpawn || missTower || missExt > 0 || siteRemV > 0) ? 'dayof' : 'done';
+  else if (need < 80000) why = 'near';
+  o.w8day = { t: Game.time, rcl, need, siteRem: siteRemV, builders, upgraders, storE, bill,
+    missSpawn: missSpawn ? 1 : 0, missTower: missTower ? 1 : 0, missExt, why };
+}
 function layoutRun(room) {
   if (Game.time % 20) return;
+  dayObs(room);
   if (room.controller.level >= 2) placeSeal(room);
   moveRun(room);
   if (moving() && Memory.ops.w8move.phase === 'build') return;
@@ -537,4 +569,4 @@ function selfSufficient() {
   const r = Game.rooms[C.ROOM]; if (!r || !r.find(FIND_MY_SPAWNS).length) return false;
   return mine().some(c => c.memory.role === 'w8miner'); // Spawn2 + its own miner -> home stops cq pioneers/haulers (guard stays)
 }
-module.exports = { sealAt, banking, BANK_HOLD, moveRun, moveReady, rampNeeded, homeWant, linkAt, linkRun, rampHold, swapTemp, extBatch, energyOrder, ROOM: C.ROOM, spawnRun, layoutRun, towerRun, selfSufficient, bodyFor, rmLead8 };
+module.exports = { sealAt, banking, BANK_HOLD, moveRun, moveReady, rampNeeded, homeWant, linkAt, linkRun, rampHold, dayObs, swapTemp, extBatch, energyOrder, ROOM: C.ROOM, spawnRun, layoutRun, towerRun, selfSufficient, bodyFor, rmLead8 };

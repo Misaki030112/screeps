@@ -3,6 +3,13 @@
 Novice zone ends **2026-10-28 03:33 UTC+8** (past as of 10-29). Defence timeline: `docs/DEFENSE_NOVICE.md` (2026-10-16); detail `docs/DEFENSE.md` / geometry `docs/DEFENSE_PLAN.md`.
 **Safe mode: NEVER auto-activate** — alert Misaki.
 
+## 2026-10-30 20:4x strategy review: W47N8 RCL7 day-of — no pre-bank (reactive siteRem)
+- **Chose:** whether to pre-bank ~50k colony storage before RCL7 day-of vs keep upgrade-first and let `siteRem` spawn builders (distinct from 20:4x factory gate / 14:4x–17:4x soft-ramp).
+- **Findings (`docs/RCL7.md` 20:4x, `docs/PLAN_W47N8.md`):** (1) Spurs DONE → bill ≈ **50k** (spawn+tower+10ext). (2) Existing spawn: sites → 2 upgraders + builders `siteRem≥3k→4` — reactive, matches Overmind/TooAngel. (3) Full batch ~2–3 h / first batch ~15–20 min; pre-bank delays RCL7 ~1–2 h. (4) Live t~83962645: soft COMPLETE; home walls 300001 EXIT; W47N8 ~21 h RCL7; stor home~13k colony~2k; CPU~12 bucket 10k; deploy was 60a9653.
+- **Shipped:** `Memory.ops.w8day` observability + `tests/w47n8_dayobs.js`; docs RCL7/PLAN/STRATEGY/MINERAL/this. **No spawn/layout behavior change.** Deploy for obs only.
+- **Reprioritise (confirm, soft+walls DONE):** (1) home hold 300k + recover stor≥15k / upgrade; (2) W47N8 RCL7 → tower3+spawn2 **reactive** (factory OFF, **no pre-bank**); (3) colony stor≥20k → minerals+K; (4) KO≥900 → boost; (5) barriers→1M later; (6) STATIONARY_FILL at RCL8. Defend-only W47N9.
+- **Plan check:** home RCL7 ~732k/10.9M (~6.7%) stor~13.3k walls min 300001; W47N8 3.207M/3.645M (~21h) soft ok; remotes SAFE; BustJetter neighbor-only; no major Misaki decision.
+
 ## 2026-10-30 17:4x strategy review: soft-ramp stuck ~49k (SOFT_MIN + w8threatN)
 - **Chose:** Topic A follow-up — why W47N8 soft KEY tower/storage stuck ~49k→100k since 14:4x while spawn already at GATE_TOWER; will soft finish before RCL7 day-of (~25h)?
 - **Findings (`docs/RCL7.md` 17:4x):** (1) Dual gate: `SOFT_MIN=5k` never trips under upgrade-first (colony stor ~0–3k), AND `!TH.on()` treats neighbor `w8threatN` (BustJetter W48N9 staging) as peacetime-off — soft path dead while spawn/GATE still climb via GATE_TOWER. (2) Remaining cost ~1k e (~8 e/t tower divert) → **minutes**, not hours — easily before RCL7. (3) Fix: `SOFT_MIN=0` + peacetime = `!TH.localOn()` (in-room/W47N7 only); towers still need E>600; hold map unchanged. (4) Live t~83959959: tower 49001 storR 49701 spawn 100201 GATE 296401; home walls 283501 fundSpend; W47N8 need~503k ~25h; CPU ok.
