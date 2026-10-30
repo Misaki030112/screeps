@@ -17,7 +17,7 @@ Object.assign(global, K, { _: require('lodash'), Memory: { ops: { w8layout: 'app
 const W = require(path.join(d, 'index.js')), L = require(path.join(d, 'layout'));
 function mk(rcl, built, creeps, progressLeft) {
   const st = {}, sites = [];
-  for (const [x, y, t] of built) (st[x * 50 + y] = st[x * 50 + y] || []).push({ structureType: t, pos: { x, y } });
+  for (const [x, y, t] of built) (st[x * 50 + y] = st[x * 50 + y] || []).push({ structureType: t, pos: { x, y }, store: t === 'tower' ? { energy: 900 } : undefined });
   const pt = 3645000, p = pt - (progressLeft == null ? 400000 : progressLeft);
   const room = {
     name: 'W47N8',
@@ -31,6 +31,7 @@ function mk(rcl, built, creeps, progressLeft) {
     },
     controller: { level: rcl, progress: p, progressTotal: pt },
     storage: { store: { energy: 2100 } },
+    energyAvailable: 1800, energyCapacityAvailable: 2300,
   };
   Game.creeps = {};
   (creeps || []).forEach((c, i) => { Game.creeps['c' + i] = Object.assign({ memory: { home: 'W47N8' }, room, pos: { roomName: 'W47N8' } }, c); });
@@ -48,6 +49,9 @@ assert.strictEqual(d0.missExt, 10);
 assert.strictEqual(d0.bill, 50000);
 assert.strictEqual(d0.builders, 1);
 assert.strictEqual(d0.upgraders, 3);
+assert.strictEqual(d0.towerMinE, 900);
+assert.strictEqual(d0.eAvail, 1800);
+assert.strictEqual(d0.eCap, 2300);
 // near RCL7
 W.dayObs(mk(6, base, [], 50000));
 assert.strictEqual(Memory.ops.w8day.why, 'near');

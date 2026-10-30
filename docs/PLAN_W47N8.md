@@ -222,3 +222,28 @@ Before RCL7 day-of tower3/spawn2, KEY soft ramparts (spawn/tower/storage) climb 
 
 ## 2026-10-30 23:4x — lean KO gate split
 `RCL6_MINERALS` now means **logistics only** (terminal + extractor + `MINERAL_CONT` 37,44 + MINERAL trunk). Colony labs gated by **`RCL6_LABS`** (default false). See `docs/MINERAL_DEFENSE_ROADMAP.md` §5. Do not flip either gate until RCL7 day-of + stor≥20k + w8mminer/send.
+
+## Day-of energy crash risk (2026-10-31 05:4x strategy review)
+
+**Question:** With colony storage chronically ~1–3k, does the first RCL7 site wave (~20k spawn2+tower3, then ~30k ext) risk emptying towers / crashing `energyAvailable` so miners die?
+
+**Answer: NO crash expected. Keep no-pre-bank. Watch north tower via `w8day.towerMinE`.**
+
+### Live (t~83970965, Asia/Hong_Kong 05:46)
+- Need ~247k → **RCL7 ~2026-10-31 ~17:40** Asia/Hong_Kong @~23 e/t (~910 t/h).
+- `storE` 1561; `energyAvailable` **2300/2300 full**; towers **920/950**; soft COMPLETE; `w8model.links=true` `lcarry=9` → HMAX already 2.
+- `w8day` bill 50k why=upgrade; gates OFF.
+
+### Why spawn/eAvail holds
+1. Local+remote income ~35–40 e/t continues through links while builders spend sites.
+2. `w8filler` prioritizes spawn (−1e6 score); haulers `fillTarget(c,true)` include spawn/ext before `fed()` builders.
+3. First wave sites budget 6 + `towerSite` holds extensions → only spawn+tower (~20k) first ≈ **15–20 min**, not the full 50k at once.
+4. Overmind Hatchery / TooAngel also refill spawn before construction sinks; we already match that order.
+
+### Residual risk (north tower only)
+- `fill.js` `hubNeedy` blocks **filler** tower top-ups while any hub strip/point has free capacity — true often during builder spawns.
+- Haulers still refill towers when `free>200`, but sticky `ft` + hub builder-feed can delay **north** tower 24,8 (and later 22,7). Hub tower 33,35 stays easy.
+- Soft already COMPLETE; peacetime soft idle. Risk window = probe/BJ during the ~2–3 h day-of build if north tower <600.
+
+### Observability shipped
+`Memory.ops.w8day` now also reports `towerMinE`, `eAvail`, `eCap`. Patrol: if `why=dayof` and `towerMinE<500` → alert; if `eAvail` chronically ≪ body costs → alert. No fill-priority behavior change this run (propose later: filler ignore `hubNeedy` when towerE<500).

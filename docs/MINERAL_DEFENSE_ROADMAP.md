@@ -1,7 +1,7 @@
 # 矿物线 + 强化 + 城防路线图（2026-10-29 12:4x；14:4x boost；17:4x fundSpend；23:4x fortify；08:4x RCL7 hold 300k；11:4x post-300k exit；14:4x soft ramp 100k；20:4x day-of 不预存；**23:4x lean KO 脚手架**）
 
-Live refresh **20:45 UTC+8 2026-10-30** tick ~83962645。**不自动交易、不开 safe mode。**
-围攻已中止；home 墙 **HOLD 300k COMPLETE**（fundSpend EXIT）；殖民地 soft **COMPLETE ≥100k**；**20:4x** day-of **不预存**（spur 已齐，bill≈50k，siteRem 反应式建造）。boost 仍等殖民地 RCL7+storage≥20k。seal 300k 不变。
+Live refresh **05:46 UTC+8 2026-10-31** tick ~83970965。**不自动交易、不开 safe mode。**
+围攻已中止；home 墙 **HOLD 300k**；殖民地 soft **COMPLETE**；**05:4x** 确认 day-of **不预存**且 spawn/eAvail 扛得住（看 `w8day.towerMinE`）；RCL7 ETA **~今晚 17:40**。boost 仍等 RCL7+storage≥20k。seal 300k 不变。
 
 ## 0. 现状（实测）
 

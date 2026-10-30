@@ -379,11 +379,16 @@ function dayObs(room) {
   if (missTower && !sites.some(s => s.structureType === STRUCTURE_TOWER && s.pos.x === tx && s.pos.y === ty)) bill += 5000;
   const extSites = sites.filter(s => s.structureType === STRUCTURE_EXTENSION).length;
   bill += Math.max(0, missExt - extSites) * 3000;
+  // 05:4x strategy: day-of energy crash watch (docs/PLAN_W47N8.md / docs/RCL7.md). Tower min + spawn pool
+  // so patrol can alert if north tower dips while hubNeedy blocks filler during the first 20k site wave.
+  const towers = room.find(FIND_MY_STRUCTURES, { filter: s => s.structureType === STRUCTURE_TOWER });
+  const towerMinE = towers.length ? Math.min(...towers.map(t => (t.store && t.store[RESOURCE_ENERGY]) || 0)) : -1;
+  const eAvail = room.energyAvailable || 0, eCap = room.energyCapacityAvailable || 0;
   let why = 'upgrade';
   if (rcl >= 7) why = (missSpawn || missTower || missExt > 0 || siteRemV > 0) ? 'dayof' : 'done';
   else if (need < 80000) why = 'near';
   o.w8day = { t: Game.time, rcl, need, siteRem: siteRemV, builders, upgraders, storE, bill,
-    missSpawn: missSpawn ? 1 : 0, missTower: missTower ? 1 : 0, missExt, why };
+    missSpawn: missSpawn ? 1 : 0, missTower: missTower ? 1 : 0, missExt, why, towerMinE, eAvail, eCap };
   // 23:4x strategy: lean KO readiness (docs/MINERAL_DEFENSE_ROADMAP.md §5). Dormant report only — gates stay false.
   const [mx, my] = C.MINERAL_CONT || [37, 44];
   const hasTerm = !!room.terminal;

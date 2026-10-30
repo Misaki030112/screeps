@@ -236,3 +236,16 @@ Hits remaining ≈ (100k−49k)×2 KEY ≈ 102k hits ≈ **~1k e**. Towers repai
 - Day-of order unchanged: spawn2 + tower3 first, then 10 ext; minerals after stor≥20k (`MINERAL_DEFENSE_ROADMAP` §B).
 - Defend-only W47N9; no claim/attack/credits/SM.
 
+
+## 2026-10-31 05:4x — W47N8 day-of energy crash (stor~1–3k)
+
+**Question:** Will reactive day-of with stor~1–3k empty towers or crash spawn energy?
+
+**Answer: NO.** Confirm 20:4x no-pre-bank. Spawn/eAvail protected by filler+hauler priority; residual risk is **north tower** while `hubNeedy` blocks filler — haulers still cover `free>200`. Detail: `docs/PLAN_W47N8.md` "Day-of energy crash risk".
+
+### Also closed (02:4x next-open)
+Home upgrade sustained ≥20 after remotes SAFE? **YES** on short/SAFE windows (24h hourly: SAFE hours 20–22 e/t ≈ live_comp; core hours 15–17). Binding constraint = W45N7 Invader core frequency, not transport. No code lever beyond finishing cores (already engaging).
+
+### Shipped
+- `w8day.{towerMinE,eAvail,eCap}` + `tests/w47n8_dayobs.js`. Deploy this run.
+- No gate flips; no fill-priority change; no pre-bank.

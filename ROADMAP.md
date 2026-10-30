@@ -3,6 +3,13 @@
 Novice zone ends **2026-10-28 03:33 UTC+8** (past as of 10-29). Defence timeline: `docs/DEFENSE_NOVICE.md` (2026-10-16); detail `docs/DEFENSE.md` / geometry `docs/DEFENSE_PLAN.md`.
 **Safe mode: NEVER auto-activate** — alert Misaki.
 
+## 2026-10-31 05:4x strategy review: W47N8 day-of energy crash (stor~1–3k)
+- **Chose:** with colony stor chronically ~1–3k and RCL7 ~12 h away, does first site wave (~20k spawn+tower) empty towers / crash `energyAvailable`? (OUR ops; closes 20:4x residual + 02:4x "sustained ≥20" next-open.)
+- **Findings (`docs/PLAN_W47N8.md` crash section, `docs/RCL7.md` 05:4x):** (1) Spawn/eAvail protected — filler spawn-first + hauler `fillTarget(true)` before builder-feed; income ~35–40 continues via links. (2) First wave only spawn+tower (`towerSite` holds ext) ≈15–20 min. (3) Residual: north tower 24,8 (later 22,7) while `hubNeedy` blocks filler — haulers still cover free>200. (4) Home upgrade ≥20 when SAFE+stor≥15k **YES** (24h SAFE hours 20–22); cores bind the 2h lag. (5) Live t~83970965: need~247k **ETA ~17:40 Asia/Hong_Kong**; eA 2300/2300; towers 920/950; soft COMPLETE; links→HMAX 2; deploy was 84f92e1.
+- **Shipped:** `w8day.{towerMinE,eAvail,eCap}` + dayobs test; docs PLAN/RCL7/STRATEGY/MINERAL/this. **No fill-priority / gate / pre-bank change.** Deploy this run.
+- **Reprioritise:** (1) finish W45N7 core → upgrade ~20–22; (2) hold 300k + stor≥15k; (3) **W47N8 RCL7 ~tonight → tower3+spawn2 reactive** (watch `towerMinE`); (4) colony stor≥20k → lean `RCL6_MINERALS`; (5) KO≥900 boost; (6) barriers→1M; (7) STATIONARY_FILL@RCL8. Defend-only W47N9.
+- **Plan check:** no major Misaki decision (obs + confirm autonomous). Next open: after day-of, does north tower stay ≥600 for the full ext wave, or should filler ignore `hubNeedy` when towerE<500?
+
 ## 2026-10-31 02:4x strategy review: home upgrade vs ideal 26 after walls HOLD
 - **Chose:** why home upgrade ~16 vs ideal 26 with `waiting_feed` after walls HOLD 300k + stor≥15k (default candidate; higher leverage than boost/KO timing while W45N7 CORE pauses income).
 - **Findings (`docs/MODEL.md` 02:4x):** (1) Post-HOLD SAFE hours ~19–23 e/t ≈ **live_comp ~20** (93%+); ideal 26 is full-remote ceiling. (2) Core hours ~16.5 ≈ live_comp − W45N7 net (~4.5). (3) Carry 54 vs 72.8 includes paused remote; 2×14W already energy-bound. (4) Overmind scales WORK only above huge surplus — do **not** add upgraders / retune SEND while feed-starved. (5) Live t~83968210: home ~837k/10.9M stor~13–16k (fight dip); W47N8 ~3.338M ~14h RCL7; W45N7 CORE ONGOING; gates OFF.
