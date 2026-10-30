@@ -84,14 +84,14 @@ const cases = [
     assert.strictEqual(W.repairJob(r, null, new Set(['a'])).id, 'b', 'band (a) held -> next free below step, not a pile-up');
     assert.strictEqual(W.repairJob(r, null, new Set(['a', 'b'])).id, 'a', 'nothing free -> lowest');
     OBJ = {}; }],
-  ['step hold (Misaki 10-19 20:51): RCL6 past 100k -> no job / no builder unless threat; RCL7 resumes; storage floor = reserveE', () => {
+  ['step hold (Misaki 10-19 20:51): RCL6 past 100k -> no job / no builder unless threat; RCL7 resumes 300k; storage floor = reserveE', () => {
     OBJ = {}; const m = { walls: { started: 1 } }; wall('a', 26, 7, 142101); wall('b', 27, 7, 154000); wall('g', 47, 16, 172000, 'rampart');
     const r = room({ mem: m, storage: 30000 }); assert.strictEqual(W.target(r, W.barriers(r, P)), 300000);
     assert.strictEqual(W.repairJob(r), null, 'step 2 held at RCL6'); assert.strictEqual(W.wantBuilder(r), false);
     Game.time++; assert.strictEqual(W.stepHeld(r), true);
     const r4 = Object.assign(room({ mem: {}, rcl: 4, storage: 800 }), { name: 'W47N8' }); assert.strictEqual(W.stepHeld(r4), false, 'same tick, other room: cache is per room');
     HOLD = true; Game.time++; assert.ok(W.repairJob(r), 'threat: attacked walls still repaired'); assert.strictEqual(W.stepHeld(r), false); HOLD = false;
-    const r7 = room({ mem: m, rcl: 7, storage: 30000 }); Game.time++; assert.strictEqual(W.repairJob(r7).id, 'a', 'RCL7: step 2 resumes'); assert.strictEqual(W.stepHeld(r7), false);
+    const r7 = room({ mem: m, rcl: 7, storage: 30000 }); Game.time++; assert.strictEqual(W.repairJob(r7).id, 'a', 'RCL7: step 300k resumes'); assert.strictEqual(W.stepHeld(r7), false);
     OBJ.a.hits = 60000; Game.time++; assert.strictEqual(W.repairJob(r).id, 'a', 'below 100k still repaired at RCL6'); assert.strictEqual(W.stepHeld(r), false);
     OBJ.a.hits = 142101; Game.time++; global.Memory = global.Memory || {}; Memory.defense = { reserveE: 15000 };
     Object.assign(global, { STRUCTURE_SPAWN: 'spawn', STRUCTURE_EXTENSION: 'extension', STRUCTURE_CONTAINER: 'container', STRUCTURE_TOWER: 'tower', STRUCTURE_STORAGE: 'storage', STRUCTURE_LINK: 'link', STRUCTURE_LAB: 'lab', STRUCTURE_TERMINAL: 'terminal', FIND_MY_CREEPS: 102, FIND_STRUCTURES: 107 });
@@ -99,6 +99,23 @@ const cases = [
     assert.strictEqual(Q.storageFloor(r), 15000, 'held: fund not reserved, floor = reserveE');
     Game.time++; HOLD = true; assert.strictEqual(Q.storageFloor(r), 1300 + W.reserved(r), 'threat: fund reserved again'); assert.ok(W.reserved(r) > 20000); HOLD = false;
     delete Memory.defense; OBJ = {}; }],
+  ['RCL7 peacetime hold at 300k (strategy 08:4x): no auto 1M; pushBarrier / threat resume', () => {
+    OBJ = {}; Game.time++; const m = { walls: { started: 1, fund: 40000, ft: Game.time } };
+    wall('a', 26, 7, 300000); wall('b', 27, 7, 300000); wall('g', 47, 16, 300000, 'rampart');
+    const r7 = room({ mem: m, rcl: 7, storage: 16000 });
+    assert.strictEqual(W.target(r7, W.barriers(r7, P)), 1000000, 'next step is 1M');
+    assert.strictEqual(W.stepHeld(r7), true, '1M held peacetime');
+    assert.strictEqual(W.repairJob(r7), null, 'no 1M job');
+    assert.strictEqual(W.fundSpend(r7), false, 'fundSpend off while held');
+    assert.strictEqual(W.HOLD_STEP_RCL7, 300000);
+    global.Memory = global.Memory || {}; Memory.defense = { pushBarrier: true };
+    Game.time++; assert.strictEqual(W.stepHeld(r7), false, 'pushBarrier lifts hold');
+    assert.ok(W.repairJob(r7), '1M job with pushBarrier');
+    delete Memory.defense.pushBarrier; HOLD = true; Game.time++;
+    assert.strictEqual(W.stepHeld(r7), false, 'threat lifts hold');
+    assert.ok(W.repairJob(r7), 'threat repairs toward 1M');
+    HOLD = false; delete Memory.defense; OBJ = {};
+  }],
   ['all barriers at last step -> no job', () => { OBJ = {}; wall('a', 26, 7, 300000); assert.strictEqual(W.repairJob(room()), null); }],
 ];
 let fail = 0; const log = (...a) => process.stdout.write(a.join(' ') + '\n');

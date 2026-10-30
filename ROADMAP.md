@@ -3,6 +3,13 @@
 Novice zone ends **2026-10-28 03:33 UTC+8** (past as of 10-29). Defence timeline: `docs/DEFENSE_NOVICE.md` (2026-10-16); detail `docs/DEFENSE.md` / geometry `docs/DEFENSE_PLAN.md`.
 **Safe mode: NEVER auto-activate** — alert Misaki.
 
+## 2026-10-30 08:4x strategy review: RCL7 peacetime wall hold at 300k (no auto 1M)
+- **Chose:** what happens the tick home walls reach STEPS[7]=300k — auto-open 1M via fundSpend vs hold and resume upgrade/colony path.
+- **Findings (`docs/RCL7.md` 08:4x, Overmind fortifyDutyThreshold):** (1) STEPS next after 300k is 1M ≈ **~287k e** for 41 walls — would pin home upgrade for days. (2) Live storage ~13.5k under reserveE 15k; Overmind gates fortify on storage≥500k — we hold the step instead. (3) Roadmap already put barriers→1M after colony RCL7 / minerals. (4) Morning remotes: W45N7 core killed + W47N7 Invader cleared; all SAFE; walls min ~241k fund~36.5k ETA 300k ~3–6 h; W47N8 ~2.965M ~34 h RCL7.
+- **Shipped:** `walls.stepHeld` RCL≥7 peacetime max `HOLD_STEP_RCL7=300k`; escape `Memory.defense.pushBarrier` / threat; `playerCombat` FIND_HOSTILE guard for unit tests; `tests/walls_barriers.js` case. Deploy this run.
+- **Reprioritise:** (1) home walls→300k then **hold**; (2) W47N8 RCL7 → tower3+spawn2 (factory OFF); (3) raise colony soft ramps; (4) colony storage≥20k → minerals+K; (5) KO≥900 → boost; (6) barriers→1M via pushBarrier or later review; (7) STATIONARY_FILL at RCL8. Defend-only W47N9. W45N7 reclaim done (05:4x).
+- **Plan check (t~83952400):** home RCL7 ~606k/10.9M stor~13.5k walls~241k fund~36.5k; W47N8 2.965M/3.645M (~34h); remotes SAFE; CPU~10–12 bucket 10k; deploy was 18c6a1e → this SHA. No major Misaki decision (hold is autonomous; pushBarrier console escape if she wants 1M early).
+
 ## 2026-10-30 05:4x strategy review: W45N7 post-core Invader-reservation reclaim
 - **Chose:** W45N7 reclaim after Invader-core kill (live SAFE why=killed but harvest ERR_NOT_OWNER) over rehashing STATIONARY_FILL / fundSpend / RCL7 day-of.
 - **Findings (`docs/REMOTE_W45N7.md` 05:4x):** (1) Core dead since ~04:27; Invader reservation still ~1.4k ticks; container gone; rminer harvest −1. (2) Reserver early-returned on any foreign res (`never attackController`) — sat adjacent idle. (3) `attackController` clears Invader at −1/CLAIM (+ natural −1) → ~30–35 min with one 2CLAIM vs ~1.6 h wait. (4) Overmind ReservingOverlord does not attackController; conquest/TooAngel-style reclaim does; **reserve7 stays never-attack** (BJ neighbour). (5) Abandoned `fhl` spawn@13,10 — ignore (propose only). (6) W47N8 seal 300k; soft ramps spawn2 ~20k / towers ~50k.

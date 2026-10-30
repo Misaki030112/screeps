@@ -1,4 +1,4 @@
-# 矿物线 + 强化 + 城防路线图（2026-10-29 12:4x；14:4x boost；17:4x fundSpend；**23:4x fortify hardening**）
+# 矿物线 + 强化 + 城防路线图（2026-10-29 12:4x；14:4x boost；17:4x fundSpend；23:4x fortify；**08:4x RCL7 hold 300k**）
 
 Live refresh **23:50 UTC+8** tick ~83945055。**不自动交易、不开 safe mode。**
 围攻已中止；`walls.fundSpend` 仍在推家墙 **~230k→300k**（05:4x ETA ~6 h）；**23:4x** lab ramparts live ~600k；**05:4x** W45N7 Invader-res reclaim。boost 代码仍等殖民地 RCL7+storage。W47N8 seal 300k，spawn2/tower soft ramps ~20–50k 待抬。
@@ -91,7 +91,7 @@ Console 开反应（有 K 入库后）：`Memory.ops.labs = { W46N8: 'KO' }`
 ## 2. 城防 / 加固分阶段（**23:4x hardening**）
 
 ### 2.1 深挖结论（相对 Overmind / Screeps docs）
-- **Overmind：** RCL7 `barrierHits = 1M`，`fortifyDutyThreshold = 500k`（storage 够才全力抬墙）。我们用 **STEPS + 50k fund + fundSpend FLOOR 5k**，等价但更抠能量。
+- **Overmind：** RCL7 `barrierHits = 1M`，`fortifyDutyThreshold = 500k`（storage 够才全力抬墙）。我们用 **STEPS + 50k fund + fundSpend FLOOR 5k**；**08:4x** 另加 peacetime `HOLD_STEP_RCL7=300k`（storage≪500k 时不自动开 1M）。
 - **软目标矩阵（home live 23:50 → 02:4x 复核）：** spawn/tower/storage/terminal **有** rampart；**3 labs rampart 已落地**（live ~423k，23:4x 规划）。extractor/links/containers 仍无（extractor 在环外，可接受）。
 - **W47N8：** seal 墙 + GATE@29,3 均已 **≥300k**。巡逻日志 "~20k GATE" 是 **spawn 位空 rampart 的 `GATE_TOWER=20k` 地板**，不是北门——已纠正。
 - **塔覆盖：** home 3 塔足够核心；殖民地 RCL7 当天落 tower3@22,7（北线）。不扩 4 塔直到 RCL8。
@@ -101,8 +101,8 @@ Console 开反应（有 K 入库后）：`Memory.ops.labs = { W46N8: 'KO' }`
 | 阶段 | 目标 | 备注 |
 |---|---|---|
 | **现在** | **lab@34,22 / 35,21 / 33,21 落 rampart** | **✅ 23:4x** 写入 `layouts/W46N8` RCL6(+7/8) rampart 列表；`layout.js` 自动落点；塔先抬到 `RAMPART_FLOOR` 5k（storage<reserve 时），有余粮再往 RCL 目标 |
-| 并行 | 环墙 min→**300k**（STEPS[7]） | **✅ 17:4x `walls.fundSpend`** 仍 live；02:4x min **~197k**，fund ~43k；ETA **~12–18 h**（~16:30 Asia/Hong_Kong） |
-| 稳后 | 全屏障 **1M** | Overmind RCL7 1M；我们 STEPS 下一档；structure ramp 已有 ~345k–1M |
+| 并行 | 环墙 min→**300k**（STEPS[7]） | **✅ fundSpend** live；08:50 min **~241k**，fund ~36.5k；ETA **~3–6 h**；**达 300k 后 peacetime hold**（`HOLD_STEP_RCL7`） |
+| 稳后 | 全屏障 **1M** | **非自动**：需 `Memory.defense.pushBarrier` 或后续评审；Overmind 等价 `fortifyDutyThreshold=500k` |
 | 姿态 | 3 塔满能；SM **永不自动**；remoteDefender on | BustJetter：**defend-only** W47N9 |
 
 **已落地：** 17:4x fundSpend；**23:4x lab rampart 布局**（+ `tests/lab_ramparts.js`）；**02:4x** labs 盖板 live ~423k；`STATIONARY_FILL` 仍 false（`docs/RCL7.md`）。`reserveE=15k` 保留。

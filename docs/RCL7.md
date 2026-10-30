@@ -32,7 +32,7 @@ mineralRun). Mineral mining would have stopped silently at RCL7 (mminer spawns o
 ## Watch at RCL7 (patrol)
 - Spawn 2 at 30,34: two spawns run spawnMgr in the same tick. Confirm no duplicate spawns of the same role (the engine adds the new creep to Game.creeps as spawning, but verify live).
 - Capacity 5600: bodies are capped (builder 11 sets = 2200, upgrader 12W, queen 1200), so the spawn does not wait for 5600, but the 2 queens (800 carry each) need ~7 trips to refill 5000 extension energy. Check refill time with fillmeter (Misaki: refill speed = reaction speed).
-- Wall step 1M opens at RCL7 (walls.STEPS[7]); budget rules unchanged.
+- Wall STEPS[7]=300k then STEPS next=1M; **08:4x peacetime `stepHeld` holds at HOLD_STEP_RCL7=300k** so fundSpend does not auto-open 1M. Resume via threat/siege or `Memory.defense.pushBarrier=true`.
 - Upgrader cap: RCL7 has no 15 e/t limit; 12W bodies x spots is still the limit.
 
 ## For Misaki (not urgent, before ~10-26)
@@ -99,3 +99,24 @@ mineralRun). Mineral mining would have stopped silently at RCL7 (mminer spawns o
 3. Lab ramparts → raise toward RCL targets (sites already placed 23:4x; live ~423k covering 3 labs)
 4. Colony storage ≥20k → minerals + K send; then KO≥900 → boost
 5. Barriers →1M; **then** STATIONARY_FILL / hybrid at RCL8
+
+## 2026-10-30 08:4x — post-300k STEP at RCL7 (hold vs auto 1M)
+
+**Question:** when home walls min lands on STEPS[7]=300k, should fundSpend immediately open the next STEP (1M)?
+
+**Answer: NO (peacetime).** Hold at 300k until colony RCL7 / soft ramps / minerals progress, or Misaki/`Memory.defense.pushBarrier` resumes.
+
+### Why
+- Next STEP is **1M**. Lifting 41 walls × ~(1M−300k)/100 ≈ **~287k e** — would crush home upgrade for days while W47N8 still needs ~34 h to RCL7 and storage sits ~13–15k.
+- Roadmap already ordered **walls→300k → colony RCL7 → minerals → barriers 1M**. Auto-open contradicts that.
+- **Overmind:** `barrierHits[7]=1M` but `fortifyDutyThreshold=500k` storage before routine fortify. We lack 500k storage; holding the step is the equivalent gate (cheaper than waiting for a storage threshold we will not hit under supply-follows-demand + reserveE 15k).
+
+### Code (`src/managers/walls.js`)
+- `HOLD_STEP_RCL7 = 300000`; RCL≥7 peacetime `stepHeld` when `tgt > HOLD_STEP_RCL7`.
+- Escape: `threat(room)` / siege, or `Memory.defense.pushBarrier` truthy.
+- RCL<7 still holds at `HOLD_STEP` 100k (unchanged).
+- Tests: `tests/walls_barriers.js` case "RCL7 peacetime hold at 300k".
+
+### Reprioritise
+Unchanged order; **1M is now explicit opt-in** (pushBarrier or later strategy when storage/colony ready), not an automatic fundSpend consequence of finishing 300k.
+

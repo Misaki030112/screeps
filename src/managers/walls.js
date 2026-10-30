@@ -8,6 +8,7 @@
 const START = 20000, NOVICE_END = Date.UTC(2026, 9, 27, 19, 33); // 2026-10-28 03:33 UTC+8
 const COMBAT = ['attack', 'ranged_attack', 'work', 'claim'];
 function playerCombat(room) {
+  if (typeof FIND_HOSTILE_CREEPS === 'undefined') return false; // node unit tests without Game stubs
   return room.find(FIND_HOSTILE_CREEPS).some(h => h.owner.username !== 'Invader' && h.body.some(p => COMBAT.includes(p.type) && p.hits > 0));
 }
 // early start switched off: back to the normal schedule; drop unbuilt (<10% progress) planned barrier sites. Built structures untouched.
@@ -150,23 +151,31 @@ function siege(room) { return !!room && typeof FIND_HOSTILE_CREEPS !== 'undefine
 function threat(room) { return require('./threat').holding(room.name) || playerCombat(room) || require('./home').alert(room); }
 // Storage energy the ctl ferry / upgrader extras must leave alone.
 function reserved(room) { const m = room.memory && room.memory.walls; return m && m.started && room.storage ? Math.min(fund(room), room.storage.store[RESOURCE_ENERGY]) : 0; }
-// Step hold (Misaki 2026-10-19 20:51: home wall step 2 (300k) waits until after RCL7, upgrade first; siege-time repair of attacked
-// walls still applies). At RCL < 7 with no threat, barriers are not raised past HOLD_STEP: no repair job, so no wall builder spawns.
-// Before this (2room eval 10-20 00:3x) every storage pop above reserveE+2k spawned a 33-part wall builder (~10 e/t, 1h window) that
-// lifted walls 142k -> 152-162k. Ramparts still never decay: towers ratchet rampHW (managers/tower.js). The fund keeps accruing.
-const HOLD_STEP = 100000, HOLD_BELOW_RCL = 7;
+// Step hold:
+// - RCL < 7 (Misaki 2026-10-19 20:51): peacetime max HOLD_STEP 100k; RCL7 opened 300k via fundSpend.
+// - RCL ≥ 7 (strategy 08:4x): peacetime max HOLD_STEP_RCL7 300k. Without this, fundSpend auto-opens STEPS 1M
+//   (~287k e for 41 walls) the tick 300k lands and keeps home upgrade crushed. Roadmap puts barriers→1M after
+//   colony RCL7 / soft ramps / minerals. Overmind analog: barrierHits[7]=1M but fortifyDutyThreshold=500k energy
+//   before routine fortify — we hold the step instead (storage still ~15k). Console resume:
+//   Memory.defense.pushBarrier = true (or any truthy). Threat/siege still repairs past the hold.
+const HOLD_STEP = 100000, HOLD_BELOW_RCL = 7, HOLD_STEP_RCL7 = 300000;
 const heldC = {}; // per room per tick: { t, v }
+function pushBarrier() {
+  return !!(typeof Memory !== 'undefined' && Memory.defense && Memory.defense.pushBarrier);
+}
 function stepHeld(room, tgt) {
-  if (!room || !room.controller || room.controller.level >= HOLD_BELOW_RCL) return false;
+  if (!room || !room.controller) return false;
   if (tgt === undefined) {
     const c = heldC[room.name]; if (typeof Game !== 'undefined' && c && c.t === Game.time) return c.v;
     const P = plan().get(room.name);
     tgt = defense(P) && phase(room) === 'build' ? target(room, barriers(room, P)) : 0;
-    const v = tgt > HOLD_STEP && !threat(room);
+    const v = stepHeld(room, tgt);
     if (typeof Game !== 'undefined') heldC[room.name] = { t: Game.time, v };
     return v;
   }
-  return tgt > HOLD_STEP && !threat(room);
+  if (threat(room) || pushBarrier()) return false;
+  if (room.controller.level < HOLD_BELOW_RCL) return tgt > HOLD_STEP;
+  return tgt > HOLD_STEP_RCL7;
 }
 // Builder repair job: lowest barrier below the step target, capped at +CHUNK so the set rises evenly. null = no work / no budget.
 const CHUNK = 10000;
@@ -242,4 +251,4 @@ function noUpgrade(room) {
   const B = barriers(room, P); return !ringClosed(room, P) || !B.length || _.min(B.map(eff)) < HOLD_TO;
 }
 const HOLD_TO = 100000;
-module.exports = { stepHeld, HOLD_STEP, siege, fundSpend, defReserve, defLow, SLACK, FLOOR_HITS, belowFloor, FLOOR, budgetE, WALL_CAP, ringClosed, UP_SAFE, DECAY_FLOOR, DECAY_CAP, decaying, noUpgrade, START, NOVICE_END, phase, planned, STEPS, target, barriers, fund, spend, reserved, repairJob, wantBuilder, placeSites, lists };
+module.exports = { stepHeld, HOLD_STEP, HOLD_STEP_RCL7, siege, fundSpend, defReserve, defLow, SLACK, FLOOR_HITS, belowFloor, FLOOR, budgetE, WALL_CAP, ringClosed, UP_SAFE, DECAY_FLOOR, DECAY_CAP, decaying, noUpgrade, START, NOVICE_END, phase, planned, STEPS, target, barriers, fund, spend, reserved, repairJob, wantBuilder, placeSites, lists };
