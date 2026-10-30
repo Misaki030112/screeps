@@ -256,6 +256,19 @@ function placeSeal(room) {
 const L = require('./layout');
 const TH = require('./threat'); // v3b (approved 20:11): ORDER per type nearest-core first; STRIPS with filler stand
 const PRIO = ['spawn', 'tower', 'extension', 'container', 'storage', 'link', 'terminal', 'extractor', 'lab', 'factory', 'powerSpawn', 'nuker', 'observer', 'road']; // no 'rampart' (17:15, see layoutRun)
+// 10-31 (Misaki): KEY structures (tower/spawn/storage/terminal) may keep/get a rampart site — tower 24,8 was naked while 33,35 had ~100k.
+// Empty planned slots still get no rampart (old 17:15 rule). Soft staging (SOFT_RAMP) raises KEY covers to ~100k.
+const KEY = ['spawn', 'storage', 'tower', 'terminal'];
+const keepRamp = (room, x, y) => isGate(x, y) || (x === L.ORDER.spawn[0][0] && y === L.ORDER.spawn[0][1])
+  || room.lookForAt(LOOK_STRUCTURES, x, y).some(s => KEY.includes(s.structureType));
+function placeKeyRamps(room) {
+  for (const s of room.find(FIND_MY_STRUCTURES, { filter: s => KEY.includes(s.structureType) })) {
+    const { x, y } = s.pos;
+    if (room.lookForAt(LOOK_STRUCTURES, x, y).some(o => o.structureType === STRUCTURE_RAMPART)) continue;
+    if (room.lookForAt(LOOK_CONSTRUCTION_SITES, x, y).length) continue;
+    room.createConstructionSite(x, y, STRUCTURE_RAMPART);
+  }
+}
 const isTemp = s => L.TEMP_EXT.some(([x, y]) => s.pos.x === x && s.pos.y === y);
 function swapTemp(room, minE = 50000) {
   const hub = room.lookForAt(LOOK_STRUCTURES, L.ORDER.spawn[0][0], L.ORDER.spawn[0][1]).some(s => s.structureType === STRUCTURE_SPAWN && s.my);
@@ -406,7 +419,9 @@ function layoutRun(room) {
   // (previous swap done), the replacement tile is clear and the site budget has room (this run's PRIO loop / the next places it).
   // Spawn2 is kept.
   if (ok && rcl >= 7) swapTemp(room);
-  for (const s of room.find(FIND_MY_CONSTRUCTION_SITES, { filter: s => s.structureType === STRUCTURE_RAMPART && !isGate(s.pos.x, s.pos.y) && !(s.pos.x === L.ORDER.spawn[0][0] && s.pos.y === L.ORDER.spawn[0][1]) })) s.remove(); // 17:15, see below
+  // 17:15 drop empty-slot rampart sites; 10-31 keep gate + spawn-slot + live KEY covers (tower 24,8 etc.)
+  for (const s of room.find(FIND_MY_CONSTRUCTION_SITES, { filter: s => s.structureType === STRUCTURE_RAMPART && !keepRamp(room, s.pos.x, s.pos.y) })) s.remove();
+  placeKeyRamps(room); // durable: any live KEY structure without a rampart gets a site (builders + soft raise to SOFT_RAMP)
   let sites = room.find(FIND_MY_CONSTRUCTION_SITES, { filter: s => s.structureType !== STRUCTURE_RAMPART }).length; if (sites >= 6) return;
   // 03:05 west<->hub link road (missing from v3b plan): loaded 10C5M rhaulers sat 7-10 ticks on unroaded swamp 22,34 (fatigue 70)
   // between road 15,33 and strip road 24,35; queued ahead of the plan roads since every hub trip crosses it
@@ -426,10 +441,8 @@ function layoutRun(room) {
     minOk ? {} : { terminal: [], extractor: [] },
     labsOk ? {} : { lab: [] },
     indOk ? {} : { factory: [], powerSpawn: [], nuker: [], observer: [] }) : { extension: L.TEMP_EXT, container: L.ORDER.container };
-  // 17:15 (Misaki "急着早 rampart 是为了什么" / "看看主房间"): no rampart placement here. The PRIO loop placed every v3b ORDER.rampart
-  // tile at RCL4, incl. empty future spawn/terminal/tower slots (32,32 32,33 33,32 33,30 built; 34,31 36,31 36,33 sites), and
-  // builders raised them to the 50k seal target. Home only rampart-covers real structures and deferred even those behind storage
-  // (6957a9a). Unbuilt rampart sites are dropped (top of layoutRun); built ones hold their current hits via the tower (rampHold, ~0.2 e/t for 7).
+  // 17:15: PRIO still has no rampart (empty-slot sites were the waste). 10-31: placeKeyRamps covers live KEY only (tower 24,8…).
+  // Empty planned slots still dropped above; built KEY covers soft-raise to SOFT_RAMP via rampHold (~100k).
   // 17:5x strategy review: tower before everything except spawn, and nothing new is queued while a tower site stands. At RCL5 the
   // old order put 10 extensions (30k, ~2-3 h at W47N8's ~10-15 e/t build) ahead of tower 2 (5k); combat_sim F2/F3 (DEFENSE_W47N8.md)
   // says 2 towers alone beat the full BustJetter squad while 1 tower loses without defenders, so tower 2 is the defence step to rush.
@@ -458,10 +471,8 @@ const tdmg = r => (r <= 5 ? 600 : r >= 20 ? 150 : 600 - (r - 5) * 30);
 // up never: a fresh rampart's hold is what it had). Tower tops up one rampart once it is HOLD_SLACK below its hold (300 hits/100t decay,
 // ~0.03 e/t per rampart). Gone ramparts drop out of the map.
 const HOLD_SLACK = 1000;
-// 10-20 13:39 (Misaki): only NECESSARY ramparts are held: the gate (29,3), ramparts over a key structure (spawn, storage, tower,
-// terminal) and the hub spawn slot 32,32 (the relocated spawn lands under it). Empty-slot ramparts (33,32 33,30 34,31 36,31 36,33
-// 32,33) and the old Spawn2 rampart once Spawn2 is gone are left to decay.
-const KEY = ['spawn', 'storage', 'tower', 'terminal'];
+// 10-20 13:39 / 10-31: hold gate, KEY covers (spawn/storage/tower/terminal), and hub spawn slot. Empty-slot ramparts decay.
+// placeKeyRamps (layoutRun) keeps live KEY structures covered; soft path raises them to SOFT_RAMP.
 function rampNeeded(room, r) {
   if (!r.pos) return true;
   const { x, y } = r.pos;
