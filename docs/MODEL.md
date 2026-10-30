@@ -152,3 +152,29 @@ quiet hours 10-21 00-08: 22.7 23.4 24.7 19.8 25.8 19.4 25.0 22.8 25.8 (mean 23.3
 event hours: 11:00 14.3 (ctl 43, W45N7 Invader pause), 14:00 9.3 (ctl 0, raid9 spawns), 16:00 19.0 (ctl 40, turnover).
 12 h model: measured 21.0 vs expected 26.1; storage delta -0.01 e/t; overhead_live 8.74 vs ideal 6.64.
 Reading: storage pinned at the 15k floor means upgrade = income - upkeep - event spend. A low hour is the floor rule letting upgraders absorb a spawn burst, which is energy-neutral (the energy is upgraded later). Floor-rule changes cannot raise the long-run rate; only lower overhead or fewer spend events can.
+
+## 2026-10-31 02:4x strategy review: upgrade ~16 vs ideal 26 after walls HOLD (waiting_feed)
+
+**Question:** After peacetime walls HOLD 300k and storage ≥15k floor, why is home upgrade stuck ~16 e/t vs ideal 26 with `waiting_feed` — SEND/CTL_LOW, upgrader count/body, queen/hauler priority, or remote-pause carry gap?
+
+**Quant (room_stats + idle_by_reason, Asia/Hong_Kong):**
+| Window | upgrade e/t | vs ideal 26 | vs live_comp ~20.3 | waiting_feed | notes |
+|---|---|---|---|---|---|
+| 10-30 20–23h (post-HOLD, remotes SAFE) | 19.0–23.3 | 73–90% | ~93–115% | 17–28% | healthy vs live_comp |
+| 10-31 00–01h (W45N7 CORE pause) | 16.5–16.5 | ~63% | ~81% | 30–37% | −W45N7 ≈ −4.5 net |
+| 10-31 02h (core still ONGOING) | ~19.8 recovering | ~76% | ~98% | ~30% | buster DPS; stor briefly dipped under 15k mid-fight |
+
+- Ideal 26 = A+B+W45N8+W45N7 after upkeep (`upgrade_max_ideal`). Realistic / live_comp ≈ **20–22** (fleet + events). 6h measured **18.8** ≈ 93% of live_comp — ALERT vs 26 is mostly baseline mismatch when a remote is paused.
+- Δ pre-core → core ≈ **3.6 e/t** ≈ W45N7 flow net 4.54 / 1.072. Carry "54 vs need 72.8" includes paused W45N7's 48 design CARRY — not a hauler bug.
+- 2×14W = 28 WORK capacity; at ~70% working ≈ 19.6 e/t matches measured. Queens ~40% `target_full` (thin surplus 0–2k above floor) — ferry already maxed under supply-follows-demand.
+- ctlLink / SEND=400 / CTL_LOW=400 already match Overmind-ish receive threshold (Overmind `linksRequestBelow=200`; we are more aggressive). Lowering SEND further would thrash cooldown without raising long-run rate while income is capped by pause.
+- Overmind `UpgradeSite`: scales WORK only with storage surplus above `energyBuffer=100k` — we correctly gate the 3rd upgrader on `stor≥floor+1k` and `ctlEma≥700`. **Do not add WORK while feed-starved.**
+
+**Do / don't:**
+| Do | Don't |
+|---|---|
+| Compare patrol upgrade % to **live_comp / pause-adjusted ideal** (`Memory.ops.upgFeed.idealAdj`) | Treat consec-<70% vs raw 26 as an economy defect during remote DEFEND/WAIT |
+| Wait for W45N7 SAFE → expect ~20–22 e/t again | Flip mineral gates / cut reserveE / raise upgrader count |
+| Keep CTL_LOW/SEND=400; supply-follows-demand | Tune link SEND mid-core fight |
+
+**Shipped:** `src/managers/upgfeed.js` → `Memory.ops.upgFeed` every 5t from `stats.js` (`why`: remote_pause / ctl_starved / thin_surplus / waiting_feed / ok; `pausedNet`, `idealAdj`, ctl/link/stor/nUp/work/hungry). `tests/upgfeed.js`. No spawn/link behavior change.

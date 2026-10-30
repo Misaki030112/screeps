@@ -3,6 +3,13 @@
 Novice zone ends **2026-10-28 03:33 UTC+8** (past as of 10-29). Defence timeline: `docs/DEFENSE_NOVICE.md` (2026-10-16); detail `docs/DEFENSE.md` / geometry `docs/DEFENSE_PLAN.md`.
 **Safe mode: NEVER auto-activate** — alert Misaki.
 
+## 2026-10-31 02:4x strategy review: home upgrade vs ideal 26 after walls HOLD
+- **Chose:** why home upgrade ~16 vs ideal 26 with `waiting_feed` after walls HOLD 300k + stor≥15k (default candidate; higher leverage than boost/KO timing while W45N7 CORE pauses income).
+- **Findings (`docs/MODEL.md` 02:4x):** (1) Post-HOLD SAFE hours ~19–23 e/t ≈ **live_comp ~20** (93%+); ideal 26 is full-remote ceiling. (2) Core hours ~16.5 ≈ live_comp − W45N7 net (~4.5). (3) Carry 54 vs 72.8 includes paused remote; 2×14W already energy-bound. (4) Overmind scales WORK only above huge surplus — do **not** add upgraders / retune SEND while feed-starved. (5) Live t~83968210: home ~837k/10.9M stor~13–16k (fight dip); W47N8 ~3.338M ~14h RCL7; W45N7 CORE ONGOING; gates OFF.
+- **Shipped:** `Memory.ops.upgFeed` + `tests/upgfeed.js`; docs MODEL/STRATEGY/this. **No SEND/CTL_LOW/upgrader/mineral-gate change.**
+- **Reprioritise:** (1) finish W45N7 core → resume remote → upgrade back ~20–22; (2) hold 300k + stor≥15k; (3) W47N8 RCL7 → tower3+spawn2 reactive; (4) colony stor≥20k → lean `RCL6_MINERALS`; (5) KO≥900 boost; (6) barriers→1M; (7) STATIONARY_FILL@RCL8. Defend-only W47N9.
+- **Plan check:** no major Misaki decision (obs + docs autonomous). Next open: after remotes SAFE, is home upgrade sustained ≥20 vs live_comp, or does thin surplus / queen ferry still cap below 22?
+
 ## 2026-10-30 23:4x strategy review: W47N8 lean KO scaffolding (skip colony labs)
 - **Chose:** W47N8 mineral-line **code gap** before flipping `RCL6_MINERALS` — what must exist so K flows to home KO labs? (OUR ops; not neighbor scan.)
 - **Findings (`docs/MINERAL_DEFENSE_ROADMAP.md` §5):** (1) Mineral@37,45; walkable stands 37,44/38,44. (2) No mineral container in ORDER; no w8mminer/haul/send; comments admitted no mineral logic. (3) Colony 3 labs ~150k unnecessary — home already has 3 labs for KO. (4) Lean KO ≈ **105–110k** (terminal+extractor+minCont+trunk) vs old **255k**. (5) Bug: `roads.MINERAL` was **not** in `ROADS` — flipping gate never placed trunk; fixed via `baseRoads.concat(MINERAL)`. (6) Live t~83965320: home RCL7 ~7.2% stor~15k walls HOLD 300k; W47N8 ~89.7% ~17h RCL7 @~22 e/t; remotes SAFE; CPU~10–14.

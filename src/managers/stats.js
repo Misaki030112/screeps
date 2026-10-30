@@ -47,4 +47,11 @@ module.exports = { run(errors, alerts = []) {
       rem[r] = { st: th.st, why: th.why || null, until: th.until || null, reserved: !!(threat.reservedByUs && threat.reservedByUs(r)) };
     }
   } catch (e) { /* threat/remote may be mid-reload */ }
+  // Home upgrade-feed snapshot (strategy 2026-10-31 02:4x): Memory.ops.upgFeed
+  try {
+    if (Game.time % 5 === 0) {
+      const home = Game.rooms['W46N8'];
+      if (home && home.controller && home.controller.my) require('./upgfeed').run(home);
+    }
+  } catch (e) { /* upgfeed optional */ }
 } };
