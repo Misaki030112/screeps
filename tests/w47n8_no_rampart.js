@@ -26,11 +26,11 @@ rs[0].hits = 49900; assert.strictEqual(Memory.ops.w8hold.a, 49800, 'hold never r
 rs.pop(); W.rampHold(room); assert.deepStrictEqual(Object.keys(Memory.ops.w8hold), ['a'], 'gone rampart dropped');
 console.log('w47n8 rampHold ok');
 
-// 14:4x soft staging: GATE_TOWER=SOFT_RAMP=100k; peacetime+storage≥SOFT_MIN raises KEY soft ramps; hold still never raised
+// 14:4x soft staging; 17:4x SOFT_MIN=0 + peacetime=!localOn (neighbor w8threatN must not block)
 const Csoft = require(path.join(d, 'config.js'));
 assert.strictEqual(Csoft.GATE_TOWER, 100000, 'GATE_TOWER soft band');
 assert.strictEqual(Csoft.SOFT_RAMP, 100000, 'SOFT_RAMP');
-assert.strictEqual(Csoft.SOFT_MIN, 5000, 'SOFT_MIN');
+assert.strictEqual(Csoft.SOFT_MIN, 0, 'SOFT_MIN 0 (upgrade-first)');
 Memory.ops = {}; Game.time = 10;
 const rs2 = [
   { id: 'spawnR', structureType: 'rampart', hits: 20000, pos: { x: 34, y: 30 } },
@@ -47,12 +47,22 @@ const roomSoft = {
   storage: { store: { energy: 2000 } },
   lookForAt: (k, x, y) => structs.filter(s => s.pos.x === x && s.pos.y === y),
 };
-// low storage: spawn-slot still lifts via GATE_TOWER (critical), but tower/storage soft raise stays off
+// spawn-slot still lifts via GATE_TOWER (critical) even under soft path
 assert.strictEqual(W.rampHold(roomSoft).id, 'spawnR', 'spawn below GATE_TOWER always');
 rs2[0].hits = 100000;
-assert.strictEqual(W.rampHold(roomSoft), null, 'storage under SOFT_MIN: no soft raise on tower/storage');
-roomSoft.storage.store.energy = 5000;
-assert.strictEqual(W.rampHold(roomSoft).id, 'towR', 'peacetime+storage≥SOFT_MIN: lowest soft KEY raised');
+// 17:4x: SOFT_MIN=0 → low storage still raises soft KEY (upgrade-first economy)
+assert.strictEqual(W.rampHold(roomSoft).id, 'towR', 'SOFT_MIN=0 peacetime: lowest soft KEY raised at stor 2k');
+assert.strictEqual(Memory.ops.w8soft.why, 'ok', 'w8soft.why ok');
+assert.strictEqual(Memory.ops.w8soft.storE, 2000, 'w8soft.storE');
+// local threat blocks soft raise (neighbor threatN alone must not)
+Memory.ops.w8threat = Game.time;
+assert.strictEqual(W.rampHold(roomSoft), null, 'local threat: soft raise off');
+assert.strictEqual(Memory.ops.w8soft.why, 'threat', 'w8soft.why threat');
+delete Memory.ops.w8threat;
+Memory.ops.w8threatN = Game.time; // neighbor staging
+assert.strictEqual(W.rampHold(roomSoft).id, 'towR', 'neighbor w8threatN alone: soft still raises');
+assert.strictEqual(Memory.ops.w8soft.why, 'ok', 'w8soft.why ok under threatN');
+delete Memory.ops.w8threatN;
 rs2[1].hits = 100000; rs2[2].hits = 100000;
 assert.strictEqual(W.rampHold(roomSoft), null, 'all at SOFT_RAMP: nothing');
 assert.strictEqual(Memory.ops.w8hold.towR, 48000, 'hold never raised by soft path');

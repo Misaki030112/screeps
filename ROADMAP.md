@@ -3,6 +3,13 @@
 Novice zone ends **2026-10-28 03:33 UTC+8** (past as of 10-29). Defence timeline: `docs/DEFENSE_NOVICE.md` (2026-10-16); detail `docs/DEFENSE.md` / geometry `docs/DEFENSE_PLAN.md`.
 **Safe mode: NEVER auto-activate** — alert Misaki.
 
+## 2026-10-30 17:4x strategy review: soft-ramp stuck ~49k (SOFT_MIN + w8threatN)
+- **Chose:** Topic A follow-up — why W47N8 soft KEY tower/storage stuck ~49k→100k since 14:4x while spawn already at GATE_TOWER; will soft finish before RCL7 day-of (~25h)?
+- **Findings (`docs/RCL7.md` 17:4x):** (1) Dual gate: `SOFT_MIN=5k` never trips under upgrade-first (colony stor ~0–3k), AND `!TH.on()` treats neighbor `w8threatN` (BustJetter W48N9 staging) as peacetime-off — soft path dead while spawn/GATE still climb via GATE_TOWER. (2) Remaining cost ~1k e (~8 e/t tower divert) → **minutes**, not hours — easily before RCL7. (3) Fix: `SOFT_MIN=0` + peacetime = `!TH.localOn()` (in-room/W47N7 only); towers still need E>600; hold map unchanged. (4) Live t~83959959: tower 49001 storR 49701 spawn 100201 GATE 296401; home walls 283501 fundSpend; W47N8 need~503k ~25h; CPU ok.
+- **Shipped:** `SOFT_MIN=0`; `threat.localOn`; `rampHold` soft uses localOn + `Memory.ops.w8soft.{storE,why}`; tests `w47n8_no_rampart`. Deploy this run.
+- **Reprioritise:** (1) home walls→300k then **hold + recover stor≥15k**; (2) W47N8 soft ramps→100k (**this deploy**, minutes); (3) W47N8 RCL7 → tower3+spawn2 (factory OFF); (4) colony stor≥20k → minerals+K; (5) KO≥900 → boost; (6) barriers→1M later; (7) STATIONARY_FILL at RCL8. Defend-only W47N9.
+- **Plan check (t~83959959):** home RCL7 walls min 283501 fund~38k stor~14k; W47N8 3.142M/3.645M (~25h) soft tower~49k→100k after deploy; remotes SAFE; BustJetter neighbor-only; CPU bucket 10k; deploy was 9ddf92e → this SHA. No major Misaki decision (throttle fix autonomous).
+
 ## 2026-10-30 14:4x strategy review: W47N8 colony soft-ramp staging (topic A)
 - **Chose:** colony soft ramparts staging band before RCL7 day-of (topic A deferred at 11:4x) — spawn/tower/storage ~20–50k vs Overmind-style barrier staging; home walls still climbing ~273k→300k.
 - **Findings (`docs/RCL7.md` 14:4x):** (1) Overmind `barrierHits[6]=500k` / `[7]=1M` + `fortifyDutyThreshold=500k` storage — we lack that storage and must not starve W47N8 upgrade (~560k e left). (2) Soft band **100k** (=GATE_TOWER) is enough for peacetime + small probe; seal/GATE stay 300k. (3) Cost ~1.8k e to lift KEY soft ramps to 100k — negligible vs remaining RCL7. (4) Soft raise gated: peacetime + `storage≥SOFT_MIN=5k`; spawn/gate always via GATE_TOWER. Hold map never ratchets up. (5) Live: W45N7 core killed@83957209 reclaiming Invader-res; hostiles 0; stor home~15k; W47N8 ~28h RCL7.

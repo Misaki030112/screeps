@@ -1,7 +1,7 @@
 # 矿物线 + 强化 + 城防路线图（2026-10-29 12:4x；14:4x boost；17:4x fundSpend；23:4x fortify；08:4x RCL7 hold 300k；11:4x post-300k exit；**14:4x soft ramp 100k**）
 
 Live refresh **14:45 UTC+8 2026-10-30** tick ~83957470。**不自动交易、不开 safe mode。**
-围攻已中止；`walls.fundSpend` 推家墙 **~274k→300k**（ETA ~1–1.5 h）；**11:4x** exit 仍有效；**14:4x**：殖民地 soft ramp `GATE_TOWER=SOFT_RAMP=100k`（spawn 常抬；KEY soft 和平+storage≥5k）。**23:4x** lab ramparts；**05:4x**/13:53 W45N7 core 已杀并 reclaim。boost 仍等殖民地 RCL7+storage。seal 300k 不变。
+围攻已中止；`walls.fundSpend` 推家墙 **~283k→300k**（ETA ~1 h）；**11:4x** exit 仍有效；**14:4x**/**17:4x**：殖民地 soft ramp `GATE_TOWER=SOFT_RAMP=100k`，`SOFT_MIN=0` + `!localOn`（spawn 已 100k；tower/storage 从 ~49k 分钟级爬完）。**23:4x** lab ramparts；**05:4x** W45N7 reclaim。boost 仍等殖民地 RCL7+storage。seal 300k 不变。
 
 ## 0. 现状（实测）
 

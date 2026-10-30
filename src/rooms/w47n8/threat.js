@@ -19,6 +19,9 @@ function mark(room) {
   if (fl.length) M().w8flee = Game.time;
 }
 function on() { const o = M(), t = Math.max(o.w8threat || 0, o.w8threatN || 0); return t > 0 && Game.time - t < WINDOW; }
+// 17:4x soft staging: local in-room/W47N7 threat only — neighbor staging (w8threatN) must not block soft raise
+// (seal already at 300k; towers still prioritize attack/heal over repair).
+function localOn() { const t = M().w8threat || 0; return t > 0 && Game.time - t < WINDOW; }
 // invasion(): armed hostiles in W47N8 within 50 ticks, or north_watch saw >=2 armed in W47N9 (border room) within 300 ticks
 function invasion() { const o = M(); return (o.w8inv > 0 && Game.time - o.w8inv < 50) || (o.w8invN > 0 && Game.time - o.w8invN < 300); }
 function flee() { const t = M().w8flee || 0; return t > 0 && Game.time - t < FLEE_QUIET; }
@@ -37,4 +40,4 @@ function planTarget(level, base) {
   const m = Memory.ops && Memory.ops.w8move;
   return (m && m.phase !== 'done') ? Math.min(base, STAGE1) : Math.min(Math.max(base, STAGE3), STAGE3);
 }
-module.exports = { planTarget, STAGE1, STAGE3, mark, on, flee, invasion, wallTarget, urgentTarget, WINDOW, FLOOR };
+module.exports = { planTarget, STAGE1, STAGE3, mark, on, localOn, flee, invasion, wallTarget, urgentTarget, WINDOW, FLOOR };

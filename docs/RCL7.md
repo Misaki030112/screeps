@@ -184,10 +184,34 @@ Once fundSpend is off and storage has recovered past the floor:
 
 ### Code (`src/rooms/w47n8/config.js`, `index.js` rampHold)
 - `GATE_TOWER` 20k→**100000** (spawn-slot + gate critical floor, always).
-- `SOFT_RAMP=100000`, `SOFT_MIN=5000`.
-- Soft path: peacetime (`!TH.on()`) + storage≥SOFT_MIN → raise lowest non-gate KEY soft ramp below SOFT_RAMP.
-- Observability: `Memory.ops.w8soft = { t, tgt, spawn, tower, stor, gate }`.
+- `SOFT_RAMP=100000`, `SOFT_MIN=5000` (→**0** at 17:4x).
+- Soft path: peacetime (`!TH.on()` at 14:4x → `!TH.localOn()` at 17:4x) + storage≥SOFT_MIN → raise lowest non-gate KEY soft ramp below SOFT_RAMP.
+- Observability: `Memory.ops.w8soft = { t, tgt, spawn, tower, stor, gate, storE, why }` (why/storE added 17:4x).
 - Tests: `tests/w47n8_no_rampart.js` soft staging; `w47n8_spawn_move.js` adjusted for GATE_TOWER band.
 
 ### Reprioritise
 Soft ramps move **ahead of** day-of RCL7 placement in the post-hold sequence (still after walls hold + storage recover). Day-of order unchanged: tower3@22,7 + spawn2@33,30 + 10 ext + spur; factory OFF (`RCL7_INDUSTRY=false`).
+
+## 2026-10-30 17:4x — soft-ramp stuck ~49k (follow-up)
+
+**Question:** why are W47N8 soft KEY ramparts (tower/storage) still ~49k three hours after 14:4x staged them to 100k, while spawn already hit GATE_TOWER? Will soft finish before RCL7 day-of (~25 h)?
+
+**Answer: two gates blocked the soft path; fix both. Soft finishes in minutes after deploy — well before RCL7.**
+
+### Root cause
+1. **`SOFT_MIN=5000` never trips.** Upgrade-first economy keeps colony storage ~0–3k (live ~2.4k). Soft raise required `storE >= SOFT_MIN`, so tower/storage never climbed; spawn/gate still did via unconditional `GATE_TOWER`.
+2. **`!TH.on()` treated neighbor staging as wartime.** `TH.on()` ORs `w8threat` with `w8threatN`. BustJetter armed groups in own W48N9 refresh `w8threatN` every north_watch scan → soft path stayed off even if storage briefly cleared 5k. Seal walls already ≥300k; towers still prioritize attack/heal over repair.
+
+### Cost / ETA
+Hits remaining ≈ (100k−49k)×2 KEY ≈ 102k hits ≈ **~1k e**. Towers repair only when E>600 and not fighting — ~minutes of divert, negligible vs ~503k e left on the RCL7 controller (~25 h at ~23 e/t).
+
+### Code
+- `config.SOFT_MIN` **5000→0**.
+- `threat.localOn()` — in-room / W47N7 `w8threat` only (not `w8threatN`).
+- `rampHold` soft peacetime = `!TH.localOn()`; observability `Memory.ops.w8soft.{storE,why}` (`ok`/`stor`/`threat`/`off`).
+- Hold map still never ratchets up; GATE_TOWER path unchanged.
+
+### What we did not change
+- No flip of `RCL6_MINERALS` / `RCL7_INDUSTRY` / `STATIONARY_FILL`.
+- Seal/GATE stay 300k; no Overmind 500k soft band; defend-only W47N9.
+

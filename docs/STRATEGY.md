@@ -17,7 +17,7 @@ Last full refresh: **2026-10-30 14:4x strategy review** (W47N8 soft-ramp staging
 | | |
 |---|---|
 | Home | W46N8 **RCL7** ~658k/10.9M; storage ~15–15.5k (near reserveE 15k); walls min **~274k** → **300k** (fundSpend live, fund~35.7k; ETA **~1–1.5 h**); towers 3; spawns 2; terminal+extractor+3 labs; lab/core ramps ~0.35–1.0M; O depleted (regen); labs dormant; **`STATIONARY_FILL=false`** dual queens; SM avail 6 |
-| W47N8 | **RCL6** ~3.087M/3.645M (~558k left, **RCL7 ~2026-10-31 ~18:00–20:00** Asia/Hong_Kong at ~23 e/t ≈ **~28 h**); seal **300k**; soft staging **14:4x** GATE_TOWER=SOFT_RAMP=**100k** (spawn~20k climbing / tower+stor~49k); towers 2; tower3+spawn2 wait RCL7; stor ~2–3k; `HUB_LINK=false` **`RCL7_INDUSTRY=false`** |
+| W47N8 | **RCL6** ~3.142M/3.645M (~503k left, **RCL7 ~2026-10-31 ~18:00–19:00** Asia/Hong_Kong at ~23 e/t ≈ **~25 h**); seal **300k**; soft **17:4x** GATE_TOWER=SOFT_RAMP=**100k** SOFT_MIN=**0** + `!localOn` (spawn~100k / tower+stor climbing from ~49k); towers 2; tower3+spawn2 wait RCL7; stor ~0–3k; `HUB_LINK=false` **`RCL7_INDUSTRY=false`** |
 | Assault | **ABORTED** 2026-10-29 (~15:31): defend-only W47N9, keep mining O (no mineralCap), civilian building both rooms |
 | Remote | W45N8/W47N7 **SAFE** (Misaki res); W45N7 SAFE post-core (killed@83957209; Invader res decaying, reclaim spawning); BustJetter combat 0 neighbor-only |
 | CPU | **~10–14 / 20**, bucket 10000 — `docs/CPU.md` |

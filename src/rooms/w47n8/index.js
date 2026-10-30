@@ -433,11 +433,14 @@ function rampHold(room) {
   // 14:4x: GATE_TOWER=100k (=SOFT_RAMP) — spawn/gate critical floor, always (defense).
   const slot = (x, y) => x === L.ORDER.spawn[0][0] && y === L.ORDER.spawn[0][1];
   const g = rs.find(r => r.pos && (isGate(r.pos.x, r.pos.y) || slot(r.pos.x, r.pos.y)) && r.hits < (C.GATE_TOWER || 0)); if (g) return g;
-  // 14:4x soft staging: peacetime + storage≥SOFT_MIN → raise KEY soft ramps (tower/storage/terminal; spawn covered above)
-  // toward SOFT_RAMP. Hold map still never ratchets up (decay-offset only above the soft floor). Cost ~1.8k e to 100k.
+  // 14:4x soft staging; 17:4x: SOFT_MIN=0 + peacetime = !TH.localOn() (not TH.on — w8threatN neighbor staging
+  // was pinning soft at ~49k while spawn already hit GATE_TOWER). Hold map never ratchets up. Cost ~1k e remaining.
   const softT = C.SOFT_RAMP || 0, softMin = C.SOFT_MIN || 0;
   const storE = room.storage && room.storage.store ? (room.storage.store[RESOURCE_ENERGY] || 0) : 0;
-  if (softT > 0 && storE >= softMin && !TH.on()) {
+  soft.storE = storE;
+  const localThreat = TH.localOn();
+  soft.why = softT <= 0 ? 'off' : localThreat ? 'threat' : (storE < softMin ? 'stor' : 'ok');
+  if (softT > 0 && storE >= softMin && !localThreat) {
     const low = rs.filter(r => r.hits < softT && r.pos && !isGate(r.pos.x, r.pos.y))
       .sort((a, b) => a.hits - b.hits)[0];
     if (low) return low;
@@ -505,7 +508,7 @@ function towerRun(room) {
   for (const t of towers) {
     if (hurt && (!peace || t.store[RESOURCE_ENERGY] >= 200)) t.heal(hurt);
     else if (fire.has(t)) t.attack(p.h);
-    else if (t.store[RESOURCE_ENERGY] > 600) { // 17:20 hold/decay; 14:4x soft staging to SOFT_RAMP when storage≥SOFT_MIN (see rampHold)
+    else if (t.store[RESOURCE_ENERGY] > 600) { // 17:20 hold/decay; 14:4x/17:4x soft staging to SOFT_RAMP (see rampHold)
       const r = rampHold(room);
       if (r) t.repair(r);
     }
