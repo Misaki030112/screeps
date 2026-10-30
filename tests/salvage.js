@@ -1,17 +1,17 @@
 // Salvage (src/utils/salvage.js): worth-the-trip scoring, decay, hostile exclusion, per-pile reservation, retire.
 // node tests/salvage.js -> exits 1 on failure
 const path = require('path'), assert = require('assert');
-Object.assign(global, { RESOURCE_ENERGY: 'energy', FIND_DROPPED_RESOURCES: 106, FIND_TOMBSTONES: 118, FIND_RUINS: 123, FIND_HOSTILE_CREEPS: 103, ATTACK: 'attack', RANGED_ATTACK: 'ranged_attack',
+Object.assign(global, { RESOURCE_ENERGY: 'energy', FIND_DROPPED_RESOURCES: 106, FIND_TOMBSTONES: 118, FIND_RUINS: 123, FIND_HOSTILE_CREEPS: 103, LOOK_STRUCTURES: 'structure', TERRAIN_MASK_WALL: 1, ATTACK: 'attack', RANGED_ATTACK: 'ranged_attack',
   _: { filter: (o, f) => Object.values(o).filter(f), sum: a => a.reduce((x, y) => x + y, 0), max: (a, f) => a.reduce((b, x) => b === -Infinity || f(x) > f(b) ? x : b, -Infinity) } });
 const S = require(path.join(__dirname, '..', 'src', 'utils', 'salvage.js'));
 const pos = (x, y) => ({ x, y, roomName: 'W46N8', getRangeTo(o) { const p = o.pos || o; return Math.max(Math.abs(p.x - x), Math.abs(p.y - y)); }, isNearTo(o) { return this.getRangeTo(o) <= 1; } });
-let world;
-function room() { return { name: 'W46N8', find: t => (world[t] || []) }; }
-function creep(name, x, y, free, mem = {}) { const c = { name, pos: pos(x, y), memory: mem, store: { energy: 0, getFreeCapacity: () => free, getUsedCapacity() { return Object.keys(this).filter(k => typeof this[k] === 'number').reduce((a, k) => a + this[k], 0); } } }; Object.defineProperty(c, 'room', { get: room }); return c; }
+let world, ROOM;
+function makeRoom() { ROOM = { name: 'W46N8', find: t => (world[t] || []) }; return ROOM; }
+function creep(name, x, y, free, mem = {}) { const c = { name, pos: pos(x, y), memory: mem, store: { energy: 0, getFreeCapacity: () => free, getUsedCapacity() { return Object.keys(this).filter(k => typeof this[k] === 'number').reduce((a, k) => a + this[k], 0); } } }; Object.defineProperty(c, 'room', { get: () => ROOM || makeRoom() }); return c; }
 const drop = (id, x, y, a) => ({ id, pos: pos(x, y), resourceType: 'energy', amount: a });
 const tomb = (id, x, y, a) => ({ id, pos: pos(x, y), store: { energy: a } });
 let T = 1, STOR = null;
-function setup(w, creeps) { world = w; T++; global.Game = { time: T, creeps: {}, spawns: {}, rooms: { W46N8: { storage: STOR } }, getObjectById: id => [].concat(...Object.values(w)).find(o => o.id === id) }; for (const c of creeps) Game.creeps[c.name] = c; }
+function setup(w, creeps) { world = w; T++; makeRoom(); global.Game = { time: T, creeps: {}, spawns: {}, rooms: { W46N8: { storage: STOR } }, getObjectById: id => [].concat(...Object.values(w)).find(o => o.id === id) }; for (const c of creeps) Game.creeps[c.name] = c; }
 const cases = [
   ['scout tombstone 45 is below MIN -> ignored', () => { const c = creep('h', 30, 30, 700); setup({ 118: [tomb('t', 31, 30, 45)] }, [c]); assert.strictEqual(S.pick(c), null); }],
   ['650 dropped 3 tiles away -> picked', () => { const c = creep('h', 30, 30, 700); setup({ 106: [drop('d', 33, 30, 650)] }, [c]); assert.strictEqual(S.pick(c).id, 'd'); assert.strictEqual(c.memory.salv, 'd'); }],
@@ -33,6 +33,31 @@ const cases = [
     let got; c.withdraw = (o, k) => { got = k; return 0; }; S.take(c, t); assert.strictEqual(got, 'energy'); STOR = null; }],
   ['dump: carrying GO goes to storage first', () => { const st = { my: true, pos: pos(31, 30), store: { getFreeCapacity: () => 1e5 } }; STOR = st; const c = creep('h', 30, 30, 700); c.store.GO = 10; c.memory.home = 'W46N8'; setup({}, [c]);
     let tr; c.transfer = (s, k) => { tr = k; return 0; }; assert.strictEqual(S.dump(c), true); assert.strictEqual(tr, 'GO'); STOR = null; }],
+  ['enclosed drop (no walkable neighbour) ignored', () => {
+    const c = creep('h', 33, 31, 700); const d = drop('enc', 31, 33, 960);
+    setup({ 106: [d] }, [c]);
+    const blocked = new Set(['30,32','30,33','30,34','31,32','31,34','32,32','32,33','32,34']);
+    c.room.lookForAt = (look, x, y) => blocked.has(x + ',' + y) ? [{ structureType: 'extension' }] : [];
+    assert.strictEqual(S.reachable(c.room, d.pos), false);
+    assert.strictEqual(S.pick(c), null);
+    assert.strictEqual(c.memory.salv, undefined);
+  }],
+  ['enclosed sticky salv cleared so hauler resumes work', () => {
+    const c = creep('h', 33, 31, 700); c.memory.salv = 'enc'; const d = drop('enc', 31, 33, 960);
+    setup({ 106: [d] }, [c]);
+    const blocked = new Set(['30,32','30,33','30,34','31,32','31,34','32,32','32,33','32,34']);
+    c.room.lookForAt = (look, x, y) => blocked.has(x + ',' + y) ? [{ structureType: 'extension' }] : [];
+    assert.strictEqual(S.pick(c), null);
+    assert.strictEqual(c.memory.salv, undefined);
+  }],
+  ['creep already next to enclosed pile may finish it', () => {
+    const c = creep('h', 31, 33, 700); const d = drop('enc', 31, 33, 960);
+    setup({ 106: [d] }, [c]);
+    const blocked = new Set(['30,32','30,33','30,34','31,32','31,34','32,32','32,33','32,34']);
+    c.room.lookForAt = (look, x, y) => blocked.has(x + ',' + y) ? [{ structureType: 'extension' }] : [];
+    assert.strictEqual(S.reachable(c.room, d.pos, c.pos), true);
+    assert.strictEqual(S.pick(c).id, 'enc');
+  }],
 ];
 let fail = 0; for (const [n, f] of cases) { try { f(); console.log('ok  ', n); } catch (e) { fail++; console.log('FAIL', n, e.message); } }
 process.exit(fail ? 1 : 0);

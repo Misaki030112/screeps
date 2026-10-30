@@ -222,11 +222,18 @@ function canEscape(c) {
   return N8.some(([dx, dy]) => walkable(c.pos.x + dx, c.pos.y + dy));
 }
 function freeTrapped(c) {
-  // Empty + walled in: recycle at adjacent spawn (returns energy) else suicide. Never leave a queen stuck with spawn dry.
-  if ((c.store[RESOURCE_ENERGY] || 0) > 0) return false;
+  // Walled in (patrol 2026-10-29 escape hatch; 2026-10-30: also when carrying): recycle at adjacent spawn
+  // (store energy returns to spawn). Previously only empty queens recycled — a loaded queen aging out on
+  // enclosed filler 31,33 left an unreachable ~1k drop that the home hauler then oscillated on forever.
   if (canEscape(c)) return false;
   const sp = c.pos.findInRange(FIND_MY_SPAWNS, 1)[0];
   if (sp) { sp.recycleCreep(c); return true; }
+  if ((c.store[RESOURCE_ENERGY] || 0) > 0) {
+    const t = c.pos.findInRange(FIND_MY_STRUCTURES, 1, {
+      filter: s => FILL.has(s.structureType) && s.store.getFreeCapacity(RESOURCE_ENERGY) > 0
+    })[0];
+    if (t) { c.transfer(t, RESOURCE_ENERGY); return true; }
+  }
   c.suicide(); return true;
 }
 module.exports = { fillRoute, storageFloor, buildZones, zoneDeficit, myStops, canEscape, run(c) {
