@@ -120,3 +120,53 @@ mineralRun). Mineral mining would have stopped silently at RCL7 (mminer spawns o
 ### Reprioritise
 Unchanged order; **1M is now explicit opt-in** (pushBarrier or later strategy when storage/colony ready), not an automatic fundSpend consequence of finishing 300k.
 
+## Post-300k energy reallocation (strategy 11:4x, 2026-10-30 ~11:45 Asia/Hong_Kong)
+
+**Question.** Once peacetime walls hit `HOLD_STEP_RCL7` (300k) and `stepHeld` flips true, how does energy leave wall builders and return to storage / upgrade / colony RCL7 / minerals — without starving the 15k defense floor?
+
+**Live context (tick ~83954890).** Home RCL7 walls min ~262k climbing (~+10k / 30 min → ~1.8–2 h to 300k). `fundSpend=true`, `stepHeld=false`, storage ~14k under reserveE 15k, fund ~35.5k. Colony W47N8 ~32 h to RCL7. Remotes SAFE. Hostiles 0. Deploy `2ff5c0d`.
+
+### Exit criteria (already coded — no flip flag)
+
+| Condition | Effect |
+|-----------|--------|
+| `stepHeld` (RCL≥7, peacetime, all barriers ≥300k, no `pushBarrier` / threat) | `fundSpend` → **false** same tick (`walls.js`) |
+| `wantBuilder` / `repairJob` | Off while held (unless threat / push) |
+| `reserved` (fund) | 0 while held → queen `storageFloor` = `reserveE` (15k) |
+| Builders | Starve out / recycle; no new wall builders |
+| Income | Banks into storage toward ≥15k (no builder drain) |
+| Upgraders | `defLowUpgraders(held=true)` restores target when `storage ≥ reserveE − UP_DIP` (13k) |
+
+So the "exit" is automatic: reaching the hold **is** the exit. No Memory flag, no manual Misaki action. Tests: `tests/walls_barriers.js` ("post-300k fundSpend exit"), `tests/spawn_upgraders.js` (held + UP_DIP).
+
+### Recovery sequence (expected after first 300k tick)
+
+1. **0–~30 min:** builders die off; storage climbs from dip (~9–14k) toward 15k at net surplus (~8–12 e/t typical peacetime with remotes).
+2. **storage ≥13k:** upgrader count returns (ferry still stops at 15k floor — upgraders eat ctl container/link, not storage below floor).
+3. **storage ≥15k stable:** `defLow` clears; normal spawn mix; home surplus feeds colony claim/upgrade pipeline.
+4. **Do not open 1M** unless Misaki sets `Memory.rooms.W46N8.walls.pushBarrier` or a real threat — peacetime hold stays (08:4x).
+
+Rough ETA from live climb: wall min 262k→300k ≈ **~12:00–14:00 Asia/Hong_Kong 2026-10-30** (rate-dependent). Recovery banking ≈ **30–90 min** after hold if storage lands under 13k; often shorter when fundSpend already kept stor near 13–15k.
+
+### Post-hold energy priority (reallocation order)
+
+Once fundSpend is off and storage has recovered past the floor:
+
+1. **Defense floor** — keep storage ≥15k; towers/safe-mode cushion untouched.
+2. **Home upgrade** — resume full upgrader set (RCL7→8 is long; don't idle for walls).
+3. **Colony W47N8 RCL6→7** — still the critical path (~32 h); home surplus / remote O support colony, not a new wall STEP.
+4. **Colony soft ramparts** — raise spawn/tower/storage soft ramps from ~20–50k toward a staging band (candidate for a later review; Overmind-style barrier staging) **before** day-of RCL7 tower3/spawn2.
+5. **Mineral / boost pipeline** — extractor→container→miner body, then labs; keep `RCL7_INDUSTRY=false` / BOOST gate until walls held **and** storage healthy (see `MINERAL_DEFENSE_ROADMAP.md`).
+6. **Optional 1M walls** — only via `pushBarrier` or threat; not automatic.
+
+### Overmind / TooAngel notes
+
+- **Overmind** `fortifyDutyThreshold` (~500k) / `barrierHits[7]=1M`: workers fortify when barriers are below threshold; above it they leave fortify duty. Same shape as our hold: past the peacetime target, energy returns to upgrade/economy. We hold earlier (300k) by Misaki choice; Overmind's higher bar is a reference, not a reason to auto-climb.
+- **TooAngel**: dedicated repairers top walls continuously — we deliberately **don't** (fund + STEP + hold) so storage can recover. Continuous repairers would fight the post-300k reallocation.
+
+### What we did not change
+
+- No code behavior change beyond documenting the exit comment on `fundSpend`.
+- No auto-push to 1M; no mineral enable; no soft-rampart HP raise this run (topic A deferred).
+- Observability: patrol / model already expose `wmin`, `fundSpend`, storage; watch for `stepHeld` equivalent = walls min ≥300k + no job.
+

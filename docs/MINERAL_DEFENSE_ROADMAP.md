@@ -1,7 +1,7 @@
-# 矿物线 + 强化 + 城防路线图（2026-10-29 12:4x；14:4x boost；17:4x fundSpend；23:4x fortify；**08:4x RCL7 hold 300k**）
+# 矿物线 + 强化 + 城防路线图（2026-10-29 12:4x；14:4x boost；17:4x fundSpend；23:4x fortify；08:4x RCL7 hold 300k；**11:4x post-300k exit**）
 
-Live refresh **23:50 UTC+8** tick ~83945055。**不自动交易、不开 safe mode。**
-围攻已中止；`walls.fundSpend` 仍在推家墙 **~230k→300k**（05:4x ETA ~6 h）；**23:4x** lab ramparts live ~600k；**05:4x** W45N7 Invader-res reclaim。boost 代码仍等殖民地 RCL7+storage。W47N8 seal 300k，spawn2/tower soft ramps ~20–50k 待抬。
+Live refresh **11:45 UTC+8 2026-10-30** tick ~83954890。**不自动交易、不开 safe mode。**
+围攻已中止；`walls.fundSpend` 推家墙 **~262k→300k**（ETA ~1.5–2 h）；**11:4x**：到 300k 后 fundSpend 自动关 → 回升 storage/升级 → 殖民地 RCL7 → soft ramp → 再开矿物（见 `docs/RCL7.md` 11:4x）。**23:4x** lab ramparts；**05:4x** W45N7 reclaim。boost 仍等殖民地 RCL7+storage。W47N8 seal 300k，spawn/tower soft ramps ~20–50k 待抬。
 
 ## 0. 现状（实测）
 
@@ -43,6 +43,8 @@ Live refresh **23:50 UTC+8** tick ~83945055。**不自动交易、不开 safe mo
 
 ### 阶段 A · 现在 → W47N8 升 RCL7（优先升级，~1–2 天）
 **目标：** 殖民地 RCL7；home 不抢能量。
+> **11:4x 能量闸：** home 墙未到 300k / fundSpend 仍开时，不要指望 storage 稳定 ≥15k 去开矿物或强化。墙 hold 后按 `docs/RCL7.md` 11:4x 回收序列：storage→升级→殖民地 RCL7→soft ramp→再矿物。
+
 
 | 做 | 不做 |
 |---|---|

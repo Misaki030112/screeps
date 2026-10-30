@@ -116,6 +116,28 @@ const cases = [
     assert.ok(W.repairJob(r7), 'threat repairs toward 1M');
     HOLD = false; delete Memory.defense; OBJ = {};
   }],
+  ['post-300k fundSpend exit (strategy 11:4x): hold stops spend; queen floor=reserveE; wantBuilder off', () => {
+    OBJ = {}; Game.time++; const m = { walls: { started: 1, fund: 35000, ft: Game.time } };
+    wall('a', 26, 7, 300000); wall('b', 27, 7, 305000); wall('g', 47, 16, 310000, 'rampart');
+    const r7 = room({ mem: m, rcl: 7, storage: 12000 });
+    global.Memory = global.Memory || {}; Memory.defense = { reserveE: 15000 };
+    assert.strictEqual(W.target(r7, W.barriers(r7, P)), 1000000);
+    assert.strictEqual(W.stepHeld(r7), true);
+    assert.strictEqual(W.fundSpend(r7), false, 'exit: fundSpend off at hold');
+    assert.strictEqual(W.wantBuilder(r7), false, 'exit: no wall builder');
+    assert.strictEqual(W.repairJob(r7), null);
+    Object.assign(global, { STRUCTURE_SPAWN: 'spawn', STRUCTURE_EXTENSION: 'extension', STRUCTURE_CONTAINER: 'container',
+      STRUCTURE_TOWER: 'tower', STRUCTURE_STORAGE: 'storage', STRUCTURE_LINK: 'link', STRUCTURE_LAB: 'lab', STRUCTURE_TERMINAL: 'terminal',
+      FIND_MY_CREEPS: 102, FIND_STRUCTURES: 107 });
+    const Q = require(src('roles/queen.js')); r7.energyCapacityAvailable = 5600;
+    assert.strictEqual(Q.storageFloor(r7), 15000, 'exit: ferry floor back to reserveE (fund not reserved while held)');
+    // Still climbing to 300k: fundSpend ON, stepHeld OFF — opposite of exit
+    OBJ.a.hits = 262000; OBJ.b.hits = 270000; OBJ.g.hits = 280000; Game.time++;
+    assert.strictEqual(W.stepHeld(r7), false);
+    assert.strictEqual(W.fundSpend(r7), true, 'pre-exit: still spending toward 300k');
+    assert.ok(W.wantBuilder(r7), 'pre-exit: wall builder wanted');
+    delete Memory.defense; OBJ = {};
+  }],
   ['all barriers at last step -> no job', () => { OBJ = {}; wall('a', 26, 7, 300000); assert.strictEqual(W.repairJob(room()), null); }],
 ];
 let fail = 0; const log = (...a) => process.stdout.write(a.join(' ') + '\n');

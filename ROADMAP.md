@@ -3,6 +3,14 @@
 Novice zone ends **2026-10-28 03:33 UTC+8** (past as of 10-29). Defence timeline: `docs/DEFENSE_NOVICE.md` (2026-10-16); detail `docs/DEFENSE.md` / geometry `docs/DEFENSE_PLAN.md`.
 **Safe mode: NEVER auto-activate** — alert Misaki.
 
+## 2026-10-30 11:4x strategy review: post-300k fundSpend exit / energy reallocation
+- **Chose:** what happens **after** peacetime walls hit HOLD_STEP_RCL7=300k — fundSpend exit criteria and how energy returns to storage/upgrade/colony without starving the 15k floor (topic B; distinct from 08:4x hold-vs-1M).
+- **Findings (`docs/RCL7.md` 11:4x):** (1) Exit is already automatic: `stepHeld` → `fundSpend=false` same tick; builders/repairJob off; queen floor back to reserveE; income banks storage. (2) Upgraders return via `defLowUpgraders(held=true)` when stor≥reserveE−UP_DIP (13k). (3) Overmind leaves fortify duty past threshold; TooAngel continuous repairers would fight recovery — we don't use them. (4) Live ~11:45: walls min~262k fund~35.5k ETA 300k ~1.5–2 h; stor~14k; W47N8 ~32 h RCL7; remotes SAFE; hostiles 0.
+- **Post-hold priority:** defense floor → home upgrade → colony RCL7 day-of → colony soft ramps → minerals/boost → optional 1M (`pushBarrier`).
+- **Shipped:** docs (`RCL7`/`STRATEGY`/`MINERAL_DEFENSE_ROADMAP`/this) + `walls.js` exit comment + `tests/walls_barriers.js` post-300k exit case. **No game behavior change / no deploy required** (comment-only in src).
+- **Reprioritise:** (1) finish walls→300k then **hold + recover storage≥15k / upgraders**; (2) W47N8 RCL7 → tower3+spawn2 (factory OFF); (3) raise colony soft ramps (topic A next); (4) colony storage≥20k → minerals+K; (5) KO≥900 → boost; (6) barriers→1M via pushBarrier or later review; (7) STATIONARY_FILL at RCL8. Defend-only W47N9.
+- **Plan check (t~83954890):** home RCL7 ~638k/10.9M stor~14k walls~262k fund~35.5k; W47N8 3.021M/3.645M (~32h) soft spawn~20k/tower~50k; CPU~14 bucket 10k; remotes SAFE; deploy 2ff5c0d; GCL4. No major Misaki decision.
+
 ## 2026-10-30 08:4x strategy review: RCL7 peacetime wall hold at 300k (no auto 1M)
 - **Chose:** what happens the tick home walls reach STEPS[7]=300k — auto-open 1M via fundSpend vs hold and resume upgrade/colony path.
 - **Findings (`docs/RCL7.md` 08:4x, Overmind fortifyDutyThreshold):** (1) STEPS next after 300k is 1M ≈ **~287k e** for 41 walls — would pin home upgrade for days. (2) Live storage ~13.5k under reserveE 15k; Overmind gates fortify on storage≥500k — we hold the step instead. (3) Roadmap already put barriers→1M after colony RCL7 / minerals. (4) Morning remotes: W45N7 core killed + W47N7 Invader cleared; all SAFE; walls min ~241k fund~36.5k ETA 300k ~3–6 h; W47N8 ~2.965M ~34 h RCL7.
