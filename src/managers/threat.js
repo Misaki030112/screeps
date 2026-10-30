@@ -6,8 +6,8 @@
 //         any -> WAIT (wait-out: players on the route/home, unreserved escalation, gate, timeouts, defender died) -> SAFE
 // A room is "reserved" when its controller reservation is still ours (Memory.remote[r].res, projected from m.seen),
 // Memory.ops.r7 says we hold W47N7, or Memory.ops.resRooms lists it.
-// An invader core in a remote we defend is a fight (melee buster), not a wait-out. WAIT only when a spawn gate fails
-// (gate/cpu/deaths — not maxPerDay budget; cores must be fought so they cannot chew containers while mining is paused).
+// Invader cores and solo/guard Invaders in remotes we defend are fights, not wait-outs. WAIT only when a spawn gate fails
+// (gate/cpu/deaths — not maxPerDay budget; Misaki: fight reserved-room enemies, do not pause mining and idle).
 // Players outrank a core (the buster never targets a creep). W47N9 is never a target.
 const S = { SAFE: 'SAFE', THREAT: 'THREAT', DEFEND: 'DEFEND', WAIT: 'WAIT' };
 const DEF = {
@@ -55,9 +55,9 @@ const GATES = ['gate', 'cpu', 'budget', 'deaths']; // every reason gateReason() 
 function gateReason(o, c, k) { // why we may not spawn a defender now ('' = ok); k = classify() kind
   if (!o.armed) return 'gate';
   if (o.bucket < c.minBucket) return 'cpu';
-  // Invader cores persist until destroyed; maxPerDay WAIT pauses mining while they chew containers
-  // (Misaki: fight reserved-room cores — do not WAIT/budget them out). Wave Invaders still hit the cap.
-  if (k !== 'core' && (o.spawnsDay || 0) >= c.maxPerDay) return 'budget';
+  // Misaki: reserved remotes fight Invaders (solo/guard) and cores — do not WAIT/budget them out.
+  // maxPerDay still caps a 2nd defender via request2(); unreserved escalated waves stay WAIT(escalated).
+  if (k !== 'core' && k !== 'solo' && k !== 'guard' && (o.spawnsDay || 0) >= c.maxPerDay) return 'budget';
   if ((o.deathsDay || 0) >= c.maxDeaths) return 'deaths';
   return '';
 }
@@ -286,7 +286,7 @@ module.exports = { S, DEF, cfg, classify, step, sense, run, state, armed, ourNam
   earlyNext, EARLY,
   // first remote of this home that needs a defender spawned now
   wantDefender: home => remotesOf(home).find(r => (state(r).st === S.THREAT && !state(r).def) || (state(r).st === S.DEFEND && state(r).need2 && !state(r).def2)),
-  // defender could not win alone: ask for a 2nd one (wave Invaders count against maxPerDay; cores exempt)
+  // defender could not win alone: ask for a 2nd one (2nd spawn still hits maxPerDay; cores/first fight exempt)
   request2(r) { const m = mem(r), th = m.th, c = cfg(r); if (!th || th.st !== S.DEFEND || th.need2 || th.def2) return;
     if (th.mission !== 'core' && hist(m, 'defSpawns', c).length >= c.maxPerDay) return; th.need2 = Game.time;
     console.log('INCIDENT ' + JSON.stringify({ remote: r, tick: Game.time, inc: th.inc || null, state: th.st, ev: 'need2', def: th.def })); },
