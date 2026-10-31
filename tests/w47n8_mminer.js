@@ -1,0 +1,150 @@
+// 2026-10-31 11:4x strategy: dormant w8mminer + w8hauler mineralRun (lean KO). Gates stay false — code ready only.
+const assert = require('assert'), path = require('path');
+const d = path.join(__dirname, '..', 'src', 'rooms', 'w47n8');
+Object.assign(global, {
+  STRUCTURE_CONTAINER: 'container', STRUCTURE_EXTRACTOR: 'extractor', STRUCTURE_TERMINAL: 'terminal',
+  STRUCTURE_SPAWN: 'spawn', STRUCTURE_EXTENSION: 'extension', STRUCTURE_TOWER: 'tower', STRUCTURE_STORAGE: 'storage',
+  STRUCTURE_LINK: 'link', STRUCTURE_ROAD: 'road', STRUCTURE_WALL: 'constructedWall', STRUCTURE_RAMPART: 'rampart',
+  STRUCTURE_LAB: 'lab', LOOK_STRUCTURES: 'structure', LOOK_CREEPS: 'creep', LOOK_SOURCES: 'source',
+  LOOK_CONSTRUCTION_SITES: 'constructionSite',
+  FIND_MINERALS: 116, FIND_MY_STRUCTURES: 108, FIND_MY_CREEPS: 106, FIND_HOSTILE_CREEPS: 103,
+  FIND_DROPPED_RESOURCES: 105, FIND_STRUCTURES: 107, FIND_SOURCES_ACTIVE: 104, FIND_MY_SPAWNS: 112,
+  FIND_MY_CONSTRUCTION_SITES: 114, FIND_SOURCES: 103, RESOURCE_ENERGY: 'energy',
+  WORK: 'work', MOVE: 'move', CARRY: 'carry', ATTACK: 'attack', RANGED_ATTACK: 'ranged_attack',
+  HEAL: 'heal', TOUGH: 'tough', CLAIM: 'claim',
+  BODYPART_COST: { work: 100, move: 50, carry: 50, attack: 80, ranged_attack: 150, heal: 250, tough: 10, claim: 600 },
+  OK: 0, ERR_NOT_ENOUGH_ENERGY: -6,
+  _: require('lodash'), Memory: { ops: { w8model: { links: true, lcarry: 9, rcarry: 49, upw: 31 } } },
+  Game: { time: 50, rooms: {}, creeps: {}, getObjectById: () => null },
+});
+const C = require(path.join(d, 'config')), W = require(path.join(d, 'index.js'));
+const roles = require(path.join(d, 'roles.js'));
+const cost = b => b.reduce((s, p) => s + BODYPART_COST[p], 0);
+const cnt = (b, t) => b.filter(p => p === t).length;
+
+assert.strictEqual(C.RCL6_MINERALS, false, 'gate stays off');
+assert.deepStrictEqual(C.MINERAL_CONT, [37, 44]);
+
+// bodyFor: same shape as home mminer (WORK*n + 3 MOVE), fits budget, no CARRY
+// body cost = n*100+150; min 2W needs e>=350 (same as home mminer — spawn waits if avail < cost)
+for (const e of [350, 550, 800, 1300, 2300]) {
+  const b = W.bodyFor('w8mminer', e);
+  assert.ok(cost(b) <= e, 'fits ' + e + ': ' + b);
+  assert.strictEqual(cnt(b, MOVE), 3, '3 MOVE @' + e);
+  assert.ok(cnt(b, WORK) >= 2 && cnt(b, WORK) <= 12, 'WORK range @' + e);
+  assert.strictEqual(cnt(b, CARRY), 0, 'no CARRY (drop into container)');
+}
+assert.deepStrictEqual([cnt(W.bodyFor('w8mminer', 1300), WORK), cnt(W.bodyFor('w8mminer', 1300), MOVE)], [11, 3]);
+
+// mineralRun dormant while gate off
+const term = { pos: { x: 35, y: 33 }, store: {} };
+let pile = 800;
+const roomBase = {
+  name: C.ROOM, terminal: term,
+  lookForAt: (k, x, y) => {
+    if (k === LOOK_STRUCTURES && x === 37 && y === 44) {
+      const s = { K: pile }; s.getFreeCapacity = () => 2000 - (s.K || 0);
+      return [{ structureType: 'container', store: s, pos: { x: 37, y: 44 } }];
+    }
+    return [];
+  },
+};
+Game.rooms[C.ROOM] = roomBase;
+const creep = (store = {}) => {
+  const st = Object.assign({ energy: 0 }, store);
+  st.getCapacity = () => 400;
+  return {
+    memory: { home: C.ROOM, role: 'w8hauler' }, store: st, got: [],
+    pos: { x: 37, y: 44, isNearTo() { return true; }, inRangeTo() { return true; }, getRangeTo() { return 0; } },
+    room: roomBase, withdraw(k, r) { this.got.push(['w', r]); return 0; },
+    transfer(d, r) { this.got.push(['t', r]); return 0; },
+    moveTo() { return 0; },
+  };
+};
+assert.strictEqual(roles._mineralRun(creep()), false, 'gate off → no mineralRun');
+
+// gate on: small pile waits; >= MIN_RUN(500) withdraws; held mineral delivers to terminal
+C.RCL6_MINERALS = true;
+pile = 200;
+assert.strictEqual(roles._mineralRun(creep()), false, 'small pile waits');
+pile = 600;
+let c = creep();
+assert.strictEqual(roles._mineralRun(c), true);
+assert.deepStrictEqual(c.got, [['w', 'K']], '>= MIN_RUN → withdraw K');
+c = creep({ K: 400 });
+assert.strictEqual(roles._mineralRun(c), true);
+assert.deepStrictEqual(c.got, [['t', 'K']], 'deliver K to terminal');
+c = creep({ energy: 50 });
+pile = 1900;
+assert.strictEqual(roles._mineralRun(c), false, 'carrying energy: normal job');
+C.RCL6_MINERALS = false;
+
+// spawnRun: with economy fleet filled, gate off → never w8mminer; gate on + line ready → w8mminer
+{
+  const mk = (role, extra = {}) => ({
+    memory: Object.assign({ role, home: C.ROOM }, extra),
+    ticksToLive: 1000, spawning: false, body: [{ type: WORK }, { type: WORK }, { type: WORK }, { type: WORK }, { type: WORK }, { type: MOVE }],
+    getActiveBodyparts: t => t === WORK ? 5 : 0, pos: { x: 20, y: 20, inRangeTo: () => false },
+  });
+  // miners + 2 haulers + filler + 3 upgraders (links floor) so spawn falls through to surplus/mminer
+  const fleet = {
+    a: mk('w8miner', { si: 0 }), b: mk('w8miner', { si: 1 }),
+    c: mk('w8hauler'), d: mk('w8hauler'),
+    e: mk('w8filler'),
+    f: mk('w8upgrader'), g: mk('w8upgrader'), h: mk('w8upgrader'),
+  };
+  // pad hauler bodies so rCarry / body filters don't crash
+  for (const k of Object.keys(fleet)) {
+    if (fleet[k].memory.role === 'w8hauler') fleet[k].body = Array(10).fill({ type: CARRY }).concat(Array(5).fill({ type: MOVE }));
+    if (fleet[k].memory.role === 'w8filler') fleet[k].body = [{ type: CARRY }, { type: CARRY }, { type: MOVE }];
+    if (fleet[k].memory.role === 'w8upgrader') fleet[k].body = Array(8).fill({ type: WORK }).concat([{ type: CARRY }, { type: MOVE }, { type: MOVE }]);
+  }
+  Game.creeps = fleet;
+
+  const st = {};
+  const put = (x, y, o) => { (st[x * 50 + y] = st[x * 50 + y] || []).push(o); };
+  put(37, 44, { structureType: 'container', store: { getFreeCapacity: () => 1500, K: 0 }, pos: { x: 37, y: 44 } });
+  put(37, 45, { structureType: 'extractor', pos: { x: 37, y: 45 } });
+  const mineral = { mineralAmount: 50000, mineralType: 'K', pos: { x: 37, y: 45 } };
+
+  const room = {
+    name: C.ROOM, energyAvailable: 2300, energyCapacityAvailable: 2300,
+    controller: { level: 6, my: true, ticksToDowngrade: 50000, progress: 3000000, progressTotal: 3645000 },
+    storage: { store: { energy: 25000 }, pos: { x: 35, y: 32 } },
+    terminal: term, memory: {},
+    lookForAt: (k, x, y) => k === LOOK_STRUCTURES ? (st[x * 50 + y] || []) : [],
+    find: (k, o) => {
+      let a = [];
+      if (k === FIND_MY_STRUCTURES || k === FIND_STRUCTURES) a = Object.values(st).flat();
+      else if (k === FIND_MINERALS) a = [mineral];
+      else if (k === FIND_MY_CREEPS) a = Object.values(Game.creeps);
+      else if (k === FIND_MY_CONSTRUCTION_SITES) a = [];
+      else if (k === FIND_HOSTILE_CREEPS) a = [];
+      else if (k === FIND_DROPPED_RESOURCES) a = [];
+      return o && o.filter ? a.filter(o.filter) : a;
+    },
+  };
+  Game.rooms[C.ROOM] = room;
+
+  function runSpawn() {
+    let got = null;
+    const spawn = {
+      room, spawning: null, pos: { x: 34, y: 30, getRangeTo: () => 10 },
+      spawnCreep: (b, n, o) => { got = o.memory; return 0; },
+    };
+    W.spawnRun(spawn);
+    return got && got.role;
+  }
+
+  assert.notStrictEqual(runSpawn(), 'w8mminer', 'gate off: must not spawn w8mminer');
+
+  C.RCL6_MINERALS = true;
+  assert.strictEqual(runSpawn(), 'w8mminer', 'gate on + line ready → spawn w8mminer');
+  // already have a live mminer → no second
+  fleet.mm = mk('w8mminer');
+  Game.creeps = fleet;
+  assert.notStrictEqual(runSpawn(), 'w8mminer', 'one live w8mminer is enough');
+  C.RCL6_MINERALS = false;
+}
+
+console.log('w47n8_mminer ok');

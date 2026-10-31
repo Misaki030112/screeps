@@ -208,6 +208,30 @@ function rroadWork(c) {
 }
 function rgo(c, x, y, r) { return rmove(c, RM.room, x, y, r); }
 const go8 = (c, x, y, r = 1) => rmove(c, C.ROOM, x, y, r); // rhauler legs inside W47N8 too (same 1-wide trunk, 14,35-38 plain lane seen live)
+// 11:4x strategy: lean KO haul (Overmind ExtractorOverlord pattern — mine→container→hauler→terminal).
+// Dormant while RCL6_MINERALS false. Empty w8hauler drains mineral container (>= MIN_RUN or near-full) into terminal.
+// terminal.send W47N8→W46N8 is a later slice; do NOT add it here.
+const MIN_RUN = 500; // colony haulers are smaller than home (~400 carry vs ~800)
+function mineralRun(c) {
+  if (!C.RCL6_MINERALS) return false;
+  const room = Game.rooms[C.ROOM]; if (!room) return false;
+  const term = room.terminal; if (!term) return false;
+  const held = Object.keys(c.store).find(r => r !== E && c.store[r] > 0);
+  if (held) {
+    if (c.pos.isNearTo(term)) c.transfer(term, held); else go8(c, term.pos.x, term.pos.y);
+    return true;
+  }
+  if (c.store[E] > 0 || c.memory.w) return false;
+  const [mx, my] = C.MINERAL_CONT || [37, 44];
+  const k = room.lookForAt(LOOK_STRUCTURES, mx, my).find(s => s.structureType === STRUCTURE_CONTAINER);
+  if (!k) { delete c.memory.mr; return false; }
+  const r = Object.keys(k.store).find(t => t !== E && k.store[t] > 0);
+  if (!r) { delete c.memory.mr; return false; }
+  if (!c.memory.mr && k.store[r] < Math.min(MIN_RUN, c.store.getCapacity()) && k.store.getFreeCapacity() > 200) return false;
+  c.memory.mr = 1;
+  if (c.pos.isNearTo(k)) { c.withdraw(k, r); delete c.memory.mr; } else go8(c, mx, my);
+  return true;
+}
 const R = {
   w8miner(c) {
     if (!home(c)) return;
@@ -232,8 +256,21 @@ const R = {
     }
     if (src) c.harvest(src);
   },
+  // 11:4x strategy: dormant mineral miner (home mminer pattern). Stands on MINERAL_CONT; harvest when extractor off CD.
+  // No CARRY — output drops into the container underfoot. Spawned only while RCL6_MINERALS + extractor + minCont.
+  w8mminer(c) {
+    if (!home(c)) return;
+    const [x, y] = C.MINERAL_CONT || [37, 44];
+    if (c.pos.x !== x || c.pos.y !== y) return go(c, x, y, 0);
+    const m = c.memory.min ? Game.getObjectById(c.memory.min) : c.pos.findInRange(FIND_MINERALS, 1)[0];
+    if (!m) return; c.memory.min = m.id;
+    const ex = m.pos.lookFor(LOOK_STRUCTURES).find(s => s.structureType === STRUCTURE_EXTRACTOR);
+    if (ex && !ex.cooldown && m.mineralAmount > 0) c.harvest(m);
+  },
   w8hauler(c) {
-    if (!home(c)) return; toggle(c);
+    if (!home(c)) return;
+    if (mineralRun(c)) return;
+    toggle(c);
     if (!c.memory.w) { if (!haulPick(c) && c.store[E] > 0) c.memory.w = true; return; }
     const room8 = Game.rooms[C.ROOM];
     // CPU 13:10: the builder scan only runs when no fill target (same result as before, evaluated lazily)
@@ -514,3 +551,4 @@ Object.defineProperty(module.exports, '_haulPick', { value: haulPick, enumerable
 Object.defineProperty(module.exports, '_wallJob', { value: wallJob, enumerable: false }); // tests only
 Object.defineProperty(module.exports, '_rmove', { value: rmove, enumerable: false }); // tests only
 Object.defineProperty(module.exports, '_home', { value: home, enumerable: false }); // tests only
+Object.defineProperty(module.exports, '_mineralRun', { value: mineralRun, enumerable: false }); // tests only

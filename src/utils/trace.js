@@ -11,7 +11,7 @@ const H = {}; let wrapped = false;
 const h = n => H[n] || (H[n] = { cpu: 0, a: 0, w: 0, rp: 0, st: 0, rw: '', sc: '', ta: 0, f: 0, mx: 0 });
 const DEF = { miner: 'e', rminer: 'e', mminer: 'e', hauler: 'p', rhauler: 'p', upgrader: 'u', builder: 'n', queen: 'f', filler: 'f', manager: 'f',
   // W47N8 roles fell through to 'q' so audits read e.g. upgrader waiting_feed as queue_blocked (strategy 10-21 11:4x)
-  w8miner: 'e', w8rminer: 'e', w8hauler: 'p', w8rhauler: 'p', w8upgrader: 'u', w8builder: 'n', w8filler: 'f', w8defender: 't', w8guard: 't', w8healer: 't' };
+  w8miner: 'e', w8rminer: 'e', w8mminer: 'e', w8hauler: 'p', w8rhauler: 'p', w8upgrader: 'u', w8builder: 'n', w8filler: 'f', w8defender: 't', w8guard: 't', w8healer: 't' };
 const WHY = {}, POS = {};
 const WORKF = { harvest: c => 2 * c.getActiveBodyparts(WORK), upgradeController: c => c.getActiveBodyparts(WORK), build: c => 5 * c.getActiveBodyparts(WORK),
   repair: c => c.getActiveBodyparts(WORK), transfer: c => c.store.getUsedCapacity(), withdraw: c => c.store.getFreeCapacity(), pickup: c => c.store.getFreeCapacity(),

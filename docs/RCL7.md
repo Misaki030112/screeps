@@ -277,3 +277,7 @@ Overmind `storageBuffer` ~100k before industry; TooAngel banks via fewer upgrade
 - `leanBank` / `energyBank` / `leanBankRecycle` / `dayofMiss` in `src/rooms/w47n8/index.js`; roles use `energyBank` for repair pause + park.
 - tests: `w47n8_dayobs` phase/bank/recycle/opt-out; `w47n8_move_bank` spawn throttle + park.
 - **No gate flips. No home throttle. Opt-out: `Memory.ops.w8leanBank=false`.**
+
+
+## 2026-10-31 11:4x — lean KO code: w8mminer + haul (send still open)
+Closes the 08:4x "still needs w8mminer/send" half: colony now has dormant miner + haul-to-terminal. Flip still waits RCL7 + leanBank ready + **`terminal.send`** (next slice) + Misaki propose. Detail: `docs/MINERAL_DEFENSE_ROADMAP.md` §5.9. ETA RCL7 slipped to **~18:00–18:15 Asia/Hong_Kong**.

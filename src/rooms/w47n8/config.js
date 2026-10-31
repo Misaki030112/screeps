@@ -37,7 +37,7 @@ module.exports = {
   //   RCL6_MINERALS → terminal + extractor + mineral container 37,44 + MINERAL trunk roads (~105k + trunk)
   //   RCL6_LABS     → 3 colony labs (~150k); default OFF — KO reacts on home W46N8 labs
   //   HUB_LINK      → hub link 33,34 (unchanged)
-  // Flip RCL6_MINERALS only after RCL7 day-of + colony storage≥20k + w8mminer/haul/send code ready (see §5 checklist).
+  // Flip RCL6_MINERALS only after RCL7 day-of + colony storage≥20k + w8mminer/haul ✅ (11:4x) + send code ready (see §5 checklist).
   RCL6_MINERALS: false, RCL6_LABS: false, HUB_LINK: false,
   // RCL7 gate (10-29 20:4x strategy review, docs/PLAN_W47N8.md "RCL7 day-of"): factory 35,30 (100k) + RCL8 powerSpawn/nuker/observer stay
   // unplaced — no colony factory/lab code yet (same as home plan.RCL7_INDUSTRY). Flip when industry code exists.

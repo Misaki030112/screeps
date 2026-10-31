@@ -3,6 +3,13 @@
 Novice zone ends **2026-10-28 03:33 UTC+8** (past as of 10-29). Defence timeline: `docs/DEFENSE_NOVICE.md` (2026-10-16); detail `docs/DEFENSE.md` / geometry `docs/DEFENSE_PLAN.md`.
 **Safe mode: NEVER auto-activate** — alert Misaki.
 
+## 2026-10-31 11:4x strategy review: dormant w8mminer + haul→terminal (lean KO code gap)
+- **Chose:** topic A scoped first slice — ship dormant `w8mminer` + w8hauler mineral haul to terminal (behind `RCL6_MINERALS=false`) so after leanBank we can propose the gate flip. Closes 08:4x/23:4x code gap. Deferred B (enclosed drop@31,33 episodic ~0–1.5k) and C (north tower≥600 residual).
+- **Findings (`docs/MINERAL_DEFENSE_ROADMAP.md` §5.9):** (1) Overmind ExtractorOverlord = mine→container→logistics→terminal; TerminalNetwork send is separate — matches our slice. (2) Home already has `mminer` + `hauler.mineralRun`; colony had layout/gates/obs but **no role**. (3) Live t~83976528: home RCL7 ~996k/10.9M stor~16.2k walls HOLD 300k; W47N8 ~3.519M/3.645M need~126k ETA RCL7 **~18:00–18:15 Asia/Hong_Kong**; remotes SAFE; gates OFF; leanBank armed live=0; drop@31,33 not present. (4) Remaining after this ship: **`terminal.send` W47N8→W46N8** only (checklist §5.6 item 3).
+- **Shipped:** `w8mminer` role + bodyFor + spawn behind gate; `w8hauler.mineralRun` minCont→terminal; `w8min.{hasCode,sendOk}` + gaps always include `send`; tests `w47n8_mminer` + dayobs. **Gates stay false. No send. No flip.**
+- **Reprioritise:** (1) remotes SAFE + home upg~20–22 + stor≥15k; (2) **W47N8 RCL7 ~18:00–18:15 → day-of reactive** (watch towerMinE); (3) **leanBank→colony stor≥20k (~1h)**; (4) ship **terminal.send** → propose flip `RCL6_MINERALS` only; (5) KO≥900 boost; (6) barriers→1M; (7) STATIONARY_FILL@RCL8. Defend-only W47N9. B/C remain open residuals.
+- **Plan check:** no major Misaki decision (dormant code autonomous; gate flip still propose-only). Next open: after leanBank `phase=ready`, ship `terminal.send` K→W46N8 (then propose gate flip) — vs day-of north tower≥600 (C) if towerMinE dips.
+
 ## 2026-10-31 08:4x strategy review: post-RCL7 first-hours leanBank → stor≥20k
 - **Chose:** topic A — after day-of (~50k) how to sequence tower3+spawn2 vs stor→20k for lean KO vs home upgrade throttle (RCL7 THIS afternoon ~16:30–16:45).
 - **Findings (`docs/RCL7.md` 08:4x):** (1) Natural stor→20k under full upgrade ≈ **never** (24h stor stuck 0.5–3k; surplus upgrader scales with stor). (2) Bank 2.5→20k needs ~15–25 e/t net → **~0.8–1.3 h** with ≤1 upgrader. (3) **Home throttle NOT needed** — separate economies, no terminal energy send, CPU fine. (4) Day-of stays reactive ~2–3 h (20:4x/05:4x). (5) Lean KO still blocked on **w8mminer/send** after bank.

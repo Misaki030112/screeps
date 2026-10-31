@@ -29,6 +29,8 @@ function bodyFor(role, e) {
   // were lost for good (local miners 85% working, 1 h). 6W catches up; +0.07 e/t upkeep. +1 CARRY at RCL5 to feed the source link.
   if (role === 'w8miner') { const w = Math.max(2, Math.min(6, Math.floor((e - 50) / 100))), cy = linkAt(C.SOURCES[0].link) && e >= 750 ? 1 : 0;
     return rep(Math.min(w, Math.floor((e - 50 - 50 * cy) / 100)), WORK).concat(rep(cy, CARRY), [MOVE]); }
+  // 11:4x strategy: dormant w8mminer (same body as home mminer). Only spawned while RCL6_MINERALS + extractor + minCont.
+  if (role === 'w8mminer') { const n = Math.max(2, Math.min(12, Math.floor((e - 150) / 100))); return rep(n, WORK).concat(rep(3, MOVE)); }
   // 15:10 model: local routes are paved end to end (A->ctl 25/25 road, B->ctl 16/16, hub legs 1 unpaved tile), so 2C:1M keeps full
   // speed loaded on road: 10C5M = 750 carries the same 500 as 10C10M = 1000 (-0.5 e/t upkeep over 3 haulers). Below 450: 1:1.
   if (role === 'w8hauler') { if (e < 450) { const n = Math.max(2, Math.floor(e / 100)); return rep(n, CARRY).concat(rep(n, MOVE)); }
@@ -231,6 +233,16 @@ function spawnRun(spawn) {
     // at 400 carry = ~3.6 e/t each, below the 2 sources' ~20 e/t plus decay
     // 18:05: need x1.0 (model rcarry already carries the 1.1 congestion factor; x1.1 kept 75 CARRY vs 56 with W47N7 conts empty)
     if (!want && n('w8rhauler') < 8 && rCarry(100) < rNeed + 16 * Math.floor(Math.max(0, lo7 - 3000) / 2000)) want = 'w8rhauler';
+  }
+  // 11:4x strategy: w8mminer behind RCL6_MINERALS (lean KO). Low priority — after economy/defense/remote floors.
+  // Dormant while gate false; when flipped: one miner while K remains and mineral container has room.
+  if (!want && C.RCL6_MINERALS && !raidPause) {
+    const [mx, my] = C.MINERAL_CONT || [37, 44];
+    const k = room.lookForAt(LOOK_STRUCTURES, mx, my).find(s => s.structureType === STRUCTURE_CONTAINER);
+    const ex = room.find(FIND_MY_STRUCTURES, { filter: s => s.structureType === STRUCTURE_EXTRACTOR })[0];
+    const min = (typeof FIND_MINERALS !== 'undefined' ? room.find(FIND_MINERALS) : [])[0];
+    if (k && ex && min && min.mineralAmount > 0 && k.store.getFreeCapacity() > 400
+      && !cs.some(c => c.memory.role === 'w8mminer' && (c.spawning || c.ticksToLive > 50))) want = 'w8mminer';
   }
   if (!want) { FM.idle(); return; }
   // emergency: nothing alive that refills -> spawn with what we have
@@ -447,11 +459,14 @@ function dayObs(room) {
   if (!hasTerm) gaps.push('terminal');
   if (!hasExt) gaps.push('extractor');
   if (!hasMinCont) gaps.push('minCont');
-  if (!miners) gaps.push('miner'); // expected until w8mminer ships
+  // 11:4x: w8mminer+haul shipped (dormant). Still missing terminal.send → home. Miner gap only matters once gate is on.
+  if (C.RCL6_MINERALS && !miners) gaps.push('miner');
   if (rcl < 7) gaps.push('rcl');
   if (storE < 20000) gaps.push('stor20k');
+  gaps.push('send'); // terminal.send W47N8→W46N8 not yet coded (next slice)
   o.w8min = { t: Game.time, rcl, storE, kAmt, kTerm, hasTerm: hasTerm ? 1 : 0, hasExt: hasExt ? 1 : 0,
     hasMinCont: hasMinCont ? 1 : 0, miners, minOk: C.RCL6_MINERALS ? 1 : 0, labsOk: C.RCL6_LABS ? 1 : 0,
+    hasCode: 1, sendOk: 0,
     gaps: gaps.join(','), why: gaps.length ? gaps[0] : 'ready' };
 }
 function layoutRun(room) {

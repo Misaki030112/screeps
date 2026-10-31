@@ -1,7 +1,7 @@
-# 矿物线 + 强化 + 城防路线图（2026-10-29 12:4x；14:4x boost；17:4x fundSpend；23:4x fortify；08:4x RCL7 hold 300k；11:4x post-300k exit；14:4x soft ramp 100k；20:4x day-of 不预存；23:4x lean KO 脚手架；**08:4x leanBank→stor20k**）
+# 矿物线 + 强化 + 城防路线图（2026-10-29 12:4x；14:4x boost；17:4x fundSpend；23:4x fortify；08:4x RCL7 hold 300k；11:4x post-300k exit；14:4x soft ramp 100k；20:4x day-of 不预存；23:4x lean KO 脚手架；**08:4x leanBank→stor20k**；**11:4x w8mminer+haul**）
 
 Live refresh **05:46 UTC+8 2026-10-31** tick ~83970965。**不自动交易、不开 safe mode。**
-围攻已中止；home 墙 **HOLD 300k**；殖民地 soft **COMPLETE**；**05:4x** 确认 day-of **不预存**且 spawn/eAvail 扛得住（看 `w8day.towerMinE`）；RCL7 ETA **~今晚 16:30–16:45**。day-of 后 **leanBank** 自动攒到 stor≥20k（~1h）；boost 仍等 RCL7+storage≥20k+w8mminer。seal 300k 不变。
+围攻已中止；home 墙 **HOLD 300k**；殖民地 soft **COMPLETE**；**05:4x** 确认 day-of **不预存**且 spawn/eAvail 扛得住（看 `w8day.towerMinE`）；RCL7 ETA **~今晚 18:00–18:15**。day-of 后 **leanBank** 自动攒到 stor≥20k（~1h）；boost 仍等 RCL7+storage≥20k+**send**（miner+haul ✅ 11:4x）。seal 300k 不变。
 
 ## 0. 现状（实测）
 
@@ -223,7 +223,7 @@ W47N8 在翻 `RCL6_MINERALS` **之前**，矿物线代码缺口有多大？是�
 | 矿物容器 | **未放**（ORDER 原先只有 ctl cont） | **23:4x** 加 `MINERAL_CONT=[37,44]`，随 minOk 落点 |
 | MINERAL trunk | roads.MINERAL=`[[36,43],[37,42],[37,44]]` **不在** ROADS 里 | **23:4x** layout 在 minOk 时 `baseRoads.concat(MINERAL)`（修了「翻 gate 也不铺 trunk」的旧 bug） |
 | 3 colony labs | ORDER 有；gate 默认关 | **23:4x 拆出 `RCL6_LABS=false`** |
-| w8mminer / haul / send | **无** | 下一 PR；home `mminer`/`hauler.mineralRun` 只认 home `plan.pos.mineralMiner` |
+| w8mminer / haul / send | **✅ 11:4x** miner+haul（dormant）；**send 未写** | `w8mminer` + `w8hauler.mineralRun`；`terminal.send` 下一刀 |
 | `Memory.ops.w8min` | **✅ 23:4x** | dayObs：gaps=`gate,terminal,extractor,minCont,miner,rcl,stor20k` |
 
 ### 5.3 参考（Screeps docs / Overmind / TooAngel）
@@ -250,7 +250,7 @@ W47N8 在翻 `RCL6_MINERALS` **之前**，矿物线代码缺口有多大？是�
 ### 5.6 翻 `RCL6_MINERALS` 前 checklist（仍 **propose**；不自动翻）
 1. W47N8 **RCL7** + tower3 + spawn2 落完（`w8day.why=done`）
 2. colony storage **≥20k**（且 home 墙 HOLD 300k、home stor 稳在 ≥15k）
-3. **代码：** `w8mminer` 站 37,44 + 把 K 搬进 terminal + `terminal.send`→W46N8（尚未写）
+3. **代码：** `w8mminer` 站 37,44 + 把 K 搬进 terminal **✅ 11:4x**；`terminal.send`→W46N8（**尚未写**）
 4. `Memory.ops.w8min.why` 只剩 `miner`/`stor20k` 类可解缺口
 5. **不**开 `RCL6_LABS` / `RCL7_INDUSTRY` / `ops.labs` / `mineralCap`（除非 Misaki 改口）
 
@@ -265,5 +265,15 @@ W47N8 在翻 `RCL6_MINERALS` **之前**，矿物线代码缺口有多大？是�
 - **问题：** day-of 完成后 stor 卡在 0.5–3k，自然攒不到 20k（满升级净≈0）。
 - **做法：** `leanBank` 默认开（RCL7 + spawn2/tower3/50ext 齐 + stor<20k + `!RCL6_MINERALS`）。节流升级（≤1 upgrader、回收多余、idle builder 停车），obs：`w8day.phase/bankLeft/bankEta/leanBank`。
 - **退出：** stor≥20k → `phase=ready`，恢复满升级；cushion 留给 lean KO。
-- **仍不自动翻 gate**；§5.6 checklist 不变（还缺 w8mminer/send）。
+- **仍不自动翻 gate**；§5.6 checklist：w8mminer+haul ✅；还缺 **send**。
 - 关闭：`Memory.ops.w8leanBank=false`。详见 `docs/RCL7.md` 08:4x。
+
+### 5.9 w8mminer + haul→terminal（11:4x 2026-10-31 ~11:4x Asia/Hong_Kong）
+- **问题：** leanBank 之后翻 gate 仍被「没有采/运代码」挡住（08:4x next open / 23:4x §5.6#3）。
+- **做法（Overmind ExtractorOverlord 同构，send 另开）：**
+  - `roles.w8mminer`：站 `MINERAL_CONT` 37,44，extractor 冷却外 `harvest`；无 CARRY（掉进容器）。
+  - `bodyFor('w8mminer')`：`WORK*n + 3 MOVE`（同 home mminer）；spawn 仅当 `RCL6_MINERALS` + extractor + minCont + K>0 + cont free>400。
+  - `w8hauler.mineralRun`：空载时把容器非能量矿（≥500 或近满）搬进 **terminal**（不进 storage）；gate 关时整段 dormant。
+  - obs：`w8min.hasCode=1`，`sendOk=0`，gaps 恒含 `send`。
+- **未做：** `terminal.send('W46N8', K, n)`；**未翻** `RCL6_MINERALS` / labs / industry。
+- **测试：** `tests/w47n8_mminer.js`（body / mineralRun gate / spawn want）；dayobs hasCode/send。
