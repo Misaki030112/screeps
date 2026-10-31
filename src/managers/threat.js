@@ -95,6 +95,12 @@ function step(s, o, c, t) {
       if (k === 'none') go(S.SAFE, 'gone');
       else if (!o.armed) waitNpc('gate'); // disarmed mid-THREAT: wait out, any defender recycles
       else if (k !== 'solo' && k !== 'guard' && k !== 'core') waitNpc(k === 'short' ? 'short_ttl' : 'escalated');
+      // solo/guard creep died but an Invader core remains: drop the kite, re-arm as a core buster mission
+      else if (k === 'core' && s.mission !== 'core') {
+        s.mission = 'core'; if (o.corePos) s.corePos = o.corePos.slice();
+        delete s.def; delete s.def2; delete s.arrived; delete s.need2;
+        go(S.THREAT, 'core');
+      }
       else if (o.def === 'out') go(S.DEFEND, 'dispatched');
       else if (o.def !== 'spawning' && t - s.since > c.readyTimeout) waitNpc('timeout');
       break;
@@ -104,6 +110,12 @@ function step(s, o, c, t) {
       else if (o.def === 'none') waitNpc('defender_expired');
       else if (k === 'none' && o.vis && t - s.gone >= c.clearTicks) go(S.SAFE, 'killed');
       else if (k === 'none' && !o.vis && !(o.inv || []).length && s.mission !== 'core') go(S.SAFE, 'gone'); // foe memory expired, nothing left to project
+      // solo kite finished the creep but a core remains (W45N7@83983760: mission=solo DEFEND stuck while core@9,44 lived)
+      else if (k === 'core' && s.mission !== 'core') {
+        s.mission = 'core'; if (o.corePos) s.corePos = o.corePos.slice();
+        delete s.def; delete s.def2; delete s.arrived; delete s.need2; delete s.early;
+        go(S.THREAT, 'core');
+      }
       else if (s.mission === 'core' && k !== 'core' && k !== 'none') waitNpc(k === 'short' ? 'short_ttl' : 'escalated'); // melee body does not duel creeps
       else if (k === 'invader') waitNpc('escalated');
       else if (k === 'core' && t - s.since > (c.coreDefendTimeout || 1000)) waitNpc('defend_timeout');

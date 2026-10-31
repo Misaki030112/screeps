@@ -102,6 +102,22 @@ it('player creeps outrank a core: WAIT player, never a core buster and never a g
   assert.strictEqual(r.s.st, 'WAIT'); assert.strictEqual(r.s.why, 'player');
   assert.strictEqual(run([[1, { core: true, players: 1, hereP: 0 }]]).s.why, 'player'); // player on the route
 });
+it('solo DEFEND upgrades to core THREAT when the creep dies and a core remains', () => {
+  const live = { st: 'DEFEND', since: 1, why: 'dispatched', mission: 'solo', def: 'd1', gone: 1, last: null, arrived: 1, early: true };
+  const r = run([[50, { core: true, corePos: [9, 44], def: 'out' }]], live);
+  assert.strictEqual(r.s.st, 'THREAT');
+  assert.strictEqual(r.s.mission, 'core');
+  assert.strictEqual(r.s.why, 'core');
+  assert.strictEqual(r.s.def, undefined);
+  assert.deepStrictEqual(r.s.corePos, [9, 44]);
+});
+it('solo THREAT with kite out upgrades to core (no DEFEND on a kite vs core)', () => {
+  const live = { st: 'THREAT', since: 1, why: 'solo', mission: 'solo', def: 'd1' };
+  const r = run([[10, { core: true, corePos: [9, 44], def: 'out' }]], live);
+  assert.strictEqual(r.s.st, 'THREAT');
+  assert.strictEqual(r.s.mission, 'core');
+  assert.strictEqual(r.s.def, undefined);
+});
 it('solo invader still takes the ranged path when a core is also present', () => {
   assert.strictEqual(run([[1, { core: true, inv: solo() }]]).evs[0], 'threat:solo');
   assert.notStrictEqual(run([[1, { core: true, inv: solo() }]]).s.mission, 'core');
