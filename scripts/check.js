@@ -26,6 +26,7 @@ execSync('node ' + path.join(__dirname, '..', 'tests', 'core_buster.js'), { stdi
 execSync('node ' + path.join(__dirname, '..', 'tests', 'reserved_guard_spawn.js'), { stdio: 'pipe' });
 execSync('node ' + path.join(__dirname, '..', 'tests', 'defender_duel.js'), { stdio: 'pipe' });
 execSync('node ' + path.join(__dirname, '..', 'tests', 'defender_guard_kite.js'), { stdio: 'pipe' });
+execSync('node ' + path.join(__dirname, '..', 'tests', 'defender_guard_idle.js'), { stdio: 'pipe' });
 execSync('node ' + path.join(__dirname, '..', 'tests', 'kite.js'), { stdio: 'pipe' });
 execSync('node ' + path.join(__dirname, '..', 'tests', 'w47n8_defense.js'), { stdio: 'pipe' });
 execSync('node ' + path.join(__dirname, '..', 'tests', 'w47n8_tower.js'), { stdio: 'pipe' });

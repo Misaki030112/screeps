@@ -282,7 +282,7 @@ function kite(c, t, flee, approaching) {
   c.memory.kd = d || undefined; if (d) c.move(d); }
 const meleeOf = h => h.body.some(p => p.type === ATTACK && p.hits > 0);
 const rangedOf = h => h.body.some(p => p.type === RANGED_ATTACK && p.hits > 0);
-const F = require('../utils/focus');
+const F = require('../utils/focus'), GP = require('../utils/guardpost');
 // patrol loop: [remoteKey(route), room, x, y, linger]
 const PATROL = [['W45N7', 'W45N8', 24, 43, 40], ['W45N7', 'W45N7', 20, 12, 10], ['W45N7', 'W45N8', 24, 43, 40], ['W45N8', 'W45N8', 10, 8, 10]];
 const patrolOn = () => require('../managers/home').on('remotePatrol');
@@ -360,8 +360,16 @@ roles.defender = function (c) {
   // on an exit tile with an Invader within 4 (exit campers): fight from here instead of blindly stepping toward the container
   if (!here || (edge && !inv.some(h => c.pos.inRangeTo(h, 4)))) return go(c, rm, C.cont[0], C.cont[1], 2);
   const P = t0, t = P ? P.h : null;
-  // after a kill (FSM still DEFEND for clearTicks): hold at the kill spot (tombstone stays covered), don't walk to the container
-  if (!t) { if (c.memory.lk) return; return move.to(c, C.cont[0], C.cont[1], 2); }
+  // no target: after a kill (FSM still DEFEND for clearTicks) hold near the kill spot (tombstone stays covered), otherwise
+  // patrol the room's guard post (utils/guardpost: never on a road/container/exit lane or next to a source/controller).
+  // 2026-10-31: rdef83982033 held its W47N7 kill spot 18,1 (next to exit 18,0 on the rhauler lane) for good, because guard
+  // remotes never patrol/recycle; Misaki: 别挡路，驻守 27,19，四处巡逻. Engage above is unchanged and runs first every tick.
+  if (!t) {
+    if (fighting && c.memory.lk) return GP.hold(c, c.memory.lk[0], c.memory.lk[1], move);
+    delete c.memory.lk; delete c.memory.tg; delete c.memory.ep; delete c.memory.kw; delete c.memory.kr;
+    return GP.patrol(c, C, move);
+  }
+  delete c.memory.gp;
   c.memory.lk = [t.pos.x, t.pos.y];
   // Same target as last tick? Range shrinking is not "they are closing": our own step shrinks it too.
   const same = c.memory.tg === t.id, eprev = same && c.memory.ep;
