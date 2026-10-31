@@ -377,15 +377,27 @@ function dayofMiss(room) {
   return { missSpawn: !has(STRUCTURE_SPAWN, sx, sy), missTower: !has(STRUCTURE_TOWER, tx, ty),
     missExt: Math.max(0, 50 - nExt) };
 }
+// 23:4x 2026-10-31 strategy: after gate flip, keep leanBank until terminal + mineral container stand
+// (~110k lean KO build). Otherwise `if (RCL6_MINERALS) return false` would disarm on flip and full
+// upgrade would starve the terminal/minCont sites as soon as stor dipped below 20k.
+function leanMinBuild(room) {
+  if (!C.RCL6_MINERALS) return false;
+  if (!room.terminal) return true;
+  const [mx, my] = C.MINERAL_CONT || [37, 44];
+  return !room.lookForAt(LOOK_STRUCTURES, mx, my).some(s => s.structureType === STRUCTURE_CONTAINER);
+}
 function leanBank(room) {
   // 20:4x 2026-10-31: arm after day-crit (spawn2+tower3) — do NOT wait for 50ext.
   // 17:4x already said flip/bank need not wait on the ext wave; §5.8 "50ext齐" was a doc/code mismatch.
+  // 23:4x: stay armed while lean KO logistics structures are still missing after the gate flip.
   const o = Memory.ops || {};
   if (o.w8leanBank === false) return false;
   if (!room.controller || room.controller.level < 7) return false;
-  if (C.RCL6_MINERALS) return false;
+  const minBuild = leanMinBuild(room);
+  if (C.RCL6_MINERALS && !minBuild) return false; // gate on + terminal+minCont live → normal economy
   const storE = room.storage && room.storage.store ? (room.storage.store[RESOURCE_ENERGY] || 0) : 0;
-  if (storE >= LEAN_STOR) return false;
+  // Pre-flip: bank until 20k. Post-flip minBuild: keep throttle until structs exist (sites need the energy).
+  if (!minBuild && storE >= LEAN_STOR) return false;
   const m = dayofMiss(room);
   return !(m.missSpawn || m.missTower);
 }
@@ -497,11 +509,19 @@ function dayObs(room) {
   if (rcl >= 7) why = (missSpawn || missTower) ? 'dayof' : 'done';
   else if (need < 80000) why = 'near';
   // 08:4x/20:4x: phase splits post-daycrit into bank20 (stor<20k) vs ready (≥20k cushion for lean KO).
+  // 23:4x: minBuild while gate on but terminal/minCont still missing (post-flip lean KO construction).
   let phase = why;
-  if (why === 'done') phase = storE >= LEAN_STOR ? 'ready' : 'bank20';
-  const bankLeft = Math.max(0, LEAN_STOR - storE);
+  const minBuild = leanMinBuild(room);
+  if (why === 'done') {
+    if (minBuild) phase = 'minBuild';
+    else if (C.RCL6_MINERALS || storE >= LEAN_STOR) phase = 'ready'; // gate live or cushion filled
+    else phase = 'bank20';
+  }
+  const bankLeft = (minBuild || C.RCL6_MINERALS) ? 0 : Math.max(0, LEAN_STOR - storE);
   // ~20 e/t net while leanBank (≤1 upgrader). Mid-ext, sites still sink energy first → fold siteRem into ETA.
-  const bankEta = bankLeft <= 0 ? 0 : (leanBank(room) ? Math.ceil((bankLeft + siteRemV) / 20) : -1);
+  // minBuild: ETA ≈ remaining mineral sites / 20 (stor cushion already spent into sites).
+  const bankEta = (!leanBank(room)) ? (bankLeft <= 0 ? 0 : -1)
+    : (minBuild ? Math.ceil((siteRemV || 1) / 20) : Math.ceil((bankLeft + siteRemV) / 20));
   o.w8day = { t: Game.time, rcl, need, siteRem: siteRemV, builders, upgraders, storE, bill,
     missSpawn: missSpawn ? 1 : 0, missTower: missTower ? 1 : 0, missExt, why, phase,
     bankLeft, bankEta, leanBank: leanBank(room) ? 1 : 0, towerMinE, towerHubE, towerNorthE, nf, eAvail, eCap };
@@ -527,12 +547,26 @@ function dayObs(room) {
   // no longer gap 'send' — code present; live readiness is sendWhy (gate/noK/noE/…)
   const prev = o.w8min || {};
   const termE = hasTerm ? (room.terminal.store[RESOURCE_ENERGY] || 0) : 0;
+  // 23:4x strategy: flipReady = full §5.6 propose checklist (does NOT auto-flip).
+  // Structural gaps (gate/terminal/minCont) are expected until Misaki flips — excluded from flipGaps.
+  const FLIP_TOWER = 600, FLIP_HOME = 15000, HOME = 'W46N8';
+  const flipGaps = [];
+  if (missSpawn || missTower) flipGaps.push('daycrit');
+  if (storE < LEAN_STOR) flipGaps.push('stor20k');
+  if (towerMinE >= 0 && towerMinE < FLIP_TOWER) flipGaps.push('towerE');
+  const home = Game.rooms[HOME];
+  const homeStor = (home && home.storage && home.storage.store)
+    ? (home.storage.store[RESOURCE_ENERGY] || 0) : -1;
+  if (homeStor >= 0 && homeStor < FLIP_HOME) flipGaps.push('homeStor');
+  if (C.RCL6_MINERALS) flipGaps.push('already');
+  const flipReady = flipGaps.length === 0 ? 1 : 0;
   o.w8min = { t: Game.time, rcl, storE, kAmt, kTerm, hasTerm: hasTerm ? 1 : 0, hasExt: hasExt ? 1 : 0,
     hasMinCont: hasMinCont ? 1 : 0, miners, minOk: C.RCL6_MINERALS ? 1 : 0, labsOk: C.RCL6_LABS ? 1 : 0,
     hasCode: 1, sendOk: 1, termE,
     sendWhy: prev.sendWhy || (C.RCL6_MINERALS ? 'idle' : 'gate'),
     lastSend: prev.lastSend || 0, lastAmt: prev.lastAmt || 0, needE: prev.needE || 0, cd: prev.cd || 0,
-    gaps: gaps.join(','), why: gaps.length ? gaps[0] : 'ready' };
+    gaps: gaps.join(','), why: gaps.length ? gaps[0] : 'ready',
+    flipReady, flipGaps: flipGaps.join(','), homeStor, minBuild: minBuild ? 1 : 0 };
 }
 function layoutRun(room) {
   mineralSend(room); // every tick; dormant while RCL6_MINERALS false
@@ -747,4 +781,4 @@ function selfSufficient() {
   const r = Game.rooms[C.ROOM]; if (!r || !r.find(FIND_MY_SPAWNS).length) return false;
   return mine().some(c => c.memory.role === 'w8miner'); // Spawn2 + its own miner -> home stops cq pioneers/haulers (guard stays)
 }
-module.exports = { sealAt, banking, BANK_HOLD, LEAN_STOR, leanBank, energyBank, dayofMiss, moveRun, moveReady, rampNeeded, homeWant, linkAt, linkRun, rampHold, dayObs, mineralSend, swapTemp, extBatch, energyOrder, ROOM: C.ROOM, spawnRun, layoutRun, towerRun, selfSufficient, bodyFor, rmLead8 };
+module.exports = { sealAt, banking, BANK_HOLD, LEAN_STOR, leanBank, leanMinBuild, energyBank, dayofMiss, moveRun, moveReady, rampNeeded, homeWant, linkAt, linkRun, rampHold, dayObs, mineralSend, swapTemp, extBatch, energyOrder, ROOM: C.ROOM, spawnRun, layoutRun, towerRun, selfSufficient, bodyFor, rmLead8 };

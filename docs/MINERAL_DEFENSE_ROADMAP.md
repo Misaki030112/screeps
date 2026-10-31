@@ -1,7 +1,7 @@
 # 矿物线 + 强化 + 城防路线图（2026-10-29 12:4x；14:4x boost；17:4x fundSpend；23:4x fortify；08:4x RCL7 hold 300k；11:4x post-300k exit；14:4x soft ramp 100k；20:4x day-of 不预存；23:4x lean KO 脚手架；**08:4x leanBank→stor20k**；**11:4x w8mminer+haul**）
 
-Live refresh **20:4x UTC+8 2026-10-31** tick ~83984600。**不自动交易、不开 safe mode。**
-围攻已中止；home 墙 **HOLD 300k** stor~14k UNDER；殖民地 **RCL7**；soft **COMPLETE**；**day-crit DONE**（spawn2+tower3），10ext 波次中（missExt~10；storE=0）。**20:4x** 修 leanBank：day-crit 后立刻 arm（不等 50ext）。**leanBank→stor≥20k** → **propose** 翻 `RCL6_MINERALS`（miner+haul+send ✅）。seal 300k 不变。
+Live refresh **23:4x UTC+8 2026-10-31** tick ~83987300。**不自动交易、不开 safe mode。**
+围攻已中止；home 墙 **HOLD 300k** stor~15.5k ABOVE thin；殖民地 **RCL7**；soft **COMPLETE**；**day-crit DONE** + **missExt0 DONE**；**leanBank bank20** stor~13.3k bankLeft~6.7k bankEta~338t（~0.4 h）。**23:4x** 补 flipReady obs + 翻 gate 后 leanBank 保持到 terminal+minCont 落成。仍 **propose** 翻 `RCL6_MINERALS`（code ✅）。seal 300k 不变。
 
 ## 0. 现状（实测）
 
@@ -301,3 +301,29 @@ W47N8 在翻 `RCL6_MINERALS` **之前**，矿物线代码缺口有多大？是�
 - **修法：** `leanBank` / `why` / `phase` 只看 day-crit；`missExt`/`siteRem` 仍上报；`bankEta = ceil((bankLeft+siteRem)/20)`。Builders 继续啃站点，多余 upgrader 回收。
 - **未做：** 翻任何 gate；不改 home throttle；不改 hubNeedy。
 - **测试：** `w47n8_dayobs` mid-ext leanBank；`w47n8_move_bank` 40ext arm。
+
+### 5.13 RCL6_MINERALS flip-ready + post-flip leanBank hold（23:4x 2026-10-31 ~23:4x Asia/Hong_Kong）
+
+**选了什么问题：** leanBank 快结束（missExt0 DONE，bankLeft~6.7k / ~0.4 h）时，§5.6 checklist 是否齐全？翻 gate 后 ~110k terminal+minCont 建设会不会被满升级饿死？
+
+**Live（t~83987300）：**
+| 项 | 值 |
+|---|---|
+| W47N8 | RCL7；missExt**0** siteRem0；storE~13.3k；phase=**bank20** leanBank=1 towerMinE~820 |
+| Home | RCL7 ~10.9%；stor~15.5k ABOVE；walls HOLD 300k；O 本轮采空；term O~122k；labs idle |
+| Remotes | W45N8/W45N7/W47N7 **SAFE**（W45N7 ep83986359 cleared） |
+| w8min.gaps | `gate,terminal,minCont,stor20k`（code hasCode/sendOk=1） |
+| CPU | ~12–14 / 20；bucket 10000 — 矿物线 +1 w8mminer 可承受 |
+
+**参考（Overmind / Screeps docs）：**
+- Overmind 在 RCL6 **有 extractor 就采**，不要求 stor≥20k；TerminalNetwork 另管跨房。我们更紧：先 bank 20k 再落 terminal（~100k），避免 day-of 后贴零。
+- Overmind `storageBuffer`~100k 才猛升工业；我们 20k 只是 lean KO **开工门槛**，不是工业水位。
+- 翻 gate 后若 `leanBank` 因 `RCL6_MINERALS` 立刻关掉，stor 被站点抽到 <20k 时**不会再 arm** → 满升级与 ~110k 建设抢能量（TooAngel 建设期砍 upgrader 的反面）。
+
+**结论 / 交付：**
+1. **`w8min.flipReady` / `flipGaps` / `homeStor`**：编码 §5.6 propose checklist（daycrit + stor≥20k + towerMinE≥600 + homeStor≥15k；**不含** gate/terminal/minCont — 那些是翻 gate 才落的）。`flipReady=1` 时巡逻应 **WakeParent propose**，**不自动翻**。
+2. **`leanMinBuild` + phase=`minBuild`**：gate 开且缺 terminal 或矿容器时 **继续 leanBank**，直到两者落成；之后 phase=`ready`、leanBank off。
+3. **仍不开** `RCL6_LABS` / `RCL7_INDUSTRY` / `ops.labs` / 市场。
+4. **时机：** bankEta~0.4 h 后 `phase=ready`；若 homeStor≥15k 且 towerMinE≥600 → `flipReady=1` → **propose** 翻。翻后预计 1–1.5 h 建完 lean KO 物流，再采 K→send home。
+
+**测试：** `w47n8_dayobs` flipReady / minBuild / post-complete；move_bank + mminer 回归。

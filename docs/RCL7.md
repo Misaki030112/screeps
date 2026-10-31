@@ -323,3 +323,9 @@ Closes 11:4x remaining code gap: `mineralSend` + `termFuel` behind `RCL6_MINERAL
 
 ### Shipped
 - `src/rooms/w47n8/index.js` leanBank + dayObs; tests mid-ext; docs §5.8/§5.12. **No gate flips. No home throttle.**
+
+## 2026-10-31 23:4x — flipReady + post-flip leanBank hold
+
+**Question:** When bank20 completes, is the lean KO flip checklist clear? Does flipping `RCL6_MINERALS` disarm leanBank too early?
+
+**Answer:** Ship `w8min.flipReady` (propose-only). Keep leanBank through `phase=minBuild` until terminal+minCont exist after a future flip. **Do not flip in this run.** See `docs/MINERAL_DEFENSE_ROADMAP.md` §5.13.

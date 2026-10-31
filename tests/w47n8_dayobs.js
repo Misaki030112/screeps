@@ -126,5 +126,52 @@ assert.ok(m.gaps.indexOf('gate') >= 0, 'gaps includes gate: ' + m.gaps);
 assert.ok(m.gaps.indexOf('send') < 0, 'send code shipped — gaps must not include send: ' + m.gaps);
 assert.strictEqual(m.why, 'gate');
 assert.strictEqual(m.hasCode, 1);
+
 assert.strictEqual(m.sendOk, 1);
+// 23:4x flipReady checklist (propose-only; gate/terminal/minCont excluded from flipGaps)
+assert.strictEqual(m.flipReady, 0, 'stor 2.1k → not flipReady');
+assert.ok(m.flipGaps.indexOf('stor20k') >= 0, 'flipGaps=' + m.flipGaps);
+assert.ok(m.flipGaps.indexOf('daycrit') >= 0, 'RCL6 missing spawn2/tower3 → daycrit: ' + m.flipGaps);
+// RCL7 daycrit done + stor20k + tower healthy + home stor≥15k → flipReady
+Game.rooms.W46N8 = { storage: { store: { energy: 16000 } } };
+const flipOk = mk(7, done, [], 0); flipOk.storage.store.energy = 20000;
+W.dayObs(flipOk);
+assert.strictEqual(Memory.ops.w8day.phase, 'ready');
+assert.strictEqual(Memory.ops.w8min.flipReady, 1, 'flipGaps=' + Memory.ops.w8min.flipGaps);
+assert.strictEqual(Memory.ops.w8min.flipGaps, '');
+assert.strictEqual(Memory.ops.w8min.homeStor, 16000);
+assert.strictEqual(Memory.ops.w8min.minBuild, 0);
+// home thin → homeStor gap
+Game.rooms.W46N8.storage.store.energy = 12000;
+W.dayObs(flipOk);
+assert.strictEqual(Memory.ops.w8min.flipReady, 0);
+assert.ok(Memory.ops.w8min.flipGaps.indexOf('homeStor') >= 0);
+Game.rooms.W46N8.storage.store.energy = 16000;
+// tower low → towerE gap
+const lowT = mk(7, done, [], 0); lowT.storage.store.energy = 20000;
+lowT.find(FIND_MY_STRUCTURES, { filter: s => s.structureType === 'tower' }).forEach(t => { t.store.energy = 400; });
+W.dayObs(lowT);
+assert.ok(Memory.ops.w8min.flipGaps.indexOf('towerE') >= 0);
+// post-flip minBuild: gate on, no terminal → leanBank stays ON, phase=minBuild
+const C = require(path.join(d, 'config'));
+C.RCL6_MINERALS = true;
+const postFlip = mk(7, done, [], 0); postFlip.storage.store.energy = 5000; // dipped during build
+W.dayObs(postFlip);
+assert.strictEqual(Memory.ops.w8day.phase, 'minBuild');
+assert.strictEqual(Memory.ops.w8day.leanBank, 1, 'leanBank holds through mineral build');
+assert.strictEqual(Memory.ops.w8min.minBuild, 1);
+assert.ok(Memory.ops.w8min.flipGaps.indexOf('already') >= 0);
+assert.strictEqual(Memory.ops.w8min.flipReady, 0);
+// terminal + minCont live → leanBank off even if stor low
+const withTerm = mk(7, done.concat([[35, 33, 'terminal'], [37, 44, 'container']]), [], 0);
+withTerm.storage.store.energy = 5000;
+withTerm.terminal = { store: {} };
+W.dayObs(withTerm);
+assert.strictEqual(Memory.ops.w8day.leanBank, 0, 'logistics complete → leanBank off');
+assert.strictEqual(Memory.ops.w8min.minBuild, 0);
+assert.strictEqual(Memory.ops.w8day.phase, 'ready');
+assert.strictEqual(Memory.ops.w8day.leanBank, 0);
+C.RCL6_MINERALS = false;
+delete Game.rooms.W46N8;
+
 console.log('w47n8_dayobs ok');
