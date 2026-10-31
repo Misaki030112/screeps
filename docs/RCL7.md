@@ -284,3 +284,18 @@ Closes the 08:4x "still needs w8mminer/send" half: colony now has dormant miner 
 
 ## 2026-10-31 14:4x — lean KO send shipped (dormant)
 Closes 11:4x remaining code gap: `mineralSend` + `termFuel` behind `RCL6_MINERALS=false`. Flip still waits RCL7 + day-of + leanBank ready + Misaki propose. Detail: `docs/MINERAL_DEFENSE_ROADMAP.md` §5.10. Live ETA RCL7 **~17:20–18:00 Asia/Hong_Kong** (need~57k).
+
+
+## 2026-10-31 17:4x — day-of north tower ≥600 (topic B residual)
+
+**Question:** Live day-of after RCL7@83981380 — does north tower stay ≥600 under builder drain, or need filler ignore `hubNeedy` @towerE<500?
+
+**Answer: Do not change hubNeedy.** North towers (24,8 + new 22,7) are served by `northFeed@600`, not the hub filler. Live ~33 min in: towerMinE 860, eA full, stor 0. Detail: `docs/PLAN_W47N8.md` 17:4x.
+
+### Shipped
+- `w8day.{towerHubE,towerNorthE,nf}` + `tests/w47n8_dayobs.js`. Deploy this run. **Gates stay false.**
+
+### Sequence after this
+1. Finish day-of (~2–3 h) watching `towerNorthE`/`nf`.
+2. leanBank → stor≥20k (~1 h).
+3. **Propose** flip `RCL6_MINERALS` only (code ready). No wait for ext wave beyond day-of done.

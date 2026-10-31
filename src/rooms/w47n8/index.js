@@ -474,10 +474,19 @@ function dayObs(room) {
   if (missTower && !sites.some(s => s.structureType === STRUCTURE_TOWER && s.pos.x === tx && s.pos.y === ty)) bill += 5000;
   const extSites = sites.filter(s => s.structureType === STRUCTURE_EXTENSION).length;
   bill += Math.max(0, missExt - extSites) * 3000;
-  // 05:4x strategy: day-of energy crash watch (docs/PLAN_W47N8.md / docs/RCL7.md). Tower min + spawn pool
-  // so patrol can alert if north tower dips while hubNeedy blocks filler during the first 20k site wave.
+  // 05:4x strategy: day-of energy crash watch (docs/PLAN_W47N8.md / docs/RCL7.md).
+  // 17:4x: north towers (inRange 4 of source-A stand) are fed by northFeed@600, NOT filler/hubNeedy —
+  // split towerHubE/towerNorthE/nf so patrol can tell which path dipped. Filler hubNeedy only affects hub tower.
   const towers = room.find(FIND_MY_STRUCTURES, { filter: s => s.structureType === STRUCTURE_TOWER });
   const towerMinE = towers.length ? Math.min(...towers.map(t => (t.store && t.store[RESOURCE_ENERGY]) || 0)) : -1;
+  const [ax, ay] = (C.SOURCES[0] && C.SOURCES[0].stand) || [26, 11];
+  let towerNorthE = -1, towerHubE = -1;
+  for (const t of towers) {
+    const e = (t.store && t.store[RESOURCE_ENERGY]) || 0;
+    if (t.pos.inRangeTo(ax, ay, 4)) towerNorthE = towerNorthE < 0 ? e : Math.min(towerNorthE, e);
+    else towerHubE = towerHubE < 0 ? e : Math.min(towerHubE, e);
+  }
+  const nf = towerNorthE >= 0 && towerNorthE < 600 ? 1 : 0;
   const eAvail = room.energyAvailable || 0, eCap = room.energyCapacityAvailable || 0;
   let why = 'upgrade';
   if (rcl >= 7) why = (missSpawn || missTower || missExt > 0 || siteRemV > 0) ? 'dayof' : 'done';
@@ -490,7 +499,7 @@ function dayObs(room) {
   const bankEta = bankLeft <= 0 ? 0 : (leanBank(room) ? Math.ceil(bankLeft / 20) : -1);
   o.w8day = { t: Game.time, rcl, need, siteRem: siteRemV, builders, upgraders, storE, bill,
     missSpawn: missSpawn ? 1 : 0, missTower: missTower ? 1 : 0, missExt, why, phase,
-    bankLeft, bankEta, leanBank: leanBank(room) ? 1 : 0, towerMinE, eAvail, eCap };
+    bankLeft, bankEta, leanBank: leanBank(room) ? 1 : 0, towerMinE, towerHubE, towerNorthE, nf, eAvail, eCap };
   leanBankRecycle(room);
   // 23:4x strategy: lean KO readiness (docs/MINERAL_DEFENSE_ROADMAP.md §5). Dormant report only — gates stay false.
   const [mx, my] = C.MINERAL_CONT || [37, 44];

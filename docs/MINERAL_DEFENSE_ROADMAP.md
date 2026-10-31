@@ -1,7 +1,7 @@
 # 矿物线 + 强化 + 城防路线图（2026-10-29 12:4x；14:4x boost；17:4x fundSpend；23:4x fortify；08:4x RCL7 hold 300k；11:4x post-300k exit；14:4x soft ramp 100k；20:4x day-of 不预存；23:4x lean KO 脚手架；**08:4x leanBank→stor20k**；**11:4x w8mminer+haul**）
 
-Live refresh **05:46 UTC+8 2026-10-31** tick ~83970965。**不自动交易、不开 safe mode。**
-围攻已中止；home 墙 **HOLD 300k**；殖民地 soft **COMPLETE**；**05:4x** 确认 day-of **不预存**且 spawn/eAvail 扛得住（看 `w8day.towerMinE`）；RCL7 ETA **~今晚 18:00–18:15**。day-of 后 **leanBank** 自动攒到 stor≥20k（~1h）；boost 仍等 RCL7+storage≥20k+**send**（miner+haul ✅ 11:4x）。seal 300k 不变。
+Live refresh **17:44 UTC+8 2026-10-31** tick ~83981860。**不自动交易、不开 safe mode。**
+围攻已中止；home 墙 **HOLD 300k**；殖民地 **RCL7@83981380 ~17:13**；soft **COMPLETE**；**day-of 进行中**（spawn2+tower3 sites；stor~0；towerMinE~860）。**17:4x** 关闭 hubNeedy 残题：北塔走 `northFeed@600`，不改 filler。day-of 后 **leanBank→stor≥20k（~1h）** → **propose** 翻 `RCL6_MINERALS`（miner+haul+send ✅）。seal 300k 不变。
 
 ## 0. 现状（实测）
 
@@ -288,3 +288,9 @@ W47N8 在翻 `RCL6_MINERALS` **之前**，矿物线代码缺口有多大？是�
 - **Home 接收：** `managers/labs` KO 已从 home terminal 抽 K/O — send 落点正确，无需新 receive 代码。
 - **未做：** 翻 `RCL6_MINERALS` / labs / industry；不在 live 发矿。
 - **测试：** `tests/w47n8_mminer.js`（send gate/noK/noE/sent/cd + termFuel）；`w47n8_dayobs` sendOk=1。
+
+### 5.11 day-of north tower ≥600 / close hubNeedy residual（17:4x 2026-10-31 ~17:4x Asia/Hong_Kong）
+- **问题：** day-of 建设期北塔会不会掉到 <600？要不要 filler 在 towerE<500 时忽略 `hubNeedy`？
+- **结论：不要改 hubNeedy。** 北塔 24,8 / 22,7 由 `northFeed`（阈值=600）供能，filler 只管 hub 塔。Live towerMinE~860。obs：`w8day.towerHubE/towerNorthE/nf`。
+- **翻 gate 时机（仍 propose）：** day-of done + leanBank `phase=ready`（stor≥20k）+ towerMinE 健康。不需要再等 ext 波次单独完成。
+

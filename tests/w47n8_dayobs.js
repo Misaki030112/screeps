@@ -17,7 +17,7 @@ Object.assign(global, K, { _: require('lodash'), Memory: { ops: { w8layout: 'app
 const W = require(path.join(d, 'index.js')), L = require(path.join(d, 'layout'));
 function mk(rcl, built, creeps, progressLeft) {
   const st = {}, sites = [];
-  for (const [x, y, t] of built) (st[x * 50 + y] = st[x * 50 + y] || []).push({ structureType: t, pos: { x, y }, store: t === 'tower' ? { energy: 900 } : undefined });
+  for (const [x, y, t] of built) (st[x * 50 + y] = st[x * 50 + y] || []).push({ structureType: t, pos: { x, y, inRangeTo(x2, y2, r) { return Math.max(Math.abs(this.x - x2), Math.abs(this.y - y2)) <= r; } }, store: t === 'tower' ? { energy: 900 } : undefined });
   const pt = 3645000, p = pt - (progressLeft == null ? 400000 : progressLeft);
   const room = {
     name: 'W47N8',
@@ -50,11 +50,23 @@ assert.strictEqual(d0.bill, 50000);
 assert.strictEqual(d0.builders, 1);
 assert.strictEqual(d0.upgraders, 3);
 assert.strictEqual(d0.towerMinE, 900);
+assert.strictEqual(d0.towerHubE, 900); // 33,35 not inRange4 of stand 26,11
+assert.strictEqual(d0.towerNorthE, 900); // 24,8 inRange4 of stand
+assert.strictEqual(d0.nf, 0); // north ≥600 → northFeed idle
 assert.strictEqual(d0.eAvail, 1800);
 assert.strictEqual(d0.eCap, 2300);
 // near RCL7
 W.dayObs(mk(6, base, [], 50000));
 assert.strictEqual(Memory.ops.w8day.why, 'near');
+// 17:4x: north tower low → nf=1 (hub stays high); towerMinE tracks the dip
+const lowN = mk(6, base, [], 50000);
+const nt = lowN.find(FIND_MY_STRUCTURES, { filter: s => s.structureType === 'tower' && s.pos.x === 24 })[0];
+nt.store.energy = 450;
+W.dayObs(lowN);
+assert.strictEqual(Memory.ops.w8day.towerNorthE, 450);
+assert.strictEqual(Memory.ops.w8day.towerHubE, 900);
+assert.strictEqual(Memory.ops.w8day.towerMinE, 450);
+assert.strictEqual(Memory.ops.w8day.nf, 1);
 // RCL7 with spawn2+tower3+50ext done
 const done = base.concat([[33, 30, 'spawn'], [22, 7, 'tower']], L.ORDER.extension.slice(40, 50).map(([x, y]) => [x, y, 'extension']));
 W.dayObs(mk(7, done, [], 0));

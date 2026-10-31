@@ -259,3 +259,26 @@ Shipped colony mineral **roles** behind `RCL6_MINERALS=false`: `w8mminer` (stand
 
 ## 2026-10-31 14:4x — dormant terminal.send K→W46N8
 Lean KO code path complete (mine→cont→haul→term→**send**→home labs). Gates stay false. After RCL7 day-of + leanBank `phase=ready`, propose flip `RCL6_MINERALS` only. See `docs/MINERAL_DEFENSE_ROADMAP.md` §5.10.
+
+
+## 2026-10-31 17:4x — day-of north tower ≥600 (close 05:4x residual)
+
+**Question:** During live day-of (stor~0, builders on spawn2+tower3), does north tower stay ≥600, or should filler ignore `hubNeedy` when towerE<500?
+
+**Answer: NO hubNeedy change. North path already self-heals at 600 via `northFeed`. Watch `w8day.towerNorthE` / `nf`.**
+
+### Architecture correction vs 05:4x framing
+| Path | Towers | Refill | Gated by hubNeedy? |
+|---|---|---|---|
+| Hub filler | 33,35 (≤8 of POST 34,32) | filler last-job + adj transfer when free≥300 | **Yes** |
+| North feed | **24,8 and 22,7** (inRange4 of stand A 26,11) | miner skips link → cont 26,11; haulers ×3 + fillTarget 2–4 tiles | **No** |
+
+`NORTH_FEED = 600` **is** the ≥600 watchline. Ignoring hubNeedy when towerE<500 would only help the **hub** tower, and haulers already cover towers with free>200.
+
+### Live proof (t~83981860 ≈ 17:44 Asia/Hong_Kong; RCL7 since 83981380 ~17:13)
+- Sites: spawn@33,30 0/15k + tower@22,7 0/5k; builders 3×6W starting; storE 0; eA≈4300/4300.
+- Towers: hub 880 / north 860 → `towerMinE` 860; hostiles 0; soft COMPLETE → peacetime tower drain ≈0.
+- Overmind: Hatchery `refillTowersBelow=750`, SporeCrawler request 500 / critical 250 ×2 — our hauler+northFeed already match the spirit.
+
+### Observability
+`Memory.ops.w8day` adds `towerHubE`, `towerNorthE`, `nf` (1 when north <600). Patrol: dayof + (`towerNorthE<500` or `nf=1` for long) → alert. Still no fill-priority / gate flip this run.
