@@ -171,7 +171,7 @@ function spawnRun(spawn) {
     && !raidPause && !cs.some(c => c.memory.role === 'w8builder' && (c.spawning || c.ticksToLive >= 700))) want = 'w8builder';
   if (!want && wallsLow && nUp() < (raidPause ? 1 : (room.controller.ticksToDowngrade < 10000 || stock8() > 3000 ? 2 : 1))) want = 'w8upgrader';
   else if (!want && !raidPause && wallsLow && n('w8builder') < 3) want = 'w8builder';
-  else if (!want && !wallsLow && nUp() < (raidPause ? 1 : (energyBank(room) ? (room.controller.ticksToDowngrade < 20000 ? 1 : 0) : sites ? 2 : 3))) want = 'w8upgrader'; // 15:5x: 0 upgraders while moving unless downgrade < 20k // 13:39 spawn move: bank for the 15k spawn
+  else if (!want && !wallsLow && nUp() < (raidPause ? 1 : (energyBank(room) ? (room.controller.ticksToDowngrade < 20000 ? 1 : 0) : (() => { const m = dayofMiss(room); if (m.missSpawn || m.missTower) return 1; return sites ? 2 : 3; })()))) want = 'w8upgrader'; // 15:5x: 0 upgraders while moving unless downgrade < 20k // 13:39 spawn move // 10-31 19:1x: 1 upg while day-of misses spawn2/tower3
   // 14:55 model-driven (tools/model_w8.py -> Memory.ops.w8model): remote fleet sized by CARRY need = sum 10 x (rt x 1.1 + 4) / 50 over
   // both W47N7 sources (~52 at 14:55) instead of loose-pile thresholds (live 88 CARRY: rhaulers 82% moving/12% blocked, +1.8 e/t upkeep).
   // Floor (ahead of builders): 60% of need; full need + a backlog term (+16 CARRY per 2000 loose above 3000) in step 7.
@@ -547,7 +547,16 @@ function layoutRun(room) {
   // 17:15 drop empty-slot rampart sites; 10-31 keep gate + spawn-slot + live KEY covers (tower 24,8 etc.)
   for (const s of room.find(FIND_MY_CONSTRUCTION_SITES, { filter: s => s.structureType === STRUCTURE_RAMPART && !keepRamp(room, s.pos.x, s.pos.y) })) s.remove();
   placeKeyRamps(room); // durable: any live KEY structure without a rampart gets a site (builders + soft raise to SOFT_RAMP)
-  let sites = room.find(FIND_MY_CONSTRUCTION_SITES, { filter: s => s.structureType !== STRUCTURE_RAMPART }).length; if (sites >= 6) return;
+  // 10-31 19:1x (Misaki RCL7 catch-up): while day-of still misses spawn2@33,30 or tower3@22,7, strip extension sites that
+  // steal the 6-site budget and block tower re-queue, and never place new extensions. Live: 10 ext sites at rem0 sat with
+  // tower@22,7 rem5000 for hours; sites>=6 early-return then could not re-place a missing tower.
+  const dayMiss = rcl >= 7 ? dayofMiss(room) : { missSpawn: false, missTower: false, missExt: 0 };
+  const dayCrit = !!(dayMiss.missSpawn || dayMiss.missTower);
+  if (dayCrit) {
+    for (const s of room.find(FIND_MY_CONSTRUCTION_SITES, { filter: s => s.structureType === STRUCTURE_EXTENSION })) s.remove();
+  }
+  let sites = room.find(FIND_MY_CONSTRUCTION_SITES, { filter: s => s.structureType !== STRUCTURE_RAMPART }).length;
+  if (sites >= 6 && !dayCrit) return;
   // 03:05 west<->hub link road (missing from v3b plan): loaded 10C5M rhaulers sat 7-10 ticks on unroaded swamp 22,34 (fatigue 70)
   // between road 15,33 and strip road 24,35; queued ahead of the plan roads since every hub trip crosses it
   // 09:13 road audit: only the target network (roads.js: v3b spines + shared trunks + busy live roads) is placed
@@ -573,10 +582,12 @@ function layoutRun(room) {
   // says 2 towers alone beat the full BustJetter squad while 1 tower loses without defenders, so tower 2 is the defence step to rush.
   let towerSite = room.find(FIND_MY_CONSTRUCTION_SITES, { filter: s => s.structureType === STRUCTURE_TOWER }).length > 0;
   for (const t of PRIO) {
-    if (t === 'extension' && towerSite) return;
+    // Hold extensions while a tower site stands (RCL5+) OR while RCL7 day-of still misses spawn2/tower3 structures.
+    if (t === 'extension' && (towerSite || dayCrit)) return;
     if (t === 'road' && rcl < 3) continue;
+    if (t === 'road' && dayCrit) continue; // day-of: keep site budget for spawn/tower only
     for (const [x, y] of (O[t] || [])) {
-      if (sites >= 6) return;
+      if (sites >= 6 && !(dayCrit && (t === 'spawn' || t === 'tower'))) return;
       if (t === 'road' && sites > 2) return; // roads only when little else is queued
       if (room.lookForAt(LOOK_STRUCTURES, x, y).some(s => s.structureType === t)) continue;
       if (room.lookForAt(LOOK_CONSTRUCTION_SITES, x, y).length) continue;
