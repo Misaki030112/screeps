@@ -86,7 +86,10 @@ room = { name: 'W46N8', memory: {}, get storage() { return Object.values(objs).f
 for (const o of snap.objects) {
   if (['road', 'container', 'spawn', 'extension', 'tower', 'rampart', 'storage', 'link'].includes(o.type)) {
     const s = mkStruct(o.type, o.x, o.y, o.user === snap.uid, (o.store || {}).energy || 0, { hits: o.hits || 1000, name: o.name });
-    if (o.type === 'spawn') { s.spawning = null; s.room = room; s.spawnCreep = (body, name, opt) => { const cost = body.reduce((t, p) => t + C.BODYPART_COST[p], 0); if (room.energyAvailable < cost) return C.ERR_NOT_ENOUGH_ENERGY;
+    if (o.type === 'spawn') { s.spawning = null; s.room = room;
+      // Soft-upgrade surplus recycle (roles/upgrader.js, roles/mminer.js) needs recycleCreep in sim.
+      s.recycleCreep = (c) => { if (!c || range(c.pos, s.pos) > 1) return C.ERR_NOT_IN_RANGE; const name = c.name; delete g.Game.creeps[name]; delete objs[c.id]; if (g.Memory.creeps) delete g.Memory.creeps[name]; log.push('RECYCLE ' + name); return 0; };
+      s.spawnCreep = (body, name, opt) => { const cost = body.reduce((t, p) => t + C.BODYPART_COST[p], 0); if (room.energyAvailable < cost) return C.ERR_NOT_ENOUGH_ENERGY;
       let left = cost; for (const e of Object.values(objs).filter(o => o.structureType === 'spawn' || o.structureType === 'extension')) { const d = Math.min(left, e.store.energy); e.store.energy -= d; left -= d; }
       const bd = (opt.directions || [1, 2, 3, 4, 5, 6, 7, 8]).map(d => DIRS[d]).find(([dx, dy]) => { const nx = s.pos.x + dx, ny = s.pos.y + dy; return !isWall(nx, ny) && !Object.values(objs).some(o => o.pos && o.pos.x === nx && o.pos.y === ny && (o.body || (o.structureType && OBSTACLE.has(o.structureType)))); }) || [0, 1];
       mkCreep(name, body, s.pos.x + bd[0], s.pos.y + bd[1], opt.memory); births.push([name, opt.memory && opt.memory.role, s.pos.x + bd[0], s.pos.y + bd[1]]); log.push(`SPAWN ${name} ${body.length}`); return 0; }; g.Game_spawns = g.Game_spawns || {}; g.Game_spawns[o.name] = s; }

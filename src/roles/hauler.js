@@ -72,6 +72,8 @@ function mineralRun(c, room, P) {
   const dst = room.terminal || room.storage; if (!dst) return false;
   const held = Object.keys(c.store).find(r => r !== RESOURCE_ENERGY && c.store[r] > 0);
   if (held) { if (move.to(c, dst.pos.x, dst.pos.y, 1)) c.transfer(dst, held); return true; }
+  // Under defence floor: finish delivering held minerals, but do not start a new mineralRun (hauler banks energy first).
+  if (require('../managers/walls').defLow(room)) { delete c.memory.mr; return false; }
   if (c.store[RESOURCE_ENERGY] > 0 || c.memory.working) return false;
   const k = rc.at(room, mm[0], mm[1], STRUCTURE_CONTAINER); if (!k) { delete c.memory.mr; return false; }
   const r = Object.keys(k.store).find(t => t !== RESOURCE_ENERGY && k.store[t] > 0);

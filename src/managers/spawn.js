@@ -278,14 +278,52 @@ function defenderOrder(remote) {
   const core = threat.coreMission && threat.coreMission(remote) ? 1 : 0;
   return { body: core ? B.coreBuster(1300) : B.defender(1300), core };
 }
-module.exports = { defLowUpgraders, rhTarget, birthDirs, targets, mineralCapped, rhaulerNeed, remoteNext, retiring, B, defenderOrder, reserverBody, nearFull, bodyEnergy, spawnOrder, run(spawn) {
+
+// Refresh roleTargets even when every spawn is busy (patrol 2026-11-01 soft-upgrade): upgrader surplus-recycle and
+// mminer pause read room.memory.roleTargets; a stale T=2 while both spawns were spawning kept a 3rd 14W drawing the
+// sole A-link feed under the 15k floor. Same math as run1's T block; no spawn side effects.
+function setRoleTargets(room) {
+  const P = plan.get(room.name); if (!P) return null;
+  const mine = _.filter(Game.creeps, c => c.memory.home === room.name || (!c.memory.home && c.room.name === room.name));
+  const count = _.countBy(mine.filter(c => !retiring(c)), c => c.memory.role);
+  const hp = require('../roles/hauler');
+  const backlog = _.sum(hp.pickups(room), s => s.store[RESOURCE_ENERGY]);
+  const [cx, cy] = P.pos.controllerContainer; const cc = rc.at(room, cx, cy, STRUCTURE_CONTAINER);
+  const m = room.memory, ce = cc ? cc.store[RESOURCE_ENERGY] : 0;
+  m.ctlEma = m.ctlEma === undefined ? ce : m.ctlEma + (ce - m.ctlEma) * Math.min(1, (Game.time - (m.ctlEmaT || Game.time)) / 300);
+  m.ctlEma = Math.round(m.ctlEma); m.ctlEmaT = Game.time;
+  const nSites = rc.sites(room).length, rcl = room.controller.level;
+  const T = targets(room, count, backlog, m.ctlEma, nSites);
+  let roadBuilder = false;
+  { const Wr = require('./walls'), dr = Wr.defReserve ? Wr.defReserve() : 0, war = Wr.siege(room), fundWall = !!(Wr.fundSpend && Wr.fundSpend(room));
+    if (dr && room.storage && T.builder > 0 && !war && !fundWall) { const sur = room.storage.store[RESOURCE_ENERGY] - dr - 2000; T.builder = sur < 0 ? 0 : Math.min(T.builder, 1 + Math.floor(sur / 4000)); }
+    if (war || fundWall) T.builder = Math.min(Math.max(T.builder, 1), 1);
+    const low = Wr.defLow && Wr.defLow(room);
+    if (low) { if (!war && !fundWall) T.builder = 0; }
+    if (!T.builder && room.storage && rcl >= 6 && room.storage.store[RESOURCE_ENERGY] >= dr - 3000 && (require('../roles/builder').remoteRoadSite() || require('./roads').repairTarget(0.3))) { T.builder = 1; roadBuilder = true; }
+    if (!T.builder && (!low || fundWall) && Wr.wantBuilder(room)) { T.builder = 1; }
+    if (nSites && (roadBuilder || !T.builder)) T.upgrader = targets(room, count, backlog, m.ctlEma, 0).upgrader;
+    if (low) {
+      T.upgrader = defLowUpgraders(T.upgrader, room.storage ? room.storage.store[RESOURCE_ENERGY] : 0, dr, !!(Wr.stepHeld && Wr.stepHeld(room)), (room.controller.ticksToDowngrade || 0) < Wr.UP_SAFE);
+      // Under the defence floor, pause new mineral miners (patrol 2026-11-01): a 12W3M mminer (~1450e) + mineralRun
+      // distracts the sole home hauler while storage is banking; O stock is already huge in terminal.
+      T.mminer = 0; }
+  }
+  if (require('../roles/raid9').pauseCivilians()) {
+    T.builder = 0;
+    T.upgrader = Math.min(T.upgrader || 0, 1);
+  }
+  room.memory.roleTargets = T;
+  return T;
+}
+module.exports = { defLowUpgraders, setRoleTargets, rhTarget, birthDirs, targets, mineralCapped, rhaulerNeed, remoteNext, retiring, B, defenderOrder, reserverBody, nearFull, bodyEnergy, spawnOrder, run(spawn) {
   // spawn-wait metric (Misaki 10-18 09:30: zero spawn idle due to refill). Memory.stats.sw[room] cumulative ticks:
   //   busy = spawning; wait = a creep was wanted, cost <= cap but energyAvailable < cost (refill wait); idle = nothing wanted.
   //   last = [role, cost, avail] of the latest wait.
   const SW = ((Memory.stats || (Memory.stats = {})).sw || (Memory.stats.sw = {}));
   const sw = SW[spawn.room.name] || (SW[spawn.room.name] = { since: Game.time, busy: 0, wait: 0, idle: 0 });
   require('../rooms/w47n8/fillmeter').tick(spawn); // 17:5x refill meter (Memory.ops.fm[room]: delivered, ticks below cap, episodes, queen transfers)
-  if (spawn.spawning) { sw.busy++; return; }
+  if (spawn.spawning) { sw.busy++; setRoleTargets(spawn.room); return; }
   // CPU (strategy review 2026-10-19): run1 costs ~2.4 ms a call and finds nothing to spawn on ~36% of ticks
   // (sw busy 15268 / idle 8853 / wait 231; prof.spawn EMA 0.91). After an idle pass, re-check every IDLE_EVERY ticks;
   // any hostile in the room forces a full pass. Worst case a replacement starts IDLE_EVERY-1 ticks later.
@@ -402,7 +440,8 @@ function run1(spawn, onWait) {
     // 'sites ? 1 : 2' rule dropped roleTargets.upgrader 2 -> 1 (live t83762698) for a builder that is not working the home sites.
     if (nSites && (roadBuilder || !T.builder)) T.upgrader = targets(room, count, backlog, m.ctlEma, 0).upgrader;
     if (low) {
-      T.upgrader = defLowUpgraders(T.upgrader, room.storage ? room.storage.store[RESOURCE_ENERGY] : 0, dr, !!(Wr.stepHeld && Wr.stepHeld(room)), (room.controller.ticksToDowngrade || 0) < Wr.UP_SAFE); } }
+      T.upgrader = defLowUpgraders(T.upgrader, room.storage ? room.storage.store[RESOURCE_ENERGY] : 0, dr, !!(Wr.stepHeld && Wr.stepHeld(room)), (room.controller.ticksToDowngrade || 0) < Wr.UP_SAFE);
+      T.mminer = 0; } }
   room.memory.roleTargets = T;
   // Misaki 10-29 W47N9 assault: divert spawn away from nonessential builders/extra upgraders
   if (require('../roles/raid9').pauseCivilians()) {

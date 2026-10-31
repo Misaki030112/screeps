@@ -20,6 +20,20 @@ module.exports = { run(c) {
     if (sp) { if (c.pos.isNearTo(sp)) sp.recycleCreep(c); else move.to(c, sp.pos.x, sp.pos.y, 1); }
     return;
   }
+  // Surplus recycle (patrol 2026-11-01 soft-upgrade): when roleTargets.upgrader drops under defLow banking, extras keep
+  // drawing the sole A-link feed. Name-order keep the first N; spend carry then recycle.
+  { const want = ((room.memory || {}).roleTargets || {}).upgrader;
+    if (want !== undefined) {
+      const ups = _.filter(Game.creeps, x => x.memory.role === 'upgrader' && (x.memory.home || x.room.name) === room.name && !x.spawning)
+        .sort((a, b) => a.name.localeCompare(b.name));
+      if (ups.indexOf(c) >= want) {
+        if (c.store[RESOURCE_ENERGY] > 0 && ctl && c.pos.inRangeTo(ctl, 3)) { c.upgradeController(ctl); return; }
+        const sp = _.filter(Game.spawns, s => s.pos.roomName === room.name)[0];
+        if (sp) { if (c.pos.isNearTo(sp)) sp.recycleCreep(c); else move.to(c, sp.pos.x, sp.pos.y, 1); }
+        return;
+      }
+    }
+  }
   const [x, y] = c.memory.spot;
   if (!move.to(c, x, y, 0)) {
     if (c.store[RESOURCE_ENERGY] > 0 && c.pos.inRangeTo(room.controller, 3)) c.upgradeController(room.controller);
