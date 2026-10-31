@@ -21,7 +21,9 @@ function mkRoom(rcl, built) {
     lookForAt: (k, x, y) => k === LOOK_STRUCTURES ? (st[x * 50 + y] || []) : sites.filter(s => s.pos.x === x && s.pos.y === y),
     createConstructionSite(x, y, t) {
       const n = Object.values(st).flat().filter(s => s.structureType === t).length + sites.filter(s => s.structureType === t).length;
-      if (n >= CS[t][rcl]) return ERR_RCL_NOT_ENOUGH; sites.push({ structureType: t, pos: { x, y }, remove() {} }); return OK; } };
+      if (n >= CS[t][rcl]) return ERR_RCL_NOT_ENOUGH;
+      const site = { structureType: t, pos: { x, y }, remove() { const i = sites.indexOf(site); if (i >= 0) sites.splice(i, 1); } };
+      sites.push(site); return OK; } };
 }
 assert.strictEqual(C.RCL6_MINERALS, false); assert.strictEqual(C.HUB_LINK, false); assert.strictEqual(C.RCL7_INDUSTRY, false);
 const roads = R.ROADS.filter(([x, y]) => !R.MINERAL.some(([a, b]) => a === x && b === y)).concat(require('../src/layouts/w8link').W47N8);
@@ -53,4 +55,13 @@ assert.ok(adj(22, 7), 'tower3 22,7 has no adjacent road');
   while (st.length) { const k = st.pop(), x = Math.floor(k / 50), y = k % 50;
     for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) { const q = (x + dx) * 50 + y + dy; if (SS.has(q) && !seen.has(q)) { seen.add(q); st.push(q); } } }
   assert.strictEqual(seen.size, SS.size, 'road plan split after RCL7 spurs'); }
+// 10-31 19:1x: day-of critical strips extension flood so tower3 can re-queue past the 6-site cap
+{ const flooded = mkRoom(7, base);
+  for (const [x, y] of L.ORDER.extension.slice(40, 50)) flooded.createConstructionSite(x, y, 'extension');
+  assert.strictEqual(flooded.sites.filter(s => s.structureType === 'extension').length, 10, 'pre: 10 ext flood');
+  W.layoutRun(flooded);
+  assert.ok(!flooded.sites.some(s => s.structureType === 'extension'), 'dayCrit strips ext flood: ' + flooded.sites.map(s => s.structureType));
+  assert.ok(flooded.sites.some(s => s.structureType === 'tower' && s.pos.x === 22 && s.pos.y === 7), 'tower3 re-queued after strip');
+  assert.ok(flooded.sites.some(s => s.structureType === 'spawn' && s.pos.x === 33 && s.pos.y === 30), 'spawn2 still queued');
+}
 console.log('w47n8 rcl7 gate ok', placed.length, 'sites across ticks');

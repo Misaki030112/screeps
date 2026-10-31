@@ -42,7 +42,13 @@ function getEnergy(c) {
   // 13:00 storage 35,32 finished (2026-10-19): haulers only top it up once ctl/hub conts are full, so builders/upgraders may draw
   // from it (>= 300) instead of letting the surplus sit while they walk to source containers
   // 17:4x: with a w8filler alive the storage first holds its buffer (one hub refill + 200); spenders take only what is above it + 300
-  const st = c.room.storage && c.memory.role !== 'w8hauler' && c.room.storage.store[E] >= (F.alive(c.room) ? F.reserve(c.room) + 300 : 300) ? c.room.storage : null;
+  // 10-31 19:1x: during RCL7 day-of (miss spawn2/tower3) builders may draw at >=300 even below the filler buffer — ea was full
+  // while stor~1k and 4 builders walked west every load; spawn/tower sites crawled ~1 e/t for hours.
+  let floor = F.alive(c.room) ? F.reserve(c.room) + 300 : 300;
+  // Use Memory.ops.w8day (dayObs) — avoid require('./index') cycle
+  const w8d = Memory.ops && Memory.ops.w8day;
+  if (c.memory.role === 'w8builder' && w8d && (w8d.missSpawn || w8d.missTower)) floor = 300;
+  const st = c.room.storage && c.memory.role !== 'w8hauler' && c.room.storage.store[E] >= floor ? c.room.storage : null;
   const t = [drop, cont, st].filter(Boolean).sort((a, b) => c.pos.getRangeTo(a) - c.pos.getRangeTo(b))[0];
   if (t) { if (!c.pos.isNearTo(t)) go(c, t.pos.x, t.pos.y); else if (t.amount !== undefined) c.pickup(t); else c.withdraw(t, E); return true; }
   const src = c.pos.findClosestByRange(FIND_SOURCES_ACTIVE);
@@ -527,7 +533,9 @@ const R = {
       if (!c.pos.inRangeTo(nx, ny, 2)) go(c, nx, ny, 2); return; }
     // 20:1x ext-phase relocation: new hub extension sites right after the spawn/seal sites
     const ex8 = mvb && mvb.phase === 'ext' && c.pos.findClosestByRange(all.filter(s => s.structureType === STRUCTURE_EXTENSION));
-    const site = sp8 || seal[0] || ex8 || c.pos.findClosestByRange(all);
+    // 10-31 19:1x: tower3@22,7 after spawn (not closest — hub ext sites stole focus once spawn finished)
+    const tw8 = all.find(s => s.structureType === STRUCTURE_TOWER);
+    const site = sp8 || seal[0] || tw8 || ex8 || c.pos.findClosestByRange(all);
     if (site) { if (!c.pos.inRangeTo(site, 3)) go(c, site.pos.x, site.pos.y, 3); else c.build(site); return; }
     // 19:31: urgent road/container repair (<10%; container 11,43 at 18% = 2k ticks of decay left pulled the builder off the walls) -> seal walls to WALL_TARGET[rcl], lowest first -> maintenance (<60%).
     // With maintenance first the lone 2W builder spent 180 ticks on container 26,11 (87k/250k) + 22 roads and no wall left 1 hit.

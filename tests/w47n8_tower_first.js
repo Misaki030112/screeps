@@ -20,7 +20,9 @@ function mkRoom(rcl, built) { // built: [[x,y,type]]
     lookForAt: (k, x, y) => k === LOOK_STRUCTURES ? (st[x * 50 + y] || []) : sites.filter(s => s.pos.x === x && s.pos.y === y),
     createConstructionSite(x, y, t) {
       const n = Object.values(st).flat().filter(s => s.structureType === t).length + sites.filter(s => s.structureType === t).length;
-      if (n >= CS[t][rcl]) return ERR_RCL_NOT_ENOUGH; sites.push({ structureType: t, pos: { x, y }, remove() {} }); return OK; } };
+      if (n >= CS[t][rcl]) return ERR_RCL_NOT_ENOUGH;
+      const site = { structureType: t, pos: { x, y }, remove() { const i = sites.indexOf(site); if (i >= 0) sites.splice(i, 1); } };
+      sites.push(site); return OK; } };
 }
 const base = [].concat(C.SEAL.map(([x, y]) => [x, y, 'wall']), [[15, 18, 'spawn'], [35, 32, 'storage'], [C.HUB_CONT[0], C.HUB_CONT[1], 'container']],
   L.ORDER.extension.slice(0, 20).map(([x, y]) => [x, y, 'extension']), [[33, 35, 'tower']]);
