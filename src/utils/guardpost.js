@@ -1,7 +1,7 @@
 // Idle remote defender: a guard post off the haul lanes + a slow wander around it (W47N7 2026-10-31, Misaki:
 // "rdef83982033 能不能别挡路，在这种位置驻守呢 27,19 ?? 并且有点活人感，四处巡逻"). rdef83982033 killed the Invader at
 // 19,2 and then held the kill spot (memory.lk) forever at 18,1 — the tile next to the only exit 18,0, on the rhauler lane.
-// Rules: never stop on a road / container / structure, next to a source, mineral, controller or container (miners and
+// Rules: never stop on or next to a road, on a container / structure, next to a source, mineral, controller or container (miners and
 // haulers work there), or within 1 of the room border (exit lanes). Swamp is avoided for stops (slow, looks stuck).
 // Post per room: Memory.remote[r].post = [x, y] (no redeploy) > CFG/GUARD `post` > the room centre 25,25; if the wanted
 // tile is not ok, the nearest ok tile. CPU: one bad-tile set per room per 100 ticks (heap), one move.to per idle tick.
@@ -13,7 +13,8 @@ function badSet(room) {
   const bad = new Set(), near = (x, y) => { for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) bad.add((x + dx) * 50 + y + dy); };
   for (const s of room.find(FIND_STRUCTURES) || []) {
     bad.add(s.pos.x * 50 + s.pos.y);
-    if (s.structureType === STRUCTURE_CONTAINER || s.structureType === STRUCTURE_CONTROLLER) near(s.pos.x, s.pos.y);
+    // roads too: live 83982760 it paused on 25,21, beside the 1-wide haul road (24,21 / 25,22) — keep one tile of margin
+    if (s.structureType === STRUCTURE_ROAD || s.structureType === STRUCTURE_CONTAINER || s.structureType === STRUCTURE_CONTROLLER) near(s.pos.x, s.pos.y);
   }
   for (const s of room.find(FIND_SOURCES) || []) near(s.pos.x, s.pos.y);
   for (const s of room.find(FIND_MINERALS) || []) near(s.pos.x, s.pos.y);
@@ -76,7 +77,7 @@ function patrol(c, C, move) {
   let g = c.memory.gp;
   const at = g && c.pos.x === g.x && c.pos.y === g.y;
   if (!g || g.r !== c.room.name || Game.time >= g.u || (at && wanted(c))) {
-    const w = (g || !ok(c.pos.x, c.pos.y, tget, bad)) ? waypoint(post, tget, bad, Math.random) : post;
+    const w = g ? waypoint(post, tget, bad, Math.random) : post; // first stop = the post itself
     g = c.memory.gp = { x: w[0], y: w[1], r: c.room.name, u: Game.time + GIVEUP };
   }
   if (c.pos.x === g.x && c.pos.y === g.y) {
