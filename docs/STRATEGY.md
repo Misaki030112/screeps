@@ -1,7 +1,7 @@
 # Strategy — W46N8 (home) + W45N8 (remote), 20 CPU, shard3
 
 Sources: Screeps docs (control, defense, invaders, CPU), screepers wiki, Overmind / TooAngel / Hivemind patterns.
-Last full refresh: **2026-10-31 05:4x strategy review** (W47N8 day-of energy crash / `w8day.towerMinE`); before that **2026-10-31 02:4x** (home upgrade vs ideal 26 / `upgFeed`); before that **2026-10-30 23:4x** (W47N8 lean KO scaffold / `RCL6_LABS` split / w8min); before that **2026-10-30 20:4x** (RCL7 day-of no pre-bank / w8day); before that **2026-10-30 17:4x** (soft-ramp SOFT_MIN+localOn); before that **2026-10-30 14:4x strategy review** (W47N8 soft-ramp staging 100k); before that **2026-10-30 11:4x** (post-300k fundSpend exit / energy reallocation); before that **2026-10-30 08:4x** (RCL7 peacetime hold at 300k / no auto 1M); before that **2026-10-30 05:4x** (W45N7 Invader-res reclaim via attackController); before that **2026-10-30 02:4x** (STATIONARY_FILL readiness — keep queens); before that **2026-10-29 23:4x** (lab ramparts); before that **2026-10-29 20:4x** (W47N8 RCL7 day-of gate + spur roads); before that **2026-10-29 17:4x** (fortify fundSpend); before that **2026-10-29 14:4x** (mineral/boost §4); before that **2026-10-20 00:0x** (remote posture after novice end: `docs/DEFENSE_NOVICE.md`); before that **2026-10-19** (CPU `docs/CPU.md`, market `docs/MARKET.md`); before that **2026-10-18 strategy review** (W47N8 hold / safe-mode mechanics: `docs/W47N8_HOLD.md`); before that **2026-10-17 strategy review** (neighbours: `docs/NEIGHBORS.md`); before that **2026-10-16 strategy review** (defence before novice end: `docs/DEFENSE_NOVICE.md`); prior: RCL6 readiness `docs/RCL6.md` (10-15), RCL5 `docs/RCL5.md` (10-14). Also `docs/DEFENSE.md`, `docs/DEFENSE_PLAN.md`, `docs/LAYOUT_V2.md`, `docs/REMOTE_W45N8.md`, `docs/MODEL.md`, `docs/DATA.md`.
+Last full refresh: **2026-10-31 08:4x strategy review** (W47N8 post-dayof leanBank → stor≥20k); before that **2026-10-31 05:4x** (day-of energy crash / `w8day.towerMinE`); before that **2026-10-31 02:4x** (home upgrade vs ideal 26 / `upgFeed`); before that **2026-10-30 23:4x** (W47N8 lean KO scaffold / `RCL6_LABS` split / w8min); before that **2026-10-30 20:4x** (RCL7 day-of no pre-bank / w8day); before that **2026-10-30 17:4x** (soft-ramp SOFT_MIN+localOn); before that **2026-10-30 14:4x strategy review** (W47N8 soft-ramp staging 100k); before that **2026-10-30 11:4x** (post-300k fundSpend exit / energy reallocation); before that **2026-10-30 08:4x** (RCL7 peacetime hold at 300k / no auto 1M); before that **2026-10-30 05:4x** (W45N7 Invader-res reclaim via attackController); before that **2026-10-30 02:4x** (STATIONARY_FILL readiness — keep queens); before that **2026-10-29 23:4x** (lab ramparts); before that **2026-10-29 20:4x** (W47N8 RCL7 day-of gate + spur roads); before that **2026-10-29 17:4x** (fortify fundSpend); before that **2026-10-29 14:4x** (mineral/boost §4); before that **2026-10-20 00:0x** (remote posture after novice end: `docs/DEFENSE_NOVICE.md`); before that **2026-10-19** (CPU `docs/CPU.md`, market `docs/MARKET.md`); before that **2026-10-18 strategy review** (W47N8 hold / safe-mode mechanics: `docs/W47N8_HOLD.md`); before that **2026-10-17 strategy review** (neighbours: `docs/NEIGHBORS.md`); before that **2026-10-16 strategy review** (defence before novice end: `docs/DEFENSE_NOVICE.md`); prior: RCL6 readiness `docs/RCL6.md` (10-15), RCL5 `docs/RCL5.md` (10-14). Also `docs/DEFENSE.md`, `docs/DEFENSE_PLAN.md`, `docs/LAYOUT_V2.md`, `docs/REMOTE_W45N8.md`, `docs/MODEL.md`, `docs/DATA.md`.
 
 ## Principles
 
@@ -12,20 +12,20 @@ Last full refresh: **2026-10-31 05:4x strategy review** (W47N8 day-of energy cra
 5. **Growth after RCL4:** remote mining (W45N8 approved and live), then links; a 2nd room only with explicit Misaki approval (GCL 2 already allows a claim).
 6. **Major decisions need approval:** claim/expand, attack or provoke player neighbours, spend credits/pixels, activate safe mode, respawn.
 
-## Current state (2026-10-31 ~05:46 Asia/Hong_Kong)
+## Current state (2026-10-31 ~08:4x Asia/Hong_Kong)
 
 | | |
 |---|---|
 | Home | W46N8 **RCL7** ~888k/10.9M (~8.1%); storage ~14–16k (osc around reserveE 15k); walls min **300001 HOLD**; towers 3; spawns 2; terminal+extractor+3 labs; O depleted; labs dormant; **`STATIONARY_FILL=false`** dual queens; SM avail 6; upgrade recovers ≥20–22 when remotes SAFE (ideal 26 = full-remote ceiling) — `Memory.ops.upgFeed` |
-| W47N8 | **RCL6** ~3.398M/3.645M (~247k left, **RCL7 ~2026-10-31 ~17:40** Asia/Hong_Kong at ~23 e/t ≈ **~12 h**); seal **300k**; soft **COMPLETE**; towers 2 @~920–950; eAvail full 2300; tower3+spawn2 wait RCL7 (reactive, **no pre-bank**); stor ~1.5k; **`RCL6_MINERALS=false` `RCL6_LABS=false`**; `HUB_LINK=false` `RCL7_INDUSTRY=false`; links on → HMAX 2 |
+| W47N8 | **RCL6** ~3.458M/3.645M (**RCL7 ~2026-10-31 ~16:30–16:45** Asia/Hong_Kong ≈ **~8 h**); seal **300k**; soft **COMPLETE**; towers 2; tower3+spawn2 wait RCL7 (reactive, **no pre-bank**); after day-of **`leanBank`→stor≥20k** then lean KO; stor ~2–3k; **`RCL6_MINERALS=false` `RCL6_LABS=false`**; `HUB_LINK=false` `RCL7_INDUSTRY=false` |
 | Assault | **ABORTED** 2026-10-29 (~15:31): defend-only W47N9, keep mining O (no mineralCap), civilian building both rooms |
 | Remote | W45N8/W47N7 **SAFE**; **W45N7 Invader CORE ONGOING** (mining paused, buster engaged); neighbor peacetime scan **paused** |
 | CPU | **~11–15 / 20**, bucket 10000 — `docs/CPU.md` |
 | GCL | **4** (3rd room still CPU-bound; no claim without Misaki) |
 | Novice | **ended 2026-10-28 03:33 Asia/Hong_Kong** |
-| Fortify | Lab cover ✅; home walls **HOLD 300k**; colony soft **COMPLETE** 100k; day-of no pre-bank + `w8day.towerMinE` watch; lean KO scaffold — flip after RCL7+stor20k+w8mminer; STATIONARY_FILL @ RCL8 |
+| Fortify | Lab cover ✅; home walls **HOLD 300k**; colony soft **COMPLETE** 100k; day-of no pre-bank + `towerMinE`; post-dayof **leanBank→20k**; lean KO — flip after RCL7+stor20k+w8mminer; STATIONARY_FILL @ RCL8 |
 
-Ideal vs actual: `tools/model.py` / `tools/model_w8.py` / Grafana / `Memory.ops.upgFeed` / `Memory.ops.w8day`. Priority: **finish remote core → upgrade ~20–22** → hold 300k + stor≥15k → **colony RCL7 tonight** tower3+spawn2 (factory OFF, watch north tower) → colony stor≥20k → **lean KO** → KO≥900 boost → barriers 1M → STATIONARY_FILL @ RCL8.
+Ideal vs actual: `tools/model.py` / `tools/model_w8.py` / Grafana / `Memory.ops.upgFeed` / `Memory.ops.w8day`. Priority: remotes SAFE → home upgrade ~20–22 + stor≥15k → **colony RCL7 ~16:30–16:45** tower3+spawn2 (factory OFF, watch north tower) → **leanBank→stor≥20k (~1h)** → **lean KO** (after w8mminer) → KO≥900 boost → barriers 1M → STATIONARY_FILL @ RCL8.
 
 ## Phases
 

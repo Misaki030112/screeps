@@ -247,3 +247,9 @@ Before RCL7 day-of tower3/spawn2, KEY soft ramparts (spawn/tower/storage) climb 
 
 ### Observability shipped
 `Memory.ops.w8day` now also reports `towerMinE`, `eAvail`, `eCap`. Patrol: if `why=dayof` and `towerMinE<500` → alert; if `eAvail` chronically ≪ body costs → alert. No fill-priority behavior change this run (propose later: filler ignore `hubNeedy` when towerE<500).
+
+## Post-dayof leanBank → stor≥20k (2026-10-31 08:4x strategy review)
+
+**Decision:** after day-of structures complete, **auto throttle colony upgrade** until storage ≥20k (`leanBank`, default ON). Does **not** pre-bank before RCL7 (20:4x stands). Does **not** flip mineral gates. Opt-out `Memory.ops.w8leanBank=false`.
+
+Natural stor→20k under full upgrade never happens (24h proof stor stuck 0.5–3k). With ≤1 upgrader, ~1 h bank. Home upgrade untouched (separate economies). Detail: `docs/RCL7.md` 08:4x. Patrol: `w8day.phase` `bank20`→`ready`, `bankEta`, `leanBank`.

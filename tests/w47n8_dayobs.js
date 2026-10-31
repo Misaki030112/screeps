@@ -34,7 +34,7 @@ function mk(rcl, built, creeps, progressLeft) {
     energyAvailable: 1800, energyCapacityAvailable: 2300,
   };
   Game.creeps = {};
-  (creeps || []).forEach((c, i) => { Game.creeps['c' + i] = Object.assign({ memory: { home: 'W47N8' }, room, pos: { roomName: 'W47N8' } }, c); });
+  (creeps || []).forEach((c, i) => { const m = Object.assign({ home: 'W47N8' }, (c && c.memory) || {}); Game.creeps['c' + i] = Object.assign({ name: 'c' + i, room, pos: { roomName: 'W47N8' } }, c, { memory: m }); });
   return room;
 }
 const base = [[34, 30, 'spawn'], [35, 32, 'storage'], [33, 35, 'tower'], [24, 8, 'tower']]
@@ -61,6 +61,29 @@ W.dayObs(mk(7, done, [], 0));
 assert.strictEqual(Memory.ops.w8day.why, 'done');
 assert.strictEqual(Memory.ops.w8day.bill, 0);
 assert.strictEqual(Memory.ops.w8day.missSpawn, 0);
+// 08:4x: RCL7 day-of done + stor 2.1k → phase bank20, leanBank on, recycle surplus upgraders
+assert.strictEqual(Memory.ops.w8day.phase, 'bank20');
+assert.strictEqual(Memory.ops.w8day.leanBank, 1);
+assert.strictEqual(Memory.ops.w8day.bankLeft, 20000 - 2100);
+assert.ok(Memory.ops.w8day.bankEta > 0, 'bankEta positive while leanBank');
+const ups = [{ memory: { role: 'w8upgrader' } }, { memory: { role: 'w8upgrader' } }, { memory: { role: 'w8upgrader' } }];
+W.dayObs(mk(7, done, ups, 0));
+assert.ok((Memory.ops.w8recycle || []).length >= 2, 'leanBank recycles surplus upgraders: ' + JSON.stringify(Memory.ops.w8recycle));
+// stor ≥20k → ready, leanBank off
+const rReady = mk(7, done, [], 0); rReady.storage.store.energy = 20000;
+W.dayObs(rReady);
+assert.strictEqual(Memory.ops.w8day.phase, 'ready');
+assert.strictEqual(Memory.ops.w8day.leanBank, 0);
+assert.strictEqual(Memory.ops.w8day.bankLeft, 0);
+assert.strictEqual(Memory.ops.w8day.bankEta, 0);
+// opt-out Memory.ops.w8leanBank=false
+Memory.ops.w8leanBank = false;
+const rOff = mk(7, done, [], 0); rOff.storage.store.energy = 3000;
+W.dayObs(rOff);
+assert.strictEqual(Memory.ops.w8day.leanBank, 0);
+assert.strictEqual(Memory.ops.w8day.phase, 'bank20'); // still wants bank, throttle off
+assert.strictEqual(Memory.ops.w8day.bankEta, -1);
+delete Memory.ops.w8leanBank;
 // 23:4x lean KO readiness obs
 W.dayObs(mk(6, base, [], 400000));
 const m = Memory.ops.w8min;

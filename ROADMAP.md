@@ -3,6 +3,13 @@
 Novice zone ends **2026-10-28 03:33 UTC+8** (past as of 10-29). Defence timeline: `docs/DEFENSE_NOVICE.md` (2026-10-16); detail `docs/DEFENSE.md` / geometry `docs/DEFENSE_PLAN.md`.
 **Safe mode: NEVER auto-activate** — alert Misaki.
 
+## 2026-10-31 08:4x strategy review: post-RCL7 first-hours leanBank → stor≥20k
+- **Chose:** topic A — after day-of (~50k) how to sequence tower3+spawn2 vs stor→20k for lean KO vs home upgrade throttle (RCL7 THIS afternoon ~16:30–16:45).
+- **Findings (`docs/RCL7.md` 08:4x):** (1) Natural stor→20k under full upgrade ≈ **never** (24h stor stuck 0.5–3k; surplus upgrader scales with stor). (2) Bank 2.5→20k needs ~15–25 e/t net → **~0.8–1.3 h** with ≤1 upgrader. (3) **Home throttle NOT needed** — separate economies, no terminal energy send, CPU fine. (4) Day-of stays reactive ~2–3 h (20:4x/05:4x). (5) Lean KO still blocked on **w8mminer/send** after bank.
+- **Shipped:** `leanBank`/`energyBank`/`leanBankRecycle` (default ON after day-of+stor<20k; opt-out `ops.w8leanBank=false`); `w8day.{phase,bankLeft,bankEta,leanBank}`; roles park/repair via energyBank; tests dayobs+move_bank. **No gate flips. No home throttle.**
+- **Reprioritise:** (1) remotes SAFE + home upg~20–22 + stor≥15k; (2) **W47N8 RCL7 ~16:30–16:45 → day-of reactive** (watch towerMinE); (3) **leanBank→colony stor≥20k (~1h)**; (4) ship w8mminer/send → flip `RCL6_MINERALS` only; (5) KO≥900 boost; (6) barriers→1M; (7) STATIONARY_FILL@RCL8. Defend-only W47N9.
+- **Plan check:** no major Misaki decision (auto leanBank is small safe ops improvement; gate flip still propose-only). Next open: after leanBank hits ready, prioritize w8mminer/send vs home enclosed drop@31,33 salvage.
+
 ## 2026-10-31 05:4x strategy review: W47N8 day-of energy crash (stor~1–3k)
 - **Chose:** with colony stor chronically ~1–3k and RCL7 ~12 h away, does first site wave (~20k spawn+tower) empty towers / crash `energyAvailable`? (OUR ops; closes 20:4x residual + 02:4x "sustained ≥20" next-open.)
 - **Findings (`docs/PLAN_W47N8.md` crash section, `docs/RCL7.md` 05:4x):** (1) Spawn/eAvail protected — filler spawn-first + hauler `fillTarget(true)` before builder-feed; income ~35–40 continues via links. (2) First wave only spawn+tower (`towerSite` holds ext) ≈15–20 min. (3) Residual: north tower 24,8 (later 22,7) while `hubNeedy` blocks filler — haulers still cover free>200. (4) Home upgrade ≥20 when SAFE+stor≥15k **YES** (24h SAFE hours 20–22); cores bind the 2h lag. (5) Live t~83970965: need~247k **ETA ~17:40 Asia/Hong_Kong**; eA 2300/2300; towers 920/950; soft COMPLETE; links→HMAX 2; deploy was 84f92e1.

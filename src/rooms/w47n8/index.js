@@ -169,7 +169,7 @@ function spawnRun(spawn) {
     && !raidPause && !cs.some(c => c.memory.role === 'w8builder' && (c.spawning || c.ticksToLive >= 700))) want = 'w8builder';
   if (!want && wallsLow && nUp() < (raidPause ? 1 : (room.controller.ticksToDowngrade < 10000 || stock8() > 3000 ? 2 : 1))) want = 'w8upgrader';
   else if (!want && !raidPause && wallsLow && n('w8builder') < 3) want = 'w8builder';
-  else if (!want && !wallsLow && nUp() < (raidPause ? 1 : (banking(room) ? (room.controller.ticksToDowngrade < 20000 ? 1 : 0) : sites ? 2 : 3))) want = 'w8upgrader'; // 15:5x: 0 upgraders while moving unless downgrade < 20k // 13:39 spawn move: bank for the 15k spawn
+  else if (!want && !wallsLow && nUp() < (raidPause ? 1 : (energyBank(room) ? (room.controller.ticksToDowngrade < 20000 ? 1 : 0) : sites ? 2 : 3))) want = 'w8upgrader'; // 15:5x: 0 upgraders while moving unless downgrade < 20k // 13:39 spawn move: bank for the 15k spawn
   // 14:55 model-driven (tools/model_w8.py -> Memory.ops.w8model): remote fleet sized by CARRY need = sum 10 x (rt x 1.1 + 4) / 50 over
   // both W47N7 sources (~52 at 14:55) instead of loose-pile thresholds (live 88 CARRY: rhaulers 82% moving/12% blocked, +1.8 e/t upkeep).
   // Floor (ahead of builders): 60% of need; full need + a backlog term (+16 CARRY per 2000 loose above 3000) in step 7.
@@ -207,7 +207,7 @@ function spawnRun(spawn) {
     // above 2k counts as stock (rhaulers now overflow there); WORK cap = model upw + 5 per 5k stored (max 40, 4 stands x 10W)
     const stor = room.storage ? room.storage.store[RESOURCE_ENERGY] : 0, bigBuild = siteRem(room) >= 3000;
     const wcap = Math.max(24, Math.min(40, (wm.upw || 0) + 5 * Math.floor(stor / 5000)));
-    if (!want && !wallsLow && !banking(room) && nUp() < Math.min(6, (bigBuild ? 2 : 3) + Math.floor(Math.max(0, loose + hubIdle + Math.max(0, stor - 2000) - 600) / 600))
+    if (!want && !wallsLow && !energyBank(room) && nUp() < Math.min(6, (bigBuild ? 2 : 3) + Math.floor(Math.max(0, loose + hubIdle + Math.max(0, stor - 2000) - 600) / 600))
       && _.sum(cs.filter(c => c.memory.role === 'w8upgrader' && (c.spawning || !(c.ticksToLive <= 3 * (c.body || []).length + 60))), c => _.filter(c.body, p => p.type === WORK).length) + bodyFor('w8upgrader', cap).filter(p => p === WORK).length <= wcap + 5) want = 'w8upgrader'; // 15:55: a whole new body must fit (upw 31 made 4x10W = 40 WORK on ~30 e/t net) // 14:55: WORK cap = model net income (upw ~30) instead of fixed 24 // 21:20: 16->24 WORK; income ~20 local + ~13 W47N7 remote, ctl cont 1984/2000 full with 4x4W upgraders (WORK-bound)
   }
   // 6) wall builder from surplus (19:18): 1 builder while a seal wall is below target and spawn is full
@@ -354,9 +354,47 @@ function extBatch(room, m) {
 // 10-20 17:0x (Misaki: storage 20k+ idle): banking only holds MOVE_E + 2k; above that upgraders/builders/repairs run as normal
 const BANK_HOLD = MOVE_E + 2000, banking = room => moving() && bankE(room) < BANK_HOLD;
 const moving = () => { const m = Memory.ops && Memory.ops.w8move; return !!m && (m.phase === 'prep' || m.phase === 'build'); };
-// 20:4x strategy: day-of readiness observability (no behavior change). Spurs already live →
+const LEAN_STOR = 20000;
+// 08:4x 2026-10-31 strategy: after RCL7 day-of structures, throttle upgrade so storage can reach 20k for lean KO.
+// Opt-out: Memory.ops.w8leanBank === false. Does NOT flip RCL6_MINERALS / RCL6_LABS. See docs/RCL7.md "08:4x".
+function dayofMiss(room) {
+  const has = (typ, x, y) => room.lookForAt(LOOK_STRUCTURES, x, y).some(s => s.structureType === typ);
+  const [sx, sy] = L.ORDER.spawn[1], [tx, ty] = L.ORDER.tower[2];
+  const nExt = room.find(FIND_MY_STRUCTURES, { filter: s => s.structureType === STRUCTURE_EXTENSION }).length;
+  return { missSpawn: !has(STRUCTURE_SPAWN, sx, sy), missTower: !has(STRUCTURE_TOWER, tx, ty),
+    missExt: Math.max(0, 50 - nExt) };
+}
+function leanBank(room) {
+  const o = Memory.ops || {};
+  if (o.w8leanBank === false) return false;
+  if (!room.controller || room.controller.level < 7) return false;
+  if (C.RCL6_MINERALS) return false;
+  const storE = room.storage && room.storage.store ? (room.storage.store[RESOURCE_ENERGY] || 0) : 0;
+  if (storE >= LEAN_STOR) return false;
+  const m = dayofMiss(room);
+  return !(m.missSpawn || m.missTower || m.missExt > 0);
+}
+const energyBank = room => banking(room) || leanBank(room);
+function leanBankRecycle(room) {
+  if (!leanBank(room)) return;
+  const ups = [];
+  for (const n in Game.creeps) {
+    const c = Game.creeps[n];
+    if (!c || !c.memory || c.memory.role !== 'w8upgrader' || c.spawning) continue;
+    if (!(c.memory.home === room.name || (c.room && c.room.name === room.name))) continue;
+    if (!c.name) c.name = n;
+    ups.push(c);
+  }
+  ups.sort((a, b) => (b.ticksToLive || 0) - (a.ticksToLive || 0));
+  if (ups.length <= 1) return;
+  const o = (Memory.ops = Memory.ops || {});
+  const L = o.w8recycle || [];
+  for (const c of ups.slice(1)) if (c.name && !L.includes(c.name)) L.push(c.name);
+  o.w8recycle = L;
+}
+// 20:4x strategy: day-of readiness observability. Spurs already live →
 // remaining bill ≈ missing spawn2@33,30 + tower3@22,7 + (50−nExt)×3k. Reactive siteRem≥3k → ≤4 builders;
-// no pre-bank (see docs/RCL7.md "20:4x").
+// no pre-bank (see docs/RCL7.md "20:4x"). 08:4x adds phase bank20/ready + leanBank.
 function dayObs(room) {
   const o = (Memory.ops = Memory.ops || {});
   const rcl = room.controller.level;
@@ -370,10 +408,8 @@ function dayObs(room) {
   const storE = room.storage && room.storage.store ? (room.storage.store[RESOURCE_ENERGY] || 0) : 0;
   const has = (typ, x, y) => room.lookForAt(LOOK_STRUCTURES, x, y).some(s => s.structureType === typ);
   const [sx, sy] = L.ORDER.spawn[1], [tx, ty] = L.ORDER.tower[2];
-  const missSpawn = !has(STRUCTURE_SPAWN, sx, sy);
-  const missTower = !has(STRUCTURE_TOWER, tx, ty);
-  const nExt = room.find(FIND_MY_STRUCTURES, { filter: s => s.structureType === STRUCTURE_EXTENSION }).length;
-  const missExt = Math.max(0, 50 - nExt);
+  const miss = dayofMiss(room);
+  const missSpawn = miss.missSpawn, missTower = miss.missTower, missExt = miss.missExt;
   let bill = siteRemV;
   if (missSpawn && !sites.some(s => s.structureType === STRUCTURE_SPAWN && s.pos.x === sx && s.pos.y === sy)) bill += 15000;
   if (missTower && !sites.some(s => s.structureType === STRUCTURE_TOWER && s.pos.x === tx && s.pos.y === ty)) bill += 5000;
@@ -387,8 +423,16 @@ function dayObs(room) {
   let why = 'upgrade';
   if (rcl >= 7) why = (missSpawn || missTower || missExt > 0 || siteRemV > 0) ? 'dayof' : 'done';
   else if (need < 80000) why = 'near';
+  // 08:4x: phase splits post-dayof into bank20 (stor<20k, leanBank active/wanted) vs ready (≥20k cushion for lean KO).
+  let phase = why;
+  if (why === 'done') phase = storE >= LEAN_STOR ? 'ready' : 'bank20';
+  const bankLeft = Math.max(0, LEAN_STOR - storE);
+  // Assume ~20 e/t net while leanBank keeps ≤1 upgrader (income ~35 − 10 upg − ~5 upkeep); else ~0 under full upgrade.
+  const bankEta = bankLeft <= 0 ? 0 : (leanBank(room) ? Math.ceil(bankLeft / 20) : -1);
   o.w8day = { t: Game.time, rcl, need, siteRem: siteRemV, builders, upgraders, storE, bill,
-    missSpawn: missSpawn ? 1 : 0, missTower: missTower ? 1 : 0, missExt, why, towerMinE, eAvail, eCap };
+    missSpawn: missSpawn ? 1 : 0, missTower: missTower ? 1 : 0, missExt, why, phase,
+    bankLeft, bankEta, leanBank: leanBank(room) ? 1 : 0, towerMinE, eAvail, eCap };
+  leanBankRecycle(room);
   // 23:4x strategy: lean KO readiness (docs/MINERAL_DEFENSE_ROADMAP.md §5). Dormant report only — gates stay false.
   const [mx, my] = C.MINERAL_CONT || [37, 44];
   const hasTerm = !!room.terminal;
@@ -611,4 +655,4 @@ function selfSufficient() {
   const r = Game.rooms[C.ROOM]; if (!r || !r.find(FIND_MY_SPAWNS).length) return false;
   return mine().some(c => c.memory.role === 'w8miner'); // Spawn2 + its own miner -> home stops cq pioneers/haulers (guard stays)
 }
-module.exports = { sealAt, banking, BANK_HOLD, moveRun, moveReady, rampNeeded, homeWant, linkAt, linkRun, rampHold, dayObs, swapTemp, extBatch, energyOrder, ROOM: C.ROOM, spawnRun, layoutRun, towerRun, selfSufficient, bodyFor, rmLead8 };
+module.exports = { sealAt, banking, BANK_HOLD, LEAN_STOR, leanBank, energyBank, dayofMiss, moveRun, moveReady, rampNeeded, homeWant, linkAt, linkRun, rampHold, dayObs, swapTemp, extBatch, energyOrder, ROOM: C.ROOM, spawnRun, layoutRun, towerRun, selfSufficient, bodyFor, rmLead8 };

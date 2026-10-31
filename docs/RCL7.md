@@ -249,3 +249,31 @@ Home upgrade sustained ≥20 after remotes SAFE? **YES** on short/SAFE windows (
 ### Shipped
 - `w8day.{towerMinE,eAvail,eCap}` + `tests/w47n8_dayobs.js`. Deploy this run.
 - No gate flips; no fill-priority change; no pre-bank.
+
+## 2026-10-31 08:4x — post-RCL7 first-hours: leanBank → stor≥20k
+
+**Question:** After W47N8 day-of (spawn2+tower3+10ext ≈50k) finishes, how do we get colony storage from ~2–3k → **20k** for lean KO without flipping gates — and do we need to throttle **home** upgrade for the colony day-of bill?
+
+**Answer: Auto leanBank on colony after day-of (default ON, opt-out `Memory.ops.w8leanBank=false`). Do NOT throttle home. Do NOT flip `RCL6_MINERALS`.**
+
+### Live proof (24h postgres + Memory.ops, Asia/Hong_Kong 08:4x)
+- Colony stor stuck **0.5–3k** under full upgrade for ~24h (surplus upgrader rule scales WORK with stor → net≈0).
+- Natural stor→20k under 3 upgraders ≈ **never**; with 1×10W upgrader, net ~15–25 e/t → **~0.8–1.3 h** from 2.5k.
+- Home and colony economies are **independent** (no terminal energy send yet); home throttle would not fund colony day-of. Home CPU fine; keep home upgrade.
+
+### Sequence (refined checklist; gates stay false)
+1. **RCL7 tick** → reactive day-of (20:4x / 05:4x): spawn2@33,30 + tower3@22,7 first, then 10 ext. Watch `w8day.towerMinE`. ~2–3 h.
+2. **`w8day.why=done`** + storE < 20k → **`leanBank` ON**: `energyBank` throttles upgrader spawn (keep ≤1 if ticksToDowngrade≥20k else 1 for downgrade), recycles surplus via `Memory.ops.w8recycle`, parks idle builders, pauses non-urgent road repair (same as move-banking).
+3. **`w8day.phase=bank20`** until storE≥20000 → **`phase=ready`**, leanBank off, full upgrade resumes. Cushion sits ready for lean KO.
+4. Flip **`RCL6_MINERALS`** only after checklist in `MINERAL_DEFENSE_ROADMAP` §5.6 (still needs **w8mminer/send** — not this run).
+
+### Observability
+`Memory.ops.w8day` adds: `phase` (`upgrade|near|dayof|bank20|ready`), `bankLeft`, `bankEta` (ticks @~20 e/t while leanBank, else −1), `leanBank` 0/1.
+
+### Overmind / TooAngel
+Overmind `storageBuffer` ~100k before industry; TooAngel banks via fewer upgraders when building. We use a tighter **20k** colony cushion and an explicit post-dayof throttle (not a pre-RCL bank — that remains rejected by 20:4x).
+
+### Shipped
+- `leanBank` / `energyBank` / `leanBankRecycle` / `dayofMiss` in `src/rooms/w47n8/index.js`; roles use `energyBank` for repair pause + park.
+- tests: `w47n8_dayobs` phase/bank/recycle/opt-out; `w47n8_move_bank` spawn throttle + park.
+- **No gate flips. No home throttle. Opt-out: `Memory.ops.w8leanBank=false`.**

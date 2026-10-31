@@ -43,4 +43,36 @@ Memory.ops.w8move.phase = 'done'; acts.length = 0; RL.w8builder.run(bc); assert.
 // 17:0x guard: armed group at W47N9 south (w8n9a fresh) -> w8guard queued; stale -> not
 Memory.ops.w8move.phase = 'done'; Memory.ops.w8n9a = Game.time - 10; const g = run(); assert.strictEqual(g, 'w8guard', 'border threat -> guard, got ' + g);
 Memory.ops.w8n9a = Game.time - 500; assert.notStrictEqual(run(), 'w8guard', 'stale border -> no guard');
+// 08:4x leanBank: after RCL7 day-of done + stor<20k, throttle upgraders (energyBank) and park idle builders
+Memory.ops.w8move = { phase: 'done' }; delete Memory.ops.w8n9a; delete Memory.ops.w8recycle;
+room.controller.level = 7; room.controller.ticksToDowngrade = 80000; room.storage.store.energy = 3000;
+// dayofMiss needs spawn2+tower3+50ext present
+const L = require(path.join(__dirname, '..', 'src', 'rooms', 'w47n8', 'layout'));
+const built = {};
+for (const [x, y] of [L.ORDER.spawn[0], L.ORDER.spawn[1]]) built[x * 50 + y] = [{ structureType: 'spawn', pos: { x, y } }];
+for (const [x, y] of L.ORDER.tower.slice(0, 3)) built[x * 50 + y] = [{ structureType: 'tower', pos: { x, y }, store: { energy: 900 } }];
+for (const [x, y] of L.ORDER.extension.slice(0, 50)) (built[x * 50 + y] = built[x * 50 + y] || []).push({ structureType: 'extension', pos: { x, y } });
+room.lookForAt = (k, x, y) => k === 'ls' || k === LOOK_STRUCTURES ? (built[x * 50 + y] || []) : [];
+room.find = (k) => {
+  if (k === FIND_MY_STRUCTURES) return Object.values(built).flat();
+  if (k === FIND_MY_SPAWNS) return Object.values(built).flat().filter(s => s.structureType === 'spawn');
+  return [];
+};
+assert.ok(W.leanBank(room), 'leanBank should be on at RCL7 dayof-done stor3k');
+assert.ok(W.energyBank(room), 'energyBank covers leanBank');
+// clear creeps except essentials; 0 upgraders + high ticks → no upgrader spawn (target 0)
+Object.keys(Game.creeps).forEach(n => delete Game.creeps[n]);
+cr('w8miner', 1400); Game.creeps.w8miner1399 = Object.assign({}, Game.creeps.w8miner1400, { name: 'w8miner1399', memory: { role: 'w8miner', home: 'W47N8', si: 1 } });
+cr('w8hauler', 1000); cr('w8hauler', 1001); cr('w8hauler', 1002); cr('w8filler', 1200);
+assert.notStrictEqual(run(), 'w8upgrader', 'leanBank + high ticks: no upgrader');
+room.controller.ticksToDowngrade = 15000; assert.strictEqual(run(), 'w8upgrader', 'leanBank + low ticks: keep 1 upgrader');
+// idle builder parks under leanBank (no upgrade/withdraw)
+acts.length = 0; room.storage.store.energy = 3000;
+const bc2 = cr('w8builder', 1100, { id: 'b2', memory: { role: 'w8builder', home: 'W47N8', w: true }, store: Object.assign({ energy: 300 }, { getFreeCapacity: () => 0, getCapacity: () => 300 }),
+  pos: Object.assign(pos(C.UPG_EXTRA[0][0], C.UPG_EXTRA[0][1]), { findClosestByRange: () => null }), fatigue: 0, owner: { username: 'Misaki030112' },
+  upgradeController: () => acts.push('upgrade'), withdraw: () => acts.push('withdraw'), repair: () => acts.push('repair'), build: () => acts.push('build'), move: () => acts.push('move'), moveTo: () => acts.push('moveTo'), say() {} });
+RL.w8builder.run(bc2); assert.ok(!acts.includes('upgrade') && !acts.includes('withdraw'), 'leanBank: idle builder parks, acts ' + acts);
+// opt-out
+Memory.ops.w8leanBank = false; assert.ok(!W.leanBank(room), 'opt-out works'); delete Memory.ops.w8leanBank;
 console.log('w47n8 move bank ok');
+
