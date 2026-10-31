@@ -269,7 +269,8 @@ function coreBuster(c) {
 // Retreats home (<60% hp: tower heals it) or when it cannot win (focus.canWin) -> asks the FSM for a 2nd defender (threat.request2)
 // and waits at the rally point until the partner is near. After the fight (Memory.defense.remotePatrol, default ON) it patrols
 // W45N8 <-> W45N7 until TTL (lingers at the W45N8 south exit = the only way into W45N7); the FSM adopts it for the next THREAT.
-// opt.approaching: target closed in since last tick (kite holds at >=4 off swamp); c.memory.kd = last step (direction inertia)
+// opt.approaching: the enemy itself stepped closer (kite holds at >=4 off swamp). Not "range dropped" — our step does that too.
+// c.memory.kd = last step (direction inertia). c.memory.ep = enemy tile last tick. c.memory.kw = ticks a melee at range 4-8 has not closed.
 function kite(c, t, flee, approaching) {
   // GUARD/dynamic remotes (W47N7) live in cfgFor, not CFG — CFG-only blew up on C.avoid (live 10-29 ~19:24, rdef vs Invader).
   const C = (remote.cfgFor && remote.cfgFor(c.memory.remote)) || remote.CFG[c.memory.remote] || {};
@@ -361,18 +362,27 @@ roles.defender = function (c) {
   const P = t0, t = P ? P.h : null;
   // after a kill (FSM still DEFEND for clearTicks): hold at the kill spot (tombstone stays covered), don't walk to the container
   if (!t) { if (c.memory.lk) return; return move.to(c, C.cont[0], C.cont[1], 2); }
-  c.memory.lk = [t.pos.x, t.pos.y]; c.memory.tg = t.id;
-  const r = c.pos.getRangeTo(t), prev = c.memory.kr || 99;
+  c.memory.lk = [t.pos.x, t.pos.y];
+  // Same target as last tick? Range shrinking is not "they are closing": our own step shrinks it too.
+  const same = c.memory.tg === t.id, eprev = same && c.memory.ep;
+  c.memory.tg = t.id;
+  const r = c.pos.getRangeTo(t);
+  const enemyCloser = !!(eprev && Math.max(Math.abs(eprev[0] - c.pos.x), Math.abs(eprev[1] - c.pos.y)) > r);
+  c.memory.ep = [t.pos.x, t.pos.y];
   if (P.mass) c.rangedMassAttack();
   else if (r <= 3) c.rangedAttack(t);
   else { const n = inv.find(h => c.pos.inRangeTo(h, 3)); if (n) c.rangedAttack(n); } // goal out of range: shoot whatever is in range
   const mv = { range: 3, reusePath: 0, maxRooms: 1, plainCost: 2, swampCost: 10, costCallback: move.foreignSites };
   // pure ranged target (no ATTACK): kiting only gives it free shots — close to range 3 and trade (we out-heal/out-damage small ones)
-  if (rangedOf(t) && !meleeOf(t)) { c.memory.kr = r; if (r > 3) { delete c.memory._m; c.moveTo(t, mv); } return; }
-  // melee target (it chases us): within 8 let it come and hold range 3 (utils/kite); moveTo would walk into swamp -> 5-tick lock -> melee.
-  // If it stops coming (busy elsewhere / wall in the way: range 4-8 not shrinking for 10 ticks), approach normally.
-  c.memory.kw = r > 3 && r <= 8 && r >= (c.memory.kr || 99) ? (c.memory.kw || 0) + 1 : 0; c.memory.kr = r;
-  if (meleeOf(t) && r <= 8 && c.memory.kw <= 10) return kite(c, t, false, r < prev);
+  if (rangedOf(t) && !meleeOf(t)) { c.memory.kr = r; c.memory.kw = 0; if (r > 3) { delete c.memory._m; c.moveTo(t, mv); } return; }
+  // melee target: while it is actually stepping toward us, kite (hold >=4, fight at 3). moveTo into a chaser
+  // walks onto swamp and gets caught (2026-10-15). If it is NOT closing (busy on a miner/structure), approach.
+  // Counting range was wrong: the step we took to close looked like the enemy approaching, kw reset, kite held
+  // at range 4-6 and never fired (W47N7 2026-10-31, Misaki: 不会靠近、不会打).
+  if (r > 3 && r <= 8) c.memory.kw = enemyCloser ? 0 : (c.memory.kw || 0) + 1;
+  else c.memory.kw = 0;
+  c.memory.kr = r;
+  if (meleeOf(t) && r <= 8 && c.memory.kw <= 10) return kite(c, t, false, enemyCloser);
   if (r > 3) { delete c.memory._m; c.moveTo(t, mv); }
 };
 // Vision fallback (no observer): 1 MOVE scout parks in the remote when nobody else gives vision (spawn.js decides when).

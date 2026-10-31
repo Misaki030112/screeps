@@ -73,4 +73,50 @@ assert.strictEqual(remote.CFG.W47N7, undefined, 'CFG has no W47N7 (regression tr
 const roles = require(path.join(ROOT, 'src/roles/remote.js'));
 assert.doesNotThrow(() => roles.defender.run(creep), 'defender kite must not throw on GUARD remote');
 assert.ok(moved.length >= 0, 'ran without throw');
+
+// W47N7 2026-10-31: a melee Invader that is not walking into us (busy on a miner/structure).
+// Range used to count as "approaching" whenever WE stepped closer, so kw reset, kite held at range 4-6,
+// and rangedAttack never fired. Real terrain pocket 33,29 vs 28,24.
+const T7 = fs.readFileSync(path.join(ROOT, 'data/terrain_W47N7.txt'), 'utf8');
+const wall7 = (x, y) => x < 1 || y < 1 || x > 48 || y > 48 || T7[y * 50 + x] === '1' || T7[y * 50 + x] === '3';
+const D9 = [[0, 0], [0, -1], [1, -1], [1, 0], [1, 1], [0, 1], [-1, 1], [-1, 0], [-1, -1]];
+room.getTerrain = () => ({ get: (x, y) => wall7(x, y) ? 1 : (T7[y * 50 + x] === '2' ? 2 : 0) });
+function bfs(x, y, gx, gy, range) {
+  if (Math.max(Math.abs(x - gx), Math.abs(y - gy)) <= range) return null;
+  const q = [[x, y]], prev = new Map(), seen = new Set([x * 50 + y]);
+  while (q.length) {
+    const [cx, cy] = q.shift();
+    for (let d = 1; d <= 8; d++) {
+      const nx = cx + D9[d][0], ny = cy + D9[d][1], k = nx * 50 + ny;
+      if (wall7(nx, ny) || seen.has(k)) continue;
+      seen.add(k); prev.set(k, cx * 50 + cy); q.push([nx, ny]);
+      if (Math.max(Math.abs(nx - gx), Math.abs(ny - gy)) <= range) {
+        let cur = k; while (prev.get(cur) !== x * 50 + y) cur = prev.get(cur);
+        return [((cur / 50) | 0) - x, (cur % 50) - y];
+      }
+    }
+  }
+  return null;
+}
+function bindPos(p) {
+  p.getRangeTo = function (t) { const q = t.pos || t; return Math.max(Math.abs(this.x - q.x), Math.abs(this.y - q.y)); };
+  p.inRangeTo = function (a, b, r) {
+    if (typeof a === 'object' && a.pos) return Math.max(Math.abs(this.x - a.pos.x), Math.abs(this.y - a.pos.y)) <= (r === undefined ? b : r);
+    if (typeof a === 'object') return Math.max(Math.abs(this.x - a.x), Math.abs(this.y - a.y)) <= b;
+    return Math.max(Math.abs(this.x - a), Math.abs(this.y - b)) <= r;
+  };
+  p.isNearTo = function (o) { const q = o.pos || o; return Math.max(Math.abs(this.x - q.x), Math.abs(this.y - q.y)) <= 1; };
+}
+bindPos(inv.pos); bindPos(creep.pos);
+inv.pos.x = 28; inv.pos.y = 24;
+creep.pos.x = 33; creep.pos.y = 29;
+creep.memory = { role: 'defender', remote: 'W47N7', home: 'W47N8' };
+let shots = 0;
+creep.rangedAttack = () => { shots++; };
+creep.rangedMassAttack = () => { shots++; };
+creep.move = (d) => { const s = D9[d] || [0, 0]; const nx = creep.pos.x + s[0], ny = creep.pos.y + s[1]; if (!wall7(nx, ny)) { creep.pos.x = nx; creep.pos.y = ny; } };
+creep.moveTo = (t) => { const q = t.pos || t; const s = bfs(creep.pos.x, creep.pos.y, q.x, q.y, 3); if (s) { creep.pos.x += s[0]; creep.pos.y += s[1]; } };
+for (let t = 0; t < 30; t++) { Game.time = 200 + t; roles.defender.run(creep); }
+const endR = Math.max(Math.abs(creep.pos.x - 28), Math.abs(creep.pos.y - 24));
+assert.ok(shots > 0 && endR <= 3, 'stationary melee on W47N7 must be closed and shot, shots=' + shots + ' range=' + endR + ' at ' + creep.pos.x + ',' + creep.pos.y);
 console.log('defender_guard_kite ok');
