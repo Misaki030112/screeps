@@ -147,4 +147,113 @@ C.RCL6_MINERALS = false;
   C.RCL6_MINERALS = false;
 }
 
+
+// 14:4x: mineralSend dormant + live path; termFuel parks energy for fees
+{
+  assert.strictEqual(typeof W.mineralSend, 'function', 'mineralSend exported');
+  Memory.ops = Memory.ops || {};
+  // rebuild dayObs sendOk via a minimal room
+  const termStore = { K: 0, energy: 0 };
+  const homeTermStore = { energy: 0 };
+  homeTermStore.getFreeCapacity = () => 50000;
+  const sent = [];
+  const term = {
+    store: termStore, cooldown: 0, storeCapacity: 300000,
+    send(res, amt, dest) { sent.push([res, amt, dest]); return 0; },
+  };
+  const homeTerm = { store: homeTermStore, storeCapacity: 300000 };
+  const stMap = {};
+  const put = (x, y, o) => { (stMap[x * 50 + y] = stMap[x * 50 + y] || []).push(o); };
+  put(37, 44, { structureType: 'container', store: { getFreeCapacity: () => 1500, K: 0 }, pos: { x: 37, y: 44 } });
+  put(37, 45, { structureType: 'extractor', pos: { x: 37, y: 45 } });
+  const mineral = { mineralAmount: 50000, mineralType: 'K', pos: { x: 37, y: 45 } };
+  const room = {
+    name: C.ROOM, energyAvailable: 2300, energyCapacityAvailable: 2300,
+    controller: { level: 7, my: true, ticksToDowngrade: 50000, progress: 0, progressTotal: 1 },
+    storage: { store: { energy: 25000 }, pos: { x: 35, y: 32 } },
+    terminal: term, memory: {},
+    lookForAt: (k, x, y) => k === LOOK_STRUCTURES ? (stMap[x * 50 + y] || []) : [],
+    find: (k, o) => {
+      let a = [];
+      if (k === FIND_MY_STRUCTURES || k === FIND_STRUCTURES) a = Object.values(stMap).flat();
+      else if (k === FIND_MINERALS) a = [mineral];
+      else if (k === FIND_MY_CREEPS) a = Object.values(Game.creeps || {});
+      else if (k === FIND_MY_CONSTRUCTION_SITES) a = [];
+      else if (k === FIND_HOSTILE_CREEPS) a = [];
+      else if (k === FIND_DROPPED_RESOURCES) a = [];
+      else if (k === FIND_MY_SPAWNS) a = [];
+      return o && o.filter ? a.filter(o.filter) : a;
+    },
+  };
+  Game.rooms[C.ROOM] = room;
+  Game.rooms.W46N8 = { name: 'W46N8', terminal: homeTerm };
+  Game.market = { calcTransactionCost: (amt) => Math.ceil(amt * 0.033) };
+  Game.time = 100;
+  Game.creeps = Game.creeps || {};
+
+  // gate off: sendWhy=gate, no send intent
+  C.RCL6_MINERALS = false;
+  termStore.K = 2000; termStore.energy = 500;
+  sent.length = 0;
+  W.mineralSend(room);
+  assert.strictEqual(Memory.ops.w8min.sendWhy, 'gate');
+  assert.strictEqual(Memory.ops.w8min.sendOk, 1);
+  assert.strictEqual(sent.length, 0, 'no send while gate off');
+
+  // gate on, no K
+  C.RCL6_MINERALS = true;
+  termStore.K = 0;
+  W.mineralSend(room);
+  assert.strictEqual(Memory.ops.w8min.sendWhy, 'noK');
+
+  // gate on, K but no energy for cost
+  termStore.K = 2000; termStore.energy = 0;
+  W.mineralSend(room);
+  assert.strictEqual(Memory.ops.w8min.sendWhy, 'noE');
+  assert.ok(Memory.ops.w8min.needE > 0);
+
+  // gate on, ready → send
+  termStore.energy = 500;
+  sent.length = 0;
+  W.mineralSend(room);
+  assert.strictEqual(Memory.ops.w8min.sendWhy, 'sent', 'sendWhy=' + Memory.ops.w8min.sendWhy);
+  assert.strictEqual(sent.length, 1);
+  assert.strictEqual(sent[0][0], 'K');
+  assert.strictEqual(sent[0][2], 'W46N8');
+  assert.ok(sent[0][1] >= 100 && sent[0][1] <= 5000);
+
+  // cooldown
+  term.cooldown = 5; sent.length = 0;
+  W.mineralSend(room);
+  assert.strictEqual(Memory.ops.w8min.sendWhy, 'cd');
+  assert.strictEqual(sent.length, 0);
+  term.cooldown = 0;
+
+  // dayObs: sendOk=1, gaps no longer include send
+  Memory.ops.w8layout = 'approved';
+  // minimal globals for dayObs towers etc already covered by room.find
+  W.dayObs(room);
+  const m = Memory.ops.w8min;
+  assert.strictEqual(m.sendOk, 1);
+  assert.ok(m.gaps.indexOf('send') < 0, 'gaps=' + m.gaps);
+  assert.strictEqual(m.hasCode, 1);
+
+  // termFuel: gate off → false; gate on + K waiting + low termE → withdraw storage
+  C.RCL6_MINERALS = false;
+  assert.strictEqual(roles._termFuel(creep()), false);
+  C.RCL6_MINERALS = true;
+  termStore.K = 500; termStore.energy = 50;
+  const fuelC = creep();
+  fuelC.pos.isNearTo = (t) => t === room.storage || (t && t.pos && t.pos.x === 35);
+  // creep() isNearTo always true — withdraw storage
+  assert.strictEqual(roles._termFuel(fuelC), true);
+  assert.deepStrictEqual(fuelC.got, [['w', 'energy']], 'termFuel withdraws energy from storage');
+  const fuelC2 = creep({ energy: 200 });
+  fuelC2.pos.isNearTo = () => true;
+  assert.strictEqual(roles._termFuel(fuelC2), true);
+  assert.deepStrictEqual(fuelC2.got, [['t', 'energy']], 'termFuel transfers energy to terminal');
+
+  C.RCL6_MINERALS = false;
+}
+
 console.log('w47n8_mminer ok');

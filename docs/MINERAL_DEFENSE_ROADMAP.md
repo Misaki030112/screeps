@@ -250,7 +250,7 @@ W47N8 在翻 `RCL6_MINERALS` **之前**，矿物线代码缺口有多大？是�
 ### 5.6 翻 `RCL6_MINERALS` 前 checklist（仍 **propose**；不自动翻）
 1. W47N8 **RCL7** + tower3 + spawn2 落完（`w8day.why=done`）
 2. colony storage **≥20k**（且 home 墙 HOLD 300k、home stor 稳在 ≥15k）
-3. **代码：** `w8mminer` 站 37,44 + 把 K 搬进 terminal **✅ 11:4x**；`terminal.send`→W46N8（**尚未写**）
+3. **代码：** `w8mminer` 站 37,44 + 把 K 搬进 terminal **✅ 11:4x**；`terminal.send`→W46N8 **✅ 14:4x**（dormant）
 4. `Memory.ops.w8min.why` 只剩 `miner`/`stor20k` 类可解缺口
 5. **不**开 `RCL6_LABS` / `RCL7_INDUSTRY` / `ops.labs` / `mineralCap`（除非 Misaki 改口）
 
@@ -265,7 +265,7 @@ W47N8 在翻 `RCL6_MINERALS` **之前**，矿物线代码缺口有多大？是�
 - **问题：** day-of 完成后 stor 卡在 0.5–3k，自然攒不到 20k（满升级净≈0）。
 - **做法：** `leanBank` 默认开（RCL7 + spawn2/tower3/50ext 齐 + stor<20k + `!RCL6_MINERALS`）。节流升级（≤1 upgrader、回收多余、idle builder 停车），obs：`w8day.phase/bankLeft/bankEta/leanBank`。
 - **退出：** stor≥20k → `phase=ready`，恢复满升级；cushion 留给 lean KO。
-- **仍不自动翻 gate**；§5.6 checklist：w8mminer+haul ✅；还缺 **send**。
+- **仍不自动翻 gate**；§5.6 checklist：w8mminer+haul ✅；send ✅ 14:4x。
 - 关闭：`Memory.ops.w8leanBank=false`。详见 `docs/RCL7.md` 08:4x。
 
 ### 5.9 w8mminer + haul→terminal（11:4x 2026-10-31 ~11:4x Asia/Hong_Kong）
@@ -277,3 +277,14 @@ W47N8 在翻 `RCL6_MINERALS` **之前**，矿物线代码缺口有多大？是�
   - obs：`w8min.hasCode=1`，`sendOk=0`，gaps 恒含 `send`。
 - **未做：** `terminal.send('W46N8', K, n)`；**未翻** `RCL6_MINERALS` / labs / industry。
 - **测试：** `tests/w47n8_mminer.js`（body / mineralRun gate / spawn want）；dayobs hasCode/send。
+
+### 5.10 terminal.send K→W46N8（14:4x 2026-10-31 ~14:4x Asia/Hong_Kong）
+- **问题：** lean KO 代码缺口只剩跨房 `terminal.send`（11:4x next open / §5.6#3）。
+- **参考：** Overmind `TerminalNetwork` — surplus room sends to deficit; `Game.market.calcTransactionCost`; `TERMINAL_MIN_SEND=100`, cooldown 10. TooAngel parks energy in terminal for transfer fees. Adjacent (range 1) ≈ ceil(amt × (1−e^(−1/30))) ≈ 33e/1k.
+- **做法（全部 behind `RCL6_MINERALS=false`）：**
+  - `mineralSend(room)` in `w47n8/index.js`：每 tick 从 layoutRun 调用；gate 关 → `sendWhy=gate` 立刻返回；gate 开时检查 cooldown / K≥100 / home terminal free / energy≥cost，batch≤5000，`term.send('K', amt, 'W46N8')`。
+  - `w8hauler.termFuel`：terminal 有矿等待且 `termE < 1000` 时从 storage 补能量（不抽干 stor<2k）。
+  - obs：`w8min.sendOk=1`；`sendWhy` ∈ gate|noTerm|cd|noK|noHome|homeFull|noE|sent|err*；`termE/lastSend/lastAmt/needE/cd`；gaps **不再**恒含 `send`。
+- **Home 接收：** `managers/labs` KO 已从 home terminal 抽 K/O — send 落点正确，无需新 receive 代码。
+- **未做：** 翻 `RCL6_MINERALS` / labs / industry；不在 live 发矿。
+- **测试：** `tests/w47n8_mminer.js`（send gate/noK/noE/sent/cd + termFuel）；`w47n8_dayobs` sendOk=1。

@@ -256,3 +256,6 @@ Natural stor→20k under full upgrade never happens (24h proof stor stuck 0.5–
 
 ## 2026-10-31 11:4x — dormant w8mminer + haul→terminal
 Shipped colony mineral **roles** behind `RCL6_MINERALS=false`: `w8mminer` (stand 37,44) + `w8hauler.mineralRun` (minCont→terminal). **No** `terminal.send` yet; **no** gate flip. See `docs/MINERAL_DEFENSE_ROADMAP.md` §5.9. After RCL7 day-of + leanBank ready, next code slice is send, then propose flip.
+
+## 2026-10-31 14:4x — dormant terminal.send K→W46N8
+Lean KO code path complete (mine→cont→haul→term→**send**→home labs). Gates stay false. After RCL7 day-of + leanBank `phase=ready`, propose flip `RCL6_MINERALS` only. See `docs/MINERAL_DEFENSE_ROADMAP.md` §5.10.

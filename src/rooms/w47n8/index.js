@@ -404,6 +404,53 @@ function leanBankRecycle(room) {
   for (const c of ups.slice(1)) if (c.name && !L.includes(c.name)) L.push(c.name);
   o.w8recycle = L;
 }
+
+// 14:4x strategy: dormant terminal.send K W47N8→W46N8 (lean KO). Overmind TerminalNetwork pattern —
+// surplus at colony, deficit at home labs; TERMINAL_MIN_SEND=100, COOLDOWN=10; adjacent ~ceil(amt*(1-e^(-1/30))).
+// Gate stays false → no live send. termFuel (roles) parks energy for fees when gate flips.
+const HOME_ROOM = 'W46N8';
+const SEND_BATCH = 5000;
+const TERM_MIN_SEND = 100;
+function sendCost(amt, from, to) {
+  if (typeof Game !== 'undefined' && Game.market && Game.market.calcTransactionCost)
+    return Game.market.calcTransactionCost(amt, from, to);
+  const range = (typeof Game !== 'undefined' && Game.map && Game.map.getRoomLinearDistance)
+    ? Game.map.getRoomLinearDistance(from, to, true) : 1;
+  return Math.ceil(amt * (1 - Math.exp(-range / 30)));
+}
+function mineralSend(room) {
+  const o = (Memory.ops = Memory.ops || {});
+  const w = o.w8min = o.w8min || {};
+  w.sendOk = 1;
+  if (!C.RCL6_MINERALS) { w.sendWhy = 'gate'; return; }
+  const term = room.terminal;
+  if (!term) { w.sendWhy = 'noTerm'; return; }
+  if (term.cooldown > 0) { w.sendWhy = 'cd'; w.cd = term.cooldown; return; }
+  const K = (typeof RESOURCE_KEANIUM !== 'undefined') ? RESOURCE_KEANIUM : 'K';
+  const k = term.store[K] || 0;
+  if (k < TERM_MIN_SEND) { w.sendWhy = 'noK'; w.cd = 0; return; }
+  const home = Game.rooms[HOME_ROOM];
+  const hTerm = home && home.terminal;
+  if (!hTerm) { w.sendWhy = 'noHome'; return; }
+  const free = hTerm.store.getFreeCapacity
+    ? hTerm.store.getFreeCapacity()
+    : Math.max(0, (hTerm.storeCapacity || 300000) - _.sum(hTerm.store));
+  if (free < TERM_MIN_SEND) { w.sendWhy = 'homeFull'; return; }
+  let amount = Math.min(k, SEND_BATCH, free);
+  let cost = sendCost(amount, room.name, HOME_ROOM);
+  const e = term.store[(typeof RESOURCE_ENERGY !== 'undefined') ? RESOURCE_ENERGY : 'energy'] || 0;
+  while (amount >= TERM_MIN_SEND && e < cost) {
+    amount = Math.floor(amount / 2);
+    cost = sendCost(amount, room.name, HOME_ROOM);
+  }
+  if (amount < TERM_MIN_SEND) { w.sendWhy = 'noE'; w.needE = sendCost(TERM_MIN_SEND, room.name, HOME_ROOM); return; }
+  const r = term.send(K, amount, HOME_ROOM);
+  if (r === OK) {
+    w.sendWhy = 'sent'; w.lastSend = Game.time; w.lastAmt = amount; w.needE = 0; w.cd = 0;
+  } else {
+    w.sendWhy = 'err' + r;
+  }
+}
 // 20:4x strategy: day-of readiness observability. Spurs already live →
 // remaining bill ≈ missing spawn2@33,30 + tower3@22,7 + (50−nExt)×3k. Reactive siteRem≥3k → ≤4 builders;
 // no pre-bank (see docs/RCL7.md "20:4x"). 08:4x adds phase bank20/ready + leanBank.
@@ -459,17 +506,22 @@ function dayObs(room) {
   if (!hasTerm) gaps.push('terminal');
   if (!hasExt) gaps.push('extractor');
   if (!hasMinCont) gaps.push('minCont');
-  // 11:4x: w8mminer+haul shipped (dormant). Still missing terminal.send → home. Miner gap only matters once gate is on.
+  // 11:4x: w8mminer+haul shipped. 14:4x: terminal.send shipped (dormant). Miner gap only once gate on.
   if (C.RCL6_MINERALS && !miners) gaps.push('miner');
   if (rcl < 7) gaps.push('rcl');
   if (storE < 20000) gaps.push('stor20k');
-  gaps.push('send'); // terminal.send W47N8→W46N8 not yet coded (next slice)
+  // no longer gap 'send' — code present; live readiness is sendWhy (gate/noK/noE/…)
+  const prev = o.w8min || {};
+  const termE = hasTerm ? (room.terminal.store[RESOURCE_ENERGY] || 0) : 0;
   o.w8min = { t: Game.time, rcl, storE, kAmt, kTerm, hasTerm: hasTerm ? 1 : 0, hasExt: hasExt ? 1 : 0,
     hasMinCont: hasMinCont ? 1 : 0, miners, minOk: C.RCL6_MINERALS ? 1 : 0, labsOk: C.RCL6_LABS ? 1 : 0,
-    hasCode: 1, sendOk: 0,
+    hasCode: 1, sendOk: 1, termE,
+    sendWhy: prev.sendWhy || (C.RCL6_MINERALS ? 'idle' : 'gate'),
+    lastSend: prev.lastSend || 0, lastAmt: prev.lastAmt || 0, needE: prev.needE || 0, cd: prev.cd || 0,
     gaps: gaps.join(','), why: gaps.length ? gaps[0] : 'ready' };
 }
 function layoutRun(room) {
+  mineralSend(room); // every tick; dormant while RCL6_MINERALS false
   if (Game.time % 20) return;
   dayObs(room);
   if (room.controller.level >= 2) placeSeal(room);
@@ -670,4 +722,4 @@ function selfSufficient() {
   const r = Game.rooms[C.ROOM]; if (!r || !r.find(FIND_MY_SPAWNS).length) return false;
   return mine().some(c => c.memory.role === 'w8miner'); // Spawn2 + its own miner -> home stops cq pioneers/haulers (guard stays)
 }
-module.exports = { sealAt, banking, BANK_HOLD, LEAN_STOR, leanBank, energyBank, dayofMiss, moveRun, moveReady, rampNeeded, homeWant, linkAt, linkRun, rampHold, dayObs, swapTemp, extBatch, energyOrder, ROOM: C.ROOM, spawnRun, layoutRun, towerRun, selfSufficient, bodyFor, rmLead8 };
+module.exports = { sealAt, banking, BANK_HOLD, LEAN_STOR, leanBank, energyBank, dayofMiss, moveRun, moveReady, rampNeeded, homeWant, linkAt, linkRun, rampHold, dayObs, mineralSend, swapTemp, extBatch, energyOrder, ROOM: C.ROOM, spawnRun, layoutRun, towerRun, selfSufficient, bodyFor, rmLead8 };

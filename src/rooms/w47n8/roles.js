@@ -210,6 +210,7 @@ function rgo(c, x, y, r) { return rmove(c, RM.room, x, y, r); }
 const go8 = (c, x, y, r = 1) => rmove(c, C.ROOM, x, y, r); // rhauler legs inside W47N8 too (same 1-wide trunk, 14,35-38 plain lane seen live)
 // 11:4x strategy: lean KO haul (Overmind ExtractorOverlord pattern — mine→container→hauler→terminal).
 // Dormant while RCL6_MINERALS false. Empty w8hauler drains mineral container (>= MIN_RUN or near-full) into terminal.
+// 14:4x: terminal.send (index.mineralSend) + termFuel energy buffer complete the lean KO path once gate flips.
 // terminal.send W47N8→W46N8 is a later slice; do NOT add it here.
 const MIN_RUN = 500; // colony haulers are smaller than home (~400 carry vs ~800)
 function mineralRun(c) {
@@ -230,6 +231,26 @@ function mineralRun(c) {
   if (!c.memory.mr && k.store[r] < Math.min(MIN_RUN, c.store.getCapacity()) && k.store.getFreeCapacity() > 200) return false;
   c.memory.mr = 1;
   if (c.pos.isNearTo(k)) { c.withdraw(k, r); delete c.memory.mr; } else go8(c, mx, my);
+  return true;
+}
+// 14:4x: park energy in terminal for send fees when K (or other mineral) is waiting. Overmind keeps
+// transfer-cost buffer in the terminal; adjacent send ~33e/1k. Dormant while gate false.
+const TERM_E_FLOOR = 1000;
+function termFuel(c) {
+  if (!C.RCL6_MINERALS) return false;
+  const room = Game.rooms[C.ROOM]; if (!room || !room.terminal || !room.storage) return false;
+  const term = room.terminal, st = room.storage;
+  if ((term.store[E] || 0) >= TERM_E_FLOOR) return false;
+  const waiting = Object.keys(term.store).some(r => r !== E && (term.store[r] || 0) >= 100);
+  if (!waiting) return false;
+  if (Object.keys(c.store).some(r => r !== E && c.store[r] > 0)) return false;
+  if (c.store[E] > 0) {
+    if (c.pos.isNearTo(term)) c.transfer(term, E); else go8(c, term.pos.x, term.pos.y);
+    return true;
+  }
+  if (c.memory.w) return false;
+  if ((st.store[E] || 0) < 2000) return false;
+  if (c.pos.isNearTo(st)) c.withdraw(st, E); else go8(c, st.pos.x, st.pos.y);
   return true;
 }
 const R = {
@@ -270,6 +291,7 @@ const R = {
   w8hauler(c) {
     if (!home(c)) return;
     if (mineralRun(c)) return;
+    if (termFuel(c)) return;
     toggle(c);
     if (!c.memory.w) { if (!haulPick(c) && c.store[E] > 0) c.memory.w = true; return; }
     const room8 = Game.rooms[C.ROOM];
@@ -552,3 +574,4 @@ Object.defineProperty(module.exports, '_wallJob', { value: wallJob, enumerable: 
 Object.defineProperty(module.exports, '_rmove', { value: rmove, enumerable: false }); // tests only
 Object.defineProperty(module.exports, '_home', { value: home, enumerable: false }); // tests only
 Object.defineProperty(module.exports, '_mineralRun', { value: mineralRun, enumerable: false }); // tests only
+Object.defineProperty(module.exports, '_termFuel', { value: termFuel, enumerable: false }); // tests only
