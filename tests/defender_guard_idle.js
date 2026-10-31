@@ -68,7 +68,7 @@ assert.ok(C && C.guardOnly, 'W47N7 guard cfg');
 const bad = GP.badSet(room);
 assert.ok(GP.ok(27, 19, tget, bad), '27,19 is an ok idle tile');
 assert.deepStrictEqual(GP.postFor(room, C), [27, 19], 'W47N7 post = 27,19');
-for (const [x, y] of ROADS) assert.ok(!GP.ok(x, y, tget, bad), 'road not ok ' + x + ',' + y);
+for (const [x, y] of ROADS) for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) assert.ok(!GP.ok(x + dx, y + dy, tget, bad), 'road / road-side not ok ' + (x + dx) + ',' + (y + dy));
 assert.ok(!GP.ok(18, 1, tget, bad) && !GP.ok(17, 18, tget, bad) && !GP.ok(37, 25, tget, bad), 'exit lane / source / controller neighbours not ok');
 Memory.remote.W48N7 = { post: [18, 1] };
 assert.ok(GP.ok(...GP.postFor({ name: 'W48N7', getTerrain: () => ({ get: tget }), find: () => [], controller: null }, {}), tget, new Set()), 'override is snapped to an ok tile');
