@@ -3,6 +3,13 @@
 Novice zone ends **2026-10-28 03:33 UTC+8** (past as of 10-29). Defence timeline: `docs/DEFENSE_NOVICE.md` (2026-10-16); detail `docs/DEFENSE.md` / geometry `docs/DEFENSE_PLAN.md`.
 **Safe mode: NEVER auto-activate** — alert Misaki.
 
+## 2026-11-01 02:4x strategy review: leanBank hysteresis + soft-cap
+- **Chose:** why does leanBank thrash ready↔bank20 after hitting 20k, then fail to rebuild cushion under remote DEFEND? (OUR ops; skip neighbor peacetime.)
+- **Findings (`docs/MINERAL_DEFENSE_ROADMAP.md` §5.14 / `docs/RCL7.md` 02:4x):** (1) Live t83987530–83989900: ready@23k → 4 upg → dn20@~19.9k → re-arm@16k → W47N7 DEFEND drained to ~1.7k; prog frozen@74778. (2) Overmind scales WORK off `storageBuffer` (~100k) and only spawns when assets > buffer — binary 20k on/off thrash is ours. (3) After upg=0, further drain = remote pause + defender fill + soft local income; `bankEta@20e/t` lies under threat. (4) Soft-cap ≤2 while stor<25k keeps a cushion without Overmind-sized buffer.
+- **Shipped:** `LEAN_ARM=15k` / `LEAN_SOFT=25k`; soft recycle ≤2; `w8day.bankWhy/bankArm/bankSoft`; tests. **Gates stay false. No flip.**
+- **Reprioritise:** (1) remotes clear DEFEND (W47N7/W45N7) + home stor≥15k; (2) **leanBank→colony stor≥20k** (now with hysteresis; soft-cap protects cushion); (3) **propose flip `RCL6_MINERALS` only** after flipReady (her nod); (4) home upg recover; (5) KO≥900 boost; (6) barriers→1M; (7) STATIONARY_FILL@RCL8. Defend-only W47N9.
+- **Plan check:** no major Misaki decision (hysteresis/soft-cap autonomous). Next open: after remotes SAFE + stor≥20k + homeStor green → **propose** flip. WakeParent only if flipReady returns while she has not nodded.
+
 ## 2026-10-31 23:4x strategy review: RCL6_MINERALS flip-ready + post-flip leanBank hold
 - **Chose:** gate timing — bank20 nearly done (missExt0 DONE, bankLeft~6.7k / ~0.4 h); is §5.6 checklist complete, and will flip starve the ~110k terminal build?
 - **Findings (`docs/MINERAL_DEFENSE_ROADMAP.md` §5.13):** (1) Live t~83987300: daycrit+50ext DONE, towerMinE~820, homeStor~15.5k ABOVE, remotes SAFE, code hasCode/sendOk=1; only **stor20k** blocks propose. (2) Overmind mines at RCL6 without a 20k cushion; our tighter bank is intentional. (3) **Hazard:** old `leanBank` returned false as soon as `RCL6_MINERALS` flipped, so after stor dipped below 20k mid-terminal-build it would never re-arm → full upgrade vs ~110k sites. (4) CPU ~12–14/20 has headroom for +1 w8mminer. (5) Home O cycle empty; term O~122k enough for KO; no market.

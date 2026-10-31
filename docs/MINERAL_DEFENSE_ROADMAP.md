@@ -1,7 +1,7 @@
-# 矿物线 + 强化 + 城防路线图（2026-10-29 12:4x；14:4x boost；17:4x fundSpend；23:4x fortify；08:4x RCL7 hold 300k；11:4x post-300k exit；14:4x soft ramp 100k；20:4x day-of 不预存；23:4x lean KO 脚手架；**08:4x leanBank→stor20k**；**11:4x w8mminer+haul**）
+# 矿物线 + 强化 + 城防路线图（2026-10-29 12:4x；14:4x boost；17:4x fundSpend；23:4x fortify；08:4x RCL7 hold 300k；11:4x post-300k exit；14:4x soft ramp 100k；20:4x day-of 不预存；23:4x lean KO 脚手架；**08:4x leanBank→stor20k**；**11:4x w8mminer+haul**；**02:4x leanBank hysteresis+soft-cap**）
 
-Live refresh **23:4x UTC+8 2026-10-31** tick ~83987300。**不自动交易、不开 safe mode。**
-围攻已中止；home 墙 **HOLD 300k** stor~15.5k ABOVE thin；殖民地 **RCL7**；soft **COMPLETE**；**day-crit DONE** + **missExt0 DONE**；**leanBank bank20** stor~13.3k bankLeft~6.7k bankEta~338t（~0.4 h）。**23:4x** 补 flipReady obs + 翻 gate 后 leanBank 保持到 terminal+minCont 落成。仍 **propose** 翻 `RCL6_MINERALS`（code ✅）。seal 300k 不变。
+Live refresh **02:4x UTC+8 2026-11-01** tick ~83989900。**不自动交易、不开 safe mode。**
+home 墙 **HOLD 300k** stor~14k thin；殖民地 **RCL7** prog frozen@74.8k；soft **COMPLETE**；**day-crit+missExt0 DONE**；**leanBank bank20** stor~1.7–3.6k（W47N7 DEFEND + prior thrash）。**02:4x** 修 leanBank 滞后回滞（15k 再 arm / 20k disarm）+ stor<25k soft-cap≤2 upgrader。仍 **propose** 翻 `RCL6_MINERALS`（等 flipReady+homeStor；code ✅）。seal 300k 不变。
 
 ## 0. 现状（实测）
 
@@ -327,3 +327,26 @@ W47N8 在翻 `RCL6_MINERALS` **之前**，矿物线代码缺口有多大？是�
 4. **时机：** bankEta~0.4 h 后 `phase=ready`；若 homeStor≥15k 且 towerMinE≥600 → `flipReady=1` → **propose** 翻。翻后预计 1–1.5 h 建完 lean KO 物流，再采 K→send home。
 
 **测试：** `w47n8_dayobs` flipReady / minBuild / post-complete；move_bank + mminer 回归。
+
+### 5.14 leanBank hysteresis + soft-cap（02:4x 2026-11-01 ~02:4x Asia/Hong_Kong）
+
+**选了什么问题：** leanBank 到 20k 后立刻拉满 3–4 upgrader，浅跌破 20k 就重 arm；紧接着 remote DEFEND 把 cushion 抽干，`bankEta@~20 e/t` 失真，flipReady 反复抖动。
+
+**实测（room_stats t83987300–83989900）：**
+| 事件 | tick | stor | w8upg | 备注 |
+|---|---|---|---|---|
+| up20 / ready | ~83987530 | ≥20k | 4 | phase=ready，满升级 |
+| dn20 | ~83988460 | <20k | 4 | 浅跌仍满升级 |
+| re-arm | ~83988750 | ~16.4k | 3→0 | leanBank 重开 |
+| W47N7 DEFEND | ~83988798 | →1.7k | 0 | mining pause；prog 冻@74778 |
+
+**对照：** Overmind `UpgradeSite.storageBuffer=100k`，只在 surplus 上按 `energyPerBodyUnit` 加 WORK；spawn 条件 `assets > buffer`。我们的 20k cushion 更紧，但不能二进制 thrash。
+
+**修法（SAFE，不翻 gate）：**
+1. **`LEAN_ARM=15000` 回滞：** disarm@20k；仅当上一拍 `leanBank=0` 且 stor&lt;15k 才再 arm。15–20k = hold（phase=`ready`，`bankWhy=hold`）。
+2. **`LEAN_SOFT=25000` soft-cap：** stor&lt;25k 时 base upgrader ≤2，禁 surplus spawn；`leanBankRecycle` 在非 bank 时收到 ≤2。
+3. **obs：** `w8day.{bankArm,bankSoft,bankWhy}`（`ready|hold|bank|threat|minBuild|gate|off`）。threat 下 `bankEta` 仍按 20 e/t，但 why=threat 提示不可信。
+
+**测试：** `w47n8_dayobs` hold/soft-recycle/re-arm；`w47n8_move_bank` hysteresis。
+
+**仍不自动翻 gate。** flipReady 仍要 stor≥20k + homeStor≥15k + towerMinE≥600 + 她点头。

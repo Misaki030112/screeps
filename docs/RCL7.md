@@ -329,3 +329,21 @@ Closes 11:4x remaining code gap: `mineralSend` + `termFuel` behind `RCL6_MINERAL
 **Question:** When bank20 completes, is the lean KO flip checklist clear? Does flipping `RCL6_MINERALS` disarm leanBank too early?
 
 **Answer:** Ship `w8min.flipReady` (propose-only). Keep leanBank through `phase=minBuild` until terminal+minCont exist after a future flip. **Do not flip in this run.** See `docs/MINERAL_DEFENSE_ROADMAP.md` §5.13.
+
+## 2026-11-01 02:4x — leanBank hysteresis + soft-cap
+
+**Question:** Why did leanBank thrash ready↔bank20 within ~1 h and then fail to rebuild the 20k cushion under W47N7 DEFEND?
+
+**Answer: Add 15k re-arm hysteresis + ≤2 upgrader soft-cap while stor < 25k. Do NOT flip gates.**
+
+### Live
+- ready@~00:14 stor~23k → 4 upgraders; dn20@~01:06; re-arm@~01:25 stor~16k; DEFEND@~01:28 → stor~1.7k by ~02:40; prog frozen@74778.
+- Drain after upg=0 is income collapse (remote pause + soft local) + defender spawn fill — bankEta@20e/t lies while `bankWhy=threat`.
+
+### Overmind
+- `storageBuffer` 100k; upgraders only when assets > buffer; WORK scales with surplus. Our 20k is intentional but needs hysteresis.
+
+### Shipped
+- `LEAN_ARM=15k` / `LEAN_SOFT=25k`; recycle ≤2 soft / ≤1 bank; `w8day.bankWhy/bankArm/bankSoft`.
+- Tests dayobs + move_bank. **No gate flips. No home throttle.**
+

@@ -77,6 +77,13 @@ const bc2 = cr('w8builder', 1100, { id: 'b2', memory: { role: 'w8builder', home:
   pos: Object.assign(pos(C.UPG_EXTRA[0][0], C.UPG_EXTRA[0][1]), { findClosestByRange: () => null }), fatigue: 0, owner: { username: 'Misaki030112' },
   upgradeController: () => acts.push('upgrade'), withdraw: () => acts.push('withdraw'), repair: () => acts.push('repair'), build: () => acts.push('build'), move: () => acts.push('move'), moveTo: () => acts.push('moveTo'), say() {} });
 RL.w8builder.run(bc2); assert.ok(!acts.includes('upgrade') && !acts.includes('withdraw'), 'leanBank: idle builder parks, acts ' + acts);
+// 02:4x hysteresis: prior ready + stor 18k → leanBank stays off (shallow dip)
+Memory.ops.w8day = { leanBank: 0 }; room.storage.store.energy = 18000;
+assert.ok(!W.leanBank(room), 'hysteresis: 18k after ready does not re-arm');
+assert.ok(!W.energyBank(room), 'energyBank off in hold band');
+room.storage.store.energy = 14000;
+assert.ok(W.leanBank(room), 'hysteresis: 14k re-arms');
+room.storage.store.energy = 3000;
 // opt-out
 Memory.ops.w8leanBank = false; assert.ok(!W.leanBank(room), 'opt-out works'); delete Memory.ops.w8leanBank;
 console.log('w47n8 move bank ok');

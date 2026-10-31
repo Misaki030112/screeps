@@ -292,3 +292,8 @@ Lean KO code path complete (mine→cont→haul→term→**send**→home labs). G
 ## 2026-10-31 23:4x — flipReady obs + post-flip leanBank hold
 
 After missExt0 DONE and bank20 nearly finished: `w8min.flipReady` encodes the propose checklist (stor20k + towerMinE≥600 + homeStor≥15k + daycrit). **Do not flip yet.** When gate later flips, `leanMinBuild` keeps leanBank until terminal + mineral container stand so the ~110k lean KO build is not starved. Detail: `docs/MINERAL_DEFENSE_ROADMAP.md` §5.13.
+
+## 2026-11-01 02:4x — leanBank hysteresis + soft-cap
+
+Post-ready thrash (20k→16k→DEFEND→1.7k) fixed with `LEAN_ARM=15k` re-arm + `LEAN_SOFT=25k` ≤2 upgrader soft-cap. Detail: `docs/MINERAL_DEFENSE_ROADMAP.md` §5.14 / `docs/RCL7.md` 02:4x. Gates stay false; flip still propose-only after ready+homeStor.
+

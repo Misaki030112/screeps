@@ -106,6 +106,33 @@ assert.strictEqual(Memory.ops.w8day.phase, 'ready');
 assert.strictEqual(Memory.ops.w8day.leanBank, 0);
 assert.strictEqual(Memory.ops.w8day.bankLeft, 0);
 assert.strictEqual(Memory.ops.w8day.bankEta, 0);
+assert.strictEqual(Memory.ops.w8day.bankWhy, 'ready');
+assert.strictEqual(W.LEAN_ARM, 15000);
+assert.strictEqual(W.LEAN_SOFT, 25000);
+// 02:4x hysteresis: after ready, stor 18k does NOT re-arm; phase stays ready (bankWhy=hold)
+Memory.ops.w8day.leanBank = 0;
+const rHold = mk(7, done, [], 0); rHold.storage.store.energy = 18000;
+W.dayObs(rHold);
+assert.strictEqual(Memory.ops.w8day.leanBank, 0, 'hysteresis hold at 18k');
+assert.strictEqual(Memory.ops.w8day.phase, 'ready');
+assert.strictEqual(Memory.ops.w8day.bankWhy, 'hold');
+assert.strictEqual(Memory.ops.w8day.bankLeft, 2000);
+// soft recycle: 4 upgraders at stor 22k → keep ≤2
+delete Memory.ops.w8recycle;
+const softUps = [{ memory: { role: 'w8upgrader' } }, { memory: { role: 'w8upgrader' } },
+  { memory: { role: 'w8upgrader' } }, { memory: { role: 'w8upgrader' } }];
+const rSoft = mk(7, done, softUps, 0); rSoft.storage.store.energy = 22000;
+Memory.ops.w8day.leanBank = 0;
+W.dayObs(rSoft);
+assert.strictEqual(Memory.ops.w8day.leanBank, 0, '22k still ready');
+assert.ok((Memory.ops.w8recycle || []).length >= 2, 'soft-cap recycles to ≤2: ' + JSON.stringify(Memory.ops.w8recycle));
+// re-arm below LEAN_ARM
+Memory.ops.w8day.leanBank = 0;
+const rArm = mk(7, done, [], 0); rArm.storage.store.energy = 14000;
+W.dayObs(rArm);
+assert.strictEqual(Memory.ops.w8day.leanBank, 1, 're-arm below 15k');
+assert.strictEqual(Memory.ops.w8day.phase, 'bank20');
+assert.strictEqual(Memory.ops.w8day.bankWhy, 'bank');
 // opt-out Memory.ops.w8leanBank=false
 Memory.ops.w8leanBank = false;
 const rOff = mk(7, done, [], 0); rOff.storage.store.energy = 3000;
