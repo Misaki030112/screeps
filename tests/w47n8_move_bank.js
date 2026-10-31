@@ -43,22 +43,27 @@ Memory.ops.w8move.phase = 'done'; acts.length = 0; RL.w8builder.run(bc); assert.
 // 17:0x guard: armed group at W47N9 south (w8n9a fresh) -> w8guard queued; stale -> not
 Memory.ops.w8move.phase = 'done'; Memory.ops.w8n9a = Game.time - 10; const g = run(); assert.strictEqual(g, 'w8guard', 'border threat -> guard, got ' + g);
 Memory.ops.w8n9a = Game.time - 500; assert.notStrictEqual(run(), 'w8guard', 'stale border -> no guard');
-// 08:4x leanBank: after RCL7 day-of done + stor<20k, throttle upgraders (energyBank) and park idle builders
+// 08:4x/20:4x leanBank: after RCL7 day-crit (spawn2+tower3) + stor<20k — NOT waiting for 50ext
 Memory.ops.w8move = { phase: 'done' }; delete Memory.ops.w8n9a; delete Memory.ops.w8recycle;
 room.controller.level = 7; room.controller.ticksToDowngrade = 80000; room.storage.store.energy = 3000;
-// dayofMiss needs spawn2+tower3+50ext present
 const L = require(path.join(__dirname, '..', 'src', 'rooms', 'w47n8', 'layout'));
 const built = {};
 for (const [x, y] of [L.ORDER.spawn[0], L.ORDER.spawn[1]]) built[x * 50 + y] = [{ structureType: 'spawn', pos: { x, y } }];
 for (const [x, y] of L.ORDER.tower.slice(0, 3)) built[x * 50 + y] = [{ structureType: 'tower', pos: { x, y }, store: { energy: 900 } }];
-for (const [x, y] of L.ORDER.extension.slice(0, 50)) (built[x * 50 + y] = built[x * 50 + y] || []).push({ structureType: 'extension', pos: { x, y } });
+// 20:4x: only 40ext (missExt=10) — leanBank must still arm
+for (const [x, y] of L.ORDER.extension.slice(0, 40)) (built[x * 50 + y] = built[x * 50 + y] || []).push({ structureType: 'extension', pos: { x, y } });
 room.lookForAt = (k, x, y) => k === 'ls' || k === LOOK_STRUCTURES ? (built[x * 50 + y] || []) : [];
-room.find = (k) => {
-  if (k === FIND_MY_STRUCTURES) return Object.values(built).flat();
-  if (k === FIND_MY_SPAWNS) return Object.values(built).flat().filter(s => s.structureType === 'spawn');
-  return [];
+room.find = (k, o) => {
+  let a = [];
+  if (k === FIND_MY_STRUCTURES) a = Object.values(built).flat();
+  else if (k === FIND_MY_SPAWNS) a = Object.values(built).flat().filter(s => s.structureType === 'spawn');
+  return o && o.filter ? a.filter(o.filter) : a;
 };
-assert.ok(W.leanBank(room), 'leanBank should be on at RCL7 dayof-done stor3k');
+assert.ok(W.leanBank(room), 'leanBank on at RCL7 day-crit + 40ext + stor3k');
+assert.strictEqual(W.dayofMiss(room).missExt, 10, 'still missExt=10');
+// fill remaining 10ext — still on
+for (const [x, y] of L.ORDER.extension.slice(40, 50)) (built[x * 50 + y] = built[x * 50 + y] || []).push({ structureType: 'extension', pos: { x, y } });
+assert.ok(W.leanBank(room), 'leanBank still on at 50ext stor3k');
 assert.ok(W.energyBank(room), 'energyBank covers leanBank');
 // clear creeps except essentials; 0 upgraders + high ticks → no upgrader spawn (target 0)
 Object.keys(Game.creeps).forEach(n => delete Game.creeps[n]);

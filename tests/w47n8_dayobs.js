@@ -67,6 +67,24 @@ assert.strictEqual(Memory.ops.w8day.towerNorthE, 450);
 assert.strictEqual(Memory.ops.w8day.towerHubE, 900);
 assert.strictEqual(Memory.ops.w8day.towerMinE, 450);
 assert.strictEqual(Memory.ops.w8day.nf, 1);
+// 20:4x: RCL7 day-crit (spawn2+tower3) done but missExt=10 → leanBank ON, why=done, phase=bank20
+// (was stuck dayof/leanBank=0 waiting for 50ext — mismatch vs 17:4x intent)
+const midExt = base.concat([[33, 30, 'spawn'], [22, 7, 'tower']]); // still 40ext
+W.dayObs(mk(7, midExt, [], 0));
+assert.strictEqual(Memory.ops.w8day.missSpawn, 0);
+assert.strictEqual(Memory.ops.w8day.missTower, 0);
+assert.strictEqual(Memory.ops.w8day.missExt, 10);
+assert.strictEqual(Memory.ops.w8day.why, 'done', 'day-crit done → why=done even mid-ext');
+assert.strictEqual(Memory.ops.w8day.phase, 'bank20');
+assert.strictEqual(Memory.ops.w8day.leanBank, 1, 'leanBank arms without 50ext');
+assert.ok(Memory.ops.w8day.bankEta > 0, 'bankEta positive mid-ext leanBank');
+// still missing day-crit → dayof, leanBank off
+const critMiss = base; // no spawn2/tower3
+W.dayObs(mk(7, critMiss, [], 0));
+assert.strictEqual(Memory.ops.w8day.why, 'dayof');
+assert.strictEqual(Memory.ops.w8day.phase, 'dayof');
+assert.strictEqual(Memory.ops.w8day.leanBank, 0, 'leanBank waits for spawn2+tower3');
+assert.strictEqual(Memory.ops.w8day.bankEta, -1);
 // RCL7 with spawn2+tower3+50ext done
 const done = base.concat([[33, 30, 'spawn'], [22, 7, 'tower']], L.ORDER.extension.slice(40, 50).map(([x, y]) => [x, y, 'extension']));
 W.dayObs(mk(7, done, [], 0));

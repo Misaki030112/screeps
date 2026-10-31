@@ -367,7 +367,8 @@ function extBatch(room, m) {
 const BANK_HOLD = MOVE_E + 2000, banking = room => moving() && bankE(room) < BANK_HOLD;
 const moving = () => { const m = Memory.ops && Memory.ops.w8move; return !!m && (m.phase === 'prep' || m.phase === 'build'); };
 const LEAN_STOR = 20000;
-// 08:4x 2026-10-31 strategy: after RCL7 day-of structures, throttle upgrade so storage can reach 20k for lean KO.
+// 08:4x 2026-10-31 strategy: after RCL7 day-crit (spawn2+tower3), throttle upgrade so storage can reach 20k for lean KO.
+// 20:4x: day-crit ≠ 50ext — arm leanBank while the 10ext wave is still building (builders keep sites; upgraders throttle).
 // Opt-out: Memory.ops.w8leanBank === false. Does NOT flip RCL6_MINERALS / RCL6_LABS. See docs/RCL7.md "08:4x".
 function dayofMiss(room) {
   const has = (typ, x, y) => room.lookForAt(LOOK_STRUCTURES, x, y).some(s => s.structureType === typ);
@@ -377,6 +378,8 @@ function dayofMiss(room) {
     missExt: Math.max(0, 50 - nExt) };
 }
 function leanBank(room) {
+  // 20:4x 2026-10-31: arm after day-crit (spawn2+tower3) — do NOT wait for 50ext.
+  // 17:4x already said flip/bank need not wait on the ext wave; §5.8 "50ext齐" was a doc/code mismatch.
   const o = Memory.ops || {};
   if (o.w8leanBank === false) return false;
   if (!room.controller || room.controller.level < 7) return false;
@@ -384,7 +387,7 @@ function leanBank(room) {
   const storE = room.storage && room.storage.store ? (room.storage.store[RESOURCE_ENERGY] || 0) : 0;
   if (storE >= LEAN_STOR) return false;
   const m = dayofMiss(room);
-  return !(m.missSpawn || m.missTower || m.missExt > 0);
+  return !(m.missSpawn || m.missTower);
 }
 const energyBank = room => banking(room) || leanBank(room);
 function leanBankRecycle(room) {
@@ -489,14 +492,16 @@ function dayObs(room) {
   const nf = towerNorthE >= 0 && towerNorthE < 600 ? 1 : 0;
   const eAvail = room.energyAvailable || 0, eCap = room.energyCapacityAvailable || 0;
   let why = 'upgrade';
-  if (rcl >= 7) why = (missSpawn || missTower || missExt > 0 || siteRemV > 0) ? 'dayof' : 'done';
+  // 20:4x: why=dayof only while day-crit (spawn2/tower3) missing. Ext wave + sites tracked via missExt/siteRem;
+  // after crit done we enter bank20/ready even mid-ext so leanBank can arm (17:4x intent).
+  if (rcl >= 7) why = (missSpawn || missTower) ? 'dayof' : 'done';
   else if (need < 80000) why = 'near';
-  // 08:4x: phase splits post-dayof into bank20 (stor<20k, leanBank active/wanted) vs ready (≥20k cushion for lean KO).
+  // 08:4x/20:4x: phase splits post-daycrit into bank20 (stor<20k) vs ready (≥20k cushion for lean KO).
   let phase = why;
   if (why === 'done') phase = storE >= LEAN_STOR ? 'ready' : 'bank20';
   const bankLeft = Math.max(0, LEAN_STOR - storE);
-  // Assume ~20 e/t net while leanBank keeps ≤1 upgrader (income ~35 − 10 upg − ~5 upkeep); else ~0 under full upgrade.
-  const bankEta = bankLeft <= 0 ? 0 : (leanBank(room) ? Math.ceil(bankLeft / 20) : -1);
+  // ~20 e/t net while leanBank (≤1 upgrader). Mid-ext, sites still sink energy first → fold siteRem into ETA.
+  const bankEta = bankLeft <= 0 ? 0 : (leanBank(room) ? Math.ceil((bankLeft + siteRemV) / 20) : -1);
   o.w8day = { t: Game.time, rcl, need, siteRem: siteRemV, builders, upgraders, storE, bill,
     missSpawn: missSpawn ? 1 : 0, missTower: missTower ? 1 : 0, missExt, why, phase,
     bankLeft, bankEta, leanBank: leanBank(room) ? 1 : 0, towerMinE, towerHubE, towerNorthE, nf, eAvail, eCap };

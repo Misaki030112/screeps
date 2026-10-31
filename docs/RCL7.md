@@ -299,3 +299,27 @@ Closes 11:4x remaining code gap: `mineralSend` + `termFuel` behind `RCL6_MINERAL
 1. Finish day-of (~2–3 h) watching `towerNorthE`/`nf`.
 2. leanBank → stor≥20k (~1 h).
 3. **Propose** flip `RCL6_MINERALS` only (code ready). No wait for ext wave beyond day-of done.
+
+## 2026-10-31 20:4x — leanBank arms on day-crit (not 50ext)
+
+**Question:** Why is `leanBank` still 0 after spawn2+tower3 DONE while ext~40/50? Does post-RCL banking wait for the full extension flood?
+
+**Answer: Bug/mismatch — arm leanBank as soon as day-crit (spawn2+tower3) is live. Do NOT wait for 50ext. Gates stay false.**
+
+### Live proof (Asia/Hong_Kong ~20:47, t~83984600)
+- `w8day`: missSpawn=0 missTower=0 **missExt=10** why=**dayof** phase=dayof leanBank=**0** storE=0 bankEta=-1 siteRem~15.8k; builders4 upgraders3; towerMinE~600 (north=600 hub=920 nf=0).
+- Home: stor~14k UNDER floor15k; remotes W45N8/W45N7 SAFE post core clear; deploy was 1cba10f.
+
+### Research
+- Overmind `UpgradeSite.storageBuffer` ≈100k before scaling upgraders — surplus-driven upgrade, not "finish every extension then bank."
+- TooAngel cuts upgrader pressure while construction sinks energy — same shape as mid-ext leanBank.
+- Our own `dayCrit` already prioritises spawn+tower over ext flood (19:1x); leanBank requiring `missExt===0` undid that.
+
+### Fix
+1. `leanBank(room)`: require only `!missSpawn && !missTower` (+ RCL7 + stor<20k + !gate + opt-out).
+2. `w8day.why`: `dayof` only while day-crit missing; else `done` → `phase` bank20/ready from storE.
+3. `bankEta`: `ceil((bankLeft + siteRem) / 20)` while leanBank (sites still sink first).
+4. Builders keep working sites; surplus upgraders recycle; idle builders park once sites clear.
+
+### Shipped
+- `src/rooms/w47n8/index.js` leanBank + dayObs; tests mid-ext; docs §5.8/§5.12. **No gate flips. No home throttle.**

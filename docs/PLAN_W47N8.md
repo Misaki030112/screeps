@@ -282,3 +282,9 @@ Lean KO code path complete (mine→cont→haul→term→**send**→home labs). G
 
 ### Observability
 `Memory.ops.w8day` adds `towerHubE`, `towerNorthE`, `nf` (1 when north <600). Patrol: dayof + (`towerNorthE<500` or `nf=1` for long) → alert. Still no fill-priority / gate flip this run.
+
+## 2026-10-31 20:4x — leanBank day-crit arming (not 50ext)
+
+**Bug:** `leanBank` / `w8day.why` treated `missExt>0` as still-dayof, so after spawn2+tower3 DONE the colony kept 3 upgraders and storE=0 through the whole 10ext wave. **17:4x** already said bank/flip need not wait on ext beyond day-of.
+
+**Fix:** arm leanBank + enter `phase=bank20` as soon as day-crit (spawn2+tower3) stands; builders finish 10ext in parallel; `bankEta` includes `siteRem`. Detail: `docs/RCL7.md` 20:4x / `docs/MINERAL_DEFENSE_ROADMAP.md` §5.12. Gates stay false.

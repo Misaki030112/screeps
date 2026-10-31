@@ -1,7 +1,7 @@
 # 矿物线 + 强化 + 城防路线图（2026-10-29 12:4x；14:4x boost；17:4x fundSpend；23:4x fortify；08:4x RCL7 hold 300k；11:4x post-300k exit；14:4x soft ramp 100k；20:4x day-of 不预存；23:4x lean KO 脚手架；**08:4x leanBank→stor20k**；**11:4x w8mminer+haul**）
 
-Live refresh **17:44 UTC+8 2026-10-31** tick ~83981860。**不自动交易、不开 safe mode。**
-围攻已中止；home 墙 **HOLD 300k**；殖民地 **RCL7@83981380 ~17:13**；soft **COMPLETE**；**day-of 进行中**（spawn2+tower3 sites；stor~0；towerMinE~860）。**17:4x** 关闭 hubNeedy 残题：北塔走 `northFeed@600`，不改 filler。day-of 后 **leanBank→stor≥20k（~1h）** → **propose** 翻 `RCL6_MINERALS`（miner+haul+send ✅）。seal 300k 不变。
+Live refresh **20:4x UTC+8 2026-10-31** tick ~83984600。**不自动交易、不开 safe mode。**
+围攻已中止；home 墙 **HOLD 300k** stor~14k UNDER；殖民地 **RCL7**；soft **COMPLETE**；**day-crit DONE**（spawn2+tower3），10ext 波次中（missExt~10；storE=0）。**20:4x** 修 leanBank：day-crit 后立刻 arm（不等 50ext）。**leanBank→stor≥20k** → **propose** 翻 `RCL6_MINERALS`（miner+haul+send ✅）。seal 300k 不变。
 
 ## 0. 现状（实测）
 
@@ -261,12 +261,12 @@ W47N8 在翻 `RCL6_MINERALS` **之前**，矿物线代码缺口有多大？是�
 - tests：`w47n8_rcl6_gate` lean-on；`w47n8_dayobs` w8min
 - **未**翻任何 gate；**未**写 w8mminer；**未**设 mineralCap / ops.labs
 
-### 5.8 leanBank → stor≥20k（08:4x 2026-10-31）
+### 5.8 leanBank → stor≥20k（08:4x 2026-10-31；**20:4x 修正 arming**）
 - **问题：** day-of 完成后 stor 卡在 0.5–3k，自然攒不到 20k（满升级净≈0）。
-- **做法：** `leanBank` 默认开（RCL7 + spawn2/tower3/50ext 齐 + stor<20k + `!RCL6_MINERALS`）。节流升级（≤1 upgrader、回收多余、idle builder 停车），obs：`w8day.phase/bankLeft/bankEta/leanBank`。
+- **做法：** `leanBank` 默认开（RCL7 + **spawn2+tower3（day-crit）** + stor<20k + `!RCL6_MINERALS`）。**不等 50ext**（20:4x；08:4x 原文「50ext齐」已废）。节流升级（≤1 upgrader、回收多余、idle builder 停车），obs：`w8day.phase/bankLeft/bankEta/leanBank`；`bankEta` 含 `siteRem`。
 - **退出：** stor≥20k → `phase=ready`，恢复满升级；cushion 留给 lean KO。
 - **仍不自动翻 gate**；§5.6 checklist：w8mminer+haul ✅；send ✅ 14:4x。
-- 关闭：`Memory.ops.w8leanBank=false`。详见 `docs/RCL7.md` 08:4x。
+- 关闭：`Memory.ops.w8leanBank=false`。详见 `docs/RCL7.md` 08:4x / 20:4x。
 
 ### 5.9 w8mminer + haul→terminal（11:4x 2026-10-31 ~11:4x Asia/Hong_Kong）
 - **问题：** leanBank 之后翻 gate 仍被「没有采/运代码」挡住（08:4x next open / 23:4x §5.6#3）。
@@ -294,3 +294,10 @@ W47N8 在翻 `RCL6_MINERALS` **之前**，矿物线代码缺口有多大？是�
 - **结论：不要改 hubNeedy。** 北塔 24,8 / 22,7 由 `northFeed`（阈值=600）供能，filler 只管 hub 塔。Live towerMinE~860。obs：`w8day.towerHubE/towerNorthE/nf`。
 - **翻 gate 时机（仍 propose）：** day-of done + leanBank `phase=ready`（stor≥20k）+ towerMinE 健康。不需要再等 ext 波次单独完成。
 
+### 5.12 leanBank arming vs 50ext（20:4x 2026-10-31 ~20:4x Asia/Hong_Kong）
+- **问题：** live spawn2+tower3 DONE、ext~40/50、storE=0，但 `leanBank=0` / `why=dayof` / `bankEta=-1`。§5.8 写「50ext齐」；17:4x 写 bank/flip 只需 day-of=spawn2+tower3。
+- **根因：** `leanBank()` 与 `why` 把 `missExt>0`（及 `siteRem`）算进 day-of，和 `dayCrit`（只看 spawn/tower）不一致，把整个 10ext 波次挡在 bank 外；3 upgrader 继续吃净收入 → stor 贴 0。
+- **参考：** Overmind UpgradeSite 用 `storageBuffer`~100k 缩放 upgrader（有盈余才猛升）；TooAngel 建设期砍 upgrader。我们 post-daycrit 用更紧的 20k cushion + 显式 throttle，应在 **crit 完成后立刻** 生效，建设与攒库并行。
+- **修法：** `leanBank` / `why` / `phase` 只看 day-crit；`missExt`/`siteRem` 仍上报；`bankEta = ceil((bankLeft+siteRem)/20)`。Builders 继续啃站点，多余 upgrader 回收。
+- **未做：** 翻任何 gate；不改 home throttle；不改 hubNeedy。
+- **测试：** `w47n8_dayobs` mid-ext leanBank；`w47n8_move_bank` 40ext arm。
