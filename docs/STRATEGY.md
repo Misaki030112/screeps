@@ -17,7 +17,7 @@ Last full refresh: **2026-10-31 14:4x strategy review** (dormant terminal.send K
 | | |
 |---|---|
 | Home | W46N8 **RCL7** ~1.04M/10.9M (~9.5%); storage ~15–16k (osc around reserveE 15k); walls min **300001 HOLD**; towers 3; spawns 2; terminal+extractor+3 labs; O depleted; labs dormant; **`STATIONARY_FILL=false`** dual queens; SM avail 6; upgrade recovers ≥20–22 when remotes SAFE (ideal 26 = full-remote ceiling) — `Memory.ops.upgFeed` |
-| W47N8 | **RCL6** ~3.585M/3.645M (**RCL7 ~2026-10-31 ~15:30–16:00** Asia/Hong_Kong); seal **300k**; soft **COMPLETE**; towers 2 (~850+); tower3+spawn2 wait RCL7 (reactive, **no pre-bank**); after day-of **`leanBank`→stor≥20k** then lean KO; stor ~2–3k; **`RCL6_MINERALS=false` `RCL6_LABS=false`**; w8mminer+haul+**send ✅ dormant**; `HUB_LINK=false` `RCL7_INDUSTRY=false` |
+| W47N8 | **RCL6** ~3.585M/3.645M (**RCL7 ~2026-10-31 ~17:20–18:00** Asia/Hong_Kong); seal **300k**; soft **COMPLETE**; towers 2 (~850+); tower3+spawn2 wait RCL7 (reactive, **no pre-bank**); after day-of **`leanBank`→stor≥20k** then lean KO; stor ~2–3k; **`RCL6_MINERALS=false` `RCL6_LABS=false`**; w8mminer+haul+**send ✅ dormant**; `HUB_LINK=false` `RCL7_INDUSTRY=false` |
 | Assault | **ABORTED** 2026-10-29 (~15:31): defend-only W47N9, keep mining O (no mineralCap), civilian building both rooms |
 | Remote | W45N8/W45N7/W47N7 **SAFE**; neighbor peacetime scan **paused** |
 | CPU | **~11–15 / 20**, bucket 10000 — `docs/CPU.md` |
@@ -25,7 +25,7 @@ Last full refresh: **2026-10-31 14:4x strategy review** (dormant terminal.send K
 | Novice | **ended 2026-10-28 03:33 Asia/Hong_Kong** |
 | Fortify | Lab cover ✅; home walls **HOLD 300k**; colony soft **COMPLETE** 100k; day-of no pre-bank + `towerMinE`; post-dayof **leanBank→20k**; lean KO code **✅** (miner+haul+send dormant) — propose flip after RCL7+day-of+stor20k; STATIONARY_FILL @ RCL8 |
 
-Ideal vs actual: `tools/model.py` / `tools/model_w8.py` / Grafana / `Memory.ops.upgFeed` / `Memory.ops.w8day` / `w8min`. Priority: remotes SAFE → home upgrade ~20–22 + stor≥15k → **colony RCL7 ~15:30–16:00** tower3+spawn2 (factory OFF, watch north tower) → **leanBank→stor≥20k (~1h)** → **propose lean KO flip** (code ready) → KO≥900 boost → barriers 1M → STATIONARY_FILL @ RCL8.
+Ideal vs actual: `tools/model.py` / `tools/model_w8.py` / Grafana / `Memory.ops.upgFeed` / `Memory.ops.w8day` / `w8min`. Priority: remotes SAFE → home upgrade ~20–22 + stor≥15k → **colony RCL7 ~17:20–18:00** tower3+spawn2 (factory OFF, watch north tower) → **leanBank→stor≥20k (~1h)** → **propose lean KO flip** (code ready) → KO≥900 boost → barriers 1M → STATIONARY_FILL @ RCL8.
 
 ## Phases
 

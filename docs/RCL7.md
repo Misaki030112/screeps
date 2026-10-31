@@ -283,4 +283,4 @@ Overmind `storageBuffer` ~100k before industry; TooAngel banks via fewer upgrade
 Closes the 08:4x "still needs w8mminer/send" half: colony now has dormant miner + haul-to-terminal. Flip still waits RCL7 + leanBank ready + **`terminal.send`** (next slice) + Misaki propose. Detail: `docs/MINERAL_DEFENSE_ROADMAP.md` §5.9. ETA RCL7 slipped to **~18:00–18:15 Asia/Hong_Kong**.
 
 ## 2026-10-31 14:4x — lean KO send shipped (dormant)
-Closes 11:4x remaining code gap: `mineralSend` + `termFuel` behind `RCL6_MINERALS=false`. Flip still waits RCL7 + day-of + leanBank ready + Misaki propose. Detail: `docs/MINERAL_DEFENSE_ROADMAP.md` §5.10. Live ETA RCL7 tightened to **~15:30–16:00 Asia/Hong_Kong**.
+Closes 11:4x remaining code gap: `mineralSend` + `termFuel` behind `RCL6_MINERALS=false`. Flip still waits RCL7 + day-of + leanBank ready + Misaki propose. Detail: `docs/MINERAL_DEFENSE_ROADMAP.md` §5.10. Live ETA RCL7 **~17:20–18:00 Asia/Hong_Kong** (need~57k).
