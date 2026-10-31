@@ -1,7 +1,7 @@
-# 矿物线 + 强化 + 城防路线图（2026-10-29 12:4x；14:4x boost；17:4x fundSpend；23:4x fortify；08:4x RCL7 hold 300k；11:4x post-300k exit；14:4x soft ramp 100k；20:4x day-of 不预存；23:4x lean KO 脚手架；**08:4x leanBank→stor20k**；**11:4x w8mminer+haul**；**02:4x leanBank hysteresis+soft-cap**）
+# 矿物线 + 强化 + 城防路线图（2026-10-29 12:4x；14:4x boost；17:4x fundSpend；23:4x fortify；08:4x RCL7 hold 300k；11:4x post-300k exit；14:4x soft ramp 100k；20:4x day-of 不预存；23:4x lean KO 脚手架；**08:4x leanBank→stor20k**；**11:4x w8mminer+haul**；**02:4x leanBank hysteresis+soft-cap**；**05:4x soft-cap survives gate**）
 
-Live refresh **02:4x UTC+8 2026-11-01** tick ~83989900。**不自动交易、不开 safe mode。**
-home 墙 **HOLD 300k** stor~14k thin；殖民地 **RCL7** prog frozen@74.8k；soft **COMPLETE**；**day-crit+missExt0 DONE**；**leanBank bank20** stor~1.7–3.6k（W47N7 DEFEND + prior thrash）。**02:4x** 修 leanBank 滞后回滞（15k 再 arm / 20k disarm）+ stor<25k soft-cap≤2 upgrader。仍 **propose** 翻 `RCL6_MINERALS`（等 flipReady+homeStor；code ✅）。seal 300k 不变。
+Live refresh **05:4x UTC+8 2026-11-01** tick ~83992670。**不自动交易、不开 safe mode。**
+home 墙 **HOLD 300k** stor~14.8–15.5k；殖民地 **RCL7** prog~90k/10.9M；soft **COMPLETE**；day-crit+missExt0 **DONE**；leanBank **hold** stor~17.7–18.6k（soft-cap≤2）；`flipReady=0`（stor20k+homeStor；04:57 提案已 stale）。W45N7 DEFEND(core) 刚再派。**05:4x** soft-cap 在 gate 翻后仍生效。仍 **propose-only** 等下一次 flipReady+她点头。seal 300k 不变。
 
 ## 0. 现状（实测）
 
@@ -350,3 +350,26 @@ W47N8 在翻 `RCL6_MINERALS` **之前**，矿物线代码缺口有多大？是�
 **测试：** `w47n8_dayobs` hold/soft-recycle/re-arm；`w47n8_move_bank` hysteresis。
 
 **仍不自动翻 gate。** flipReady 仍要 stor≥20k + homeStor≥15k + towerMinE≥600 + 她点头。
+
+### 5.15 soft-cap must survive RCL6_MINERALS flip（05:4x 2026-11-01 ~05:4x Asia/Hong_Kong）
+
+**选了什么问题：** 02:4x 的 `LEAN_SOFT` soft-cap 在 `!C.RCL6_MINERALS` 守卫下；翻 gate → minBuild 结束后 leanBank 立刻关，若 stor 被 ~110k 站点抽到 ≪25k，会不会再次满升级 thrash？
+
+**Live（t~83992670，Asia/Hong_Kong ~05:48）：**
+| 项 | 值 |
+|---|---|
+| W47N8 | RCL7 prog~90.6k；phase=**ready** leanBank=0 bankWhy=**hold** storE~18k bankLeft~1.8k；towerMinE~880；2 upg soft |
+| Home | RCL7 ~11.9%；stor~14.8k thin；upgFeed why=`remote_pause`（W45N7 DEFEND core）；term O~124k；K=0 |
+| flipReady | **0** gaps=`stor20k,homeStor`（04:57 曾=1 → 提案 **stale**，勿重复轰炸） |
+| Remotes | W45N8 SAFE；W45N7 **DEFEND** core@83992605；W47N7 SAFE |
+| Roads | W47 soft hits&lt;50% **134**（维修债，已知）；home walls HOLD 300001 |
+
+**对照 Overmind：** `UpgradeSite.storageBuffer=100k` **与矿物线无关**——assets 不够就不起满 upgrader。我们的 soft-cap 应对齐：门槛更低（25k）但 **不因 gate 关掉**。minBuild 期间 leanBank≤1 已覆盖建设；缺口在 **minBuild 完成后、stor 仍薄** 的窗口。
+
+**修法（SAFE，不翻 gate）：**
+1. spawn soft-cap 与 `leanBankRecycle` 去掉 `!C.RCL6_MINERALS` 守卫；stor&lt;LEAN_SOFT 时一律 ≤2 upgrader（leanBank 仍优先 ≤1）。
+2. 不改 LEAN_STOR/ARM、不改 flipReady、不改 minBuild。
+3. **仍不自动翻 gate**；下次 flipReady=1 再 propose（当前 stale）。
+
+**测试：** `w47n8_dayobs` post-gate soft recycle @stor5k。
+

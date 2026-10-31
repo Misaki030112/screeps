@@ -198,6 +198,16 @@ assert.strictEqual(Memory.ops.w8day.leanBank, 0, 'logistics complete → leanBan
 assert.strictEqual(Memory.ops.w8min.minBuild, 0);
 assert.strictEqual(Memory.ops.w8day.phase, 'ready');
 assert.strictEqual(Memory.ops.w8day.leanBank, 0);
+// 05:4x: soft-cap survives gate — 4 upgraders at stor 5k post-minBuild → recycle to ≤2
+delete Memory.ops.w8recycle;
+const postSoftUps = [{ memory: { role: 'w8upgrader' } }, { memory: { role: 'w8upgrader' } },
+  { memory: { role: 'w8upgrader' } }, { memory: { role: 'w8upgrader' } }];
+const withTermSoft = mk(7, done.concat([[35, 33, 'terminal'], [37, 44, 'container']]), postSoftUps, 0);
+withTermSoft.storage.store.energy = 5000;
+withTermSoft.terminal = { store: {} };
+W.dayObs(withTermSoft);
+assert.strictEqual(Memory.ops.w8day.leanBank, 0, 'post-minBuild leanBank still off');
+assert.ok((Memory.ops.w8recycle || []).length >= 2, '05:4x soft-cap post-gate recycles to ≤2: ' + JSON.stringify(Memory.ops.w8recycle));
 C.RCL6_MINERALS = false;
 delete Game.rooms.W46N8;
 

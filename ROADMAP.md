@@ -3,6 +3,13 @@
 Novice zone ends **2026-10-28 03:33 UTC+8** (past as of 10-29). Defence timeline: `docs/DEFENSE_NOVICE.md` (2026-10-16); detail `docs/DEFENSE.md` / geometry `docs/DEFENSE_PLAN.md`.
 **Safe mode: NEVER auto-activate** — alert Misaki.
 
+## 2026-11-01 05:4x strategy review: soft-cap survives mineral gate
+- **Chose:** after flip + minBuild, does `LEAN_SOFT` still cap upgraders, or does `!RCL6_MINERALS` drop the cushion and thrash again? (OUR ops; skip neighbors.)
+- **Findings (`docs/MINERAL_DEFENSE_ROADMAP.md` §5.15 / `docs/RCL7.md` 05:4x):** (1) Live t~83992670: hold@~18k soft≤2; flipReady=0 (stor20k+homeStor); W45N7 DEFEND core; 04:57 propose **stale**. (2) Soft-cap spawn+recycle both required `!RCL6_MINERALS` — post-minBuild leanBank offs immediately even at stor 5k → full upgrade risk. (3) Overmind storageBuffer is gate-agnostic. (4) minBuild leanBank≤1 covers construction; gap is the thin-stor window after terminal+minCont stand.
+- **Shipped:** soft-cap survives gate flip; dayobs post-gate soft recycle. **Gates stay false. No re-propose.**
+- **Reprioritise:** (1) clear W45N7 DEFEND + homeStor≥15k; (2) colony stor≥20k (soft-cap holding); (3) when flipReady=1 again **re-propose** `RCL6_MINERALS` only (her nod; prior propose stale); (4) post-flip minBuild + soft-cap → K send; (5) KO≥900 boost; (6) barriers→1M; (7) STATIONARY_FILL@RCL8. Defend-only W47N9. W47 road soft hits~134 (maintenance).
+- **Plan check:** no major Misaki decision this run (soft-cap autonomous). WakeParent only when flipReady returns 1 (conditions currently not green — do not re-spam).
+
 ## 2026-11-01 02:4x strategy review: leanBank hysteresis + soft-cap
 - **Chose:** why does leanBank thrash ready↔bank20 after hitting 20k, then fail to rebuild cushion under remote DEFEND? (OUR ops; skip neighbor peacetime.)
 - **Findings (`docs/MINERAL_DEFENSE_ROADMAP.md` §5.14 / `docs/RCL7.md` 02:4x):** (1) Live t83987530–83989900: ready@23k → 4 upg → dn20@~19.9k → re-arm@16k → W47N7 DEFEND drained to ~1.7k; prog frozen@74778. (2) Overmind scales WORK off `storageBuffer` (~100k) and only spawns when assets > buffer — binary 20k on/off thrash is ours. (3) After upg=0, further drain = remote pause + defender fill + soft local income; `bankEta@20e/t` lies under threat. (4) Soft-cap ≤2 while stor<25k keeps a cushion without Overmind-sized buffer.

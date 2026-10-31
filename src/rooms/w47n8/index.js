@@ -171,7 +171,7 @@ function spawnRun(spawn) {
     && !raidPause && !cs.some(c => c.memory.role === 'w8builder' && (c.spawning || c.ticksToLive >= 700))) want = 'w8builder';
   if (!want && wallsLow && nUp() < (raidPause ? 1 : (room.controller.ticksToDowngrade < 10000 || stock8() > 3000 ? 2 : 1))) want = 'w8upgrader';
   else if (!want && !raidPause && wallsLow && n('w8builder') < 3) want = 'w8builder';
-  else if (!want && !wallsLow && nUp() < (raidPause ? 1 : (energyBank(room) ? (room.controller.ticksToDowngrade < 20000 ? 1 : 0) : (() => { const m = dayofMiss(room); if (m.missSpawn || m.missTower) return 1; const base = sites ? 2 : 3; const se = room.storage && room.storage.store ? (room.storage.store[RESOURCE_ENERGY] || 0) : 0; return (se < LEAN_SOFT && !C.RCL6_MINERALS) ? Math.min(base, 2) : base; })()))) want = 'w8upgrader'; // 15:5x: 0 upgraders while moving unless downgrade < 20k // 13:39 spawn move // 10-31 19:1x: 1 upg while day-of misses spawn2/tower3 // 11-01 02:4x: soft-cap ≤2 while stor<LEAN_SOFT
+  else if (!want && !wallsLow && nUp() < (raidPause ? 1 : (energyBank(room) ? (room.controller.ticksToDowngrade < 20000 ? 1 : 0) : (() => { const m = dayofMiss(room); if (m.missSpawn || m.missTower) return 1; const base = sites ? 2 : 3; const se = room.storage && room.storage.store ? (room.storage.store[RESOURCE_ENERGY] || 0) : 0; return (se < LEAN_SOFT) ? Math.min(base, 2) : base; })()))) want = 'w8upgrader'; // 15:5x: 0 upgraders while moving unless downgrade < 20k // 13:39 spawn move // 10-31 19:1x: 1 upg while day-of misses spawn2/tower3 // 11-01 02:4x+05:4x: soft-cap ≤2 while stor<LEAN_SOFT (survives gate flip)
   // 14:55 model-driven (tools/model_w8.py -> Memory.ops.w8model): remote fleet sized by CARRY need = sum 10 x (rt x 1.1 + 4) / 50 over
   // both W47N7 sources (~52 at 14:55) instead of loose-pile thresholds (live 88 CARRY: rhaulers 82% moving/12% blocked, +1.8 e/t upkeep).
   // Floor (ahead of builders): 60% of need; full need + a backlog term (+16 CARRY per 2000 loose above 3000) in step 7.
@@ -415,11 +415,12 @@ function leanBank(room) {
 const energyBank = room => banking(room) || leanBank(room);
 function leanBankRecycle(room) {
   // 02:4x: keep ≤1 under leanBank; keep ≤2 while cushion thin (stor < LEAN_SOFT) even after ready.
+  // 05:4x: soft-cap must survive RCL6_MINERALS flip — Overmind storageBuffer is gate-agnostic; post-minBuild stor can be ≪25k.
   const banking = leanBank(room);
   const storE = room.storage && room.storage.store ? (room.storage.store[RESOURCE_ENERGY] || 0) : 0;
   let keep = Infinity;
   if (banking) keep = 1;
-  else if (room.controller && room.controller.level >= 7 && storE < LEAN_SOFT && !C.RCL6_MINERALS) keep = 2;
+  else if (room.controller && room.controller.level >= 7 && storE < LEAN_SOFT) keep = 2;
   else return;
   const ups = [];
   for (const n in Game.creeps) {

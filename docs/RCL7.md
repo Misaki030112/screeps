@@ -347,3 +347,16 @@ Closes 11:4x remaining code gap: `mineralSend` + `termFuel` behind `RCL6_MINERAL
 - `LEAN_ARM=15k` / `LEAN_SOFT=25k`; recycle ≤2 soft / ≤1 bank; `w8day.bankWhy/bankArm/bankSoft`.
 - Tests dayobs + move_bank. **No gate flips. No home throttle.**
 
+## 2026-11-01 05:4x — soft-cap survives RCL6_MINERALS flip
+
+**Question:** After Misaki nods and we flip the gate, does the 02:4x `LEAN_SOFT` soft-cap still protect the post-minBuild window when stor is spent into ~110k terminal+minCont sites?
+
+**Answer: No — soft-cap was gated behind `!RCL6_MINERALS`. Extend it past the flip. Do NOT flip gates this run.**
+
+### Live
+- t~83992670: phase=ready hold stor~18k; flipReady=0 (stor20k+homeStor); W45N7 DEFEND core; home ~11.9% stor thin; 04:57 propose stale.
+- Overmind `storageBuffer` is mineral-agnostic; our soft-cap must match that shape at a tighter 25k.
+
+### Shipped
+- Drop `!C.RCL6_MINERALS` from spawn soft-cap + `leanBankRecycle`. leanBank≤1 still wins during minBuild.
+- Tests dayobs post-gate soft recycle @5k. **No gate flips.**
