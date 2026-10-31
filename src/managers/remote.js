@@ -32,6 +32,9 @@ function off(r) { return !!(((Memory.remotes || {})[r] || {}).off); }
 // guardOnly: no rminer/rhauler/reserver from home spawn, no home-builder road adoption. W47N9 is never listed.
 const GUARD = { W47N7: { home: 'W47N8', guardOnly: true, defend: true, src: [17, 17], cont: [24, 14], ctl: [38, 26],
   park: [16, 20], spawn: 'Spawn2',
+  // idle guard post (Misaki 10-31): plain, 5 tiles east of the haul road, clear of both sources/containers and the controller.
+  // Override live: Memory.remote.W47N7.post = [x, y]. Rooms without `post` use the nearest ok tile to 25,25.
+  post: [27, 19],
   exits: { 'W47N8>W47N7': [18, 49], 'W47N7>W47N8': [18, 0] },
   threat: { readyTimeout: 280, defendTimeout: 800 } } };
 const threat = require('./threat');
