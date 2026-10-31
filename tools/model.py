@@ -166,12 +166,25 @@ def main():
     road_body = lambda e: (['carry'] * (2 * min(16, e // 150)) + ['move'] * min(16, e // 150))
     M = {'rcl': rcl, 'progress': prog, 'energy_cap': cap, 'sources': {}}
     upkeep_creeps = 0; spawn_time = 0; bodies = {}
+    owner = O(HOME, 'controller')[0].get('user')
     for r in (HOME, REMOTE):
         for o in O(r, 'creep'):
-            if o.get('user') and o['user'] != O(HOME, 'controller')[0].get('user'): continue
+            if o.get('user') and o['user'] != owner: continue
             b = [x['type'] for x in o['body']]; life = 600 if 'claim' in b else 1500
             upkeep_creeps += body_cost(b) / life; spawn_time += 3 * len(b) / life
             bodies.setdefault(''.join(o['name'].rstrip('0123456789')), []).append(''.join(x[0] for x in b))
+    # Extra remotes (W45N7/W47N7) are in flow.carry need but not in the HOME+W45N8 terrain grid — still count their
+    # hauler bodies so hauler_carry_live matches the expanded need (patrol 2026-11-01 false soft 46 vs 72).
+    for r in ('W45N7', 'W47N7'):
+        try:
+            for o in api.req(f'game/room-objects?room={r}&shard=shard3')['objects']:
+                if o.get('type') != 'creep': continue
+                if o.get('user') and o['user'] != owner: continue
+                b = [x['type'] for x in o['body']]; life = 600 if 'claim' in b else 1500
+                upkeep_creeps += body_cost(b) / life; spawn_time += 3 * len(b) / life
+                bodies.setdefault(''.join(o['name'].rstrip('0123456789')), []).append(''.join(x[0] for x in b))
+        except Exception:
+            pass
     M['bodies_live'] = bodies
     M['upkeep_creeps'] = upkeep_creeps; M['spawn_util'] = spawn_time
     tot_income = 0; carry_need = 0; route_tiles = set()

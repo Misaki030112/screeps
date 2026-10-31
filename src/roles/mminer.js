@@ -4,7 +4,14 @@
 // while extractor + container stand, the mineral has amount and the container has room.
 const plan = require('../utils/plan'), move = require('../utils/move');
 module.exports = { run(c) {
-  const P = plan.get(c.memory.home || c.room.name), [x, y] = P.pos.mineralMiner;
+  const home = c.memory.home || c.room.name, room = Game.rooms[home] || c.room;
+  // Recycle when spawn dropped the target (defLow pause / mineralCap): free the body energy back into storage.
+  if ((((room.memory || {}).roleTargets || {}).mminer || 0) === 0) {
+    const sp = _.filter(Game.spawns, s => s.pos.roomName === room.name)[0];
+    if (sp) { if (c.pos.isNearTo(sp)) sp.recycleCreep(c); else move.to(c, sp.pos.x, sp.pos.y, 1); }
+    return;
+  }
+  const P = plan.get(home), [x, y] = P.pos.mineralMiner;
   if (!move.to(c, x, y, 0)) return;
   const m = c.memory.min ? Game.getObjectById(c.memory.min) : c.pos.findInRange(FIND_MINERALS, 1)[0];
   if (!m) return; c.memory.min = m.id;
