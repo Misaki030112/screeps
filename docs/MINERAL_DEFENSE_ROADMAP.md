@@ -1,7 +1,7 @@
-# 矿物线 + 强化 + 城防路线图（2026-10-29 12:4x；14:4x boost；17:4x fundSpend；23:4x fortify；08:4x RCL7 hold 300k；11:4x post-300k exit；14:4x soft ramp 100k；20:4x day-of 不预存；23:4x lean KO 脚手架；**08:4x leanBank→stor20k**；**11:4x w8mminer+haul**；**02:4x leanBank hysteresis+soft-cap**；**05:4x soft-cap survives gate**；**08:4x hold-band sink→stor20k**；**11:4x first-K pacing**；**14:4x home KO labReady**；**17:4x w8mminer soft-cap prio**；**20:4x post-minBuild leanBank re-arm**；**23:4x thin-K + KO activate seq**）
+# 矿物线 + 强化 + 城防路线图（2026-10-29 12:4x；14:4x boost；17:4x fundSpend；23:4x fortify；08:4x RCL7 hold 300k；11:4x post-300k exit；14:4x soft ramp 100k；20:4x day-of 不预存；23:4x lean KO 脚手架；**08:4x leanBank→stor20k**；**11:4x w8mminer+haul**；**02:4x leanBank hysteresis+soft-cap**；**05:4x soft-cap survives gate**；**08:4x hold-band sink→stor20k**；**11:4x first-K pacing**；**14:4x home KO labReady**；**17:4x w8mminer soft-cap prio**；**20:4x post-minBuild leanBank re-arm**；**23:4x thin-K + KO activate seq**；**02:4x link HMAX vs soft-cap**）
 
 Live refresh **17:4x UTC+8 2026-11-01** tick ~84003240。**不自动交易、不开 safe mode。**
-Misaki **已点头翻 `RCL6_MINERALS`**（b758f38）；labs/industry/market/W47N9 仍 OFF。W47 **terminal+minCont+trunk DONE**；w8mminer ON；homeTermK≥4k → `labReady.propose=1` 等她设 `ops.labs={W46N8:'KO'}`。§5.20 leanBank re-arm 已让 W47 回到 ~18–20k hold；本轮 §5.21 = 在 `labReady.propose=1` + homeTermK≥9k 下，最安全的 thin-K + `ops.labs=KO` 激活顺序（不自动设）。
+Misaki **已点头翻 `RCL6_MINERALS`**（b758f38）；labs/industry/market/W47N9 仍 OFF。W47 **terminal+minCont+trunk DONE**；w8mminer ON；homeTermK≥4k → `labReady.propose=1` 等她设 `ops.labs={W46N8:'KO'}`。§5.20 leanBank re-arm 已让 W47 回到 ~18–20k hold；§5.21 = thin-K + `ops.labs=KO` 激活顺序（仍等她点头）。**02:4x §5.22** = soft-cap 下 link-era HMAX 2→3（溢出搬运阀；不翻 labs）。
 
 ## 0. 现状（实测）
 
@@ -556,3 +556,11 @@ W47N8 在翻 `RCL6_MINERALS` **之前**，矿物线代码缺口有多大？是�
 3. 测试：kBuf / homeStor 缺口；floors 齐 → actOk=1；ko 合计。
 
 **仍不自动翻 labs/industry；不卖矿；不自动设 ops.labs。**
+
+### 5.22 link-era HMAX vs soft-cap backlog（02:4x 2026-11-02 ~02:5x Asia/Hong_Kong）
+
+**问题：** soft-cap ≤2 + A→ctl links 下，source cont 满、`src_A` harvest soft，而 stor 停在 rebuild 带——该加 upgrader 还是加 hauler？
+
+**结论：保持 soft-cap；link-era `HMAX` 2→3（`hFloor` 仍 2）让 loose>1200 能多 1 个 hauler 把溢出停进 storage。不翻 labs/industry；`ops.labs` 仍等 Misaki。**
+
+细节见 `docs/RCL7.md`「02:4x」/ `docs/MODEL_W47N8.md`。与矿物线关系：只影响 W47 本地能量垫与升级速率，不改 KO 激活门；`labReady.propose/actOk` 仍绿。

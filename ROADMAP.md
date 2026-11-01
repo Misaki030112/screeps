@@ -3,6 +3,13 @@
 Novice zone ends **2026-10-28 03:33 UTC+8** (past as of 10-29). Defence timeline: `docs/DEFENSE_NOVICE.md` (2026-10-16); detail `docs/DEFENSE.md` / geometry `docs/DEFENSE_PLAN.md`.
 **Safe mode: NEVER auto-activate** — alert Misaki.
 
+## 2026-11-02 02:4x strategy review: W47 link-era HMAX vs soft-cap backlog
+- **Chose:** under soft-cap ≤2 + A→ctl links, why do source conts fill and `src_A` harvest soft while stor sits in the rebuild band? (OUR ops; skip neighbor peacetime.)
+- **Findings (`docs/RCL7.md` 02:4x / `docs/MODEL_W47N8.md`):** (1) Live t~84011271: home ~15.25% stor~16.5k ABOVE walls HOLD 300k termK~14.8k; W47 ~2.60% stor~20.7k ready soft≤2 links live; upg ~14 vs ideal ~30; source+ctl conts full. (2) 10-29 correctly dropped hauler **floor** to 2 but also capped `HMAX=2`, so loose>1200 surplus could never spawn a 3rd hauler. (3) Overmind scales upgraders off storage surplus and still uses storage/links as logistics buffers when the upgrade battery is full — raise haul overflow, not soft-cap. (4) `labReady.propose=1 actOk=1` still awaiting Misaki `ops.labs={W46N8:'KO'}`.
+- **Shipped:** link-era `HMAX` 2→3 (`hFloor` stays 2); `tests/w47n8.js` overflow under soft-cap. **No labs/industry/market flips.**
+- **Reprioritise:** (1) Misaki nod `ops.labs={W46N8:'KO'}` (actOk); (2) watch HMAX drain → upg recover ≥20 + source conts leave 1800–2000; (3) thin-K keep homeTermK; (4) boost@KO≥900; (5) barriers→1M; (6) STATIONARY_FILL@RCL8. Defend-only W47N9.
+- **Plan check:** decision still hers for labs; HMAX autonomous.
+
 ## 2026-11-01 23:4x strategy review: thin-K + KO lab activation sequence
 - **Chose:** safest thin-K + `ops.labs=KO` activation order given propose=1, W47 hold-band, homeTermK≥9k (OUR ops; skip neighbors / no auto labs).
 - **Findings (`docs/MINERAL_DEFENSE_ROADMAP.md` §5.21 / `docs/RCL7.md` 23:4x):** (1) Live t~84008500: home~14.8% stor~15.4k upg~22.5 e/t termK~9k; W47~2.2% stor~18.9k hold soft~12 e/t; labReady propose=1 ops.labs null; remotes SAFE; CPU~14.7. (2) Reaction needs no lab energy; 0.5 KO/t; Overmind/TooAngel do not pause upgrade for T1 react. (3) propose@1k K is necessary but thin — prefer actOk homeStor≥15k + kTerm≥3k before nod (live already green). (4) W47 stor≥20k is cushion, not a KO gate. (5) Boost still waits KO≥900 (~2 h after react starts).

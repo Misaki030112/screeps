@@ -199,8 +199,11 @@ function spawnRun(spawn) {
   // 15:55 model: local CARRY need = lcarry (~20, source->ctl) + ~10 for extension refills (spawn upkeep ~10 e/t over ~45t hub trips) = ~30
   // = 3 x 10C5M. The loose-pile surplus rule had grown it to 5-6 haulers (50-60 CARRY): the piles were sink-bound (ctl cont 2000 full,
   // 1-2 upgraders under the wall rule), so extra haulers only cost upkeep. Max 4 (one spare for stock/storage moves).
-  // 10-29 patrol: with A→ctl links + w8filler, local need ~9 CARRY (1x10C); floor/cap 2. Pre-link keeps old 3–4.
-  const HMAX = wm.links ? 2 : Math.max(3, Math.min(4, Math.ceil(((wm.lcarry || 20) + 10) / 10) + 1));
+  // 10-29 patrol: with A→ctl links + w8filler, local need ~9 CARRY (1x10C); floor 2. Pre-link keeps old 3–4.
+  // 11-02 02:4x strategy: soft-cap ≤2 (LEAN_SOFT) saturates ctl cont → source conts fill → src_A harvest soft (~2 e/t).
+  // HMAX=2 also blocked the loose>1200 surplus rule from spawning a 3rd hauler, so piles never drained into rebuild-band storage.
+  // Cap 3 under links so overflow can park into storage without lifting the upgrader soft-cap (floor stays 2 via hFloor).
+  const HMAX = wm.links ? 3 : Math.max(3, Math.min(4, Math.ceil(((wm.lcarry || 20) + 10) / 10) + 1));
   const rCarry = (ttl) => cs.filter(c => c.memory.role === 'w8rhauler' && (c.spawning || c.ticksToLive > ttl)).reduce((a, c) => a + c.body.filter(p => p.type === CARRY).length, 0);
   if (!want && ours7 && lo7 > 1000 && n('w8rminer') && rCarry(150) < rNeed * (lo7 > 3000 ? 1 : 0.6)) want = 'w8rhauler';
   // 12:00: local loose ~2.9k (source conts 1090/2000) with hub 0 while spawn waited on a 1000-cost 4th builder (have 3). Surplus

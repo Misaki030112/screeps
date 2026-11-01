@@ -132,3 +132,15 @@ Links **live and transferring**: A 26,12 → ctl 13,25 (both hold energy; hauler
 - Do **not** enable `HUB_LINK` / minerals yet; waiting_feed is mild and storage is thin (~2k).
 
 **Verify (next model_w8 / w8patrol):** `Memory.ops.w8model.links === true` and `lcarry` ~9; local CARRY should fall toward ~20 (2×10C) as the 3rd hauler ages out; upgrade target ~24–26 while waste_other ~3.
+
+## 2026-11-02 02:4x strategy: soft-cap + link HMAX backlog
+
+**Symptom:** Post-RCL7 W47 under `LEAN_SOFT` soft-cap ≤2: upgrade ~14 vs ideal ~30; `src_A` ~2 vs 9.6; source+ctl containers full; links transferring; `upgrader_work` stuck at soft-cap 20; storage ~18–21k ready band.
+
+**Mechanism:** Link path A→ctl is non-divertible. When ctl cont is full, link receive stalls and source-A container backs up until the miner pauses. With `HMAX=2` the loose-pile surplus rule could not add a hauler to drain B (and overflow A when link blocked) into storage via rebuild-band sink.
+
+**Model note:** `w8model.lcarry≈9` / `links:true` still correct for **steady** link-fed upgrade. The 3rd hauler is an **overflow valve**, not a return to pre-link floor-3 upkeep. Expected upkeep +~0.5 e/t only while piles >1200; idle after drain.
+
+**Research:** Overmind `UpgradeSite.storageBuffer` gates upgrader **scale** on storage assets; transporters still use storage as a logistics buffer when the upgrade battery is saturated. Matching shape at our tighter 15/25k: keep soft-cap, allow one surplus hauler (`HMAX=3`).
+
+**Fix:** link-era `HMAX` 2→3; floor stays 2. See `docs/RCL7.md` "02:4x".

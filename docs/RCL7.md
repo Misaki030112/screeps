@@ -443,3 +443,28 @@ Closes 11:4x remaining code gap: `mineralSend` + `termFuel` behind `RCL6_MINERAL
 - `labReady` actOk/actGaps + ko/homeStor obs; tests. Detail: `docs/MINERAL_DEFENSE_ROADMAP.md` §5.21.
 - **No labs/industry/market flips; ops.labs still Misaki.**
 
+## 2026-11-02 02:4x — link-era HMAX vs soft-cap backlog
+
+**Question:** Under soft-cap ≤2 (`LEAN_SOFT`) + A→ctl links, why do W47 source containers fill (~2k) and `src_A` harvest soft (~2 e/t vs model 9.6) while storage sits in the rebuild band? Is the lever more upgraders, or more local haul?
+
+**Answer: Keep soft-cap; raise link-era `HMAX` 2→3 so the loose>1200 surplus can spawn a 3rd hauler to park overflow into storage. Floor stays 2 (`hFloor`). Do NOT lift soft-cap / flip labs/industry.**
+
+### Live (tick ~84011166–84011271, ~02:47–02:54 Asia/Hong_Kong)
+- home RCL7 ~15.25% (`1668150/10.935M`) stor~16.5k ABOVE; walls HOLD 300k; termK~14.8k O~127k KO32; `labReady.propose=1 actOk=1` `ops.labs=null`.
+- W47N8 RCL7 ~2.60% (`283879`) stor~20.7k `leanBank=0 phase=ready`; upgraders=2; links live (A 26,12 → ctl 13,25); both source conts + ctl nearly full; `w8model.links=true lcarry=9`.
+- Upgrade actual ~14 e/t vs ideal ~30; `src_A` harvest soft while ctl saturated — classic sink-full + no overflow drain.
+- Overmind: upgrade power scales only with **storage** surplus above `storageBuffer` (100k); logistics treat storage/links as **buffers** (`LogisticsGroup.bufferChoices`) so transporters still move when the upgrade battery is full. Screeps link loss 3% — links are for latency, not infinite sink.
+- TooAngel / docs pattern: controller fed from near-ctl energy; excess belongs in storage, not stranded at sources.
+
+### Why HMAX=2 was wrong under soft-cap
+- 10-29 correctly dropped **floor** to 2 (link-era local need ~9 CARRY).
+- Cap was also set to 2, so `loose>1200` surplus could never spawn a 3rd hauler.
+- Soft-cap ≤2 upgraders fills ctl cont/link → miners stall on full source conts → harvest soft. Raising upgraders would fight the cushion rebuild; a spare hauler parks into rebuild-band storage (hold-band/rebuild-band sink already prefers storage when ctl≥1200).
+
+### Shipped
+- `src/rooms/w47n8/index.js`: `HMAX = wm.links ? 3` (was 2); `hFloor` remains 2.
+- `tests/w47n8.js`: links floor=2 + soft-cap overflow → 3rd hauler; Screeps lodash3 `_.sum` compat.
+- **No gate / labs / industry / market flips; `ops.labs` still Misaki.**
+
+### Watch
+- After deploy: `w8.upgrade` recover toward ≥20; source cont energy leave the 1800–2000 band; stor stay ≥15k; local haulers ≤3.
