@@ -130,11 +130,19 @@ function targets(room, count, backlog, ctlEnergy, sites) {
   return T;
 }
 // Upgraders under defLow (storage < Memory.defense.reserveE). While the wall step is held the queen's ferry floor IS reserveE, so
-// storage sits right at it and every spawn/tower refill dips it below: roleTargets.upgrader went 0 at storage 14.4-14.75k and a
-// 45-TTL upgrader went unreplaced (patrol 10-20 01:0x). Upgraders draw only the ctl container (the ferry stops at the floor), so
-// within UP_DIP of the reserve the held room keeps its normal upgraders; a real deficit (or no hold) still banks everything.
-const UP_DIP = 2000;
-function defLowUpgraders(t, e, reserve, held, downgradeRisk) { return held && e >= reserve - UP_DIP ? t : (downgradeRisk ? 1 : 0); }
+// storage sits right at it and every spawn/tower refill dips it below (patrol 10-20 01:0x: T.upgrader→0 at 14.4-14.75k left a
+// 45-TTL upgrader unreplaced). One-sided UP_DIP=2000 kept T=2 down to reserve-2k (13.0k), so spawn kept replacing 2×1300
+// upgraders while the ferry correctly refused to pull under floor → ctl empty, thin_surplus, consec-under stuck
+// (patrol 2026-11-01 11:0x). Hysteresis: enter room.memory.upBank below reserve-UP_NOISE; leave only at reserve+UP_RECOVER.
+const UP_NOISE = 500, UP_RECOVER = 1000;
+function defLowUpgraders(t, e, reserve, held, downgradeRisk, mem) {
+  if (!held) return downgradeRisk ? 1 : 0;
+  mem = mem || {};
+  if (e < reserve - UP_NOISE) mem.upBank = 1;
+  else if (e >= reserve + UP_RECOVER) delete mem.upBank;
+  if (mem.upBank) return downgradeRisk ? 1 : 0;
+  return t;
+}
 // Pre-spawn: a dying upgrader / home hauler / queen stops counting once its TTL is under spawn time + walk + margin,
 // so the replacement is queued while the room is still full. Counting it to death let upgrader83631342 (died 83632876) go
 // unreplaced 276 ticks: a remote reserver/rhauler/rminer wave took the 1300 first, 1x10W upgraded ~10/t (patrol 10-14 11:43).
@@ -304,7 +312,7 @@ function setRoleTargets(room) {
     if (!T.builder && (!low || fundWall) && Wr.wantBuilder(room)) { T.builder = 1; }
     if (nSites && (roadBuilder || !T.builder)) T.upgrader = targets(room, count, backlog, m.ctlEma, 0).upgrader;
     if (low) {
-      T.upgrader = defLowUpgraders(T.upgrader, room.storage ? room.storage.store[RESOURCE_ENERGY] : 0, dr, !!(Wr.stepHeld && Wr.stepHeld(room)), (room.controller.ticksToDowngrade || 0) < Wr.UP_SAFE);
+      T.upgrader = defLowUpgraders(T.upgrader, room.storage ? room.storage.store[RESOURCE_ENERGY] : 0, dr, !!(Wr.stepHeld && Wr.stepHeld(room)), (room.controller.ticksToDowngrade || 0) < Wr.UP_SAFE, room.memory);
       // Under the defence floor, pause new mineral miners (patrol 2026-11-01): a 12W3M mminer (~1450e) + mineralRun
       // distracts the sole home hauler while storage is banking; O stock is already huge in terminal.
       T.mminer = 0; }
@@ -440,7 +448,7 @@ function run1(spawn, onWait) {
     // 'sites ? 1 : 2' rule dropped roleTargets.upgrader 2 -> 1 (live t83762698) for a builder that is not working the home sites.
     if (nSites && (roadBuilder || !T.builder)) T.upgrader = targets(room, count, backlog, m.ctlEma, 0).upgrader;
     if (low) {
-      T.upgrader = defLowUpgraders(T.upgrader, room.storage ? room.storage.store[RESOURCE_ENERGY] : 0, dr, !!(Wr.stepHeld && Wr.stepHeld(room)), (room.controller.ticksToDowngrade || 0) < Wr.UP_SAFE);
+      T.upgrader = defLowUpgraders(T.upgrader, room.storage ? room.storage.store[RESOURCE_ENERGY] : 0, dr, !!(Wr.stepHeld && Wr.stepHeld(room)), (room.controller.ticksToDowngrade || 0) < Wr.UP_SAFE, room.memory);
       T.mminer = 0; } }
   room.memory.roleTargets = T;
   // Misaki 10-29 W47N9 assault: divert spawn away from nonessential builders/extra upgraders

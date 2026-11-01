@@ -225,15 +225,23 @@ function freeTrapped(c) {
   // Walled in (patrol 2026-10-29 escape hatch; 2026-10-30: also when carrying): recycle at adjacent spawn
   // (store energy returns to spawn). Previously only empty queens recycled — a loaded queen aging out on
   // enclosed filler 31,33 left an unreachable ~1k drop that the home hauler then oscillated on forever.
+  // Patrol 2026-11-01 11:0x: ~1.3k still stranded on 31,33 (all 8 neighbours blocked; salvage.reachable skips it).
+  // Spawn3 can still birth onto that tile (inside preferred). Pickup the pile and transfer into adjacent
+  // spawn/extension BEFORE recycle, so the next trapped birth recovers the energy instead of leaving it to decay.
   if (canEscape(c)) return false;
-  const sp = c.pos.findInRange(FIND_MY_SPAWNS, 1)[0];
-  if (sp) { sp.recycleCreep(c); return true; }
+  if (c.store.getFreeCapacity() > 0) {
+    const drop = c.pos.lookFor(LOOK_RESOURCES).find(r => r.resourceType === RESOURCE_ENERGY)
+      || c.pos.findInRange(FIND_DROPPED_RESOURCES, 1).find(r => r.resourceType === RESOURCE_ENERGY);
+    if (drop) { c.pickup(drop); return true; }
+  }
   if ((c.store[RESOURCE_ENERGY] || 0) > 0) {
     const t = c.pos.findInRange(FIND_MY_STRUCTURES, 1, {
       filter: s => FILL.has(s.structureType) && s.store.getFreeCapacity(RESOURCE_ENERGY) > 0
     })[0];
     if (t) { c.transfer(t, RESOURCE_ENERGY); return true; }
   }
+  const sp = c.pos.findInRange(FIND_MY_SPAWNS, 1)[0];
+  if (sp) { sp.recycleCreep(c); return true; }
   c.suicide(); return true;
 }
 module.exports = { fillRoute, storageFloor, buildZones, zoneDeficit, myStops, canEscape, run(c) {
