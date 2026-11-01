@@ -101,4 +101,28 @@ out = U.run(mkRoom(400));
 assert.strictEqual(out.why, 'thin_surplus');
 assert.strictEqual(out.surplus, 500);
 
-console.log('upgfeed ok');
+// Case 5: upBank set → floor_bank (beats thin_surplus); exposes obs fields
+world.ctl = 300; world.ctlLink = 200; world.stor = 15200; // surplus 200
+setUps([50, 50]);
+{
+  const room = mkRoom(400);
+  room.memory.upBank = 1;
+  room.memory.roleTargets = { upgrader: 0 };
+  out = U.run(room);
+}
+assert.strictEqual(out.why, 'floor_bank');
+assert.strictEqual(out.upBank, 1);
+assert.strictEqual(out.tUp, 0);
+assert.strictEqual(out.allowExtra, 16000);
+assert.strictEqual(out.boundHint, 'energy'); // 28 WORK > ideal 26
+
+// Case 6: remote_pause still beats floor_bank
+world.rem = { W45N8: 'SAFE', W45N7: 'DEFEND' };
+{
+  const room = mkRoom(400);
+  room.memory.upBank = 1;
+  out = U.run(room);
+}
+assert.strictEqual(out.why, 'remote_pause');
+
+console.log('upgfeed ok (+floor_bank)');

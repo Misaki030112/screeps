@@ -468,3 +468,47 @@ Closes 11:4x remaining code gap: `mineralSend` + `termFuel` behind `RCL6_MINERAL
 
 ### Watch
 - After deploy: `w8.upgrade` recover toward ≥20; source cont energy leave the 1800–2000 band; stor stay ≥15k; local haulers ≤3.
+
+## 2026-11-02 05:4x — home upgrade energy-bound / short-soft at storage ABOVE
+
+**Question:** Why is home (W46N8) upgrade energy-bound / short-soft with storage ABOVE (~15–17k) while model ideal is ~26 e/t and `live_comp` ~9?
+
+**Answer: Not a ctl/link feed bug.** (1) `live_comp~9` is a model artifact (full-fleet overhead vs income) — measured 2h upgrade is **~19.6 e/t (~75% of ideal 26)**, 6h **~18.7**. (2) 2×14W=28 WORK is **designed slightly energy-bound** vs ~26 feed; 3rd upgrader needs stor≥floor+1000. (3) Short soft = **15k floor hysteresis / `upBank`**: stor oscillates 14.5–17.7k → brief UNDER freezes `T.upgrader→0` until reserve+1000 → rebuild windows look energy-bound while `upgFeed.why` is often `ok` and hungry=0. (4) Hub DROP@31,33 is overflow when ctl battery saturates (improving ~2.7→0.9k) — secondary. Do **not** lower the floor or lift upBank; protect the cushion like Overmind's storageBuffer (they scale WORK only above ~100k surplus).
+
+### Live (tick ~84013580–84013700, ~05:33–05:41 Asia/Hong_Kong)
+- Deploy HEAD strategy `922fe38` (W47 HMAX 2→3); tip routine ~`96134c4`; no `deploy.lock`.
+- Home RCL7 ~15.7% (`~1.717M/10.9M`) stor~15.5–16.1k ABOVE-ish; ctl~0.8–1.9k (brief 0 then rebuild); towers full; walls HOLD 300k; termK~19.3k O~127k KO32.
+- `upgFeed`: surplus~504, hungry=0, why=`ok`, nUp=2 work=28, ctlLink~178 hub=0; remotes SAFE; `roleTargets.upgrader=2` (not banked this snapshot).
+- W47N8 RCL7 ~3.0% stor~20.0k leanBank=0 phase=ready; 2h upg **~18.3** (HMAX drain working); links LIVE; K mining ON; LABS/industry OFF.
+- `labReady.propose=1 actOk=1` `ops.labs=null` — **do not re-ask** this run.
+- CPU ~16/20 bucket 10k; GCL4.
+
+### Energy inventory (why not transport-starved)
+| Bucket | Typical | Read |
+|---|---|---|
+| Storage | 15–17k around floor | Cushion thrash, not empty |
+| Ctl container | 0.8–2.0k (EMA~1.3k) | Battery OK when why=ok |
+| Ctl/hub links | often 0 when ctl full | Idle is correct (supply-follows-demand) |
+| Hub drop@31,33 | ≤1k improving | Enclosed overflow parking |
+| Extensions/spawns | filled | Queen pathing not the bottleneck |
+
+### Overmind / TooAngel compare
+- Overmind `UpgradeSite.settings.storageBuffer=100000`: upgrade power scales with surplus **above** buffer; logistics still treat storage/links as buffers when the upgrade battery is full (`LinkNetwork` greedy match + command-center drain).
+- We gate the 3rd upgrader at floor+1k and freeze via `upBank` (enter reserve−500 / leave reserve+1000). Same philosophy at a tighter RCL7 cushion — short soft is the cost of not eating the 15k defense reserve.
+- TooAngel / docs: ctl fed from near-ctl energy; excess belongs in storage, not stranded at sources (W47 HMAX 02:4x already addressed colony side).
+
+### Root-cause ranking
+1. **Designed energy-bound at nUp=2** (28W > ~26 feed) + 3rd-upgrader gate → model `upgrader_bound=energy` / `boundHint=energy` even when feed is healthy.
+2. **`upBank` / floor thrash** → short soft windows (nUp→0) that patrols label energy-bound / mid-UNDER rebuild.
+3. **`live_comp~9` misread** — do not chase ideal−live_comp; compare to measured ~19–22 or pause-adjusted ideal.
+4. Hub drop / remote soft harvest — secondary; remotes SAFE.
+
+### Shipped
+- `src/managers/upgfeed.js`: new `why=floor_bank` when `room.memory.upBank`; obs `upBank`, `tUp`, `allowExtra`, `boundHint`. **No spawn/link behavior change.**
+- `tests/upgfeed.js`: floor_bank + remote_pause precedence.
+- **No labs/industry/market/W47N9/HUB_LINK flips; ops.labs still Misaki; no re-ask.**
+
+### Watch
+- Patrol: treat `upgFeed.why=floor_bank` as expected near-floor, not a haul defect; keep soft ≥70% vs ideal when why∈{ok,thin_surplus,floor_bank}.
+- Home stor prefer ≥16k so allowExtra can admit a 3rd when ctlEma healthy (optional; not forced this run).
+- W47 conts leave 1800–2000 / upg stay ≥18 after HMAX.

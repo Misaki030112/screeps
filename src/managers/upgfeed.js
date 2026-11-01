@@ -1,6 +1,6 @@
 // Home upgrade-feed observability (strategy 2026-10-31 02:4x).
-// Writes Memory.ops.upgFeed — diagnose waiting_feed vs remote pause vs thin surplus.
-// No spawn/link behavior change. Overmind UpgradeSite requests link receive below ~200 and
+// Writes Memory.ops.upgFeed — diagnose waiting_feed vs remote pause vs thin surplus vs floor_bank.
+// No spawn/link behavior change. 2026-11-02 05:4x: +floor_bank/upBank/tUp/allowExtra/boundHint. Overmind UpgradeSite requests link receive below ~200 and
 // logistics input when battery <50%; we keep CTL_LOW/SEND=400 + supply-follows-demand
 // (no 3rd upgrader without surplus). See docs/MODEL.md "2026-10-31 02:4x".
 const plan = require('../utils/plan'), rc = require('../utils/roomcache');
@@ -42,15 +42,25 @@ function run(room) {
   }
   // Ideal ~26 assumes all remotes; pause-adjusted ≈ ideal - pausedNet/(1+upkeep≈0.072)
   const idealAdj = Math.round((26 - pausedNet / 1.072) * 10) / 10;
+  // upBank hysteresis (spawn.js): enter below reserve-500, leave at reserve+1000 → freezes nUp.
+  // Expose so patrol can tell designed energy-bound (28W>26 feed) from floor-bank short soft.
+  const upBank = room.memory.upBank ? 1 : 0;
+  const tUp = (room.memory.roleTargets && room.memory.roleTargets.upgrader != null)
+    ? room.memory.roleTargets.upgrader : null;
+  const allowExtra = floor + 1000; // 3rd upgrader gate (spawn SURPLUS)
   let why = 'ok';
   if (pausedNet > 0) why = 'remote_pause';
+  else if (upBank) why = 'floor_bank';
   else if (hungry > 0 && ctlEma < 400) why = 'ctl_starved';
   else if (surplus < 1000 && ctlEma < 700) why = 'thin_surplus';
   else if (hungry > 0) why = 'waiting_feed';
+  // boundHint mirrors model upgrader_bound: WORK vs pause-adjusted ideal (design energy-bound at 2×14W).
+  const boundHint = work > idealAdj ? 'energy' : (work > 0 ? 'ok' : 'none');
   const out = {
-    t: Game.time, storE, floor, surplus: Math.round(surplus),
+    t: Game.time, storE, floor, surplus: Math.round(surplus), allowExtra,
     ctl, ctlEma, ctlLinkE, hubLinkE, srcLinkE,
-    nUp, work, hungry, pausedNet: Math.round(pausedNet * 100) / 100, idealAdj,
+    nUp, tUp, work, hungry, upBank, boundHint,
+    pausedNet: Math.round(pausedNet * 100) / 100, idealAdj,
     rem: Object.keys(rem).map(r => r + ':' + rem[r]).join(','),
     why,
   };

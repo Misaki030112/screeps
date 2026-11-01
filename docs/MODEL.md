@@ -178,3 +178,10 @@ Reading: storage pinned at the 15k floor means upgrade = income - upkeep - event
 | Keep CTL_LOW/SEND=400; supply-follows-demand | Tune link SEND mid-core fight |
 
 **Shipped:** `src/managers/upgfeed.js` → `Memory.ops.upgFeed` every 5t from `stats.js` (`why`: remote_pause / ctl_starved / thin_surplus / waiting_feed / ok; `pausedNet`, `idealAdj`, ctl/link/stor/nUp/work/hungry). `tests/upgfeed.js`. No spawn/link behavior change.
+
+## 2026-11-02 05:4x — live_comp~9 vs measured ~20; floor_bank obs
+
+- Snapshot `upgrade_max_live_comp~9` / `upgrader_bound=energy` with stor ABOVE is **misleading**: live_comp = income − **full live fleet** overhead (colony+remotes), so 2×14W always looks energy-bound even when measured upgrade is ~19–20 e/t (~75% of ideal 26). Prefer progress-delta (Grafana/`room_stats`) or patrol 2h %.
+- Short soft near 15k is usually **`upBank` hysteresis** (spawn enter reserve−500 / leave +1000), not waiting_feed. `Memory.ops.upgFeed.why=floor_bank` + `upBank`/`tUp`/`allowExtra`/`boundHint` (shipped this review) separates that from ctl_starved / thin_surplus.
+- Keep comparing soft to idealAdj / ≥70% band; do not chase live_comp back to 26 by cutting remotes or lowering the floor.
+

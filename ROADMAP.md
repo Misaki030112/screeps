@@ -3,6 +3,13 @@
 Novice zone ends **2026-10-28 03:33 UTC+8** (past as of 10-29). Defence timeline: `docs/DEFENSE_NOVICE.md` (2026-10-16); detail `docs/DEFENSE.md` / geometry `docs/DEFENSE_PLAN.md`.
 **Safe mode: NEVER auto-activate** — alert Misaki.
 
+## 2026-11-02 05:4x strategy review: home energy-bound / short-soft at stor ABOVE
+- **Chose:** why home upgrade looks energy-bound / short-soft with stor ABOVE while ideal~26 and live_comp~9 (OUR ops; skip neighbor peacetime).
+- **Findings (`docs/RCL7.md` 05:4x / `docs/MODEL.md`):** (1) Live t~84013700: home ~15.7% stor~15.5k 2h upg **~19.6/26 (~75%)** hungry=0 why=ok nUp=2 work=28; W47 ~3.0% stor~20k 2h upg~18.3 after HMAX; labReady propose=1 actOk=1 ops.labs null (no re-ask). (2) live_comp~9 is a full-fleet artifact — chase measured ~19–22, not ideal−9. (3) 2×14W designed energy-bound; short soft = 15k `upBank` hysteresis, not ctl/link starvation; hub DROP secondary. (4) Overmind storageBuffer scales WORK only above surplus — keep floor; do not lower reserve.
+- **Shipped:** `upgFeed` `floor_bank` + upBank/tUp/allowExtra/boundHint obs; tests. **No spawn/link/labs/industry/market flips.**
+- **Reprioritise:** (1) Misaki nod `ops.labs={W46N8:'KO'}` (actOk; already asked — no re-ask); (2) home floor stay ≥15k / soft ≥70% (read `floor_bank` as expected); (3) W47 HMAX drain hold upg≥18 + conts leave 1800–2000; (4) thin-K keep homeTermK; (5) boost@KO≥900; (6) barriers→1M; (7) STATIONARY_FILL@RCL8. Defend-only W47N9.
+- **Plan check:** diagnosis only — no Misaki decision this run (KO already pending). WakeParent no QUIET.
+
 ## 2026-11-02 02:4x strategy review: W47 link-era HMAX vs soft-cap backlog
 - **Chose:** under soft-cap ≤2 + A→ctl links, why do source conts fill and `src_A` harvest soft while stor sits in the rebuild band? (OUR ops; skip neighbor peacetime.)
 - **Findings (`docs/RCL7.md` 02:4x / `docs/MODEL_W47N8.md`):** (1) Live t~84011271: home ~15.25% stor~16.5k ABOVE walls HOLD 300k termK~14.8k; W47 ~2.60% stor~20.7k ready soft≤2 links live; upg ~14 vs ideal ~30; source+ctl conts full. (2) 10-29 correctly dropped hauler **floor** to 2 but also capped `HMAX=2`, so loose>1200 surplus could never spawn a 3rd hauler. (3) Overmind scales upgraders off storage surplus and still uses storage/links as logistics buffers when the upgrade battery is full — raise haul overflow, not soft-cap. (4) `labReady.propose=1 actOk=1` still awaiting Misaki `ops.labs={W46N8:'KO'}`.
