@@ -150,6 +150,62 @@ C.RCL6_MINERALS = true;
 }
 
 
+// 17:4x strategy: soft-cap must NOT starve first w8mminer (Overmind mineral ahead of upgrade).
+// stor 10k < LEAN_SOFT → soft wants ≤2 upgraders; with 0 upgraders the OLD queue picked w8upgrader first.
+{
+  const mk = (role, extra = {}) => ({
+    memory: Object.assign({ role, home: C.ROOM }, extra),
+    ticksToLive: 1000, spawning: false, body: [{ type: WORK }, { type: WORK }, { type: WORK }, { type: WORK }, { type: WORK }, { type: MOVE }],
+    getActiveBodyparts: t => t === WORK ? 5 : 0, pos: { x: 20, y: 20, inRangeTo: () => false },
+  });
+  const fleet = {
+    a: mk('w8miner', { si: 0 }), b: mk('w8miner', { si: 1 }),
+    c: mk('w8hauler'), d: mk('w8hauler'),
+    e: mk('w8filler'),
+    // deliberately ZERO upgraders under soft-cap band
+  };
+  for (const k of Object.keys(fleet)) {
+    if (fleet[k].memory.role === 'w8hauler') fleet[k].body = Array(10).fill({ type: CARRY }).concat(Array(5).fill({ type: MOVE }));
+    if (fleet[k].memory.role === 'w8filler') fleet[k].body = [{ type: CARRY }, { type: CARRY }, { type: MOVE }];
+  }
+  Game.creeps = fleet;
+  const st = {};
+  const put = (x, y, o) => { (st[x * 50 + y] = st[x * 50 + y] || []).push(o); };
+  put(37, 44, { structureType: 'container', store: { getFreeCapacity: () => 1500, K: 0 }, pos: { x: 37, y: 44 } });
+  put(37, 45, { structureType: 'extractor', pos: { x: 37, y: 45 } });
+  const mineral = { mineralAmount: 50000, mineralType: 'K', pos: { x: 37, y: 45 } };
+  const room = {
+    name: C.ROOM, energyAvailable: 2300, energyCapacityAvailable: 2300,
+    controller: { level: 7, my: true, ticksToDowngrade: 50000, progress: 3000000, progressTotal: 5256000 },
+    storage: { store: { energy: 10000 }, pos: { x: 35, y: 32 } },
+    terminal: term, memory: {},
+    lookForAt: (k, x, y) => k === LOOK_STRUCTURES ? (st[x * 50 + y] || []) : [],
+    find: (k, o) => {
+      let a = [];
+      if (k === FIND_MY_STRUCTURES || k === FIND_STRUCTURES) a = Object.values(st).flat();
+      else if (k === FIND_MINERALS) a = [mineral];
+      else if (k === FIND_MY_CREEPS) a = Object.values(Game.creeps);
+      else if (k === FIND_MY_CONSTRUCTION_SITES) a = [];
+      else if (k === FIND_HOSTILE_CREEPS) a = [];
+      else if (k === FIND_DROPPED_RESOURCES) a = [];
+      else if (k === FIND_STRUCTURES) a = Object.values(st).flat();
+      return o && o.filter ? a.filter(o.filter) : a;
+    },
+  };
+  Game.rooms[C.ROOM] = room;
+  let got = null;
+  const spawn = {
+    room, spawning: null, pos: { x: 34, y: 30, getRangeTo: () => 10 },
+    spawnCreep: (b, n, o) => { got = o.memory; return 0; },
+  };
+  C.RCL6_MINERALS = true;
+  W.spawnRun(spawn);
+  assert.strictEqual(got && got.role, 'w8mminer', '17:4x soft-cap with 0 upg → still w8mminer first, got=' + (got && got.role));
+  C.RCL6_MINERALS = false;
+}
+
+
+
 // 14:4x: mineralSend dormant + live path; termFuel parks energy for fees
 {
   assert.strictEqual(typeof W.mineralSend, 'function', 'mineralSend exported');

@@ -402,3 +402,15 @@ Closes 11:4x remaining code gap: `mineralSend` + `termFuel` behind `RCL6_MINERAL
 ### Shipped
 - `labs.readyObs` → `Memory.ops.labReady`; stale carrier comments fixed; tests. Detail: `docs/MINERAL_DEFENSE_ROADMAP.md` §5.18.
 
+## 2026-11-01 17:4x — w8mminer vs soft-cap spawn priority
+
+**Question:** After minCont stands and leanBank drops, will spawn raise `w8mminer` under thin stor + soft-cap ≤2, or do upgraders starve mineral start?
+
+**Answer: Old queue put mminer last (after remotes) — soft-cap would win. Elevate mminer after economy floors / before soft upgraders (Overmind mineral 520 < upgrade 600). Do NOT set ops.labs.**
+
+### Live
+- t~84003240 (~17:45 Asia/Hong_Kong): terminal DONE; minCont siteRem~1.7k leanBank=1 stor~12.3k; home~16k ABOVE; remotes SAFE; labReady noK.
+- Detail: `docs/MINERAL_DEFENSE_ROADMAP.md` §5.19.
+
+### Shipped
+- Elevate `w8mminer` spawn; `w8min.minerPrio=1`; soft-cap priority test. **No gate / labs flips.**

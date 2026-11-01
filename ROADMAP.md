@@ -3,6 +3,13 @@
 Novice zone ends **2026-10-28 03:33 UTC+8** (past as of 10-29). Defence timeline: `docs/DEFENSE_NOVICE.md` (2026-10-16); detail `docs/DEFENSE.md` / geometry `docs/DEFENSE_PLAN.md`.
 **Safe mode: NEVER auto-activate** — alert Misaki.
 
+## 2026-11-01 17:4x strategy review: w8mminer vs soft-cap spawn priority
+- **Chose:** after minCont stands and leanBank drops, will spawn actually raise `w8mminer` under thin stor + soft-cap ≤2, or do upgraders/builders/remotes starve mineral start? (OUR ops; skip neighbors / no auto labs.)
+- **Findings (`docs/MINERAL_DEFENSE_ROADMAP.md` §5.19 / `docs/RCL7.md` 17:4x):** (1) Live t~84003240: terminal DONE; minCont siteRem~1.7k leanBank=1 stor~12.3k; home~16k ABOVE; remotes SAFE; labReady noK. (2) Old queue put w8mminer **after** remote surplus — soft-cap would fill ≤2 upgraders first. (3) Overmind mineral=520 < upgrade=600 — we were inverted. (4) leanMinBuild stays terminal+minCont only (trunk not required to dig). (5) +1 mminer CPU OK; thin-batch already covers first-K fee.
+- **Shipped:** elevate `w8mminer` after economy floors / before soft-cap upgraders; `w8min.minerPrio=1`; soft-cap priority test. **Do NOT set ops.labs. Labs/industry/market/W47N9 stay OFF.**
+- **Reprioritise:** (1) finish minCont (~minutes) → **w8mminer** (now elevated) → trunk → thin-batch K→home; (2) when `labReady.propose=1` **propose** `Memory.ops.labs={W46N8:'KO'}` (her nod); (3) home upg hold ≥15k / soft-cap; (4) KO≥900 → boost.js + lab energy; (5) barriers→1M; (6) STATIONARY_FILL@RCL8. Still no labs-colony/industry/market/W47N9.
+- **Plan check:** no Misaki decision this run (prio autonomous; K=0). WakeParent yes — brief spawn prio fix + next: propose labs only at K≥1k.
+
 ## 2026-11-01 14:4x strategy review: home KO labReady propose
 - **Chose:** once first K lands at home, is the dormant KO pipeline complete, and when do we **propose** `Memory.ops.labs={W46N8:'KO'}`? (OUR ops after minBuild; skip neighbors / no auto labs.)
 - **Findings (`docs/MINERAL_DEFENSE_ROADMAP.md` §5.18 / `docs/RCL7.md` 14:4x):** (1) Live t~84000540: minBuild siteRem~36k leanBank=1 stor~3.4k; home~17.8k ABOVE term K=0 O~127k; remotes SAFE; CPU~14.6. (2) Pipeline complete dormant — labs.run + hauler.labRun + thin-batch send; old "carrier 未接" stale. (3) Reaction needs no lab energy (boost does). (4) Overmind AcquiringMinerals waits for reagents then loads; we need Misaki flag — ship `labReady.propose` at K≥1000. (5) ETA first propose ~minBuild 1.8h + mine ~5h ≈ **~7 h**.

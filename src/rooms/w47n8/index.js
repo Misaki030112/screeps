@@ -164,6 +164,17 @@ function spawnRun(spawn) {
   // 10-20 04:4x: W47N7 reservation from Spawn2 once cap >= 1800 (roles/reserve7.js: ~60 t walk vs ~200 from home; home is the fallback)
   let body7 = null;
   if (!want) { const w7 = require('../../roles/reserve7').wantSpawn(C.ROOM); if (w7) { want = 'reserve7'; body7 = w7.body; mem = w7.mem; } }
+  // 17:4x strategy 2026-11-01: elevate w8mminer after economy floors, BEFORE soft/surplus upgraders.
+  // Overmind ownedRoom.mineral=520 < upgrading.upgrade=600 — mineral start must not wait behind soft-cap ≤2.
+  // Still behind miners/haulers/filler/rminer/reserve7/defense. Dormant while gate false or minCont missing.
+  if (!want && C.RCL6_MINERALS && !raidPause) {
+    const [mx, my] = C.MINERAL_CONT || [37, 44];
+    const k = room.lookForAt(LOOK_STRUCTURES, mx, my).find(s => s.structureType === STRUCTURE_CONTAINER);
+    const ex = room.find(FIND_MY_STRUCTURES, { filter: s => s.structureType === STRUCTURE_EXTRACTOR })[0];
+    const min = (typeof FIND_MINERALS !== 'undefined' ? room.find(FIND_MINERALS) : [])[0];
+    if (k && ex && min && min.mineralAmount > 0 && k.store.getFreeCapacity() > 400
+      && !cs.some(c => c.memory.role === 'w8mminer' && (c.spawning || c.ticksToLive > 50))) want = 'w8mminer';
+  }
   // 14:23 threat mode: seal walls to 50k ahead of upgrading; 1 upgrader keeps the controller safe (2 if downgrade < 10k)
   const thr = TH.on(), wtgt = TH.wallTarget(TH.planTarget((room.controller || {}).level || 0, C.WALL_TARGET[(room.controller || {}).level] || 0));
   // 15:45 hysteresis: core ramparts decay 300/100t, so a strict '< 50k' gate re-entered wall mode (1-2 upgraders, +builders) ~100 ticks
@@ -243,16 +254,6 @@ function spawnRun(spawn) {
     // at 400 carry = ~3.6 e/t each, below the 2 sources' ~20 e/t plus decay
     // 18:05: need x1.0 (model rcarry already carries the 1.1 congestion factor; x1.1 kept 75 CARRY vs 56 with W47N7 conts empty)
     if (!want && n('w8rhauler') < 8 && rCarry(100) < rNeed + 16 * Math.floor(Math.max(0, lo7 - 3000) / 2000)) want = 'w8rhauler';
-  }
-  // 11:4x strategy: w8mminer behind RCL6_MINERALS (lean KO). Low priority — after economy/defense/remote floors.
-  // Dormant while gate false; when flipped: one miner while K remains and mineral container has room.
-  if (!want && C.RCL6_MINERALS && !raidPause) {
-    const [mx, my] = C.MINERAL_CONT || [37, 44];
-    const k = room.lookForAt(LOOK_STRUCTURES, mx, my).find(s => s.structureType === STRUCTURE_CONTAINER);
-    const ex = room.find(FIND_MY_STRUCTURES, { filter: s => s.structureType === STRUCTURE_EXTRACTOR })[0];
-    const min = (typeof FIND_MINERALS !== 'undefined' ? room.find(FIND_MINERALS) : [])[0];
-    if (k && ex && min && min.mineralAmount > 0 && k.store.getFreeCapacity() > 400
-      && !cs.some(c => c.memory.role === 'w8mminer' && (c.spawning || c.ticksToLive > 50))) want = 'w8mminer';
   }
   if (!want) { FM.idle(); return; }
   // emergency: nothing alive that refills -> spawn with what we have
@@ -613,6 +614,8 @@ function dayObs(room) {
     lastSend: prev.lastSend || 0, lastAmt: prev.lastAmt || 0, needE: prev.needE || 0, cd: prev.cd || 0,
     // 11:4x first-K pacing obs (mineralSend refreshes every tick; dayObs preserves between)
     homeFree: prev.homeFree || 0, batch: prev.batch || SEND_BATCH, fee: prev.fee || 0,
+    // 17:4x: minerPrio=1 means spawn elevates w8mminer ahead of soft/surplus upgraders (Overmind mineral<upgrade).
+    minerPrio: 1,
     gaps: gaps.join(','), why: gaps.length ? gaps[0] : 'ready',
     flipReady, flipGaps: flipGaps.join(','), homeStor, minBuild: minBuild ? 1 : 0 };
 }

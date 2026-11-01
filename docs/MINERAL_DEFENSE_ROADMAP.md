@@ -1,7 +1,7 @@
-# 矿物线 + 强化 + 城防路线图（2026-10-29 12:4x；14:4x boost；17:4x fundSpend；23:4x fortify；08:4x RCL7 hold 300k；11:4x post-300k exit；14:4x soft ramp 100k；20:4x day-of 不预存；23:4x lean KO 脚手架；**08:4x leanBank→stor20k**；**11:4x w8mminer+haul**；**02:4x leanBank hysteresis+soft-cap**；**05:4x soft-cap survives gate**；**08:4x hold-band sink→stor20k**；**11:4x first-K pacing**；**14:4x home KO labReady**）
+# 矿物线 + 强化 + 城防路线图（2026-10-29 12:4x；14:4x boost；17:4x fundSpend；23:4x fortify；08:4x RCL7 hold 300k；11:4x post-300k exit；14:4x soft ramp 100k；20:4x day-of 不预存；23:4x lean KO 脚手架；**08:4x leanBank→stor20k**；**11:4x w8mminer+haul**；**02:4x leanBank hysteresis+soft-cap**；**05:4x soft-cap survives gate**；**08:4x hold-band sink→stor20k**；**11:4x first-K pacing**；**14:4x home KO labReady**；**17:4x w8mminer soft-cap prio**）
 
-Live refresh **14:4x UTC+8 2026-11-01** tick ~84000540。**不自动交易、不开 safe mode。**
-Misaki **已点头翻 `RCL6_MINERALS`**（b758f38）；labs/industry/market/W47N9 仍 OFF。W47 minBuild 进行中（terminal rem~31k + minCont 5k + trunk）；本节 §5.18 = home KO labReady propose。
+Live refresh **17:4x UTC+8 2026-11-01** tick ~84003240。**不自动交易、不开 safe mode。**
+Misaki **已点头翻 `RCL6_MINERALS`**（b758f38）；labs/industry/market/W47N9 仍 OFF。W47 **terminal DONE**；minCont siteRem~1.7k（即将立）→ 下节 §5.19 = w8mminer vs soft-cap spawn prio。
 
 ## 0. 现状（实测）
 
@@ -459,6 +459,35 @@ W47N8 在翻 `RCL6_MINERALS` **之前**，矿物线代码缺口有多大？是�
 4. 测试：dormant noK；K≥1000 propose；stor+term 合计；active 不再 propose。
 
 **预期：** 第一批 thin-send K 到家 → `labReady.propose=1` → 她设 `Memory.ops.labs={W46N8:'KO'}` → hauler 装罐 → 0.5 KO/t。boost.js / lab 充能仍等 KO≥900。
+
+**仍不自动翻 labs/industry；不卖矿；不自动设 ops.labs。**
+
+### 5.19 w8mminer vs soft-cap spawn priority（17:4x 2026-11-01 ~17:4x Asia/Hong_Kong）
+
+**选了什么问题：** minCont(+trunk) 立起、`leanBank` 落下后，在 thin stor ~5–12k + soft-cap ≤2 下，spawn **会不会真的抬起 `w8mminer`**，还是 soft/surplus upgrader + remote 把矿物起步饿死？
+
+**实测（t~84003240，Asia/Hong_Kong ~17:45）：**
+| 项 | 值 |
+|---|---|
+| W47N8 | RCL7；**terminal DONE** hasTerm=1；**minCont 未立** siteRem~1.7k leanBank=1 bankWhy=minBuild；storE~12.3k builders=4 upgraders=0；K@deposit=35k miners=0；gaps=minCont,miner,stor20k |
+| home | RCL7 ~13.7%；stor~15.9–16.6k ABOVE；nUp 刚从 upBank 恢复中；term O~127k K=0；`labReady.why=noK` propose=0 |
+| Remotes | W45N8/W45N7/W47N7 **SAFE** |
+| Code | `w8mminer` 原先排在 **remote surplus 之后（队尾）**；soft-cap ≤2 在 `LEAN_SOFT` 下先抢 `w8upgrader` |
+
+**发现：**
+1. **队尾会饿死首矿：** soft-cap 在 stor<25k 时持续要 ≤2 upgrader；builders/rminer/rhauler 也在前。旧队列把 `w8mminer` 放在 step 7 remote 之后 → minCont 一立、leanBank=0 后，spawn 会先填 soft upgrader，矿物起步可能延后整轮 TTL。
+2. **Overmind 对照：** `ownedRoom.mineral` priority **520**，`upgrading.upgrade` **600** — 矿物矿工 **先于** upgrader。我们此前反了。
+3. **leanMinBuild 只等 terminal+minCont**（不含 trunk）——正确：container 一立即可挖；trunk ~分钟级，creep 可走 swamp。不把 trunk 绑进 leanBank。
+4. **CPU/经济：** +1 mminer ~5W 体可接受（bucket 满、CPU~16/20）；thin-batch send（§5.17）已覆盖首 K fee。
+5. **不碰 labs：** `labReady.propose` 仍要 K≥1k（§5.18）；本次只修 spawn 优先级，不设 `ops.labs`。
+
+**修法（SAFE）：**
+1. **抬升 `w8mminer`：** 经济地板（miner/hauler/filler/rminer/reserve7）+ 防御之后、**soft-cap / surplus upgrader 之前**。
+2. **obs：** `w8min.minerPrio=1`（标记已抬升；dayObs 每 20t 刷新）。
+3. **测试：** stor=10k + 0 upgrader + 线齐 → 仍 spawn `w8mminer`（不是 soft upgrader）。
+4. **不**改 leanMinBuild / 不翻 labs/industry/market。
+
+**预期：** minCont 落成后下一可用 spawn 槽优先出 `w8mminer` → haul → thin-batch K→home → `labReady.propose`（仍要 Misaki 点头开 KO）。
 
 **仍不自动翻 labs/industry；不卖矿；不自动设 ops.labs。**
 
