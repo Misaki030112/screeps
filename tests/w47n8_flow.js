@@ -53,5 +53,8 @@ console.log('w47n8 flow ok');
   b = W.bodyFor('w8miner', 1300); assert.deepStrictEqual([cnt(b, 'work'), cnt(b, 'carry')], [6, 1], '6W1C1M with link');
   W.linkRun(); assert.strictEqual(sent, 1, 'source link -> ctl link');
   la.cooldown = 3; W.linkRun(); assert.strictEqual(sent, 1, 'cooldown respected');
+  // 20:5x: ctl partially full (free 314 < old 400 gate) must still accept transfer
+  la.cooldown = 0; lk.store.energy = 486; lk.store.getFreeCapacity = () => 314; la.store.energy = 800;
+  W.linkRun(); assert.strictEqual(sent, 2, 'partial ctl free still transfers');
   console.log('w47n8 miner/link ok');
 }

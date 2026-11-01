@@ -749,8 +749,12 @@ function rampHold(room) {
 // 17:20 RCL5 links (parent-approved plan): source A link 26,12 -> ctl link 13,25 (3% loss) replaces ~25-tile hauling of source A.
 function linkAt(p) { const r = Game.rooms[C.ROOM]; return p && r && r.lookForAt(LOOK_STRUCTURES, p[0], p[1]).find(s => s.structureType === STRUCTURE_LINK); }
 function linkRun() {
+  // 20:5x patrol: require free>=400 deadlocked when ctl sat ~486 (free 314) — src link stayed full, A harvest looked soft.
+  // Transfer any time sender has energy and ctl has free space (API caps to free). Keep >=50 src floor to avoid tiny dribbles.
   const a = linkAt(C.SOURCES[0].link), k = linkAt(C.CTL_LINK);
-  if (a && k && !a.cooldown && a.store[RESOURCE_ENERGY] >= 400 && k.store.getFreeCapacity(RESOURCE_ENERGY) >= 400) a.transferEnergy(k);
+  if (!a || !k || a.cooldown) return;
+  const have = a.store[RESOURCE_ENERGY] || 0, free = k.store.getFreeCapacity(RESOURCE_ENERGY) || 0;
+  if (have >= 50 && free > 0) a.transferEnergy(k, Math.min(have, free));
 }
 const D = require('./defense'), F = require('../../utils/focus');
 const SEAL_FIGHT = { x: 27, y: 3 }; // centre of the east seal: where a north squad has to break in
