@@ -3,6 +3,13 @@
 Novice zone ends **2026-10-28 03:33 UTC+8** (past as of 10-29). Defence timeline: `docs/DEFENSE_NOVICE.md` (2026-10-16); detail `docs/DEFENSE.md` / geometry `docs/DEFENSE_PLAN.md`.
 **Safe mode: NEVER auto-activate** — alert Misaki.
 
+## 2026-11-01 14:4x strategy review: home KO labReady propose
+- **Chose:** once first K lands at home, is the dormant KO pipeline complete, and when do we **propose** `Memory.ops.labs={W46N8:'KO'}`? (OUR ops after minBuild; skip neighbors / no auto labs.)
+- **Findings (`docs/MINERAL_DEFENSE_ROADMAP.md` §5.18 / `docs/RCL7.md` 14:4x):** (1) Live t~84000540: minBuild siteRem~36k leanBank=1 stor~3.4k; home~17.8k ABOVE term K=0 O~127k; remotes SAFE; CPU~14.6. (2) Pipeline complete dormant — labs.run + hauler.labRun + thin-batch send; old "carrier 未接" stale. (3) Reaction needs no lab energy (boost does). (4) Overmind AcquiringMinerals waits for reagents then loads; we need Misaki flag — ship `labReady.propose` at K≥1000. (5) ETA first propose ~minBuild 1.8h + mine ~5h ≈ **~7 h**.
+- **Shipped:** `Memory.ops.labReady` + readyObs; comment/doc fix; tests. **Do NOT set ops.labs. Labs/industry/market/W47N9 stay OFF.**
+- **Reprioritise:** (1) finish minBuild → w8mminer → thin-batch K→home; (2) when `labReady.propose=1` **propose** `Memory.ops.labs={W46N8:'KO'}` (her nod); (3) home upg hold ≥15k / soft-cap; (4) KO≥900 → boost.js + lab energy; (5) barriers→1M; (6) STATIONARY_FILL@RCL8. Still no labs-colony/industry/market/W47N9.
+- **Plan check:** no Misaki decision this run (obs only; K=0). WakeParent yes — brief next propose gate + ETA.
+
 ## 2026-11-01 11:4x strategy review: first-K send pacing
 - **Chose:** post-minBuild first K send — batch size / TERM_E fee buffer / homeFree vs thin colony stor ~5–8k (OUR ops after mineral flip; skip neighbors / labs).
 - **Findings (`docs/MINERAL_DEFENSE_ROADMAP.md` §5.17 / `docs/RCL7.md` 11:4x):** (1) Live t~83998040: minBuild siteRem~79k leanBank=1 stor~5.5k hasTerm=0; home~15k ABOVE-ish term free~173k; remotes SAFE; minOk=1. (2) Full 5k batch ≈165e fee can `noE` under thin cushion; old termFuel stor≥2000 blocked fee top-up. (3) Overmind TerminalNetwork keeps fee buffer without a 2k storage gate; adjacent ≈33e/1k. (4) Safe default = thin 1k under LEAN_ARM, full 5k above; TERM_FUEL_STOR=500.

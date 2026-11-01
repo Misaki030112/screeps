@@ -1,7 +1,7 @@
-# 矿物线 + 强化 + 城防路线图（2026-10-29 12:4x；14:4x boost；17:4x fundSpend；23:4x fortify；08:4x RCL7 hold 300k；11:4x post-300k exit；14:4x soft ramp 100k；20:4x day-of 不预存；23:4x lean KO 脚手架；**08:4x leanBank→stor20k**；**11:4x w8mminer+haul**；**02:4x leanBank hysteresis+soft-cap**；**05:4x soft-cap survives gate**；**08:4x hold-band sink→stor20k**；**11:4x first-K pacing**）
+# 矿物线 + 强化 + 城防路线图（2026-10-29 12:4x；14:4x boost；17:4x fundSpend；23:4x fortify；08:4x RCL7 hold 300k；11:4x post-300k exit；14:4x soft ramp 100k；20:4x day-of 不预存；23:4x lean KO 脚手架；**08:4x leanBank→stor20k**；**11:4x w8mminer+haul**；**02:4x leanBank hysteresis+soft-cap**；**05:4x soft-cap survives gate**；**08:4x hold-band sink→stor20k**；**11:4x first-K pacing**；**14:4x home KO labReady**）
 
-Live refresh **11:4x UTC+8 2026-11-01** tick ~83998040。**不自动交易、不开 safe mode。**
-Misaki **已点头翻 `RCL6_MINERALS`**（b758f38）；labs/industry/market/W47N9 仍 OFF。W47 minBuild 进行中；本节 §5.17 = first-K send pacing。
+Live refresh **14:4x UTC+8 2026-11-01** tick ~84000540。**不自动交易、不开 safe mode。**
+Misaki **已点头翻 `RCL6_MINERALS`**（b758f38）；labs/industry/market/W47N9 仍 OFF。W47 minBuild 进行中（terminal rem~31k + minCont 5k + trunk）；本节 §5.18 = home KO labReady propose。
 
 ## 0. 现状（实测）
 
@@ -32,7 +32,7 @@ Misaki **已点头翻 `RCL6_MINERALS`**（b758f38）；labs/industry/market/W47N
 ### 代码/开关
 - `plan.RCL6_MINERALS=true`（home 矿物基建已齐）；`plan.RCL7_INDUSTRY=false`（factory+labs4–6 不落点）
 - `w47n8.config.RCL6_MINERALS=true` / `RCL6_LABS=false` / `HUB_LINK=false`（11:1x lean KO flipped）
-- `managers/labs.js`：反应 + `task()` 已有；**carrier 未接**（本 PR 接 hauler，仍需 `Memory.ops.labs`）
+- `managers/labs.js`：反应 + `task()` + **`labReady` obs**；hauler `labRun` **已接**（dormant 直到 `Memory.ops.labs`；§5.18 propose 闸）
 - **无** `boostCreep` / 战斗预强化 spawn 代码
 - `Memory.defense.remoteDefender=true`（#1 已验 W47N7）
 - 邻居：BustJetter W47N9 / Evans W48N8 当前 **无视野**；外矿 SAFE；W45N7 残留他户 spawn `fhl`@13,10（非 Invader creep）
@@ -432,4 +432,33 @@ W47N8 在翻 `RCL6_MINERALS` **之前**，矿物线代码缺口有多大？是�
 **预期：** terminal+minCont 立起 → w8mminer → haul K → 即使 stor~5–8k 也能以 1k 批发出第一波 K；stor≥15k 后自动回 5k 批。home upg floor 不被单次 165e 抽空。
 
 **仍不自动翻 labs/industry；不卖矿。**
+
+### 5.18 home KO labReady propose（14:4x 2026-11-01 ~14:4x Asia/Hong_Kong）
+
+**选了什么问题：** minBuild 结束后 ~2 h 内会采/发第一批 K。home 端 KO 反应管线是否齐？何时 **propose** `Memory.ops.labs={W46N8:'KO'}`（不自动开）？lab 能量 / boost 是否挡反应？
+
+**实测（t~84000540，Asia/Hong_Kong ~14:40）：**
+| 项 | 值 |
+|---|---|
+| W47N8 | RCL7 prog~169k；**minBuild** siteRem~36.3k（terminal@33,32 rem~31k + minCont@37,44 5k + road@36,43 300）；storE~3.4k leanBank=1 bankWhy=minBuild；towerMinE~970；batch=1000；sendWhy=noTerm；miners=0 |
+| home | RCL7 ~1.44M/10.9M (~13.2%)；stor~17.8k ABOVE；terminal O~127k K=0 free~173k；nUp=4 work=56；`ops.labs` 未设；mineralCap=50k |
+| Remotes | W45N8/W45N7/W47N7 **SAFE**（邻居 peacetime scan 暂停） |
+| 3h 趋势 | home upg ~16.1 e/t stor 13.2–17.8k；W47 stor 2.5–6.0k（建设抽干）；CPU avg ~14.6/20 bucket 10k |
+
+**发现：**
+1. **管线已齐（dormant）：** `labs.run`（main）+ `hauler.labRun`→`task()` + `w8mminer`/`mineralRun`/`mineralSend`（thin-batch）均已落地。旧文档「carrier 未接」**过时**——`tests/labs_hauler.js` 已覆盖。
+2. **反应不耗 lab 能量**（Screeps docs / wiki）：`runReaction` 只要试剂≥5 + cooldown；energy 只给 `boostCreep`。开 KO 反应 **不必** 先给 labs 充能；充能留给阶段 C / boost.js。
+3. **Overmind EvolutionChamber：** Idle→AcquiringMinerals→LoadingLabs→Synthesizing；缺矿时等 terminal 到齐再装罐。我们没有自动队列——用 **Misaki `Memory.ops.labs`** 当唯一开关。需要可观测的 propose 信号，避免第一批 K 到了巡逻不知道该不该叫醒她。
+4. **Propose 阈值：** `k(term+stor) ≥ 1000`（= `SEND_BATCH_THIN` / 一罐 input 目标）且 `o ≥ 1000` 且 3 labs + terminal 且尚未设 `ops.labs` → `labReady.propose=1`。O 已远超（~127k terminal）。满产 KO≥900 约需再等数批 K；先开反应不亏（0.5 KO/t）。
+5. **ETA：** minBuild ~1.8 h（siteRem~36k）；extractor 净 ~0.2 K/t → 首个 1k K ≈ **+5 h** 采矿 + haul/send → 合计约 **~7 h** 后第一次 propose。不碰 labs/industry/market/W47N9 自动翻。
+
+**修法（SAFE）：**
+1. **`Memory.ops.labReady`**（`readyObs` 每 tick，即使 dormant）：`{t,mode,kTerm,oTerm,k,o,labsN,ready,propose,why,hasCode,proposeK}`；`why∈{noK,noO,noLabs,noTerm,ready,active}`。
+2. 修正 `labs.js` / 本文件 §0 过时「carrier 未接」注释。
+3. **不**自动写 `Memory.ops.labs`；巡逻见 `propose=1` → WakeParent 请 Misaki 点头。
+4. 测试：dormant noK；K≥1000 propose；stor+term 合计；active 不再 propose。
+
+**预期：** 第一批 thin-send K 到家 → `labReady.propose=1` → 她设 `Memory.ops.labs={W46N8:'KO'}` → hauler 装罐 → 0.5 KO/t。boost.js / lab 充能仍等 KO≥900。
+
+**仍不自动翻 labs/industry；不卖矿；不自动设 ops.labs。**
 

@@ -388,3 +388,17 @@ Closes 11:4x remaining code gap: `mineralSend` + `termFuel` behind `RCL6_MINERAL
 
 ### Shipped
 - `SEND_BATCH_THIN=1000` when storE < LEAN_ARM; `TERM_FUEL_STOR=500`; `w8min.{batch,homeFree,fee}`; tests. Detail: `docs/MINERAL_DEFENSE_ROADMAP.md` §5.17.
+
+## 2026-11-01 14:4x — home KO labReady propose
+
+**Question:** After minBuild + first thin-batch K arrives home, is the dormant KO reaction pipeline complete, and when should patrol **propose** `Memory.ops.labs={W46N8:'KO'}`?
+
+**Answer: Pipeline complete (labs.run + hauler.labRun + send). Ship `Memory.ops.labReady` with propose at K≥1000. Do NOT auto-set ops.labs. Reaction needs no lab energy.**
+
+### Live
+- t~84000540 (~14:40 Asia/Hong_Kong): W47 minBuild siteRem~36k stor~3.4k leanBank=1; home stor~17.8k term K=0 O~127k; remotes SAFE; CPU~14.6/20.
+- ETA: minBuild ~1.8h + mine first 1k K ~5h ≈ **~7 h** to first propose.
+
+### Shipped
+- `labs.readyObs` → `Memory.ops.labReady`; stale carrier comments fixed; tests. Detail: `docs/MINERAL_DEFENSE_ROADMAP.md` §5.18.
+
