@@ -116,7 +116,7 @@ const FLOOR = 5000;
 // supply-follows-demand pins storage at reserveE, budgetE/pickSource freeze, and walls stay stuck at STEP 142101 despite
 // fund=50k (live 10-29 after 2523dd6: builder spawned on a blip then starved waiting_feed).
 // Exit (strategy 11:4x): returns false the tick stepHeld (RCL≥7 peacetime tgt>HOLD_STEP_RCL7=300k). Then builders stop,
-// queen floor = reserveE, income banks storage→15k, defLowUpgraders (held+UP_DIP) restores upgraders — no extra flip needed.
+// queen floor = reserveE, income banks storage→15k, defLowUpgraders (held+upBank hysteresis) restores upgraders — no extra flip needed.
 function fundSpend(room) {
   if (!room || !room.storage || !room.name || !room.memory) return false;
   if (typeof FIND_HOSTILE_CREEPS === 'undefined') return false; // node unit tests without Game stubs
