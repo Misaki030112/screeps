@@ -136,8 +136,8 @@ function targets(room, count, backlog, ctlEnergy, sites) {
 // (patrol 2026-11-01 11:0x). Hysteresis: enter room.memory.upBank below reserve-UP_NOISE; leave only at reserve+UP_RECOVER.
 const UP_NOISE = 500, UP_RECOVER = 1000;
 function defLowUpgraders(t, e, reserve, held, downgradeRisk, mem) {
-  if (!held) return downgradeRisk ? 1 : 0;
   mem = mem || {};
+  if (!held) { delete mem.upBank; return downgradeRisk ? 1 : 0; }
   if (e < reserve - UP_NOISE) mem.upBank = 1;
   else if (e >= reserve + UP_RECOVER) delete mem.upBank;
   if (mem.upBank) return downgradeRisk ? 1 : 0;
@@ -311,11 +311,13 @@ function setRoleTargets(room) {
     if (!T.builder && room.storage && rcl >= 6 && room.storage.store[RESOURCE_ENERGY] >= dr - 3000 && (require('../roles/builder').remoteRoadSite() || require('./roads').repairTarget(0.3))) { T.builder = 1; roadBuilder = true; }
     if (!T.builder && (!low || fundWall) && Wr.wantBuilder(room)) { T.builder = 1; }
     if (nSites && (roadBuilder || !T.builder)) T.upgrader = targets(room, count, backlog, m.ctlEma, 0).upgrader;
-    if (low) {
-      T.upgrader = defLowUpgraders(T.upgrader, room.storage ? room.storage.store[RESOURCE_ENERGY] : 0, dr, !!(Wr.stepHeld && Wr.stepHeld(room)), (room.controller.ticksToDowngrade || 0) < Wr.UP_SAFE, room.memory);
+    // Apply upBank even after stor crosses reserve (defLow false): otherwise T.upgrader snaps back to 2 at 15.0-15.9k
+    // and the next spawn wave re-dips under the floor (live 839974xx right after PR #15).
+    { const held = !!(Wr.stepHeld && Wr.stepHeld(room));
+      if (low || m.upBank) T.upgrader = defLowUpgraders(T.upgrader, room.storage ? room.storage.store[RESOURCE_ENERGY] : 0, dr, held, (room.controller.ticksToDowngrade || 0) < Wr.UP_SAFE, m);
       // Under the defence floor, pause new mineral miners (patrol 2026-11-01): a 12W3M mminer (~1450e) + mineralRun
       // distracts the sole home hauler while storage is banking; O stock is already huge in terminal.
-      T.mminer = 0; }
+      if (low) T.mminer = 0; }
   }
   if (require('../roles/raid9').pauseCivilians()) {
     T.builder = 0;
@@ -447,9 +449,9 @@ function run1(spawn, onWait) {
     // now lives until the W45N8 route roads are >= 50%; once the worst passed 30% roadBuilder went false while it was alive, and the
     // 'sites ? 1 : 2' rule dropped roleTargets.upgrader 2 -> 1 (live t83762698) for a builder that is not working the home sites.
     if (nSites && (roadBuilder || !T.builder)) T.upgrader = targets(room, count, backlog, m.ctlEma, 0).upgrader;
-    if (low) {
-      T.upgrader = defLowUpgraders(T.upgrader, room.storage ? room.storage.store[RESOURCE_ENERGY] : 0, dr, !!(Wr.stepHeld && Wr.stepHeld(room)), (room.controller.ticksToDowngrade || 0) < Wr.UP_SAFE, room.memory);
-      T.mminer = 0; } }
+    { const held = !!(Wr.stepHeld && Wr.stepHeld(room));
+      if (low || m.upBank) T.upgrader = defLowUpgraders(T.upgrader, room.storage ? room.storage.store[RESOURCE_ENERGY] : 0, dr, held, (room.controller.ticksToDowngrade || 0) < Wr.UP_SAFE, m);
+      if (low) T.mminer = 0; } }
   room.memory.roleTargets = T;
   // Misaki 10-29 W47N9 assault: divert spawn away from nonessential builders/extra upgraders
   if (require('../roles/raid9').pauseCivilians()) {
