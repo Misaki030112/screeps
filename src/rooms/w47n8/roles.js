@@ -127,10 +127,29 @@ function sink(room, c) {
   const inbound = () => room.find(FIND_MY_CREEPS, { filter: o => o.id !== c.id && o.memory.sk === room.storage.id }).reduce((a, o) => a + o.store[E], 0);
   const bufLow = () => room.storage && F.alive(room) && F.stock(room) + inbound() < F.reserve(room);
   let was = free(c.memory.sk && Game.getObjectById(c.memory.sk));
-  if (was && room.storage && was.id === room.storage.id && !bufLow()) was = null;
+  // 08:4x: keep sticky storage while hold-band (stor 15–20k + ctl≥1200) even if filler buffer is met
+  const holdBand = () => {
+    if (!room.storage) return false;
+    const se = room.storage.store[E] || 0;
+    const ctlS = ctlCont();
+    const ctlE = ctlS ? (ctlS.store[E] || 0) : 0;
+    return se >= 15000 && se < 20000 && ctlE >= 1200;
+  };
+  if (was && room.storage && was.id === room.storage.id && !bufLow() && !holdBand()) was = null;
   if (was) return was;
   // 17:4x filler buffer: while a w8filler lives, storage below one hub refill (+200) comes before the ctl/hub containers
   if (room.storage && free(room.storage) && bufLow()) { c.memory.sk = room.storage.id; return room.storage; }
+  // 08:4x strategy: hold-band storage park — stor in [LEAN_ARM, LEAN_STOR) and ctl already has a feed floor (≥1200):
+  // park hauler surplus in storage so flipReady/stor20k can clear. Below ARM leanBank already throttles upgrade;
+  // above LEAN cushion is done. Sticky storage was cleared above when !bufLow — re-select here while hold applies.
+  // Overmind keeps UpgradeSite assets in storage (storageBuffer); we mirror at a tighter 15–20k band.
+  if (room.storage && free(room.storage)) {
+    const se = room.storage.store[E] || 0;
+    const ARM = 15000, LEAN = 20000; // keep in sync with index.js LEAN_ARM / LEAN_STOR (avoid require cycle)
+    const ctlS = ctlCont();
+    const ctlE = ctlS ? (ctlS.store[E] || 0) : 0;
+    if (se >= ARM && se < LEAN && ctlE >= 1200) { c.memory.sk = room.storage.id; return room.storage; }
+  }
   const ctl = free(ctlCont()), hub = free(hubCont());
   // 03:20 hub only while sites near the hub need it: any road site anywhere sent rhaulers to the hub (864 -> 2000 full in ~290t)
   // while the ctl cont fell 1024 -> 652 and the upgraders starved

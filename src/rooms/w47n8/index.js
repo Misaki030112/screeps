@@ -39,9 +39,18 @@ function bodyFor(role, e) {
   if (role === 'w8upgrader' && e >= 550) { const w = Math.min(10, Math.floor((e - 150) / 100)); return rep(w, WORK).concat([CARRY, MOVE, MOVE]); }
   const n = Math.max(1, Math.min(6, Math.floor(e / 200))); return rep(n, WORK).concat(rep(n, CARRY), rep(n, MOVE)); // upgrader/builder
 }
-// energy lying on the ground or in source containers (ctl container excluded)
-const looseE = room => _.sum(room.find(FIND_DROPPED_RESOURCES, { filter: r => r.resourceType === RESOURCE_ENERGY }), r => r.amount)
-  + _.sum(room.find(FIND_STRUCTURES, { filter: s => s.structureType === STRUCTURE_CONTAINER && !(s.pos.x === C.CTL_CONT[0] && s.pos.y === C.CTL_CONT[1]) && !(s.pos.x === C.HUB_CONT[0] && s.pos.y === C.HUB_CONT[1]) }), s => s.store[RESOURCE_ENERGY]);
+// energy lying on the ground or in source containers (ctl/hub containers excluded)
+// typeof guards: unit tests often stub only a subset of FIND_* constants
+const looseE = room => {
+  let n = 0;
+  if (typeof FIND_DROPPED_RESOURCES !== 'undefined')
+    n += _.sum(room.find(FIND_DROPPED_RESOURCES, { filter: r => r.resourceType === RESOURCE_ENERGY }), r => r.amount);
+  if (typeof FIND_STRUCTURES !== 'undefined')
+    n += _.sum(room.find(FIND_STRUCTURES, { filter: s => s.structureType === STRUCTURE_CONTAINER
+      && !(s.pos.x === C.CTL_CONT[0] && s.pos.y === C.CTL_CONT[1])
+      && !(s.pos.x === C.HUB_CONT[0] && s.pos.y === C.HUB_CONT[1]) }), s => (s.store && s.store[RESOURCE_ENERGY]) || 0);
+  return n;
+};
 const siteRem = room => _.sum(room.find(FIND_MY_CONSTRUCTION_SITES), s => s.progressTotal - s.progress);
 // 14:57 (Misaki): spawn energy from hub-area extensions (nearest the core first) and hub spawns, Spawn2 + its 5 temp extensions last
 function energyOrder(room) {
@@ -549,10 +558,12 @@ function dayObs(room) {
   else if (lb) bankWhy = (typeof TH !== 'undefined' && TH.on && TH.on()) ? 'threat' : 'bank';
   else if (storE < LEAN_STOR) bankWhy = (storE >= LEAN_ARM) ? 'hold' : 'off';
   else bankWhy = 'ready';
+  // 08:4x: looseE (drops + source conts, excl ctl/hub) so patrol can see stranded energy vs stor20k shortfall
+  const loose = looseE(room);
   o.w8day = { t: Game.time, rcl, need, siteRem: siteRemV, builders, upgraders, storE, bill,
     missSpawn: missSpawn ? 1 : 0, missTower: missTower ? 1 : 0, missExt, why, phase,
     bankLeft, bankEta, leanBank: lb ? 1 : 0, bankArm: LEAN_ARM, bankSoft: LEAN_SOFT, bankWhy,
-    towerMinE, towerHubE, towerNorthE, nf, eAvail, eCap };
+    towerMinE, towerHubE, towerNorthE, nf, eAvail, eCap, looseE: loose };
   leanBankRecycle(room);
   // 23:4x strategy: lean KO readiness (docs/MINERAL_DEFENSE_ROADMAP.md §5). Dormant report only — gates stay false.
   const [mx, my] = C.MINERAL_CONT || [37, 44];

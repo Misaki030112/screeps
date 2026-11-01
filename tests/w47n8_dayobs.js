@@ -2,7 +2,7 @@
 const assert = require('assert'), path = require('path');
 const d = path.join(__dirname, '..', 'src/rooms/w47n8');
 const K = { LOOK_STRUCTURES: 'structure', LOOK_CONSTRUCTION_SITES: 'constructionSite', FIND_MY_SPAWNS: 112,
-  FIND_MY_CONSTRUCTION_SITES: 114, FIND_MY_STRUCTURES: 108, FIND_MINERALS: 116, FIND_MY_CREEPS: 106, OK: 0,
+  FIND_MY_CONSTRUCTION_SITES: 114, FIND_MY_STRUCTURES: 108, FIND_STRUCTURES: 107, FIND_DROPPED_RESOURCES: 1006, FIND_MINERALS: 116, FIND_MY_CREEPS: 106, OK: 0,
   STRUCTURE_SPAWN: 'spawn', STRUCTURE_TOWER: 'tower', STRUCTURE_EXTENSION: 'extension', STRUCTURE_STORAGE: 'storage',
   STRUCTURE_RAMPART: 'rampart', STRUCTURE_WALL: 'wall', STRUCTURE_CONTAINER: 'container', STRUCTURE_LINK: 'link',
   STRUCTURE_TERMINAL: 'terminal', STRUCTURE_EXTRACTOR: 'extractor', STRUCTURE_LAB: 'lab', STRUCTURE_FACTORY: 'factory',
@@ -55,6 +55,8 @@ assert.strictEqual(d0.towerNorthE, 900); // 24,8 inRange4 of stand
 assert.strictEqual(d0.nf, 0); // north ≥600 → northFeed idle
 assert.strictEqual(d0.eAvail, 1800);
 assert.strictEqual(d0.eCap, 2300);
+assert.ok('looseE' in d0, '08:4x looseE obs');
+assert.strictEqual(d0.looseE, 0, 'no drops/conts in mk → 0');
 // near RCL7
 W.dayObs(mk(6, base, [], 50000));
 assert.strictEqual(Memory.ops.w8day.why, 'near');

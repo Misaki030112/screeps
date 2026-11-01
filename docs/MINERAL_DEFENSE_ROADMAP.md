@@ -1,7 +1,7 @@
-# 矿物线 + 强化 + 城防路线图（2026-10-29 12:4x；14:4x boost；17:4x fundSpend；23:4x fortify；08:4x RCL7 hold 300k；11:4x post-300k exit；14:4x soft ramp 100k；20:4x day-of 不预存；23:4x lean KO 脚手架；**08:4x leanBank→stor20k**；**11:4x w8mminer+haul**；**02:4x leanBank hysteresis+soft-cap**；**05:4x soft-cap survives gate**）
+# 矿物线 + 强化 + 城防路线图（2026-10-29 12:4x；14:4x boost；17:4x fundSpend；23:4x fortify；08:4x RCL7 hold 300k；11:4x post-300k exit；14:4x soft ramp 100k；20:4x day-of 不预存；23:4x lean KO 脚手架；**08:4x leanBank→stor20k**；**11:4x w8mminer+haul**；**02:4x leanBank hysteresis+soft-cap**；**05:4x soft-cap survives gate**；**08:4x hold-band sink→stor20k**）
 
-Live refresh **05:4x UTC+8 2026-11-01** tick ~83992670。**不自动交易、不开 safe mode。**
-home 墙 **HOLD 300k** stor~14.8–15.5k；殖民地 **RCL7** prog~90k/10.9M；soft **COMPLETE**；day-crit+missExt0 **DONE**；leanBank **hold** stor~17.7–18.6k（soft-cap≤2）；`flipReady=0`（stor20k+homeStor；04:57 提案已 stale）。W45N7 DEFEND(core) 刚再派。**05:4x** soft-cap 在 gate 翻后仍生效。仍 **propose-only** 等下一次 flipReady+她点头。seal 300k 不变。
+Live refresh **08:4x UTC+8 2026-11-01** tick ~83995200。**不自动交易、不开 safe mode。**
+home 墙 **HOLD 300k** stor~17.3–17.9k ABOVE；殖民地 **RCL7** prog~120k/10.9M；soft **COMPLETE**；day-crit+missExt0 **DONE**；leanBank **hold** stor~16.7k bankLeft~3.3k（soft-cap≤2）；`flipReady=0` **仅** `stor20k`（homeStor~18k 已绿；04:57 提案 stale）。remotes 全 SAFE。**08:4x** hold-band sink 把 15–20k 段盈余送进 storage。仍 **propose-only** 等 flipReady+她点头。seal 300k 不变。
 
 ## 0. 现状（实测）
 
@@ -372,4 +372,35 @@ W47N8 在翻 `RCL6_MINERALS` **之前**，矿物线代码缺口有多大？是�
 3. **仍不自动翻 gate**；下次 flipReady=1 再 propose（当前 stale）。
 
 **测试：** `w47n8_dayobs` post-gate soft recycle @stor5k。
+
+### 5.16 hold-band sink → finish stor20k（08:4x 2026-11-01 ~08:4x Asia/Hong_Kong）
+
+**选了什么问题：** soft-cap + hysteresis 之后，为什么 `phase=ready` / `bankWhy=hold` 仍卡在 stor~16–18k（`flipReady` 只差 `stor20k`），而 source cont / drops 里长期趴着 ~6–7k（`w8lo7`~7k）？
+
+**实测（t~83995200，Asia/Hong_Kong ~08:40）：**
+| 项 | 值 |
+|---|---|
+| W47N8 | storE~16.7k bankLeft~3.3k leanBank=0 bankWhy=**hold** soft≤2 upg；towerMinE~960；prog~120k |
+| homeStor | ~18.0k **ABOVE** → flipGaps **只剩** `stor20k` |
+| loose | `ops.w8lo7`~7.0k + 巡逻 drop~6–7k（source conts） |
+| Remotes | W45N8/W45N7/W47N7 **SAFE**；CPU~12–15/20 |
+| 3h 趋势 | home upg ~18 e/t stor ABOVE；W47 upg ~12 e/t（soft-cap）；W47 stor 3h avg~17.8k 振荡不破 20k |
+
+**根因：** `w8hauler.sink()` 在 filler buffer 满足后 **永远优先 ctl/hub cont**。soft-cap≤2 时 ctl 常有空位（≥1200 但仍未满）→ 盈余循环喂升级，**永远到不了 storage**。leanBank 只在 &lt;15k 节流；15–20k hold 带靠「少 spawn」不够把已采出的 6–7k 搬进 stor。
+
+**对照：**
+- **Overmind** `UpgradeSite.storageBuffer` / LogisticsNetwork：资产默认进 **storage**，upgrader 只吃 surplus；storage 是 cushion 的家。
+- **TooAngel**：建设/lean 期砍 upgrader，haul 目标仍是 storage/terminal，不是「永远优先 controller container」。
+- 我们的 ctl-first 在 leanBank/满升级期合理，但在 **hold 带** 与 flipReady 目标冲突。
+
+**修法（SAFE，不翻 gate）：**
+1. **hold-band sink：** `stor ∈ [LEAN_ARM=15k, LEAN_STOR=20k)` **且** ctl cont ≥1200 → hauler sink 选 **storage**（sticky 在 hold 带内保留）。&lt;15k 仍 ctl-first（leanBank 节流）；≥20k 恢复 ctl-first；ctl&lt;1200 仍喂 ctl。
+2. **obs：** `w8day.looseE`（drops + source conts，排除 ctl/hub）方便巡逻对比 bankLeft。
+3. **不改** LEAN_*、flipReady、minBuild、gates。
+
+**预期：** 把 ~3.3k shortfall 从已有 loose 里搬进 storage → `flipReady=1`（homeStor 已绿）→ 下次巡逻/策略 **re-propose**（04:57 stale，勿重复轰炸直到真正=1）。
+
+**测试：** `w47n8_filler` sink hold-band；`w47n8_dayobs` looseE；move_bank/mminer 回归。
+
+**仍不自动翻 gate。**
 

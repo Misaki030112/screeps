@@ -360,3 +360,18 @@ Closes 11:4x remaining code gap: `mineralSend` + `termFuel` behind `RCL6_MINERAL
 ### Shipped
 - Drop `!C.RCL6_MINERALS` from spawn soft-cap + `leanBankRecycle`. leanBank≤1 still wins during minBuild.
 - Tests dayobs post-gate soft recycle @5k. **No gate flips.**
+
+## 2026-11-01 08:4x — hold-band sink finishes stor20k
+
+**Question:** Soft-cap + hysteresis left W47 in `bankWhy=hold` at stor~16–18k with flipGaps only `stor20k`, while ~6–7k sat in source conts (`w8lo7`). Why does the cushion never land in storage?
+
+**Answer: `sink()` ctl/hub-first after filler buffer met starves storage in the 15–20k band. Prefer storage while hold-band + ctl≥1200. Do NOT flip gates.**
+
+### Live
+- t~83995200 (~08:40 Asia/Hong_Kong): storE~16.7k bankLeft~3.3k leanBank=0 hold soft≤2; homeStor~18k; remotes SAFE; CPU~14/20.
+- 3h: home ~18 e/t ABOVE; W47 ~12 e/t under soft-cap; stor oscillates under 20k.
+- Overmind parks assets in storage (`storageBuffer`); our ctl-first fights flipReady.
+
+### Shipped
+- Hold-band sink in `roles.js` (LEAN_ARM–LEAN_STOR + ctl≥1200 → storage; sticky kept).
+- `w8day.looseE` obs. Tests filler hold-band + dayobs. **No gate flips.**

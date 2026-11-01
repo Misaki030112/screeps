@@ -3,6 +3,13 @@
 Novice zone ends **2026-10-28 03:33 UTC+8** (past as of 10-29). Defence timeline: `docs/DEFENSE_NOVICE.md` (2026-10-16); detail `docs/DEFENSE.md` / geometry `docs/DEFENSE_PLAN.md`.
 **Safe mode: NEVER auto-activate** — alert Misaki.
 
+## 2026-11-01 08:4x strategy review: hold-band sink → finish stor20k
+- **Chose:** why does W47 stor stall ~16–18k (`bankWhy=hold`, flipGaps only `stor20k`) while ~6–7k sits in source conts/drops? (OUR ops; skip neighbors.)
+- **Findings (`docs/MINERAL_DEFENSE_ROADMAP.md` §5.16 / `docs/RCL7.md` 08:4x):** (1) Live t~83995200: stor~16.7k bankLeft~3.3k soft≤2; homeStor~18k ABOVE; remotes SAFE; `w8lo7`~7k. (2) Root: `sink()` prefers ctl/hub once filler buffer met — soft-cap leaves ctl free capacity so surplus never lands in storage. (3) Overmind/TooAngel park assets in storage; ctl-first fights flipReady in the 15–20k hold band. (4) 3h: home ~18 e/t ABOVE; W47 ~12 e/t under soft-cap; stor oscillates under 20k.
+- **Shipped:** hold-band sink (stor∈[15k,20k) + ctl≥1200 → storage); `w8day.looseE`; tests. **Gates stay false. No re-propose until flipReady=1.**
+- **Reprioritise:** (1) finish stor≥20k via hold-band drain (minutes if loose clears); (2) when flipReady=1 **re-propose** `RCL6_MINERALS` only (her nod; 04:57 stale); (3) post-flip minBuild + soft-cap → K send; (4) home upg hold ~18–22; (5) KO≥900 boost; (6) barriers→1M; (7) STATIONARY_FILL@RCL8. Defend-only W47N9. W47/W47N7 cont overflow watch; mineral STALE.
+- **Plan check:** no major Misaki decision this run (sink autonomous). WakeParent only when flipReady returns 1.
+
 ## 2026-11-01 05:4x strategy review: soft-cap survives mineral gate
 - **Chose:** after flip + minBuild, does `LEAN_SOFT` still cap upgraders, or does `!RCL6_MINERALS` drop the cushion and thrash again? (OUR ops; skip neighbors.)
 - **Findings (`docs/MINERAL_DEFENSE_ROADMAP.md` §5.15 / `docs/RCL7.md` 05:4x):** (1) Live t~83992670: hold@~18k soft≤2; flipReady=0 (stor20k+homeStor); W45N7 DEFEND core; 04:57 propose **stale**. (2) Soft-cap spawn+recycle both required `!RCL6_MINERALS` — post-minBuild leanBank offs immediately even at stor 5k → full upgrade risk. (3) Overmind storageBuffer is gate-agnostic. (4) minBuild leanBank≤1 covers construction; gap is the thin-stor window after terminal+minCont stand.
