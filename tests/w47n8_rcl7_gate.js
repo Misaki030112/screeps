@@ -25,7 +25,7 @@ function mkRoom(rcl, built) {
       const site = { structureType: t, pos: { x, y }, remove() { const i = sites.indexOf(site); if (i >= 0) sites.splice(i, 1); } };
       sites.push(site); return OK; } };
 }
-assert.strictEqual(C.RCL6_MINERALS, false); assert.strictEqual(C.HUB_LINK, false); assert.strictEqual(C.RCL7_INDUSTRY, false);
+assert.strictEqual(C.RCL6_MINERALS, true); assert.strictEqual(C.RCL6_LABS, false); assert.strictEqual(C.HUB_LINK, false); assert.strictEqual(C.RCL7_INDUSTRY, false);
 const roads = R.ROADS.filter(([x, y]) => !R.MINERAL.some(([a, b]) => a === x && b === y)).concat(require('../src/layouts/w8link').W47N8);
 const base = [].concat(C.SEAL.map(([x, y]) => [x, y, 'wall']), [[34, 30, 'spawn'], [35, 32, 'storage'], [C.HUB_CONT[0], C.HUB_CONT[1], 'container'], [13, 26, 'container']],
   L.ORDER.extension.slice(0, 40).map(([x, y]) => [x, y, 'extension']), [[33, 35, 'tower'], [24, 8, 'tower'], [C.CTL_LINK[0], C.CTL_LINK[1], 'link'], [C.SOURCES[0].link[0], C.SOURCES[0].link[1], 'link']],
@@ -33,8 +33,11 @@ const base = [].concat(C.SEAL.map(([x, y]) => [x, y, 'wall']), [[34, 30, 'spawn'
 const placed = [];
 for (let i = 0; i < 12; i++) { const r = mkRoom(7, base.concat(placed.map(s => [s.pos.x, s.pos.y, s.structureType]))); W.layoutRun(r); placed.push(...r.sites); }
 const types = placed.map(s => s.structureType);
-for (const t of ['terminal', 'extractor', 'lab', 'factory', 'powerSpawn', 'nuker', 'observer'])
-  assert.ok(!types.includes(t), 'RCL7: no ' + t + ' while gates off, got ' + types.filter(x => x === t));
+assert.ok(types.includes('terminal'), 'RCL7 lean: terminal while RCL6_MINERALS on');
+assert.ok(types.includes('extractor'), 'RCL7 lean: extractor while RCL6_MINERALS on');
+assert.ok(placed.some(s => s.structureType === 'container' && s.pos.x === 37 && s.pos.y === 44), 'RCL7 lean: mineral cont 37,44');
+for (const t of ['lab', 'factory', 'powerSpawn', 'nuker', 'observer'])
+  assert.ok(!types.includes(t), 'RCL7: no ' + t + ' while labs/industry off, got ' + types.filter(x => x === t));
 assert.ok(!placed.some(s => s.structureType === 'link'), 'RCL7: no hub link while HUB_LINK off');
 assert.ok(placed.some(s => s.structureType === 'spawn' && s.pos.x === 33 && s.pos.y === 30), 'RCL7: spawn2 @33,30');
 assert.ok(placed.some(s => s.structureType === 'tower' && s.pos.x === 22 && s.pos.y === 7), 'RCL7: tower3 @22,7');

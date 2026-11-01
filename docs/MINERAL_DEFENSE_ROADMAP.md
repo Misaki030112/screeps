@@ -1,7 +1,7 @@
 # 矿物线 + 强化 + 城防路线图（2026-10-29 12:4x；14:4x boost；17:4x fundSpend；23:4x fortify；08:4x RCL7 hold 300k；11:4x post-300k exit；14:4x soft ramp 100k；20:4x day-of 不预存；23:4x lean KO 脚手架；**08:4x leanBank→stor20k**；**11:4x w8mminer+haul**；**02:4x leanBank hysteresis+soft-cap**；**05:4x soft-cap survives gate**；**08:4x hold-band sink→stor20k**）
 
-Live refresh **08:4x UTC+8 2026-11-01** tick ~83995200。**不自动交易、不开 safe mode。**
-home 墙 **HOLD 300k** stor~17.3–17.9k ABOVE；殖民地 **RCL7** prog~120k/10.9M；soft **COMPLETE**；day-crit+missExt0 **DONE**；leanBank **hold** stor~16.7k bankLeft~3.3k（soft-cap≤2）；`flipReady=0` **仅** `stor20k`（homeStor~18k 已绿；04:57 提案 stale）。remotes 全 SAFE。**08:4x** hold-band sink 把 15–20k 段盈余送进 storage。仍 **propose-only** 等 flipReady+她点头。seal 300k 不变。
+Live refresh **11:1x UTC+8 2026-11-01** tick ~83997460。**不自动交易、不开 safe mode。**
+Misaki **点头只翻 `RCL6_MINERALS`**（labs/industry/market/W47N9 仍 OFF）。home 墙 HOLD 300k；殖民地 RCL7 stor~23.7k `flipReady=1`；extractor 已有；下一拍 **minBuild** terminal+minCont@37,44 + trunk（~110k）。seal 300k 不变。
 
 ## 0. 现状（实测）
 
@@ -31,7 +31,7 @@ home 墙 **HOLD 300k** stor~17.3–17.9k ABOVE；殖民地 **RCL7** prog~120k/10
 
 ### 代码/开关
 - `plan.RCL6_MINERALS=true`（home 矿物基建已齐）；`plan.RCL7_INDUSTRY=false`（factory+labs4–6 不落点）
-- `w47n8.config.RCL6_MINERALS=false` / `RCL6_LABS=false` / `HUB_LINK=false`（23:4x lean KO）
+- `w47n8.config.RCL6_MINERALS=true` / `RCL6_LABS=false` / `HUB_LINK=false`（11:1x lean KO flipped）
 - `managers/labs.js`：反应 + `task()` 已有；**carrier 未接**（本 PR 接 hauler，仍需 `Memory.ops.labs`）
 - **无** `boostCreep` / 战斗预强化 spawn 代码
 - `Memory.defense.remoteDefender=true`（#1 已验 W47N7）
