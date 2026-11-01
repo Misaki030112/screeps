@@ -22,7 +22,7 @@ const roles = require(path.join(d, 'roles.js'));
 const cost = b => b.reduce((s, p) => s + BODYPART_COST[p], 0);
 const cnt = (b, t) => b.filter(p => p === t).length;
 
-assert.strictEqual(C.RCL6_MINERALS, false, 'gate stays off');
+assert.strictEqual(C.RCL6_MINERALS, true, 'Misaki flip: mineral gate on');
 assert.deepStrictEqual(C.MINERAL_CONT, [37, 44]);
 
 // bodyFor: same shape as home mminer (WORK*n + 3 MOVE), fits budget, no CARRY
@@ -36,7 +36,8 @@ for (const e of [350, 550, 800, 1300, 2300]) {
 }
 assert.deepStrictEqual([cnt(W.bodyFor('w8mminer', 1300), WORK), cnt(W.bodyFor('w8mminer', 1300), MOVE)], [11, 3]);
 
-// mineralRun dormant while gate off
+// mineralRun dormant while gate off (temp)
+C.RCL6_MINERALS = false;
 const term = { pos: { x: 35, y: 33 }, store: {} };
 let pile = 800;
 const roomBase = {
@@ -77,7 +78,7 @@ assert.deepStrictEqual(c.got, [['t', 'K']], 'deliver K to terminal');
 c = creep({ energy: 50 });
 pile = 1900;
 assert.strictEqual(roles._mineralRun(c), false, 'carrying energy: normal job');
-C.RCL6_MINERALS = false;
+C.RCL6_MINERALS = true;
 
 // spawnRun: with economy fleet filled, gate off → never w8mminer; gate on + line ready → w8mminer
 {
@@ -136,6 +137,7 @@ C.RCL6_MINERALS = false;
     return got && got.role;
   }
 
+  C.RCL6_MINERALS = false;
   assert.notStrictEqual(runSpawn(), 'w8mminer', 'gate off: must not spawn w8mminer');
 
   C.RCL6_MINERALS = true;

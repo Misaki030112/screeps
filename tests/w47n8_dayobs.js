@@ -69,6 +69,9 @@ assert.strictEqual(Memory.ops.w8day.towerNorthE, 450);
 assert.strictEqual(Memory.ops.w8day.towerHubE, 900);
 assert.strictEqual(Memory.ops.w8day.towerMinE, 450);
 assert.strictEqual(Memory.ops.w8day.nf, 1);
+// Pre-flip bank/dayof assertions need gate OFF (live default is now true after Misaki flip).
+const Cgate = require(path.join(d, 'config'));
+Cgate.RCL6_MINERALS = false;
 // 20:4x: RCL7 day-crit (spawn2+tower3) done but missExt=10 → leanBank ON, why=done, phase=bank20
 // (was stuck dayof/leanBank=0 waiting for 50ext — mismatch vs 17:4x intent)
 const midExt = base.concat([[33, 30, 'spawn'], [22, 7, 'tower']]); // still 40ext
@@ -143,7 +146,9 @@ assert.strictEqual(Memory.ops.w8day.leanBank, 0);
 assert.strictEqual(Memory.ops.w8day.phase, 'bank20'); // still wants bank, throttle off
 assert.strictEqual(Memory.ops.w8day.bankEta, -1);
 delete Memory.ops.w8leanBank;
-// 23:4x lean KO readiness obs
+// 23:4x lean KO readiness obs (gate-off path; live default is now true)
+const C0 = require(path.join(d, 'config'));
+C0.RCL6_MINERALS = false;
 W.dayObs(mk(6, base, [], 400000));
 const m = Memory.ops.w8min;
 assert.ok(m, 'w8min present');
@@ -210,7 +215,7 @@ withTermSoft.terminal = { store: {} };
 W.dayObs(withTermSoft);
 assert.strictEqual(Memory.ops.w8day.leanBank, 0, 'post-minBuild leanBank still off');
 assert.ok((Memory.ops.w8recycle || []).length >= 2, '05:4x soft-cap post-gate recycles to ≤2: ' + JSON.stringify(Memory.ops.w8recycle));
-C.RCL6_MINERALS = false;
+C.RCL6_MINERALS = true; // leave matching live config
 delete Game.rooms.W46N8;
 
 console.log('w47n8_dayobs ok');

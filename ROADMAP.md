@@ -3,6 +3,13 @@
 Novice zone ends **2026-10-28 03:33 UTC+8** (past as of 10-29). Defence timeline: `docs/DEFENSE_NOVICE.md` (2026-10-16); detail `docs/DEFENSE.md` / geometry `docs/DEFENSE_PLAN.md`.
 **Safe mode: NEVER auto-activate** — alert Misaki.
 
+## 2026-11-01 11:1x: flip RCL6_MINERALS (Misaki nod)
+- **Chose:** execute approved flip — `w47n8.config.RCL6_MINERALS=true` only (lean KO: terminal + extractor + minCont@37,44 + trunk). Keep `RCL6_LABS` / `RCL7_INDUSTRY` / `HUB_LINK` / market / W47N9 OFF.
+- **Findings:** live flipReady=1 (stor~23.7k, homeStor~15.6k, towerMinE~840, remotes ok); extractor already live @37,45; terminal+minCont missing; `leanMinBuild` + soft-cap already shipped so post-flip construction will not starve.
+- **Shipped:** config flip + gate tests updated for default-on; docs note. Deploy via `scripts/deploy.py`.
+- **Reprioritise:** (1) minBuild terminal+minCont (~110k / ~1–1.5 h); (2) w8mminer → K haul → terminal.send home; (3) home upg hold ≥15k; (4) KO≥900 boost later; still no labs/industry/market/W47N9.
+- **Plan check:** no further Misaki decision until labs/industry/market/W47N9.
+
 ## 2026-11-01 08:4x strategy review: hold-band sink → finish stor20k
 - **Chose:** why does W47 stor stall ~16–18k (`bankWhy=hold`, flipGaps only `stor20k`) while ~6–7k sits in source conts/drops? (OUR ops; skip neighbors.)
 - **Findings (`docs/MINERAL_DEFENSE_ROADMAP.md` §5.16 / `docs/RCL7.md` 08:4x):** (1) Live t~83995200: stor~16.7k bankLeft~3.3k soft≤2; homeStor~18k ABOVE; remotes SAFE; `w8lo7`~7k. (2) Root: `sink()` prefers ctl/hub once filler buffer met — soft-cap leaves ctl free capacity so surplus never lands in storage. (3) Overmind/TooAngel park assets in storage; ctl-first fights flipReady in the 15–20k hold band. (4) 3h: home ~18 e/t ABOVE; W47 ~12 e/t under soft-cap; stor oscillates under 20k.
