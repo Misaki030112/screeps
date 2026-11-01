@@ -1,7 +1,7 @@
-# 矿物线 + 强化 + 城防路线图（2026-10-29 12:4x；14:4x boost；17:4x fundSpend；23:4x fortify；08:4x RCL7 hold 300k；11:4x post-300k exit；14:4x soft ramp 100k；20:4x day-of 不预存；23:4x lean KO 脚手架；**08:4x leanBank→stor20k**；**11:4x w8mminer+haul**；**02:4x leanBank hysteresis+soft-cap**；**05:4x soft-cap survives gate**；**08:4x hold-band sink→stor20k**；**11:4x first-K pacing**；**14:4x home KO labReady**；**17:4x w8mminer soft-cap prio**；**20:4x post-minBuild leanBank re-arm**）
+# 矿物线 + 强化 + 城防路线图（2026-10-29 12:4x；14:4x boost；17:4x fundSpend；23:4x fortify；08:4x RCL7 hold 300k；11:4x post-300k exit；14:4x soft ramp 100k；20:4x day-of 不预存；23:4x lean KO 脚手架；**08:4x leanBank→stor20k**；**11:4x w8mminer+haul**；**02:4x leanBank hysteresis+soft-cap**；**05:4x soft-cap survives gate**；**08:4x hold-band sink→stor20k**；**11:4x first-K pacing**；**14:4x home KO labReady**；**17:4x w8mminer soft-cap prio**；**20:4x post-minBuild leanBank re-arm**；**23:4x thin-K + KO activate seq**）
 
 Live refresh **17:4x UTC+8 2026-11-01** tick ~84003240。**不自动交易、不开 safe mode。**
-Misaki **已点头翻 `RCL6_MINERALS`**（b758f38）；labs/industry/market/W47N9 仍 OFF。W47 **terminal+minCont+trunk DONE**；w8mminer ON；homeTermK≥4k → `labReady.propose=1` 等她设 `ops.labs={W46N8:'KO'}`。本轮 §5.20 = post-minBuild leanBank 永久关 → stor 塌到 3–5k。
+Misaki **已点头翻 `RCL6_MINERALS`**（b758f38）；labs/industry/market/W47N9 仍 OFF。W47 **terminal+minCont+trunk DONE**；w8mminer ON；homeTermK≥4k → `labReady.propose=1` 等她设 `ops.labs={W46N8:'KO'}`。§5.20 leanBank re-arm 已让 W47 回到 ~18–20k hold；本轮 §5.21 = 在 `labReady.propose=1` + homeTermK≥9k 下，最安全的 thin-K + `ops.labs=KO` 激活顺序（不自动设）。
 
 ## 0. 现状（实测）
 
@@ -519,5 +519,40 @@ W47N8 在翻 `RCL6_MINERALS` **之前**，矿物线代码缺口有多大？是�
 6. **不**改 LEAN_* 数值、不翻 labs/industry/market、不设 `ops.labs`。
 
 **预期：** 部署后 stor~4k → leanBank=1 ≤1 upgrader + rebuild-band 灌 storage → ~0.5–1 h 回 15–20k；`labReady.propose` 继续等她设 KO。
+
+**仍不自动翻 labs/industry；不卖矿；不自动设 ops.labs。**
+
+### 5.21 thin-K + KO lab 激活顺序（23:4x 2026-11-01 ~23:4x Asia/Hong_Kong）
+
+**选了什么问题：** W47 stor≥20k（hold 带回摆）、`labReady.propose=1` 且 `ops.labs` 仍 null —— 最安全的 thin-K + 开 KO 反应顺序是什么？（storage 地板、terminal K 缓冲、反应 CPU、boost 就绪 vs 双房 RCL7 升级压力）
+
+**实测（t~84008500，Asia/Hong_Kong ~23:44）：**
+| 项 | 值 |
+|---|---|
+| home | RCL7 ~14.8%；stor~15.4k ABOVE（2h avg~16.4k min~14.2k）；2h upg **~22.5 e/t**（ideal~26）；term **K~9.1–9.6k** O~127k；labs 空 energy=0；walls HOLD 300k；nUp=2 work=28 |
+| W47N8 | RCL7 ~2.2%；stor~18.9k（刚从 ≥20k 回落到 hold；leanBank=0 bankWhy=hold bankLeft~1k）；2h upg **~12.3 e/t** soft≤2；w8mminer=1 K@deposit~25k kTerm=0 sendWhy=noK（haul 中）；lastSend 500；soft COMPLETE；towerMinE~810 |
+| labReady | propose=1 why=ready hasCode=1；`ops.labs` **null** |
+| Remotes | W45N8/W45N7/W47N7 **SAFE**；邻居 peacetime scan **暂停** |
+| CPU | avg ~14.7/20 bucket 10k；道路 soft hits 0 |
+
+**发现（对照 Overmind / TooAngel / Screeps docs）：**
+1. **反应 ≠ boost：** `runReaction` 只要试剂≥5 + cooldown（`REACTION_TIME.KO=10` → **0.5 KO/t**）；**不耗 lab energy**。energy / `boostCreep` 留给 KO≥900 之后的 boost.js（§4 / §5.18）。现在开 KO **不必** 先给 labs 充能，也 **不必** 停升级。
+2. **Overmind EvolutionChamber：** Idle→AcquiringMinerals→LoadingLabs→Synthesizing；试剂到齐就装罐反应，**不**暂停 `UpgradeSite`。boost 另走 lab reservation，反应/boost 抢 lab 时 boost 优先——我们 3 lab = REACT\|BOOST mutex，所以先 REACT 到库存再切 BOOST。
+3. **TooAngel：** 本房矿高水位进 terminal；他矿 ~1k 够反应；mineral creep 管装罐。我们已有 hauler.`labRun` + thin-batch send——缺的只是 Misaki 开关。
+4. **Propose vs 安全点头：** `propose` 在 K≥1k 就亮（§5.18）。但 `task()` 首次会抽 **1k K + 1k O** 进 input labs；若 kTerm 刚好 1k，装罐后 terminal 空、thin-send 抖动会饿反应。更稳：`kTerm≥3k`（装 1k 后仍 ≥2k）+ `homeStor≥15k`（reserveE / 升级地板）。W47 **不必** 卡死 ≥20k 才开 KO——20k 是 leanBank cushion 目标，不是反应门；hold 带 15–20k + soft-cap 已够。
+5. **CPU / 经济：** `runReaction` + 偶发 labRun 可忽略（~14.7/20）；不增 creep。继续双房升级：home ~22 e/t、W47 soft ~12 e/t。ETA KO≥900 ≈ 900/0.5 = **1800 t ≈ 1.8–2 h**（有足够 K 时）。
+6. **thin-K 不停：** W47 继续 dig→haul→thin-batch；开反应后 home 消耗 K，更需要稳定 send。勿为开 labs 关 `RCL6_MINERALS` / 停 mminer。
+
+**推荐顺序（仍要她点头；本轮不自动设）：**
+1. **现在就可以点头**（live 已满足）：`Memory.ops.labs = { W46N8: 'KO' }` —— homeStor≥15k、kTerm≥9k≫3k、O 充裕、remotes SAFE、`actOk=1`。
+2. hauler 装罐 → 0.5 KO/t；**不**改 upgrader 数量、**不**翻 `RCL6_LABS` / `RCL7_INDUSTRY` / market。
+3. 继续 thin-K + W47 hold/soft-cap 重建垫到稳 ≥20k（平行，非阻塞）。
+4. `labReady.ko ≥ 900` 后再提 boost.js + lab 充能（另一次策略/她点头）。
+5. 关反应：`delete Memory.ops.labs`。
+
+**修法（SAFE obs only）：**
+1. **`labReady` 扩展：** `homeStor, koTerm, koLab, ko, actOk, actGaps, actHome/actK/actO`。`actGaps` ∈ {homeStor,kBuf,oBuf}；`actOk=1` 当 homeStor≥15k 且 kTerm≥3k 且 O≥3k。
+2. **不**自动写 `ops.labs`；propose 逻辑不变。
+3. 测试：kBuf / homeStor 缺口；floors 齐 → actOk=1；ko 合计。
 
 **仍不自动翻 labs/industry；不卖矿；不自动设 ops.labs。**

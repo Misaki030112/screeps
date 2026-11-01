@@ -430,3 +430,16 @@ Closes 11:4x remaining code gap: `mineralSend` + `termFuel` behind `RCL6_MINERAL
 - Remove permanent post-minBuild leanBank disable; honest phase/bankLeft/bankWhy; rebuild-band sink; flipGaps skip stor20k when already; tests. Detail: `docs/MINERAL_DEFENSE_ROADMAP.md` §5.20.
 - **No labs/industry/market flips; ops.labs still Misaki.**
 
+## 2026-11-01 23:4x — thin-K + KO lab activation sequence
+
+**Question:** With W47 in the 15–20k hold band, `labReady.propose=1`, and homeTermK≥9k, what is the safest order to start KO reaction without starving RCL7 upgrade?
+
+**Answer: Nod `ops.labs={W46N8:'KO'}` now is safe — reaction needs no lab energy and does not throttle upgrade (Overmind/TooAngel). Prefer actOk (homeStor≥15k, kTerm≥3k). Boost still waits KO≥900. Do NOT auto-set.**
+
+### Live
+- t~84008500 (~23:44 Asia/Hong_Kong): home ~14.8% stor~15.4k upg~22.5 e/t termK~9.1k; W47 ~2.2% stor~18.9k hold soft upg~12 e/t; labReady propose=1 ops.labs null; remotes SAFE; CPU~14.7/20.
+
+### Shipped
+- `labReady` actOk/actGaps + ko/homeStor obs; tests. Detail: `docs/MINERAL_DEFENSE_ROADMAP.md` §5.21.
+- **No labs/industry/market flips; ops.labs still Misaki.**
+

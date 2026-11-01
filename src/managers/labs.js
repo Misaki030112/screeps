@@ -7,6 +7,11 @@ const R = { KO: ['K', 'O'], LO: ['L', 'O'], UH: ['U', 'H'], OH: ['O', 'H'], ZO: 
 // One input-lab fill / thin-batch size — enough for task() to start loading (≥100) and match SEND_BATCH_THIN.
 const PROPOSE_K = 1000;
 const PROPOSE_O = 1000;
+// 23:4x strategy 2026-11-01: activation checklist floors (docs/MINERAL_DEFENSE_ROADMAP.md §5.21).
+// Prefer nod only when home can spare a 1k K load without emptying terminal; reaction itself needs no lab energy.
+const ACT_HOME_STOR = 15000;  // = reserveE / upgFeed.floor — keep upgrade pressure
+const ACT_K_BUF = 3000;       // ≥1k load + ≥2k residual for continuous KO / thin-send jitter
+const ACT_O_BUF = 3000;
 function cfg(room) { const o = typeof Memory !== 'undefined' && Memory.ops && Memory.ops.labs; return o && R[o[room.name]] ? o[room.name] : null; }
 function roles(labs) {
   if (labs.length < 3) return null;
@@ -26,6 +31,8 @@ function task(room, labs) {
 }
 // 14:4x strategy 2026-11-01: home KO readiness obs for patrol propose (Overmind EvolutionChamber AcquiringMinerals —
 // start once reagents present; we gate on Misaki Memory.ops.labs, so patrol needs a clear propose flag).
+// 23:4x: also publish actOk/actGaps so strategy can tell "propose" (K landed) from "safe to nod now"
+// (storage floor + terminal buffer). Reaction still needs no lab energy; boost waits KO≥900.
 function readyObs(room) {
   if (!room || room.name !== 'W46N8') return;
   const term = room.terminal, stor = room.storage;
@@ -34,7 +41,11 @@ function readyObs(room) {
   const oTerm = (term && term.store && (term.store.O || 0)) || 0;
   const kStor = (stor && stor.store && (stor.store.K || 0)) || 0;
   const oStor = (stor && stor.store && (stor.store.O || 0)) || 0;
+  const homeStor = (stor && stor.store && (stor.store.energy || 0)) || 0;
   const k = kTerm + kStor, o = oTerm + oStor;
+  let koTerm = (term && term.store && (term.store.KO || 0)) || 0;
+  let koLab = 0;
+  for (const l of labs) koLab += (l.store && (l.store.KO || 0)) || 0;
   const mode = cfg(room);
   let why = 'ok', ready = 0, propose = 0;
   if (mode) why = 'active';
@@ -43,13 +54,24 @@ function readyObs(room) {
   else if (k < PROPOSE_K) why = 'noK';
   else if (o < PROPOSE_O) why = 'noO';
   else { ready = 1; propose = 1; why = 'ready'; }
+  // Activation checklist (independent of propose): Overmind starts AcquiringMinerals with reagents present
+  // without pausing UpgradeSite; TooAngel keeps ~1k other minerals for reaction. We add a thin buffer so
+  // the first 1k K lab load does not empty terminal while thin-send still jitters.
+  const gaps = [];
+  if (homeStor < ACT_HOME_STOR) gaps.push('homeStor');
+  if (kTerm < ACT_K_BUF) gaps.push('kBuf');
+  if (oTerm + oStor < ACT_O_BUF) gaps.push('oBuf');
+  const actOk = gaps.length ? 0 : 1;
   const ops = (Memory.ops = Memory.ops || {});
   ops.labReady = {
     t: Game.time, mode: mode || null, kTerm, oTerm, k, o, labsN: labs.length,
     ready, propose, why, hasCode: 1, proposeK: PROPOSE_K,
+    homeStor, koTerm, koLab, ko: koTerm + koLab,
+    actOk, actGaps: gaps.join(',') || '',
+    actHome: ACT_HOME_STOR, actK: ACT_K_BUF, actO: ACT_O_BUF,
   };
 }
-module.exports = { R, cfg, roles, task, PROPOSE_K, PROPOSE_O, readyObs, run(room) {
+module.exports = { R, cfg, roles, task, PROPOSE_K, PROPOSE_O, ACT_HOME_STOR, ACT_K_BUF, ACT_O_BUF, readyObs, run(room) {
   readyObs(room);
   const c = cfg(room); if (!c) return 0;
   const labs = room.find(FIND_MY_STRUCTURES).filter(s => s.structureType === STRUCTURE_LAB), ro = roles(labs); if (!ro) return 0;

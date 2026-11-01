@@ -3,6 +3,13 @@
 Novice zone ends **2026-10-28 03:33 UTC+8** (past as of 10-29). Defence timeline: `docs/DEFENSE_NOVICE.md` (2026-10-16); detail `docs/DEFENSE.md` / geometry `docs/DEFENSE_PLAN.md`.
 **Safe mode: NEVER auto-activate** — alert Misaki.
 
+## 2026-11-01 23:4x strategy review: thin-K + KO lab activation sequence
+- **Chose:** safest thin-K + `ops.labs=KO` activation order given propose=1, W47 hold-band, homeTermK≥9k (OUR ops; skip neighbors / no auto labs).
+- **Findings (`docs/MINERAL_DEFENSE_ROADMAP.md` §5.21 / `docs/RCL7.md` 23:4x):** (1) Live t~84008500: home~14.8% stor~15.4k upg~22.5 e/t termK~9k; W47~2.2% stor~18.9k hold soft~12 e/t; labReady propose=1 ops.labs null; remotes SAFE; CPU~14.7. (2) Reaction needs no lab energy; 0.5 KO/t; Overmind/TooAngel do not pause upgrade for T1 react. (3) propose@1k K is necessary but thin — prefer actOk homeStor≥15k + kTerm≥3k before nod (live already green). (4) W47 stor≥20k is cushion, not a KO gate. (5) Boost still waits KO≥900 (~2 h after react starts).
+- **Shipped:** `labReady` actOk/actGaps + ko/homeStor obs; tests. **Do NOT set ops.labs. Labs/industry/market/W47N9 stay OFF.**
+- **Reprioritise:** (1) **Misaki decide `Memory.ops.labs={W46N8:'KO'}`** (propose=1 + actOk); (2) keep thin-K + W47 hold→稳 20k; (3) home upg hold ≥15k; (4) KO≥900 → boost.js + lab energy; (5) barriers→1M; (6) STATIONARY_FILL@RCL8. Still no labs-colony/industry/market/W47N9.
+- **Plan check:** WakeParent yes — activation seq concluded + **she still needs to nod ops.labs**.
+
 ## 2026-11-01 20:4x strategy review: post-minBuild leanBank re-arm
 - **Chose:** after terminal+minCont stand, why does leanBank stay permanently off (`bankWhy=gate`) while colony stor collapses to ~3–5k? Is soft-cap ≤2 enough to rebuild the 20k cushion? (OUR ops; skip neighbors / no auto labs.)
 - **Findings (`docs/MINERAL_DEFENSE_ROADMAP.md` §5.20 / `docs/RCL7.md` 20:4x):** (1) Live t~84005916 pre-deploy: minBuild DONE stor~4.2k leanBank=0 bankWhy=gate; home~19.3k ABOVE termK=4444 labReady.propose=1 ops.labs null; remotes SAFE; CPU~15/20. (2) §5.13 permanent `RCL6_MINERALS && !minBuild → false` hid cushion debt. (3) Soft-cap ≤2 + ctl-first + hold-band only [15k,20k) never parks energy below ARM. (4) Overmind storageBuffer is gate-agnostic — keep 15/20k hysteresis post-gate. (5) flipGaps still listed stor20k after already-flipped.
