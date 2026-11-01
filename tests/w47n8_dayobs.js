@@ -196,25 +196,53 @@ assert.strictEqual(Memory.ops.w8day.leanBank, 1, 'leanBank holds through mineral
 assert.strictEqual(Memory.ops.w8min.minBuild, 1);
 assert.ok(Memory.ops.w8min.flipGaps.indexOf('already') >= 0);
 assert.strictEqual(Memory.ops.w8min.flipReady, 0);
-// terminal + minCont live → leanBank off even if stor low
+// 20:4x: terminal + minCont live + stor low → leanBank RE-ARMS (was permanently off via gate)
+Memory.ops.w8day = { leanBank: 0 };
 const withTerm = mk(7, done.concat([[35, 33, 'terminal'], [37, 44, 'container']]), [], 0);
 withTerm.storage.store.energy = 5000;
 withTerm.terminal = { store: {} };
 W.dayObs(withTerm);
-assert.strictEqual(Memory.ops.w8day.leanBank, 0, 'logistics complete → leanBank off');
 assert.strictEqual(Memory.ops.w8min.minBuild, 0);
+assert.strictEqual(Memory.ops.w8day.leanBank, 1, '20:4x post-gate stor5k re-arms leanBank');
+assert.strictEqual(Memory.ops.w8day.phase, 'bank20');
+assert.strictEqual(Memory.ops.w8day.bankWhy, 'bank');
+assert.ok(Memory.ops.w8day.bankLeft > 0, 'bankLeft honest post-gate');
+assert.ok((Memory.ops.w8min.flipGaps || '').indexOf('already') >= 0);
+assert.ok((Memory.ops.w8min.flipGaps || '').indexOf('stor20k') < 0, 'stor20k not in flipGaps once already');
+assert.ok((Memory.ops.w8min.gaps || '').indexOf('stor20k') >= 0, 'stor20k still in cushion gaps');
+// post-gate hysteresis hold at 18k still off
+Memory.ops.w8day.leanBank = 0;
+withTerm.storage.store.energy = 18000;
+W.dayObs(withTerm);
+assert.strictEqual(Memory.ops.w8day.leanBank, 0, 'post-gate hysteresis hold at 18k');
+assert.strictEqual(Memory.ops.w8day.bankWhy, 'hold');
 assert.strictEqual(Memory.ops.w8day.phase, 'ready');
+// cushion filled → ready
+withTerm.storage.store.energy = 20000;
+W.dayObs(withTerm);
 assert.strictEqual(Memory.ops.w8day.leanBank, 0);
-// 05:4x: soft-cap survives gate — 4 upgraders at stor 5k post-minBuild → recycle to ≤2
+assert.strictEqual(Memory.ops.w8day.phase, 'ready');
+assert.strictEqual(Memory.ops.w8day.bankWhy, 'ready');
+// 05:4x/20:4x: soft-cap still works; at stor5k leanBank now ON → recycle to ≤1 (stricter than soft ≤2)
 delete Memory.ops.w8recycle;
+Memory.ops.w8day = { leanBank: 0 };
 const postSoftUps = [{ memory: { role: 'w8upgrader' } }, { memory: { role: 'w8upgrader' } },
   { memory: { role: 'w8upgrader' } }, { memory: { role: 'w8upgrader' } }];
 const withTermSoft = mk(7, done.concat([[35, 33, 'terminal'], [37, 44, 'container']]), postSoftUps, 0);
 withTermSoft.storage.store.energy = 5000;
 withTermSoft.terminal = { store: {} };
 W.dayObs(withTermSoft);
-assert.strictEqual(Memory.ops.w8day.leanBank, 0, 'post-minBuild leanBank still off');
-assert.ok((Memory.ops.w8recycle || []).length >= 2, '05:4x soft-cap post-gate recycles to ≤2: ' + JSON.stringify(Memory.ops.w8recycle));
+assert.strictEqual(Memory.ops.w8day.leanBank, 1, '20:4x post-minBuild leanBank re-arms at 5k');
+assert.ok((Memory.ops.w8recycle || []).length >= 3, 'leanBank recycles to ≤1: ' + JSON.stringify(Memory.ops.w8recycle));
+// soft-cap alone at hold-band 18k (leanBank off): still ≤2
+delete Memory.ops.w8recycle;
+Memory.ops.w8day = { leanBank: 0 };
+const withTermSoftHold = mk(7, done.concat([[35, 33, 'terminal'], [37, 44, 'container']]), postSoftUps, 0);
+withTermSoftHold.storage.store.energy = 18000;
+withTermSoftHold.terminal = { store: {} };
+W.dayObs(withTermSoftHold);
+assert.strictEqual(Memory.ops.w8day.leanBank, 0, 'hold-band leanBank off');
+assert.ok((Memory.ops.w8recycle || []).length >= 2, '05:4x soft-cap post-gate recycles to ≤2 at 18k: ' + JSON.stringify(Memory.ops.w8recycle));
 C.RCL6_MINERALS = true; // leave matching live config
 delete Game.rooms.W46N8;
 

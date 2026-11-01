@@ -3,6 +3,13 @@
 Novice zone ends **2026-10-28 03:33 UTC+8** (past as of 10-29). Defence timeline: `docs/DEFENSE_NOVICE.md` (2026-10-16); detail `docs/DEFENSE.md` / geometry `docs/DEFENSE_PLAN.md`.
 **Safe mode: NEVER auto-activate** — alert Misaki.
 
+## 2026-11-01 20:4x strategy review: post-minBuild leanBank re-arm
+- **Chose:** after terminal+minCont stand, why does leanBank stay permanently off (`bankWhy=gate`) while colony stor collapses to ~3–5k? Is soft-cap ≤2 enough to rebuild the 20k cushion? (OUR ops; skip neighbors / no auto labs.)
+- **Findings (`docs/MINERAL_DEFENSE_ROADMAP.md` §5.20 / `docs/RCL7.md` 20:4x):** (1) Live t~84005916 pre-deploy: minBuild DONE stor~4.2k leanBank=0 bankWhy=gate; home~19.3k ABOVE termK=4444 labReady.propose=1 ops.labs null; remotes SAFE; CPU~15/20. (2) §5.13 permanent `RCL6_MINERALS && !minBuild → false` hid cushion debt. (3) Soft-cap ≤2 + ctl-first + hold-band only [15k,20k) never parks energy below ARM. (4) Overmind storageBuffer is gate-agnostic — keep 15/20k hysteresis post-gate. (5) flipGaps still listed stor20k after already-flipped.
+- **Shipped:** drop permanent gate-off; honest phase/bankLeft/bankWhy; rebuild-band sink (stor<20k + ctl≥1200 → storage); flipGaps skip stor20k when already; tests dayobs/filler/move_bank. **Do NOT set ops.labs. Labs/industry/market/W47N9 stay OFF.**
+- **Reprioritise:** (1) deploy → leanBank re-arm → colony stor≥20k (~0.5–1 h); (2) **Misaki decide `Memory.ops.labs={W46N8:'KO'}`** (labReady.propose=1, K≥4k); (3) home upg hold ≥15k; (4) KO≥900 → boost.js + lab energy; (5) barriers→1M; (6) STATIONARY_FILL@RCL8. Still no labs-colony/industry/market/W47N9.
+- **Plan check:** WakeParent yes — code fix + **she still needs to nod ops.labs**.
+
 ## 2026-11-01 17:4x strategy review: w8mminer vs soft-cap spawn priority
 - **Chose:** after minCont stands and leanBank drops, will spawn actually raise `w8mminer` under thin stor + soft-cap ≤2, or do upgraders/builders/remotes starve mineral start? (OUR ops; skip neighbors / no auto labs.)
 - **Findings (`docs/MINERAL_DEFENSE_ROADMAP.md` §5.19 / `docs/RCL7.md` 17:4x):** (1) Live t~84003240: terminal DONE; minCont siteRem~1.7k leanBank=1 stor~12.3k; home~16k ABOVE; remotes SAFE; labReady noK. (2) Old queue put w8mminer **after** remote surplus — soft-cap would fill ≤2 upgraders first. (3) Overmind mineral=520 < upgrade=600 — we were inverted. (4) leanMinBuild stays terminal+minCont only (trunk not required to dig). (5) +1 mminer CPU OK; thin-batch already covers first-K fee.

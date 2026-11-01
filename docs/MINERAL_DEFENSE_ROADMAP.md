@@ -1,7 +1,7 @@
-# 矿物线 + 强化 + 城防路线图（2026-10-29 12:4x；14:4x boost；17:4x fundSpend；23:4x fortify；08:4x RCL7 hold 300k；11:4x post-300k exit；14:4x soft ramp 100k；20:4x day-of 不预存；23:4x lean KO 脚手架；**08:4x leanBank→stor20k**；**11:4x w8mminer+haul**；**02:4x leanBank hysteresis+soft-cap**；**05:4x soft-cap survives gate**；**08:4x hold-band sink→stor20k**；**11:4x first-K pacing**；**14:4x home KO labReady**；**17:4x w8mminer soft-cap prio**）
+# 矿物线 + 强化 + 城防路线图（2026-10-29 12:4x；14:4x boost；17:4x fundSpend；23:4x fortify；08:4x RCL7 hold 300k；11:4x post-300k exit；14:4x soft ramp 100k；20:4x day-of 不预存；23:4x lean KO 脚手架；**08:4x leanBank→stor20k**；**11:4x w8mminer+haul**；**02:4x leanBank hysteresis+soft-cap**；**05:4x soft-cap survives gate**；**08:4x hold-band sink→stor20k**；**11:4x first-K pacing**；**14:4x home KO labReady**；**17:4x w8mminer soft-cap prio**；**20:4x post-minBuild leanBank re-arm**）
 
 Live refresh **17:4x UTC+8 2026-11-01** tick ~84003240。**不自动交易、不开 safe mode。**
-Misaki **已点头翻 `RCL6_MINERALS`**（b758f38）；labs/industry/market/W47N9 仍 OFF。W47 **terminal DONE**；minCont siteRem~1.7k（即将立）→ 下节 §5.19 = w8mminer vs soft-cap spawn prio。
+Misaki **已点头翻 `RCL6_MINERALS`**（b758f38）；labs/industry/market/W47N9 仍 OFF。W47 **terminal+minCont+trunk DONE**；w8mminer ON；homeTermK≥4k → `labReady.propose=1` 等她设 `ops.labs={W46N8:'KO'}`。本轮 §5.20 = post-minBuild leanBank 永久关 → stor 塌到 3–5k。
 
 ## 0. 现状（实测）
 
@@ -491,3 +491,33 @@ W47N8 在翻 `RCL6_MINERALS` **之前**，矿物线代码缺口有多大？是�
 
 **仍不自动翻 labs/industry；不卖矿；不自动设 ops.labs。**
 
+### 5.20 post-minBuild leanBank re-arm + rebuild-band sink（20:4x 2026-11-01 ~20:4x Asia/Hong_Kong）
+
+**选了什么问题：** minBuild（terminal+minCont）完成后，为何 `leanBank` 永久 `bankWhy=gate`、殖民地 stor 塌到 ~3–5k 且不再回升？soft-cap ≤2 是否足以重建 20k cushion？
+
+**实测（t~84005916，Asia/Hong_Kong ~20:47；部署前旧码）：**
+| 项 | 值 |
+|---|---|
+| W47N8 | RCL7 ~1.9%；**minBuild DONE** hasTerm=1 hasMinCont=1 siteRem=0；storE~4.2k **leanBank=0 bankWhy=gate** phase=ready bankLeft=0；upgraders=2 soft；towerMinE~880；w8mminer=1 K@deposit~30k；batch=1000 lastSend=500；gaps=`stor20k` flipGaps=`stor20k,already` |
+| home | RCL7 ~14.3%；stor~19.3k ABOVE；term K=4444 O~127k；**`labReady.propose=1`** why=ready；`ops.labs` **仍 null** |
+| Remotes | W45N8/W45N7/W47N7 **SAFE**（邻居 peacetime scan 暂停） |
+| Model | home upg ~22 e/t（ideal~26）；W47 upg ~7 e/t（ideal~30，soft+薄垫）；CPU ~15/20 bucket 10k |
+
+**发现：**
+1. **§5.13 的永久关闸：** `if (C.RCL6_MINERALS && !minBuild) return false` 在物流齐后永远关 leanBank；`bankLeft`/`bankWhy=gate` 把 cushion 债藏起来；`phase` 被 `RCL6_MINERALS` 强制 `ready`。
+2. **soft-cap ≤2 不够重建：** ctl-first sink + 2 upgrader 把净收入吃光；§5.16 hold-band 只覆盖 [15k,20k)——stor 一旦跌破 15k 就再也不会「停进 storage」。
+3. **Overmind 对照：** `UpgradeSite.storageBuffer` **与矿物 gate 无关**——assets 不够就不起满 upgrader。我们的 15/20k 回滞应对齐：minBuild 后仍可 re-arm。
+4. **obs 噪音：** 已翻 gate 后 `flipGaps` 仍带 `stor20k`（cushion 债应只在 `w8min.gaps`）。
+5. **labs：** `labReady.propose=1`（K≥4k）——仍要 Misaki 点头；本轮不自动设 `ops.labs`。
+
+**修法（SAFE）：**
+1. **去掉** post-minBuild 永久 `return false`；保留 LEAN_STOR/ARM 回滞（pre-/post-gate 同形）。
+2. **phase / bankLeft / bankWhy：** 不再因 `RCL6_MINERALS` 强制 ready / 清零 bankLeft / 写 `gate`；post-gate 薄垫 → `bank20` + honest `bankLeft`。
+3. **rebuild-band sink：** `stor < LEAN_STOR` + ctl≥1200 → hauler 优先 storage（扩展原 hold-band 到 <15k）；ctl&lt;1200 仍喂 ctl。
+4. **flipGaps：** 已翻后不再把 `stor20k` 算进 flipGaps（仍报 `w8min.gaps`）。
+5. **测试：** dayobs post-gate re-arm@5k / hold@18k / soft recycle；filler rebuild-band；move_bank hysteresis + STRUCTURE_EXTRACTOR stub。
+6. **不**改 LEAN_* 数值、不翻 labs/industry/market、不设 `ops.labs`。
+
+**预期：** 部署后 stor~4k → leanBank=1 ≤1 upgrader + rebuild-band 灌 storage → ~0.5–1 h 回 15–20k；`labReady.propose` 继续等她设 KO。
+
+**仍不自动翻 labs/industry；不卖矿；不自动设 ops.labs。**

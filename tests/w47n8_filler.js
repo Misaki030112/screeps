@@ -207,7 +207,7 @@ console.log('w47n8 filler ok' + (quiet ? '' : ' (' + JSON.stringify(R4[800]) + '
   creeps = [];
 }
 say('sink buffer ok');
-// ---------- (G) 08:4x hold-band: stor in [15k,20k) + ctl≥1200 → sink prefers storage (flipReady/stor20k)
+// ---------- (G) 08:4x/20:4x rebuild-band: stor <20k + ctl≥1200 → sink prefers storage
 {
   build(50); DUTY_RESET(); fillAll();
   const RL = require(path.join(ROOT, 'src/rooms/w47n8/roles.js'));
@@ -216,15 +216,17 @@ say('sink buffer ok');
   room.storage.store.energy = 17000; Game.time++;
   const h = mkCreep('w8hauler', body, 25, 14); h.store.energy = 500; h.memory.sk = undefined;
   assert.strictEqual(RL._sink(room, h), room.storage, 'hold-band 17k + ctl1500 → storage');
-  // below ARM: leanBank territory — still prefer ctl (do not steal feed while banking via throttle)
+  // 20:4x: below ARM also parks in storage when ctl feed floor met (post-gate rebuild)
   room.storage.store.energy = 12000; h.memory.sk = undefined; Game.time++;
-  assert.strictEqual(RL._sink(room, h), ctl, 'below ARM 12k → ctl (not hold-band)');
-  // ctl hungry: feed ctl even in hold band
+  assert.strictEqual(RL._sink(room, h), room.storage, 'rebuild-band 12k + ctl1500 → storage');
+  room.storage.store.energy = 4000; h.memory.sk = undefined; Game.time++;
+  assert.strictEqual(RL._sink(room, h), room.storage, 'rebuild-band 4k + ctl1500 → storage');
+  // ctl hungry: feed ctl even in rebuild band
   room.storage.store.energy = 17000; ctl.store.energy = 800; h.memory.sk = undefined; Game.time++;
-  assert.strictEqual(RL._sink(room, h), ctl, 'hold-band but ctl hungry <1200 → ctl');
+  assert.strictEqual(RL._sink(room, h), ctl, 'rebuild-band but ctl hungry <1200 → ctl');
   // cushion done: back to ctl preference
   room.storage.store.energy = 21000; ctl.store.energy = 1500; h.memory.sk = undefined; Game.time++;
   assert.strictEqual(RL._sink(room, h), ctl, 'stor≥20k → ctl again');
   creeps = [];
 }
-say('sink hold-band ok');
+say('sink rebuild-band ok');

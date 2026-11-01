@@ -4,7 +4,7 @@ const assert = require('assert'), path = require('path');
 Object.assign(global, { _: require('lodash'), FIND_MY_STRUCTURES: 10, FIND_MY_CONSTRUCTION_SITES: 1, FIND_MY_SPAWNS: 2, FIND_MY_CREEPS: 3, FIND_STRUCTURES: 5,
   FIND_HOSTILE_CREEPS: 4, FIND_DROPPED_RESOURCES: 6, FIND_SOURCES_ACTIVE: 7, FIND_SOURCES: 8, FIND_HOSTILE_STRUCTURES: 9,
   STRUCTURE_EXTENSION: 'extension', STRUCTURE_SPAWN: 'spawn', STRUCTURE_TOWER: 'tower', STRUCTURE_ROAD: 'road', STRUCTURE_RAMPART: 'rampart', STRUCTURE_CONTAINER: 'container',
-  STRUCTURE_STORAGE: 'storage', STRUCTURE_WALL: 'constructedWall', STRUCTURE_LINK: 'link', RESOURCE_ENERGY: 'energy', LOOK_STRUCTURES: 'ls', LOOK_CONSTRUCTION_SITES: 'lc', OK: 0,
+  STRUCTURE_STORAGE: 'storage', STRUCTURE_WALL: 'constructedWall', STRUCTURE_LINK: 'link', STRUCTURE_TERMINAL: 'terminal', STRUCTURE_EXTRACTOR: 'extractor', RESOURCE_ENERGY: 'energy', LOOK_STRUCTURES: 'ls', LOOK_CONSTRUCTION_SITES: 'lc', OK: 0,
   ERR_RCL_NOT_ENOUGH: -14, TERRAIN_MASK_WALL: 1, BODYPART_COST: { work: 100, carry: 50, move: 50, attack: 80, ranged_attack: 150, heal: 250, tough: 10, claim: 600 },
   WORK: 'work', CARRY: 'carry', MOVE: 'move', ATTACK: 'attack', RANGED_ATTACK: 'ranged_attack', HEAL: 'heal', TOUGH: 'tough', CLAIM: 'claim',
   Memory: { ops: { w8layout: 'approved' } }, Game: { time: 1000, rooms: {}, creeps: {}, spawns: {}, cpu: { getUsed: () => 0 } } });
@@ -77,13 +77,20 @@ const bc2 = cr('w8builder', 1100, { id: 'b2', memory: { role: 'w8builder', home:
   pos: Object.assign(pos(C.UPG_EXTRA[0][0], C.UPG_EXTRA[0][1]), { findClosestByRange: () => null }), fatigue: 0, owner: { username: 'Misaki030112' },
   upgradeController: () => acts.push('upgrade'), withdraw: () => acts.push('withdraw'), repair: () => acts.push('repair'), build: () => acts.push('build'), move: () => acts.push('move'), moveTo: () => acts.push('moveTo'), say() {} });
 RL.w8builder.run(bc2); assert.ok(!acts.includes('upgrade') && !acts.includes('withdraw'), 'leanBank: idle builder parks, acts ' + acts);
+// 02:4x/20:4x hysteresis needs minBuild complete (terminal+minCont). While minBuild, leanBank stays on at any stor.
+const [mx, my] = C.MINERAL_CONT || [37, 44];
+built[35 * 50 + 33] = [{ structureType: 'terminal', pos: { x: 35, y: 33 } }];
+built[mx * 50 + my] = (built[mx * 50 + my] || []).concat([{ structureType: 'container', pos: { x: mx, y: my } }]);
+room.terminal = { store: {} };
+assert.ok(!W.leanMinBuild(room), 'logistics complete → minBuild off');
 // 02:4x hysteresis: prior ready + stor 18k → leanBank stays off (shallow dip)
 Memory.ops.w8day = { leanBank: 0 }; room.storage.store.energy = 18000;
 assert.ok(!W.leanBank(room), 'hysteresis: 18k after ready does not re-arm');
 assert.ok(!W.energyBank(room), 'energyBank off in hold band');
 room.storage.store.energy = 14000;
-assert.ok(W.leanBank(room), 'hysteresis: 14k re-arms');
+assert.ok(W.leanBank(room), 'hysteresis: 14k re-arms post-gate');
 room.storage.store.energy = 3000;
+assert.ok(W.leanBank(room), '20:4x post-gate stor3k still re-arms');
 // opt-out
 Memory.ops.w8leanBank = false; assert.ok(!W.leanBank(room), 'opt-out works'); delete Memory.ops.w8leanBank;
 console.log('w47n8 move bank ok');

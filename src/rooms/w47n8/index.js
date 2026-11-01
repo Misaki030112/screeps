@@ -408,15 +408,17 @@ function leanBank(room) {
   // 23:4x: stay armed while lean KO logistics structures are still missing after the gate flip.
   // 02:4x 2026-11-01: hysteresis — once disarmed (leanBank was 0), stay off until stor < LEAN_ARM (15k).
   // Live proof 00:14→01:25: ready@23k → 4 upgraders → dn20@~19.9k → re-arm → W47N7 DEFEND drained to ~1.7k.
+  // 20:4x 2026-11-01 strategy: post-minBuild must NOT permanently disable leanBank while RCL6_MINERALS.
+  // Soft-cap ≤2 alone left colony stor~3–5k (ctl-first sink feeds 2 upgraders; hold-band only [15k,20k)).
+  // Overmind storageBuffer is gate-agnostic — keep our 15/20k hysteresis after logistics stand.
   const o = Memory.ops || {};
   if (o.w8leanBank === false) return false;
   if (!room.controller || room.controller.level < 7) return false;
   const minBuild = leanMinBuild(room);
-  if (C.RCL6_MINERALS && !minBuild) return false; // gate on + terminal+minCont live → normal economy
   const storE = room.storage && room.storage.store ? (room.storage.store[RESOURCE_ENERGY] || 0) : 0;
-  // Pre-flip: bank until 20k. Post-flip minBuild: keep throttle until structs exist (sites need the energy).
+  // Pre-flip / post-flip rebuild: bank until 20k. minBuild: keep throttle until structs exist (sites need the energy).
   if (!minBuild && storE >= LEAN_STOR) return false;
-  // Hysteresis hold: after ready, do not re-arm on a shallow dip above LEAN_ARM.
+  // Hysteresis hold: after ready, do not re-arm on a shallow dip above LEAN_ARM (pre- or post-gate).
   const wasLean = !!(o.w8day && o.w8day.leanBank);
   if (!minBuild && !wasLean && storE >= LEAN_ARM) return false;
   const m = dayofMiss(room);
@@ -549,20 +551,21 @@ function dayObs(room) {
   const minBuild = leanMinBuild(room);
   if (why === 'done') {
     if (minBuild) phase = 'minBuild';
-    else if (C.RCL6_MINERALS || storE >= LEAN_STOR) phase = 'ready'; // gate live or cushion filled
+    else if (storE >= LEAN_STOR) phase = 'ready'; // cushion filled (pre- or post-gate)
     else if (storE >= LEAN_ARM && !leanBank(room)) phase = 'ready'; // 02:4x hysteresis hold (15–20k)
-    else phase = 'bank20';
+    else phase = 'bank20'; // 20:4x: post-gate rebuild also uses bank20 (not forced ready by minerals)
   }
-  const bankLeft = (minBuild || C.RCL6_MINERALS) ? 0 : Math.max(0, LEAN_STOR - storE);
+  // 20:4x: bankLeft honest post-gate too (was zeroed by RCL6_MINERALS, hiding cushion debt).
+  const bankLeft = minBuild ? 0 : Math.max(0, LEAN_STOR - storE);
   // ~20 e/t net while leanBank (≤1 upgrader). Mid-ext, sites still sink energy first → fold siteRem into ETA.
   // minBuild: ETA ≈ remaining mineral sites / 20 (stor cushion already spent into sites).
   const lb = leanBank(room);
   const bankEta = (!lb) ? (bankLeft <= 0 ? 0 : -1)
     : (minBuild ? Math.ceil((siteRemV || 1) / 20) : Math.ceil((bankLeft + siteRemV) / 20));
   // 02:4x obs: bankWhy explains ETA honesty (threat WINDOW / remote pause lie about +20 e/t).
+  // 20:4x: drop unconditional bankWhy=gate — post-minBuild leanBank can re-arm; use bank/hold/off/ready.
   let bankWhy = 'ok';
-  if (C.RCL6_MINERALS && !minBuild) bankWhy = 'gate';
-  else if (minBuild) bankWhy = 'minBuild';
+  if (minBuild) bankWhy = 'minBuild';
   else if (lb) bankWhy = (typeof TH !== 'undefined' && TH.on && TH.on()) ? 'threat' : 'bank';
   else if (storE < LEAN_STOR) bankWhy = (storE >= LEAN_ARM) ? 'hold' : 'off';
   else bankWhy = 'ready';
@@ -599,7 +602,8 @@ function dayObs(room) {
   const FLIP_TOWER = 600, FLIP_HOME = 15000, HOME = 'W46N8';
   const flipGaps = [];
   if (missSpawn || missTower) flipGaps.push('daycrit');
-  if (storE < LEAN_STOR) flipGaps.push('stor20k');
+  // 20:4x: once flipped, stor20k is a cushion gap (w8min.gaps), not a flip blocker — avoid flipGaps noise.
+  if (!C.RCL6_MINERALS && storE < LEAN_STOR) flipGaps.push('stor20k');
   if (towerMinE >= 0 && towerMinE < FLIP_TOWER) flipGaps.push('towerE');
   const home = Game.rooms[HOME];
   const homeStor = (home && home.storage && home.storage.store)

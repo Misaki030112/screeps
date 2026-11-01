@@ -414,3 +414,19 @@ Closes 11:4x remaining code gap: `mineralSend` + `termFuel` behind `RCL6_MINERAL
 
 ### Shipped
 - Elevate `w8mminer` spawn; `w8min.minerPrio=1`; soft-cap priority test. **No gate / labs flips.**
+
+## 2026-11-01 20:4x — post-minBuild leanBank re-arm + rebuild-band
+
+**Question:** After terminal+minCont stand, why does leanBank stay permanently off (`bankWhy=gate`) while stor collapses to ~3–5k? Is soft-cap ≤2 enough to rebuild the 20k cushion?
+
+**Answer: Drop §5.13 permanent gate-off; keep 15/20k hysteresis post-gate; extend hold-band sink to rebuild-band (stor<20k + ctl≥1200). Do NOT set ops.labs.**
+
+### Live
+- t~84005916 (~20:47 Asia/Hong_Kong) pre-deploy: W47 stor~4.2k leanBank=0 bankWhy=gate phase=ready bankLeft=0; w8mminer=1 K~30k@deposit; home~19.3k ABOVE termK=4444 labReady.propose=1; remotes SAFE; CPU~15/20.
+- Root: `if (RCL6_MINERALS && !minBuild) return false` + ctl-first sink below ARM never parks energy; soft-cap alone feeds 2 upgraders forever.
+- Overmind `storageBuffer` is gate-agnostic — match that shape at our tighter 15/20k.
+
+### Shipped
+- Remove permanent post-minBuild leanBank disable; honest phase/bankLeft/bankWhy; rebuild-band sink; flipGaps skip stor20k when already; tests. Detail: `docs/MINERAL_DEFENSE_ROADMAP.md` §5.20.
+- **No labs/industry/market flips; ops.labs still Misaki.**
+
