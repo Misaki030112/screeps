@@ -224,6 +224,23 @@ C.RCL6_MINERALS = true;
   assert.strictEqual(sent[0][2], 'W46N8');
   assert.ok(sent[0][1] >= 100 && sent[0][1] <= 5000);
 
+  // 11:4x: thin stor (<LEAN_ARM) → SEND_BATCH_THIN=1000
+  room.storage.store.energy = 5000;
+  termStore.K = 8000; termStore.energy = 500; sent.length = 0;
+  W.mineralSend(room);
+  assert.strictEqual(Memory.ops.w8min.sendWhy, 'sent');
+  assert.strictEqual(sent[0][1], 1000, 'thin batch=' + sent[0][1]);
+  assert.strictEqual(Memory.ops.w8min.batch, 1000);
+  assert.ok(Memory.ops.w8min.homeFree >= 100);
+  assert.ok(Memory.ops.w8min.fee > 0);
+  // full cushion → SEND_BATCH=5000
+  room.storage.store.energy = 25000;
+  termStore.K = 8000; termStore.energy = 500; sent.length = 0;
+  W.mineralSend(room);
+  assert.strictEqual(sent[0][1], 5000, 'full batch=' + sent[0][1]);
+  assert.strictEqual(Memory.ops.w8min.batch, 5000);
+  room.storage.store.energy = 25000;
+
   // cooldown
   term.cooldown = 5; sent.length = 0;
   W.mineralSend(room);
@@ -254,6 +271,18 @@ C.RCL6_MINERALS = true;
   fuelC2.pos.isNearTo = () => true;
   assert.strictEqual(roles._termFuel(fuelC2), true);
   assert.deepStrictEqual(fuelC2.got, [['t', 'energy']], 'termFuel transfers energy to terminal');
+
+  // 11:4x: thin post-minBuild stor (500–1999) still fuels; below 500 refuses
+  room.storage.store.energy = 800;
+  termStore.K = 500; termStore.energy = 50;
+  const fuelThin = creep();
+  fuelThin.pos.isNearTo = (t) => t === room.storage || (t && t.pos && t.pos.x === 35);
+  assert.strictEqual(roles._termFuel(fuelThin), true, 'termFuel at stor 800');
+  room.storage.store.energy = 400;
+  const fuelStarved = creep();
+  fuelStarved.pos.isNearTo = (t) => t === room.storage || (t && t.pos && t.pos.x === 35);
+  assert.strictEqual(roles._termFuel(fuelStarved), false, 'termFuel refuses stor <500');
+  room.storage.store.energy = 25000;
 
   C.RCL6_MINERALS = false;
 }

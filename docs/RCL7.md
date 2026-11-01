@@ -375,3 +375,16 @@ Closes 11:4x remaining code gap: `mineralSend` + `termFuel` behind `RCL6_MINERAL
 ### Shipped
 - Hold-band sink in `roles.js` (LEAN_ARM–LEAN_STOR + ctl≥1200 → storage; sticky kept).
 - `w8day.looseE` obs. Tests filler hold-band + dayobs. **No gate flips.**
+
+## 2026-11-01 11:4x — first-K send pacing (post-minBuild)
+
+**Question:** After `RCL6_MINERALS` flip + minBuild, will `SEND_BATCH=5000` + `termFuel` stor≥2000 stall the first K send (`noE`) while colony stor sits ~5–8k?
+
+**Answer: Yes risk. Thin-batch 1k under LEAN_ARM + termFuel stor floor 500. Obs batch/homeFree/fee. Do NOT flip labs/industry.**
+
+### Live
+- t~83998040 (~11:47 Asia/Hong_Kong): W47 minBuild siteRem~79k stor~5.5k leanBank=1; home stor~15k ABOVE-ish; remotes SAFE; deploy b758f38.
+- Adjacent fee ≈33e/1k; home terminal free~173k OK.
+
+### Shipped
+- `SEND_BATCH_THIN=1000` when storE < LEAN_ARM; `TERM_FUEL_STOR=500`; `w8min.{batch,homeFree,fee}`; tests. Detail: `docs/MINERAL_DEFENSE_ROADMAP.md` §5.17.

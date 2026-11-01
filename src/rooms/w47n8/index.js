@@ -449,9 +449,11 @@ function leanBankRecycle(room) {
 
 // 14:4x strategy: dormant terminal.send K W47N8→W46N8 (lean KO). Overmind TerminalNetwork pattern —
 // surplus at colony, deficit at home labs; TERMINAL_MIN_SEND=100, COOLDOWN=10; adjacent ~ceil(amt*(1-e^(-1/30))).
-// Gate stays false → no live send. termFuel (roles) parks energy for fees when gate flips.
+// 11:4x 2026-11-01: first-K pacing — thin-stor batch + homeFree/fee obs (post-minBuild stor often ≪15k).
+// Gate false → no live send. termFuel (roles) parks energy for fees when gate flips.
 const HOME_ROOM = 'W46N8';
-const SEND_BATCH = 5000;
+const SEND_BATCH = 5000;      // full cushion / Overmind-ish chunk
+const SEND_BATCH_THIN = 1000; // post-minBuild / lean recovery: ~33e fee adjacent vs ~165e for 5k
 const TERM_MIN_SEND = 100;
 function sendCost(amt, from, to) {
   if (typeof Game !== 'undefined' && Game.market && Game.market.calcTransactionCost)
@@ -464,6 +466,9 @@ function mineralSend(room) {
   const o = (Memory.ops = Memory.ops || {});
   const w = o.w8min = o.w8min || {};
   w.sendOk = 1;
+  const storE = room.storage && room.storage.store ? (room.storage.store[RESOURCE_ENERGY] || 0) : 0;
+  const batchMax = (storE > 0 && storE < LEAN_ARM) ? SEND_BATCH_THIN : SEND_BATCH;
+  w.batch = batchMax;
   if (!C.RCL6_MINERALS) { w.sendWhy = 'gate'; return; }
   const term = room.terminal;
   if (!term) { w.sendWhy = 'noTerm'; return; }
@@ -477,18 +482,20 @@ function mineralSend(room) {
   const free = hTerm.store.getFreeCapacity
     ? hTerm.store.getFreeCapacity()
     : Math.max(0, (hTerm.storeCapacity || 300000) - _.sum(hTerm.store));
+  w.homeFree = free;
   if (free < TERM_MIN_SEND) { w.sendWhy = 'homeFull'; return; }
-  let amount = Math.min(k, SEND_BATCH, free);
+  let amount = Math.min(k, batchMax, free);
   let cost = sendCost(amount, room.name, HOME_ROOM);
   const e = term.store[(typeof RESOURCE_ENERGY !== 'undefined') ? RESOURCE_ENERGY : 'energy'] || 0;
   while (amount >= TERM_MIN_SEND && e < cost) {
     amount = Math.floor(amount / 2);
     cost = sendCost(amount, room.name, HOME_ROOM);
   }
+  w.fee = cost;
   if (amount < TERM_MIN_SEND) { w.sendWhy = 'noE'; w.needE = sendCost(TERM_MIN_SEND, room.name, HOME_ROOM); return; }
   const r = term.send(K, amount, HOME_ROOM);
   if (r === OK) {
-    w.sendWhy = 'sent'; w.lastSend = Game.time; w.lastAmt = amount; w.needE = 0; w.cd = 0;
+    w.sendWhy = 'sent'; w.lastSend = Game.time; w.lastAmt = amount; w.needE = 0; w.cd = 0; w.fee = cost;
   } else {
     w.sendWhy = 'err' + r;
   }
@@ -604,6 +611,8 @@ function dayObs(room) {
     hasCode: 1, sendOk: 1, termE,
     sendWhy: prev.sendWhy || (C.RCL6_MINERALS ? 'idle' : 'gate'),
     lastSend: prev.lastSend || 0, lastAmt: prev.lastAmt || 0, needE: prev.needE || 0, cd: prev.cd || 0,
+    // 11:4x first-K pacing obs (mineralSend refreshes every tick; dayObs preserves between)
+    homeFree: prev.homeFree || 0, batch: prev.batch || SEND_BATCH, fee: prev.fee || 0,
     gaps: gaps.join(','), why: gaps.length ? gaps[0] : 'ready',
     flipReady, flipGaps: flipGaps.join(','), homeStor, minBuild: minBuild ? 1 : 0 };
 }

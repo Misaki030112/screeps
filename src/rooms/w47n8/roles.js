@@ -260,7 +260,9 @@ function mineralRun(c) {
 }
 // 14:4x: park energy in terminal for send fees when K (or other mineral) is waiting. Overmind keeps
 // transfer-cost buffer in the terminal; adjacent send ~33e/1k. Dormant while gate false.
+// 11:4x 2026-11-01: post-minBuild stor often ~2–8k — old stor≥2000 floor blocked first fees; drop to 500 while mineral waits.
 const TERM_E_FLOOR = 1000;
+const TERM_FUEL_STOR = 500; // was 2000; 500 still leaves spawn/tower headroom under lean soft-cap
 function termFuel(c) {
   if (!C.RCL6_MINERALS) return false;
   const room = Game.rooms[C.ROOM]; if (!room || !room.terminal || !room.storage) return false;
@@ -274,7 +276,7 @@ function termFuel(c) {
     return true;
   }
   if (c.memory.w) return false;
-  if ((st.store[E] || 0) < 2000) return false;
+  if ((st.store[E] || 0) < TERM_FUEL_STOR) return false;
   if (c.pos.isNearTo(st)) c.withdraw(st, E); else go8(c, st.pos.x, st.pos.y);
   return true;
 }

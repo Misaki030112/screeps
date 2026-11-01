@@ -1,7 +1,7 @@
-# 矿物线 + 强化 + 城防路线图（2026-10-29 12:4x；14:4x boost；17:4x fundSpend；23:4x fortify；08:4x RCL7 hold 300k；11:4x post-300k exit；14:4x soft ramp 100k；20:4x day-of 不预存；23:4x lean KO 脚手架；**08:4x leanBank→stor20k**；**11:4x w8mminer+haul**；**02:4x leanBank hysteresis+soft-cap**；**05:4x soft-cap survives gate**；**08:4x hold-band sink→stor20k**）
+# 矿物线 + 强化 + 城防路线图（2026-10-29 12:4x；14:4x boost；17:4x fundSpend；23:4x fortify；08:4x RCL7 hold 300k；11:4x post-300k exit；14:4x soft ramp 100k；20:4x day-of 不预存；23:4x lean KO 脚手架；**08:4x leanBank→stor20k**；**11:4x w8mminer+haul**；**02:4x leanBank hysteresis+soft-cap**；**05:4x soft-cap survives gate**；**08:4x hold-band sink→stor20k**；**11:4x first-K pacing**）
 
-Live refresh **11:1x UTC+8 2026-11-01** tick ~83997460。**不自动交易、不开 safe mode。**
-Misaki **点头只翻 `RCL6_MINERALS`**（labs/industry/market/W47N9 仍 OFF）。home 墙 HOLD 300k；殖民地 RCL7 stor~23.7k `flipReady=1`；extractor 已有；下一拍 **minBuild** terminal+minCont@37,44 + trunk（~110k）。seal 300k 不变。
+Live refresh **11:4x UTC+8 2026-11-01** tick ~83998040。**不自动交易、不开 safe mode。**
+Misaki **已点头翻 `RCL6_MINERALS`**（b758f38）；labs/industry/market/W47N9 仍 OFF。W47 minBuild 进行中；本节 §5.17 = first-K send pacing。
 
 ## 0. 现状（实测）
 
@@ -403,4 +403,33 @@ W47N8 在翻 `RCL6_MINERALS` **之前**，矿物线代码缺口有多大？是�
 **测试：** `w47n8_filler` sink hold-band；`w47n8_dayobs` looseE；move_bank/mminer 回归。
 
 **仍不自动翻 gate。**
+
+### 5.17 first-K send pacing（11:4x 2026-11-01 ~11:4x Asia/Hong_Kong）
+
+**选了什么问题：** mineral flip 之后，terminal+minCont 一立就会采 K → `mineralSend`。post-minBuild 殖民地 stor 常掉到 ~5–8k：`SEND_BATCH=5000`（fee≈165e）+ `termFuel` stor≥2000 会不会把第一批 K 卡在 `noE`，同时伤到 home upg ≥15k？
+
+**实测（t~83998020–040，Asia/Hong_Kong ~11:47）：**
+| 项 | 值 |
+|---|---|
+| W47N8 | RCL7 prog~163k；**minBuild** siteRem~79k leanBank=1 bankWhy=minBuild；storE~5.3–6.0k；towerMinE~970；hasTerm=0 hasMinCont=0 sendWhy=noTerm；minOk=1 |
+| home | RCL7 ~1.40M/10.9M (~12.8%)；stor~14.9–15.1k 贴 floor；terminal O~127k free~173k；mineralCap=50k |
+| Remotes | W45N8/W45N7/W47N7 **SAFE**（邻居 peacetime scan 暂停） |
+| Deploy | b758f38 @83997488（RCL6_MINERALS ON；labs/industry OFF） |
+
+**发现：**
+1. **Batch vs cushion：** 相邻 send `ceil(amt×(1−e^(−1/30)))` ≈ **33e/1k**。满 batch 5k ≈ **165e**；minBuild 后 stor~5k + termFuel 抽 1k → 很容易 `noE` 或抽干 spawn/tower 余量。
+2. **termFuel 地板过高：** 旧 `stor≥2000` 在 post-minBuild 薄垫里经常不给 terminal 补 fee → 永久 `noE` 直到 stor 回升。Overmind TerminalNetwork 保持 fee buffer，但不要求 storage 先到 2k；TooAngel 同样只留少量 terminal energy。
+3. **Home 端安全：** 当前 home terminal free ~173k ≫ 5k；`mineralCap` 50k 管 O，不挡 K。仍需 obs `homeFree` 防日后 O+K 塞满。
+4. **Cooldown=10 / TERM_MIN_SEND=100** 已对齐 Overmind；不必改。安全默认 = **薄垫用小批，满垫回 5k**。
+5. **不碰** labs / industry / market / W47N9；不改 LEAN_* / flipReady / minBuild 闸。
+
+**修法（SAFE）：**
+1. **`SEND_BATCH_THIN=1000`** when `0 < storE < LEAN_ARM(15k)`；否则 `SEND_BATCH=5000`。fee ~33e vs ~165e。
+2. **`TERM_FUEL_STOR=500`**（was 2000）— 只要 mineral 在 terminal 等待就允许补 fee；500 仍留 spawn/tower 头。
+3. **obs：** `w8min.{batch,homeFree,fee}`（dayObs 保留上次值）。
+4. **测试：** thin/full batch；termFuel @800 ok / @400 refuse。
+
+**预期：** terminal+minCont 立起 → w8mminer → haul K → 即使 stor~5–8k 也能以 1k 批发出第一波 K；stor≥15k 后自动回 5k 批。home upg floor 不被单次 165e 抽空。
+
+**仍不自动翻 labs/industry；不卖矿。**
 

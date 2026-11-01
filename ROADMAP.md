@@ -3,6 +3,13 @@
 Novice zone ends **2026-10-28 03:33 UTC+8** (past as of 10-29). Defence timeline: `docs/DEFENSE_NOVICE.md` (2026-10-16); detail `docs/DEFENSE.md` / geometry `docs/DEFENSE_PLAN.md`.
 **Safe mode: NEVER auto-activate** — alert Misaki.
 
+## 2026-11-01 11:4x strategy review: first-K send pacing
+- **Chose:** post-minBuild first K send — batch size / TERM_E fee buffer / homeFree vs thin colony stor ~5–8k (OUR ops after mineral flip; skip neighbors / labs).
+- **Findings (`docs/MINERAL_DEFENSE_ROADMAP.md` §5.17 / `docs/RCL7.md` 11:4x):** (1) Live t~83998040: minBuild siteRem~79k leanBank=1 stor~5.5k hasTerm=0; home~15k ABOVE-ish term free~173k; remotes SAFE; minOk=1. (2) Full 5k batch ≈165e fee can `noE` under thin cushion; old termFuel stor≥2000 blocked fee top-up. (3) Overmind TerminalNetwork keeps fee buffer without a 2k storage gate; adjacent ≈33e/1k. (4) Safe default = thin 1k under LEAN_ARM, full 5k above; TERM_FUEL_STOR=500.
+- **Shipped:** `SEND_BATCH_THIN` + `TERM_FUEL_STOR=500` + `w8min.{batch,homeFree,fee}` + tests. **Labs/industry/market/W47N9 stay OFF.**
+- **Reprioritise:** (1) finish minBuild terminal→minCont→trunk (~1 h); (2) w8mminer → K haul → thin-batch send home; (3) home upg hold ≥15k / soft-cap; (4) KO≥900 boost later; (5) barriers→1M; (6) STATIONARY_FILL@RCL8. Still no labs/industry/market/W47N9.
+- **Plan check:** no Misaki decision this run (pacing autonomous). WakeParent no unless minBuild stalls badly or first send errors.
+
 ## 2026-11-01 11:1x: flip RCL6_MINERALS (Misaki nod)
 - **Chose:** execute approved flip — `w47n8.config.RCL6_MINERALS=true` only (lean KO: terminal + extractor + minCont@37,44 + trunk). Keep `RCL6_LABS` / `RCL7_INDUSTRY` / `HUB_LINK` / market / W47N9 OFF.
 - **Findings:** live flipReady=1 (stor~23.7k, homeStor~15.6k, towerMinE~840, remotes ok); extractor already live @37,45; terminal+minCont missing; `leanMinBuild` + soft-cap already shipped so post-flip construction will not starve.
