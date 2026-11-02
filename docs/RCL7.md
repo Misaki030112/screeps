@@ -627,7 +627,7 @@ Refs: Overmind `storageBuffer` + warSpawnCutoff; TooAngel `upgraderMinStorage` /
 ### Flip checklist (propose to Misaki)
 1. Peacetime, softCap2 OFF, KEY DONE, sealMinE=25k accepted.
 2. Deploy with hub plumbing LIVE (this commit).
-3. Set `config.HUB_LINK=true` → layout places 33,34; builders finish; watch `hubLinkE` rise, `waiting_feed`↓, upg ≥24 / short≥70%.
+3. Set `config.HUB_LINK=true` → layout places 33,34; builders finish; **upgCeil waits for structure** (`hubLinkLive` / 05:4x); watch `hubReady`/`hubLinkE` rise, `waiting_feed`↓, upg ≥24 / short≥70%.
 4. Do **not** flip labs/industry/market with it. K still regenerating — minerals not the bottleneck.
 
 ## 2026-11-03 02:4x — seal soft-gate vs softCap2 (no sealMinE raise)
@@ -654,3 +654,42 @@ Refs: Overmind `storageBuffer` + warSpawnCutoff; TooAngel `upgraderMinStorage` /
 ### Watch
 - After deploy: when softCap2 re-ON, `sealPark=1` / `sealRaise=0` and live builders stop climbing above 300k; when softCap clears, park holds until nUp≥3 then seal resumes; 2nd builder only above ~30k.
 - HUB_LINK nod remains open (~23:45) — do not re-spam. Biggest remaining upg gap is still !HUB_LINK feed.
+
+## 2026-11-03 05:4x — HUB_LINK flip day-of: upgCeil must wait for structure
+
+**Question:** When Misaki nods `HUB_LINK=true`, does `upgCeil` 3→6 fire before the 5k hub link at 33,34 stands — recreating the 14:4x waiting_feed thrash — and should surplus/recycle gate on `hubReady` (structure) rather than the config flag alone?
+
+**Answer: YES it was a gap; gate on structure (`hubLinkLive`).** Plumbing (23:4x) is enough to ferry+send once the link stands, but raising ceil on the flag alone would spawn WORK40+ while A→ctl still ~8 e/t during the ~5k build. Do **not** flip the flag this run; do **not** re-ask — nod stays open. Shipped the gate so the day-of sequence is safe when she nods.
+
+### Live (~05:29–05:42 Asia/Shanghai, deploy 3301591)
+- Peacetime; home W46N8 RCL7 ~19.63% 2h~81% stor~16.0–16.1k ABOVE15k nUp2–3.
+- W47N8 RCL7 ~6.33% 2h~68.4% (FIRST soft after held≥70) softCap2 JUST cleared KEY 300k DONE; seal soft-gate LIVE (sealPark0 / sealMinE 25k); hubReady0; HUB_LINK nod open.
+- Remotes: W45N7 Invader1 + defender1; labs OFF no re-ask; K regener~37.9k; roads.phase=done; CPU~10–16/20.
+
+### Research (Screeps + Overmind / TooAngel)
+1. **Screeps link cooldown** = `pos.getRangeTo(target)` ticks (1 tick/tile). Hub 33,34 → ctl 13,25 Chebyshev **20** → cooldown 20 → max **800/20 = 40 e/t** gross ≈ **38.8 e/t** net after 3% loss — enough for WORK40+ once live. A→ctl range 13 → ~61 e/t theoretical but A only produces ~10.
+2. **Overmind UpgradeSite** places an upgrade link when the storage path is long and requests battery input when thin — hub→ctl matches that topology (23:4x). Surplus WORK must not outrun the battery before the link exists.
+3. **TooAngel** is storage-centric; we stay ctl-centric like home `managers/links.js`. Filler ferry (23:4x) tops hub when stor≥25k — no-op without structure.
+4. **Seal soft-gate (02:4x)** interaction: during the 5k site, `bigBuild` (siteRem≥3k) already caps base at 2; with structure-gated ceil, surplus cannot jump to 6 mid-build even if softCap clears and sealPark drops.
+
+### Gap (pre-fix)
+- `upgCeil = C.HUB_LINK ? 6 : (bigBuild ? 2 : 3)` and recycle `(!C.HUB_LINK || ctlBat < FEED_MIN/2)` keyed the **config flag**.
+- Day-of: flag→true places site; feedOk + softCap OFF could spawn toward 6 while hub is still a construction site → same 14:4x starve (A→ctl only).
+- `linkRun` / filler ferry already required the structure; only ceil/recycle did not.
+
+### Day-of sequence (after Misaki nod — do not re-ask)
+1. Set `config.HUB_LINK=true` → layout places link site 33,34 (5k).
+2. **While site:** `hubLinkLive=false` → upgCeil = bigBuild?2:3; recycle keep≤3; seal soft-gate still applies; builders finish site (~minutes at softCap OFF).
+3. **Structure stands:** `hubReady=1` / `hubLinkLive` → upgCeil 6 unlocked; filler ferry tops hub; `linkRun` hub→ctl (own cooldown, A still first).
+4. Patrol watch: `hubLinkE` rising, `waiting_feed`↓, short≥70%, nUp toward 4–6 only while `feedOk` + `!softCap2`; sealPark must not thrash stor under 25k mid-build (02:4x gate).
+5. Do **not** flip labs / industry / market with it. K regenerating — minerals not the bottleneck.
+
+### Shipped
+- `hubLinkLive(room)` — `C.HUB_LINK &&` structure at `L.ORDER.link[0]`.
+- Surplus `upgCeil` + leanBankRecycle keep≤3 use `hubLinkLive` (not flag alone).
+- `w8day.hubReady` now mirrors `hubLinkLive`. Tests `w47n8_dayobs` (flag-on without structure still recycles; structure+feedOk allows surplus).
+- **`HUB_LINK` stays false.** No labs/industry/market flips. No re-ask.
+
+### Watch after next nod-deploy
+- Tick of flip: hubReady 0, siteRem~5k, upgCeil effectively ≤2 (bigBuild).
+- After stand: hubReady 1, hubLinkE≥0, recycle clears when feedOk, waiting_feed↓ within ~1–2k ticks.

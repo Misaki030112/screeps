@@ -228,9 +228,10 @@ function spawnRun(spawn) {
     const wcap = Math.max(24, Math.min(40, (wm.upw || 0) + 5 * Math.floor(stor / 5000)));
     // 02:4x: no surplus upgraders while cushion thin (stor < LEAN_SOFT) — soft-cap holds at ≤2 from the base rule above.
     // 11:4x: softCap2 also blocks surplus while threat soft is on, so stor≥25k cannot expand to 4×10W.
-    // 14:4x strategy: peacetime surplus needs ctlBattery≥FEED_MIN; without HUB_LINK, A→ctl ~8 e/t cannot sustain >base 3 (WORK30≈ideal).
+    // 14:4x strategy: peacetime surplus needs ctlBattery≥FEED_MIN; without hub→ctl live, A→ctl ~8 e/t cannot sustain >base 3 (WORK30≈ideal).
     // SoftCap2 lift + stor-2000 surplus previously jumped to 4×10W=WORK40 → waiting_feed~30% while hub filled.
-    const upgCeil = C.HUB_LINK ? 6 : (bigBuild ? 2 : 3);
+    // 05:4x: gate ceil on hubLinkLive (structure), not config.HUB_LINK alone — flip day-of site must not raise WORK before ferry.
+    const upgCeil = hubLinkLive(room) ? 6 : (bigBuild ? 2 : 3);
     if (!want && !wallsLow && !energyBank(room) && !softCap2(stor) && ctlBattery(room) >= FEED_MIN && nUp() < Math.min(upgCeil, (bigBuild ? 2 : 3) + Math.floor(Math.max(0, loose + hubIdle + Math.max(0, stor - 2000) - 600) / 600))
       && _.sum(cs.filter(c => c.memory.role === 'w8upgrader' && (c.spawning || !(c.ticksToLive <= 3 * (c.body || []).length + 60))), c => _.filter(c.body, p => p.type === WORK).length) + bodyFor('w8upgrader', cap).filter(p => p === WORK).length <= wcap + 5) want = 'w8upgrader'; // 15:55: a whole new body must fit (upw 31 made 4x10W = 40 WORK on ~30 e/t net) // 14:55: WORK cap = model net income (upw ~30) instead of fixed 24 // 21:20: 16->24 WORK; income ~20 local + ~13 W47N7 remote, ctl cont 1984/2000 full with 4x4W upgraders (WORK-bound)
   }
@@ -429,6 +430,15 @@ function ctlBattery(room) {
   if (link && link.store) e += link.store[RESOURCE_ENERGY] || 0;
   return e;
 }
+// 11-03 05:4x strategy: upgCeil/recycle must wait for hub link STRUCTURE, not just config.HUB_LINK.
+// Flipping the flag places a 5k site; raising ceil on the flag alone recreates 14:4x waiting_feed before
+// ferry+linkRun can feed ctl. Screeps link cooldown = getRangeTo (hub 33,34→ctl 13,25 = 20) → ~40 e/t
+// gross / ~38.8 net after 3% — enough for WORK40+ once live. Matches w8day.hubReady.
+function hubLinkLive(room) {
+  if (!C.HUB_LINK || !room) return false;
+  const [hx, hy] = (L.ORDER.link && L.ORDER.link[0]) || [33, 34];
+  return !!room.lookForAt(LOOK_STRUCTURES, hx, hy).find(s => s.structureType === STRUCTURE_LINK);
+}
 // 08:4x 2026-10-31 strategy: after RCL7 day-crit (spawn2+tower3), throttle upgrade so storage can reach 20k for lean KO.
 // 20:4x: day-crit ≠ 50ext — arm leanBank while the 10ext wave is still building (builders keep sites; upgraders throttle).
 // Opt-out: Memory.ops.w8leanBank === false. Does NOT flip RCL6_MINERALS / RCL6_LABS. See docs/RCL7.md "08:4x".
@@ -476,6 +486,7 @@ function leanBankRecycle(room) {
   // 05:4x: soft-cap must survive RCL6_MINERALS flip — Overmind storageBuffer is gate-agnostic; post-minBuild stor can be ≪25k.
   // 11:4x: softCap2 also recycles back to ≤2 while threat soft is on, even after stor≥LEAN_SOFT (4×10W waiting_feed).
   // 11:4x strategy: peacetime feed-starve — if softCap2 off but ctl battery thin, trim surplus above base 3 (keep stands saturable).
+  // 05:4x: !hubLinkLive (not mere !HUB_LINK) — flag-on + 5k site still keeps ≤3 until structure stands.
   // 17:2x patrol: reconcile each tick (prune dead; release kept upgraders). Prior append-only left stale names on
   // Memory.ops.w8recycle so a kept stand worker kept walking to Spawn2 after the surplus died → upgrade flat.
   const o = (Memory.ops = Memory.ops || {});
@@ -489,7 +500,7 @@ function leanBankRecycle(room) {
   let keep = Infinity;
   if (banking) keep = 1;
   else if (room.controller && room.controller.level >= 7 && softCap2(storE)) keep = 2;
-  else if (room.controller && room.controller.level >= 7 && (!C.HUB_LINK || ctlBattery(room) < Math.floor(FEED_MIN / 2))) keep = 3;
+  else if (room.controller && room.controller.level >= 7 && (!hubLinkLive(room) || ctlBattery(room) < Math.floor(FEED_MIN / 2))) keep = 3;
   else { o.w8recycle = nonUp(o.w8recycle); return; }
   const ups = [];
   for (const n in Game.creeps) {
@@ -654,10 +665,11 @@ function dayObs(room) {
   // 11-03 02:4x: refresh sticky seal park from dayObs too (layoutRun every 20t) — spawnRun owns every-tick path
   TH.updateSealPark(storE, upgraders, sites.length);
   // 23:4x: hub link readiness (dormant until HUB_LINK + structure). Patrol sees energy + gate without flipping.
+  // 05:4x: hubReady mirrors hubLinkLive — same predicate as upgCeil/recycle (structure, not flag alone).
   const [hlx, hly] = (L.ORDER.link && L.ORDER.link[0]) || [33, 34];
   const hubLink = room.lookForAt(LOOK_STRUCTURES, hlx, hly).find(s => s.structureType === STRUCTURE_LINK);
   const hubLinkE = hubLink && hubLink.store ? (hubLink.store[RESOURCE_ENERGY] || 0) : -1;
-  const hubReady = (C.HUB_LINK && hubLink) ? 1 : 0;
+  const hubReady = hubLinkLive(room) ? 1 : 0;
     o.w8day = { t: Game.time, rcl, need, siteRem: siteRemV, builders, upgraders, storE, bill,
     missSpawn: missSpawn ? 1 : 0, missTower: missTower ? 1 : 0, missExt, why, phase,
     bankLeft, bankEta, leanBank: lb ? 1 : 0, bankArm: LEAN_ARM, bankSoft: LEAN_SOFT, bankWhy, softLeft,
@@ -955,4 +967,4 @@ function selfSufficient() {
   const r = Game.rooms[C.ROOM]; if (!r || !r.find(FIND_MY_SPAWNS).length) return false;
   return mine().some(c => c.memory.role === 'w8miner'); // Spawn2 + its own miner -> home stops cq pioneers/haulers (guard stays)
 }
-module.exports = { sealAt, banking, BANK_HOLD, LEAN_STOR, LEAN_ARM, LEAN_SOFT, FEED_MIN, threatSoft, softCap2, ctlBattery, leanBank, leanMinBuild, energyBank, dayofMiss, moveRun, moveReady, rampNeeded, homeWant, linkAt, linkRun, rampHold, dayObs, mineralSend, swapTemp, extBatch, energyOrder, ROOM: C.ROOM, spawnRun, layoutRun, towerRun, selfSufficient, bodyFor, rmLead8 };
+module.exports = { sealAt, banking, BANK_HOLD, LEAN_STOR, LEAN_ARM, LEAN_SOFT, FEED_MIN, threatSoft, softCap2, ctlBattery, hubLinkLive, leanBank, leanMinBuild, energyBank, dayofMiss, moveRun, moveReady, rampNeeded, homeWant, linkAt, linkRun, rampHold, dayObs, mineralSend, swapTemp, extBatch, energyOrder, ROOM: C.ROOM, spawnRun, layoutRun, towerRun, selfSufficient, bodyFor, rmLead8 };

@@ -305,6 +305,41 @@ assert.strictEqual(Memory.ops.w8day.hubLinkE, -1, 'no hub link structure → -1'
 assert.strictEqual(Memory.ops.w8day.hubReady, 0, 'HUB_LINK off → hubReady 0');
 assert.strictEqual(Memory.ops.w8day.hubLink, 0, 'hubLink flag obs 0');
 
+// 11-03 05:4x: upgCeil/recycle gate on hubLinkLive (structure), not config flag alone.
+// Flag ON + no structure → still recycle 4→≤3 (same as pre-flip); hubReady stays 0.
+{
+  delete Memory.ops.w8recycle;
+  Memory.ops.w8day = { leanBank: 0 };
+  Ccfg.HUB_LINK = true;
+  assert.strictEqual(W.hubLinkLive(rFeed), false, 'flag on without structure → !hubLinkLive');
+  W.dayObs(rFeed);
+  assert.strictEqual(Memory.ops.w8day.hubLink, 1, 'flag obs 1 while HUB_LINK true');
+  assert.strictEqual(Memory.ops.w8day.hubReady, 0, 'no structure → hubReady 0 even with flag');
+  assert.ok((Memory.ops.w8recycle || []).length >= 1, 'flag-on site-phase still recycles >3: ' + JSON.stringify(Memory.ops.w8recycle));
+  // Structure stands + battery full → hubReady 1, surplus allowed (no recycle)
+  delete Memory.ops.w8recycle;
+  Memory.ops.w8day = { leanBank: 0 };
+  const hubBuilt = done.concat([[35, 33, 'terminal'], [37, 44, 'container'],
+    [Ccfg.CTL_CONT[0], Ccfg.CTL_CONT[1], 'container'], [Ccfg.CTL_LINK[0], Ccfg.CTL_LINK[1], 'link'],
+    [33, 34, 'link']]);
+  const rHub = mk(7, hubBuilt, threatUps, 0);
+  rHub.storage.store.energy = 30000;
+  rHub.terminal = { store: {} };
+  const ctlC2 = rHub.lookForAt(LOOK_STRUCTURES, Ccfg.CTL_CONT[0], Ccfg.CTL_CONT[1])[0];
+  ctlC2.store = { energy: 1500 };
+  const ctlL2 = rHub.lookForAt(LOOK_STRUCTURES, Ccfg.CTL_LINK[0], Ccfg.CTL_LINK[1])[0];
+  ctlL2.store = { energy: 400 };
+  assert.ok(W.hubLinkLive(rHub), 'hub structure + flag → hubLinkLive');
+  const hubL = rHub.lookForAt(LOOK_STRUCTURES, 33, 34).find(s => s.structureType === 'link');
+  assert.ok(hubL, 'mk placed hub link 33,34');
+  hubL.store = { energy: 200 }; // mock store so hubLinkE is numeric
+  W.dayObs(rHub);
+  assert.strictEqual(Memory.ops.w8day.hubReady, 1, 'structure + flag → hubReady 1');
+  assert.strictEqual(Memory.ops.w8day.hubLinkE, 200, 'hubLinkE from structure store');
+  assert.ok(!(Memory.ops.w8recycle || []).length, 'hub live + feedOk → no recycle: ' + JSON.stringify(Memory.ops.w8recycle));
+  Ccfg.HUB_LINK = false;
+}
+
 // 05:4x/20:4x: soft-cap still works; at stor5k leanBank now ON → recycle to ≤1 (stricter than soft ≤2)
 delete Memory.ops.w8recycle;
 Memory.ops.w8day = { leanBank: 0 };
