@@ -1,65 +1,100 @@
-# W47N9 进攻（破口 39,42 → 先拆塔 → 逼 SM）
+# W47N9 wartime raid (east line)
 
-Misaki 2026-10-29（t333）：**持续派波**直到 BustJetter 开 safe mode。编制含 **近战 + 远程 + 治疗**，两房（home W46N8 + colony W47N8）集中能量出兵；停非必要建造/升级分心。破口 **(39,42)** 墙/rampart，进房后 **先拆塔**，再打 creep、拆建筑，歼灭施压。
+Misaki ordered GO. This build is the wartime controller. **Do not arm or deploy from a cloud agent.** Parent merges, deploys, then runs `arm`. The code never calls `activateSafeMode`.
 
-Code: `src/roles/raid9.js`，控制 `tools/raid9.py`，测试 `tests/raid9.js`。
-**不自动开我方 SM。**
+Code: `src/roles/raid9.js`. Console: `tools/raid9.py`. Tests: `node tests/raid9.js` (also `scripts/check.js`).
 
-## 目标序（每 tick）
-
-1. **破口屏障**：`rampart` / `constructedWall` 距 (39,42) ≤2  
-2. **塔**  
-3. **敌 creep**（武装优先）  
-4. **其它非路建筑**（spawn 略优先）
-
-不再以 spawn-first / 追 feeder 为主。
-
-## 编制与持续派波
-
-| 槽 | 体型 | 造价 | 数量 |
-|---|---|---|---|
-| melee | 2T 16A 18M | 2200 | 2 |
-| ranged | 10RA 11M 1H | 2300 | 2 |
-| heal | 7H 7M | 2100 | 2 |
-| **合计 / 波** | | **~13200** | **6** |
-
-- 出兵：**W46N8 与 W47N8 均可**（`wantSpawn` 两边）；存活不足 WAVE 且 `on` 且未 SM/garrison 时自动补员。  
-- 集结：W47N8 北口一带（`y≤3`：出口、近战 `y=1`、远程/治疗 `y=2`、后排一格）。**≥2 近战**，或 **≥2 近战+远程**，已在该带或已在 W47N9，即设 `go` 推向破口 (39,42)。治疗不必站上精确槽；已在目标房的 creep **不退回** STAGE。  
-- 进房：近战先，远程/治疗跟；治疗贴近战回血。  
-- **减员不因此清 `go`**。房内还有人，或北口还有近战/远程，就保持 `go`。目标房已空且北口没有近战/远程（只剩治疗不算）才清 `go`，让新一波重新凑够战斗单位再进。SM / overrun / `abort` 才停。
-
-`Memory.ops.w47n9` 标志：
-
-| 字段 | 含义 |
-|---|---|
-| `on` | 造兵总开关 |
-| `n` | 累计已造数量（统计） |
-| `go` | 突击出发 tick。北口或目标房内凑够战斗单位即置位；目标房已空且北口没有近战/远程才清除 |
-| `safe` / `safeUntil` | 对方 SM → 撤回 garrison，不再造 |
-| `flee` / `garrison` | overrun 或 `abort` |
-| （隐式）`pauseCivilians` | `on && !safe && !garrison && !flee` 时 home/colony 停 builder、upgrader 压到 1 |
-
-## 止损
-
-| 条件 | 动作 |
-|---|---|
-| W47N9 safe mode | 烧 SM 成功；garrison；停造 |
-| 房内敌 ATTACK+RA ≥12 | flee → garrison |
-| `raid9.py abort` | 停造 + garrison |
-| 减员，但房内还有人或北口还有近战/远程 | **保持 go**，继续打；不要求回精确槽 |
-| 目标房已空，且北口没有近战/远程 | 清 `go`，新一波凑够 ≥2 战斗单位再进 |
-| 单波阵亡 | **继续补下一波**（不因此 abort） |
-
-## 启动
+## Arm (after deploy)
 
 ```bash
-python3 tools/raid9.py status
-python3 tools/raid9.py arm    # Memory.ops.w47n9={on:true,n:0}，清 safe/garrison/go/flee
-python3 tools/raid9.py abort  # 紧急停
+python3 tools/raid9.py status          # read-only intel + Memory.ops.w47n9
+python3 tools/raid9.py defaults        # print the arm payload, no Memory write
+python3 tools/raid9.py arm             # NEEDS APPROVAL. Sets on:true and the knobs below. Clears safe/garrison/flee/go.
+python3 tools/raid9.py abort           # on:false, garrison, flee.why=abort
 ```
 
-## 风险
+`arm` replaces `Memory.ops.w47n9`. It does not upload code. While `on` is true (and the assault is not safe/garrison/flee), both rooms pause upgraders and builders. Miners, fillers, haulers, and remotes keep their spawn priority.
 
-- 破口东侧 ~84k rampart，需治疗续航；塔在 39,37 / 34,28，破口后先点塔。  
-- 两房合计 ~13k/波，storage 可花（Misaki）。  
-- 侧翼 W48N9 回防 → overrun 阈值。
+Knobs are read every tick. Change them with `set` — no redeploy:
+
+```bash
+python3 tools/raid9.py set phase=punch pauseSpawn=false pullSoft=0.7 pullHard=0.45
+python3 tools/raid9.py set max.d=4 minDps=1240 maxY43=2 kite=true
+python3 tools/raid9.py set 'mouths=[{"x":38,"y":42},{"x":39,"y":42}]'
+python3 tools/raid9.py set 'focusSeal={"x":39,"y":42}'
+python3 tools/raid9.py pause           # pauseCivilians=true even if on is false
+python3 tools/raid9.py resume-civ      # pauseCivilians=false (development continues while on)
+python3 tools/raid9.py order raid9_d_1 moveTo=38,43,W47N9 dismantle=38,42 until=500
+python3 tools/raid9.py clear raid9_d_1
+```
+
+`order` writes `Memory.creeps[<name>].raidOrder`. Fields: `moveTo` (`x,y` or `x,y,room`), `attack`, `dismantle` (id or `x,y`), `heal` (`self`, `lowest`, id, or `x,y`), `hold`, `until` (Game.time), `clear`. The creep follows that order instead of the formation AI until `clear` or `until`.
+
+## Memory.ops.w47n9
+
+| Knob | Default | Effect |
+|---|---|---|
+| `on` | arm sets true | Spawn the field. `false` stops new raid creeps. |
+| `go` | AI | Set when ≥ `need.d` dismantlers (default 2) and one melee or healer are on the W47N8 north lip (`y≤3`) or already in W47N9. Cleared only when W47N9 is empty and no d/m/r remain on that lip. Deaths do not clear it. |
+| `safe` / `safeUntil` | AI on enemy safe mode | Garrison, stop spawn. Does not open our safe mode. |
+| `flee` | AI on overrun, or `abort` | Any truthy `flee` forces garrison. Overrun = hostile ATTACK+RA parts ≥ 40. |
+| `garrison` | AI with flee/safe | Stop spawn. Living creeps walk to the W47N8 north-wall slots. |
+| `phase` | `breach` | `breach` \| `punch` \| `inside_towers` \| `inside_clean` \| `fallback`. AI only advances the ladder. An operator phase sticks until the room reaches a later step. `fallback` (or flee/garrison/safe) pulls everyone out through (38,49). |
+| `need` | `{d:2,m:0,r:0,h:0}` | Soft GO gate. `need.d` is how many dismantlers must be up before `go`. |
+| `max` | `{d:4,m:6,r:6,h:10}` | Field cap. Spawn keeps streaming until each kind is full. |
+| `mouths` | dual `(38,42)+(39,42)`; wide `37–40` once inside | Seal order. |
+| `focusSeal` | first mouth | Moved to the front of `mouths`. |
+| `minDps` | `1240` | Two-tower repair. A mouth opens only when assigned dismantlers beat this. One 24W is 1200 and is not given a seal alone. |
+| `towerOrder` | `(39,37)` then `(34,28)` | Tower hull order (T1 then T2). |
+| `prio` | fight, filler, towerRampart, tower, blocker, econ | Inside focus classes. Sticky: keep the current target until it dies or a higher class appears. |
+| `kite` | true | `false` disables pull and the healer emergency. |
+| `pullSoft` / `pullHard` | `0.70` / `0.45` | Worst front creep (d/m) at or under soft: do not advance. At or under hard: d/m/r step south together. |
+| `maxY43` | `2` | Dismantlers on y=43. The rest wait on y=45. |
+| `pauseSpawn` | false | `true` stops raid spawns. Creeps already up keep fighting. |
+| `pauseCivilians` | while `on` and not stood down | `true` forces the pause. `false` lets upgraders/builders spawn during the assault. |
+| `note` | free text | Not read by AI. |
+
+Per-creep `raidOrder` overrides that creep only. Squad knobs still apply to everyone else.
+
+## Economy pause
+
+`pauseCivilians()` is true when `pauseCivilians===true`, or when `on` and not `safe` / `garrison` / `flee` / `safeUntil`, unless `pauseCivilians===false`.
+
+Both rooms then:
+
+- builder target 0, and living builders walk to spawn and recycle (colony via `Memory.ops.w8recycle`)
+- upgrader target 0, except **one** upgrader if `ticksToDowngrade < 20000`
+- miners, fillers, haulers, queens, and remotes stay on their normal targets
+
+## Spawn
+
+| Kind | Body | Cost | Cap |
+|---|---|---|---|
+| dismantler `d` | 2T 24W 24M | 3620 | 4 |
+| melee `m` | 2T 24A 24M | 3140 | 6 |
+| ranged `r` | 15RA 15M 1H | 3250 | 6 |
+| heal `h` | 18H 18M spec | 5400 | 10 |
+
+RCL7 `energyCapacityAvailable` is 5300, so the healer that actually spawns is **17H17M (5100)** until the cap can hold 5400. Home (`W46N8`) prefers `d` then `m` then `r` then `h`. Colony (`W47N8`) prefers `h` then the combat kinds. Both keep spawning any kind still under `max`.
+
+A fat body is not spawned while a miner, hauler, filler, or remote is short. If `energyAvailable` is under the body cost and logistics are full, that room banks energy instead of spawning an upgrader with the partial pile.
+
+## East line
+
+- Enter only at **(38,49)**. Do not step on swamp **(38,47)**; go through **(37,47)** or **(39,47)**.
+- Formation until the hole opens: ≤2 dismantlers on **y=43** (adjacent to the open seal), melee **y=44**, extra dismantlers **y=45**, ranged **y=46**, healers **y=47–48**.
+- First seals are (38,42) and (39,42), but both dismantlers stack on the focus seal while `minDps` is 1240. The second mouth waits. Raising `maxY43` (or lowering `minDps`) opens the next mouth. Inside, the mouth list widens to x=37–40.
+- Pre-breach the towers repair. Threat is enemy ranged on the rampart, handled by `pullSoft` / `pullHard`. If the front is at hard pull, at most two healers step to y=44 for 3 ticks, then those two leave together.
+- The tick the focus seal is gone, phase becomes `punch`: melee and dismantlers step through, hit a creep on that rampart first, otherwise finish the rampart. Healers follow to y=45.
+- Inside, focus is sticky and ordered: fighting creeps → tower fillers → rampart on the tower → tower hull (T1 then T2) → path blockers → economy. Ranged and healers yield the lane if they are closer to the focus than a dismantler or melee.
+
+## Stop
+
+| Condition | Result |
+|---|---|
+| Enemy safe mode | `safe`, garrison, stop spawn |
+| ATTACK+RA parts ≥ 40 | `flee` → garrison, stop spawn |
+| `raid9.py abort` | same, `flee.why=abort` |
+| `phase=fallback` | pull out; spawn continues unless garrison/pauseSpawn |
+| `pauseSpawn` | no new raid creeps |
+| Under `max` and logistics are met | keep spawning |

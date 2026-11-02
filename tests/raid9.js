@@ -1,170 +1,246 @@
-// raid9 breach@39,42 targeting + continuous dual-room spawn. node tests/raid9.js
-const assert = require('assert'), path = require('path');
-Object.assign(global, { _: require('lodash'), TOUGH: 'tough', ATTACK: 'attack', MOVE: 'move', RANGED_ATTACK: 'ranged_attack', HEAL: 'heal', Memory: {}, Game: { time: 1, creeps: {} } });
+// W47N9 wartime raid: east-line formation, memory knobs, spawn split, civilian pause.
+// node tests/raid9.js
+const assert = require('assert'), fs = require('fs'), path = require('path');
+const L = require('lodash');
+const _ = Object.assign({}, L, {
+  min: (a, f) => (f ? (L.minBy ? L.minBy(a, f) : L.min(a, f)) : L.min(a)),
+  sum: (a, f) => (f ? (L.sumBy ? L.sumBy(a, f) : L.sum(a, f)) : L.sum(a)),
+});
+Object.assign(global, {
+  _: _, TOUGH: 'tough', WORK: 'work', ATTACK: 'attack', MOVE: 'move', RANGED_ATTACK: 'ranged_attack', HEAL: 'heal',
+  Memory: {}, Game: { time: 1, creeps: {}, spawns: {} },
+});
 const R = require(path.join(__dirname, '..', 'src', 'roles', 'raid9.js'));
-const P = (x, y) => ({ x, y });
-const me = P(39, 45);
-const tower = { id: 'T', pos: P(39, 37), structureType: 'tower', hits: 3000 };
-const tower2 = { id: 'T2', pos: P(34, 28), structureType: 'tower', hits: 3000 };
-const spawn = { id: 'S', pos: P(26, 29), structureType: 'spawn', hits: 5000 };
-const ext = { id: 'E', pos: P(20, 40), structureType: 'extension', hits: 1000 };
-const road = { id: 'R', pos: P(25, 44), structureType: 'road', hits: 1000 };
-const breachRamp = { id: 'BR', pos: P(39, 42), structureType: 'rampart', hits: 84000 };
-const nearRamp = { id: 'NR', pos: P(40, 42), structureType: 'rampart', hits: 82000 };
-const farRamp = { id: 'FR', pos: P(26, 29), structureType: 'rampart', hits: 84000 };
-const feeder = { id: 'F', pos: P(35, 30), energy: 800, hits: 1700, armed: false };
-const armed = { id: 'D', pos: P(38, 40), energy: 0, hits: 500, armed: true };
+const src = fs.readFileSync(path.join(__dirname, '..', 'src', 'roles', 'raid9.js'), 'utf8');
+const spawnSrc = fs.readFileSync(path.join(__dirname, '..', 'src', 'managers', 'spawn.js'), 'utf8');
+const colSrc = fs.readFileSync(path.join(__dirname, '..', 'src', 'rooms', 'w47n8', 'index.js'), 'utf8');
+assert.ok(!src.includes('.activateSafeMode('), 'raid must never activate safe mode');
+assert.ok(spawnSrc.indexOf('wantSpawn(room, avail)') > spawnSrc.lastIndexOf('remoteSpawn'), 'home raid follows remote logistics');
+assert.ok(colSrc.indexOf('wantSpawn(room, avail)') > colSrc.indexOf("want = 'w8rminer'"), 'colony raid follows rminer');
+assert.ok(!spawnSrc.includes('ERR_NOT_ENOUGH_ENERGY;\n    const rv = spawn.spawnCreep(w.body'));
 
-// 1) breach barrier beats towers/spawn/creeps
-assert.deepStrictEqual(R.pick(me, { creeps: [armed, feeder], structs: [tower, spawn, ext, road, breachRamp, farRamp] }), { id: 'BR', pri: 1 });
-assert.deepStrictEqual(R.pick(me, { creeps: [], structs: [nearRamp, tower] }), { id: 'NR', pri: 1 });
-// 2) breach open -> towers before spawn/creeps
-assert.deepStrictEqual(R.pick(me, { creeps: [armed, feeder], structs: [tower, tower2, spawn, ext, farRamp] }), { id: 'T', pri: 2 });
-// 3) towers gone -> armed creeps before structures
-assert.deepStrictEqual(R.pick(me, { creeps: [armed, feeder], structs: [spawn, ext, road] }), { id: 'D', pri: 3 });
-assert.deepStrictEqual(R.pick(me, { creeps: [feeder], structs: [spawn, ext] }), { id: 'F', pri: 3 });
-// 4) no creeps -> other structures (spawn preferred), roads/ramparts skipped
-assert.deepStrictEqual(R.pick(me, { creeps: [], structs: [spawn, ext, road, farRamp] }), { id: 'S', pri: 4 });
-assert.deepStrictEqual(R.pick(me, { creeps: [], structs: [ext, road] }), { id: 'E', pri: 4 });
-assert.strictEqual(R.pick(me, { creeps: [], structs: [road, farRamp] }), null);
-// ranged mass
-assert.ok(R.useMass(P(5, 5), [{ pos: P(5, 7) }, { pos: P(7, 7) }, { pos: P(8, 8) }]));
-assert.ok(!R.useMass(P(5, 5), [{ pos: P(5, 8) }]));
-// bodies within caps
-const cost = { tough: 10, attack: 80, move: 50, ranged_attack: 150, heal: 250 }, c = b => b.reduce((a, p) => a + cost[p], 0);
-assert.ok(c(R.MELEE()) <= 2300 && c(R.RANGED()) <= 2300 && c(R.HEALER()) <= 2300);
-assert.ok(R.MELEE().length <= 50 && R.HEALER().includes('heal'));
-assert.strictEqual(R.WAVE, 6);
-assert.deepStrictEqual(R.NEED, { m: 2, r: 2, h: 2 });
-assert.deepStrictEqual(R.BREACH, { x: 39, y: 42 });
-// continuous dual-room spawn: fill missing kinds until WAVE; both HOME and STAGE
+const P = (x, y) => ({ x, y });
+const cost = { tough: 10, attack: 80, move: 50, work: 100, ranged_attack: 150, heal: 250 };
+const c = b => b.reduce((a, p) => a + cost[p], 0);
+assert.strictEqual(R.DISMANTLER().length, 50);
+assert.strictEqual(c(R.DISMANTLER()), 3620);
+assert.deepStrictEqual(R.DISMANTLER().slice(0, 2).concat(R.DISMANTLER().filter(p => p === 'work').length, R.DISMANTLER().filter(p => p === 'move').length), ['tough', 'tough', 24, 24]);
+assert.strictEqual(c(R.MELEE()), 3140);
+assert.strictEqual(R.MELEE().length, 50);
+assert.strictEqual(c(R.RANGED()), 3250);
+assert.strictEqual(R.RANGED().filter(p => p === 'ranged_attack').length, 15);
+assert.strictEqual(c(R.HEALER()), 5400);
+assert.strictEqual(R.HEALER().length, 36);
+// RCL7 cap 5300 cannot spawn 18H18M; the live body is the largest 1:1 that fits.
+assert.strictEqual(c(R.healBody(5300)), 5100);
+assert.strictEqual(R.healBody(5300).length, 34);
+assert.strictEqual(R.bodyFor('d', 5300).length, 50);
+assert.strictEqual(R.bodyFor('d', 2300), null);
+assert.deepStrictEqual(R.MAX, { d: 4, m: 6, r: 6, h: 10 });
+assert.deepStrictEqual(R.NEED, { d: 2, m: 0, r: 0, h: 0 });
+assert.deepStrictEqual(R.ENTRY, { x: 38, y: 49 });
+assert.strictEqual(R.MIN_DPS, 1240);
+assert.strictEqual(R.DPS_ONE, 1200);
+
+const room = (name, avail, cap) => ({ name, energyAvailable: avail, energyCapacityAvailable: cap == null ? 5300 : cap });
 Memory.ops = { w47n9: { on: true } };
 Game.creeps = {};
-assert.strictEqual(R.wantSpawn({ name: 'W45N8' }), null);
-const kinds = [];
-for (let i = 0; i < 10; i++) {
-  const room = i % 2 === 0 ? { name: 'W46N8' } : { name: 'W47N8' };
-  const w = R.wantSpawn(room);
-  if (!w) break;
-  kinds.push(w.mem.kind);
-  const name = 'r' + i;
-  Game.creeps[name] = { name, memory: w.mem };
+assert.strictEqual(R.wantSpawn(room('W45N8', 8000)), null);
+assert.strictEqual(R.wantSpawn(room('W46N8', 8000)).mem.kind, 'd', 'home prefers dismantlers');
+assert.strictEqual(R.wantSpawn(room('W47N8', 8000)).mem.kind, 'h', 'colony prefers healers');
+assert.strictEqual(R.wantSpawn(room('W47N8', 8000)).body.length, 34, 'colony healer fits RCL7');
+const defer = R.wantSpawn(room('W46N8', 500));
+assert.strictEqual(defer.defer, true);
+assert.strictEqual(defer.mem.kind, 'd');
+assert.ok(defer.cost > 500);
+Memory.ops.w47n9.pauseSpawn = true;
+assert.strictEqual(R.wantSpawn(room('W46N8', 8000)), null);
+delete Memory.ops.w47n9.pauseSpawn;
+
+const got = { d: 0, m: 0, r: 0, h: 0 }, seq = [];
+Game.creeps = {};
+Game.time = 1;
+for (let i = 0; i < 40; i++) {
+  const rm = i % 2 === 0 ? room('W46N8', 8000) : room('W47N8', 8000);
+  const w = R.wantSpawn(rm);
+  if (!w || w.defer) break;
+  seq.push((rm.name === 'W46N8' ? 'H' : 'C') + w.mem.kind);
+  got[w.mem.kind]++;
+  Game.creeps['c' + i] = { memory: w.mem };
   R.noteSpawned();
 }
-assert.deepStrictEqual(kinds, ['m', 'm', 'r', 'r', 'h', 'h']);
-assert.strictEqual(R.wantSpawn({ name: 'W46N8' }), null);
-assert.strictEqual(R.wantSpawn({ name: 'W47N8' }), null);
-// death frees a spawn slot (continuous waves)
-delete Game.creeps.r0;
-const refill = R.wantSpawn({ name: 'W47N8' });
-assert.ok(refill && refill.mem.kind === 'm');
-// safe / garrison / flee stop spawning
+assert.deepStrictEqual(got, { d: 4, m: 6, r: 6, h: 10 });
+assert.strictEqual(seq[0], 'Hd');
+assert.strictEqual(seq[1], 'Ch');
+assert.strictEqual(R.wantSpawn(room('W46N8', 8000)), null);
+assert.strictEqual(R.wantSpawn(room('W47N8', 8000)), null);
+assert.ok(Memory.ops.w47n9.n >= 26);
+// a death frees a slot; stream does not wait for a wave
+delete Game.creeps.c0;
+const refill = R.wantSpawn(room('W47N8', 8000));
+assert.ok(refill && !refill.defer && refill.mem.kind === 'd');
+
 Memory.ops.w47n9.garrison = true;
-assert.strictEqual(R.wantSpawn({ name: 'W46N8' }), null);
+assert.strictEqual(R.wantSpawn(room('W46N8', 8000)), null);
+assert.ok(!R.pauseCivilians(), 'garrison stands the economy back up');
 delete Memory.ops.w47n9.garrison;
 Memory.ops.w47n9.safe = 1;
-assert.strictEqual(R.wantSpawn({ name: 'W46N8' }), null);
+assert.strictEqual(R.wantSpawn(room('W46N8', 8000)), null);
 delete Memory.ops.w47n9.safe;
-assert.ok(R.pauseCivilians());
+assert.ok(R.pauseCivilians(), 'on pauses civilians');
+Memory.ops.w47n9.pauseCivilians = false;
+assert.ok(!R.pauseCivilians(), 'explicit false keeps development');
 Memory.ops.w47n9.on = false;
+Memory.ops.w47n9.pauseCivilians = true;
+assert.ok(R.pauseCivilians(), 'explicit flag pauses even if on is false');
+delete Memory.ops.w47n9.pauseCivilians;
 assert.ok(!R.pauseCivilians());
-// heal plan
+
+const Tgt = { builder: 4, upgrader: 2, hauler: 1 };
+Memory.ops.w47n9 = { on: true };
+R.applyPause(Tgt, { controller: { ticksToDowngrade: 100000 } });
+assert.strictEqual(Tgt.builder, 0);
+assert.strictEqual(Tgt.upgrader, 0);
+assert.strictEqual(Tgt.hauler, 1, 'logistics target untouched');
+const Tlow = { builder: 2, upgrader: 2 };
+R.applyPause(Tlow, { controller: { ticksToDowngrade: 5000 } });
+assert.strictEqual(Tlow.upgrader, 1, 'one upgrader while the controller can downgrade');
+assert.deepStrictEqual(R.namesToRecycle([
+  { name: 'u1', role: 'w8upgrader', ttl: 100, spawning: false },
+  { name: 'u2', role: 'w8upgrader', ttl: 800, spawning: false },
+  { name: 'b1', role: 'w8builder', ttl: 400, spawning: false },
+  { name: 'm1', role: 'w8miner', ttl: 1000, spawning: false },
+], 1), ['u1', 'b1']);
+assert.deepStrictEqual(R.namesToRecycle([
+  { name: 'u2', role: 'w8upgrader', ttl: 800 },
+  { name: 'b1', role: 'w8builder', ttl: 10 },
+], 0), ['u2', 'b1']);
+
+Game.spawns = { Spawn1: { my: true, pos: { roomName: 'W46N8', x: 35, y: 28 }, recycleCreep(c) { c.recycled = true; } } };
+const bld = { memory: { role: 'builder', home: 'W46N8' }, pos: { roomName: 'W46N8', x: 10, y: 10, isNearTo() { return false; } }, moveTo() { this.moved = true; } };
+assert.strictEqual(R.recycleCivilian(bld), true);
+assert.ok(bld.moved);
+bld.pos.isNearTo = () => true;
+assert.strictEqual(R.recycleCivilian(bld), true);
+assert.ok(bld.recycled);
+assert.strictEqual(R.recycleCivilian({ memory: { role: 'hauler' }, pos: bld.pos }), false);
+
+// mouths: 1200 dps cannot beat 1240 repair, so 2 dismantlers stack on one seal. A single is never assigned.
+const one = R.assignSeals(1, R.MOUTH_DUAL, 1240, 1200, 2);
+assert.strictEqual(one.open.length, 0);
+const two = R.assignSeals(2, R.MOUTH_DUAL, 1240, 1200, 2);
+assert.strictEqual(two.open.length, 1);
+assert.strictEqual(two.open[0].n, 2);
+assert.strictEqual(two.open[0].x, 38);
+const wide = R.assignSeals(4, R.MOUTH_WIDE, 1240, 1200, 2);
+assert.strictEqual(wide.open.length, 1, 'y43 cap 2 covers one mouth');
+const opened = R.assignSeals(4, R.MOUTH_WIDE, 1240, 1200, 4);
+assert.strictEqual(opened.open.length, 2);
+assert.deepStrictEqual(opened.open.map(m => m.x), [37, 38]);
+const posts = R.assignment([
+  { id: 'd0', kind: 'd', k: 0 }, { id: 'd1', kind: 'd', k: 1 }, { id: 'd2', kind: 'd', k: 2 },
+  { id: 'm0', kind: 'm', k: 0 }, { id: 'r0', kind: 'r', k: 0 }, { id: 'h0', kind: 'h', k: 0 }, { id: 'h1', kind: 'h', k: 1 },
+], { mouths: R.MOUTH_DUAL, minDps: 1240, dps: 1200, maxY43: 2 });
+assert.strictEqual(posts.posts.d0.y, 43);
+assert.strictEqual(posts.posts.d1.y, 43);
+assert.notStrictEqual(posts.posts.d0.x, posts.posts.d1.x);
+assert.strictEqual(posts.posts.d2.y, 45);
+assert.strictEqual(posts.posts.m0.y, 44);
+assert.strictEqual(posts.posts.r0.y, 46);
+assert.ok(posts.posts.h0.y === 47 || posts.posts.h0.y === 48);
+assert.ok(!(posts.posts.h0.x === 38 && posts.posts.h0.y === 47));
+assert.ok(!(posts.posts.h1.x === 38 && posts.posts.h1.y === 47));
+assert.deepStrictEqual(R.swampStep({ x: 38, y: 47 }, { x: 38, y: 43 }), { x: 37, y: 47 });
+assert.deepStrictEqual(R.swampStep({ x: 38, y: 47 }, { x: 40, y: 43 }), { x: 39, y: 47 });
+assert.strictEqual(R.swampStep({ x: 38, y: 46 }, { x: 38, y: 43 }), null);
+assert.ok(R.stepOntoSwamp({ x: 38, y: 48 }, { x: 38, y: 43 }));
+assert.ok(!R.stepOntoSwamp({ x: 37, y: 47 }, { x: 39, y: 43 }));
+
+assert.strictEqual(R.pullMode(0.8, 0.7, 0.45), null);
+assert.strictEqual(R.pullMode(0.7, 0.7, 0.45), 'soft');
+assert.strictEqual(R.pullMode(0.45, 0.7, 0.45), 'hard');
+assert.ok(R.shouldYield({ x: 38, y: 44 }, 'r', [{ kind: 'd', pos: { x: 38, y: 46 } }], { x: 38, y: 42 }));
+assert.ok(!R.shouldYield({ x: 38, y: 46 }, 'r', [{ kind: 'd', pos: { x: 38, y: 44 } }], { x: 38, y: 42 }));
+assert.ok(!R.shouldYield({ x: 38, y: 44 }, 'd', [{ kind: 'd', pos: { x: 38, y: 46 } }], { x: 38, y: 42 }));
+
+const me = P(38, 44);
+const fight = { id: 'F', pos: P(39, 42), hits: 400, armed: true, nearTower: false };
+const filler = { id: 'C', pos: P(39, 37), hits: 200, armed: false, energy: 400, nearTower: true };
+const tRamp = { id: 'TR', pos: P(39, 37), structureType: 'rampart', hits: 5000, towerTile: true };
+const t1 = { id: 'T1', pos: P(39, 37), structureType: 'tower', hits: 3000 };
+const t2 = { id: 'T2', pos: P(34, 28), structureType: 'tower', hits: 3000 };
+const block = { id: 'BL', pos: P(38, 40), structureType: 'constructedWall', hits: 1000 };
+const spawn = { id: 'S', pos: P(26, 29), structureType: 'spawn', hits: 5000 };
+const road = { id: 'R', pos: P(38, 45), structureType: 'road', hits: 100 };
+const seal = { id: 'BR', pos: P(38, 42), structureType: 'rampart', hits: 80000 };
+const optIn = { phase: 'inside_towers', towerOrder: [{ x: 39, y: 37 }, { x: 34, y: 28 }] };
+assert.strictEqual(R.pick(me, { creeps: [fight, filler], structs: [tRamp, t1, t2, block, spawn] }, optIn).id, 'F');
+assert.strictEqual(R.pick(me, { creeps: [filler], structs: [tRamp, t1, spawn] }, optIn).id, 'C');
+assert.strictEqual(R.pick(me, { creeps: [], structs: [tRamp, t1, block, spawn] }, optIn).id, 'TR');
+assert.strictEqual(R.pick(me, { creeps: [], structs: [t2, t1, spawn] }, optIn).id, 'T1');
+assert.strictEqual(R.pick(me, { creeps: [], structs: [block, spawn, road] }, optIn).id, 'BL');
+assert.strictEqual(R.pick(me, { creeps: [], structs: [spawn, road] }, optIn).id, 'S');
+assert.strictEqual(R.pick(me, { creeps: [fight], structs: [t1] }, Object.assign({ sticky: 'T1' }, optIn)).id, 'F', 'fight outranks a sticky tower');
+assert.strictEqual(R.pick(me, { creeps: [], structs: [t1, spawn] }, Object.assign({ sticky: 'T1' }, optIn)).id, 'T1');
+assert.strictEqual(R.pick(me, { creeps: [fight], structs: [seal] }, { phase: 'breach', mouth: { x: 38, y: 42 } }).id, 'BR');
+assert.strictEqual(R.pick(me, { creeps: [fight], structs: [seal] }, { phase: 'punch', mouth: { x: 38, y: 42 } }).id, 'F');
+assert.strictEqual(R.pick(me, { creeps: [], structs: [] }, { phase: 'breach', mouth: { x: 38, y: 42 } }), null);
+
+const ops = {};
+R.syncPhase(ops, { phase: 'breach' });
+assert.strictEqual(ops.phase, 'breach');
+R.syncPhase(ops, { phase: 'punch' });
+assert.strictEqual(ops.phase, 'punch');
+R.syncPhase(ops, { phase: 'breach' });
+assert.strictEqual(ops.phase, 'punch', 'no regress');
+ops.phase = 'inside_clean';
+R.syncPhase(ops, { phase: 'punch' });
+assert.strictEqual(ops.phase, 'inside_clean', 'operator can hold a later phase');
+ops.flee = { t: 1, why: 'overrun' };
+R.syncPhase(ops, { phase: 'inside_clean' });
+assert.strictEqual(ops.phase, 'fallback');
+const held = { phase: 'fallback' };
+R.syncPhase(held, { phase: 'breach' });
+assert.strictEqual(held.phase, 'fallback');
+assert.strictEqual(R.observe({ structs: [seal], creeps: [] }, [{ x: 38, y: 42 }], []).phase, 'breach');
+assert.strictEqual(R.observe({ structs: [], creeps: [] }, [{ x: 38, y: 42 }], []).phase, 'punch');
+assert.strictEqual(R.observe({ structs: [t1], creeps: [] }, [{ x: 38, y: 42 }], [{ pos: { y: 40 }, inRoom: true }]).phase, 'inside_towers');
+assert.strictEqual(R.observe({ structs: [spawn], creeps: [] }, [{ x: 38, y: 42 }], [{ pos: { y: 30 }, inRoom: true }]).phase, 'inside_clean');
+
+Game.time = 50;
+const creep = { memory: { raidOrder: { moveTo: { x: 38, y: 44 }, until: 49 } } };
+assert.strictEqual(R.manualOrder(creep), null);
+assert.ok(!creep.memory.raidOrder);
+const hold = { memory: { raidOrder: { hold: true, until: 60 } } };
+assert.strictEqual(R.manualOrder(hold).hold, true);
+const cleared = { memory: { raidOrder: { clear: true, attack: 'x' } } };
+assert.strictEqual(R.manualOrder(cleared), null);
+
+const cr = (kind, roomName, x, y) => ({ memory: { role: 'raid9', kind }, room: { name: roomName }, pos: { x, y } });
+assert.ok(R.assaultReady([cr('d', 'W47N8', 38, 1), cr('d', 'W47N8', 37, 1), cr('h', 'W47N8', 39, 2)]));
+assert.ok(R.assaultReady([cr('d', 'W47N8', 38, 1), cr('d', 'W47N9', 38, 45), cr('m', 'W47N8', 37, 1)]));
+assert.ok(!R.assaultReady([cr('d', 'W47N8', 38, 1), cr('d', 'W47N8', 37, 1)]));
+assert.ok(!R.assaultReady([cr('d', 'W47N8', 38, 1), cr('h', 'W47N8', 38, 2), cr('m', 'W47N8', 38, 2)]));
+assert.ok(!R.shouldRegroup([cr('d', 'W47N9', 38, 43)]));
+assert.ok(R.shouldRegroup([cr('h', 'W47N8', 38, 2)]));
+Game.time = 80;
+const go = { on: true };
+R.syncGo(go, [cr('d', 'W47N8', 38, 1), cr('d', 'W47N8', 37, 2), cr('m', 'W47N8', 39, 1)]);
+assert.strictEqual(go.go, 80);
+const stay = { on: true, go: 10 };
+R.syncGo(stay, [cr('h', 'W47N9', 38, 47), cr('d', 'W46N8', 1, 1)]);
+assert.strictEqual(stay.go, 10);
+const reset = { on: true, go: 10 };
+R.syncGo(reset, [cr('d', 'W46N8', 1, 1), cr('h', 'W47N8', 38, 2)]);
+assert.ok(!reset.go);
+assert.ok(R.useMass(P(5, 5), [{ pos: P(5, 6) }, { pos: P(6, 6) }, { pos: P(6, 5) }]));
 const H = (id, x, y, hits, hitsMax = 1000) => ({ id, pos: P(x, y), hits, hitsMax });
-const meH = H('me', 10, 10, 1000);
-assert.strictEqual(R.healPlan(meH, [H('a', 11, 10, 1000)]), null);
-assert.deepStrictEqual(R.healPlan(H('me', 10, 10, 900), [H('a', 11, 10, 1000)]).id, 'me');
-assert.strictEqual(R.healPlan(meH, [H('a', 13, 10, 500)]).mode, 'ranged');
-// formation slots by kind
-assert.deepStrictEqual(R.slotOf(0, 'm'), [38, 1]);
-assert.deepStrictEqual(R.slotOf(1, 'm'), [39, 1]);
-assert.deepStrictEqual(R.slotOf(0, 'r'), [38, 2]);
-assert.deepStrictEqual(R.slotOf(0, 'h'), [40, 2]);
-// garrison slots distinct
-{ const gs = [0, 1, 2, 3, 4, 5].map(R.gSlotOf);
-  assert.strictEqual(new Set(gs.map(String)).size, 6); }
-// overrun
-assert.ok(R.armedParts([{ attack: 0, ranged: 6 }, { attack: 0, ranged: 6 }]) >= 12);
-assert.ok(R.armedParts([{ attack: 0, ranged: 6 }]) < 12);
-// launch / regroup. creep = kind, room, x, y
-const cr = (kind, room, x, y) => ({ memory: { role: 'raid9', kind }, room: { name: room }, pos: { x, y } });
-assert.strictEqual(R.NEAR_EXIT, 3);
-assert.strictEqual(R.LAUNCH, 2);
-assert.ok(R.inAssaultZone(cr('m', 'W47N8', 10, 1)));
-assert.ok(R.inAssaultZone(cr('h', 'W47N8', 41, R.NEAR_EXIT)));
-assert.ok(R.inAssaultZone(cr('h', 'W47N9', 39, 45)));
-assert.ok(!R.inAssaultZone(cr('m', 'W47N8', 38, R.NEAR_EXIT + 1)));
-assert.ok(!R.inAssaultZone(cr('m', 'W46N8', 38, 1)));
-// preferred: two melee on the lip, not on exact slots; healers still home / already in TARGET
-{
-  const alive = [cr('m', 'W47N8', 10, 1), cr('m', 'W47N8', 12, 1), cr('r', 'W46N8', 20, 20), cr('h', 'W47N9', 39, 45)];
-  assert.ok(R.assaultReady(alive));
-  assert.ok(!R.shouldRegroup(alive));
-}
-// one melee + one ranged on the lip is enough; a healer off-slot does not block
-assert.ok(R.assaultReady([cr('m', 'W47N8', 38, 1), cr('r', 'W47N8', 5, 2), cr('h', 'W46N8', 1, 1)]));
-// two ranged on the hold-back row
-assert.ok(R.assaultReady([cr('r', 'W47N8', 38, 3), cr('r', 'W47N8', 39, 3)]));
-// melee already in TARGET + ranged on the lip: do not require the melee to return to a slot
-assert.ok(R.assaultReady([cr('m', 'W47N9', 39, 42), cr('r', 'W47N8', 38, 2)]));
-// healers on exact slots do not count; one combat is not a wave
-assert.ok(!R.assaultReady([cr('m', 'W47N8', 38, 1), cr('h', 'W47N8', 40, 2), cr('h', 'W47N8', 41, 2)]));
-// combat still walking up (south of the lip / still home) does not launch
-assert.ok(!R.assaultReady([cr('m', 'W47N8', 38, 4), cr('m', 'W47N8', 39, 4), cr('r', 'W46N8', 10, 10)]));
-// old gate: healer already in TARGET used to block "all 6 on exact slots"
-{
-  const alive = [
-    cr('m', 'W47N8', 38, 1), cr('m', 'W47N8', 39, 1),
-    cr('r', 'W47N8', 38, 2), cr('r', 'W47N8', 39, 2),
-    cr('h', 'W47N8', 40, 2), cr('h', 'W47N9', 39, 44),
-  ];
-  assert.ok(R.assaultReady(alive));
-  Game.time = 100;
-  const P = { on: true };
-  R.syncGo(P, alive);
-  assert.strictEqual(P.go, 100);
-}
-// live stall: 4 parked on y=1, short of WAVE, not on exact x — still launch
-{
-  Game.time = 100;
-  const P = { on: true };
-  R.syncGo(P, [cr('m', 'W47N8', 37, 1), cr('m', 'W47N8', 36, 1), cr('r', 'W47N8', 40, 1), cr('h', 'W47N8', 41, 1)]);
-  assert.strictEqual(P.go, 100);
-}
-// one death, others still in the room or on the lip: keep go (even if alive < WAVE and target is briefly empty)
-{
-  const P = { on: true, go: 50 };
-  R.syncGo(P, [cr('m', 'W47N9', 39, 43), cr('h', 'W47N8', 40, 2), cr('r', 'W46N8', 10, 10)]);
-  assert.strictEqual(P.go, 50);
-  const parked = { on: true, go: 50 };
-  R.syncGo(parked, [cr('m', 'W47N8', 38, 1), cr('r', 'W47N8', 39, 1), cr('h', 'W47N8', 41, 1)]);
-  assert.strictEqual(parked.go, 50);
-}
-// assault force gone (home / deep stage only, healers alone on the lip, or nobody left): clear go
-{
-  const P = { on: true, go: 50 };
-  R.syncGo(P, [cr('m', 'W46N8', 10, 10), cr('r', 'W47N8', 25, 20)]);
-  assert.ok(!P.go);
-  const healers = { on: true, go: 50 };
-  R.syncGo(healers, [cr('h', 'W47N8', 40, 2), cr('h', 'W47N8', 41, 1)]);
-  assert.ok(!healers.go);
-  const dead = { on: true, go: 50 };
-  R.syncGo(dead, []);
-  assert.ok(!dead.go);
-}
-// a creep still inside TARGET holds go, including a lone healer — do not abandon the breach
-{
-  const P = { on: true, go: 50 };
-  R.syncGo(P, [cr('h', 'W47N9', 39, 44), cr('m', 'W46N8', 10, 10)]);
-  assert.strictEqual(P.go, 50);
-}
-// safe / garrison do not launch; an existing go timestamp is not refreshed while the wave holds
-{
-  Game.time = 100;
-  const held = { on: true, garrison: true };
-  R.syncGo(held, [cr('m', 'W47N8', 38, 1), cr('m', 'W47N8', 39, 1)]);
-  assert.ok(!held.go);
-  const stamped = { on: true, go: 40 };
-  R.syncGo(stamped, [cr('m', 'W47N8', 38, 1), cr('m', 'W47N8', 39, 1)]);
-  assert.strictEqual(stamped.go, 40);
-}
+assert.strictEqual(R.healPlan(H('me', 10, 10, 1000), []), null);
+assert.strictEqual(R.healPlan(H('me', 10, 10, 900), [H('a', 11, 10, 1000)]).mode, 'heal');
+assert.ok(R.armedParts([{ attack: 20, ranged: 20 }, { attack: 0, ranged: 0 }]) >= 40);
+assert.ok(R.armedParts([{ attack: 0, ranged: 6 }]) < 40);
+const focused = R.mouthsOf({ focusSeal: { x: 39, y: 42 }, mouths: [{ x: 38, y: 42 }, { x: 39, y: 42 }] }, 'breach');
+assert.strictEqual(focused[0].x, 39);
+assert.strictEqual(focused[1].x, 38);
+
 console.log('raid9 ok');

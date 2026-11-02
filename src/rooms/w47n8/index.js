@@ -135,16 +135,7 @@ function spawnRun(spawn) {
   if (!want && cs.filter(c => c.memory.role === 'w8hauler' && (c.spawning || c.ticksToLive > 75)).length < hFloor) want = 'w8hauler';
   // 17:4x (Misaki: spawn must never wait for energy): hub filler right after miners + the hauler floor, replaced ahead of death (fill.js)
   if (!want && FL.want(room, cs)) want = 'w8filler';
-  // Misaki 10-29: continuous W47N9 assault from colony spawn (after economy floor)
-  if (!want) {
-    const RD = require('../../roles/raid9'), w = RD.wantSpawn(room);
-    if (w) {
-      const cost = _.sum(w.body, p => BODYPART_COST[p]);
-      if (avail < cost) { FM.wait('raid9', cost, avail); return; }
-      const rv = spawn.spawnCreep(w.body, 'raid9_' + Game.time, { memory: w.mem, energyStructures: energyOrder(room) });
-      if (rv === OK) { RD.noteSpawned(); FM.spent(cost); return; }
-    }
-  }
+  // Raid spawn is after miners/haulers/filler/rminers/rhaulers (logistics stay ahead of the fat body).
   // 10-20 03:4x (w8patrol): rminer replacements sat behind the 3rd upgrader (after a defender + 2-hauler burst): W47N7 src 18,17 unmined
   // from t83750522 with the other rminer at TTL 123 < lead. Income before sinks: W47N7 rminers come right after the filler.
   // 10:40: rhaulers sat last in the queue, so with 4 builders + 6 sites on the single Spawn2 all 6 (spawned in one burst at RCL3) aged out
@@ -189,9 +180,9 @@ function spawnRun(spawn) {
   const mv8 = Memory.ops && Memory.ops.w8move;
   if (!want && mv8 && mv8.phase === 'prep' && room.storage && bankE(room) >= MOVE_E - 3000
     && !raidPause && !cs.some(c => c.memory.role === 'w8builder' && (c.spawning || c.ticksToLive >= 700))) want = 'w8builder';
-  if (!want && wallsLow && nUp() < (raidPause ? 1 : (room.controller.ticksToDowngrade < 10000 || stock8() > 3000 ? 2 : 1))) want = 'w8upgrader';
+  if (!want && wallsLow && nUp() < (raidPause ? require('../../roles/raid9').upgraderKeep(room) : (room.controller.ticksToDowngrade < 10000 || stock8() > 3000 ? 2 : 1))) want = 'w8upgrader';
   else if (!want && !raidPause && wallsLow && n('w8builder') < 3) want = 'w8builder';
-  else if (!want && !wallsLow && nUp() < (raidPause ? 1 : (energyBank(room) ? (room.controller.ticksToDowngrade < 20000 ? 1 : 0) : (() => { const m = dayofMiss(room); if (m.missSpawn || m.missTower) return 1; const base = sites ? 2 : 3; const se = room.storage && room.storage.store ? (room.storage.store[RESOURCE_ENERGY] || 0) : 0; return softCap2(se) ? Math.min(base, 2) : base; })()))) want = 'w8upgrader'; // 15:5x: 0 upgraders while moving unless downgrade < 20k // 13:39 spawn move // 10-31 19:1x: 1 upg while day-of misses spawn2/tower3 // 11-01 02:4x+05:4x: soft-cap ≤2 while stor<LEAN_SOFT (survives gate flip) // 11-02 11:4x: softCap2 also while threatSoft (localOn), even after stor≥LEAN_SOFT
+  else if (!want && !wallsLow && nUp() < (raidPause ? require('../../roles/raid9').upgraderKeep(room) : (energyBank(room) ? (room.controller.ticksToDowngrade < 20000 ? 1 : 0) : (() => { const m = dayofMiss(room); if (m.missSpawn || m.missTower) return 1; const base = sites ? 2 : 3; const se = room.storage && room.storage.store ? (room.storage.store[RESOURCE_ENERGY] || 0) : 0; return softCap2(se) ? Math.min(base, 2) : base; })()))) want = 'w8upgrader'; // 15:5x: 0 upgraders while moving unless downgrade < 20k // 13:39 spawn move // 10-31 19:1x: 1 upg while day-of misses spawn2/tower3 // 11-01 02:4x+05:4x: soft-cap ≤2 while stor<LEAN_SOFT (survives gate flip) // 11-02 11:4x: softCap2 also while threatSoft (localOn), even after stor≥LEAN_SOFT
   // 14:55 model-driven (tools/model_w8.py -> Memory.ops.w8model): remote fleet sized by CARRY need = sum 10 x (rt x 1.1 + 4) / 50 over
   // both W47N7 sources (~52 at 14:55) instead of loose-pile thresholds (live 88 CARRY: rhaulers 82% moving/12% blocked, +1.8 e/t upkeep).
   // Floor (ahead of builders): 60% of need; full need + a backlog term (+16 CARRY per 2000 loose above 3000) in step 7.
@@ -261,6 +252,16 @@ function spawnRun(spawn) {
     // at 400 carry = ~3.6 e/t each, below the 2 sources' ~20 e/t plus decay
     // 18:05: need x1.0 (model rcarry already carries the 1.1 congestion factor; x1.1 kept 75 CARRY vs 56 with W47N7 conts empty)
     if (!want && n('w8rhauler') < 8 && rCarry(100) < rNeed + 16 * Math.floor(Math.max(0, lo7 - 3000) / 2000)) want = 'w8rhauler';
+  }
+  // Wartime raid after miners/haulers/fillers/rminers/rhaulers. A short logistics creep already set `want`
+  // and spawns small. defer banks the partial pile instead of dropping it into an upgrader/builder.
+  if (!want) {
+    const RD = require('../../roles/raid9'), w = RD.wantSpawn(room, avail);
+    if (w && w.defer) { FM.wait('raid9', w.cost, avail); return; }
+    if (w) {
+      const rv = spawn.spawnCreep(w.body, 'raid9_' + room.name + Game.time, { memory: w.mem, energyStructures: energyOrder(room) });
+      if (rv === OK) { RD.noteSpawned(); FM.spent(w.cost); return; }
+    }
   }
   if (!want) { FM.idle(); return; }
   // emergency: nothing alive that refills -> spawn with what we have
@@ -486,6 +487,27 @@ function leanBankRecycle(room) {
   for (const c of ups.slice(keep)) if (c.name && !L.includes(c.name)) L.push(c.name);
   o.w8recycle = L;
 }
+// W47N9 wartime: recycle colony upgraders (keep one if the controller is near downgrade) and every builder.
+// Miners, haulers, fillers, and the W47N7 remote are not on this list.
+function raidSoftKill(room) {
+  const RD = require('../../roles/raid9');
+  if (!RD.pauseCivilians()) return;
+  const rows = [];
+  for (const n in Game.creeps) {
+    const c = Game.creeps[n];
+    if (!c || !c.memory) continue;
+    const role = c.memory.role;
+    if (role !== 'w8upgrader' && role !== 'w8builder') continue;
+    if (!(c.memory.home === room.name || (c.room && c.room.name === room.name))) continue;
+    rows.push({ name: c.name || n, role, ttl: c.ticksToLive || 0, spawning: !!c.spawning });
+  }
+  const drop = RD.namesToRecycle(rows, RD.upgraderKeep(room));
+  if (!drop.length) return;
+  const o = (Memory.ops = Memory.ops || {});
+  const L = o.w8recycle || [];
+  for (const name of drop) if (name && !L.includes(name)) L.push(name);
+  o.w8recycle = L;
+}
 
 // 14:4x strategy: dormant terminal.send K W47N8→W46N8 (lean KO). Overmind TerminalNetwork pattern —
 // surplus at colony, deficit at home labs; TERMINAL_MIN_SEND=100, COOLDOWN=10; adjacent ~ceil(amt*(1-e^(-1/30))).
@@ -618,6 +640,7 @@ function dayObs(room) {
     ctlBat: ctlBattery(room), feedOk: ctlBattery(room) >= FEED_MIN ? 1 : 0, // 11:4x strategy: peacetime surplus needs feedOk
     towerMinE, towerHubE, towerNorthE, nf, eAvail, eCap, looseE: loose };
   leanBankRecycle(room);
+  raidSoftKill(room);
   // 23:4x strategy: lean KO readiness (docs/MINERAL_DEFENSE_ROADMAP.md §5). Dormant report only — gates stay false.
   const [mx, my] = C.MINERAL_CONT || [37, 44];
   const hasTerm = !!room.terminal;
