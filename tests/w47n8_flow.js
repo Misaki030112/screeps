@@ -58,3 +58,30 @@ console.log('w47n8 flow ok');
   W.linkRun(); assert.strictEqual(sent, 2, 'partial ctl free still transfers');
   console.log('w47n8 miner/link ok');
 }
+
+// 23:4x strategy: hub link → ctl when hub exists (dormant path; HUB_LINK still false in config)
+{
+  Object.assign(global, { STRUCTURE_LINK: 'link' });
+  let sentA = 0, sentH = 0;
+  const la = { structureType: 'link', cooldown: 0, store: { energy: 800, getFreeCapacity: () => 0 }, transferEnergy: () => { sentA++; return 0; } };
+  const lh = { structureType: 'link', cooldown: 0, store: { energy: 400, getFreeCapacity: () => 400 }, transferEnergy: (t, amt) => { sentH++; lh.last = amt; return 0; } };
+  const lk = { structureType: 'link', store: { energy: 100, getFreeCapacity: () => 700 } };
+  Game.rooms.W47N8 = { lookForAt: (k, x, y) => {
+    if (x === 26 && y === 12) return [la];
+    if (x === 13 && y === 25) return [lk];
+    if (x === 33 && y === 34) return [lh];
+    return [];
+  }};
+  W.linkRun();
+  assert.strictEqual(sentA, 1, 'A→ctl still first');
+  assert.strictEqual(sentH, 1, 'hub→ctl when ctl low and hub has ≥200');
+  // hub cooldown / ctl already high → no second hub send
+  lh.cooldown = 0; lk.store.energy = 500; lk.store.getFreeCapacity = () => 300; sentH = 0; la.cooldown = 3;
+  W.linkRun();
+  assert.strictEqual(sentH, 0, 'ctl ≥400 → hub idle');
+  // hub below SEND floor
+  lk.store.energy = 100; lk.store.getFreeCapacity = () => 700; lh.store.energy = 50; sentH = 0;
+  W.linkRun();
+  assert.strictEqual(sentH, 0, 'hub <200 → no send');
+  console.log('w47n8 hub→ctl link ok');
+}

@@ -178,3 +178,10 @@ Links **live and transferring**: A 26,12 → ctl 13,25 (both hold energy; hauler
 **Mechanism:** Surplus counted storage headroom, not ctl battery fill. Overmind: `UpgradeSite` requests input equal to upgrade power and scales WORK only with storageBuffer. TooAngel: storage beside upgrader. Our ctl is link+cont fed; hub is the larger sink until feedOk.
 
 **Fix:** `FEED_MIN` + `ctlBattery` gate on surplus / recycle-to-3. See `docs/RCL7.md` "14:4x". Do not flip `HUB_LINK` on this evidence alone.
+
+## 2026-11-02 23:4x — hub→ctl expected lift
+
+With softCap cleared and nUp=3, measured upgrade ~19–20 e/t vs ideal ~30 (~66%); waiting_feed ~0.26; hub delivery ~26 e/t vs A→ctl ~8–10.
+Enabling hub link (33,34) + filler ferry should add ~15–20 e/t effective to ctl after 3% loss when hub is topped from storage surplus — target waiting_feed <0.10 and short ≥70% at nUp3 before considering surplus nUp>3.
+Plumbing shipped dormant (`HUB_LINK` still false). See `docs/RCL7.md` 23:4x.
+

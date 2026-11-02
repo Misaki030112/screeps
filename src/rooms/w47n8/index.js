@@ -642,7 +642,12 @@ function dayObs(room) {
   // 08:4x: looseE (drops + source conts, excl ctl/hub) so patrol can see stranded energy vs stor20k shortfall
   const loose = looseE(room);
   const softLeft = Math.max(0, LEAN_SOFT - storE);
-  o.w8day = { t: Game.time, rcl, need, siteRem: siteRemV, builders, upgraders, storE, bill,
+  // 23:4x: hub link readiness (dormant until HUB_LINK + structure). Patrol sees energy + gate without flipping.
+  const [hlx, hly] = (L.ORDER.link && L.ORDER.link[0]) || [33, 34];
+  const hubLink = room.lookForAt(LOOK_STRUCTURES, hlx, hly).find(s => s.structureType === STRUCTURE_LINK);
+  const hubLinkE = hubLink && hubLink.store ? (hubLink.store[RESOURCE_ENERGY] || 0) : -1;
+  const hubReady = (C.HUB_LINK && hubLink) ? 1 : 0;
+    o.w8day = { t: Game.time, rcl, need, siteRem: siteRemV, builders, upgraders, storE, bill,
     missSpawn: missSpawn ? 1 : 0, missTower: missTower ? 1 : 0, missExt, why, phase,
     bankLeft, bankEta, leanBank: lb ? 1 : 0, bankArm: LEAN_ARM, bankSoft: LEAN_SOFT, bankWhy, softLeft,
     threatSoft: threatSoft() ? 1 : 0, softCap2: softCap2(storE) ? 1 : 0, // 11:4x: ≤2 gate (local threat OR stor<LEAN_SOFT); leanBank still tighter at ≤1
@@ -650,7 +655,8 @@ function dayObs(room) {
     ctlBat: ctlBattery(room), feedOk: ctlBattery(room) >= FEED_MIN ? 1 : 0, // 11:4x strategy: peacetime surplus needs feedOk
     sealMinE: TH.sealMinE(), // effective deep-seal gate (Memory override visible)
     sealRaise: (storE >= TH.sealMinE() && (TH.sealCap() > TH.STAGE3)) ? 1 : 0,
-    towerMinE, towerHubE, towerNorthE, nf, eAvail, eCap, looseE: loose };
+    towerMinE, towerHubE, towerNorthE, nf, eAvail, eCap, looseE: loose,
+    hubLinkE, hubReady, hubLink: C.HUB_LINK ? 1 : 0 }; // 23:4x strategy: HUB_LINK plumbing obs
   leanBankRecycle(room);
   raidSoftKill(room);
   // 23:4x strategy: lean KO readiness (docs/MINERAL_DEFENSE_ROADMAP.md §5). Dormant report only — gates stay false.
@@ -832,10 +838,22 @@ function linkAt(p) { const r = Game.rooms[C.ROOM]; return p && r && r.lookForAt(
 function linkRun() {
   // 20:5x patrol: require free>=400 deadlocked when ctl sat ~486 (free 314) — src link stayed full, A harvest looked soft.
   // Transfer any time sender has energy and ctl has free space (API caps to free). Keep >=50 src floor to avoid tiny dribbles.
+  // 23:4x strategy: also hub→ctl when hub link exists (dormant until HUB_LINK built). Home managers/links.js pattern:
+  // queen fills hub; hub pushes when ctl < CTL_LOW. Overmind UpgradeSite requests battery when <50%/link <200.
   const a = linkAt(C.SOURCES[0].link), k = linkAt(C.CTL_LINK);
-  if (!a || !k || a.cooldown) return;
-  const have = a.store[RESOURCE_ENERGY] || 0, free = k.store.getFreeCapacity(RESOURCE_ENERGY) || 0;
-  if (have >= 50 && free > 0) a.transferEnergy(k, Math.min(have, free));
+  const [hx, hy] = (L.ORDER.link && L.ORDER.link[0]) || [33, 34];
+  const h = linkAt([hx, hy]);
+  const CTL_LOW = 400, HUB_SEND = 200; // home uses SEND=400; allow 200 so intermittent battery recovers sooner
+  if (a && k && !a.cooldown) {
+    const have = a.store[RESOURCE_ENERGY] || 0, free = k.store.getFreeCapacity(RESOURCE_ENERGY) || 0;
+    if (have >= 50 && free > 0) a.transferEnergy(k, Math.min(have, free));
+  }
+  // Hub→ctl independent of A (own cooldown). No-op while HUB_LINK=false (no structure). Prefer A first above.
+  if (h && k && h !== a && !h.cooldown) {
+    const have = h.store[RESOURCE_ENERGY] || 0, ke = k.store[RESOURCE_ENERGY] || 0;
+    const free = k.store.getFreeCapacity(RESOURCE_ENERGY) || 0;
+    if (ke < CTL_LOW && have >= HUB_SEND && free > 0) h.transferEnergy(k, Math.min(have, free));
+  }
 }
 const D = require('./defense'), F = require('../../utils/focus');
 const KEY_REP_R = 10;

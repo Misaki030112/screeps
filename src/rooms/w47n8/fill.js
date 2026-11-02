@@ -177,6 +177,36 @@ function run(c) {
     const cl = objs(D.cluster).filter(s => free(s) > 0), claimed = new Set(room.find(FIND_MY_CREEPS, { filter: o => o.memory.ft }).map(o => o.memory.ft));
     if (cl.some(s => !claimed.has(s.id))) { m.fs = 'c'; return; }
   }
+  // 23:4x strategy: idle hub-link ferry (dormant until HUB_LINK built). Mirror home queen.standby —
+  // when hub duty is full and storage ≥ LEAN_SOFT, top the hub link so linkRun can push hub→ctl
+  // whenever ctl battery dips (Overmind UpgradeSite requests when link <200 / battery <50%).
+  // Hub link 33,34 is range-2 from POST 34,32 — one step to 33,33/34,33 then transfer.
+  {
+    const [hx, hy] = (L.ORDER.link && L.ORDER.link[0]) || [33, 34];
+    const hubL = room.lookForAt(LOOK_STRUCTURES, hx, hy).find(s => s.structureType === STRUCTURE_LINK);
+    const storE = room.storage && room.storage.store ? (room.storage.store[E] || 0) : 0;
+    if (hubL && storE >= 25000) {
+      const freeL = hubL.store.getFreeCapacity ? hubL.store.getFreeCapacity(E) : Math.max(0, 800 - (hubL.store[E] || 0));
+      let bat = 0;
+      const cc = room.lookForAt(LOOK_STRUCTURES, C.CTL_CONT[0], C.CTL_CONT[1]).find(s => s.structureType === STRUCTURE_CONTAINER);
+      if (cc && cc.store) bat += cc.store[E] || 0;
+      const [lx, ly] = C.CTL_LINK || [13, 25];
+      const cl = room.lookForAt(LOOK_STRUCTURES, lx, ly).find(s => s.structureType === STRUCTURE_LINK);
+      if (cl && cl.store) bat += cl.store[E] || 0;
+      // Fill when ctl battery thin OR hub link empty enough to accept a full SEND (200+)
+      if ((bat < 800 || (hubL.store[E] || 0) < 200) && freeL >= 100) {
+        if (held > 0) {
+          if (c.pos.isNearTo(hubL)) { c.transfer(hubL, E); return; }
+          return go(c, hx, hy, 1);
+        }
+        // draw from storage at POST then walk to hub link
+        if (room.storage && c.pos.isNearTo(room.storage) && c.store.getFreeCapacity(E) > 0) {
+          c.withdraw(room.storage, E); return;
+        }
+        if (c.pos.x !== POST[0] || c.pos.y !== POST[1]) return go(c, POST[0], POST[1], 0);
+      }
+    }
+  }
   // idle: refill to full at POST
   if (c.store.getFreeCapacity(E) > 0 && !src && source(room).length) return go(c, POST[0], POST[1], 0);
   if (c.pos.x !== POST[0] || c.pos.y !== POST[1]) go(c, POST[0], POST[1], 0);

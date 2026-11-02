@@ -599,3 +599,34 @@ While `Memory.ops.w47n9.on` + `pauseCivilians` (Misaki GO):
 
 Refs: Overmind `storageBuffer` + warSpawnCutoff; TooAngel `upgraderMinStorage` / underSiege. Detail: `docs/RAID_W47N9.md`, `ROADMAP.md` 14:5x.
 
+## 2026-11-02 23:4x — HUB_LINK plumbing readiness (no flip)
+
+**Question:** with softCap cleared, KEY DONE, tower3+spawn2 DONE, and sealMinE back at LEAN_SOFT 25k (Misaki rejected +10k headroom), is it time to flip `HUB_LINK` so hub→ctl can close the ~66% upgrade gap?
+
+**Answer: plumbing YES, flip NOT YET — need Misaki nod.** Shipped dormant hub→ctl + filler ferry; keep `HUB_LINK=false` until she approves the 5k site + upgCeil lift.
+
+### Live (~23:28–23:40 Asia/Shanghai, t~84028896–84029075, aa4446b)
+- Peacetime; home ~18.63% stor~15.5–16k ABOVE 2h~84%; W47 ~5.37% stor~25.4k softCap2 OFF KEY DONE sealRaise flap at 25k band; 2h upg ~66% (ideal~30 → actual~19–20); waiting_feed~0.26; remotes SAFE; K empty regener; labs OFF no re-ask; CPU~14.4/20.
+- Delivered: hub ~26 e/t vs ctl ~8–10 e/t — remotes/B pile at hub while A→ctl alone cannot sustain WORK30 intermittently.
+
+### Research (Screeps + Overmind / TooAngel)
+- Screeps link transfer is 3% loss; RCL7 allows 4 links — we have A + ctl (+ hub gated).
+- Overmind `UpgradeSite`: requests input when battery <50% / upgrade link <200; places upgrade link when storage path >10 (our ctl is ~20+ tiles from storage) — **hub→ctl is the right topology**.
+- TooAngel: storage-centric hub link; fillers keep linkStorage topped; other links push *to* storage. Ours is **ctl-centric** (home `managers/links.js`: queen fills hub, hub→ctl when ctl <400) — match home, not TooAngel reverse.
+
+### Gap before flip
+1. `linkRun` only did A→ctl — no hub→ctl even if structure existed.
+2. `w8filler` never deposited into hub link 33,34 (POST is range-2).
+3. Flipping alone would place 5k site and raise `upgCeil` to 6 once feedOk — risk of WORK40+ before ferry is proven.
+
+### Shipped (dormant; `HUB_LINK` stays false)
+- `linkRun`: hub→ctl when hub exists, ctl <400, hub ≥200 (own cooldown; A still first).
+- `fill.js`: idle hub-link ferry when stor≥25k and ctlBat <800 or hubE <200 (no-op without structure).
+- `w8day.hubLinkE` / `hubReady` / `hubLink` obs. Tests flow + dayobs.
+
+### Flip checklist (propose to Misaki)
+1. Peacetime, softCap2 OFF, KEY DONE, sealMinE=25k accepted.
+2. Deploy with hub plumbing LIVE (this commit).
+3. Set `config.HUB_LINK=true` → layout places 33,34; builders finish; watch `hubLinkE` rise, `waiting_feed`↓, upg ≥24 / short≥70%.
+4. Do **not** flip labs/industry/market with it. K still regenerating — minerals not the bottleneck.
+

@@ -138,6 +138,8 @@ Shipped: `config.RCL6_MINERALS=false` (terminal/extractor/labs + MINERAL roads n
 not placed). RCL6 still places the 10 extensions; RCL5 still places links 13,25 + 26,12 (asserted). Dormant until RCL6.
 **Proposal for Misaki (not urgent, before ~10-22):** keep both off until there is a use. Options to revisit then:
 (a) hub link 33,34 -> ctl link 13,25 fed from storage (needs a hub manager; worth it only if haulers can't keep the ctl container fed);
+
+**2026-11-02 23:4x:** dormant hub→ctl in `linkRun` + idle `w8filler` ferry shipped; still gated by `HUB_LINK=false` until Misaki nod. See `docs/RCL7.md` 23:4x.
 (b) terminal at W47N8 so home can `terminal.send` energy (cost ~3% at range 1) or minerals: only useful with a market/boost plan;
 (c) extractor + labs: needs mineral miner + lab code, and only matters for boosts after novice end.
 
