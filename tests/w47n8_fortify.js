@@ -17,7 +17,7 @@ assert.strictEqual(TH.planTarget(4, 50000), 50000);
 Memory.defense.w8seal = 200000; assert.strictEqual(TH.planTarget(7, 1000000), 300000, 'knob below STAGE3 ignored (never lowers)');
 Memory.ops.w8move.phase = 'prep'; Memory.defense.w8seal = 1000000; assert.strictEqual(TH.planTarget(7, 1000000), 100000, 'move pending still 100k');
 delete Memory.ops.w8move;
-assert.strictEqual(TH.sealMinE(), 25000, 'default = LEAN_SOFT'); Memory.defense.w8sealMinE = 4000; assert.strictEqual(TH.sealMinE(), 4000); delete Memory.defense.w8sealMinE;
+assert.strictEqual(TH.sealMinE(), 35000, 'default = LEAN_SOFT+10k'); Memory.defense.w8sealMinE = 4000; assert.strictEqual(TH.sealMinE(), 4000); delete Memory.defense.w8sealMinE;
 // spawn rule 6 gates the deep raise on storage
 const idx = fs.readFileSync(path.join(d, 'index.js'), 'utf8');
 assert.ok(/const tgt = \(room\.storage[^\n]*>= TH\.sealMinE\(\) \? wtgt : Math\.min\(wtgt, TH\.STAGE3\)/.test(idx), 'builder spawn: deep raise only with storage >= w8sealMinE');
@@ -48,7 +48,9 @@ const roomLow = {
 };
 assert.strictEqual(R._wallJob(roomLow, null), null, 'stor < sealMinE: wallJob caps at STAGE3, seal@310k idle');
 roomLow.storage.store.energy = 25000;
-assert.strictEqual(R._wallJob(roomLow, null).id, 'sw1', 'stor >= sealMinE: wallJob aims at w8seal=1M');
+assert.strictEqual(R._wallJob(roomLow, null), null, '20:4x: stor=LEAN_SOFT still < default 35k — no deep seal thrash');
+roomLow.storage.store.energy = 35000;
+assert.strictEqual(R._wallJob(roomLow, null).id, 'sw1', 'stor >= sealMinE 35k: wallJob aims at w8seal=1M');
 Memory.defense.w8sealMinE = 5000;
 roomLow.storage.store.energy = 6000;
 assert.strictEqual(R._wallJob(roomLow, null).id, 'sw1', 'Memory override lowers gate');

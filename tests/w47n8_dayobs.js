@@ -340,4 +340,26 @@ delete Memory.ops.w47n9;
 C.RCL6_MINERALS = true; // leave matching live config
 delete Game.rooms.W46N8;
 
+
+// 20:4x: sealMinE / sealRaise obs (Memory override must be visible; default LEAN_SOFT+10k)
+delete Memory.defense;
+delete Memory.ops.w47n9;
+W.dayObs(mk(7, done, [], 0));
+assert.strictEqual(Memory.ops.w8day.sealMinE, 35000, 'default sealMinE exposed');
+assert.strictEqual(Memory.ops.w8day.sealRaise, 0, 'no w8seal knob → sealCap=STAGE3 → sealRaise 0');
+Memory.defense = { w8seal: 1000000 };
+const rSeal = mk(7, done, [], 0); rSeal.storage.store.energy = 20000;
+W.dayObs(rSeal);
+assert.strictEqual(Memory.ops.w8day.sealMinE, 35000);
+assert.strictEqual(Memory.ops.w8day.sealRaise, 0, 'stor 20k < 35k → sealRaise 0 even with w8seal=1M');
+rSeal.storage.store.energy = 36000;
+W.dayObs(rSeal);
+assert.strictEqual(Memory.ops.w8day.sealRaise, 1, 'stor≥35k + w8seal=1M → sealRaise 1');
+Memory.defense.w8sealMinE = 5000;
+rSeal.storage.store.energy = 10000;
+W.dayObs(rSeal);
+assert.strictEqual(Memory.ops.w8day.sealMinE, 5000, 'Memory override visible in obs');
+assert.strictEqual(Memory.ops.w8day.sealRaise, 1, 'override 5k lets sealRaise at stor 10k (the 17:4x failure mode)');
+delete Memory.defense;
+
 console.log('w47n8_dayobs ok');

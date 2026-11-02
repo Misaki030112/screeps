@@ -235,7 +235,7 @@ function spawnRun(spawn) {
   // 19:31: 2 while >1500 loose energy piles (2.8k at 19:30 with the ctl container full and upgraders at the WORK cap)
   if (!want && !raidPause && room.energyAvailable === cap && n('w8builder') < (looseE(room) > 1500 ? 2 : 1)) {
     // 11-02 (Misaki t375u): the raise above STAGE3 (Memory.defense.w8seal) only spawns builders while storage >= w8sealMinE
-    // 11-02 17:4x: default sealMinE = LEAN_SOFT (25000); wallJob also clamps (roles.js) so live builders cannot deep-raise below the gate
+    // 11-02 17:4x/20:4x: default sealMinE = LEAN_SOFT+10k (35000); wallJob also clamps (roles.js) so live builders cannot deep-raise below the gate
     const tgt = (room.storage ? room.storage.store[RESOURCE_ENERGY] : 0) >= TH.sealMinE() ? wtgt : Math.min(wtgt, TH.STAGE3);
     if (room.find(FIND_STRUCTURES, { filter: s => s.structureType === STRUCTURE_WALL && s.hits < tgt && C.SEAL.some(([x, y]) => s.pos.x === x && s.pos.y === y) }).length) want = 'w8builder';
   }
@@ -648,6 +648,8 @@ function dayObs(room) {
     threatSoft: threatSoft() ? 1 : 0, softCap2: softCap2(storE) ? 1 : 0, // 11:4x: ≤2 gate (local threat OR stor<LEAN_SOFT); leanBank still tighter at ≤1
     warMode: warMode ? 1 : 0, // 14:4x: Memory.ops.w47n9 assault freeze
     ctlBat: ctlBattery(room), feedOk: ctlBattery(room) >= FEED_MIN ? 1 : 0, // 11:4x strategy: peacetime surplus needs feedOk
+    sealMinE: TH.sealMinE(), // 20:4x: effective deep-seal gate (Memory override visible — 17:4x default was masked by w8sealMinE=5000)
+    sealRaise: (storE >= TH.sealMinE() && (TH.sealCap() > TH.STAGE3)) ? 1 : 0,
     towerMinE, towerHubE, towerNorthE, nf, eAvail, eCap, looseE: loose };
   leanBankRecycle(room);
   raidSoftKill(room);
@@ -814,6 +816,8 @@ function rampHold(room) {
   // 11-02 (Misaki t375u): Memory.defense.w8key lifts KEY covers above SOFT_RAMP while storage >= w8keyMinE (towers within KEY_REP_R only)
   const kt = TH.keyTarget(), softT = kt > (C.SOFT_RAMP || 0) && storE >= TH.keyMinE() ? kt : (C.SOFT_RAMP || 0);
   soft.tgt = softT; soft.storE = storE;
+  soft.sealMinE = TH.sealMinE(); soft.sealCap = TH.sealCap();
+  soft.sealRaise = (storE >= TH.sealMinE() && TH.sealCap() > TH.STAGE3) ? 1 : 0; // 20:4x: 1 only when deep seal may burn surplus
   const localThreat = TH.localOn();
   soft.why = softT <= 0 ? 'off' : localThreat ? 'threat' : (storE < softMin ? 'stor' : 'ok');
   if (softT > 0 && storE >= softMin && !localThreat) {

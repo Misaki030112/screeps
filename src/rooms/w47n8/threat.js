@@ -38,16 +38,17 @@ const STAGE1 = 100000, STAGE3 = 300000;
 // 11-02 16:2x (Misaki t375u "加固城防，尤其面对他那一方"): post-W47N9-raid retaliation guard. Memory.defense knobs (absent = old behaviour):
 //   w8seal      north seal walls + gate 29,3 cap above STAGE3 (clamped to WALL_TARGET[rcl]: 1M at RCL7). Builders raise lowest-first, so
 //               the line climbs evenly 300k -> 1M.
-//   w8sealMinE  colony storage needed to SPAWN a surplus wall builder AND for wallJob to aim above STAGE3 (default 25000 =
-//               LEAN_SOFT). Below it the spawn rule + wallJob see the old 300k cap, so the deep raise never starves softCap2 /
-//               KEY catch-up / upgraders. 11-02 17:4x: was 5000 — post-war w8seal=1M kept builders draining stor~20k into
-//               seal 314k→1M while softCap2 (stor<25k) held nUp≤2 and KEY towers still climbing to w8key. Override via
-//               Memory.defense.w8sealMinE if a deliberate early climb is wanted.
+//   w8sealMinE  colony storage needed to SPAWN a surplus wall builder AND for wallJob to aim above STAGE3 (default 35000 =
+//               LEAN_SOFT+10k). Below it the spawn rule + wallJob see the old 300k cap, so the deep raise never starves softCap2 /
+//               KEY catch-up / upgraders. 11-02 17:4x: was 5000→25000 (=LEAN_SOFT). 11-02 20:4x: raised again to 35000 —
+//               Memory.defense.w8sealMinE=5000 (fortify knobs #23) overrode the code default and kept seal→1M draining
+//               through softCap2; even sealMinE=LEAN_SOFT has zero hysteresis (seal starts the tick softCap clears → thrash).
+//               Headroom above LEAN_SOFT lets nUp3 recover before deep seal. Override lower only for a deliberate early climb.
 //   w8key       KEY rampart (spawn/tower/storage/terminal) soft target above SOFT_RAMP; w8keyMinE (default 8000) storage gate.
 const D8 = () => (typeof Memory !== 'undefined' && Memory.defense) || {};
 const num = (v, d) => (typeof v === 'number' && v >= 0 ? v : d);
 function sealCap() { const v = num(D8().w8seal, 0); return v > STAGE3 ? v : STAGE3; }
-function sealMinE() { return num(D8().w8sealMinE, 25000); }
+function sealMinE() { return num(D8().w8sealMinE, 35000); }
 function keyTarget() { return num(D8().w8key, 0); }
 function keyMinE() { return num(D8().w8keyMinE, 8000); }
 function planTarget(level, base) {

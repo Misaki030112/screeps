@@ -116,9 +116,10 @@ not a threat-posture leak (refill triggers at free > 200). Re-check only if the 
 Memory.defense knobs (absent = old behaviour):
 - `w8seal` (set 1,000,000): north seal walls + gate 29,3 cap above the 300k STAGE3, clamped to WALL_TARGET[rcl] (1M at RCL7).
   Builders raise lowest-first. Spawn rule 6 only spawns a builder for the part above 300k while storage >= `w8sealMinE`.
-  **`w8sealMinE` default 25000 (= LEAN_SOFT)** — 17:4x raised from 5000 so deep seal→1M does not drain stor~20k while softCap2
-  still holds nUp≤2 and KEY towers climb to `w8key`. `wallJob` also clamps to STAGE3 below the gate (spawn alone was not enough —
-  a live maintenance builder kept burning into seal→1M). Override `Memory.defense.w8sealMinE` lower only for a deliberate early climb.
+  **`w8sealMinE` default 35000 (= LEAN_SOFT+10k)** — 17:4x raised 5000→25000; **20:4x raised again to 35000**.
+  `wallJob` clamps to STAGE3 below the gate. Live Memory override of 5000 (fortify knobs #23) masked the 17:4x code default and
+  kept seal→1M draining through softCap2 (stor thrash ~24–25k). Even sealMinE=LEAN_SOFT has zero hysteresis — seal starts the tick
+  softCap clears. Headroom above LEAN_SOFT lets nUp3 / upgrade recover before deep seal. Override lower only for a deliberate early climb.
 - `w8key` (set 300,000): KEY ramparts (spawn/tower/storage/terminal) soft target above SOFT_RAMP, while storage >= `w8keyMinE`
   (default 8000) and no local threat. Above GATE_TOWER only towers within 10 tiles repair (efficiency 800 vs 200 hits/10e).
 
@@ -128,3 +129,19 @@ already above STAGE3; stor~19–21k < LEAN_SOFT → softCap2 ON. With `w8seal=1M
 314k→1M (~100k e) and competed with softCap lift / KEY catch-up. Overmind gates routine fortifyDuty until colony energy ≥500k;
 we keep KEY raise (towers, `w8keyMinE=8k`) and only defer deep seal. Priority peacetime: softCap lift (stor≥25k → nUp3) → KEY→300k
 → then seal→1M. Do **not** unset Misaki's `w8seal`/`w8key` knobs — gate energy instead.
+
+### 2026-11-02 20:4x softCap thrash at LEAN_SOFT / Memory sealMinE override (strategy)
+Live ~20:47 Asia/Shanghai t~84026600 peacetime post-KEY: home ~18.1% stor~17k ABOVE 2h~88%; W47 ~4.96% stor oscillating
+19→25→24k; softCap2 briefly 0 then back ON (softLeft~0.7k); KEY DONE (stor/tower/spawn ~300k); seal min~396k / gate~445k climbing
+to `w8seal=1M` with **live builder on north y=3**; upgrade 2h~57% short~18–34%; remotes SAFE; labs OFF no re-ask; K deposit empty.
+
+**Root cause:** (1) `Memory.defense.w8sealMinE=5000` (set with fortify knobs #23 @15:22 alongside `w8seal`/`w8key`) overrode the
+17:4x code default of 25000 — `wallJob` + spawn rule 6 kept deep-raising seal while softCap2 needed the energy. (2) Even
+sealMinE=LEAN_SOFT has **zero hysteresis**: the tick stor≥25k, softCap lifts and seal starts, draining stor back under 25k →
+softCap thrash (live 24947→24347 in ~10t). Overmind `fortifyDutyThreshold=500k` parks *all* routine fortify until colony energy
+is fat (`barrierHits[7]=1M`); we keep KEY tower raise ungated (DONE) and only defer deep seal, but need headroom **above**
+LEAN_SOFT so upgrade can hold nUp3 before seal burns surplus. TooAngel gates walls on room-healthy / storage floors — same shape.
+
+**Shipped:** default `sealMinE` **25000→35000** (LEAN_SOFT+10k); live Memory `w8sealMinE` **5000→35000** (stale override fixed;
+`w8seal`/`w8key` untouched); `w8day.sealMinE`/`sealRaise` + `w8soft.sealMinE`/`sealCap`/`sealRaise` obs so patrols see the
+effective gate. Tests fortify + dayobs.
