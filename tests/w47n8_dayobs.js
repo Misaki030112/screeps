@@ -297,7 +297,9 @@ W.dayObs(rFeed);
 assert.strictEqual(Memory.ops.w8day.softCap2, 0);
 assert.strictEqual(Memory.ops.w8day.ctlBat, 1900);
 assert.strictEqual(Memory.ops.w8day.feedOk, 1, 'battery ≥FEED_MIN → feedOk');
-assert.ok(!(Memory.ops.w8recycle || []).length, 'peace ≥25k + feedOk does not recycle: ' + JSON.stringify(Memory.ops.w8recycle));
+// 14:4x: without HUB_LINK, peacetime still recycles 4→≤3 (A→ctl cannot sustain WORK40)
+assert.ok((Memory.ops.w8recycle || []).length >= 1, 'no HUB_LINK: recycle surplus above base 3: ' + JSON.stringify(Memory.ops.w8recycle));
+assert.strictEqual(Ccfg.HUB_LINK, false, 'test assumes HUB_LINK off');
 // 05:4x/20:4x: soft-cap still works; at stor5k leanBank now ON → recycle to ≤1 (stricter than soft ≤2)
 delete Memory.ops.w8recycle;
 Memory.ops.w8day = { leanBank: 0 };

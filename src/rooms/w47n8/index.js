@@ -234,8 +234,10 @@ function spawnRun(spawn) {
     const wcap = Math.max(24, Math.min(40, (wm.upw || 0) + 5 * Math.floor(stor / 5000)));
     // 02:4x: no surplus upgraders while cushion thin (stor < LEAN_SOFT) — soft-cap holds at ≤2 from the base rule above.
     // 11:4x: softCap2 also blocks surplus while threat soft is on, so stor≥25k cannot expand to 4×10W.
-    // 11:4x strategy: peacetime surplus also needs ctlBattery≥FEED_MIN so stor≥25k alone cannot jump to WORK40 / waiting_feed.
-    if (!want && !wallsLow && !energyBank(room) && !softCap2(stor) && ctlBattery(room) >= FEED_MIN && nUp() < Math.min(6, (bigBuild ? 2 : 3) + Math.floor(Math.max(0, loose + hubIdle + Math.max(0, stor - 2000) - 600) / 600))
+    // 14:4x strategy: peacetime surplus needs ctlBattery≥FEED_MIN; without HUB_LINK, A→ctl ~8 e/t cannot sustain >base 3 (WORK30≈ideal).
+    // SoftCap2 lift + stor-2000 surplus previously jumped to 4×10W=WORK40 → waiting_feed~30% while hub filled.
+    const upgCeil = C.HUB_LINK ? 6 : (bigBuild ? 2 : 3);
+    if (!want && !wallsLow && !energyBank(room) && !softCap2(stor) && ctlBattery(room) >= FEED_MIN && nUp() < Math.min(upgCeil, (bigBuild ? 2 : 3) + Math.floor(Math.max(0, loose + hubIdle + Math.max(0, stor - 2000) - 600) / 600))
       && _.sum(cs.filter(c => c.memory.role === 'w8upgrader' && (c.spawning || !(c.ticksToLive <= 3 * (c.body || []).length + 60))), c => _.filter(c.body, p => p.type === WORK).length) + bodyFor('w8upgrader', cap).filter(p => p === WORK).length <= wcap + 5) want = 'w8upgrader'; // 15:55: a whole new body must fit (upw 31 made 4x10W = 40 WORK on ~30 e/t net) // 14:55: WORK cap = model net income (upw ~30) instead of fixed 24 // 21:20: 16->24 WORK; income ~20 local + ~13 W47N7 remote, ctl cont 1984/2000 full with 4x4W upgraders (WORK-bound)
   }
   // 6) wall builder from surplus (19:18): 1 builder while a seal wall is below target and spawn is full
@@ -467,7 +469,7 @@ function leanBankRecycle(room) {
   let keep = Infinity;
   if (banking) keep = 1;
   else if (room.controller && room.controller.level >= 7 && softCap2(storE)) keep = 2;
-  else if (room.controller && room.controller.level >= 7 && ctlBattery(room) < Math.floor(FEED_MIN / 2)) keep = 3;
+  else if (room.controller && room.controller.level >= 7 && (!C.HUB_LINK || ctlBattery(room) < Math.floor(FEED_MIN / 2))) keep = 3;
   else return;
   const ups = [];
   for (const n in Game.creeps) {

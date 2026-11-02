@@ -571,8 +571,8 @@ Closes 11:4x remaining code gap: `mineralSend` + `termFuel` behind `RCL6_MINERAL
 ### Gate
 - `FEED_MIN = 800` (link almost full; hold-band uses 1200).
 - `ctlBattery(room)` = energy in `CTL_CONT` [13,26] + `CTL_LINK` [13,25].
-- Peacetime surplus spawn: requires `!softCap2 && ctlBattery ≥ FEED_MIN` (base 3 unchanged).
-- Recycle: if softCap2 off and `ctlBattery < FEED_MIN/2` (400), keep ≤3 (stands stay saturable). softCap2 ≤2 and leanBank ≤1 still win.
+- Peacetime surplus spawn: requires `!softCap2 && ctlBattery ≥ FEED_MIN`; **upgCeil = HUB_LINK ? 6 : base 3** (no 4th while hub→ctl link gated off).
+- Recycle: if softCap2 off and (`!HUB_LINK` or `ctlBattery < FEED_MIN/2`), keep ≤3. softCap2 ≤2 and leanBank ≤1 still win.
 - Obs: `w8day.ctlBat`, `w8day.feedOk`.
 
 ### Shipped
