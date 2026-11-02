@@ -466,13 +466,21 @@ function leanBankRecycle(room) {
   // 05:4x: soft-cap must survive RCL6_MINERALS flip — Overmind storageBuffer is gate-agnostic; post-minBuild stor can be ≪25k.
   // 11:4x: softCap2 also recycles back to ≤2 while threat soft is on, even after stor≥LEAN_SOFT (4×10W waiting_feed).
   // 11:4x strategy: peacetime feed-starve — if softCap2 off but ctl battery thin, trim surplus above base 3 (keep stands saturable).
+  // 17:2x patrol: reconcile each tick (prune dead; release kept upgraders). Prior append-only left stale names on
+  // Memory.ops.w8recycle so a kept stand worker kept walking to Spawn2 after the surplus died → upgrade flat.
+  const o = (Memory.ops = Memory.ops || {});
+  const prune = L => (L || []).filter(n => Game.creeps[n]);
+  const nonUp = L => prune(L).filter(n => {
+    const c = Game.creeps[n];
+    return c && c.memory && c.memory.role !== 'w8upgrader';
+  });
   const banking = leanBank(room);
   const storE = room.storage && room.storage.store ? (room.storage.store[RESOURCE_ENERGY] || 0) : 0;
   let keep = Infinity;
   if (banking) keep = 1;
   else if (room.controller && room.controller.level >= 7 && softCap2(storE)) keep = 2;
   else if (room.controller && room.controller.level >= 7 && (!C.HUB_LINK || ctlBattery(room) < Math.floor(FEED_MIN / 2))) keep = 3;
-  else return;
+  else { o.w8recycle = nonUp(o.w8recycle); return; }
   const ups = [];
   for (const n in Game.creeps) {
     const c = Game.creeps[n];
@@ -482,11 +490,8 @@ function leanBankRecycle(room) {
     ups.push(c);
   }
   ups.sort((a, b) => (b.ticksToLive || 0) - (a.ticksToLive || 0));
-  if (ups.length <= keep) return;
-  const o = (Memory.ops = Memory.ops || {});
-  const L = o.w8recycle || [];
-  for (const c of ups.slice(keep)) if (c.name && !L.includes(c.name)) L.push(c.name);
-  o.w8recycle = L;
+  const drop = ups.slice(keep).map(c => c.name).filter(Boolean);
+  o.w8recycle = nonUp(o.w8recycle).concat(drop);
 }
 // W47N9 wartime: recycle colony upgraders (keep one if the controller is near downgrade) and every builder.
 // Miners, haulers, fillers, and the W47N7 remote are not on this list.
