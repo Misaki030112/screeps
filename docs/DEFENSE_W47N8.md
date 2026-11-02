@@ -115,6 +115,16 @@ not a threat-posture leak (refill triggers at free > 200). Re-check only if the 
 ## 2026-11-02 retaliation hardening (Misaki: "加固城防，尤其面对他那一方")
 Memory.defense knobs (absent = old behaviour):
 - `w8seal` (set 1,000,000): north seal walls + gate 29,3 cap above the 300k STAGE3, clamped to WALL_TARGET[rcl] (1M at RCL7).
-  Builders raise lowest-first. Spawn rule 6 only spawns a builder for the part above 300k while storage >= `w8sealMinE` (default 5000).
+  Builders raise lowest-first. Spawn rule 6 only spawns a builder for the part above 300k while storage >= `w8sealMinE`.
+  **`w8sealMinE` default 25000 (= LEAN_SOFT)** — 17:4x raised from 5000 so deep seal→1M does not drain stor~20k while softCap2
+  still holds nUp≤2 and KEY towers climb to `w8key`. `wallJob` also clamps to STAGE3 below the gate (spawn alone was not enough —
+  a live maintenance builder kept burning into seal→1M). Override `Memory.defense.w8sealMinE` lower only for a deliberate early climb.
 - `w8key` (set 300,000): KEY ramparts (spawn/tower/storage/terminal) soft target above SOFT_RAMP, while storage >= `w8keyMinE`
   (default 8000) and no local threat. Above GATE_TOWER only towers within 10 tiles repair (efficiency 800 vs 200 hits/10e).
+
+### 2026-11-02 17:4x post-war fortify vs softCap (strategy)
+Live ~17:40 Asia/Shanghai t~84023920 peacetime: threat expired (`w8soft.why=ok`); KEY ~204–216k→300k via near towers; seal ~314k+
+already above STAGE3; stor~19–21k < LEAN_SOFT → softCap2 ON. With `w8seal=1M` + old `w8sealMinE=5000`, builders kept raising seal
+314k→1M (~100k e) and competed with softCap lift / KEY catch-up. Overmind gates routine fortifyDuty until colony energy ≥500k;
+we keep KEY raise (towers, `w8keyMinE=8k`) and only defer deep seal. Priority peacetime: softCap lift (stor≥25k → nUp3) → KEY→300k
+→ then seal→1M. Do **not** unset Misaki's `w8seal`/`w8key` knobs — gate energy instead.

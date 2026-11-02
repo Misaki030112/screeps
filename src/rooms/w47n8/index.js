@@ -235,6 +235,7 @@ function spawnRun(spawn) {
   // 19:31: 2 while >1500 loose energy piles (2.8k at 19:30 with the ctl container full and upgraders at the WORK cap)
   if (!want && !raidPause && room.energyAvailable === cap && n('w8builder') < (looseE(room) > 1500 ? 2 : 1)) {
     // 11-02 (Misaki t375u): the raise above STAGE3 (Memory.defense.w8seal) only spawns builders while storage >= w8sealMinE
+    // 11-02 17:4x: default sealMinE = LEAN_SOFT (25000); wallJob also clamps (roles.js) so live builders cannot deep-raise below the gate
     const tgt = (room.storage ? room.storage.store[RESOURCE_ENERGY] : 0) >= TH.sealMinE() ? wtgt : Math.min(wtgt, TH.STAGE3);
     if (room.find(FIND_STRUCTURES, { filter: s => s.structureType === STRUCTURE_WALL && s.hits < tgt && C.SEAL.some(([x, y]) => s.pos.x === x && s.pos.y === y) }).length) want = 'w8builder';
   }

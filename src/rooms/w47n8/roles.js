@@ -192,7 +192,12 @@ function pickTile(c, tiles, key) {
 // repair lifted a wall past the others (walls within 200 hits), even walking over with 2 energy left. Now: sticky per-creep
 // target kept until it is 500 above the weakest; new picks are the closest wall within 500 of the weakest.
 function wallJob(room, c, cap) {
-  const tgt = Math.min(cap === undefined ? Infinity : cap, TH.wallTarget(TH.planTarget(room.controller.level, C.WALL_TARGET[room.controller.level] || 0)));
+  // 11-02 17:4x: planTarget may be w8seal=1M, but deep raise above STAGE3 only when stor >= sealMinE (default LEAN_SOFT).
+  // Otherwise a live maintenance builder kept burning the bank into seal→1M while softCap2 / KEY catch-up needed the energy.
+  let plan = TH.planTarget(room.controller.level, C.WALL_TARGET[room.controller.level] || 0);
+  const storE = room.storage && room.storage.store ? (room.storage.store[E] || 0) : 0;
+  if (storE < TH.sealMinE()) plan = Math.min(plan, TH.STAGE3);
+  const tgt = Math.min(cap === undefined ? Infinity : cap, TH.wallTarget(plan));
   // 17:15: seal walls only. Core ramparts (14:09) are no longer raised by builders (Misaki: development first, as in home).
   const ws = room.find(FIND_STRUCTURES, { filter: s => (s.structureType === STRUCTURE_WALL || (s.structureType === STRUCTURE_RAMPART && (C.GATE || []).some(([x, y]) => s.pos.x === x && s.pos.y === y))) && s.hits < tgt && C.SEAL.some(([x, y]) => s.pos.x === x && s.pos.y === y) });
   if (!ws.length) { if (c) delete c.memory.wt; return null; }

@@ -2,7 +2,7 @@
 // WALL_TARGET[rcl]=1M at RCL7) and KEY ramparts (w8key), each behind a storage gate; far towers skip high repairs.
 const assert = require('assert'), fs = require('fs'), path = require('path');
 const d = path.join(__dirname, '..', 'src', 'rooms', 'w47n8');
-Object.assign(global, { _: require('lodash'), FIND_MY_STRUCTURES: 1, STRUCTURE_RAMPART: 'rampart', STRUCTURE_TOWER: 'tower', STRUCTURE_STORAGE: 'storage',
+Object.assign(global, { _: require('lodash'), FIND_MY_STRUCTURES: 1, FIND_STRUCTURES: 2, STRUCTURE_RAMPART: 'rampart', STRUCTURE_TOWER: 'tower', STRUCTURE_STORAGE: 'storage',
   STRUCTURE_SPAWN: 'spawn', STRUCTURE_WALL: 'constructedWall', LOOK_STRUCTURES: 'ls', RESOURCE_ENERGY: 'energy', Memory: { ops: {} }, Game: { time: 10, rooms: {}, creeps: {} } });
 const TH = require(path.join(d, 'threat')), C = require(path.join(d, 'config')), W = require(path.join(d, 'index.js'));
 // --- seal cap
@@ -17,7 +17,7 @@ assert.strictEqual(TH.planTarget(4, 50000), 50000);
 Memory.defense.w8seal = 200000; assert.strictEqual(TH.planTarget(7, 1000000), 300000, 'knob below STAGE3 ignored (never lowers)');
 Memory.ops.w8move.phase = 'prep'; Memory.defense.w8seal = 1000000; assert.strictEqual(TH.planTarget(7, 1000000), 100000, 'move pending still 100k');
 delete Memory.ops.w8move;
-assert.strictEqual(TH.sealMinE(), 5000); Memory.defense.w8sealMinE = 4000; assert.strictEqual(TH.sealMinE(), 4000);
+assert.strictEqual(TH.sealMinE(), 25000, 'default = LEAN_SOFT'); Memory.defense.w8sealMinE = 4000; assert.strictEqual(TH.sealMinE(), 4000); delete Memory.defense.w8sealMinE;
 // spawn rule 6 gates the deep raise on storage
 const idx = fs.readFileSync(path.join(d, 'index.js'), 'utf8');
 assert.ok(/const tgt = \(room\.storage[^\n]*>= TH\.sealMinE\(\) \? wtgt : Math\.min\(wtgt, TH\.STAGE3\)/.test(idx), 'builder spawn: deep raise only with storage >= w8sealMinE');
@@ -37,4 +37,20 @@ Memory.defense.w8keyMinE = 6000; assert.strictEqual(W.rampHold(room).id, 'storR'
 Memory.ops.w8threat = Game.time; assert.strictEqual(W.rampHold(room), null, 'local threat: towers keep energy for combat');
 // --- tower range filter
 assert.ok(/r\.hits < \(C\.GATE_TOWER \|\| 0\) \|\| [^\n]*getRangeTo\(r\) <= KEY_REP_R\)\) t\.repair\(r\)/.test(idx), 'towers: above GATE_TOWER only within KEY_REP_R');
+// --- wallJob deep raise gated by sealMinE (11-02 17:4x)
+const R = require(path.join(d, 'roles.js'));
+Memory.defense = { w8seal: 1000000 };
+const sealWall = { id: 'sw1', structureType: 'constructedWall', hits: 310000, pos: { x: 10, y: 3 } };
+const roomLow = {
+  controller: { level: 7 },
+  storage: { store: { energy: 20000 } },
+  find: (t, o) => (o && o.filter ? [sealWall].filter(o.filter) : [sealWall]),
+};
+assert.strictEqual(R._wallJob(roomLow, null), null, 'stor < sealMinE: wallJob caps at STAGE3, seal@310k idle');
+roomLow.storage.store.energy = 25000;
+assert.strictEqual(R._wallJob(roomLow, null).id, 'sw1', 'stor >= sealMinE: wallJob aims at w8seal=1M');
+Memory.defense.w8sealMinE = 5000;
+roomLow.storage.store.energy = 6000;
+assert.strictEqual(R._wallJob(roomLow, null).id, 'sw1', 'Memory override lowers gate');
+delete Memory.defense.w8sealMinE;
 console.log('w47n8 fortify ok');
