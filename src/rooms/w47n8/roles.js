@@ -192,7 +192,7 @@ function pickTile(c, tiles, key) {
 // repair lifted a wall past the others (walls within 200 hits), even walking over with 2 energy left. Now: sticky per-creep
 // target kept until it is 500 above the weakest; new picks are the closest wall within 500 of the weakest.
 function wallJob(room, c, cap) {
-  // 11-02 17:4x/20:4x: planTarget may be w8seal=1M, but deep raise above STAGE3 only when stor >= sealMinE (default LEAN_SOFT+10k=35k).
+  // 11-02 17:4x/21:xx: planTarget may be w8seal=1M, but deep raise above STAGE3 only when stor >= sealMinE (default LEAN_SOFT=25k).
   // Otherwise a live maintenance builder kept burning the bank into seal→1M while softCap2 / KEY catch-up needed the energy.
   let plan = TH.planTarget(room.controller.level, C.WALL_TARGET[room.controller.level] || 0);
   const storE = room.storage && room.storage.store ? (room.storage.store[E] || 0) : 0;
