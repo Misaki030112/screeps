@@ -319,10 +319,7 @@ function setRoleTargets(room) {
       // distracts the sole home hauler while storage is banking; O stock is already huge in terminal.
       if (low) T.mminer = 0; }
   }
-  if (require('../roles/raid9').pauseCivilians()) {
-    T.builder = 0;
-    T.upgrader = Math.min(T.upgrader || 0, 1);
-  }
+  require('../roles/raid9').applyPause(T, room); // wartime: builders 0, upgraders 0 (1 if downgrade < UP_SAFE)
   room.memory.roleTargets = T;
   return T;
 }
@@ -404,11 +401,8 @@ function run1(spawn, onWait) {
     if (avail < _.sum(b, p => BODYPART_COST[p])) return ERR_NOT_ENOUGH_ENERGY;
     const rv = spawn.spawnCreep(b, name, { memory: { role: 'probe', home: room.name, born: Game.time }, directions: birthDirs(spawn, 'probe') });
     if (rv === OK) PR.noteSpawned(name); return rv; }
-  // 2b1) one-off W47N9 raid (roles/raid9.js, Memory.ops.w47n9.on; Misaki 10-21): storage floor ignored, queen/hold handled above
-  { const RD = require('../roles/raid9'), w = RD.wantSpawn(room); if (w) {
-    if (avail < _.sum(w.body, p => BODYPART_COST[p])) return ERR_NOT_ENOUGH_ENERGY;
-    const rv = spawn.spawnCreep(w.body, 'raid9_' + Game.time, { memory: w.mem, directions: birthDirs(spawn, 'raid9') });
-    if (rv === OK) RD.noteSpawned(); return rv; } }
+  // 2b1) W47N9 raid waits until logistics below are filled. A fat body must not idle-wait here
+  // ahead of miners (already spawned) / haulers / fillers / remotes. See the pass after remoteSpawn.
   // 2b2) refill staff before heavy conquest bodies: a 2nd 16C8M queen (1200) cuts the 2300e refill gap roughly in half
   if ((count.queen || 0) < 2 && !(count.filler || 0) && room.energyCapacityAvailable >= 1300) {
     const rQ = go('queen', B.queen(bodyEnergy('queen', E, cap, avail, !!alive.hauler, !!room.storage)));
@@ -453,12 +447,9 @@ function run1(spawn, onWait) {
       if (low || m.upBank) T.upgrader = defLowUpgraders(T.upgrader, room.storage ? room.storage.store[RESOURCE_ENERGY] : 0, dr, held, (room.controller.ticksToDowngrade || 0) < Wr.UP_SAFE, m);
       if (low) T.mminer = 0; } }
   room.memory.roleTargets = T;
-  // Misaki 10-29 W47N9 assault: divert spawn away from nonessential builders/extra upgraders
-  if (require('../roles/raid9').pauseCivilians()) {
-    T.builder = 0;
-    T.upgrader = Math.min(T.upgrader || 0, 1);
-    room.memory.roleTargets = T;
-  }
+  // Misaki W47N9 wartime: soft-kill builders; keep at most one upgrader if the controller is near downgrade.
+  require('../roles/raid9').applyPause(T, room);
+  room.memory.roleTargets = T;
   const homeRole = role => {
     const mem = {};
     if (role === 'filler') { const used = new Set(mine.filter(c => c.memory.role === 'filler').map(c => c.memory.spot.join())); mem.spot = P.pos.fillers.slice(0, 4).find(s => !used.has(s.join())); }
@@ -483,7 +474,9 @@ function run1(spawn, onWait) {
   // 2c0) home growth vs W47N8 (Misaki 16:18: home resumes normal development). With storage > reserveE+10k home roles below
   // target (hauler/builder/upgrader) and W47N8 bodies take turns (room.memory.cqTurn); the W47N8 guard (cqatk) always goes first.
   if (room.storage && room.storage.store[RESOURCE_ENERGY] > ((Memory.defense && Memory.defense.reserveE) || 0) + 10000) {
-    const need = ['hauler', 'upgrader', 'mminer', 'builder'].find(r => (count[r] || 0) < (T[r] || 0));
+    // Wartime pause already zeros upgrader/builder. Don't let a mineral miner spend the pile the raid body is banking.
+    const pauseCiv = require('../roles/raid9').pauseCivilians();
+    const need = ['hauler', 'upgrader', 'mminer', 'builder'].find(r => (count[r] || 0) < (T[r] || 0) && !(pauseCiv && r !== 'hauler'));
     const cw = need && !indep8 && require('../roles/conquest').wantSpawn(room);
     // cqTurn expires after 150t: remotes spawned ahead of CQ kept it set 83720845..83721136 and home got no upgrader for ~300t
     const cqTurn = room.memory.cqTurn && Game.time - room.memory.cqTurn < 150;
@@ -506,8 +499,23 @@ function run1(spawn, onWait) {
     const name = w.role + Game.time;
     const rv = spawn.spawnCreep(w.body, name, { memory: w.mem, directions: birthDirs(spawn, w.role) });
     if (rv === OK) { CQ.noteSpawned(name, w.role); room.memory.cqTurn = 0; } return rv; } }
+  // Logistics (queen/hauler/filler/manager/remote) before the raid fat body. Civilians after.
+  // If the raid body does not fit energyAvailable, bank — but only once nothing logistical is short,
+  // so a miner/hauler/filler/remote still spawns small instead of waiting on 3k–5k.
+  const CIV = new Set(['upgrader', 'builder', 'mminer']);
   for (const role of spawnOrder(count, T, nSites)) {
+    if (CIV.has(role)) continue;
     if (role === 'REMOTE') { const r = remoteSpawn(room, go, avail); if (r !== undefined) return r; continue; }
+    if ((count[role] || 0) >= T[role]) continue;
+    return homeRole(role);
+  }
+  { const RD = require('../roles/raid9'), w = RD.wantSpawn(room, avail); if (w) {
+    if (w.defer) { onWait('raid9', w.cost, avail); return ERR_NOT_ENOUGH_ENERGY; }
+    const rv = spawn.spawnCreep(w.body, 'raid9_' + room.name + Game.time, { memory: w.mem, directions: birthDirs(spawn, 'raid9') });
+    if (rv === OK) RD.noteSpawned();
+    return rv; } }
+  for (const role of spawnOrder(count, T, nSites)) {
+    if (!CIV.has(role)) continue;
     if ((count[role] || 0) >= T[role]) continue;
     return homeRole(role);
   }

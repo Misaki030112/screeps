@@ -141,6 +141,8 @@ function hop(c, dest) {
 module.exports = { ROUTE_FIX, routeJob, remoteRoadSite, remoteRefill, pickSource, hop, run(c) {
   const room = c.room, P = plan.get(c.memory.home || room.name) || plan.get(room.name);
   if (!P) return;
+  // W47N9 wartime: walk home and recycle. Logistics (miner/hauler/filler/remote) are not builders.
+  if (require('./raid9').recycleCivilian(c)) return;
   if (c.memory.working && c.store[RESOURCE_ENERGY] === 0) { c.memory.working = false; }
   if (!c.memory.working && c.store.getFreeCapacity() === 0) { c.memory.working = true; delete c.memory.src; }
   if (!c.memory.working) {

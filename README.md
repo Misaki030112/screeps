@@ -52,6 +52,9 @@ node scripts/check.js      # build + checks only
 node upload.js             # check then upload
 python3 status.py --live   # collect + summary
 ```
+
+## W47N9 wartime raid
+`src/roles/raid9.js` streams a field (d4 m6 r6 h10) at the east seal. Knobs live in `Memory.ops.w47n9` and per-creep `raidOrder` — see `docs/RAID_W47N9.md`. While the assault is on, both rooms recycle upgraders and builders; miners, fillers, haulers, and remotes stay first in the spawn queue. The bot does not activate safe mode. Arm only after deploy, by hand: `python3 tools/raid9.py arm` (not from a cloud agent).
 Token lives in `.env` (`SCREEPS_TOKEN=...`, chmod 600, gitignored).
 - Remote mining status: `python3 tools/remote_status.py`; W45N8 activity log `metrics/w45n8_activity.jsonl` (docs/REMOTE_W45N8.md).
 
