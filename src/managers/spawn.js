@@ -134,13 +134,15 @@ function targets(room, count, backlog, ctlEnergy, sites) {
 // 45-TTL upgrader unreplaced). One-sided UP_DIP=2000 kept T=2 down to reserve-2k (13.0k), so spawn kept replacing 2×1300
 // upgraders while the ferry correctly refused to pull under floor → ctl empty, thin_surplus, consec-under stuck
 // (patrol 2026-11-01 11:0x). Hysteresis: enter room.memory.upBank below reserve-UP_NOISE; leave only at reserve+UP_RECOVER.
+// Patrol 2026-11-02 16:56: T→0 recycled ALL upgraders (surplus) then a second cohort while stor oscillated 14.2–16.8k
+// → ~280t upgrade blackout (progress flat 84022948–84023230). Keep 1 while upBank so extras recycle but feed never zeroes.
 const UP_NOISE = 500, UP_RECOVER = 1000;
 function defLowUpgraders(t, e, reserve, held, downgradeRisk, mem) {
   mem = mem || {};
   if (!held) { delete mem.upBank; return downgradeRisk ? 1 : 0; }
   if (e < reserve - UP_NOISE) mem.upBank = 1;
   else if (e >= reserve + UP_RECOVER) delete mem.upBank;
-  if (mem.upBank) return downgradeRisk ? 1 : 0;
+  if (mem.upBank) return Math.min(t, 1); // keep one upgrading; was 0 (1 only on downgradeRisk)
   return t;
 }
 // Pre-spawn: a dying upgrader / home hauler / queen stops counting once its TTL is under spawn time + walk + margin,

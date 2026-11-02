@@ -26,19 +26,19 @@ const cases = [
   ['storage surplus but ctl EMA low -> 2', () => assert.strictEqual(up({ storage: 5000, ema: 300 }), 2)],
   ['higher defender reserve raises the floor', () => { assert.strictEqual(up({ storage: 2300, reserve: 2000 }), 2); assert.strictEqual(up({ storage: 3000, reserve: 2000 }), 3); }],
   ['no storage: EMA only (pre-storage behaviour)', () => assert.strictEqual(up({ hasStorage: false, ema: 1400 }), 3)],
-  ['defLow: upBank hysteresis — enter below reserve-500, stay until reserve+1000; no hold -> 0 (1 on downgrade risk)', () => {
+  ['defLow: upBank hysteresis — enter below reserve-500, stay until reserve+1000; keep 1 while banking; no hold -> 0 (1 on downgrade risk)', () => {
     const mem = {};
     assert.strictEqual(S.defLowUpgraders(2, 14700, 15000, true, false, mem), 2); // within noise, never banked
-    assert.strictEqual(S.defLowUpgraders(2, 14400, 15000, true, false, mem), 0); // enters upBank
+    assert.strictEqual(S.defLowUpgraders(2, 14400, 15000, true, false, mem), 1); // enters upBank, keep 1
     assert.strictEqual(mem.upBank, 1);
-    assert.strictEqual(S.defLowUpgraders(2, 15500, 15000, true, false, mem), 0); // still banking
+    assert.strictEqual(S.defLowUpgraders(2, 15500, 15000, true, false, mem), 1); // still banking
     assert.strictEqual(S.defLowUpgraders(2, 16000, 15000, true, false, mem), 2); // recovered
     assert.strictEqual(mem.upBank, undefined);
     // mid-band with sticky upBank (simulates defLow just cleared at 15.5k)
     const mid = { upBank: 1 };
-    assert.strictEqual(S.defLowUpgraders(2, 15500, 15000, true, false, mid), 0);
+    assert.strictEqual(S.defLowUpgraders(2, 15500, 15000, true, false, mid), 1);
     assert.strictEqual(mid.upBank, 1);
-    assert.strictEqual(S.defLowUpgraders(2, 12999, 15000, true, false, {}), 0);
+    assert.strictEqual(S.defLowUpgraders(2, 12999, 15000, true, false, {}), 1);
     assert.strictEqual(S.defLowUpgraders(2, 14400, 15000, false, false, {}), 0);
     assert.strictEqual(S.defLowUpgraders(2, 5000, 15000, false, true, {}), 1); }],
   ['capped by upgrader spots', () => assert.strictEqual(up({ storage: 9000, ema: 5000 }), 3)],
