@@ -499,6 +499,12 @@ function strike(c, t, w, hp) {
   const ht = hr && (hr.id === c.id ? c : Game.getObjectById(hr.id));
   if (ht && hr.mode === 'heal') c.heal(ht);
   else if (ht && hr.mode === 'ranged' && (hr.ratio < HEAL_URGENT || !ra || c.memory.kind === 'h')) { c.rangedHeal(ht); if (!ra) return; }
+  else if (!ht && c.memory.kind === 'h' && c.getActiveBodyparts(HEAL)) {
+    // Pre-heal: nobody hurt, keep the closest front creep topped (heal adj, rangedHeal at 2-3).
+    const f = c.pos.findInRange(FIND_MY_CREEPS, 3).filter(x => x.memory && (x.memory.kind === 'd' || x.memory.kind === 'm'));
+    const pf = f.length ? _.min(f, x => rng(c.pos, x.pos)) : null;
+    if (pf) { if (c.pos.isNearTo(pf)) c.heal(pf); else c.rangedHeal(pf); }
+  }
   if (ra) {
     const inR = (w.hc || []).filter(h => c.pos.inRangeTo(h, 3));
     if (useMass(c.pos, inR)) c.rangedMassAttack();
@@ -629,6 +635,18 @@ function fight(c, P) {
       if (hp && hp.mode === 'far' && hp.ratio < HEAL_URGENT) return c.moveTo(hp.pos, { range: 1, reusePath: 2, maxRooms: 1 });
       return go(c, goal.x, goal.y, kind === 'h' ? 1 : r);
     }
+  }
+  // Healers ride the front: stand 2 behind the most-hurt (else nearest) front creep so rangedHeal reaches,
+  // out of y<=44 RA reach; fall back to the heal row only when own HP < healerHold (default 0.6).
+  if (kind === 'h' && (phase === 'breach' || phase === 'punch') && front.length && P.healFront !== false) {
+    const hold = P.healerHold == null ? HEAL_URGENT : P.healerHold;
+    if (c.hits / c.hitsMax >= hold) {
+      const hurt = front.filter(x => x.hits < x.hitsMax);
+      const anchor = hurt.length ? _.min(hurt, x => x.hits / x.hitsMax) : _.min(front, x => rng(c.pos, x.pos));
+      const dy = P.healGap == null ? 2 : P.healGap;
+      return go(c, anchor.pos.x, Math.min(48, anchor.pos.y + dy), 0);
+    }
+    return go(c, post.x, Math.max(post.y, 47), 0);
   }
   const emGo = P.em && P.em.ids && P.em.ids.indexOf(c.name) >= 0;
   const emBack = P.emBack && P.emBack.indexOf(c.name) >= 0;
