@@ -111,3 +111,10 @@ Conclusion: no change. Towers alone beat the visible force with a wide margin; t
 W47N7 flee (`w8flee`, armed hostiles in W47N7 or W47N8 y<=10) cover the remote. Tower 820-1000 is the normal refill band,
 not a threat-posture leak (refill triggers at free > 200). Re-check only if the neighbour scan shows >= 6 healers or LO/GO
 (heal / tough) boosts in W48N9/W47N9. Safe mode stays Misaki's button.
+
+## 2026-11-02 retaliation hardening (Misaki: "加固城防，尤其面对他那一方")
+Memory.defense knobs (absent = old behaviour):
+- `w8seal` (set 1,000,000): north seal walls + gate 29,3 cap above the 300k STAGE3, clamped to WALL_TARGET[rcl] (1M at RCL7).
+  Builders raise lowest-first. Spawn rule 6 only spawns a builder for the part above 300k while storage >= `w8sealMinE` (default 5000).
+- `w8key` (set 300,000): KEY ramparts (spawn/tower/storage/terminal) soft target above SOFT_RAMP, while storage >= `w8keyMinE`
+  (default 8000) and no local threat. Above GATE_TOWER only towers within 10 tiles repair (efficiency 800 vs 200 hits/10e).

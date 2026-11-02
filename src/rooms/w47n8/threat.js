@@ -35,9 +35,21 @@ function urgentTarget() { return on() ? FLOOR : 0; }
 // 10-20 14:0x Misaki: staged north line (11 walls + gate 29,3): 100k until the spawn move (Memory.ops.w8move) is done, then 300k
 // from surplus; 500k later (after RCL6, not yet). Holds walls at 100k so storage can reach the 16k move trigger.
 const STAGE1 = 100000, STAGE3 = 300000;
+// 11-02 16:2x (Misaki t375u "加固城防，尤其面对他那一方"): post-W47N9-raid retaliation guard. Memory.defense knobs (absent = old behaviour):
+//   w8seal      north seal walls + gate 29,3 cap above STAGE3 (clamped to WALL_TARGET[rcl]: 1M at RCL7). Builders raise lowest-first, so
+//               the line climbs evenly 300k -> 1M.
+//   w8sealMinE  colony storage needed to SPAWN a surplus wall builder for the part above STAGE3 (default 5000); below it the
+//               spawn rule sees the old 300k cap, so the deep raise never starves the bank/upgraders.
+//   w8key       KEY rampart (spawn/tower/storage/terminal) soft target above SOFT_RAMP; w8keyMinE (default 8000) storage gate.
+const D8 = () => (typeof Memory !== 'undefined' && Memory.defense) || {};
+const num = (v, d) => (typeof v === 'number' && v >= 0 ? v : d);
+function sealCap() { const v = num(D8().w8seal, 0); return v > STAGE3 ? v : STAGE3; }
+function sealMinE() { return num(D8().w8sealMinE, 5000); }
+function keyTarget() { return num(D8().w8key, 0); }
+function keyMinE() { return num(D8().w8keyMinE, 8000); }
 function planTarget(level, base) {
   if (level < 5) return base;
   const m = Memory.ops && Memory.ops.w8move;
-  return (m && m.phase !== 'done') ? Math.min(base, STAGE1) : Math.min(Math.max(base, STAGE3), STAGE3);
+  return (m && m.phase !== 'done') ? Math.min(base, STAGE1) : Math.max(STAGE3, Math.min(base, sealCap()));
 }
-module.exports = { planTarget, STAGE1, STAGE3, mark, on, localOn, flee, invasion, wallTarget, urgentTarget, WINDOW, FLOOR };
+module.exports = { sealCap, sealMinE, keyTarget, keyMinE, planTarget, STAGE1, STAGE3, mark, on, localOn, flee, invasion, wallTarget, urgentTarget, WINDOW, FLOOR };
