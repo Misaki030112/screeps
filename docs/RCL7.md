@@ -541,5 +541,23 @@ Closes 11:4x remaining code gap: `mineralSend` + `termFuel` behind `RCL6_MINERAL
 
 ### Watch
 - `w8day.bankWhy=soft` → `ready` and `softLeft→0` within ~0.5–1 h if loose drains.
-- Then nUp→3, upg recover toward ≥24 (ideal 30 still trimmed by waste/upkeep).
+- Then nUp→3, upg recover toward ≥24 (ideal 30 still trimmed by waste/upkeep) — **unless threat soft** (`TH.localOn`). See 11:4x: that window keeps ≤2 even after 25k.
 - Source conts leave 1800–2000; home soft ≥70% hold.
+
+## 2026-11-02 11:4x — threat soft holds w8upgrader ≤2
+
+**Question:** After storage passed `LEAN_SOFT` 25k, why did W47 2h upgrade drop to ~46.7% with w8upgrader at 4 / WORK40 and lots of `waiting_feed` while threat soft was hoarding energy? Does the soft-cap rise on stor≥25k even under threat soft?
+
+**Answer: Yes — verified.** The ≤2 cap was only `stor < LEAN_SOFT`. Threat soft (`TH.localOn()`, `w8soft.why=threat`) never entered it. With seal walls already above the 100k urgent floor, `wallsLow` is false, so the peacetime base (3 with no sites) plus surplus climbed to 4×10W while towers held energy for combat. **Hold ≤2 for the local threat window only.** Neighbor `w8threatN` does not count. When the 1500-tick window ends, normal soft-band / soft-cap resumes. Do NOT flip labs/industry/market or the home upgrader cap.
+
+### Gate
+- `threatSoft()` = `TH.localOn()` = `Memory.ops.w8threat` within 1500 ticks (same predicate as soft-ramp `why=threat`).
+- `softCap2(storE)` = `threatSoft() || storE < LEAN_SOFT` (25000).
+- While `softCap2`: base spawn `min(base, 2)`, surplus upgraders off, `leanBankRecycle` keeps ≤2 (leanBank ≤1 still wins).
+- `w8day.threatSoft`, `w8day.softCap2`, `bankWhy=threatSoft` when stor≥25k and the cap is threat-held.
+- Reversible by doing nothing: the flag clears when `w8threat` ages out. No Memory toggle to remember to undo.
+
+### Shipped
+- `src/rooms/w47n8/index.js`: `threatSoft` / `softCap2` on spawn, surplus, and recycle.
+- Tests: `w47n8_dayobs.js` (recycle + `w8threatN` does not hold), `w47n8_mminer.js` (spawn stays ≤2 / fills to 2 / 3rd returns in peace).
+- **No `ops.labs` / `RCL6_LABS` / industry / market flips. Home W46N8 upgrader soft-cap untouched.**

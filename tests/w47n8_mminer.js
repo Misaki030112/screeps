@@ -343,4 +343,71 @@ C.RCL6_MINERALS = true;
   C.RCL6_MINERALS = false;
 }
 
+// 11:4x: threat soft (TH.localOn / w8threat) keeps w8upgrader ≤2 after stor≥LEAN_SOFT.
+// Peace / w8threatN-only still spawn the 3rd (no sites → base 3) once the cushion is full.
+{
+  const savedT = Game.time;
+  Game.time = savedT + 100; // bust fill.js duty cache from earlier spawnRuns
+  const upBody = Array(10).fill({ type: 'work' }).concat([{ type: 'carry' }, { type: 'move' }, { type: 'move' }]);
+  const mk = (role) => ({
+    memory: { role, home: C.ROOM },
+    ticksToLive: 1000, spawning: false,
+    body: role === 'w8upgrader' ? upBody : [{ type: 'work' }, { type: 'work' }, { type: 'work' }, { type: 'work' }, { type: 'work' }, { type: 'work' }, { type: 'move' }],
+    getActiveBodyparts(t) { return this.body.filter(p => p.type === t).length; },
+    pos: { x: 20, y: 20, inRangeTo: () => false },
+  });
+  const st = {};
+  const put = (x, y, o) => { (st[x * 50 + y] = st[x * 50 + y] || []).push(Object.assign({ pos: { x, y, inRangeTo: () => false } }, o)); };
+  put(33, 30, { structureType: 'spawn', store: { energy: 300, getCapacity: () => 300, getFreeCapacity: () => 0 } }); // ORDER.spawn[1]
+  put(22, 7, { structureType: 'tower', store: { energy: 900, getFreeCapacity: () => 0 } }); // ORDER.tower[2]
+  put(37, 44, { structureType: 'container', store: { energy: 0, getFreeCapacity: () => 2000 } });
+  const room = {
+    name: C.ROOM, energyAvailable: 2300, energyCapacityAvailable: 2300,
+    controller: { level: 7, my: true, ticksToDowngrade: 100000 },
+    storage: { store: { energy: 30000 }, pos: { x: 35, y: 32 } },
+    terminal: { store: {} }, memory: {},
+    lookForAt: (k, x, y) => k === 'structure' ? (st[x * 50 + y] || []) : [],
+    find: (k, o) => {
+      let a = [];
+      if (k === FIND_MY_CREEPS) a = Object.values(Game.creeps);
+      return o && o.filter ? a.filter(o.filter) : a;
+    },
+  };
+  let got = null;
+  const spawn = {
+    room, spawning: null, pos: { x: 34, y: 30, getRangeTo: () => 10 },
+    spawnCreep: (b, n, o) => { got = o.memory; return 0; },
+  };
+  const fleet = (nUp) => {
+    const o = {
+      a: mk('w8miner'), b: mk('w8miner'),
+      c: mk('w8hauler'), d: mk('w8hauler'),
+    };
+    o.a.memory.si = 0; o.b.memory.si = 1;
+    for (let i = 0; i < nUp; i++) o['u' + i] = mk('w8upgrader');
+    return o;
+  };
+  const run = (nUp, stor, ops) => {
+    got = null;
+    room.storage.store.energy = stor;
+    Game.creeps = fleet(nUp);
+    const keep = { w8model: Memory.ops.w8model };
+    Memory.ops = Object.assign(keep, ops || {});
+    W.spawnRun(spawn);
+    return got && got.role;
+  };
+  C.RCL6_MINERALS = true;
+  assert.strictEqual(run(2, 30000, {}), 'w8upgrader', 'peace stor≥25k no sites → 3rd upgrader');
+  assert.strictEqual(run(2, 30000, { w8threat: Game.time }), null, 'threat soft stor≥25k → stay ≤2');
+  assert.strictEqual(run(1, 30000, { w8threat: Game.time }), 'w8upgrader', 'threat soft still fills up to 2');
+  assert.strictEqual(run(2, 30000, { w8threatN: Game.time }), 'w8upgrader', 'w8threatN alone does not hold ≤2');
+  assert.strictEqual(run(2, 20000, {}), null, 'stor<LEAN_SOFT still ≤2 with threat off');
+  assert.strictEqual(W.threatSoft(), false);
+  assert.strictEqual(W.softCap2(20000), true);
+  assert.strictEqual(W.softCap2(30000), false);
+  Memory.ops = { w8model: { links: true, lcarry: 9, rcarry: 49, upw: 31 } };
+  Game.time = savedT;
+  C.RCL6_MINERALS = false;
+}
+
 console.log('w47n8_mminer ok');
