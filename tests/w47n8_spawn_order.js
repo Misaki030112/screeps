@@ -1,8 +1,9 @@
 // 14:57: spawn energy order (hub first, Spawn2 + temp exts last), hauler fill order, RCL7 temp-extension swap, RCL7 hub spawn site
 const assert = require('assert'), path = require('path');
-Object.assign(global, { _: require('lodash'), FIND_MY_STRUCTURES: 10, FIND_MY_CONSTRUCTION_SITES: 1, FIND_MY_SPAWNS: 2, FIND_MY_CREEPS: 3, FIND_STRUCTURES: 5,
+Object.assign(global, { _: require('lodash'), FIND_MY_STRUCTURES: 10, FIND_MY_CONSTRUCTION_SITES: 1, FIND_MY_SPAWNS: 2, FIND_MY_CREEPS: 3, FIND_STRUCTURES: 5, FIND_MINERALS: 116, FIND_DROPPED_RESOURCES: 1006,
   STRUCTURE_EXTENSION: 'extension', STRUCTURE_SPAWN: 'spawn', STRUCTURE_TOWER: 'tower', STRUCTURE_ROAD: 'road', STRUCTURE_RAMPART: 'rampart', STRUCTURE_CONTAINER: 'container',
-  STRUCTURE_STORAGE: 'storage', STRUCTURE_WALL: 'constructedWall', RESOURCE_ENERGY: 'energy', LOOK_STRUCTURES: 'ls', LOOK_CONSTRUCTION_SITES: 'lc', OK: 0, ERR_RCL_NOT_ENOUGH: -14,
+  STRUCTURE_STORAGE: 'storage', STRUCTURE_WALL: 'constructedWall', STRUCTURE_EXTRACTOR: 'extractor', STRUCTURE_TERMINAL: 'terminal', STRUCTURE_LINK: 'link', STRUCTURE_LAB: 'lab',
+  RESOURCE_ENERGY: 'energy', LOOK_STRUCTURES: 'ls', LOOK_CONSTRUCTION_SITES: 'lc', OK: 0, ERR_RCL_NOT_ENOUGH: -14,
   WORK: 'work', CARRY: 'carry', MOVE: 'move', ATTACK: 'attack', RANGED_ATTACK: 'ranged_attack', HEAL: 'heal', TOUGH: 'tough', CLAIM: 'claim', FIND_HOSTILE_CREEPS: 4,
   Memory: { ops: { w8layout: 'approved' } }, Game: { time: 1000, rooms: {}, creeps: {} } });
 const W = require(path.join(__dirname, '..', 'src', 'rooms', 'w47n8', 'index.js'));

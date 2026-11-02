@@ -235,6 +235,9 @@ W.dayObs(withTerm);
 assert.strictEqual(Memory.ops.w8day.bankWhy, 'ready');
 assert.strictEqual(Memory.ops.w8day.threatSoft, 0, 'peacetime threatSoft off');
 assert.strictEqual(Memory.ops.w8day.softCap2, 0, 'stor≥LEAN_SOFT peacetime lifts ≤2');
+assert.strictEqual(W.FEED_MIN, 800, '11:4x strategy FEED_MIN');
+assert.strictEqual(Memory.ops.w8day.ctlBat, 0, 'mk has no CTL cont/link → ctlBat 0');
+assert.strictEqual(Memory.ops.w8day.feedOk, 0, 'empty battery → feedOk 0');
 // 11:4x: local threat (w8soft.why=threat / TH.localOn) holds ≤2 even after LEAN_SOFT.
 // Neighbor w8threatN must NOT — chronic W47N9 camp would pin the cap forever.
 delete Memory.ops.w8recycle;
@@ -263,13 +266,38 @@ assert.strictEqual(W.softCap2(30000), false, 'neighbor camp does not hold ≤2')
 assert.strictEqual(Memory.ops.w8day.threatSoft, 0);
 assert.strictEqual(Memory.ops.w8day.softCap2, 0);
 assert.strictEqual(Memory.ops.w8day.bankWhy, 'ready');
-assert.ok(!(Memory.ops.w8recycle || []).length, 'w8threatN does not recycle: ' + JSON.stringify(Memory.ops.w8recycle));
+// w8threatN alone must NOT softCap2-recycle to ≤2; thin battery may still trim surplus 4→≤3 (feed-gate).
+assert.ok((Memory.ops.w8recycle || []).length <= 1, 'w8threatN must not softCap2-recycle to ≤2: ' + JSON.stringify(Memory.ops.w8recycle));
+if ((Memory.ops.w8recycle || []).length) {
+  assert.strictEqual((Memory.ops.w8recycle || []).length, 1, 'feed-starve only trims surplus above 3');
+}
 delete Memory.ops.w8threatN;
 delete Memory.ops.w8recycle;
 W.dayObs(rThreat);
 assert.strictEqual(Memory.ops.w8day.bankWhy, 'ready', 'window clear → normal soft-cap resumes');
 assert.strictEqual(Memory.ops.w8day.softCap2, 0);
-assert.ok(!(Memory.ops.w8recycle || []).length, 'peace ≥25k does not recycle');
+assert.strictEqual(Memory.ops.w8day.feedOk, 0, 'peace ≥25k still feedOk=0 without CTL battery');
+assert.ok((Memory.ops.w8recycle || []).length >= 1, '11:4x strategy: thin ctl battery recycles 4→≤3: ' + JSON.stringify(Memory.ops.w8recycle));
+// peacetime ≥25k + ctl battery filled → no recycle (surplus allowed once feedOk)
+delete Memory.ops.w8recycle;
+Memory.ops.w8day = { leanBank: 0 };
+const Ccfg = require(path.join(d, 'config'));
+const batBuilt = done.concat([[35, 33, 'terminal'], [37, 44, 'container'],
+  [Ccfg.CTL_CONT[0], Ccfg.CTL_CONT[1], 'container'], [Ccfg.CTL_LINK[0], Ccfg.CTL_LINK[1], 'link']]);
+const rFeed = mk(7, batBuilt, threatUps, 0);
+rFeed.storage.store.energy = 30000;
+rFeed.terminal = { store: {} };
+const ctlC = rFeed.lookForAt(LOOK_STRUCTURES, Ccfg.CTL_CONT[0], Ccfg.CTL_CONT[1])[0];
+ctlC.store = { energy: 1500 };
+const ctlL = rFeed.lookForAt(LOOK_STRUCTURES, Ccfg.CTL_LINK[0], Ccfg.CTL_LINK[1])[0];
+ctlL.store = { energy: 400 };
+assert.strictEqual(W.ctlBattery(rFeed), 1900, 'ctlBattery sums cont+link');
+assert.ok(W.ctlBattery(rFeed) >= W.FEED_MIN);
+W.dayObs(rFeed);
+assert.strictEqual(Memory.ops.w8day.softCap2, 0);
+assert.strictEqual(Memory.ops.w8day.ctlBat, 1900);
+assert.strictEqual(Memory.ops.w8day.feedOk, 1, 'battery ≥FEED_MIN → feedOk');
+assert.ok(!(Memory.ops.w8recycle || []).length, 'peace ≥25k + feedOk does not recycle: ' + JSON.stringify(Memory.ops.w8recycle));
 // 05:4x/20:4x: soft-cap still works; at stor5k leanBank now ON → recycle to ≤1 (stricter than soft ≤2)
 delete Memory.ops.w8recycle;
 Memory.ops.w8day = { leanBank: 0 };

@@ -561,3 +561,24 @@ Closes 11:4x remaining code gap: `mineralSend` + `termFuel` behind `RCL6_MINERAL
 - `src/rooms/w47n8/index.js`: `threatSoft` / `softCap2` on spawn, surplus, and recycle.
 - Tests: `w47n8_dayobs.js` (recycle + `w8threatN` does not hold), `w47n8_mminer.js` (spawn stays ≤2 / fills to 2 / 3rd returns in peace).
 - **No `ops.labs` / `RCL6_LABS` / industry / market flips. Home W46N8 upgrader soft-cap untouched.**
+
+## 2026-11-02 14:4x — peacetime ctl-battery surplus gate
+
+**Question:** After softCap2 lifts (stor≥25k and threatSoft=0), why does W47 still stall ~53% of ideal with nUp=4 / WORK40 and `waiting_feed`~30% while storage climbs?
+
+**Answer: Surplus spawned off storage alone; ctl battery was not yet saturated.** SoftCap2 correctly cleared. Base nUp→3 and the surplus rule `floor((stor-2000-…)/600)` immediately allowed a 4th 10W body. A→ctl link throughput is ~10 e/t gross (~8 net after losses); hub delivery ~18 e/t. Four stands need ~40 e/t when fed — they starve. Overmind pairs storageBuffer WORK scaling with **battery input requests** at `upgradePowerNeeded` (keep battery ≥50%). TooAngel places storage next to the upgrader so haul distance is near zero. We keep LEAN_SOFT 25k (tighter than Overmind’s ~100k) but must gate surplus on the ctl container+link battery.
+
+### Gate
+- `FEED_MIN = 800` (link almost full; hold-band uses 1200).
+- `ctlBattery(room)` = energy in `CTL_CONT` [13,26] + `CTL_LINK` [13,25].
+- Peacetime surplus spawn: requires `!softCap2 && ctlBattery ≥ FEED_MIN` (base 3 unchanged).
+- Recycle: if softCap2 off and `ctlBattery < FEED_MIN/2` (400), keep ≤3 (stands stay saturable). softCap2 ≤2 and leanBank ≤1 still win.
+- Obs: `w8day.ctlBat`, `w8day.feedOk`.
+
+### Shipped
+- `src/rooms/w47n8/index.js` + `tests/w47n8_dayobs.js`.
+- **No softCap2 predicate change / labs / HUB_LINK / industry / market / home upgrader flips. ops.labs still Misaki — no re-ask.**
+
+### Watch
+- After deploy: nUp should trim 4→3 until ctlBat≥800; waiting_feed↓; 2h upg climb toward ≥24; stor may rise slower (good).
+- Do **not** enable `HUB_LINK` yet — measure feed-gate first.

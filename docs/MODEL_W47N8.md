@@ -171,3 +171,10 @@ Links **live and transferring**: A 26,12 → ctl 13,25 (both hold energy; hauler
 
 **Fix:** `softCap2` = `TH.localOn()` **or** stor<25k. `w8threatN` excluded (chronic camp). See `docs/RCL7.md` "11:4x".
 
+## 2026-11-02 14:4x — peacetime overshoot after softCap lift
+
+**Symptom (t~84018710, ~11:46 HKT):** softCap2=0, stor~27–28k, nUp=4 WORK40, waiting_feed~0.30, upgrade **16.3 / 30.08 ≈ 54%**, delivered ctl~7.8 hub~18, storage_delta~+1.5 e/t. src_A soft ~0.85 (link era). ETA RCL8 ~785 h at actual (ideal ~425 h).
+
+**Mechanism:** Surplus counted storage headroom, not ctl battery fill. Overmind: `UpgradeSite` requests input equal to upgrade power and scales WORK only with storageBuffer. TooAngel: storage beside upgrader. Our ctl is link+cont fed; hub is the larger sink until feedOk.
+
+**Fix:** `FEED_MIN` + `ctlBattery` gate on surplus / recycle-to-3. See `docs/RCL7.md` "14:4x". Do not flip `HUB_LINK` on this evidence alone.

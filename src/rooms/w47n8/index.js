@@ -234,7 +234,8 @@ function spawnRun(spawn) {
     const wcap = Math.max(24, Math.min(40, (wm.upw || 0) + 5 * Math.floor(stor / 5000)));
     // 02:4x: no surplus upgraders while cushion thin (stor < LEAN_SOFT) — soft-cap holds at ≤2 from the base rule above.
     // 11:4x: softCap2 also blocks surplus while threat soft is on, so stor≥25k cannot expand to 4×10W.
-    if (!want && !wallsLow && !energyBank(room) && !softCap2(stor) && nUp() < Math.min(6, (bigBuild ? 2 : 3) + Math.floor(Math.max(0, loose + hubIdle + Math.max(0, stor - 2000) - 600) / 600))
+    // 11:4x strategy: peacetime surplus also needs ctlBattery≥FEED_MIN so stor≥25k alone cannot jump to WORK40 / waiting_feed.
+    if (!want && !wallsLow && !energyBank(room) && !softCap2(stor) && ctlBattery(room) >= FEED_MIN && nUp() < Math.min(6, (bigBuild ? 2 : 3) + Math.floor(Math.max(0, loose + hubIdle + Math.max(0, stor - 2000) - 600) / 600))
       && _.sum(cs.filter(c => c.memory.role === 'w8upgrader' && (c.spawning || !(c.ticksToLive <= 3 * (c.body || []).length + 60))), c => _.filter(c.body, p => p.type === WORK).length) + bodyFor('w8upgrader', cap).filter(p => p === WORK).length <= wcap + 5) want = 'w8upgrader'; // 15:55: a whole new body must fit (upw 31 made 4x10W = 40 WORK on ~30 e/t net) // 14:55: WORK cap = model net income (upw ~30) instead of fixed 24 // 21:20: 16->24 WORK; income ~20 local + ~13 W47N7 remote, ctl cont 1984/2000 full with 4x4W upgraders (WORK-bound)
   }
   // 6) wall builder from surplus (19:18): 1 builder while a seal wall is below target and spawn is full
@@ -398,6 +399,22 @@ const LEAN_SOFT = 25000;
 // stor<LEAN_SOFT only and base/surplus resume. Home W46N8 upgraders do not use this.
 function threatSoft() { return TH.localOn(); }
 function softCap2(storE) { return threatSoft() || (storE || 0) < LEAN_SOFT; }
+// 11:4x strategy 2026-11-02: peacetime overshoot after softCap lift.
+// Overmind UpgradeSite scales WORK off storageBuffer (~100k) AND requests battery input at
+// upgradePowerNeeded (battery kept ≥50%). TooAngel co-locates storage beside the upgrader so
+// feed is not the bottleneck. We park at LEAN_SOFT 25k (tighter), then the surplus rule counted
+// stor-2000 → 4×10W=WORK40 the tick softCap2 cleared, while A→ctl link + haulers only deliver
+// ~8 e/t to ctl (hub ~18) → waiting_feed ~30%, 2h upgrade stuck ~53%. Gate surplus on ctl battery.
+const FEED_MIN = 800; // surplus nUp>base needs ctl cont+link ≥ this (hold-band uses 1200; 800 = link almost full)
+function ctlBattery(room) {
+  let e = 0;
+  const cont = room.lookForAt(LOOK_STRUCTURES, C.CTL_CONT[0], C.CTL_CONT[1]).find(s => s.structureType === STRUCTURE_CONTAINER);
+  if (cont && cont.store) e += cont.store[RESOURCE_ENERGY] || 0;
+  const [lx, ly] = C.CTL_LINK || [13, 25];
+  const link = room.lookForAt(LOOK_STRUCTURES, lx, ly).find(s => s.structureType === STRUCTURE_LINK);
+  if (link && link.store) e += link.store[RESOURCE_ENERGY] || 0;
+  return e;
+}
 // 08:4x 2026-10-31 strategy: after RCL7 day-crit (spawn2+tower3), throttle upgrade so storage can reach 20k for lean KO.
 // 20:4x: day-crit ≠ 50ext — arm leanBank while the 10ext wave is still building (builders keep sites; upgraders throttle).
 // Opt-out: Memory.ops.w8leanBank === false. Does NOT flip RCL6_MINERALS / RCL6_LABS. See docs/RCL7.md "08:4x".
@@ -444,11 +461,13 @@ function leanBankRecycle(room) {
   // 02:4x: keep ≤1 under leanBank; keep ≤2 while cushion thin (stor < LEAN_SOFT) even after ready.
   // 05:4x: soft-cap must survive RCL6_MINERALS flip — Overmind storageBuffer is gate-agnostic; post-minBuild stor can be ≪25k.
   // 11:4x: softCap2 also recycles back to ≤2 while threat soft is on, even after stor≥LEAN_SOFT (4×10W waiting_feed).
+  // 11:4x strategy: peacetime feed-starve — if softCap2 off but ctl battery thin, trim surplus above base 3 (keep stands saturable).
   const banking = leanBank(room);
   const storE = room.storage && room.storage.store ? (room.storage.store[RESOURCE_ENERGY] || 0) : 0;
   let keep = Infinity;
   if (banking) keep = 1;
   else if (room.controller && room.controller.level >= 7 && softCap2(storE)) keep = 2;
+  else if (room.controller && room.controller.level >= 7 && ctlBattery(room) < Math.floor(FEED_MIN / 2)) keep = 3;
   else return;
   const ups = [];
   for (const n in Game.creeps) {
@@ -594,6 +613,7 @@ function dayObs(room) {
     missSpawn: missSpawn ? 1 : 0, missTower: missTower ? 1 : 0, missExt, why, phase,
     bankLeft, bankEta, leanBank: lb ? 1 : 0, bankArm: LEAN_ARM, bankSoft: LEAN_SOFT, bankWhy, softLeft,
     threatSoft: threatSoft() ? 1 : 0, softCap2: softCap2(storE) ? 1 : 0, // 11:4x: ≤2 gate (local threat OR stor<LEAN_SOFT); leanBank still tighter at ≤1
+    ctlBat: ctlBattery(room), feedOk: ctlBattery(room) >= FEED_MIN ? 1 : 0, // 11:4x strategy: peacetime surplus needs feedOk
     towerMinE, towerHubE, towerNorthE, nf, eAvail, eCap, looseE: loose };
   leanBankRecycle(room);
   // 23:4x strategy: lean KO readiness (docs/MINERAL_DEFENSE_ROADMAP.md §5). Dormant report only — gates stay false.
@@ -860,4 +880,4 @@ function selfSufficient() {
   const r = Game.rooms[C.ROOM]; if (!r || !r.find(FIND_MY_SPAWNS).length) return false;
   return mine().some(c => c.memory.role === 'w8miner'); // Spawn2 + its own miner -> home stops cq pioneers/haulers (guard stays)
 }
-module.exports = { sealAt, banking, BANK_HOLD, LEAN_STOR, LEAN_ARM, LEAN_SOFT, threatSoft, softCap2, leanBank, leanMinBuild, energyBank, dayofMiss, moveRun, moveReady, rampNeeded, homeWant, linkAt, linkRun, rampHold, dayObs, mineralSend, swapTemp, extBatch, energyOrder, ROOM: C.ROOM, spawnRun, layoutRun, towerRun, selfSufficient, bodyFor, rmLead8 };
+module.exports = { sealAt, banking, BANK_HOLD, LEAN_STOR, LEAN_ARM, LEAN_SOFT, FEED_MIN, threatSoft, softCap2, ctlBattery, leanBank, leanMinBuild, energyBank, dayofMiss, moveRun, moveReady, rampNeeded, homeWant, linkAt, linkRun, rampHold, dayObs, mineralSend, swapTemp, extBatch, energyOrder, ROOM: C.ROOM, spawnRun, layoutRun, towerRun, selfSufficient, bodyFor, rmLead8 };
