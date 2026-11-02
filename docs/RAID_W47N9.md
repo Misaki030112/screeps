@@ -65,6 +65,19 @@ Both rooms then:
 - builder target 0, and living builders walk to spawn and recycle (colony via `Memory.ops.w8recycle`)
 - upgrader target 0, except **one** upgrader if `ticksToDowngrade < 20000`
 - miners, fillers, haulers, queens, and remotes stay on their normal targets
+- peacetime surplus / softCap2 lifts / HUB_LINK / labs / industry **stay off the menu** while paused — do not flip those gates for war
+- observability: `Memory.ops.w8day.warMode` + `bankWhy=war`; `Memory.ops.upgFeed.warMode` / `why=war`
+
+### Storage floors (2026-11-02 14:5x)
+
+`wantSpawn` refuses a fat body when the room has storage **below**:
+
+| Room | Default floor | Override |
+|---|---|---|
+| W46N8 (home) | **12000** | `Memory.ops.w47n9.storFloorHome` |
+| W47N8 (stage) | **15000** | `Memory.ops.w47n9.storFloorStage` |
+
+Missing storage → allow (pre-storage / tests). Floors protect queens/towers; logistics still spawn ahead of raid bodies. Pattern matches Overmind warSpawnCutoff / TooAngel underSiege parking upgrade while combat drains the bank.
 
 ## Spawn
 

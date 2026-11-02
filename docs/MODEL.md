@@ -185,3 +185,7 @@ Reading: storage pinned at the 15k floor means upgrade = income - upkeep - event
 - Short soft near 15k is usually **`upBank` hysteresis** (spawn enter reserve−500 / leave +1000), not waiting_feed. `Memory.ops.upgFeed.why=floor_bank` + `upBank`/`tUp`/`allowExtra`/`boundHint` (shipped this review) separates that from ctl_starved / thin_surplus.
 - Keep comparing soft to idealAdj / ≥70% band; do not chase live_comp back to 26 by cutting remotes or lowering the floor.
 
+## Wartime upgrade ideal (2026-11-02 14:5x)
+
+Under `pauseCivilians` (W47N9 GO), treat home/W47 **upgrade ideal as ~0** except the downgrade keep (1 upgrader if `ticksToDowngrade < 20000`). Do not chase peacetime 26 / 30.08 e/t until stand-down. Obs: `upgFeed.why=war`, `w8day.bankWhy=war`.
+

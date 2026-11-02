@@ -582,3 +582,20 @@ Closes 11:4x remaining code gap: `mineralSend` + `termFuel` behind `RCL6_MINERAL
 ### Watch
 - After deploy: nUp should trim 4→3 until ctlBat≥800; waiting_feed↓; 2h upg climb toward ≥24; stor may rise slower (good).
 - Do **not** enable `HUB_LINK` yet — measure feed-gate first.
+
+## Wartime economy freeze (2026-11-02 14:5x)
+
+While `Memory.ops.w47n9.on` + `pauseCivilians` (Misaki GO):
+
+| Lever | Wartime behavior |
+|---|---|
+| Home / W47 upgraders | target **0** (keep 1 only if `ticksToDowngrade < 20000`); living surplus → recycle |
+| Builders | target **0** + recycle |
+| softCap2 / feedOk / ctlBattery | peacetime only; war does **not** lift surplus when softCap2 clears |
+| HUB_LINK / labs / industry / market | **stay OFF** — do not flip for war |
+| Raid spawn floors | home stor ≥ **12k**, colony ≥ **15k** (`raid9.WAR_STOR`) |
+| Queens / fillers / miners / haulers / remotes | keep feeding spawn + towers |
+| Ideal upgrade | wartime ideal ≈ **0** (downgrade insurance only); resume peacetime ideal after stand-down |
+
+Refs: Overmind `storageBuffer` + warSpawnCutoff; TooAngel `upgraderMinStorage` / underSiege. Detail: `docs/RAID_W47N9.md`, `ROADMAP.md` 14:5x.
+

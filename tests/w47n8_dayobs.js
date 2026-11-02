@@ -320,6 +320,23 @@ withTermSoftHold.terminal = { store: {} };
 W.dayObs(withTermSoftHold);
 assert.strictEqual(Memory.ops.w8day.leanBank, 0, 'hold-band leanBank off');
 assert.ok((Memory.ops.w8recycle || []).length >= 2, '05:4x soft-cap post-gate recycles to ≤2 at 18k: ' + JSON.stringify(Memory.ops.w8recycle));
+
+// 14:4x wartime: pauseCivilians → bankWhy=war + warMode=1 + recycle keep≤1 (upgraderKeep 0 when TTL high)
+delete Memory.ops.w8recycle;
+Memory.ops.w8day = { leanBank: 0 };
+Memory.ops.w47n9 = { on: true, pauseCivilians: true };
+const warUps = [{ memory: { role: 'w8upgrader' } }, { memory: { role: 'w8upgrader' } },
+  { memory: { role: 'w8upgrader' } }, { memory: { role: 'w8builder' } }];
+const warRoom = mk(7, done.concat([[35, 33, 'terminal'], [37, 44, 'container']]), warUps, 0);
+warRoom.storage.store.energy = 30000;
+warRoom.terminal = { store: {} };
+warRoom.controller.ticksToDowngrade = 100000;
+W.dayObs(warRoom);
+assert.strictEqual(Memory.ops.w8day.warMode, 1, 'warMode obs');
+assert.strictEqual(Memory.ops.w8day.bankWhy, 'war', 'bankWhy war overrides threatSoft/ready');
+assert.ok((Memory.ops.w8recycle || []).length >= 3, 'war recycles surplus upgraders+builder: ' + JSON.stringify(Memory.ops.w8recycle));
+delete Memory.ops.w47n9;
+
 C.RCL6_MINERALS = true; // leave matching live config
 delete Game.rooms.W46N8;
 

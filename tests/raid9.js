@@ -96,6 +96,26 @@ assert.ok(R.pauseCivilians(), 'explicit flag pauses even if on is false');
 delete Memory.ops.w47n9.pauseCivilians;
 assert.ok(!R.pauseCivilians());
 
+// 14:4x wartime storage floors — missing storage still allows spawn (legacy tests); thin stor blocks.
+Memory.ops.w47n9 = { on: true };
+Game.creeps = {};
+assert.strictEqual(R.WAR_STOR.home, 12000);
+assert.strictEqual(R.WAR_STOR.stage, 15000);
+assert.ok(R.warStorOk(room('W46N8', 8000)), 'no storage → allow');
+const thinHome = Object.assign(room('W46N8', 8000), { storage: { store: { energy: 11000 } } });
+assert.ok(!R.warStorOk(thinHome), 'home under 12k blocks');
+assert.strictEqual(R.wantSpawn(thinHome), null, 'wantSpawn null under home floor');
+const okHome = Object.assign(room('W46N8', 8000), { storage: { store: { energy: 13000 } } });
+assert.ok(R.warStorOk(okHome));
+assert.strictEqual(R.wantSpawn(okHome).mem.kind, 'd');
+const thinCol = Object.assign(room('W47N8', 8000), { storage: { store: { energy: 14000 } } });
+assert.strictEqual(R.wantSpawn(thinCol), null, 'colony under 15k blocks');
+const okCol = Object.assign(room('W47N8', 8000), { storage: { store: { energy: 20000 } } });
+assert.strictEqual(R.wantSpawn(okCol).mem.kind, 'h');
+Memory.ops.w47n9.storFloorHome = 5000;
+assert.ok(R.wantSpawn(thinHome).mem.kind === 'd', 'storFloorHome override');
+delete Memory.ops.w47n9.storFloorHome;
+
 const Tgt = { builder: 4, upgrader: 2, hauler: 1 };
 Memory.ops.w47n9 = { on: true };
 R.applyPause(Tgt, { controller: { ticksToDowngrade: 100000 } });

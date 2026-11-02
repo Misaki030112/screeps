@@ -117,12 +117,28 @@ function wantKind(roomName, have, max, cap) {
   }
   return null;
 }
+// Wartime storage floors (strategy 2026-11-02 14:4x): fat WAVE bodies must not starve queens/towers.
+// Home 12k = emergency under reserveE 15k; colony 15k = LEAN_ARM. Missing storage → allow (tests / pre-storage).
+// Override: Memory.ops.w47n9.storFloorHome / storFloorStage. Never auto safe-mode.
+const WAR_STOR = { home: 12000, stage: 15000 };
+function warFloor(room) {
+  const P = Memory.ops && Memory.ops.w47n9;
+  if (room && room.name === HOME) return (P && P.storFloorHome != null) ? P.storFloorHome : WAR_STOR.home;
+  if (room && room.name === STAGE) return (P && P.storFloorStage != null) ? P.storFloorStage : WAR_STOR.stage;
+  return WAR_STOR.stage;
+}
+function warStorOk(room) {
+  if (!room || !room.storage || !room.storage.store) return true;
+  return (room.storage.store.energy || 0) >= warFloor(room);
+}
 // avail < fat cost → {defer:true}. Caller spawns a due logistics creep instead of idling on this body.
 // Spawn still banks once miners/haulers/fillers/remotes are met (that is the only way a 3620+ body builds).
 function wantSpawn(room, avail) {
   const P = Memory.ops && Memory.ops.w47n9;
   if (!raidActive(P) || !room || (P && P.pauseSpawn)) return null;
   if (room.name !== HOME && room.name !== STAGE) return null;
+  // Protect economy floors once storage exists (Overmind warSpawnCutoff / TooAngel underSiege pattern).
+  if (!warStorOk(room)) return null;
   const { max } = fieldCaps(P);
   const cap = room.energyCapacityAvailable || 5300;
   const alive = allRaid();
@@ -655,7 +671,7 @@ module.exports = {
   PULL_SOFT, PULL_HARD, MAX_Y43, NEAR_EXIT, EM_TICKS, UP_SAFE, PRIO, LADDER, GARRISON,
   DISMANTLER, MELEE, RANGED, HEALER, healBody, bodyFor, costOf,
   raidActive, pauseCivilians, upgraderKeep, applyPause, namesToRecycle, recycleCivilian,
-  fieldCaps, wantKind, wantSpawn, noteSpawned, mouthsOf, assignSeals, frontSlots, assignment,
+  WAR_STOR, warFloor, warStorOk, fieldCaps, wantKind, wantSpawn, noteSpawned, mouthsOf, assignSeals, frontSlots, assignment,
   swampStep, stepOntoSwamp, pullMode, inApproach, assaultReady, shouldRegroup, syncGo,
   observe, syncPhase, pick, pickInside, shouldYield, manualOrder, useMass, healPlan, armedParts, overrun,
   gSlotOf, run,

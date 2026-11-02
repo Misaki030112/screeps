@@ -48,8 +48,12 @@ function run(room) {
   const tUp = (room.memory.roleTargets && room.memory.roleTargets.upgrader != null)
     ? room.memory.roleTargets.upgrader : null;
   const allowExtra = floor + 1000; // 3rd upgrader gate (spawn SURPLUS)
+  // 14:4x wartime: applyPause freezes surplus; surface warMode for patrols.
+  let warMode = 0;
+  try { warMode = require('../roles/raid9').pauseCivilians() ? 1 : 0; } catch (e) { warMode = 0; }
   let why = 'ok';
-  if (pausedNet > 0) why = 'remote_pause';
+  if (warMode) why = 'war';
+  else if (pausedNet > 0) why = 'remote_pause';
   else if (upBank) why = 'floor_bank';
   else if (hungry > 0 && ctlEma < 400) why = 'ctl_starved';
   else if (surplus < 1000 && ctlEma < 700) why = 'thin_surplus';
@@ -59,7 +63,7 @@ function run(room) {
   const out = {
     t: Game.time, storE, floor, surplus: Math.round(surplus), allowExtra,
     ctl, ctlEma, ctlLinkE, hubLinkE, srcLinkE,
-    nUp, tUp, work, hungry, upBank, boundHint,
+    nUp, tUp, work, hungry, upBank, boundHint, warMode,
     pausedNet: Math.round(pausedNet * 100) / 100, idealAdj,
     rem: Object.keys(rem).map(r => r + ':' + rem[r]).join(','),
     why,

@@ -3,6 +3,14 @@
 Live refresh **17:4x UTC+8 2026-11-01** tick ~84003240。**不自动交易、不开 safe mode。**
 Misaki **已点头翻 `RCL6_MINERALS`**（b758f38）；labs/industry/market/W47N9 仍 OFF。W47 **terminal+minCont+trunk DONE**；w8mminer ON；homeTermK≥4k → `labReady.propose=1` 等她设 `ops.labs={W46N8:'KO'}`。§5.20 leanBank re-arm 已让 W47 回到 ~18–20k hold；§5.21 = thin-K + `ops.labs=KO` 激活顺序（仍等她点头）。**02:4x §5.22** = soft-cap 下 link-era HMAX 2→3（溢出搬运阀；不翻 labs）。**08:4x §5.23** 停车带到 25k；**11:4x §5.24** threat soft（`TH.localOn`）在 stor≥25k 时仍把 w8upgrader 压在 ≤2（可逆；不翻 labs）。
 
+## 0. Wartime note (2026-11-02 14:5x)
+
+Misaki ordered **W47N9 GO**. While `Memory.ops.w47n9` assault is on / `pauseCivilians`:
+
+- **Do not** flip `RCL6_LABS` / `RCL7_INDUSTRY` / market / `ops.labs` (siege中不启 minerals/labs beyond current thin-K `w8mminer`).
+- `labReady` may stay green — **no re-ask** for KO nod until stand-down.
+- Peacetime mineral roadmap resumes after `abort` / garrison / safe stand-down.
+
 ## 0. 现状（实测）
 
 ### W46N8 home RCL7
@@ -105,7 +113,7 @@ Console 开反应（有 K 入库后）：`Memory.ops.labs = { W46N8: 'KO' }`
 | **现在** | **lab@34,22 / 35,21 / 33,21 落 rampart** | **✅ 23:4x** 写入 `layouts/W46N8` RCL6(+7/8) rampart 列表；`layout.js` 自动落点；塔先抬到 `RAMPART_FLOOR` 5k（storage<reserve 时），有余粮再往 RCL 目标 |
 | 并行 | 环墙 min→**300k**（STEPS[7]） | **✅ fundSpend** live；08:50 min **~241k**，fund ~36.5k；ETA **~3–6 h**；**达 300k 后 peacetime hold**（`HOLD_STEP_RCL7`） |
 | 稳后 | 全屏障 **1M** | **非自动**：需 `Memory.defense.pushBarrier` 或后续评审；Overmind 等价 `fortifyDutyThreshold=500k` |
-| 姿态 | 3 塔满能；SM **永不自动**；remoteDefender on | BustJetter：**defend-only** W47N9 |
+| 姿态 | 3 塔满能；SM **永不自动**；remoteDefender on | BustJetter：W47N9 **GO** 2026-11-02（原 defend-only 作废；见 `docs/RAID_W47N9.md`） |
 
 **已落地：** 17:4x fundSpend；**23:4x lab rampart 布局**（+ `tests/lab_ramparts.js`）；**02:4x** labs 盖板 live ~423k；`STATIONARY_FILL` 仍 false（`docs/RCL7.md`）。`reserveE=15k` 保留。
 

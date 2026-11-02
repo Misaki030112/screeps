@@ -623,8 +623,10 @@ function dayObs(room) {
     : (minBuild ? Math.ceil((siteRemV || 1) / 20) : Math.ceil((bankLeft + siteRemV) / 20));
   // 02:4x obs: bankWhy explains ETA honesty (threat WINDOW / remote pause lie about +20 e/t).
   // 20:4x: drop unconditional bankWhy=gate — post-minBuild leanBank can re-arm; use bank/hold/off/ready.
+  const warMode = require('../../roles/raid9').pauseCivilians();
   let bankWhy = 'ok';
   if (minBuild) bankWhy = 'minBuild';
+  else if (warMode) bankWhy = 'war'; // 14:4x wartime: assault pause labels before softCap/threatSoft
   else if (lb) bankWhy = (typeof TH !== 'undefined' && TH.on && TH.on()) ? 'threat' : 'bank';
   else if (storE < LEAN_STOR) bankWhy = (storE >= LEAN_ARM) ? 'hold' : 'off';
   else if (storE < LEAN_SOFT) bankWhy = 'soft'; // 08:4x 11-02: ready cushion but soft-cap still on — park to soft
@@ -637,6 +639,7 @@ function dayObs(room) {
     missSpawn: missSpawn ? 1 : 0, missTower: missTower ? 1 : 0, missExt, why, phase,
     bankLeft, bankEta, leanBank: lb ? 1 : 0, bankArm: LEAN_ARM, bankSoft: LEAN_SOFT, bankWhy, softLeft,
     threatSoft: threatSoft() ? 1 : 0, softCap2: softCap2(storE) ? 1 : 0, // 11:4x: ≤2 gate (local threat OR stor<LEAN_SOFT); leanBank still tighter at ≤1
+    warMode: warMode ? 1 : 0, // 14:4x: Memory.ops.w47n9 assault freeze
     ctlBat: ctlBattery(room), feedOk: ctlBattery(room) >= FEED_MIN ? 1 : 0, // 11:4x strategy: peacetime surplus needs feedOk
     towerMinE, towerHubE, towerNorthE, nf, eAvail, eCap, looseE: loose };
   leanBankRecycle(room);
