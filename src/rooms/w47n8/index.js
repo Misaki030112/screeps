@@ -234,7 +234,8 @@ function spawnRun(spawn) {
   // 6) wall builder from surplus (19:18): 1 builder while a seal wall is below target and spawn is full
   // 19:31: 2 while >1500 loose energy piles (2.8k at 19:30 with the ctl container full and upgraders at the WORK cap)
   if (!want && !raidPause && room.energyAvailable === cap && n('w8builder') < (looseE(room) > 1500 ? 2 : 1)) {
-    const tgt = wtgt;
+    // 11-02 (Misaki t375u): the raise above STAGE3 (Memory.defense.w8seal) only spawns builders while storage >= w8sealMinE
+    const tgt = (room.storage ? room.storage.store[RESOURCE_ENERGY] : 0) >= TH.sealMinE() ? wtgt : Math.min(wtgt, TH.STAGE3);
     if (room.find(FIND_STRUCTURES, { filter: s => s.structureType === STRUCTURE_WALL && s.hits < tgt && C.SEAL.some(([x, y]) => s.pos.x === x && s.pos.y === y) }).length) want = 'w8builder';
   }
   // 10-21 11:2x patrol: with 0 sites and the seal at cap no builder spawned, so nothing repaired the kept roads.js network (27 of 116
@@ -802,9 +803,11 @@ function rampHold(room) {
   const g = rs.find(r => r.pos && (isGate(r.pos.x, r.pos.y) || slot(r.pos.x, r.pos.y)) && r.hits < (C.GATE_TOWER || 0)); if (g) return g;
   // 14:4x soft staging; 17:4x: SOFT_MIN=0 + peacetime = !TH.localOn() (not TH.on — w8threatN neighbor staging
   // was pinning soft at ~49k while spawn already hit GATE_TOWER). Hold map never ratchets up. Cost ~1k e remaining.
-  const softT = C.SOFT_RAMP || 0, softMin = C.SOFT_MIN || 0;
+  const softMin = C.SOFT_MIN || 0;
   const storE = room.storage && room.storage.store ? (room.storage.store[RESOURCE_ENERGY] || 0) : 0;
-  soft.storE = storE;
+  // 11-02 (Misaki t375u): Memory.defense.w8key lifts KEY covers above SOFT_RAMP while storage >= w8keyMinE (towers within KEY_REP_R only)
+  const kt = TH.keyTarget(), softT = kt > (C.SOFT_RAMP || 0) && storE >= TH.keyMinE() ? kt : (C.SOFT_RAMP || 0);
+  soft.tgt = softT; soft.storE = storE;
   const localThreat = TH.localOn();
   soft.why = softT <= 0 ? 'off' : localThreat ? 'threat' : (storE < softMin ? 'stor' : 'ok');
   if (softT > 0 && storE >= softMin && !localThreat) {
@@ -825,6 +828,7 @@ function linkRun() {
   if (have >= 50 && free > 0) a.transferEnergy(k, Math.min(have, free));
 }
 const D = require('./defense'), F = require('../../utils/focus');
+const KEY_REP_R = 10;
 const SEAL_FIGHT = { x: 27, y: 3 }; // centre of the east seal: where a north squad has to break in
 // 10-20 23:4x strategy review: the west seal (x 8-11) is the thin side, towers r32 + r13-16 (~460 dps vs ~750 east): the 21:45 W48N9
 // group (28 HEAL) is held there by towers alone, ~36 HEAL is not. Border pre-assessment scores the segment nearest the announced group.
@@ -881,7 +885,9 @@ function towerRun(room) {
     else if (fire.has(t)) t.attack(p.h);
     else if (t.store[RESOURCE_ENERGY] > 600) { // 17:20 hold/decay; 14:4x/17:4x soft staging to SOFT_RAMP (see rampHold)
       const r = rampHold(room);
-      if (r) t.repair(r);
+      // 11-02: above GATE_TOWER (the KEY raise / high holds) only towers within KEY_REP_R repair: a r22 tower gets 200 hits per
+      // 10 energy vs 800 at r<=5, so the far towers just burned energy. Every KEY/gate rampart has a tower within 10.
+      if (r && (r.hits < (C.GATE_TOWER || 0) || !t.pos || !t.pos.getRangeTo || !r.pos || t.pos.getRangeTo(r) <= KEY_REP_R)) t.repair(r);
     }
   }
 }
