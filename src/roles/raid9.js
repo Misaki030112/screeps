@@ -660,8 +660,23 @@ function fight(c, P) {
   if (phase === 'breach' && (kind === 'm' || kind === 'r' || kind === 'h') && mode !== 'hard' && !emGo && !emBack) goal.y = Math.max(goal.y, post.y);
   return go(c, goal.x, goal.y, 0);
 }
+// War over (Memory.ops.w47n9.recycle === true): walk to the nearest own spawn and recycleCreep.
+// Prefers a spawn in the current room, else the creep's home room. Heals self on the way.
+function recycleSelf(c) {
+  if (c.spawning) return;
+  if (c.getActiveBodyparts(HEAL) && c.hits < c.hitsMax) c.heal(c);
+  const mine = _.filter(Game.spawns, s => s.my);
+  let sp = mine.filter(s => s.pos.roomName === c.room.name);
+  if (!sp.length) sp = mine.filter(s => s.pos.roomName === c.memory.home);
+  if (!sp.length) sp = mine;
+  if (!sp.length) return;
+  const t = sp.length > 1 ? (c.pos.findClosestByRange(sp) || sp[0]) : sp[0];
+  if (c.pos.roomName === t.pos.roomName && c.pos.isNearTo(t)) return t.recycleCreep(c);
+  return c.moveTo(t, { range: 1, reusePath: 10 });
+}
 function run(c) {
   const P = M();
+  if (P.recycle === true) return recycleSelf(c);
   const order = manualOrder(c);
   if (order) return applyOrder(c, order);
   if (P.garrison || P.safe || P.flee || P.phase === 'fallback') return garrison(c);
@@ -688,7 +703,7 @@ module.exports = {
   TARGET, STAGE, HOME, ENTRY, SWAMP, MOUTH_DUAL, MOUTH_WIDE, TOWER_ORDER, MAX, NEED, MIN_DPS, DPS_ONE,
   PULL_SOFT, PULL_HARD, MAX_Y43, NEAR_EXIT, EM_TICKS, UP_SAFE, PRIO, LADDER, GARRISON,
   DISMANTLER, MELEE, RANGED, HEALER, healBody, bodyFor, costOf,
-  raidActive, pauseCivilians, upgraderKeep, applyPause, namesToRecycle, recycleCivilian,
+  raidActive, pauseCivilians, upgraderKeep, recycleSelf, applyPause, namesToRecycle, recycleCivilian,
   WAR_STOR, warFloor, warStorOk, fieldCaps, wantKind, wantSpawn, noteSpawned, mouthsOf, assignSeals, frontSlots, assignment,
   swampStep, stepOntoSwamp, pullMode, inApproach, assaultReady, shouldRegroup, syncGo,
   observe, syncPhase, pick, pickInside, shouldYield, manualOrder, useMass, healPlan, armedParts, overrun,
