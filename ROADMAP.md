@@ -3,6 +3,13 @@
 Novice zone ends **2026-10-28 03:33 UTC+8** (past as of 10-29). Defence timeline: `docs/DEFENSE_NOVICE.md` (2026-10-16); detail `docs/DEFENSE.md` / geometry `docs/DEFENSE_PLAN.md`.
 **Safe mode: NEVER auto-activate** — alert Misaki.
 
+## 2026-11-02 08:4x strategy review: W47 soft-band park deadlock (WORK-bound ~55%)
+- **Chose:** why W47 still WORK-bound / ~55% of ideal (~16.5 vs ~30 e/t) hours after HMAX 2→3 + links LIVE, with stor~20k ready? (OUR ops; skip neighbor peacetime.)
+- **Findings (`docs/RCL7.md` 08:4x / `docs/MODEL_W47N8.md`):** (1) Live t~84016000: home ~16.1% stor~16.7k 2h upg **22.7/26 (~87%)** energy-bound short-soft; W47 ~3.35% stor~20.1k nUp=2 uw=20 soft≤2; 2h upg **16.55/30.08=55%**; ctl+hub conts FULL; looseE~4.8k; bankWhy was `ready` while soft-cap still on. (2) HMAX=3 overflow intended to park into storage until LEAN_SOFT, but sink hold-band stopped at LEAN_STOR 20k → dead zone [20k,25k). (3) Overmind parks via storageBuffer while upgrade battery saturated; we matched HMAX but not the park exit. (4) labReady propose/actOk green ops.labs null (no re-ask).
+- **Shipped:** sink soft-band park through LEAN_SOFT 25k; `w8day.bankWhy=soft` + softLeft obs; tests. **No soft-cap lift / labs/industry/market flips.**
+- **Reprioritise:** (1) Misaki nod `ops.labs={W46N8:'KO'}` (actOk; already asked — no re-ask); (2) W47 softLeft→0 (stor≥25k) → soft-cap lifts → upg≥24; (3) home floor ≥15k / soft ≥70%; (4) thin-K keep homeTermK; (5) boost@KO≥900; (6) barriers→1M; (7) STATIONARY_FILL@RCL8. Defend-only W47N9.
+- **Plan check:** diagnosis + autonomous park fix — no Misaki decision this run (KO already pending). WakeParent no QUIET.
+
 ## 2026-11-02 05:4x strategy review: home energy-bound / short-soft at stor ABOVE
 - **Chose:** why home upgrade looks energy-bound / short-soft with stor ABOVE while ideal~26 and live_comp~9 (OUR ops; skip neighbor peacetime).
 - **Findings (`docs/RCL7.md` 05:4x / `docs/MODEL.md`):** (1) Live t~84013700: home ~15.7% stor~15.5k 2h upg **~19.6/26 (~75%)** hungry=0 why=ok nUp=2 work=28; W47 ~3.0% stor~20k 2h upg~18.3 after HMAX; labReady propose=1 actOk=1 ops.labs null (no re-ask). (2) live_comp~9 is a full-fleet artifact — chase measured ~19–22, not ideal−9. (3) 2×14W designed energy-bound; short soft = 15k `upBank` hysteresis, not ctl/link starvation; hub DROP secondary. (4) Overmind storageBuffer scales WORK only above surplus — keep floor; do not lower reserve.

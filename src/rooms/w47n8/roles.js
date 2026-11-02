@@ -127,28 +127,31 @@ function sink(room, c) {
   const inbound = () => room.find(FIND_MY_CREEPS, { filter: o => o.id !== c.id && o.memory.sk === room.storage.id }).reduce((a, o) => a + o.store[E], 0);
   const bufLow = () => room.storage && F.alive(room) && F.stock(room) + inbound() < F.reserve(room);
   let was = free(c.memory.sk && Game.getObjectById(c.memory.sk));
-  // 08:4x/20:4x: keep sticky storage while rebuild-band (stor <20k + ctl≥1200) even if filler buffer is met.
+  // 08:4x/20:4x: keep sticky storage while rebuild/soft-band (stor <LEAN_SOFT + ctl≥1200) even if filler buffer is met.
   // 20:4x extends below LEAN_ARM — post-gate soft-cap alone never parked energy while ctl had free capacity.
+  // 08:4x 2026-11-02: park through LEAN_SOFT (25k), not just LEAN_STOR (20k). HMAX=3 overflow stopped at 20k while
+  // soft-cap held nUp≤2 until 25k → WORK-bound deadlock (ctl/hub full, stor flat ~20k, upg~55% ideal).
   const holdBand = () => {
     if (!room.storage) return false;
     const se = room.storage.store[E] || 0;
     const ctlS = ctlCont();
     const ctlE = ctlS ? (ctlS.store[E] || 0) : 0;
-    return se < 20000 && ctlE >= 1200;
+    return se < 25000 && ctlE >= 1200; // sync with index.js LEAN_SOFT
   };
   if (was && room.storage && was.id === room.storage.id && !bufLow() && !holdBand()) was = null;
   if (was) return was;
   // 17:4x filler buffer: while a w8filler lives, storage below one hub refill (+200) comes before the ctl/hub containers
   if (room.storage && free(room.storage) && bufLow()) { c.memory.sk = room.storage.id; return room.storage; }
-  // 08:4x/20:4x rebuild-band storage park — stor < LEAN_STOR and ctl already has a feed floor (≥1200):
-  // park hauler surplus in storage so cushion can rebuild (pre-flip flipReady OR post-gate leanBank re-arm).
-  // ctl <1200 still feeds ctl. Above LEAN cushion is done → ctl-first. Overmind parks assets in storageBuffer.
+  // 08:4x/20:4x/08:4x-11-02 soft-band storage park — stor < LEAN_SOFT and ctl already has a feed floor (≥1200):
+  // park hauler surplus in storage so cushion can climb to soft-cap exit (25k). Pre-flip flipReady / post-gate
+  // leanBank / post-ready soft-cap dead zone [20k,25k) all share this path. ctl <1200 still feeds ctl.
+  // Above LEAN_SOFT soft-cap lifts → ctl-first. Overmind parks assets in storageBuffer while upgrade battery saturated.
   if (room.storage && free(room.storage)) {
     const se = room.storage.store[E] || 0;
-    const LEAN = 20000; // keep in sync with index.js LEAN_STOR (avoid require cycle)
+    const LEAN_SOFT = 25000; // keep in sync with index.js LEAN_SOFT (avoid require cycle)
     const ctlS = ctlCont();
     const ctlE = ctlS ? (ctlS.store[E] || 0) : 0;
-    if (se < LEAN && ctlE >= 1200) { c.memory.sk = room.storage.id; return room.storage; }
+    if (se < LEAN_SOFT && ctlE >= 1200) { c.memory.sk = room.storage.id; return room.storage; }
   }
   const ctl = free(ctlCont()), hub = free(hubCont());
   // 03:20 hub only while sites near the hub need it: any road site anywhere sent rhaulers to the hub (864 -> 2000 full in ~290t)

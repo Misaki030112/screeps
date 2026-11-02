@@ -144,3 +144,22 @@ Links **live and transferring**: A 26,12 → ctl 13,25 (both hold energy; hauler
 **Research:** Overmind `UpgradeSite.storageBuffer` gates upgrader **scale** on storage assets; transporters still use storage as a logistics buffer when the upgrade battery is saturated. Matching shape at our tighter 15/25k: keep soft-cap, allow one surplus hauler (`HMAX=3`).
 
 **Fix:** link-era `HMAX` 2→3; floor stays 2. See `docs/RCL7.md` "02:4x".
+
+## 2026-11-02 08:4x strategy: soft-band park vs soft-cap exit
+
+**Symptom:** Hours after HMAX 2→3: upgrade still ~16.5/30 (55%); `upgrader_work=20`; stor flat ~20.1k; ctl+hub full; looseE~4.8k; `src_A` still soft in 2h meter (~0.8 — link-path artifact + occasional stall).
+
+**Mechanism:** Soft-cap exit needs stor≥`LEAN_SOFT` 25k. Sink park stopped at `LEAN_STOR` 20k. Dead zone [20k,25k): soft-cap on, HMAX overflow has nowhere sticky to grow the cushion, surplus shows as `waste_other`.
+
+**Model (2h / 24h):**
+| stage | ideal | 2h actual | 24h actual |
+|---|---|---|---|
+| upgrade | 30.08 | 16.55 | 11.83 |
+| upgrader WORK | 31 | 20 | 20 |
+| local CARRY | 9 | 30 (HMAX=3 overflow) | 30 |
+| harvest alloc | ~40 | 36.7 | 34.8 |
+
+**Research:** Overmind `UpgradeSite.storageBuffer=100k` + logistics `bufferChoices` — storage remains a buffer while the upgrade battery is full; WORK scales only with surplus **above** buffer. TooAngel / docs: excess belongs in storage, not stranded at sources/ctl.
+
+**Fix:** park through LEAN_SOFT. Soft-cap unchanged. See `docs/RCL7.md` "08:4x".
+

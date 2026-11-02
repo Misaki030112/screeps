@@ -512,3 +512,34 @@ Closes 11:4x remaining code gap: `mineralSend` + `termFuel` behind `RCL6_MINERAL
 - Patrol: treat `upgFeed.why=floor_bank` as expected near-floor, not a haul defect; keep soft ≥70% vs ideal when why∈{ok,thin_surplus,floor_bank}.
 - Home stor prefer ≥16k so allowExtra can admit a 3rd when ctlEma healthy (optional; not forced this run).
 - W47 conts leave 1800–2000 / upg stay ≥18 after HMAX.
+
+## 2026-11-02 08:4x — W47 soft-band park deadlock (WORK-bound ~55%)
+
+**Question:** Why is W47N8 still WORK-bound / ~55% of ideal (~16.5 vs ~30 e/t) hours after HMAX 2→3 and links LIVE, with stor~20k `phase=ready`?
+
+**Answer: Soft-cap exit was unreachable.** Sink park-to-storage stopped at `LEAN_STOR` 20k while soft-cap holds `nUp≤2` until `LEAN_SOFT` 25k. Extend park through 25k (`bankWhy=soft`). Do NOT lift soft-cap / flip labs.
+
+### Live (tick ~84016000–84016020, ~08:40 Asia/Hong_Kong)
+- Deploy tip strategy `df89ab7` (05:4x upgFeed); HEAD routine later; no `deploy.lock`.
+- Home RCL7 ~16.1% stor~16.7k ABOVE; 2h upg **22.7/26 (~87%)** `boundHint=energy` why=`waiting_feed` intermittent; walls HOLD 300k; termK~23.6k O~127k KO32.
+- W47N8 RCL7 ~3.35% (`366148/10.935M`) stor~20.1k leanBank=0 phase=ready; **nUp=2 uw=20**; links LIVE (A 26,12 → ctl 13,25); ctl+hub conts **2000/2000**; source B 2000 A~300; looseE~4.8k; w8lo7~5.5k.
+- Model 2h: ideal 30.08 / actual **16.55** (55%); alloc harvest 36.7 / upg 16.55 / upkeep 13.3 / waste_other 6.3 / storage ~0; delivered hub 16 > ctl 7.5.
+- `labReady.propose=1 actOk=1` `ops.labs=null` — **do not re-ask**.
+- CPU ~15/20 bucket 10k; remotes SAFE; roads DONE.
+
+### Root cause
+1. Soft-cap ≤2 (`LEAN_SOFT`) → max ~20 WORK → WORK-bound ceiling ~16–20 e/t when feed OK.
+2. 02:4x HMAX=3 correctly drains source overflow **toward** storage, but rebuild/hold-band sink released at 20k → ctl-first again.
+3. With ctl+hub full, surplus oscillates as `waste_other` / link+cont stock instead of climbing stor → softLeft stuck ~5k forever.
+4. Overmind: transporters still use storage as a logistics buffer when the upgrade battery is saturated (`LogisticsGroup.bufferChoices`); UpgradeSite scales WORK only above `storageBuffer`. Matching shape: **keep soft-cap**, finish parking to the soft exit.
+
+### Shipped
+- `src/rooms/w47n8/roles.js`: sink hold-band + park through **LEAN_SOFT 25k** (was 20k); ctl≥1200 feed floor unchanged.
+- `src/rooms/w47n8/index.js`: `w8day.bankWhy=soft` when ready but stor<25k; `softLeft` obs.
+- `tests/w47n8_filler.js` / `tests/w47n8_dayobs.js`: soft-band park + bankWhy.
+- **No soft-cap / labs / industry / market / HUB_LINK / W47N9 flips; ops.labs still Misaki.**
+
+### Watch
+- `w8day.bankWhy=soft` → `ready` and `softLeft→0` within ~0.5–1 h if loose drains.
+- Then nUp→3, upg recover toward ≥24 (ideal 30 still trimmed by waste/upkeep).
+- Source conts leave 1800–2000; home soft ≥70% hold.

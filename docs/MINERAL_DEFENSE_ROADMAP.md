@@ -564,3 +564,11 @@ W47N8 在翻 `RCL6_MINERALS` **之前**，矿物线代码缺口有多大？是�
 **结论：保持 soft-cap；link-era `HMAX` 2→3（`hFloor` 仍 2）让 loose>1200 能多 1 个 hauler 把溢出停进 storage。不翻 labs/industry；`ops.labs` 仍等 Misaki。**
 
 细节见 `docs/RCL7.md`「02:4x」/ `docs/MODEL_W47N8.md`。与矿物线关系：只影响 W47 本地能量垫与升级速率，不改 KO 激活门；`labReady.propose/actOk` 仍绿。
+
+### 5.23 soft-band park through LEAN_SOFT（08:4x 2026-11-02 ~08:4x Asia/Hong_Kong）
+
+**问题：** HMAX=3 后 W47 仍 WORK-bound ~55%（16.5/30），stor 卡在 ~20k `phase=ready`，soft-cap ≤2 永不退出。
+
+**结论：sink 停车带从 LEAN_STOR 20k 延到 LEAN_SOFT 25k（`bankWhy=soft` + softLeft）。不抬 soft-cap、不翻 labs/industry；`ops.labs` 仍等 Misaki（不重问）。**
+
+细节见 `docs/RCL7.md`「08:4x」/ `docs/MODEL_W47N8.md`。与矿物线关系：垫到 25k 后 soft-cap 松开 → 升级回升；KO 激活门不变（actOk 已绿）。

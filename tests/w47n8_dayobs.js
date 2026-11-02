@@ -111,9 +111,15 @@ assert.strictEqual(Memory.ops.w8day.phase, 'ready');
 assert.strictEqual(Memory.ops.w8day.leanBank, 0);
 assert.strictEqual(Memory.ops.w8day.bankLeft, 0);
 assert.strictEqual(Memory.ops.w8day.bankEta, 0);
-assert.strictEqual(Memory.ops.w8day.bankWhy, 'ready');
+assert.strictEqual(Memory.ops.w8day.bankWhy, 'soft'); // 08:4x 11-02: [20k,25k) soft-cap dead zone
+assert.strictEqual(Memory.ops.w8day.softLeft, 5000);
 assert.strictEqual(W.LEAN_ARM, 15000);
 assert.strictEqual(W.LEAN_SOFT, 25000);
+// soft exit at ≥25k
+const rSoftDone = mk(7, done, [], 0); rSoftDone.storage.store.energy = 25000;
+W.dayObs(rSoftDone);
+assert.strictEqual(Memory.ops.w8day.bankWhy, 'ready');
+assert.strictEqual(Memory.ops.w8day.softLeft, 0);
 // 02:4x hysteresis: after ready, stor 18k does NOT re-arm; phase stays ready (bankWhy=hold)
 Memory.ops.w8day.leanBank = 0;
 const rHold = mk(7, done, [], 0); rHold.storage.store.energy = 18000;
@@ -130,6 +136,7 @@ const rSoft = mk(7, done, softUps, 0); rSoft.storage.store.energy = 22000;
 Memory.ops.w8day.leanBank = 0;
 W.dayObs(rSoft);
 assert.strictEqual(Memory.ops.w8day.leanBank, 0, '22k still ready');
+assert.strictEqual(Memory.ops.w8day.bankWhy, 'soft', '22k bankWhy=soft');
 assert.ok((Memory.ops.w8recycle || []).length >= 2, 'soft-cap recycles to ≤2: ' + JSON.stringify(Memory.ops.w8recycle));
 // re-arm below LEAN_ARM
 Memory.ops.w8day.leanBank = 0;
@@ -222,6 +229,9 @@ withTerm.storage.store.energy = 20000;
 W.dayObs(withTerm);
 assert.strictEqual(Memory.ops.w8day.leanBank, 0);
 assert.strictEqual(Memory.ops.w8day.phase, 'ready');
+assert.strictEqual(Memory.ops.w8day.bankWhy, 'soft'); // soft-cap still on at 20k
+withTerm.storage.store.energy = 25000;
+W.dayObs(withTerm);
 assert.strictEqual(Memory.ops.w8day.bankWhy, 'ready');
 // 05:4x/20:4x: soft-cap still works; at stor5k leanBank now ON → recycle to ≤1 (stricter than soft ≤2)
 delete Memory.ops.w8recycle;

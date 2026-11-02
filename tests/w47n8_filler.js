@@ -207,7 +207,7 @@ console.log('w47n8 filler ok' + (quiet ? '' : ' (' + JSON.stringify(R4[800]) + '
   creeps = [];
 }
 say('sink buffer ok');
-// ---------- (G) 08:4x/20:4x rebuild-band: stor <20k + ctl≥1200 → sink prefers storage
+// ---------- (G) 08:4x/20:4x/08:4x-11-02 soft-band: stor <LEAN_SOFT(25k) + ctl≥1200 → sink prefers storage
 {
   build(50); DUTY_RESET(); fillAll();
   const RL = require(path.join(ROOT, 'src/rooms/w47n8/roles.js'));
@@ -224,9 +224,14 @@ say('sink buffer ok');
   // ctl hungry: feed ctl even in rebuild band
   room.storage.store.energy = 17000; ctl.store.energy = 800; h.memory.sk = undefined; Game.time++;
   assert.strictEqual(RL._sink(room, h), ctl, 'rebuild-band but ctl hungry <1200 → ctl');
-  // cushion done: back to ctl preference
+  // 08:4x 11-02: soft-cap dead zone [20k,25k) still parks to storage (was ctl-first → WORK-bound deadlock)
   room.storage.store.energy = 21000; ctl.store.energy = 1500; h.memory.sk = undefined; Game.time++;
-  assert.strictEqual(RL._sink(room, h), ctl, 'stor≥20k → ctl again');
+  assert.strictEqual(RL._sink(room, h), room.storage, 'soft-band 21k + ctl1500 → storage');
+  room.storage.store.energy = 24999; h.memory.sk = undefined; Game.time++;
+  assert.strictEqual(RL._sink(room, h), room.storage, 'soft-band 24999 + ctl1500 → storage');
+  // soft-cap exit: back to ctl preference
+  room.storage.store.energy = 25000; h.memory.sk = undefined; Game.time++;
+  assert.strictEqual(RL._sink(room, h), ctl, 'stor≥LEAN_SOFT → ctl again');
   creeps = [];
 }
-say('sink rebuild-band ok');
+say('sink rebuild/soft-band ok');
