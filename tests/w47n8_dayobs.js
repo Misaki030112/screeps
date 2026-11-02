@@ -233,6 +233,43 @@ assert.strictEqual(Memory.ops.w8day.bankWhy, 'soft'); // soft-cap still on at 20
 withTerm.storage.store.energy = 25000;
 W.dayObs(withTerm);
 assert.strictEqual(Memory.ops.w8day.bankWhy, 'ready');
+assert.strictEqual(Memory.ops.w8day.threatSoft, 0, 'peacetime threatSoft off');
+assert.strictEqual(Memory.ops.w8day.softCap2, 0, 'stor≥LEAN_SOFT peacetime lifts ≤2');
+// 11:4x: local threat (w8soft.why=threat / TH.localOn) holds ≤2 even after LEAN_SOFT.
+// Neighbor w8threatN must NOT — chronic W47N9 camp would pin the cap forever.
+delete Memory.ops.w8recycle;
+Memory.ops.w8day = { leanBank: 0 };
+const threatUps = [{ memory: { role: 'w8upgrader' } }, { memory: { role: 'w8upgrader' } },
+  { memory: { role: 'w8upgrader' } }, { memory: { role: 'w8upgrader' } }];
+const rThreat = mk(7, done.concat([[35, 33, 'terminal'], [37, 44, 'container']]), threatUps, 0);
+rThreat.storage.store.energy = 30000;
+rThreat.terminal = { store: {} };
+Memory.ops.w8threat = Game.time; // local threat soft
+delete Memory.ops.w8threatN;
+W.dayObs(rThreat);
+assert.strictEqual(W.threatSoft(), true, 'threatSoft tracks TH.localOn');
+assert.strictEqual(W.softCap2(30000), true, 'softCap2 holds above LEAN_SOFT under local threat');
+assert.strictEqual(Memory.ops.w8day.threatSoft, 1);
+assert.strictEqual(Memory.ops.w8day.softCap2, 1);
+assert.strictEqual(Memory.ops.w8day.bankWhy, 'threatSoft');
+assert.strictEqual(Memory.ops.w8day.leanBank, 0, 'threat soft is not leanBank');
+assert.ok((Memory.ops.w8recycle || []).length >= 2, 'threat soft recycles 4→≤2 above 25k: ' + JSON.stringify(Memory.ops.w8recycle));
+delete Memory.ops.w8threat;
+delete Memory.ops.w8recycle;
+Memory.ops.w8threatN = Game.time; // neighbor staging only
+W.dayObs(rThreat);
+assert.strictEqual(W.threatSoft(), false, 'w8threatN is not threat soft');
+assert.strictEqual(W.softCap2(30000), false, 'neighbor camp does not hold ≤2');
+assert.strictEqual(Memory.ops.w8day.threatSoft, 0);
+assert.strictEqual(Memory.ops.w8day.softCap2, 0);
+assert.strictEqual(Memory.ops.w8day.bankWhy, 'ready');
+assert.ok(!(Memory.ops.w8recycle || []).length, 'w8threatN does not recycle: ' + JSON.stringify(Memory.ops.w8recycle));
+delete Memory.ops.w8threatN;
+delete Memory.ops.w8recycle;
+W.dayObs(rThreat);
+assert.strictEqual(Memory.ops.w8day.bankWhy, 'ready', 'window clear → normal soft-cap resumes');
+assert.strictEqual(Memory.ops.w8day.softCap2, 0);
+assert.ok(!(Memory.ops.w8recycle || []).length, 'peace ≥25k does not recycle');
 // 05:4x/20:4x: soft-cap still works; at stor5k leanBank now ON → recycle to ≤1 (stricter than soft ≤2)
 delete Memory.ops.w8recycle;
 Memory.ops.w8day = { leanBank: 0 };

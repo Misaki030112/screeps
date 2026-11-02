@@ -145,7 +145,8 @@ function sink(room, c) {
   // 08:4x/20:4x/08:4x-11-02 soft-band storage park — stor < LEAN_SOFT and ctl already has a feed floor (≥1200):
   // park hauler surplus in storage so cushion can climb to soft-cap exit (25k). Pre-flip flipReady / post-gate
   // leanBank / post-ready soft-cap dead zone [20k,25k) all share this path. ctl <1200 still feeds ctl.
-  // Above LEAN_SOFT soft-cap lifts → ctl-first. Overmind parks assets in storageBuffer while upgrade battery saturated.
+  // Above LEAN_SOFT soft-cap lifts → ctl-first (spawn may still hold nUp≤2 while threatSoft / TH.localOn — index.js softCap2).
+  // Overmind parks assets in storageBuffer while upgrade battery saturated.
   if (room.storage && free(room.storage)) {
     const se = room.storage.store[E] || 0;
     const LEAN_SOFT = 25000; // keep in sync with index.js LEAN_SOFT (avoid require cycle)

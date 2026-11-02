@@ -1,7 +1,7 @@
-# 矿物线 + 强化 + 城防路线图（2026-10-29 12:4x；14:4x boost；17:4x fundSpend；23:4x fortify；08:4x RCL7 hold 300k；11:4x post-300k exit；14:4x soft ramp 100k；20:4x day-of 不预存；23:4x lean KO 脚手架；**08:4x leanBank→stor20k**；**11:4x w8mminer+haul**；**02:4x leanBank hysteresis+soft-cap**；**05:4x soft-cap survives gate**；**08:4x hold-band sink→stor20k**；**11:4x first-K pacing**；**14:4x home KO labReady**；**17:4x w8mminer soft-cap prio**；**20:4x post-minBuild leanBank re-arm**；**23:4x thin-K + KO activate seq**；**02:4x link HMAX vs soft-cap**）
+# 矿物线 + 强化 + 城防路线图（2026-10-29 12:4x；14:4x boost；17:4x fundSpend；23:4x fortify；08:4x RCL7 hold 300k；11:4x post-300k exit；14:4x soft ramp 100k；20:4x day-of 不预存；23:4x lean KO 脚手架；**08:4x leanBank→stor20k**；**11:4x w8mminer+haul**；**02:4x leanBank hysteresis+soft-cap**；**05:4x soft-cap survives gate**；**08:4x hold-band sink→stor20k**；**11:4x first-K pacing**；**14:4x home KO labReady**；**17:4x w8mminer soft-cap prio**；**20:4x post-minBuild leanBank re-arm**；**23:4x thin-K + KO activate seq**；**02:4x link HMAX vs soft-cap**；**08:4x soft-band→25k**；**11:4x threat-soft ≤2**）
 
 Live refresh **17:4x UTC+8 2026-11-01** tick ~84003240。**不自动交易、不开 safe mode。**
-Misaki **已点头翻 `RCL6_MINERALS`**（b758f38）；labs/industry/market/W47N9 仍 OFF。W47 **terminal+minCont+trunk DONE**；w8mminer ON；homeTermK≥4k → `labReady.propose=1` 等她设 `ops.labs={W46N8:'KO'}`。§5.20 leanBank re-arm 已让 W47 回到 ~18–20k hold；§5.21 = thin-K + `ops.labs=KO` 激活顺序（仍等她点头）。**02:4x §5.22** = soft-cap 下 link-era HMAX 2→3（溢出搬运阀；不翻 labs）。
+Misaki **已点头翻 `RCL6_MINERALS`**（b758f38）；labs/industry/market/W47N9 仍 OFF。W47 **terminal+minCont+trunk DONE**；w8mminer ON；homeTermK≥4k → `labReady.propose=1` 等她设 `ops.labs={W46N8:'KO'}`。§5.20 leanBank re-arm 已让 W47 回到 ~18–20k hold；§5.21 = thin-K + `ops.labs=KO` 激活顺序（仍等她点头）。**02:4x §5.22** = soft-cap 下 link-era HMAX 2→3（溢出搬运阀；不翻 labs）。**08:4x §5.23** 停车带到 25k；**11:4x §5.24** threat soft（`TH.localOn`）在 stor≥25k 时仍把 w8upgrader 压在 ≤2（可逆；不翻 labs）。
 
 ## 0. 现状（实测）
 
@@ -571,4 +571,10 @@ W47N8 在翻 `RCL6_MINERALS` **之前**，矿物线代码缺口有多大？是�
 
 **结论：sink 停车带从 LEAN_STOR 20k 延到 LEAN_SOFT 25k（`bankWhy=soft` + softLeft）。不抬 soft-cap、不翻 labs/industry；`ops.labs` 仍等 Misaki（不重问）。**
 
-细节见 `docs/RCL7.md`「08:4x」/ `docs/MODEL_W47N8.md`。与矿物线关系：垫到 25k 后 soft-cap 松开 → 升级回升；KO 激活门不变（actOk 已绿）。
+细节见 `docs/RCL7.md`「08:4x」/ `docs/MODEL_W47N8.md`。与矿物线关系：垫到 25k 后 soft-cap 松开 → 升级回升；KO 激活门不变（actOk 已绿）。**11:4x 例外：** 本地 threat soft（`TH.localOn`，不是 `w8threatN`）在 stor≥25k 时仍把 `w8upgrader` 压在 ≤2，窗口结束（1500t）后恢复。不翻 labs。
+
+### 5.24 threat soft holds soft-cap ≤2（11:4x 2026-11-02）
+
+**问题：** stor 过 `LEAN_SOFT` 25k 后 w8upgrader 扩到 4/WORK40，threat soft 囤能量，2h 升级掉到 ~46.7%（`waiting_feed`）。soft-cap 是否在 threat soft 下照样因 stor≥25k 松开？
+
+**结论：是，已核对。** ≤2 原先只看 `stor < LEAN_SOFT`。`softCap2` = `TH.localOn()` **或** stor<25k：spawn / surplus / recycle 都守 ≤2。`w8threatN` 不计入。窗口结束自动恢复。不翻 `ops.labs` / industry / market，不动 home upgrader cap。细节 `docs/RCL7.md`「11:4x」。

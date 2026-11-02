@@ -163,3 +163,11 @@ Links **live and transferring**: A 26,12 → ctl 13,25 (both hold energy; hauler
 
 **Fix:** park through LEAN_SOFT. Soft-cap unchanged. See `docs/RCL7.md` "08:4x".
 
+## 2026-11-02 11:4x — threat soft vs soft-cap exit
+
+**Symptom:** After stor passed 25k, 2h upgrade ~46.7% with nUp=4 / WORK40 and `waiting_feed`, while threat soft (`w8soft.why=threat`) hoarded tower energy.
+
+**Mechanism:** `LEAN_SOFT` soft-cap does not read threat. `wallsLow` is only the 100k urgent floor, so a quiet-looking seal under local threat still takes the peacetime upgrader rule (base 3, surplus to WORK cap 40).
+
+**Fix:** `softCap2` = `TH.localOn()` **or** stor<25k. `w8threatN` excluded (chronic camp). See `docs/RCL7.md` "11:4x".
+

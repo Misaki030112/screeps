@@ -3,11 +3,17 @@
 Novice zone ends **2026-10-28 03:33 UTC+8** (past as of 10-29). Defence timeline: `docs/DEFENSE_NOVICE.md` (2026-10-16); detail `docs/DEFENSE.md` / geometry `docs/DEFENSE_PLAN.md`.
 **Safe mode: NEVER auto-activate** — alert Misaki.
 
+## 2026-11-02 11:4x — threat soft holds W47 w8upgrader ≤2 (Misaki)
+- **Chose:** after stor passed `LEAN_SOFT` 25k, W47 2h upgrade fell to ~46.7% — w8upgrader expanded to 4 / WORK40 with `waiting_feed` while threat soft hoarded tower energy. Hypothesis: soft-cap rises on stor≥25k even under threat soft.
+- **Verified:** yes. `softCap2` was only `stor < LEAN_SOFT`. `TH.localOn()` (`w8soft.why=threat`) does not enter the upgrader cap. Once seal walls are above the 100k urgent floor, `wallsLow` is false, so base nUp goes 2→3 (no sites) and surplus reaches 4×10W. Neighbor `w8threatN` is a different flag and was already excluded from soft-ramp raise.
+- **Shipped:** `threatSoft()` = `TH.localOn()` (Memory.ops.w8threat within 1500t). `softCap2(stor)` = threat soft **or** stor<25k → spawn ≤2, no surplus, recycle extras to ≤2. Clears with the local window; then base/surplus resume. `w8day.threatSoft` / `softCap2` / `bankWhy=threatSoft`. **Not** `w8threatN`. **No labs/industry/market / home W46N8 upgrader cap / ops.labs flips.**
+- **Reprioritise:** (1) Misaki nod `ops.labs={W46N8:'KO'}` (actOk; already asked — no re-ask); (2) while `w8day.threatSoft=1` keep nUp≤2; when it clears and softLeft=0, soft-cap lifts → upg≥24; (3) home floor ≥15k / soft ≥70%; (4) thin-K keep homeTermK; (5) boost@KO≥900; (6) barriers→1M; (7) STATIONARY_FILL@RCL8. Defend-only W47N9.
+
 ## 2026-11-02 08:4x strategy review: W47 soft-band park deadlock (WORK-bound ~55%)
 - **Chose:** why W47 still WORK-bound / ~55% of ideal (~16.5 vs ~30 e/t) hours after HMAX 2→3 + links LIVE, with stor~20k ready? (OUR ops; skip neighbor peacetime.)
 - **Findings (`docs/RCL7.md` 08:4x / `docs/MODEL_W47N8.md`):** (1) Live t~84016000: home ~16.1% stor~16.7k 2h upg **22.7/26 (~87%)** energy-bound short-soft; W47 ~3.35% stor~20.1k nUp=2 uw=20 soft≤2; 2h upg **16.55/30.08=55%**; ctl+hub conts FULL; looseE~4.8k; bankWhy was `ready` while soft-cap still on. (2) HMAX=3 overflow intended to park into storage until LEAN_SOFT, but sink hold-band stopped at LEAN_STOR 20k → dead zone [20k,25k). (3) Overmind parks via storageBuffer while upgrade battery saturated; we matched HMAX but not the park exit. (4) labReady propose/actOk green ops.labs null (no re-ask).
 - **Shipped:** sink soft-band park through LEAN_SOFT 25k; `w8day.bankWhy=soft` + softLeft obs; tests. **No soft-cap lift / labs/industry/market flips.**
-- **Reprioritise:** (1) Misaki nod `ops.labs={W46N8:'KO'}` (actOk; already asked — no re-ask); (2) W47 softLeft→0 (stor≥25k) → soft-cap lifts → upg≥24; (3) home floor ≥15k / soft ≥70%; (4) thin-K keep homeTermK; (5) boost@KO≥900; (6) barriers→1M; (7) STATIONARY_FILL@RCL8. Defend-only W47N9.
+- **Reprioritise:** (1) Misaki nod `ops.labs={W46N8:'KO'}` (actOk; already asked — no re-ask); (2) W47 softLeft→0 (stor≥25k) → soft-cap lifts → upg≥24 **unless threat soft** (`TH.localOn`, see 11:4x — then stay ≤2); (3) home floor ≥15k / soft ≥70%; (4) thin-K keep homeTermK; (5) boost@KO≥900; (6) barriers→1M; (7) STATIONARY_FILL@RCL8. Defend-only W47N9.
 - **Plan check:** diagnosis + autonomous park fix — no Misaki decision this run (KO already pending). WakeParent no QUIET.
 
 ## 2026-11-02 05:4x strategy review: home energy-bound / short-soft at stor ABOVE
