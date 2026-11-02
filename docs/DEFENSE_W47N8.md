@@ -116,10 +116,9 @@ not a threat-posture leak (refill triggers at free > 200). Re-check only if the 
 Memory.defense knobs (absent = old behaviour):
 - `w8seal` (set 1,000,000): north seal walls + gate 29,3 cap above the 300k STAGE3, clamped to WALL_TARGET[rcl] (1M at RCL7).
   Builders raise lowest-first. Spawn rule 6 only spawns a builder for the part above 300k while storage >= `w8sealMinE`.
-  **`w8sealMinE` default 35000 (= LEAN_SOFT+10k)** — 17:4x raised 5000→25000; **20:4x raised again to 35000**.
-  `wallJob` clamps to STAGE3 below the gate. Live Memory override of 5000 (fortify knobs #23) masked the 17:4x code default and
-  kept seal→1M draining through softCap2 (stor thrash ~24–25k). Even sealMinE=LEAN_SOFT has zero hysteresis — seal starts the tick
-  softCap clears. Headroom above LEAN_SOFT lets nUp3 / upgrade recover before deep seal. Override lower only for a deliberate early climb.
+  **`w8sealMinE` default 25000 (= LEAN_SOFT)** — 17:4x raised 5000→25000; 20:4x briefly 35000 then **Misaki rejected** (back to 25k).
+  `wallJob` / spawn rule 6 use `TH.sealDeepOk` (02:4x): softCap2 shape + sticky `Memory.ops.w8sealPark` until nUp recovers +
+  `SEAL_EDGE` intensity (2nd builder only with sealMinE+5k headroom). Override `<LEAN_SOFT` no longer deep-seals under softCap2.
 - `w8key` (set 300,000): KEY ramparts (spawn/tower/storage/terminal) soft target above SOFT_RAMP, while storage >= `w8keyMinE`
   (default 8000) and no local threat. Above GATE_TOWER only towers within 10 tiles repair (efficiency 800 vs 200 hits/10e).
 
@@ -145,3 +144,19 @@ LEAN_SOFT so upgrade can hold nUp3 before seal burns surplus. TooAngel gates wal
 **Shipped:** default `sealMinE` **25000→35000** (LEAN_SOFT+10k); live Memory `w8sealMinE` **5000→35000** (stale override fixed;
 `w8seal`/`w8key` untouched); `w8day.sealMinE`/`sealRaise` + `w8soft.sealMinE`/`sealCap`/`sealRaise` obs so patrols see the
 effective gate. Tests fortify + dayobs.
+
+### 2026-11-03 02:4x seal soft-gate vs softCap2 (strategy; no sealMinE raise)
+Live ~02:47 Asia/Shanghai t~84031795 peacetime: home ~19.22% stor~16k ABOVE; W47 ~5.90% stor**25004** softCap2 OFF
+sealRaise1 builders2 nUp3 KEY DONE sealMinE=25000 (Misaki rejected 35k) hubReady0; 2h upg ~64–69% consec soft; remotes SAFE;
+labs OFF no re-ask. SoftCap has been thrashing the LEAN_SOFT edge for hours — when ON, short crashes (~30%); when OFF, seal
+immediately resumes and drains the band.
+
+**Research:** Overmind `fortifyDutyThreshold`~500k parks *routine* fortify until colony energy is fat (+ `storageBuffer`);
+TooAngel gates walls on healthy/storage floors. We already keep KEY ungated (DONE) and only deep-seal above STAGE3 — but the
+energy gate was `stor≥sealMinE` alone, so (a) threatSoft with fat stor still deep-sealed, (b) Memory override `<LEAN_SOFT`
+re-opened the 17:4x failure mode, (c) zero sticky hysteresis at 25k.
+
+**Shipped (sealMinE stays 25000):** `TH.softThin` / `sealDeepOk` / `updateSealPark` → sticky `Memory.ops.w8sealPark` until
+softThin off **and** nUp≥peacetime base; wallJob + spawn rule 6 clamp; edge intensity `SEAL_EDGE=5k` (max 1 deep-seal builder
+near the band); `w8day.sealPark` + `sealRaise` via sealDeepOk. Tests fortify + dayobs. **No** HUB_LINK/labs flips; **no** re-ask.
+

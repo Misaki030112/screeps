@@ -42,6 +42,8 @@ const STAGE1 = 100000, STAGE3 = 300000;
 //               LEAN_SOFT). Below it the spawn rule + wallJob see the old 300k cap, so the deep raise never starves softCap2 /
 //               KEY catch-up / upgraders. 11-02 17:4x: was 5000→25000. 11-02 20:4x briefly 35000 (+10k headroom) then Misaki
 //               rejected the large reserve (t377u) — back to LEAN_SOFT=25000; accept softCap edge thrash over hoarding.
+//               11-03 02:4x: soft-gate (sealDeepOk / w8sealPark) couples deep seal to softCap2 + sticky nUp recovery + SEAL_EDGE
+//               intensity — WITHOUT raising sealMinE again. Override <LEAN_SOFT no longer deep-seals under softCap2.
 //   w8key       KEY rampart (spawn/tower/storage/terminal) soft target above SOFT_RAMP; w8keyMinE (default 8000) storage gate.
 const D8 = () => (typeof Memory !== 'undefined' && Memory.defense) || {};
 const num = (v, d) => (typeof v === 'number' && v >= 0 ? v : d);
@@ -54,4 +56,27 @@ function planTarget(level, base) {
   const m = Memory.ops && Memory.ops.w8move;
   return (m && m.phase !== 'done') ? Math.min(base, STAGE1) : Math.max(STAGE3, Math.min(base, sealCap()));
 }
-module.exports = { sealCap, sealMinE, keyTarget, keyMinE, planTarget, STAGE1, STAGE3, mark, on, localOn, flee, invasion, wallTarget, urgentTarget, WINDOW, FLOOR };
+// 02:4x 2026-11-03 strategy: soft-gate deep seal without raising sealMinE (Misaki rejected 35k).
+// Overmind parks routine fortify until fortifyDutyThreshold (~500k) + storageBuffer; TooAngel uses healthy/storage floors.
+// We keep KEY ungated and only park seal→1M: couple to softCap2 shape + sticky park until nUp recovers + edge intensity.
+const LEAN_SOFT = 25000; // must match index.js LEAN_SOFT (softCap2 energy half)
+const SEAL_EDGE = 5000;  // 2nd seal builder needs sealMinE+SEAL_EDGE headroom (not raising sealMinE)
+function softThin(storE) { return localOn() || (storE || 0) < LEAN_SOFT; } // softCap2 shape without importing index
+function sealParked() { return !!(typeof Memory !== 'undefined' && Memory.ops && Memory.ops.w8sealPark); }
+// sticky: set while softThin / below sealMinE; clear only when softThin off AND nUp >= peacetime base (sites?2:3)
+function updateSealPark(storE, nUpCount, hasSites) {
+  const o = (typeof Memory !== 'undefined') ? (Memory.ops = Memory.ops || {}) : {};
+  const base = hasSites ? 2 : 3;
+  const e = storE || 0;
+  if (softThin(e) || e < sealMinE()) { o.w8sealPark = 1; return true; }
+  if (o.w8sealPark && (nUpCount || 0) < base) return true;
+  o.w8sealPark = 0;
+  return false;
+}
+function sealDeepOk(storE) {
+  const e = storE || 0;
+  if (sealParked() || softThin(e)) return false;
+  return e >= sealMinE();
+}
+module.exports = { sealCap, sealMinE, keyTarget, keyMinE, planTarget, STAGE1, STAGE3, SEAL_EDGE, LEAN_SOFT,
+  softThin, sealParked, updateSealPark, sealDeepOk, mark, on, localOn, flee, invasion, wallTarget, urgentTarget, WINDOW, FLOOR };

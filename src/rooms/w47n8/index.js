@@ -64,13 +64,16 @@ function energyOrder(room) {
 const rmLead8 = (i, c) => Math.min(180, Math.max(40, (Memory.ops && Memory.ops.w8rlead && Memory.ops.w8rlead[i]) || 90)) + 3 * ((c && c.body) || []).length + 20 + 60;
 function spawnRun(spawn) {
   FM.tick(spawn); // 17:3x spawn-energy meter (Memory.ops.w8fm)
-  if (spawn.spawning) return;
   const room = spawn.room, cs = mine(), n = r => cs.filter(c => c.memory.role === r).length;
   // 17:5x (patrol: 2 upgraders died within 40 ticks, upgrade fell to ~10 e/t): upgraders count only while they outlive a replacement
   // (spawn 3/part + ~60 ticks Spawn2 -> ctl stands), so the next one is queued before the old one dies
   const nUp = () => cs.filter(c => c.memory.role === 'w8upgrader' && (c.spawning || !(c.ticksToLive <= 3 * (c.body || []).length + 60))).length;
-  const cap = room.energyCapacityAvailable, avail = room.energyAvailable;
   const sites = room.find(FIND_MY_CONSTRUCTION_SITES).length;
+  // 11-03 02:4x: refresh seal park every tick (even while spawning) so live wallJob sees sticky gate same tick
+  const storPark = room.storage ? (room.storage.store[RESOURCE_ENERGY] || 0) : 0;
+  TH.updateSealPark(storPark, nUp(), sites);
+  if (spawn.spawning) return;
+  const cap = room.energyCapacityAvailable, avail = room.energyAvailable;
   let want = null, mem = {};
   const raidPause = require('../../roles/raid9').pauseCivilians();
   // 0) defender (Misaki 14:09): only when an armed hostile is inside the sealed base (towerRun sets threat8.inBase); max 2
@@ -233,11 +236,17 @@ function spawnRun(spawn) {
   }
   // 6) wall builder from surplus (19:18): 1 builder while a seal wall is below target and spawn is full
   // 19:31: 2 while >1500 loose energy piles (2.8k at 19:30 with the ctl container full and upgraders at the WORK cap)
-  if (!want && !raidPause && room.energyAvailable === cap && n('w8builder') < (looseE(room) > 1500 ? 2 : 1)) {
-    // 11-02 (Misaki t375u): the raise above STAGE3 (Memory.defense.w8seal) only spawns builders while storage >= w8sealMinE
-    // 11-02 17:4x/21:xx: default sealMinE = LEAN_SOFT (25000); wallJob also clamps (roles.js) so live builders cannot deep-raise below the gate
-    const tgt = (room.storage ? room.storage.store[RESOURCE_ENERGY] : 0) >= TH.sealMinE() ? wtgt : Math.min(wtgt, TH.STAGE3);
-    if (room.find(FIND_STRUCTURES, { filter: s => s.structureType === STRUCTURE_WALL && s.hits < tgt && C.SEAL.some(([x, y]) => s.pos.x === x && s.pos.y === y) }).length) want = 'w8builder';
+  // 11-03 02:4x: soft-gate — deep seal only while sealDeepOk; edge band (stor < sealMinE+SEAL_EDGE) caps at 1 builder; parked still allows 1 for STAGE3 floor
+  {
+    const storS = room.storage ? (room.storage.store[RESOURCE_ENERGY] || 0) : 0;
+    const deep = TH.sealDeepOk(storS);
+    const tgt = deep ? wtgt : Math.min(wtgt, TH.STAGE3);
+    const edgeFat = deep && storS >= TH.sealMinE() + TH.SEAL_EDGE;
+    const maxB = deep ? (looseE(room) > 1500 && edgeFat ? 2 : 1) : 1;
+    if (!want && !raidPause && room.energyAvailable === cap && n('w8builder') < maxB) {
+      // 11-02 (Misaki t375u): raise above STAGE3 only while sealDeepOk (softCap2 + sticky park + sealMinE)
+      if (room.find(FIND_STRUCTURES, { filter: s => s.structureType === STRUCTURE_WALL && s.hits < tgt && C.SEAL.some(([x, y]) => s.pos.x === x && s.pos.y === y) }).length) want = 'w8builder';
+    }
   }
   // 10-21 11:2x patrol: with 0 sites and the seal at cap no builder spawned, so nothing repaired the kept roads.js network (27 of 116
   // below 30%, link road 14,35/15,34 at 300 hits, about 3k ticks from vanishing). 1 maintenance builder while a kept road/container is < 20%.
@@ -642,6 +651,8 @@ function dayObs(room) {
   // 08:4x: looseE (drops + source conts, excl ctl/hub) so patrol can see stranded energy vs stor20k shortfall
   const loose = looseE(room);
   const softLeft = Math.max(0, LEAN_SOFT - storE);
+  // 11-03 02:4x: refresh sticky seal park from dayObs too (layoutRun every 20t) — spawnRun owns every-tick path
+  TH.updateSealPark(storE, upgraders, sites.length);
   // 23:4x: hub link readiness (dormant until HUB_LINK + structure). Patrol sees energy + gate without flipping.
   const [hlx, hly] = (L.ORDER.link && L.ORDER.link[0]) || [33, 34];
   const hubLink = room.lookForAt(LOOK_STRUCTURES, hlx, hly).find(s => s.structureType === STRUCTURE_LINK);
@@ -654,7 +665,8 @@ function dayObs(room) {
     warMode: warMode ? 1 : 0, // 14:4x: Memory.ops.w47n9 assault freeze
     ctlBat: ctlBattery(room), feedOk: ctlBattery(room) >= FEED_MIN ? 1 : 0, // 11:4x strategy: peacetime surplus needs feedOk
     sealMinE: TH.sealMinE(), // effective deep-seal gate (Memory override visible)
-    sealRaise: (storE >= TH.sealMinE() && (TH.sealCap() > TH.STAGE3)) ? 1 : 0,
+    sealRaise: (TH.sealDeepOk(storE) && (TH.sealCap() > TH.STAGE3)) ? 1 : 0, // 02:4x: soft-gate (softCap2 + sticky park)
+    sealPark: TH.sealParked() ? 1 : 0,
     towerMinE, towerHubE, towerNorthE, nf, eAvail, eCap, looseE: loose,
     hubLinkE, hubReady, hubLink: C.HUB_LINK ? 1 : 0 }; // 23:4x strategy: HUB_LINK plumbing obs
   leanBankRecycle(room);
@@ -823,7 +835,8 @@ function rampHold(room) {
   const kt = TH.keyTarget(), softT = kt > (C.SOFT_RAMP || 0) && storE >= TH.keyMinE() ? kt : (C.SOFT_RAMP || 0);
   soft.tgt = softT; soft.storE = storE;
   soft.sealMinE = TH.sealMinE(); soft.sealCap = TH.sealCap();
-  soft.sealRaise = (storE >= TH.sealMinE() && TH.sealCap() > TH.STAGE3) ? 1 : 0; // 20:4x: 1 only when deep seal may burn surplus
+  soft.sealRaise = (TH.sealDeepOk(storE) && TH.sealCap() > TH.STAGE3) ? 1 : 0; // 02:4x: soft-gate (softCap2 + sticky park)
+  soft.sealPark = TH.sealParked() ? 1 : 0;
   const localThreat = TH.localOn();
   soft.why = softT <= 0 ? 'off' : localThreat ? 'threat' : (storE < softMin ? 'stor' : 'ok');
   if (softT > 0 && storE >= softMin && !localThreat) {

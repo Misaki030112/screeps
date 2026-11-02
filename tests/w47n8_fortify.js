@@ -18,9 +18,11 @@ Memory.defense.w8seal = 200000; assert.strictEqual(TH.planTarget(7, 1000000), 30
 Memory.ops.w8move.phase = 'prep'; Memory.defense.w8seal = 1000000; assert.strictEqual(TH.planTarget(7, 1000000), 100000, 'move pending still 100k');
 delete Memory.ops.w8move;
 assert.strictEqual(TH.sealMinE(), 25000, 'default = LEAN_SOFT'); Memory.defense.w8sealMinE = 4000; assert.strictEqual(TH.sealMinE(), 4000); delete Memory.defense.w8sealMinE;
-// spawn rule 6 gates the deep raise on storage
+// spawn rule 6 soft-gates deep raise via sealDeepOk (+ SEAL_EDGE intensity)
 const idx = fs.readFileSync(path.join(d, 'index.js'), 'utf8');
-assert.ok(/const tgt = \(room\.storage[^\n]*>= TH\.sealMinE\(\) \? wtgt : Math\.min\(wtgt, TH\.STAGE3\)/.test(idx), 'builder spawn: deep raise only with storage >= w8sealMinE');
+assert.ok(/TH\.sealDeepOk\(storS\)/.test(idx), 'builder spawn: deep raise uses sealDeepOk');
+assert.ok(/TH\.SEAL_EDGE/.test(idx), 'builder spawn: SEAL_EDGE intensity for 2nd builder');
+assert.ok(/updateSealPark/.test(idx), 'spawnRun refreshes sticky seal park');
 // --- KEY soft target
 const rs = [{ id: 'spawnR', structureType: 'rampart', hits: 300000, pos: { x: 34, y: 30 } },
   { id: 'towN', structureType: 'rampart', hits: 120000, pos: { x: 24, y: 8 } },
@@ -37,9 +39,11 @@ Memory.defense.w8keyMinE = 6000; assert.strictEqual(W.rampHold(room).id, 'storR'
 Memory.ops.w8threat = Game.time; assert.strictEqual(W.rampHold(room), null, 'local threat: towers keep energy for combat');
 // --- tower range filter
 assert.ok(/r\.hits < \(C\.GATE_TOWER \|\| 0\) \|\| [^\n]*getRangeTo\(r\) <= KEY_REP_R\)\) t\.repair\(r\)/.test(idx), 'towers: above GATE_TOWER only within KEY_REP_R');
-// --- wallJob deep raise gated by sealMinE (11-02 17:4x)
+// --- wallJob deep raise gated by sealDeepOk (11-02 17:4x + 11-03 02:4x soft-gate)
 const R = require(path.join(d, 'roles.js'));
 Memory.defense = { w8seal: 1000000 };
+delete Memory.ops.w8sealPark;
+delete Memory.ops.w8threat; // KEY test left localOn sticky — softThin must be clear for peacetime sealDeepOk
 const sealWall = { id: 'sw1', structureType: 'constructedWall', hits: 310000, pos: { x: 10, y: 3 } };
 const roomLow = {
   controller: { level: 7 },
@@ -48,9 +52,24 @@ const roomLow = {
 };
 assert.strictEqual(R._wallJob(roomLow, null), null, 'stor < sealMinE: wallJob caps at STAGE3, seal@310k idle');
 roomLow.storage.store.energy = 25000;
-assert.strictEqual(R._wallJob(roomLow, null).id, 'sw1', 'stor >= sealMinE 25k: wallJob aims at w8seal=1M');
+assert.strictEqual(R._wallJob(roomLow, null).id, 'sw1', 'stor >= sealMinE 25k + park clear: wallJob aims at w8seal=1M');
+// 02:4x: softCap2 still parks deep seal even when Memory sealMinE override is below LEAN_SOFT
 Memory.defense.w8sealMinE = 5000;
 roomLow.storage.store.energy = 6000;
-assert.strictEqual(R._wallJob(roomLow, null).id, 'sw1', 'Memory override lowers gate');
+assert.strictEqual(R._wallJob(roomLow, null), null, 'override 5k at stor 6k still softCap-parked (no deep seal under softCap2)');
 delete Memory.defense.w8sealMinE;
+// sticky park: stor fat but w8sealPark held until nUp recovers
+roomLow.storage.store.energy = 30000;
+Memory.ops.w8sealPark = 1;
+assert.strictEqual(R._wallJob(roomLow, null), null, 'sticky w8sealPark clamps deep seal at stor 30k');
+assert.strictEqual(TH.sealDeepOk(30000), false, 'sealDeepOk false while parked');
+TH.updateSealPark(30000, 3, 0);
+assert.strictEqual(Memory.ops.w8sealPark, 0, 'park clears when softThin off + nUp>=base');
+assert.strictEqual(R._wallJob(roomLow, null).id, 'sw1', 'after park clear deep seal resumes');
+// threat soft at fat storage parks deep seal
+Memory.ops.w8threat = Game.time;
+assert.strictEqual(TH.sealDeepOk(30000), false, 'local threat softThin parks deep seal');
+assert.strictEqual(R._wallJob(roomLow, null), null, 'threat soft: wallJob caps at STAGE3');
+delete Memory.ops.w8threat;
+delete Memory.ops.w8sealPark;
 console.log('w47n8 fortify ok');

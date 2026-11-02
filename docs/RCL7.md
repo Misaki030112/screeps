@@ -630,3 +630,27 @@ Refs: Overmind `storageBuffer` + warSpawnCutoff; TooAngel `upgraderMinStorage` /
 3. Set `config.HUB_LINK=true` → layout places 33,34; builders finish; watch `hubLinkE` rise, `waiting_feed`↓, upg ≥24 / short≥70%.
 4. Do **not** flip labs/industry/market with it. K still regenerating — minerals not the bottleneck.
 
+## 2026-11-03 02:4x — seal soft-gate vs softCap2 (no sealMinE raise)
+
+**Question:** With KEY DONE and sealMinE = LEAN_SOFT = 25k (Misaki accepted edge thrash; rejected 35k buffer), how should seal→1M wallJob / builders interact with softCap2 so peacetime upgrade recovery is not starved every time stor dips under 25k mid-seal?
+
+**Answer: soft-gate deep seal to softCap2 + sticky park + edge intensity — do not raise sealMinE.** Overmind parks routine fortify until ~500k colony energy; TooAngel uses storage/healthy floors. We keep KEY ungated and only park seal→1M.
+
+### Live (~02:47 Asia/Shanghai, t~84031795, deploy 8075205)
+- Peacetime; home ~19.22% stor~16.0k ABOVE 2h~81%; W47 ~5.90% stor25004 softCap2 OFF sealRaise1 builders2 nUp3 KEY DONE sealMinE=25000 hubReady0; 2h ~64–69% consec soft; remotes SAFE; labs OFF no re-ask; K regener~40.5k.
+- SoftCap thrash pattern (patrols 00:23–02:27): ON→short crash ~30%; OFF→sealRaise1 drains band back under 25k.
+
+### Gate
+- `TH.softThin(storE)` = `localOn() || storE < LEAN_SOFT` (softCap2 shape).
+- `TH.updateSealPark`: set `Memory.ops.w8sealPark` while softThin / below sealMinE; clear only when softThin off **and** nUp ≥ peacetime base (sites?2:3).
+- `TH.sealDeepOk(storE)` = !parked && !softThin && storE ≥ sealMinE.
+- wallJob + spawn rule 6: deep raise only while sealDeepOk; `SEAL_EDGE=5k` → 2nd builder only with sealMinE+5k headroom; parked still allows 1 builder for STAGE3 floor only.
+- Obs: `w8day.sealPark` / `sealRaise` (via sealDeepOk); `w8soft.sealPark`.
+
+### Shipped
+- `src/rooms/w47n8/threat.js` + `index.js` + `roles.js`; tests `w47n8_fortify.js` / `w47n8_dayobs.js`.
+- **sealMinE stays 25000.** **No** HUB_LINK / labs / industry / market flips. **No** re-ask.
+
+### Watch
+- After deploy: when softCap2 re-ON, `sealPark=1` / `sealRaise=0` and live builders stop climbing above 300k; when softCap clears, park holds until nUp≥3 then seal resumes; 2nd builder only above ~30k.
+- HUB_LINK nod remains open (~23:45) — do not re-spam. Biggest remaining upg gap is still !HUB_LINK feed.

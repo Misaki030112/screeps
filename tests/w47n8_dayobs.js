@@ -346,25 +346,39 @@ C.RCL6_MINERALS = true; // leave matching live config
 delete Game.rooms.W46N8;
 
 
-// sealMinE / sealRaise obs (Memory override must be visible; default LEAN_SOFT=25k)
+// sealMinE / sealRaise / sealPark obs (02:4x soft-gate; default LEAN_SOFT=25k)
 delete Memory.defense;
 delete Memory.ops.w47n9;
+delete Memory.ops.w8sealPark;
 W.dayObs(mk(7, done, [], 0));
 assert.strictEqual(Memory.ops.w8day.sealMinE, 25000, 'default sealMinE exposed');
 assert.strictEqual(Memory.ops.w8day.sealRaise, 0, 'no w8seal knob → sealCap=STAGE3 → sealRaise 0');
+assert.strictEqual(Memory.ops.w8day.sealPark, 1, 'stor 2.1k → sealPark ON');
 Memory.defense = { w8seal: 1000000 };
 const rSeal = mk(7, done, [], 0); rSeal.storage.store.energy = 20000;
 W.dayObs(rSeal);
 assert.strictEqual(Memory.ops.w8day.sealMinE, 25000);
 assert.strictEqual(Memory.ops.w8day.sealRaise, 0, 'stor 20k < 25k → sealRaise 0 even with w8seal=1M');
+assert.strictEqual(Memory.ops.w8day.sealPark, 1, 'softCap parks seal');
+// sticky: stor≥25k but 0 upgraders → park holds, sealRaise stays 0
 rSeal.storage.store.energy = 25000;
 W.dayObs(rSeal);
-assert.strictEqual(Memory.ops.w8day.sealRaise, 1, 'stor≥25k + w8seal=1M → sealRaise 1');
+assert.strictEqual(Memory.ops.w8day.sealPark, 1, 'sticky park until nUp recovers');
+assert.strictEqual(Memory.ops.w8day.sealRaise, 0, 'stor≥25k alone does not lift sealRaise while park sticky');
+// 3 upgraders + stor≥25k clears park → sealRaise 1
+const ups3 = [{ memory: { role: 'w8upgrader' } }, { memory: { role: 'w8upgrader' } }, { memory: { role: 'w8upgrader' } }];
+const rSealOk = mk(7, done, ups3, 0); rSealOk.storage.store.energy = 25000;
+W.dayObs(rSealOk);
+assert.strictEqual(Memory.ops.w8day.sealPark, 0, 'nUp>=base clears sticky park');
+assert.strictEqual(Memory.ops.w8day.sealRaise, 1, 'stor≥25k + nUp3 + w8seal=1M → sealRaise 1');
+// 02:4x: override below LEAN_SOFT no longer deep-seals under softCap2 (was the 17:4x failure mode)
 Memory.defense.w8sealMinE = 5000;
-rSeal.storage.store.energy = 10000;
-W.dayObs(rSeal);
+rSealOk.storage.store.energy = 10000;
+W.dayObs(rSealOk);
 assert.strictEqual(Memory.ops.w8day.sealMinE, 5000, 'Memory override visible in obs');
-assert.strictEqual(Memory.ops.w8day.sealRaise, 1, 'override 5k lets sealRaise at stor 10k (the 17:4x failure mode)');
+assert.strictEqual(Memory.ops.w8day.sealRaise, 0, 'override 5k at stor 10k still softCap-parked (soft-gate)');
+assert.strictEqual(Memory.ops.w8day.sealPark, 1);
 delete Memory.defense;
+delete Memory.ops.w8sealPark;
 
 console.log('w47n8_dayobs ok');
