@@ -108,8 +108,17 @@ function fieldCaps(P) {
     need: Object.assign({}, NEED, (P && P.need) || {}),
   };
 }
-function wantKind(roomName, have, max, cap) {
-  const order = PREFER[roomName] || PREFER[HOME];
+// Fighters before surplus healers: once NEED.d dismantlers and HEAL_MIN healers exist, m/r jump the queue
+// until FIGHT_MIN (m+r) are alive. Override with Memory.ops.w47n9.minFighters / minHealers.
+const FIGHT_MIN = 4, HEAL_MIN = 2;
+function wantKind(roomName, have, max, cap, P) {
+  let order = PREFER[roomName] || PREFER[HOME];
+  const fMin = P && P.minFighters != null ? P.minFighters : FIGHT_MIN;
+  const hMin = P && P.minHealers != null ? P.minHealers : HEAL_MIN;
+  const needD = (P && P.need && P.need.d != null) ? P.need.d : NEED.d;
+  if ((have.m || 0) + (have.r || 0) < fMin && (have.h || 0) >= hMin && (have.d || 0) >= needD) {
+    order = ['m', 'r'].concat(order.filter(k => k !== 'm' && k !== 'r'));
+  }
   for (const k of order) {
     if ((have[k] || 0) >= (max[k] || 0)) continue;
     if (!bodyFor(k, cap)) continue;
@@ -143,7 +152,7 @@ function wantSpawn(room, avail) {
   const cap = room.energyCapacityAvailable || 5300;
   const alive = allRaid();
   const have = _.countBy(alive, c => (c.memory && c.memory.kind) || 'm');
-  const kind = wantKind(room.name, have, max, cap);
+  const kind = wantKind(room.name, have, max, cap, P);
   if (!kind) return null;
   const body = bodyFor(kind, cap);
   const cost = costOf(body);

@@ -264,3 +264,15 @@ assert.strictEqual(focused[0].x, 39);
 assert.strictEqual(focused[1].x, 38);
 
 console.log('raid9 ok');
+
+// fighters jump surplus healers at the colony once d>=need and h>=2
+{
+  const R = require('../src/roles/raid9');
+  const a = require('assert');
+  const max = { d: 4, m: 6, r: 6, h: 10 };
+  a.strictEqual(R.wantKind('W47N8', { d: 4, h: 3 }, max, 5300, {}), 'm');
+  a.strictEqual(R.wantKind('W47N8', { d: 4, h: 1 }, max, 5300, {}), 'h');
+  a.strictEqual(R.wantKind('W47N8', { d: 4, h: 5, m: 2, r: 2 }, max, 5300, {}), 'h');
+  a.strictEqual(R.wantKind('W46N8', { d: 2, h: 2, m: 3 }, max, 5300, { minFighters: 4 }), 'm');
+  console.log('raid9 fighters-first ok');
+}
