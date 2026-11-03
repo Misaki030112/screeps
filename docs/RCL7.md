@@ -1,5 +1,46 @@
 # Home W46N8 RCL7 readiness (strategy review 2026-10-19 18:4x UTC+8)
 
+## 2026-11-03 20:4x — softCap re-ON drain (soft-band ≠ softE)
+
+**Question:** With softCap2 re-ON after clears ~25–26k (patrol softLeft~3k → live softLeft~1k), and feedBound already diagnosed — what autonomous drain still pulls W47 storage back under softArm (22k)? sealRaise mid-clear, SEAL_EDGE 2nd builder, hub drop pile, hauler soft-band, mineral haul, or home/colony balance?
+
+**Answer: hauler soft-band was wrongly tied to softE hysteresis.** Seal soft-gate works; sustained bleed in post-clear [22k,25k) was nUp3 + park OFF. Restored STRICT soft-band at LEAN_SOFT; softE stays nUp-only.
+
+### Live (~20:44–20:50 Asia/Shanghai, t~84047400, deploy adcc35f → this ship)
+- Peacetime; home RCL7 ~22.18% 2h~22.2/26 (~85%) stor~15k ABOVE; W47 RCL7 ~8.96% stor**24000** softE=1 softCap2=1 softLeft1000 softArm22k nUp2; KEY DONE; **sealRaise0 sealPark1** gate~477k→1M; hubReady0; contMinPct50 roadCrit0; feedBound0 (soft ON); looseE~571; remotes SAFE; labs OFF propose=1 actOk=1; w8min miners0 / term K~92 homeTermK~34k; CPU~14–15/20 bkt10k.
+- 6h stor: clears ≥25k @~17:39 (26.0k), ~18:14 (25.0k), ~19:26 (25.0k) then bleed through [22k,25k) until softE re-arms <22k. One deep dip ~18:48–18:58 (24k→16k, ctl→0) looks like a spawn/delivery stall, not steady seal.
+- Builder live at ~15,26 (ctl-side maint), **not** north seal y=3 — matches sealPark.
+- Hub cont 33,33 empty; earlier hub-drop ~1.9k was transient (not the multi-hour softArm breach).
+
+### Drain matrix
+| candidate | live evidence | sustained softArm breach? |
+|---|---|---|
+| sealRaise mid-clear | sealPark1 / sealRaise0 below 25k; softThin parks | brief window only while ≥25k (1 builder, SEAL_EDGE blocks 2nd until 30k) — **not** the [22k,25k) bleed |
+| SEAL_EDGE 2nd builder | edgeFat needs sealMinE+5k=30k | no — never armed in this band |
+| hub drop pile | looseE~0.6k; hub cont 0 | transient accounting, not hours-long |
+| **hauler soft-band** | 08:4x followed softE → park OFF in post-clear [ARM,SOFT) while nUp3 | **YES** — primary autonomous drain |
+| mineral haul | w8min miners0 / gaps=miner | no |
+| home balance | home ~15k stable ABOVE | no cross-room pull |
+
+### Overmind / TooAngel
+- **Overmind** `UpgradeSite.settings.storageBuffer=100k` + logistics `requestInput` while battery <50–75%: keep topping the reserve while upgrade is fed. **WorkerOverlord.fortifyDutyThreshold=500k** parks routine fortify until fat — our seal soft-gate already mirrors that; measured seal is parked under softThin.
+- **TooAngel** healthy/storage floors park upgrade when storage thin. We keep softE hysteresis for nUp (avoid 3↔2 thrash) and only restore haul park under the soft floor.
+- Coupling park to softE fought the soft floor: after a clear, nUp3 correctly held, but surplus haul went to ctl instead of storage → stor walked down to softArm.
+
+### Shipped
+1. `roles.js` soft-band / holdBand: STRICT `se < LEAN_SOFT` (25000) + ctl≥1200 — **independent of softE**.
+2. `w8day.softBand` — 1 when `storE < LEAN_SOFT && ctlBat ≥ 1200` (patrol sees park≠softE in the hold band).
+3. Tests filler (23k softE=0 → storage) + dayobs softBand with ctl battery.
+4. **No** HUB_LINK / labs / industry / market / sealMinE flips; **no** re-ask.
+
+### Patrol watch
+- After deploy: in [22k,25k) post-clear expect `softE=0 softCap2=0 softBand=1` (nUp3 + park ON) — stor should re-climb to ≥25k instead of falling under 22k.
+- `softE=1 softBand=1` while climbing from <22k is normal.
+- `sealPark=1` whenever stor<25k; sealRaise only above clear with park cleared.
+- feedBound returns when soft clears + nUp≥3; still **do not re-ask HUB_LINK**.
+
+---
+
 ## 2026-11-03 17:3x — post-roadCrit feed ceiling (!HUB_LINK)
 
 **Question:** With softCap clear (stor≥26k), roadCrit drained to 0, contMinPct≥50, and sealRaise re-armed — is W47 upgrade still at the A→ctl feed ceiling, proving further softCap/seal/road tuning will not close the ~9 e/t gap (only `HUB_LINK` will)?

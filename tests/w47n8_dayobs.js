@@ -147,12 +147,14 @@ W.dayObs(rSoftClear);
 assert.strictEqual(Memory.ops.w8day.softE, 0);
 assert.strictEqual(Memory.ops.w8day.softCap2, 0);
 assert.strictEqual(Memory.ops.w8day.bankWhy, 'ready');
+assert.strictEqual(Memory.ops.w8day.softBand, 0, 'mk has no ctl battery → softBand 0 even below SOFT');
 rSoftClear.storage.store.energy = 23000;
 Memory.ops.w8day.leanBank = 0;
 W.dayObs(rSoftClear);
 assert.strictEqual(Memory.ops.w8day.softE, 0, 'hysteresis hold softE off at 23k after clear');
 assert.strictEqual(Memory.ops.w8day.softCap2, 0, 'softCap2 off in [ARM,SOFT) after clear');
 assert.strictEqual(Memory.ops.w8day.bankWhy, 'ready', 'bankWhy=ready in soft hysteresis hold');
+assert.strictEqual(Memory.ops.w8day.softBand, 0, 'still no ctl battery → softBand stays 0');
 // feed-gate may trim 4→≤3 without HUB_LINK; softCap must NOT recycle to ≤2 in the hold band
 assert.ok((Memory.ops.w8recycle || []).length <= 1, 'no softCap≤2 recycle while hysteresis hold: ' + JSON.stringify(Memory.ops.w8recycle));
 // re-arm soft energy below LEAN_SOFT_ARM
@@ -162,6 +164,22 @@ assert.strictEqual(Memory.ops.w8day.softE, 1, 'softE re-arms below 22k');
 assert.strictEqual(Memory.ops.w8day.softCap2, 1);
 assert.strictEqual(Memory.ops.w8day.bankWhy, 'soft');
 assert.ok((Memory.ops.w8recycle || []).length >= 2, 'soft re-arm recycles to ≤2: ' + JSON.stringify(Memory.ops.w8recycle));
+// 20:4x 11-03: softBand obs — STRICT se<LEAN_SOFT + ctlBat≥1200 (independent of softE)
+{
+  const bat = done.concat([[13, 26, 'container'], [13, 25, 'link']]);
+  const rBand = mk(7, bat, softUps, 0);
+  const cont = rBand.lookForAt(LOOK_STRUCTURES, 13, 26)[0];
+  const link = rBand.lookForAt(LOOK_STRUCTURES, 13, 25)[0];
+  cont.store = { energy: 1500 }; link.store = { energy: 0 };
+  // clear softE first
+  rBand.storage.store.energy = 25000; Memory.ops.w8day.leanBank = 0; W.dayObs(rBand);
+  assert.strictEqual(Memory.ops.w8day.softBand, 0, 'softBand off at ≥25k with ctl full');
+  rBand.storage.store.energy = 23000; Memory.ops.w8day.leanBank = 0; W.dayObs(rBand);
+  assert.strictEqual(Memory.ops.w8day.softE, 0, 'softE hysteresis hold');
+  assert.strictEqual(Memory.ops.w8day.softBand, 1, 'softBand ON at 23k when ctl≥1200 (park≠softE)');
+  cont.store.energy = 800; W.dayObs(rBand);
+  assert.strictEqual(Memory.ops.w8day.softBand, 0, 'softBand off when ctl hungry even below SOFT');
+}
 // re-arm leanBank below LEAN_ARM
 Memory.ops.w8day.leanBank = 0;
 const rArm = mk(7, done, [], 0); rArm.storage.store.energy = 14000;

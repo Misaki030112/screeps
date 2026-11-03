@@ -131,33 +131,33 @@ function sink(room, c) {
   // 20:4x extends below LEAN_ARM — post-gate soft-cap alone never parked energy while ctl had free capacity.
   // 08:4x 2026-11-02: park through LEAN_SOFT (25k), not just LEAN_STOR (20k). HMAX=3 overflow stopped at 20k while
   // soft-cap held nUp≤2 until 25k → WORK-bound deadlock (ctl/hub full, stor flat ~20k, upg~55% ideal).
-  // 08:4x 11-03: softEnergyCap hysteresis (clear@25k / re-arm@22k) via w8day.softE — avoid require('./index').
-  const softEnergyOn = (se) => {
-    if (se >= 25000) return false;
-    if (se < 22000) return true; // LEAN_SOFT_ARM
-    return !!(Memory.ops && Memory.ops.w8day && Memory.ops.w8day.softE);
-  };
+  // 20:4x 11-03 strategy: soft-band is STRICT se<LEAN_SOFT — do NOT follow softE hysteresis.
+  // softE (clear@25k / re-arm@22k) only gates softCap2/nUp. Coupling park to softE left [ARM,SOFT)
+  // after a clear with nUp3 + park OFF → stor bled 25k→22k (seal correctly parked via softThin).
+  // Overmind keeps logistics filling storageBuffer while upgrade battery is saturated; we park when
+  // ctl≥1200 and stor still under the soft floor.
+  const softFloor = (se) => (se || 0) < 25000; // LEAN_SOFT strict (nUp hysteresis is index softE only)
   const holdBand = () => {
     if (!room.storage) return false;
     const se = room.storage.store[E] || 0;
     const ctlS = ctlCont();
     const ctlE = ctlS ? (ctlS.store[E] || 0) : 0;
-    return softEnergyOn(se) && ctlE >= 1200; // sync with index softEnergyCap
+    return softFloor(se) && ctlE >= 1200;
   };
   if (was && room.storage && was.id === room.storage.id && !bufLow() && !holdBand()) was = null;
   if (was) return was;
   // 17:4x filler buffer: while a w8filler lives, storage below one hub refill (+200) comes before the ctl/hub containers
   if (room.storage && free(room.storage) && bufLow()) { c.memory.sk = room.storage.id; return room.storage; }
-  // 08:4x/20:4x/08:4x-11-02/08:4x-11-03 soft-band storage park — softEnergyCap ON and ctl ≥1200:
-  // park hauler surplus so cushion can climb to soft-cap exit (25k). Hysteresis re-arm at 22k stops
-  // 23↔25k thrash (roles used to park whenever se<25k even after softCap cleared). Threat softCap
-  // (TH.localOn) does NOT park — combat drain needs ctl fed (softE is energy-half only).
-  // Overmind parks assets in storageBuffer while upgrade battery saturated.
+  // 08:4x/20:4x/20:4x-11-03 soft-band storage park — STRICT se<LEAN_SOFT and ctl ≥1200:
+  // park hauler surplus so cushion can climb/hold the soft floor (25k). softE hysteresis stays on
+  // softCap2/nUp only — park must still refill storage in the post-clear [ARM,SOFT) band.
+  // Threat softCap (TH.localOn) does NOT force park here (predicate is energy floor, not softE).
+  // Overmind keeps logistics topping storageBuffer while upgrade battery is saturated.
   if (room.storage && free(room.storage)) {
     const se = room.storage.store[E] || 0;
     const ctlS = ctlCont();
     const ctlE = ctlS ? (ctlS.store[E] || 0) : 0;
-    if (softEnergyOn(se) && ctlE >= 1200) { c.memory.sk = room.storage.id; return room.storage; }
+    if (softFloor(se) && ctlE >= 1200) { c.memory.sk = room.storage.id; return room.storage; }
   }
   const ctl = free(ctlCont()), hub = free(hubCont());
   // 03:20 hub only while sites near the hub need it: any road site anywhere sent rhaulers to the hub (864 -> 2000 full in ~290t)

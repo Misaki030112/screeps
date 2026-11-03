@@ -3,6 +3,10 @@ Defensive only. Never leaves W47N8, never crosses the seal (y<=3), never safe mo
 Code: `src/rooms/w47n8/defense.js` (pure, `tests/w47n8_defense.js`), wired in `index.js` towerRun/spawnRun and `roles.js` w8defender.
 Model: `tools/combat_sim.py` (same tick model as `defense.sim`). Revert switch: `Memory.ops.w8defOld = 1` (old spawn trigger).
 
+## 2026-11-03 20:4x — softCap re-ON / soft-band ≠ softE
+
+Peacetime: seal soft-gate still parks deep seal under softThin (<25k). Sustained softArm breach after clears was **hauler soft-band** following softE hysteresis (park OFF in post-clear [22k,25k) while nUp3). Soft-band restored to STRICT `se < LEAN_SOFT`; softE stays nUp-only. sealMinE/SEAL_EDGE/KEY unchanged. Detail: `docs/RCL7.md` 20:4x.
+
 ## 2026-11-03 14:4x — roadCrit before deep seal
 
 Peacetime softCap clear re-armed `sealRaise`; lone builder was sticky on north seal→1M while `roadCrit`~38. Repair order now puts kept roads `<25%` **before** deep `wallJob` (Overmind RoadLogistics critical / fortifyDutyThreshold). KEY/STAGE3/sealMinE/soft-gate unchanged; under-attack seal path unchanged. Detail: `docs/RCL7.md` 14:4x.

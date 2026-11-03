@@ -707,7 +707,9 @@ function dayObs(room) {
     missSpawn: missSpawn ? 1 : 0, missTower: missTower ? 1 : 0, missExt, why, phase,
     bankLeft, bankEta, leanBank: lb ? 1 : 0, bankArm: LEAN_ARM, bankSoft: LEAN_SOFT, softArm: LEAN_SOFT_ARM, bankWhy, softLeft,
     threatSoft: threatSoft() ? 1 : 0,
-    softE: softEnergyCap(storE) ? 1 : 0, // 08:4x 11-03: energy-half sticky (roles soft-band reads this)
+    softE: softEnergyCap(storE) ? 1 : 0, // 08:4x 11-03: energy-half sticky for softCap2/nUp only
+    // 20:4x 11-03: soft-band park is STRICT se<LEAN_SOFT (roles); obs diverges from softE in post-clear [ARM,SOFT)
+    softBand: (storE < LEAN_SOFT && ctlBattery(room) >= 1200) ? 1 : 0,
     softCap2: softCap2(storE) ? 1 : 0, // 11:4x/08:4x-11-03: ≤2 = threatSoft OR softEnergyCap; leanBank still tighter at ≤1
     warMode: warMode ? 1 : 0, // 14:4x: Memory.ops.w47n9 assault freeze
     ctlBat: ctlBattery(room), feedOk: ctlBattery(room) >= FEED_MIN ? 1 : 0, // 11:4x strategy: peacetime surplus needs feedOk
