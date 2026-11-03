@@ -197,3 +197,11 @@ Plumbing shipped dormant (`HUB_LINK` still false). See `docs/RCL7.md` 23:4x.
 | upkeep | ~6.5 | 11.8 |
 
 **Conclusion:** softCap/roadCrit/cont levers are exhausted. The ~9 e/t gap is A→ctl topology (hub skew). `w8day.feedBound=1` marks the pre-structure ceiling. **2026-11-03: Misaki nodded `HUB_LINK=true`.** Site 33,34 (~5k); `upgCeil` still waits `hubLinkLive` (hub→ctl ~range 20 → ~38.8 e/t net once the link stands). See `docs/RCL7.md`.
+
+## 2026-11-03 23:4x — hub PRE-WARM during softCap bank
+
+**Symptom:** `hubReady1` LIVE but softCap intentional bank left `hubLinkE=0` (ferry gated stor≥25k). Clear → `upgCeil6` before ferry + link cooldown(20) warmed hub→ctl → post-clear `waiting_feed` risk.
+
+**Model note:** Overmind UpgradeSite tops upgrade links at `linksRequestBelow=200` independent of storageBuffer climb; our LEAN_SOFT bank needs the same pre-warm. Soft-band prime from `LEAN_SOFT_ARM(22k)` keeps one SEND (200) buffered; bat-driven ferry only after soft clear so soft-band refill is not fought.
+
+**Expect:** during bank once stor≥22k → `hubPrime=1`; on clear first hub→ctl SEND already ready; waiting_feed should not spike from cold hub. See `docs/RCL7.md` 23:4x.

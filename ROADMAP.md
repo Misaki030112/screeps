@@ -3,6 +3,13 @@
 Novice zone ends **2026-10-28 03:33 UTC+8** (past as of 10-29). Defence timeline: `docs/DEFENSE_NOVICE.md` (2026-10-16); detail `docs/DEFENSE.md` / geometry `docs/DEFENSE_PLAN.md`.
 **Safe mode: NEVER auto-activate** — alert Misaki.
 
+## 2026-11-03 23:4x strategy review: hub-link PRE-WARM during softCap bank
+- **Chose:** HUB_LINK is LIVE (`hubReady1`) but softCap bank (intentional) left `hubLinkE=0` / `hubPrime=0` through the climb — does post-clear `upgCeil6` starve WORK before ferry+link cooldown(20) can warm hub→ctl? (OUR ops transport; labs OFF no re-ask; neighbor scans paused.)
+- **Findings (`docs/RCL7.md` 23:4x 11-03 / `docs/STRATEGY.md` / `docs/MODEL_W47N8.md`):** (1) Live ~23:28–23:41 Asia/Hong_Kong deploy 3310be3: peacetime; home ~22.71% 2h~91.4% soft CLEARED stor~14.2k UNDER15k consec-under=1; W47 ~9.28% flat 2h~41.3% softCap2 ON softE1 softLeft~5.2k→~5.5k stor~19.5–20.6k climbing consec-soft70=2 short≈0; hubReady1 hubLinkLive link 33,34 upgCeil6 feedBound0 **hubLinkE=0 hubPrime0** (ferry gated stor≥25k); remotes SAFE; labs OFF; roads.phase=done; ~34–37 creeps CPU~12–18 bucket10k. (2) Gap: idle ferry only armed at `stor≥LEAN_SOFT(25k)` — during soft-band bank hub stays empty; clear flips upgCeil6 before first hub→ctl SEND (cooldown=range20). (3) Overmind UpgradeSite `linksRequestBelow=200` tops the upgrade link whenever under threshold (independent of storageBuffer climb); home queen.standby same shape. TooAngel parks upgrade when thin but keeps logistics warm. (4) Fix shape: prime-only from `LEAN_SOFT_ARM(22k)` keep hubE≥HUB_SEND(200); bat-driven ferry only once soft clear (≥25k) so soft-band refill is not fought.
+- **Shipped:** `fill.js` ferry arm `≥22000`; soft bank prime-only (`hubE<200`); soft clear keeps `bat<800||hubE<200`. `w8day.hubPrime`. Tests filler (H) + dayobs. **No** HUB_LINK/labs/industry/market/sealMinE flips; **no** re-ask.
+- **Reprioritise (peacetime):** (1) softCap bank → clear with **hubPrime=1 before clear** (watch post-clear waiting_feed↓); (2) hold softCap ≥25k / nUp→ceil6 short≥70%; (3) keep roadCrit=0 + contMinPct≥50; (4) seal→1M under soft-gate; (5) home floor ≥15k; (6) **defer** labs KO (**no re-ask**) / boost / STATIONARY_FILL / industry / market.
+- **Plan check:** autonomous pre-warm + obs — no new Misaki decision. WakeParent **no** (anti-spam; labs no re-ask).
+
 ## 2026-11-03 HUB_LINK nod YES (W47N8 hub link armed)
 - **Nod:** Misaki YES for W47N8 HUB_LINK (枢纽链路). Peacetime shard3.
 - **Shipped:** `config.HUB_LINK=true`. Layout places link site **33,34** (~5k). `hubLinkLive` / `upgCeil` / recycle / `hubReady` unchanged — ceil stays ≤3 until the structure stands, then `hubReady=1` / upgCeil 6 / `feedBound=0`. `w8day.hubLink=1` on the flag.

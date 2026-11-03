@@ -1,5 +1,23 @@
 # Home W46N8 RCL7 readiness (strategy review 2026-10-19 18:4x UTC+8)
 
+## 2026-11-03 23:4x — hub-link PRE-WARM during softCap bank
+
+**Question:** With `HUB_LINK` LIVE (`hubReady1` / upgCeil6) but softCap2 intentional bank (stor climbing ~19–21k, short≈0), the idle hub ferry only armed at stor≥25k — does post-clear raise WORK before hub→ctl is warm, recreating waiting_feed?
+
+**Answer: YES gap — prime the hub link in soft-band.** Ferry gate moved to `LEAN_SOFT_ARM(22k)` with prime-only (`hubE < HUB_SEND=200`) while `stor < LEAN_SOFT`; full bat-driven ferry (`bat<800 || hubE<200`) only after soft clear. Matches Overmind UpgradeSite `linksRequestBelow=200` (top link independent of storageBuffer climb).
+
+**Live (~23:28–23:41 Asia/Hong_Kong, deploy 3310be3):**
+- Peacetime; home RCL7 ~22.71% 2h~91.4% soft CLEARED stor~14.2k UNDER15k consec-under=1; W47 RCL7 ~9.28% flat 2h~41.3% softCap2 ON softE1 softLeft~5.2–5.5k stor~19.5–20.6k climbing consec-soft70=2 short≈0; **hubReady1 hubLinkLive link 33,34 upgCeil6 feedBound0 hubLinkE=0** (pre-fix); remotes SAFE; labs OFF; roads.phase=done; CPU~12–18 bucket10k.
+
+**Shipped:**
+1. `fill.js` ferry: arm ≥22000; soft bank prime-only; soft clear bat ferry.
+2. `w8day.hubPrime` (1 when hubReady && hubLinkE≥200) — patrol sees pre-warm.
+3. Tests filler (H) + dayobs hubPrime.
+4. **No** HUB_LINK / labs / industry / market / sealMinE flips; **no** re-ask.
+
+**Expect after deploy:** once stor≥22k during bank → `hubPrime=1` before clear; on clear, first hub→ctl SEND already buffered (cooldown 20 already payable); post-clear waiting_feed should not spike from cold hub.
+
+
 ## 2026-11-03 — HUB_LINK nod YES (armed)
 
 **Misaki nodded YES** for W47N8 hub link (枢纽链路). `config.HUB_LINK=true`. Labs / `RCL7_INDUSTRY` / market stay OFF. `sealMinE` stays **25000** (`LEAN_SOFT`). softCap sticky / `LEAN_SOFT_ARM` unchanged. 20:4x soft-band stays STRICT `se < LEAN_SOFT` (independent of softE).

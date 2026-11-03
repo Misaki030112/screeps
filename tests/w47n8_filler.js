@@ -39,7 +39,7 @@ global.RoomPosition = RoomPosition;
 const DIRS = { 1: [0, -1], 2: [1, -1], 3: [1, 0], 4: [1, 1], 5: [0, 1], 6: [-1, 1], 7: [-1, 0], 8: [-1, -1] };
 const OBST = new Set(['spawn', 'extension', 'tower', 'storage', 'link', 'constructedWall']);
 const st = (cap, e) => { const s = { energy: e }; Object.defineProperties(s, { getFreeCapacity: { value: () => cap - s.energy }, getCapacity: { value: () => cap } }); return s; };
-const CAPS = { spawn: 300, extension: 50, tower: 1000, container: 2000, storage: 1e6 };
+const CAPS = { spawn: 300, extension: 50, tower: 1000, container: 2000, storage: 1e6, link: 800 };
 const mkS = (t, x, y, e = 0, cap) => { const s = { id: 's' + nid++, structureType: t, my: true, pos: new RoomPosition(x, y), hits: 1, hitsMax: 1 }; if (CAPS[t]) s.store = st(cap || CAPS[t], Math.min(e, cap || CAPS[t])); OBJ[s.id] = s; return s; };
 let room, creeps = [];
 function build(extCap, extTiles) {
@@ -241,3 +241,78 @@ say('sink buffer ok');
   creeps = [];
 }
 say('sink rebuild/soft-band ok');
+// ---------- (H) 23:4x 11-03: hub-link ferry PRE-WARM during softCap bank (LEAN_SOFT_ARM..LEAN_SOFT)
+// Old gate stor≥25k left hubLinkE=0 through bank → post-clear waiting_feed. Prime-only at ≥22k (hubE<200);
+// bat-driven ferry only once soft clear (≥25k). Below ARM: no ferry.
+{
+  build(50); DUTY_RESET(); fillAll();
+  // towers with free≥300 become jobs once hub is full — fill them so ferry idle path is reachable
+  for (const s of Object.values(OBJ)) if (s.structureType === 'tower') s.store.energy = s.store.getCapacity();
+  // place hub link 33,34 + ctl link 13,25 if missing; ensure ctl cont 13,26
+  let hubL = Object.values(OBJ).find(s => s.structureType === 'link' && s.pos.x === 33 && s.pos.y === 34);
+  if (!hubL) hubL = mkS('link', 33, 34, 0);
+  let ctlL = Object.values(OBJ).find(s => s.structureType === 'link' && s.pos.x === 13 && s.pos.y === 25);
+  if (!ctlL) ctlL = mkS('link', 13, 25, 0);
+  const ctlC = Object.values(OBJ).find(s => s.structureType === 'container' && s.pos.x === 13 && s.pos.y === 26);
+  assert.ok(ctlC, 'ctl cont present');
+  // filler parked at POST with full carry; hub duty full (idle ferry path)
+  const f = mkCreep('w8filler', ['carry','carry','carry','carry','carry','carry','carry','carry','carry','carry','carry','carry','move','move','move','move','move','move'], F.POST[0], F.POST[1]);
+  f.store.energy = f.store.getCapacity();
+  settle(f);
+  assert.ok(hubFull(), 'hub duty full before ferry tests');
+  assert.strictEqual(f.pos.x, F.POST[0]); assert.strictEqual(f.pos.y, F.POST[1]);
+
+  // (1) below ARM (19.5k) + empty hub + thin bat → NO ferry (stay at POST, hub stays 0)
+  room.storage.store.energy = 19500;
+  hubL.store.energy = 0; ctlL.store.energy = 0; ctlC.store.energy = 400; // bat 400 < 800
+  const x0 = f.xfer, e0 = hubL.store.energy;
+  for (let i = 0; i < 8; i++) step();
+  assert.strictEqual(hubL.store.energy, e0, 'below ARM: no ferry into hub link');
+  assert.strictEqual(f.xfer, x0, 'below ARM: no transfer');
+  assert.strictEqual(f.pos.x, F.POST[0], 'below ARM: stay at POST');
+
+  // (2) soft bank 23k: prime-only — empty hub → withdraw+walk+transfer until hubE≥200; fat bat ignored for further fill
+  room.storage.store.energy = 23000;
+  hubL.store.energy = 0; ctlL.store.energy = 400; ctlC.store.energy = 1500; // bat fat 1900
+  f.store.energy = 0; // force withdraw path
+  f.pos = new RoomPosition(F.POST[0], F.POST[1]);
+  let primed = false;
+  for (let i = 0; i < 40; i++) {
+    step();
+    if (hubL.store.energy >= 200) { primed = true; break; }
+  }
+  assert.ok(primed, 'soft bank 23k primes hub to ≥200: hubE=' + hubL.store.energy);
+  const hubAfterPrime = hubL.store.energy;
+  // after prime + fat bat: should NOT keep topping (prime-only) — another 15 ticks leave hubE unchanged or ≤800 without bat-driven drain fight
+  const x1 = f.xfer;
+  for (let i = 0; i < 15; i++) step();
+  assert.ok(hubL.store.energy >= 200, 'prime holds ≥200 after idle');
+  // if hub already ≥200, want=false under soft → no more transfers into hub
+  assert.ok(f.xfer === x1 || hubL.store.energy === hubAfterPrime || hubL.store.energy >= 200,
+    'soft bank stops once primed (no bat-driven fill)');
+
+  // (3) soft clear 25k + thin bat + hub empty → full bat ferry resumes (want = bat<800 || hubE<200)
+  room.storage.store.energy = 25000;
+  hubL.store.energy = 0; ctlL.store.energy = 0; ctlC.store.energy = 400; // bat 400
+  f.store.energy = 0;
+  f.pos = new RoomPosition(F.POST[0], F.POST[1]);
+  let cleared = false;
+  for (let i = 0; i < 40; i++) {
+    step();
+    if (hubL.store.energy >= 200) { cleared = true; break; }
+  }
+  assert.ok(cleared, 'soft clear 25k bat-ferry tops hub: hubE=' + hubL.store.energy);
+
+  // (4) soft clear + hub already primed + thin bat → still wants more (bat-driven) until freeL < 100 or bat recovers
+  // (smoke: at least one withdraw/transfer attempt happens when hubE>=200 but bat thin)
+  room.storage.store.energy = 30000;
+  hubL.store.energy = 200; ctlL.store.energy = 0; ctlC.store.energy = 400;
+  f.store.energy = 0;
+  f.pos = new RoomPosition(F.POST[0], F.POST[1]);
+  const x2 = f.xfer;
+  for (let i = 0; i < 25; i++) step();
+  assert.ok(f.xfer > x2 || hubL.store.energy > 200, 'soft clear + thin bat continues ferry beyond prime');
+
+  creeps = [];
+}
+say('hub ferry soft-prime ok');

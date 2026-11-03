@@ -178,23 +178,31 @@ function run(c) {
     if (cl.some(s => !claimed.has(s.id))) { m.fs = 'c'; return; }
   }
   // 23:4x strategy: idle hub-link ferry (dormant until HUB_LINK built). Mirror home queen.standby —
-  // when hub duty is full and storage ≥ LEAN_SOFT, top the hub link so linkRun can push hub→ctl
-  // whenever ctl battery dips (Overmind UpgradeSite requests when link <200 / battery <50%).
+  // when hub duty is full, top the hub link so linkRun can push hub→ctl whenever ctl battery dips
+  // (Overmind UpgradeSite requests when link <200 / battery <50%).
   // Hub link 33,34 is range-2 from POST 34,32 — one step to 33,33/34,33 then transfer.
+  // 23:4x 11-03 strategy: PRE-WARM during softCap bank. Old gate stor≥LEAN_SOFT(25k) left hubLinkE=0
+  // through the whole climb; clear then raised upgCeil6 before ferry+cooldown(20) warmed hub→ctl →
+  // post-clear waiting_feed. Prime-only from LEAN_SOFT_ARM(22k): keep hubE≥HUB_SEND(200) without
+  // bat-driven drain that fights soft-band refill. Full bat ferry only once soft clear (≥25k).
   {
     const [hx, hy] = (L.ORDER.link && L.ORDER.link[0]) || [33, 34];
     const hubL = room.lookForAt(LOOK_STRUCTURES, hx, hy).find(s => s.structureType === STRUCTURE_LINK);
     const storE = room.storage && room.storage.store ? (room.storage.store[E] || 0) : 0;
-    if (hubL && storE >= 25000) {
-      const freeL = hubL.store.getFreeCapacity ? hubL.store.getFreeCapacity(E) : Math.max(0, 800 - (hubL.store[E] || 0));
+    const LEAN_SOFT_ARM = 22000, LEAN_SOFT = 25000, HUB_SEND = 200;
+    if (hubL && storE >= LEAN_SOFT_ARM) {
+      const hubE = hubL.store[E] || 0;
+      const freeL = hubL.store.getFreeCapacity ? hubL.store.getFreeCapacity(E) : Math.max(0, 800 - hubE);
       let bat = 0;
       const cc = room.lookForAt(LOOK_STRUCTURES, C.CTL_CONT[0], C.CTL_CONT[1]).find(s => s.structureType === STRUCTURE_CONTAINER);
       if (cc && cc.store) bat += cc.store[E] || 0;
       const [lx, ly] = C.CTL_LINK || [13, 25];
       const cl = room.lookForAt(LOOK_STRUCTURES, lx, ly).find(s => s.structureType === STRUCTURE_LINK);
       if (cl && cl.store) bat += cl.store[E] || 0;
-      // Fill when ctl battery thin OR hub link empty enough to accept a full SEND (200+)
-      if ((bat < 800 || (hubL.store[E] || 0) < 200) && freeL >= 100) {
+      const softClear = storE >= LEAN_SOFT;
+      // softClear: bat thin OR hub empty; soft bank: prime-only (hubE < HUB_SEND) — no bat drain
+      const want = softClear ? (bat < 800 || hubE < HUB_SEND) : (hubE < HUB_SEND);
+      if (want && freeL >= 100) {
         if (held > 0) {
           if (c.pos.isNearTo(hubL)) { c.transfer(hubL, E); return; }
           return go(c, hx, hy, 1);

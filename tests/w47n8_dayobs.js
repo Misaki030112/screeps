@@ -391,9 +391,16 @@ assert.strictEqual(Memory.ops.w8day.feedBound, 1, '17:3x: nUp≥3 + soft clear +
   W.dayObs(rHub);
   assert.strictEqual(Memory.ops.w8day.hubReady, 1, 'structure + flag → hubReady 1');
   assert.strictEqual(Memory.ops.w8day.hubLinkE, 200, 'hubLinkE from structure store');
+  assert.strictEqual(Memory.ops.w8day.hubPrime, 1, '23:4x 11-03: hubE≥200 → hubPrime 1');
   assert.ok(!(Memory.ops.w8recycle || []).length, 'hub live + feedOk → no recycle: ' + JSON.stringify(Memory.ops.w8recycle));
   assert.strictEqual(Memory.ops.w8day.upgCeil, 6, '17:3x: hub live → upgCeil 6');
   assert.strictEqual(Memory.ops.w8day.feedBound, 0, '17:3x: hub live clears feedBound');
+  // empty hub → hubPrime 0 (patrol sees pre-warm gap during softCap bank)
+  hubL.store = { energy: 0 };
+  Memory.ops.w8day = { leanBank: 0 };
+  W.dayObs(rHub);
+  assert.strictEqual(Memory.ops.w8day.hubPrime, 0, 'hubE 0 → hubPrime 0');
+  assert.strictEqual(Memory.ops.w8day.hubReady, 1, 'hubReady independent of energy');
   Ccfg.HUB_LINK = true; // live default
 }
 
