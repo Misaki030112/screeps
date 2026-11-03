@@ -3,6 +3,10 @@ Defensive only. Never leaves W47N8, never crosses the seal (y<=3), never safe mo
 Code: `src/rooms/w47n8/defense.js` (pure, `tests/w47n8_defense.js`), wired in `index.js` towerRun/spawnRun and `roles.js` w8defender.
 Model: `tools/combat_sim.py` (same tick model as `defense.sim`). Revert switch: `Memory.ops.w8defOld = 1` (old spawn trigger).
 
+## 2026-11-03 11:3x — repair debt (containers before roads)
+
+Peacetime KEY DONE / sealPark: builders now repair owned containers `<50%` **before** seal wallJob and road paving (Overmind-aligned). Ctl standee tops ctl battery. Not a fortify target change — KEY/STAGE3/sealMinE unchanged. Detail: `docs/RCL7.md` 11:3x.
+
 ## Before (22844c1 / 6d15f72) vs home W46N8
 | | W47N8 before | Home W46N8 (`managers/tower.js`, `utils/focus.js`) |
 |---|---|---|

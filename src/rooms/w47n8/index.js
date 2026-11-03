@@ -251,9 +251,13 @@ function spawnRun(spawn) {
   }
   // 10-21 11:2x patrol: with 0 sites and the seal at cap no builder spawned, so nothing repaired the kept roads.js network (27 of 116
   // below 30%, link road 14,35/15,34 at 300 hits, about 3k ticks from vanishing). 1 maintenance builder while a kept road/container is < 20%.
+  // 11:38 strategy: Overmind owns containers <50%; spawn earlier for container debt (roads stay critical <20%).
   if (!want && !raidPause && room.energyAvailable === cap && !n('w8builder') && Game.time % 50 === 0) {
     const keep = new Set(require('./roads').ROADS.map(([x, y]) => x * 50 + y));
-    if (room.find(FIND_STRUCTURES, { filter: s => (s.structureType === STRUCTURE_CONTAINER || (s.structureType === STRUCTURE_ROAD && keep.has(s.pos.x * 50 + s.pos.y))) && s.hits < s.hitsMax * 0.2 }).length) want = 'w8builder';
+    if (room.find(FIND_STRUCTURES, { filter: s =>
+      (s.structureType === STRUCTURE_CONTAINER && s.hits < s.hitsMax * 0.5)
+      || (s.structureType === STRUCTURE_ROAD && keep.has(s.pos.x * 50 + s.pos.y) && s.hits < s.hitsMax * 0.2)
+    }).length) want = 'w8builder';
   }
   // 7) W47N7 remote (after all local roles): only while home's reserve7 holds the reservation for us
   if (!want && ours7) {
@@ -685,6 +689,19 @@ function dayObs(room) {
   const hubLink = room.lookForAt(LOOK_STRUCTURES, hlx, hly).find(s => s.structureType === STRUCTURE_LINK);
   const hubLinkE = hubLink && hubLink.store ? (hubLink.store[RESOURCE_ENERGY] || 0) : -1;
   const hubReady = hubLinkLive(room) ? 1 : 0;
+  // 11:38 strategy: container/road repair debt for patrol (Overmind <50% containers / road critical 25%)
+  // Guard FIND_STRUCTURES like looseE — some unit stubs omit the constant (layout-only tests).
+  const keepR = new Set(require('./roads').ROADS.map(([x, y]) => x * 50 + y));
+  let contMinPct = 100, roadCrit = 0, contLow = 0;
+  if (typeof FIND_STRUCTURES !== 'undefined') {
+    for (const s of room.find(FIND_STRUCTURES, { filter: s => s.structureType === STRUCTURE_CONTAINER || (s.structureType === STRUCTURE_ROAD && keepR.has(s.pos.x * 50 + s.pos.y)) })) {
+      if (s.structureType === STRUCTURE_CONTAINER) {
+        const pct = Math.floor(100 * (s.hits || 0) / (s.hitsMax || 1));
+        if (pct < contMinPct) contMinPct = pct;
+        if (pct < 50) contLow++;
+      } else if ((s.hits || 0) < (s.hitsMax || 0) * 0.25) roadCrit++;
+    }
+  }
     o.w8day = { t: Game.time, rcl, need, siteRem: siteRemV, builders, upgraders, storE, bill,
     missSpawn: missSpawn ? 1 : 0, missTower: missTower ? 1 : 0, missExt, why, phase,
     bankLeft, bankEta, leanBank: lb ? 1 : 0, bankArm: LEAN_ARM, bankSoft: LEAN_SOFT, softArm: LEAN_SOFT_ARM, bankWhy, softLeft,
@@ -697,7 +714,8 @@ function dayObs(room) {
     sealRaise: (TH.sealDeepOk(storE) && (TH.sealCap() > TH.STAGE3)) ? 1 : 0, // 02:4x: soft-gate (softCap2 + sticky park)
     sealPark: TH.sealParked() ? 1 : 0,
     towerMinE, towerHubE, towerNorthE, nf, eAvail, eCap, looseE: loose,
-    hubLinkE, hubReady, hubLink: C.HUB_LINK ? 1 : 0 }; // 23:4x strategy: HUB_LINK plumbing obs
+    hubLinkE, hubReady, hubLink: C.HUB_LINK ? 1 : 0, // 23:4x strategy: HUB_LINK plumbing obs
+    contMinPct, contLow, roadCrit }; // 11:38: repair debt (containers <50% / roads <25%)
   leanBankRecycle(room);
   raidSoftKill(room);
   // 23:4x strategy: lean KO readiness (docs/MINERAL_DEFENSE_ROADMAP.md §5). Dormant report only — gates stay false.

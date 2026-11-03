@@ -1,5 +1,34 @@
 # Home W46N8 RCL7 readiness (strategy review 2026-10-19 18:4x UTC+8)
 
+## 2026-11-03 11:3x — W47 container repair debt (Overmind <50% before roads)
+
+**Question:** KEY DONE + softCap sticky clear (~24.5k) + one live builder — why are ctl/hub/minCont at ~23–25% hits (~1.3–1.4h of container decay left) while ~140 roads sit under 50%?
+
+### Live (~11:38–11:45 Asia/Shanghai, t~84039480, 613a205)
+- Peacetime; home ~20.6% stor~14.5k UNDER floor_bank; W47 ~7.4% stor~24.3k softE=0 softCap2=0 softLeft~0.7k; KEY DONE; sealPark1; hubReady0; nUp4 feedOk; labs OFF no re-ask; K regener~32.5k ticks.
+- Containers: minCont(37,44) **23.1%**, ctl(13,26) **25.1%**, hub(33,33) **25.2%**; source conts ~50% (miner underfoot already).
+- Roads: 4 <25% / 52 <30% / **139/142 <50%**.
+
+### Gap
+Builder maintenance used a single `rr(f)` over `CONTAINER|ROAD` with `findClosestByRange`. With seal walls already ≥STAGE3 (`wallJob`→null) and urgent `<10%` empty, the builder spent its life on the nearest mid-band road. Sticky `c.memory.rj` assignment from 10-21 had drifted into the trailing comment, so every tick re-picked the closest road. Ctl battery had **no** standee repair (unlike source/minCont miners at `<50%`).
+
+### Overmind / TooAngel
+- **Overmind** `WorkerOverlord.repairStructures`: owned-room containers when `hits < 0.5 * hitsMax`, listed **before** paving and fortify. `RoadLogistics.settings.criticalThreshold=0.25`, `repairThreshold=0.9`.
+- **TooAngel**: dedicated `repairer` for walls/ramparts; economy creeps still keep containers healthy — same split we want (containers ≠ fortify).
+
+### Shipped
+1. **Split pools:** `contNeed(f)` / `roadNeed(f)`. Order: cont/road `<10%` → **containers `<50%`** → `wallJob` → roads `<25%` → roads `<60%` (mvp/leanBank: urgent + containers only before park).
+2. Restore sticky `rj`/`rjt` and **break sticky** when a container is under 50% and the sticky target is not a container.
+3. **One** ctl-stand upgrader (lexicographically first in range) repairs ctl cont `<50%` instead of upgrading that tick.
+4. Maint spawn: containers `<50%` **or** kept roads `<20%` (was both `<20%`).
+5. Obs: `w8day.contMinPct`, `contLow`, `roadCrit`. Test `tests/w47n8_repair_prio.js`.
+
+### Patrol watch
+- `contMinPct` should climb toward ≥50% within ~1–2 builder TTLs; `roadCrit` drains after batteries are safe.
+- Do **not** re-ask HUB_LINK / ops.labs.
+
+---
+
 ## Timing
 - 10-19 18:29: RCL6 401.4k / 3.645M. Tick ~4.3 s (83742481 at 18:11 -> 83742731 at 18:29).
 - Remaining 3.24M: at 23.6 e/t (live since 18:11) ~137k ticks ~6.9 d -> **~10-26 afternoon**; at the 6 h average ~19-20 e/t -> **~10-27 evening**.

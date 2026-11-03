@@ -367,7 +367,13 @@ const R = {
       const i = pickTile(c, C.UPG_STAND, 'st');
       if (i >= 0) {
         c.memory.st = i; const [x, y] = C.UPG_STAND[i];
-        if (c.store[E] && c.pos.inRangeTo(ctl, 3)) c.upgradeController(ctl);
+        // 11:38 strategy: one standee repairs ctl cont <50% (Overmind UpgradeSite battery) before upgrade — miners already
+        // do source/minCont <50%; without this the battery rot to ~25% while builders chase roads (same findClosest pool).
+        if (c.store[E] && cont.hits < cont.hitsMax * 0.5 && c.pos.inRangeTo(cont, 3)) {
+          const standees = _.filter(Game.creeps, x => x.memory && x.memory.role === 'w8upgrader' && x.store[E] > 0 && x.pos.inRangeTo(cont, 3));
+          if (standees.length && _.min(standees, x => x.name).name === c.name) c.repair(cont);
+          else if (c.pos.inRangeTo(ctl, 3)) c.upgradeController(ctl);
+        } else if (c.store[E] && c.pos.inRangeTo(ctl, 3)) c.upgradeController(ctl);
         // 11:30: 9W1C2M upgraders left the stands whenever the ctl cont ran dry and walked ~20 tiles toward the piles (1 tile/3t) to fetch
         // 50 energy, missing the refill by ~30 ticks; a 1-CARRY upgrader waits at its stand instead
         const stay = c.store.getCapacity() <= 50;
@@ -575,12 +581,21 @@ const R = {
     if (site) { if (!c.pos.inRangeTo(site, 3)) go(c, site.pos.x, site.pos.y, 3); else c.build(site); return; }
     // 19:31: urgent road/container repair (<10%; container 11,43 at 18% = 2k ticks of decay left pulled the builder off the walls) -> seal walls to WALL_TARGET[rcl], lowest first -> maintenance (<60%).
     // With maintenance first the lone 2W builder spent 180 ticks on container 26,11 (87k/250k) + 22 roads and no wall left 1 hit.
-    const rr = f => c.pos.findClosestByRange(FIND_STRUCTURES, { filter: s => (s.structureType === STRUCTURE_CONTAINER || (s.structureType === STRUCTURE_ROAD && ROADSET.has(s.pos.x * 50 + s.pos.y))) && s.hits < s.hitsMax * f });
+    // 11:38 strategy: Overmind WorkerOverlord repairs owned containers <50% *before* paving/fortify; RoadLogistics critical=25%/repair=90%.
+    // Old rr() pooled containers+roads by distance — ~140 roads <50% starved ctl/hub/minCont at ~23–25% (~1.3h to death). Split pools.
+    const contNeed = f => c.pos.findClosestByRange(FIND_STRUCTURES, { filter: s => s.structureType === STRUCTURE_CONTAINER && s.hits < s.hitsMax * f });
+    const roadNeed = f => c.pos.findClosestByRange(FIND_STRUCTURES, { filter: s => s.structureType === STRUCTURE_ROAD && ROADSET.has(s.pos.x * 50 + s.pos.y) && s.hits < s.hitsMax * f });
     // CPU 13:10: sticky repair target, rescanned every 15 ticks or when done (was 2-3 FIND_STRUCTURES scans per builder per tick)
+    // 11:38: also break sticky when a container sits under the 50% band (do not finish a mid road while battery dies)
     let rep = c.memory.rj && Game.getObjectById(c.memory.rj);
-    if (!rep || Game.time >= (c.memory.rjt || 0) || rep.hits >= (rep.structureType === STRUCTURE_WALL || rep.structureType === STRUCTURE_RAMPART ? TH.wallTarget(TH.planTarget(c.room.controller.level, C.WALL_TARGET[c.room.controller.level] || 0)) : rep.hitsMax * 0.95)) {
+    const contUrgent = contNeed(0.5);
+    if (!rep || Game.time >= (c.memory.rjt || 0)
+      || (contUrgent && rep.structureType !== STRUCTURE_CONTAINER)
+      || rep.hits >= (rep.structureType === STRUCTURE_WALL || rep.structureType === STRUCTURE_RAMPART ? TH.wallTarget(TH.planTarget(c.room.controller.level, C.WALL_TARGET[c.room.controller.level] || 0)) : rep.hitsMax * 0.95)) {
       const mvp = require('./index').energyBank(c.room); // 15:5x+08:4x: road/container upkeep paused while banking/leanBank (only <10% urgent)
-      rep = rr(0.1) || wallJob(c.room, c) || (mvp ? null : rr(0.25) || rr(0.6)); // 10-21 22:5x: kept road 13,37 at 14% (wear ~0.44/t) while the builder walked to 25,12 at 92%: <25% first c.memory.rj = rep ? rep.id : undefined; c.memory.rjt = Game.time + 15;
+      // urgent any <10% → containers <50% → seal wallJob → roads critical 25% → roads maint 60% (mvp: skip mid-band roads; containers+wallJob still run)
+      rep = contNeed(0.1) || roadNeed(0.1) || contNeed(0.5) || wallJob(c.room, c) || (mvp ? null : roadNeed(0.25) || roadNeed(0.6));
+      c.memory.rj = rep ? rep.id : undefined; c.memory.rjt = Game.time + 15;
     }
     if (rep) {
       if (c.pos.inRangeTo(rep, 3)) { c.repair(rep); return; }
