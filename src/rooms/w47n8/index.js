@@ -403,6 +403,12 @@ const LEAN_STOR = 20000;
 // storageBuffer scales WORK off surplus; we keep a tighter cushion but stop dumping it into ctl).
 const LEAN_ARM = 15000;
 const LEAN_SOFT = 25000;
+// 08:4x 2026-11-03 strategy: softCap energy hysteresis. Clear at LEAN_SOFT; re-arm only below
+// LEAN_SOFT_ARM. Live 23.4↔25.5k thrash recycled nUp 3→2 every boundary cross (seal soft-gate
+// parks seal only — softCap itself had zero hysteresis). Mirror leanBank 15/20k; do NOT raise
+// LEAN_SOFT (Misaki rejected sealMinE 35k / accepted 25k edge). softThin/sealDeepOk stay STRICT
+// <LEAN_SOFT so seal still waits for a true ≥25k clear.
+const LEAN_SOFT_ARM = 22000;
 // 11:4x 2026-11-02 (Misaki): reversible ≤2 w8upgrader soft-cap while threat soft is on.
 // threatSoft = TH.localOn() — Memory.ops.w8threat within TH.WINDOW (1500). Same predicate as
 // rampHold's w8soft.why==='threat' (soft-ramp raise blocked; towers keep energy for combat,
@@ -411,9 +417,18 @@ const LEAN_SOFT = 25000;
 // stor≥LEAN_SOFT. That starved the ctl (waiting_feed) and dropped 2h upgrade (~46.7%).
 // Neighbor staging w8threatN (TH.on() but not localOn) does NOT hold the cap — the W47N9 camp
 // is chronic and must not pin upgraders. When the local window expires, softCap2 falls back to
-// stor<LEAN_SOFT only and base/surplus resume. Home W46N8 upgraders do not use this.
+// energy hysteresis (08:4x) and base/surplus resume. Home W46N8 upgraders do not use this.
 function threatSoft() { return TH.localOn(); }
-function softCap2(storE) { return threatSoft() || (storE || 0) < LEAN_SOFT; }
+// Energy half of softCap2 — sticky via w8day.softE so hauler park (roles.js) can follow without
+// threatSoft forcing a park during combat drain in the [ARM,SOFT) band.
+function softEnergyCap(storE) {
+  const e = storE || 0;
+  if (e >= LEAN_SOFT) return false; // clear
+  const was = !!(Memory.ops && Memory.ops.w8day && Memory.ops.w8day.softE);
+  if (!was && e >= LEAN_SOFT_ARM) return false; // hysteresis hold
+  return true; // below ARM, or was on and still below SOFT
+}
+function softCap2(storE) { return threatSoft() || softEnergyCap(storE); }
 // 11:4x strategy 2026-11-02: peacetime overshoot after softCap lift.
 // Overmind UpgradeSite scales WORK off storageBuffer (~100k) AND requests battery input at
 // upgradePowerNeeded (battery kept ≥50%). TooAngel co-locates storage beside the upgrader so
@@ -656,9 +671,9 @@ function dayObs(room) {
   else if (warMode) bankWhy = 'war'; // 14:4x wartime: assault pause labels before softCap/threatSoft
   else if (lb) bankWhy = (typeof TH !== 'undefined' && TH.on && TH.on()) ? 'threat' : 'bank';
   else if (storE < LEAN_STOR) bankWhy = (storE >= LEAN_ARM) ? 'hold' : 'off';
-  else if (storE < LEAN_SOFT) bankWhy = 'soft'; // 08:4x 11-02: ready cushion but soft-cap still on — park to soft
-  else if (threatSoft()) bankWhy = 'threatSoft'; // 11:4x: stor≥LEAN_SOFT but local threat holds ≤2
-  else bankWhy = 'ready';
+  else if (softEnergyCap(storE)) bankWhy = 'soft'; // 08:4x 11-02/11-03: soft-cap energy half (hysteresis) — park to soft
+  else if (threatSoft()) bankWhy = 'threatSoft'; // 11:4x: local threat holds ≤2 (even above LEAN_SOFT)
+  else bankWhy = 'ready'; // includes softCap hysteresis hold in [SOFT_ARM, SOFT)
   // 08:4x: looseE (drops + source conts, excl ctl/hub) so patrol can see stranded energy vs stor20k shortfall
   const loose = looseE(room);
   const softLeft = Math.max(0, LEAN_SOFT - storE);
@@ -672,8 +687,10 @@ function dayObs(room) {
   const hubReady = hubLinkLive(room) ? 1 : 0;
     o.w8day = { t: Game.time, rcl, need, siteRem: siteRemV, builders, upgraders, storE, bill,
     missSpawn: missSpawn ? 1 : 0, missTower: missTower ? 1 : 0, missExt, why, phase,
-    bankLeft, bankEta, leanBank: lb ? 1 : 0, bankArm: LEAN_ARM, bankSoft: LEAN_SOFT, bankWhy, softLeft,
-    threatSoft: threatSoft() ? 1 : 0, softCap2: softCap2(storE) ? 1 : 0, // 11:4x: ≤2 gate (local threat OR stor<LEAN_SOFT); leanBank still tighter at ≤1
+    bankLeft, bankEta, leanBank: lb ? 1 : 0, bankArm: LEAN_ARM, bankSoft: LEAN_SOFT, softArm: LEAN_SOFT_ARM, bankWhy, softLeft,
+    threatSoft: threatSoft() ? 1 : 0,
+    softE: softEnergyCap(storE) ? 1 : 0, // 08:4x 11-03: energy-half sticky (roles soft-band reads this)
+    softCap2: softCap2(storE) ? 1 : 0, // 11:4x/08:4x-11-03: ≤2 = threatSoft OR softEnergyCap; leanBank still tighter at ≤1
     warMode: warMode ? 1 : 0, // 14:4x: Memory.ops.w47n9 assault freeze
     ctlBat: ctlBattery(room), feedOk: ctlBattery(room) >= FEED_MIN ? 1 : 0, // 11:4x strategy: peacetime surplus needs feedOk
     sealMinE: TH.sealMinE(), // effective deep-seal gate (Memory override visible)
@@ -967,4 +984,4 @@ function selfSufficient() {
   const r = Game.rooms[C.ROOM]; if (!r || !r.find(FIND_MY_SPAWNS).length) return false;
   return mine().some(c => c.memory.role === 'w8miner'); // Spawn2 + its own miner -> home stops cq pioneers/haulers (guard stays)
 }
-module.exports = { sealAt, banking, BANK_HOLD, LEAN_STOR, LEAN_ARM, LEAN_SOFT, FEED_MIN, threatSoft, softCap2, ctlBattery, hubLinkLive, leanBank, leanMinBuild, energyBank, dayofMiss, moveRun, moveReady, rampNeeded, homeWant, linkAt, linkRun, rampHold, dayObs, mineralSend, swapTemp, extBatch, energyOrder, ROOM: C.ROOM, spawnRun, layoutRun, towerRun, selfSufficient, bodyFor, rmLead8 };
+module.exports = { sealAt, banking, BANK_HOLD, LEAN_STOR, LEAN_ARM, LEAN_SOFT, LEAN_SOFT_ARM, FEED_MIN, threatSoft, softEnergyCap, softCap2, ctlBattery, hubLinkLive, leanBank, leanMinBuild, energyBank, dayofMiss, moveRun, moveReady, rampNeeded, homeWant, linkAt, linkRun, rampHold, dayObs, mineralSend, swapTemp, extBatch, energyOrder, ROOM: C.ROOM, spawnRun, layoutRun, towerRun, selfSufficient, bodyFor, rmLead8 };

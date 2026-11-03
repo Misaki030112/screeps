@@ -138,7 +138,31 @@ W.dayObs(rSoft);
 assert.strictEqual(Memory.ops.w8day.leanBank, 0, '22k still ready');
 assert.strictEqual(Memory.ops.w8day.bankWhy, 'soft', '22k bankWhy=soft');
 assert.ok((Memory.ops.w8recycle || []).length >= 2, 'soft-cap recycles to ≤2: ' + JSON.stringify(Memory.ops.w8recycle));
-// re-arm below LEAN_ARM
+assert.strictEqual(Memory.ops.w8day.softE, 1, 'softE on at 22k while climbing');
+assert.strictEqual(W.LEAN_SOFT_ARM, 22000);
+// 08:4x 11-03: clear at 25k then dip to 23k — softEnergyCap stays OFF (hysteresis hold)
+delete Memory.ops.w8recycle;
+const rSoftClear = mk(7, done, softUps, 0); rSoftClear.storage.store.energy = 25000;
+W.dayObs(rSoftClear);
+assert.strictEqual(Memory.ops.w8day.softE, 0);
+assert.strictEqual(Memory.ops.w8day.softCap2, 0);
+assert.strictEqual(Memory.ops.w8day.bankWhy, 'ready');
+rSoftClear.storage.store.energy = 23000;
+Memory.ops.w8day.leanBank = 0;
+W.dayObs(rSoftClear);
+assert.strictEqual(Memory.ops.w8day.softE, 0, 'hysteresis hold softE off at 23k after clear');
+assert.strictEqual(Memory.ops.w8day.softCap2, 0, 'softCap2 off in [ARM,SOFT) after clear');
+assert.strictEqual(Memory.ops.w8day.bankWhy, 'ready', 'bankWhy=ready in soft hysteresis hold');
+// feed-gate may trim 4→≤3 without HUB_LINK; softCap must NOT recycle to ≤2 in the hold band
+assert.ok((Memory.ops.w8recycle || []).length <= 1, 'no softCap≤2 recycle while hysteresis hold: ' + JSON.stringify(Memory.ops.w8recycle));
+// re-arm soft energy below LEAN_SOFT_ARM
+rSoftClear.storage.store.energy = 21000;
+W.dayObs(rSoftClear);
+assert.strictEqual(Memory.ops.w8day.softE, 1, 'softE re-arms below 22k');
+assert.strictEqual(Memory.ops.w8day.softCap2, 1);
+assert.strictEqual(Memory.ops.w8day.bankWhy, 'soft');
+assert.ok((Memory.ops.w8recycle || []).length >= 2, 'soft re-arm recycles to ≤2: ' + JSON.stringify(Memory.ops.w8recycle));
+// re-arm leanBank below LEAN_ARM
 Memory.ops.w8day.leanBank = 0;
 const rArm = mk(7, done, [], 0); rArm.storage.store.energy = 14000;
 W.dayObs(rArm);

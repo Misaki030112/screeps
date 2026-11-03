@@ -693,3 +693,38 @@ Refs: Overmind `storageBuffer` + warSpawnCutoff; TooAngel `upgraderMinStorage` /
 ### Watch after next nod-deploy
 - Tick of flip: hubReady 0, siteRem~5k, upgCeil effectively ≤2 (bigBuild).
 - After stand: hubReady 1, hubLinkE≥0, recycle clears when feedOk, waiting_feed↓ within ~1–2k ticks.
+
+## 2026-11-03 08:4x — softCap2 leanBank-style hysteresis (LEAN_SOFT_ARM)
+
+**Question:** SoftCap energy half clears at `LEAN_SOFT=25k` with **zero hysteresis**, so live storage thrash 23.4↔25.5k recycles nUp 3↔2 every boundary cross (seal soft-gate already parks seal; Misaki rejected raising sealMinE to 35k). Should softCap itself get leanBank-style ARM/SOFT sticky?
+
+**Answer: Yes — `LEAN_SOFT_ARM=22000` + sticky `w8day.softE`. Do NOT raise sealMinE / LEAN_SOFT. softThin stays STRICT <25k.**
+
+### Live (~08:26–08:47 Asia/Shanghai, deploy e7f2017)
+- Peacetime; home ~20.1% 2h~83% stor~15.9k ABOVE floor_bank.
+- W47 ~6.85% 2h~70% CROSSED≥70 soft-streak BROKEN then softCap **ON again** at ~23.2k; KEY DONE; HUB_LINK await nod hubReady0.
+- Remotes SAFE; labs OFF no re-ask; K regener~35.4k; roads.phase=done.
+
+### Research (Screeps + Overmind / TooAngel)
+1. **leanBank precedent (02:4x):** `LEAN_ARM=15k` / `LEAN_STOR=20k` sticky via prior `w8day.leanBank` — same thrash class, already proven.
+2. **Overmind** `storageBuffer=100k` + `fortifyDutyThreshold=500k` are single thresholds (no ARM) but sit on a fat cushion; our 25k edge is thin enough that zero-hysteresis thrash is the failure mode.
+3. **TooAngel** healthy/storage floors — same "don't flicker" shape.
+4. **Seal soft-gate (02:4x)** already parks seal while `softThin` (strict `<LEAN_SOFT`). Coupling softCap clear to the same sticky would re-open seal thrash; keep softThin strict and only sticky the upgrader/hauler softCap energy half.
+
+### Gap (pre-fix)
+- `softCap2 = threatSoft || stor < LEAN_SOFT` — no ARM.
+- roles soft-band parked whenever `se < 25000`, so after a clear the next 24k tick forced park + nUp≤2 again.
+- Patrols: softCap JUST cleared → ON again within ~20m at stor~23k.
+
+### Shipped
+- `LEAN_SOFT_ARM=22000`; `softEnergyCap(stor)` sticky via `Memory.ops.w8day.softE` (clear@25k / re-arm@22k).
+- `softCap2 = threatSoft || softEnergyCap`; `w8day.softArm` / `softE`; bankWhy=`soft` only on energy half.
+- roles.js soft-band follows `softE` (threat does **not** park — combat needs ctl fed).
+- softThin / sealDeepOk unchanged (strict). Tests dayobs / mminer / filler.
+- **No** HUB_LINK / labs / industry / market flips; **no** re-ask. sealMinE stays 25000.
+
+### Watch
+- Climb past 25k once → softE=0; dip to 23k should keep softCap2=0 / nUp3 / bankWhy=ready.
+- Re-arm only below 22k (softE=1, recycle ≤2).
+- softLeft still reports distance to LEAN_SOFT (obs honesty).
+

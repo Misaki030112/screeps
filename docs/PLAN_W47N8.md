@@ -299,3 +299,7 @@ After missExt0 DONE and bank20 nearly finished: `w8min.flipReady` encodes the pr
 
 Post-ready thrash (20k→16k→DEFEND→1.7k) fixed with `LEAN_ARM=15k` re-arm + `LEAN_SOFT=25k` ≤2 upgrader soft-cap. Detail: `docs/MINERAL_DEFENSE_ROADMAP.md` §5.14 / `docs/RCL7.md` 02:4x. Gates stay false; flip still propose-only after ready+homeStor.
 
+## 2026-11-03 08:4x — softCap2 hysteresis (LEAN_SOFT_ARM 22k)
+
+softCap energy half now mirrors leanBank: clear at 25k, re-arm below 22k (`softE` sticky). softThin/seal stay strict at 25k. Detail: `docs/RCL7.md` 08:4x / `docs/DEFENSE_W47N8.md` 08:4x. HUB_LINK nod still open — do not re-spam. Gates stay false.
+

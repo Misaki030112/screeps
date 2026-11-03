@@ -160,3 +160,10 @@ re-opened the 17:4x failure mode, (c) zero sticky hysteresis at 25k.
 softThin off **and** nUp≥peacetime base; wallJob + spawn rule 6 clamp; edge intensity `SEAL_EDGE=5k` (max 1 deep-seal builder
 near the band); `w8day.sealPark` + `sealRaise` via sealDeepOk. Tests fortify + dayobs. **No** HUB_LINK/labs flips; **no** re-ask.
 
+### 2026-11-03 08:4x softCap2 energy hysteresis (strategy; seal softThin stays strict)
+Live ~08:26–08:47 Asia/Shanghai e7f2017: softCap JUST cleared after ≥70 then **ON again** at stor~23.2k — zero-hysteresis energy half. Seal soft-gate (02:4x) already parks seal while softThin; the remaining thrash was softCap itself recycling nUp 3↔2.
+
+**Research:** leanBank 15/20k sticky is the in-repo pattern; Overmind storageBuffer/fortifyDuty are fat single thresholds; TooAngel healthy floors. Raising sealMinE again is off the table (Misaki rejected 35k).
+
+**Shipped:** `LEAN_SOFT_ARM=22000` + `softEnergyCap` / `w8day.softE` (clear@25k re-arm@22k). `softCap2 = threatSoft || softEnergyCap`. roles soft-band follows softE (threat does not park). **`softThin` / `sealDeepOk` stay STRICT <LEAN_SOFT** so seal still waits for a true ≥25k clear — do not couple seal park to the softCap ARM band. sealMinE stays 25000. Tests dayobs/mminer/filler. No HUB_LINK/labs flips; no re-ask.
+

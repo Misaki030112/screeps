@@ -405,6 +405,14 @@ C.RCL6_MINERALS = true;
   assert.strictEqual(W.threatSoft(), false);
   assert.strictEqual(W.softCap2(20000), true);
   assert.strictEqual(W.softCap2(30000), false);
+  // 08:4x 11-03 softEnergyCap hysteresis
+  Memory.ops.w8day = { softE: 0 };
+  assert.strictEqual(W.softEnergyCap(23000), false, 'hold off at 23k after clear');
+  assert.strictEqual(W.softCap2(23000), false);
+  assert.strictEqual(W.softEnergyCap(21000), true, 're-arm below ARM');
+  Memory.ops.w8day = { softE: 1 };
+  assert.strictEqual(W.softEnergyCap(23000), true, 'sticky on while climbing through 23k');
+  assert.strictEqual(W.LEAN_SOFT_ARM, 22000);
   Memory.ops = { w8model: { links: true, lcarry: 9, rcarry: 49, upw: 31 } };
   Game.time = savedT;
   C.RCL6_MINERALS = false;

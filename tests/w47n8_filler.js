@@ -224,14 +224,20 @@ say('sink buffer ok');
   // ctl hungry: feed ctl even in rebuild band
   room.storage.store.energy = 17000; ctl.store.energy = 800; h.memory.sk = undefined; Game.time++;
   assert.strictEqual(RL._sink(room, h), ctl, 'rebuild-band but ctl hungry <1200 → ctl');
-  // 08:4x 11-02: soft-cap dead zone [20k,25k) still parks to storage (was ctl-first → WORK-bound deadlock)
+  // 08:4x 11-02/11-03: below ARM always parks; [ARM,SOFT) parks only while softE sticky ON
   room.storage.store.energy = 21000; ctl.store.energy = 1500; h.memory.sk = undefined; Game.time++;
-  assert.strictEqual(RL._sink(room, h), room.storage, 'soft-band 21k + ctl1500 → storage');
+  assert.strictEqual(RL._sink(room, h), room.storage, 'soft-band 21k (<ARM) + ctl1500 → storage');
+  Memory.ops = Memory.ops || {};
+  Memory.ops.w8day = Object.assign({}, Memory.ops.w8day, { softE: 1 });
   room.storage.store.energy = 24999; h.memory.sk = undefined; Game.time++;
-  assert.strictEqual(RL._sink(room, h), room.storage, 'soft-band 24999 + ctl1500 → storage');
+  assert.strictEqual(RL._sink(room, h), room.storage, 'softE sticky 24999 + ctl1500 → storage');
   // soft-cap exit: back to ctl preference
   room.storage.store.energy = 25000; h.memory.sk = undefined; Game.time++;
   assert.strictEqual(RL._sink(room, h), ctl, 'stor≥LEAN_SOFT → ctl again');
+  // 08:4x 11-03 hysteresis: after clear (softE=0), [ARM,SOFT) prefers ctl (no thrash park)
+  Memory.ops.w8day.softE = 0;
+  room.storage.store.energy = 23000; h.memory.sk = undefined; Game.time++;
+  assert.strictEqual(RL._sink(room, h), ctl, 'hysteresis hold 23k softE=0 → ctl');
   creeps = [];
 }
 say('sink rebuild/soft-band ok');

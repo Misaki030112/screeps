@@ -131,28 +131,33 @@ function sink(room, c) {
   // 20:4x extends below LEAN_ARM — post-gate soft-cap alone never parked energy while ctl had free capacity.
   // 08:4x 2026-11-02: park through LEAN_SOFT (25k), not just LEAN_STOR (20k). HMAX=3 overflow stopped at 20k while
   // soft-cap held nUp≤2 until 25k → WORK-bound deadlock (ctl/hub full, stor flat ~20k, upg~55% ideal).
+  // 08:4x 11-03: softEnergyCap hysteresis (clear@25k / re-arm@22k) via w8day.softE — avoid require('./index').
+  const softEnergyOn = (se) => {
+    if (se >= 25000) return false;
+    if (se < 22000) return true; // LEAN_SOFT_ARM
+    return !!(Memory.ops && Memory.ops.w8day && Memory.ops.w8day.softE);
+  };
   const holdBand = () => {
     if (!room.storage) return false;
     const se = room.storage.store[E] || 0;
     const ctlS = ctlCont();
     const ctlE = ctlS ? (ctlS.store[E] || 0) : 0;
-    return se < 25000 && ctlE >= 1200; // sync with index.js LEAN_SOFT
+    return softEnergyOn(se) && ctlE >= 1200; // sync with index softEnergyCap
   };
   if (was && room.storage && was.id === room.storage.id && !bufLow() && !holdBand()) was = null;
   if (was) return was;
   // 17:4x filler buffer: while a w8filler lives, storage below one hub refill (+200) comes before the ctl/hub containers
   if (room.storage && free(room.storage) && bufLow()) { c.memory.sk = room.storage.id; return room.storage; }
-  // 08:4x/20:4x/08:4x-11-02 soft-band storage park — stor < LEAN_SOFT and ctl already has a feed floor (≥1200):
-  // park hauler surplus in storage so cushion can climb to soft-cap exit (25k). Pre-flip flipReady / post-gate
-  // leanBank / post-ready soft-cap dead zone [20k,25k) all share this path. ctl <1200 still feeds ctl.
-  // Above LEAN_SOFT soft-cap lifts → ctl-first (spawn may still hold nUp≤2 while threatSoft / TH.localOn — index.js softCap2).
+  // 08:4x/20:4x/08:4x-11-02/08:4x-11-03 soft-band storage park — softEnergyCap ON and ctl ≥1200:
+  // park hauler surplus so cushion can climb to soft-cap exit (25k). Hysteresis re-arm at 22k stops
+  // 23↔25k thrash (roles used to park whenever se<25k even after softCap cleared). Threat softCap
+  // (TH.localOn) does NOT park — combat drain needs ctl fed (softE is energy-half only).
   // Overmind parks assets in storageBuffer while upgrade battery saturated.
   if (room.storage && free(room.storage)) {
     const se = room.storage.store[E] || 0;
-    const LEAN_SOFT = 25000; // keep in sync with index.js LEAN_SOFT (avoid require cycle)
     const ctlS = ctlCont();
     const ctlE = ctlS ? (ctlS.store[E] || 0) : 0;
-    if (se < LEAN_SOFT && ctlE >= 1200) { c.memory.sk = room.storage.id; return room.storage; }
+    if (softEnergyOn(se) && ctlE >= 1200) { c.memory.sk = room.storage.id; return room.storage; }
   }
   const ctl = free(ctlCont()), hub = free(hubCont());
   // 03:20 hub only while sites near the hub need it: any road site anywhere sent rhaulers to the hub (864 -> 2000 full in ~290t)
