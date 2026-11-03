@@ -9,6 +9,9 @@ Novice zone ends **2026-10-28 03:33 UTC+8** (past as of 10-29). Defence timeline
 - **Shipped:** `index.js` leanUpKeep + banded recycle/spawn; dayobs tests; SoftCap/sealMinE/HUB_LINK/labs/industry/market unchanged. **No softCap re-ask.**
 - **Reprioritise (peacetime):** (1) leanBank [15k,20k) climb with **upgKeep=2**; (2) softCap bank→clear ≥25k / nUp→ceil6 short≥70%; (3) keep roadCrit=0 + contMinPct≥50; (4) seal→1M under soft-gate; (5) home floor ≥15k; (6) **defer** labs KO (**no re-ask**) / boost / STATIONARY_FILL / industry / market.
 
+
+- **Plan check:** autonomous leanBank band + obs — no new Misaki decision. WakeParent **no** (anti-spam; softCap widget outstanding — do not re-ask; labs no re-ask).
+
 ## 2026-11-04 02:4x strategy review: hub ferry prime arm LEAN_ARM (thrash band)
 
 - **Chose:** SoftCap thrash parks W47 stor in **19–22k** for hours; 23:4x prime arm was `LEAN_SOFT_ARM(22k)` — does thrash leave `hubPrime=0` / cold hub while filler idles at POST? (OUR ops transport; labs OFF no re-ask; neighbor scans paused; softCap widget outstanding — do not re-ask.)
