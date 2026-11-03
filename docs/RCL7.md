@@ -1,6 +1,41 @@
 # Home W46N8 RCL7 readiness (strategy review 2026-10-19 18:4x UTC+8)
 
+## 2026-11-04 05:4x — leanBank rebuild-band upgKeep (post-defense dual-stack)
+
+**Question:** After Invader/remote DEFEND drain re-arms leanBank (stor dipped below `LEAN_ARM` 15k), leanBank kept nUp at **0/1 until stor≥20k** even though softCap already caps ≤2 and soft-band+sealPark protect the climb. Live spent hours at ~8 e/t upgrade in the 15–18k band. Should post-minBuild leanBank in `[LEAN_ARM, LEAN_STOR)` allow softCap parity (≤2) instead of hard 0/1?
+
+**Answer: YES — band leanBank upgrader ceiling. Emergency `<LEAN_ARM` → ≤1; rebuild `[15k,20k)` while leanBank sticky → ≤2 (= softCap). SoftCap/sealMinE/HUB_LINK/labs unchanged. No softCap re-ask.**
+
+### Live (~05:45 Asia/Hong_Kong, deploy c5334c8, tick ~84055220)
+| Room | Notes |
+|------|-------|
+| W46N8 | RCL7 ~23.74% (2.596M/10.9M); stor~16.0–16.7k ABOVE; 2h prior~76–80%; last1h ~14.2 e/t (ideal~26); remotes SAFE post-W45N7 InvaderCore kill@~84054839 |
+| W47N8 | RCL7 ~9.85% (1.077M); **leanBank=1** bankLeft~2.8k bankWhy=bank; softCap2 ON softLeft~7.8k softE1 softBand1; **hubReady1 hubPrime1** hubLinkE~369 upgCeil6; sealPark1 roadCrit0 contMinPct50; **upgraders=1**; last3h ~8.7 e/t (prior3h ~13.7); last1h ~8.4 |
+| Colony | peacetime; CPU~12–15/20 bkt10k; ~35 creeps; labs OFF propose=1 actOk (**no re-ask**); K regener miners0; neighbor scan PAUSED |
+
+6h stor path: ~00:30 W47 ~23.5k near-clear → thrash 19–22k (02:4x LEAN_ARM prime) → **~03:00 dip ≤15k** (Invader episode drain) → leanBank re-arm → stuck 15–18k with nUp≤1 for ~2.5h while softLeft stayed ~7–10k.
+
+### Research
+1. **Our stack (pre-fix):** leanBank sticky 15→20k with hard nUp 0/1, THEN softCap 20→25k with ≤2. Dual freeze after every defense dip below ARM.
+2. **Overmind UpgradeSite:** `storageBuffer=100k`; spawn upgraders only when assets > buffer (or downgrade <500); scale WORK by surplus — **single** threshold, never dual-stack 0/1 then ≤2 at a second lower band.
+3. **TooAngel:** storage-centric upgrader; parks when thin / not healthy but keeps a floor — does not zero upgrade for a 5k cushion chase once past emergency.
+4. **Local safety already present in [15k,25k):** soft-band STRICT park to storage (ctl≥1200); sealPark; hubPrime LEAN_ARM; softCap≤2. Hard 0/1 only adds upgrade freeze, not cushion safety.
+5. **Hub live:** with hub→ctl ~40 e/t gross, 2×10W is feed-safe (live ctlBat~2.5k feedOk with 1; 02:4x thrash ran ≤2 without crash).
+
+### Shipped
+1. `leanUpKeep(storE)`: `<LEAN_ARM → 1`, else `2`.
+2. `leanBankRecycle` uses `leanUpKeep` (was hard `keep=1`).
+3. Spawn energyBank branch: `<LEAN_ARM` → 0/1 (downgrade); `[ARM,STOR)` → **2**.
+4. `w8day.upgKeep` obs (1 emergency / 2 rebuild|soft / 0 clear).
+5. Tests dayobs: emergency 12k ≤1; rebuild 17.2k ≤2 (recycle exactly 1 of 3).
+6. SoftCap / sealMinE / HUB_LINK / labs / industry / market / softCap widget **unchanged**. **No re-ask.**
+
+**Expect after deploy:** stor in [15k,20k) leanBank sticky → `upgKeep=2` / nUp→2; bank climb continues via soft-band; W47 e/t should leave ~8 toward softCap-band ~12–16; softLeft drain resumes without waiting full 20k first.
+
+---
+
 ## 2026-11-04 02:4x — hub ferry prime arm LEAN_ARM (thrash band)
+
 
 **Question:** SoftCap thrash often parks W47 storage in the common **19–22k** band for hours. Ferry prime-only was armed at `LEAN_SOFT_ARM(22k)` — does that leave `hubPrime=0` / `hubLinkE=0` through the thrash while filler idles at POST with full carry, recreating the cold-hub gap 23:4x tried to close?
 

@@ -187,6 +187,30 @@ W.dayObs(rArm);
 assert.strictEqual(Memory.ops.w8day.leanBank, 1, 're-arm below 15k');
 assert.strictEqual(Memory.ops.w8day.phase, 'bank20');
 assert.strictEqual(Memory.ops.w8day.bankWhy, 'bank');
+assert.strictEqual(Memory.ops.w8day.upgKeep, 1, 'emergency <LEAN_ARM upgKeep=1');
+assert.strictEqual(W.leanUpKeep(14000), 1);
+assert.strictEqual(W.leanUpKeep(14999), 1);
+assert.strictEqual(W.leanUpKeep(15000), 2, 'rebuild band ≥LEAN_ARM → softCap parity');
+assert.strictEqual(W.leanUpKeep(17200), 2);
+// 05:4x 11-04: leanBank sticky in [ARM,STOR) keeps ≤2 (not hard ≤1) — 3 upgraders → recycle ≥1
+{
+  delete Memory.ops.w8recycle;
+  const bandUps = [{ memory: { role: 'w8upgrader' } }, { memory: { role: 'w8upgrader' } },
+    { memory: { role: 'w8upgrader' } }];
+  const rBandUp = mk(7, done, bandUps, 0); rBandUp.storage.store.energy = 17200;
+  Memory.ops.w8day.leanBank = 1; // sticky after re-arm
+  W.dayObs(rBandUp);
+  assert.strictEqual(Memory.ops.w8day.leanBank, 1, 'sticky leanBank at 17.2k');
+  assert.strictEqual(Memory.ops.w8day.upgKeep, 2, 'rebuild band upgKeep=2');
+  assert.strictEqual((Memory.ops.w8recycle || []).length, 1, 'leanBank rebuild recycles to ≤2 not ≤1: ' + JSON.stringify(Memory.ops.w8recycle));
+  // emergency still hard ≤1
+  delete Memory.ops.w8recycle;
+  const rEmerg = mk(7, done, bandUps, 0); rEmerg.storage.store.energy = 12000;
+  Memory.ops.w8day.leanBank = 1;
+  W.dayObs(rEmerg);
+  assert.strictEqual(Memory.ops.w8day.upgKeep, 1);
+  assert.ok((Memory.ops.w8recycle || []).length >= 2, 'emergency leanBank still ≤1: ' + JSON.stringify(Memory.ops.w8recycle));
+}
 // opt-out Memory.ops.w8leanBank=false
 Memory.ops.w8leanBank = false;
 const rOff = mk(7, done, [], 0); rOff.storage.store.energy = 3000;

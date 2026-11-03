@@ -3,7 +3,14 @@
 Novice zone ends **2026-10-28 03:33 UTC+8** (past as of 10-29). Defence timeline: `docs/DEFENSE_NOVICE.md` (2026-10-16); detail `docs/DEFENSE.md` / geometry `docs/DEFENSE_PLAN.md`.
 **Safe mode: NEVER auto-activate** — alert Misaki.
 
+## 2026-11-04 05:4x strategy review: leanBank rebuild-band upgKeep (post-defense)
+- **Chose:** After Invader drain re-arms leanBank (stor <15k), hard nUp 0/1 until 20k dual-stacks under softCap≤2 — freeze W47 ~8 e/t for hours in 15–18k. Allow softCap parity in [15k,20k)? (OUR ops; labs OFF no re-ask; neighbor scans paused; softCap widget outstanding — do not re-ask.)
+- **Findings (`docs/RCL7.md` 05:4x / `docs/STRATEGY.md` / `docs/MODEL_W47N8.md`):** (1) Live ~05:45 Asia/Hong_Kong c5334c8: peacetime; home ~23.74% stor~16k ABOVE last3h~19 e/t; W47 ~9.85% leanBank1 bankLeft~2.8k softCap2 ON softLeft~7.8k hubPrime1 upgraders=1 last3h~8.7 e/t; W45N7 SAFE post-core kill; labs OFF. (2) 6h: W47 ~23.5k→thrash19–22k→dip≤15k@~03:00→stuck15–18k. (3) Overmind single storageBuffer; TooAngel keeps upgrade floor when thin. soft-band+sealPark already protect [15k,25k). (4) Fix: `leanUpKeep` <15k→1 / else→2; spawn+recycle+`w8day.upgKeep`.
+- **Shipped:** `index.js` leanUpKeep + banded recycle/spawn; dayobs tests; SoftCap/sealMinE/HUB_LINK/labs/industry/market unchanged. **No softCap re-ask.**
+- **Reprioritise (peacetime):** (1) leanBank [15k,20k) climb with **upgKeep=2**; (2) softCap bank→clear ≥25k / nUp→ceil6 short≥70%; (3) keep roadCrit=0 + contMinPct≥50; (4) seal→1M under soft-gate; (5) home floor ≥15k; (6) **defer** labs KO (**no re-ask**) / boost / STATIONARY_FILL / industry / market.
+
 ## 2026-11-04 02:4x strategy review: hub ferry prime arm LEAN_ARM (thrash band)
+
 - **Chose:** SoftCap thrash parks W47 stor in **19–22k** for hours; 23:4x prime arm was `LEAN_SOFT_ARM(22k)` — does thrash leave `hubPrime=0` / cold hub while filler idles at POST? (OUR ops transport; labs OFF no re-ask; neighbor scans paused; softCap widget outstanding — do not re-ask.)
 - **Findings (`docs/RCL7.md` 02:4x / `docs/STRATEGY.md` / `docs/MODEL_W47N8.md`):** (1) Live ~02:28–02:43 Asia/Hong_Kong deploy 0483c6b: peacetime; home ~23.2% 2h~87% soft CLEARED stor~15–16k ABOVE; W47 ~9.6% 2h~49% softCap2 ON softLeft~3.5–4.8k stor~19–21k thrash; hubReady1 **hubPrime flaps 0↔1** hubLinkE often 0; filler POST ~1200e idle; remotes SAFE; labs OFF; ~38 creeps CPU~15. (2) Gap: prime arm at 22k misses the common thrash band; soft-band fight is bat-driven, not prime-only (~200e one-shot then stable). (3) Overmind linksRequestBelow=200 storageBuffer-agnostic; home queen.standby ≈ LEAN_ARM; SoftCap hysteresis must stay LEAN_SOFT_ARM=22k. (4) Fix: prime arm → LEAN_ARM(15k); bat ferry still ≥25k.
 - **Shipped:** `fill.js` ferry prime arm 22k→15k; tests filler (H) below-ARM=14k + thrash 19.5k MUST prime. SoftCap/sealMinE/HUB_LINK/labs/industry/market unchanged. **No softCap re-ask.**

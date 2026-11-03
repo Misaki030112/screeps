@@ -8,6 +8,12 @@ hauler upkeep (CARRY need = 10 × (round trip × 1.10 + 4) / 50, load split 75% 
 0.03/t each, builder-lite 1000/1500. Upgrade = net / (1 + upgrader upkeep 1150/1500/10). RCL5: 1800 cap, best of source-A link→ctl or hub→ctl link (3% loss).
 reserve7 (2 CLAIM) is spawned and paid by home.
 
+## 2026-11-04 05:4x — leanBank rebuild-band vs model upgrade
+
+Live (c5334c8, ~05:45 Asia/Hong_Kong): W47 storage ~16–18k leanBank sticky + softCap ON; **nUp=1** → last3h ~8.7 e/t vs prior3h ~13.7 and model softCap-band target ~12–16 (2×10W under softCap≤2). Cause was leanBank hard keep=1 dual-stacked under softCap≤2 after Invader dip below LEAN_ARM — not a haul/link bottleneck (hubReady1 hubPrime1 feedOk; waiting_feed low).
+
+**Model implication:** treat leanBank `[LEAN_ARM, LEAN_STOR)` as softCap-parity WORK (≤2), not a second upgrade freeze. Emergency `<LEAN_ARM` still 0/1. Soft clear ≥25k remains the gate to ceil6 / short≥70%. See `docs/RCL7.md` 05:4x.
+
 ## 2026-10-19 14:55 (6 h window, threat mode on for part of it; tick 4.20 s)
 | stage | ideal | actual |
 |---|---|---|
