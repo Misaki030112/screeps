@@ -3,12 +3,18 @@
 Novice zone ends **2026-10-28 03:33 UTC+8** (past as of 10-29). Defence timeline: `docs/DEFENSE_NOVICE.md` (2026-10-16); detail `docs/DEFENSE.md` / geometry `docs/DEFENSE_PLAN.md`.
 **Safe mode: NEVER auto-activate** — alert Misaki.
 
+## 2026-11-03 HUB_LINK nod YES (W47N8 hub link armed)
+- **Nod:** Misaki YES for W47N8 HUB_LINK (枢纽链路). Peacetime shard3.
+- **Shipped:** `config.HUB_LINK=true`. Layout places link site **33,34** (~5k). `hubLinkLive` / `upgCeil` / recycle / `hubReady` unchanged — ceil stays ≤3 until the structure stands, then `hubReady=1` / upgCeil 6 / `feedBound=0`. `w8day.hubLink=1` on the flag.
+- **Unchanged:** `RCL6_LABS` / `RCL7_INDUSTRY` / market OFF. `sealMinE` **25000**. softCap sticky / `LEAN_SOFT_ARM` unchanged. 20:4x soft-band stays STRICT `se < LEAN_SOFT` (not coupled back to softE).
+- **Plan check:** approved nod, not a new ask. WakeParent **no**.
+
 ## 2026-11-03 20:4x strategy review: softCap re-ON drain (soft-band ≠ softE)
 - **Chose:** softCap2 re-ON (softLeft~1–3k) after clears ~25–26k — what autonomous drain still pulls W47 stor under softArm(22k): sealRaise mid-clear, SEAL_EDGE 2nd builder, hub drop, hauler soft-band, mineral haul, or home balance? (OUR ops; feedBound already diagnosed.)
 - **Findings (`docs/RCL7.md` 20:4x / `docs/STRATEGY.md`):** (1) Live ~20:44–20:50 Asia/Shanghai t~84047400 deploy adcc35f: peacetime; home ~22.18% 2h~22.2/26 (~85%) stor~15k ABOVE; W47 ~8.96% stor**24000** softE=1 softCap2=1 softLeft1000 softArm22k sealRaise**0** sealPark**1** KEY DONE hubReady0 roadCrit0 contMinPct50 feedBound0 (softCap ON); remotes SAFE; labs OFF propose=1; K regener termK~34k / w8min miners0; CPU~14–15/20. (2) 6h stor trend: clears @~17:39/18:14/19:26 (≥25k) then bleed through [22k,25k) to re-arm softE — seal soft-gate works (softThin parks seal below 25k; live sealPark1). (3) **Gap:** 08:4x coupled hauler soft-band to softE hysteresis. After clear, softE stays OFF in [ARM,SOFT) (nUp3 OK) but soft-band also OFF → haulers feed ctl instead of refilling storage → stor bleeds to <22k. Hub drop/mineral/SEAL_EDGE 2nd builder not the sustained drain (looseE~0.6k; miners0; edgeFat needs 30k). (4) Overmind `storageBuffer=100k` + fortifyDutyThreshold=500k; UpgradeSite keeps logistics topping battery when saturated — park while under soft floor matches that shape. TooAngel healthy floors park upgrade when thin; we keep nUp hysteresis and only restore park.
 - **Shipped:** soft-band STRICT `se < LEAN_SOFT` (roles) independent of softE; `w8day.softBand` obs. Tests filler + dayobs. **No** HUB_LINK/labs/industry/market/sealMinE flips; **no** re-ask.
 - **Reprioritise (peacetime):** (1) **Misaki nod `HUB_LINK=true`** (feedBound when soft clear — do not re-spam); (2) hold softCap ≥25k with soft-band refill in [ARM,SOFT); (3) keep roadCrit=0 + contMinPct≥50; (4) seal→1M under soft-gate; (5) home floor ≥15k; (6) **defer** labs KO (**no re-ask**) / boost / STATIONARY_FILL / industry / market.
-- **Plan check:** autonomous soft-band/obs fix — no new Misaki decision. WakeParent **no** (anti-spam; HUB_LINK/labs already open).
+- **Plan check:** autonomous soft-band/obs fix — no new Misaki decision. WakeParent **no** (anti-spam; HUB_LINK nod later landed separately).
 
 ## 2026-11-03 17:3x strategy review: post-roadCrit feed ceiling (!HUB_LINK)
 - **Chose:** softCap clear + roadCrit=0 + contMinPct≥50 + sealRaise re-armed — is W47 still at A→ctl feed ceiling (~70% ideal), so further softCap/seal/road tuning cannot close the gap? (OUR ops; not neighbor scans.)

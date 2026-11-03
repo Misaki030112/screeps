@@ -139,7 +139,7 @@ not placed). RCL6 still places the 10 extensions; RCL5 still places links 13,25 
 **Proposal for Misaki (not urgent, before ~10-22):** keep both off until there is a use. Options to revisit then:
 (a) hub link 33,34 -> ctl link 13,25 fed from storage (needs a hub manager; worth it only if haulers can't keep the ctl container fed);
 
-**2026-11-02 23:4x:** dormant hub→ctl in `linkRun` + idle `w8filler` ferry shipped; still gated by `HUB_LINK=false` until Misaki nod. See `docs/RCL7.md` 23:4x.
+**2026-11-02 23:4x:** dormant hub→ctl in `linkRun` + idle `w8filler` ferry shipped; was gated by `HUB_LINK=false`. **2026-11-03 nod YES:** `HUB_LINK=true`, site 33,34; `hubReady` waits on the structure. Labs/industry stay off. See `docs/RCL7.md`.
 (b) terminal at W47N8 so home can `terminal.send` energy (cost ~3% at range 1) or minerals: only useful with a market/boost plan;
 (c) extractor + labs: needs mineral miner + lab code, and only matters for boosts after novice end.
 
@@ -301,5 +301,5 @@ Post-ready thrash (20k→16k→DEFEND→1.7k) fixed with `LEAN_ARM=15k` re-arm +
 
 ## 2026-11-03 08:4x — softCap2 hysteresis (LEAN_SOFT_ARM 22k)
 
-softCap energy half now mirrors leanBank: clear at 25k, re-arm below 22k (`softE` sticky). softThin/seal stay strict at 25k. Detail: `docs/RCL7.md` 08:4x / `docs/DEFENSE_W47N8.md` 08:4x. HUB_LINK nod still open — do not re-spam. Gates stay false.
+softCap energy half now mirrors leanBank: clear at 25k, re-arm below 22k (`softE` sticky). softThin/seal stay strict at 25k. Detail: `docs/RCL7.md` 08:4x / `docs/DEFENSE_W47N8.md` 08:4x. **2026-11-03:** HUB_LINK nod is YES (`config.HUB_LINK=true`); labs/industry/market stay false; sealMinE stays 25k.
 

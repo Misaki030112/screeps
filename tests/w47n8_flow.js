@@ -59,7 +59,7 @@ console.log('w47n8 flow ok');
   console.log('w47n8 miner/link ok');
 }
 
-// 23:4x strategy: hub link → ctl when hub exists (dormant path; HUB_LINK still false in config)
+// 23:4x strategy: hub link → ctl when hub structure exists (linkRun keys the structure; config.HUB_LINK now true)
 {
   Object.assign(global, { STRUCTURE_LINK: 'link' });
   let sentA = 0, sentH = 0;

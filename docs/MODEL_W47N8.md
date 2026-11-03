@@ -196,4 +196,4 @@ Plumbing shipped dormant (`HUB_LINK` still false). See `docs/RCL7.md` 23:4x.
 | build_repair (seal) | ~0–1 | 1.76 |
 | upkeep | ~6.5 | 11.8 |
 
-**Conclusion:** softCap/roadCrit/cont levers are exhausted. The ~9 e/t gap is A→ctl topology (hub skew). `w8day.feedBound=1` marks this state for patrols. Closing the gap requires Misaki `HUB_LINK=true` (hub→ctl ~range 20 → ~38.8 e/t net once live; upgCeil waits `hubLinkLive`). See `docs/RCL7.md` 17:3x.
+**Conclusion:** softCap/roadCrit/cont levers are exhausted. The ~9 e/t gap is A→ctl topology (hub skew). `w8day.feedBound=1` marks the pre-structure ceiling. **2026-11-03: Misaki nodded `HUB_LINK=true`.** Site 33,34 (~5k); `upgCeil` still waits `hubLinkLive` (hub→ctl ~range 20 → ~38.8 e/t net once the link stands). See `docs/RCL7.md`.

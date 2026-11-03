@@ -1,5 +1,14 @@
 # Home W46N8 RCL7 readiness (strategy review 2026-10-19 18:4x UTC+8)
 
+## 2026-11-03 — HUB_LINK nod YES (armed)
+
+**Misaki nodded YES** for W47N8 hub link (枢纽链路). `config.HUB_LINK=true`. Labs / `RCL7_INDUSTRY` / market stay OFF. `sealMinE` stays **25000** (`LEAN_SOFT`). softCap sticky / `LEAN_SOFT_ARM` unchanged. 20:4x soft-band stays STRICT `se < LEAN_SOFT` (independent of softE).
+
+Live path (plumbing from 23:4x / 05:4x, now ungated):
+1. `layoutRun` places the link site at **33,34** (~5k), beside hub container 33,33. RCL5 links 13,25 and 26,12 unchanged.
+2. While the site stands, `hubLinkLive` is false → `w8day.hubReady=0`, `upgCeil` stays 2 (`siteRem≥3000`) or 3, recycle keeps ≤3. `w8day.hubLink=1` as soon as the flag is live. The 5k site is bigBuild, so surplus spawn stays at 2 until it stands.
+3. Structure stands → `hubReady=1`, filler ferry + `linkRun` hub→ctl, `upgCeil` 6, `feedBound=0`.
+
 ## 2026-11-03 20:4x — softCap re-ON drain (soft-band ≠ softE)
 
 **Question:** With softCap2 re-ON after clears ~25–26k (patrol softLeft~3k → live softLeft~1k), and feedBound already diagnosed — what autonomous drain still pulls W47 storage back under softArm (22k)? sealRaise mid-clear, SEAL_EDGE 2nd builder, hub drop pile, hauler soft-band, mineral haul, or home/colony balance?
@@ -37,7 +46,7 @@
 - After deploy: in [22k,25k) post-clear expect `softE=0 softCap2=0 softBand=1` (nUp3 + park ON) — stor should re-climb to ≥25k instead of falling under 22k.
 - `softE=1 softBand=1` while climbing from <22k is normal.
 - `sealPark=1` whenever stor<25k; sealRaise only above clear with park cleared.
-- feedBound returns when soft clears + nUp≥3; still **do not re-ask HUB_LINK**.
+- feedBound returns when soft clears + nUp≥3 and the hub link is not yet live. HUB_LINK nod landed after this review (see top).
 
 ---
 

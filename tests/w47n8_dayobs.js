@@ -339,15 +339,26 @@ W.dayObs(rFeed);
 assert.strictEqual(Memory.ops.w8day.softCap2, 0);
 assert.strictEqual(Memory.ops.w8day.ctlBat, 1900);
 assert.strictEqual(Memory.ops.w8day.feedOk, 1, 'battery ≥FEED_MIN → feedOk');
-// 14:4x: without HUB_LINK, peacetime still recycles 4→≤3 (A→ctl cannot sustain WORK40)
-assert.ok((Memory.ops.w8recycle || []).length >= 1, 'no HUB_LINK: recycle surplus above base 3: ' + JSON.stringify(Memory.ops.w8recycle));
-assert.strictEqual(Ccfg.HUB_LINK, false, 'test assumes HUB_LINK off');
+// Live default HUB_LINK is on (Misaki nod). No structure yet: still recycle 4→≤3, hubReady 0, upgCeil 3.
+assert.strictEqual(Ccfg.HUB_LINK, true, 'live HUB_LINK armed');
+assert.ok((Memory.ops.w8recycle || []).length >= 1, 'no structure: recycle surplus above base 3: ' + JSON.stringify(Memory.ops.w8recycle));
 assert.ok('hubLinkE' in Memory.ops.w8day, '23:4x hubLinkE obs');
 assert.strictEqual(Memory.ops.w8day.hubLinkE, -1, 'no hub link structure → -1');
-assert.strictEqual(Memory.ops.w8day.hubReady, 0, 'HUB_LINK off → hubReady 0');
-assert.strictEqual(Memory.ops.w8day.hubLink, 0, 'hubLink flag obs 0');
-assert.strictEqual(Memory.ops.w8day.upgCeil, 3, '17:3x: no hub → upgCeil 3');
-assert.strictEqual(Memory.ops.w8day.feedBound, 1, '17:3x: nUp≥3 + soft clear + !hub → feedBound');
+assert.strictEqual(Memory.ops.w8day.hubReady, 0, 'flag on, no structure → hubReady 0');
+assert.strictEqual(Memory.ops.w8day.hubLink, 1, 'hubLink flag obs 1 while armed');
+assert.strictEqual(Memory.ops.w8day.upgCeil, 3, '17:3x: no structure → upgCeil 3');
+assert.strictEqual(Memory.ops.w8day.feedBound, 1, '17:3x: nUp≥3 + soft clear + !hubLinkLive → feedBound');
+// Flag-off path still recycles (explicit; live default stays true).
+{
+  Ccfg.HUB_LINK = false;
+  delete Memory.ops.w8recycle;
+  Memory.ops.w8day = { leanBank: 0 };
+  W.dayObs(rFeed);
+  assert.strictEqual(Memory.ops.w8day.hubLink, 0, 'hubLink flag obs 0 when off');
+  assert.strictEqual(Memory.ops.w8day.hubReady, 0, 'HUB_LINK off → hubReady 0');
+  assert.ok((Memory.ops.w8recycle || []).length >= 1, 'no HUB_LINK: recycle surplus above base 3: ' + JSON.stringify(Memory.ops.w8recycle));
+  Ccfg.HUB_LINK = true;
+}
 
 // 11-03 05:4x: upgCeil/recycle gate on hubLinkLive (structure), not config flag alone.
 // Flag ON + no structure → still recycle 4→≤3 (same as pre-flip); hubReady stays 0.
@@ -383,7 +394,7 @@ assert.strictEqual(Memory.ops.w8day.feedBound, 1, '17:3x: nUp≥3 + soft clear +
   assert.ok(!(Memory.ops.w8recycle || []).length, 'hub live + feedOk → no recycle: ' + JSON.stringify(Memory.ops.w8recycle));
   assert.strictEqual(Memory.ops.w8day.upgCeil, 6, '17:3x: hub live → upgCeil 6');
   assert.strictEqual(Memory.ops.w8day.feedBound, 0, '17:3x: hub live clears feedBound');
-  Ccfg.HUB_LINK = false;
+  Ccfg.HUB_LINK = true; // live default
 }
 
 // 05:4x/20:4x: soft-cap still works; at stor5k leanBank now ON → recycle to ≤1 (stricter than soft ≤2)

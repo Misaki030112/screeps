@@ -1,5 +1,5 @@
-// 2026-10-29 20:4x strategy review: at RCL7 W47N8 must place spawn2 + tower3 + 10 ext, NOT factory (100k) while RCL7_INDUSTRY is off;
-// RCL6 minerals/hub link stay gated. Spur roads for the 10 RCL7 extension slots must sit on the kept network.
+// 2026-10-29 20:4x strategy review: at RCL7 W47N8 must place spawn2 + tower3 + 10 ext, NOT factory (100k) while RCL7_INDUSTRY is off.
+// 2026-11-03 HUB_LINK nod: hub link 33,34 (~5k) is planned; labs/industry stay off. Spur roads for the 10 RCL7 extension slots must sit on the kept network.
 const assert = require('assert'), path = require('path');
 const d = path.join(__dirname, '..', 'src', 'rooms', 'w47n8');
 const K = { LOOK_STRUCTURES: 'structure', LOOK_CONSTRUCTION_SITES: 'constructionSite', FIND_MY_SPAWNS: 112, FIND_MY_CONSTRUCTION_SITES: 114,
@@ -25,7 +25,7 @@ function mkRoom(rcl, built) {
       const site = { structureType: t, pos: { x, y }, remove() { const i = sites.indexOf(site); if (i >= 0) sites.splice(i, 1); } };
       sites.push(site); return OK; } };
 }
-assert.strictEqual(C.RCL6_MINERALS, true); assert.strictEqual(C.RCL6_LABS, false); assert.strictEqual(C.HUB_LINK, false); assert.strictEqual(C.RCL7_INDUSTRY, false);
+assert.strictEqual(C.RCL6_MINERALS, true); assert.strictEqual(C.RCL6_LABS, false); assert.strictEqual(C.HUB_LINK, true); assert.strictEqual(C.RCL7_INDUSTRY, false);
 const roads = R.ROADS.filter(([x, y]) => !R.MINERAL.some(([a, b]) => a === x && b === y)).concat(require('../src/layouts/w8link').W47N8);
 const base = [].concat(C.SEAL.map(([x, y]) => [x, y, 'wall']), [[34, 30, 'spawn'], [35, 32, 'storage'], [C.HUB_CONT[0], C.HUB_CONT[1], 'container'], [13, 26, 'container']],
   L.ORDER.extension.slice(0, 40).map(([x, y]) => [x, y, 'extension']), [[33, 35, 'tower'], [24, 8, 'tower'], [C.CTL_LINK[0], C.CTL_LINK[1], 'link'], [C.SOURCES[0].link[0], C.SOURCES[0].link[1], 'link']],
@@ -38,7 +38,7 @@ assert.ok(types.includes('extractor'), 'RCL7 lean: extractor while RCL6_MINERALS
 assert.ok(placed.some(s => s.structureType === 'container' && s.pos.x === 37 && s.pos.y === 44), 'RCL7 lean: mineral cont 37,44');
 for (const t of ['lab', 'factory', 'powerSpawn', 'nuker', 'observer'])
   assert.ok(!types.includes(t), 'RCL7: no ' + t + ' while labs/industry off, got ' + types.filter(x => x === t));
-assert.ok(!placed.some(s => s.structureType === 'link'), 'RCL7: no hub link while HUB_LINK off');
+assert.deepStrictEqual(placed.filter(s => s.structureType === 'link').map(s => s.pos.x + ',' + s.pos.y), ['33,34'], 'RCL7: hub link site 33,34');
 assert.ok(placed.some(s => s.structureType === 'spawn' && s.pos.x === 33 && s.pos.y === 30), 'RCL7: spawn2 @33,30');
 assert.ok(placed.some(s => s.structureType === 'tower' && s.pos.x === 22 && s.pos.y === 7), 'RCL7: tower3 @22,7');
 assert.strictEqual(types.filter(t => t === 'extension').length, 10, 'RCL7: 10 new extensions, got ' + types.filter(t => t === 'extension').length);

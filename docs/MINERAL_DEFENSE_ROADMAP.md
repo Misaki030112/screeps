@@ -39,7 +39,7 @@ Misaki ordered **W47N9 GO**. While `Memory.ops.w47n9` assault is on / `pauseCivi
 
 ### 代码/开关
 - `plan.RCL6_MINERALS=true`（home 矿物基建已齐）；`plan.RCL7_INDUSTRY=false`（factory+labs4–6 不落点）
-- `w47n8.config.RCL6_MINERALS=true` / `RCL6_LABS=false` / `HUB_LINK=false`（11:1x lean KO flipped）
+- `w47n8.config.RCL6_MINERALS=true` / `RCL6_LABS=false` / `HUB_LINK=true`（11:1x lean KO; 2026-11-03 HUB_LINK nod YES, labs still off）
 - `managers/labs.js`：反应 + `task()` + **`labReady` obs**；hauler `labRun` **已接**（dormant 直到 `Memory.ops.labs`；§5.18 propose 闸）
 - **无** `boostCreep` / 战斗预强化 spawn 代码
 - `Memory.defense.remoteDefender=true`（#1 已验 W47N7）
@@ -252,7 +252,7 @@ W47N8 在翻 `RCL6_MINERALS` **之前**，矿物线代码缺口有多大？是�
 |---|---|---|
 | `RCL6_MINERALS` | false | terminal + extractor + `MINERAL_CONT` 37,44 + MINERAL trunk |
 | `RCL6_LABS` | false | 3 colony labs（ORDER lab[0..2]）；**KO 不需要** |
-| `HUB_LINK` | false | hub link 33,34（无关矿物） |
+| `HUB_LINK` | **true** (2026-11-03 nod) | hub link 33,34（无关矿物；`hubReady` 等结构） |
 | `RCL7_INDUSTRY` | false | factory / PS / nuker / observer |
 
 ### 5.6 翻 `RCL6_MINERALS` 前 checklist（仍 **propose**；不自动翻）
