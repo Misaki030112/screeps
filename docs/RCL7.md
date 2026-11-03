@@ -1,5 +1,33 @@
 # Home W46N8 RCL7 readiness (strategy review 2026-10-19 18:4x UTC+8)
 
+## 2026-11-03 14:4x — roadCrit before deep seal (Overmind critical=25%)
+
+**Question:** contMinPct hit ≥50% after 11:3x — with softCap clear + sealRaise, is deep seal→1M starving `roadCrit`, and should critical roads outrank fortify like Overmind RoadLogistics?
+
+### Live (~14:40–14:45 Asia/Shanghai, t~84042100, 5de0c2e)
+- Peacetime; home ~21.15% stor~14.3–15.6k floor_bank 2h~22.8 e/t (~88% of ideal26); W47 ~7.90% stor~25.4k softE=0 softCap2=0 softLeft0 nUp3 feedOk; KEY DONE; sealRaise1 sealPark0 hubReady0; remotes SAFE; labs OFF no re-ask; K regener~29.9k.
+- Containers: all five **50–53%** (`contMinPct=50`, `contLow=0`) — 11:3x SUCCESS.
+- Roads: **38 <25% / 69 <30% / 94 <50%** (`roadCrit=33–38`). Builder sticky on seal wall **27,3 @~542k** (sealMin~488k).
+
+### Gap
+Repair order after 11:3x: urgent10% → cont50% → **wallJob** → road25% → road60%. Once softCap cleared, `sealDeepOk` made `wallJob` return deep seal→1M every rescan; sticky rj on walls never hits 0.95×hitsMax. Roads in the 10–25% band never won.
+
+### Overmind / TooAngel
+- **Overmind** `fortifyDutyThreshold=500000` — routine fortify ticks only when colony energy is fat; `RoadLogistics.settings.criticalThreshold=0.25` is an independent paver duty.
+- **TooAngel**: dedicated wall `repairer`; economy creeps keep roads/containers — fortify must not monopolize the lone maint builder.
+
+### Shipped
+1. Order: urgent → cont50% → **`roadNeed(0.25)`** → `wallJob` → road60% (mvp still skips mid-band).
+2. Break sticky when `roadCritNeed` and sticky target is wall/rampart.
+3. Maint spawn road threshold **20%→25%** (align `w8day.roadCrit`).
+4. Tests: roadCrit prefers over seal + sticky-break. Under-attack seal path unchanged.
+
+### Patrol watch
+- `roadCrit` should fall from ~38 toward 0 over ~1–2 builder TTLs; `contMinPct` stay ≥50; sealRaise may stay 1 but builder should not sticky-seal while roadCrit>0.
+- Do **not** re-ask HUB_LINK / ops.labs.
+
+---
+
 ## 2026-11-03 11:3x — W47 container repair debt (Overmind <50% before roads)
 
 **Question:** KEY DONE + softCap sticky clear (~24.5k) + one live builder — why are ctl/hub/minCont at ~23–25% hits (~1.3–1.4h of container decay left) while ~140 roads sit under 50%?

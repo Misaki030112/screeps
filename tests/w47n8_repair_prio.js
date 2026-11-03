@@ -123,13 +123,45 @@ assert.strictEqual(repairs.length, 1, 'exactly one upgrader repairs: ' + JSON.st
 assert.ok(upgActs.some(a => a.endsWith(':upg')), 'sibling still upgrades: ' + JSON.stringify(upgActs));
 assert.strictEqual(repaired.id, 'ctl');
 
-// --- dayObs repair-debt fields
+// --- 14:4x: critical roads <25% outrank deep seal wallJob (containers already ≥50%)
+ctlCont.hits = 130000; // 52%
+hubCont.hits = 130000;
+nearRoad.hits = nearRoad.hitsMax; // healthy far road — must not distract
+const sealRoad = S('rds', STRUCTURE_ROAD, 25, 7, 950, 5000); // 19%, beside north seal (live roadCrit sample)
+structs.push(sealRoad);
+builder.memory.rj = undefined;
+builder.memory.rjt = 0;
+builder.pos = mkPos(25, 6); // beside seal wall — old order would sticky-fortify forever
+repaired = null;
+Game.creeps = { b1: builder };
+Game.time = 5100;
+R.w8builder.run(builder);
+assert.ok(repaired, 'builder repairs with healthy containers');
+assert.strictEqual(repaired.structureType, STRUCTURE_ROAD,
+  'prefer road <25% over deep seal wallJob; got ' + repaired.structureType + ' hits=' + (repaired && repaired.hits));
+assert.strictEqual(repaired.id, 'rds');
+
+// sticky fortify must break when roadCrit appears
+const sealWall = structs.find(s => s.structureType === STRUCTURE_WALL && s.pos.y === 3);
+assert.ok(sealWall, 'seal wall fixture');
+builder.memory.rj = sealWall.id;
+builder.memory.rjt = Game.time + 100; // sticky not expired
+repaired = null;
+R.w8builder.run(builder);
+assert.strictEqual(repaired && repaired.structureType, STRUCTURE_ROAD,
+  'break sticky seal when roadCrit; got ' + (repaired && repaired.structureType));
+assert.strictEqual(repaired.id, 'rds');
+
+// --- dayObs repair-debt fields (restore container debt fixtures from 11:3x)
+ctlCont.hits = 60000;
+hubCont.hits = 60000;
 Game.creeps = {};
 Game.time = 6000;
 W.dayObs(room);
 assert.ok(Memory.ops.w8day.contMinPct <= 25, 'contMinPct=' + Memory.ops.w8day.contMinPct);
 assert.ok(Memory.ops.w8day.contLow >= 2, 'contLow=' + Memory.ops.w8day.contLow);
 assert.ok(typeof Memory.ops.w8day.roadCrit === 'number');
+assert.ok(Memory.ops.w8day.roadCrit >= 1, 'roadCrit counts sealRoad: ' + Memory.ops.w8day.roadCrit);
 
 W.energyBank = realEB;
 console.log('ok w47n8_repair_prio');

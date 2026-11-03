@@ -250,13 +250,14 @@ function spawnRun(spawn) {
     }
   }
   // 10-21 11:2x patrol: with 0 sites and the seal at cap no builder spawned, so nothing repaired the kept roads.js network (27 of 116
-  // below 30%, link road 14,35/15,34 at 300 hits, about 3k ticks from vanishing). 1 maintenance builder while a kept road/container is < 20%.
-  // 11:38 strategy: Overmind owns containers <50%; spawn earlier for container debt (roads stay critical <20%).
+  // below 30%, link road 14,35/15,34 at 300 hits, about 3k ticks from vanishing). 1 maintenance builder while a kept road/container is critical.
+  // 11:38 strategy: Overmind owns containers <50%; spawn earlier for container debt.
+  // 14:4x: road maint threshold 20%→25% (= RoadLogistics criticalThreshold / w8day.roadCrit) so softCap-clear seal does not starve 10–25% roads.
   if (!want && !raidPause && room.energyAvailable === cap && !n('w8builder') && Game.time % 50 === 0) {
     const keep = new Set(require('./roads').ROADS.map(([x, y]) => x * 50 + y));
     if (room.find(FIND_STRUCTURES, { filter: s =>
       (s.structureType === STRUCTURE_CONTAINER && s.hits < s.hitsMax * 0.5)
-      || (s.structureType === STRUCTURE_ROAD && keep.has(s.pos.x * 50 + s.pos.y) && s.hits < s.hitsMax * 0.2)
+      || (s.structureType === STRUCTURE_ROAD && keep.has(s.pos.x * 50 + s.pos.y) && s.hits < s.hitsMax * 0.25)
     }).length) want = 'w8builder';
   }
   // 7) W47N7 remote (after all local roles): only while home's reserve7 holds the reservation for us
