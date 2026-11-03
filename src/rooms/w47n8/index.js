@@ -716,6 +716,9 @@ function dayObs(room) {
     sealPark: TH.sealParked() ? 1 : 0,
     towerMinE, towerHubE, towerNorthE, nf, eAvail, eCap, looseE: loose,
     hubLinkE, hubReady, hubLink: C.HUB_LINK ? 1 : 0, // 23:4x strategy: HUB_LINK plumbing obs
+    // 17:3x strategy: effective upgCeil + feedBound (at non-hub WORK ceiling → gap is hub→ctl, not softCap/seal/roads)
+    upgCeil: hubLinkLive(room) ? 6 : (siteRemV >= 3000 ? 2 : 3),
+    feedBound: (!hubLinkLive(room) && !softCap2(storE) && !warMode && upgraders >= (siteRemV >= 3000 ? 2 : 3)) ? 1 : 0,
     contMinPct, contLow, roadCrit }; // 11:38: repair debt (containers <50% / roads <25%)
   leanBankRecycle(room);
   raidSoftKill(room);

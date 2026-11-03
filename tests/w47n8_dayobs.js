@@ -328,6 +328,8 @@ assert.ok('hubLinkE' in Memory.ops.w8day, '23:4x hubLinkE obs');
 assert.strictEqual(Memory.ops.w8day.hubLinkE, -1, 'no hub link structure → -1');
 assert.strictEqual(Memory.ops.w8day.hubReady, 0, 'HUB_LINK off → hubReady 0');
 assert.strictEqual(Memory.ops.w8day.hubLink, 0, 'hubLink flag obs 0');
+assert.strictEqual(Memory.ops.w8day.upgCeil, 3, '17:3x: no hub → upgCeil 3');
+assert.strictEqual(Memory.ops.w8day.feedBound, 1, '17:3x: nUp≥3 + soft clear + !hub → feedBound');
 
 // 11-03 05:4x: upgCeil/recycle gate on hubLinkLive (structure), not config flag alone.
 // Flag ON + no structure → still recycle 4→≤3 (same as pre-flip); hubReady stays 0.
@@ -361,6 +363,8 @@ assert.strictEqual(Memory.ops.w8day.hubLink, 0, 'hubLink flag obs 0');
   assert.strictEqual(Memory.ops.w8day.hubReady, 1, 'structure + flag → hubReady 1');
   assert.strictEqual(Memory.ops.w8day.hubLinkE, 200, 'hubLinkE from structure store');
   assert.ok(!(Memory.ops.w8recycle || []).length, 'hub live + feedOk → no recycle: ' + JSON.stringify(Memory.ops.w8recycle));
+  assert.strictEqual(Memory.ops.w8day.upgCeil, 6, '17:3x: hub live → upgCeil 6');
+  assert.strictEqual(Memory.ops.w8day.feedBound, 0, '17:3x: hub live clears feedBound');
   Ccfg.HUB_LINK = false;
 }
 
@@ -384,6 +388,7 @@ withTermSoftHold.terminal = { store: {} };
 W.dayObs(withTermSoftHold);
 assert.strictEqual(Memory.ops.w8day.leanBank, 0, 'hold-band leanBank off');
 assert.ok((Memory.ops.w8recycle || []).length >= 2, '05:4x soft-cap post-gate recycles to ≤2 at 18k: ' + JSON.stringify(Memory.ops.w8recycle));
+assert.strictEqual(Memory.ops.w8day.feedBound, 0, '17:3x: softCap ON → not feedBound');
 
 // 14:4x wartime: pauseCivilians → bankWhy=war + warMode=1 + recycle keep≤1 (upgraderKeep 0 when TTL high)
 delete Memory.ops.w8recycle;

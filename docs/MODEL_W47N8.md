@@ -185,3 +185,15 @@ With softCap cleared and nUp=3, measured upgrade ~19–20 e/t vs ideal ~30 (~66%
 Enabling hub link (33,34) + filler ferry should add ~15–20 e/t effective to ctl after 3% loss when hub is topped from storage surplus — target waiting_feed <0.10 and short ≥70% at nUp3 before considering surplus nUp>3.
 Plumbing shipped dormant (`HUB_LINK` still false). See `docs/RCL7.md` 23:4x.
 
+## 2026-11-03 17:3x — feed ceiling without HUB_LINK (post roadCrit=0)
+
+6 h window to t~84044700 (RCL7 ~917k/10.9M, stor 26k, softCap OFF, roadCrit 0, nUp3 WORK30):
+| stage | ideal | actual |
+|---|---|---|
+| upgrade | 30.08 | **20.74** (~69%) |
+| delivered ctl / hub | — | **10.48 / 20.44** |
+| waiting_feed | — | 0.16 |
+| build_repair (seal) | ~0–1 | 1.76 |
+| upkeep | ~6.5 | 11.8 |
+
+**Conclusion:** softCap/roadCrit/cont levers are exhausted. The ~9 e/t gap is A→ctl topology (hub skew). `w8day.feedBound=1` marks this state for patrols. Closing the gap requires Misaki `HUB_LINK=true` (hub→ctl ~range 20 → ~38.8 e/t net once live; upgCeil waits `hubLinkLive`). See `docs/RCL7.md` 17:3x.

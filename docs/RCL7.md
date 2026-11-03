@@ -1,5 +1,44 @@
 # Home W46N8 RCL7 readiness (strategy review 2026-10-19 18:4x UTC+8)
 
+## 2026-11-03 17:3x — post-roadCrit feed ceiling (!HUB_LINK)
+
+**Question:** With softCap clear (stor≥26k), roadCrit drained to 0, contMinPct≥50, and sealRaise re-armed — is W47 upgrade still at the A→ctl feed ceiling, proving further softCap/seal/road tuning will not close the ~9 e/t gap (only `HUB_LINK` will)?
+
+**Answer: YES — feed-bound at non-hub WORK30.** softCap/roadCrit/cont debt are DONE; seal→1M at ~1.8 e/t is not the upgrade bottleneck. Remaining unlock = Misaki nod `HUB_LINK` (plumbing + hubLinkLive ceil gate already LIVE — **do not re-ask**).
+
+### Live (~17:27–17:40 Asia/Shanghai, t~84044500–84044700, deploy 5d902ed)
+- Peacetime; home RCL7 ~21.65% 2h~21/26 (~80–87%) stor~13–16k floor_bank (W45N7 DEFEND dipped home briefly); W47 RCL7 ~8.36% stor**26032** softE=0 softCap2=0 softLeft0 nUp3 feedOk ctlBat~1983; KEY DONE; sealRaise**1** sealPark0 gate~485k→1M; hubReady0 hubLink0; contMinPct=50 contLow0 **roadCrit=0**; remotes SAFE (W47); labs OFF propose=1 actOk=0 (homeStor~14.5k); K regener / homeTermK~34k; CPU~13/20 bkt10k.
+- Model 6h (`tools/model_w8.py`): ideal **30.08** / actual **20.74** (~69%); delivered **hub 20.44 vs ctl 10.48**; waiting_feed **0.16**; WORK **30**; alloc build_repair **1.76** (seal) / upkeep 11.8 / waste_other 2.4; harvest ~37.
+- 24h trend: W47 4.5%→8.4% (~+3.9pp); home 17.7%→21.7%. 3h e/t: home ~22.7 / W47 ~20.8.
+
+### Gap analysis
+| lever | status | closes ~9 e/t gap? |
+|---|---|---|
+| softCap / hysteresis | CLEAR (stor 26k, softE=0) | no — already nUp3 |
+| contMinPct / roadCrit | **DONE** (50 / 0) | no — 14:4x + 11:3x succeeded |
+| seal→1M soft-gate | re-armed (sealRaise1) | no — only 1.76 e/t build; Overmind fortifyDuty parks fat fortify, our soft-gate already protects softCap |
+| A→ctl only (no hub) | LIVE | **YES bottleneck** — ctl ~10 e/t vs hub ~20; WORK30 waiting_feed 16% |
+| HUB_LINK hub→ctl | plumbing LIVE; flag false | **only remaining unlock** (~+ hub→ctl ~38 e/t net capacity once live) |
+
+### Overmind / TooAngel
+- **Overmind UpgradeSite**: places upgrade link when storage path >10; `linksRequestBelow=200`; battery input at `upgradePowerNeeded`; WORK scales off `storageBuffer=100k`. Our LEAN_SOFT 25k + `upgCeil=3` without `hubLinkLive` is the tight-buffer analogue; hub→ctl matches UpgradeSite link topology (home `managers/links.js` already).
+- **Overmind WorkerOverlord** `fortifyDutyThreshold=500k`: routine fortify only when fat — we already soft-gate seal; measured seal spend is small vs the feed gap.
+- **TooAngel**: storage-centric hub; we stay ctl-centric — flip still needs the 5k hub link site + ferry (23:4x/05:4x shipped).
+
+### Shipped
+1. `w8day.upgCeil` — effective ceil (2/3/6) mirroring spawn/`hubLinkLive`.
+2. `w8day.feedBound` — 1 when `!hubLinkLive && !softCap2 && !war && nUp≥ceil` (at non-hub WORK ceiling). Patrol signal: do not re-chase softCap/seal/roads for the upgrade gap.
+3. Tests dayobs (no-hub feedBound=1; hub live clears; softCap clears feedBound).
+4. **No** HUB_LINK / labs / industry / market flips; **no** re-ask.
+
+### Patrol watch
+- `feedBound=1` + `roadCrit=0` + softCap clear → expect 2h upg stuck ~68–72% until HUB_LINK nod.
+- After Misaki nod: siteRem~5k → upgCeil 2 (bigBuild) → stand → `hubReady=1` / `feedBound=0` / upgCeil 6; waiting_feed↓; short≥70%.
+- sealRaise may stay 1; builder on seal is fine while feedBound=1.
+- labs: actOk still gated on homeStor≥15k — do not re-ask.
+
+---
+
 ## 2026-11-03 14:4x — roadCrit before deep seal (Overmind critical=25%)
 
 **Question:** contMinPct hit ≥50% after 11:3x — with softCap clear + sealRaise, is deep seal→1M starving `roadCrit`, and should critical roads outrank fortify like Overmind RoadLogistics?
