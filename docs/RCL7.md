@@ -1,5 +1,24 @@
 # Home W46N8 RCL7 readiness (strategy review 2026-10-19 18:4x UTC+8)
 
+## 2026-11-04 02:4x — hub ferry prime arm LEAN_ARM (thrash band)
+
+**Question:** SoftCap thrash often parks W47 storage in the common **19–22k** band for hours. Ferry prime-only was armed at `LEAN_SOFT_ARM(22k)` — does that leave `hubPrime=0` / `hubLinkE=0` through the thrash while filler idles at POST with full carry, recreating the cold-hub gap 23:4x tried to close?
+
+**Answer: YES — lower prime arm to `LEAN_ARM(15k)`. SoftCap hysteresis stays 22k. Bat ferry still ≥25k.**
+
+Live ~02:28–02:43 Asia/Hong_Kong deploy `0483c6b`: peacetime; W47 ~9.6% softCap2 ON softLeft~3.5–4.8k stor~19.4–21k thrash; **hubReady1 hubPrime flaps 0↔1**; filler at POST with ~1200e idle while hubLinkE=0; model_w8 upg ~14/30 waiting_feed~0.23 hub deliv~21.6 ctl~6.9. Soft-band fight is bat-driven (drain vs refill); prime-only is one-shot ~200e then stable (SEND idle while ctlBat fat under softCap nUp≤2).
+
+**Sources:** Overmind UpgradeSite `linksRequestBelow=200` is storageBuffer-agnostic (top link whenever under threshold). Home `queen.standby` uses defender/lean floor (~LEAN_ARM). TooAngel keeps logistics warm while upgrade parks when thin. SoftCap sticky `LEAN_SOFT_ARM` itself must stay 22k (08:4x hysteresis) — do NOT couple softE re-arm to ferry.
+
+**Shipped:**
+1. `fill.js` ferry: prime arm `LEAN_SOFT_ARM(22k)` → `LEAN_ARM(15k)`; soft bank still prime-only (`hubE < HUB_SEND`); soft clear still bat ferry.
+2. Tests filler (H): below-ARM now 14k; **new thrash-band 19.5k MUST prime**.
+3. SoftCap / sealMinE / HUB_LINK / labs / industry / market **unchanged**. **No softCap re-ask.**
+
+**Expect after deploy:** stor in [15k, 22k) → `hubPrime=1` (once hubE≥200); thrash no longer cold-hub; post-clear waiting_feed still should not spike from empty hub.
+
+---
+
 ## 2026-11-03 23:4x — hub-link PRE-WARM during softCap bank
 
 **Question:** With `HUB_LINK` LIVE (`hubReady1` / upgCeil6) but softCap2 intentional bank (stor climbing ~19–21k, short≈0), the idle hub ferry only armed at stor≥25k — does post-clear raise WORK before hub→ctl is warm, recreating waiting_feed?

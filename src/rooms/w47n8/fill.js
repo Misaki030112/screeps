@@ -183,14 +183,19 @@ function run(c) {
   // Hub link 33,34 is range-2 from POST 34,32 — one step to 33,33/34,33 then transfer.
   // 23:4x 11-03 strategy: PRE-WARM during softCap bank. Old gate stor≥LEAN_SOFT(25k) left hubLinkE=0
   // through the whole climb; clear then raised upgCeil6 before ferry+cooldown(20) warmed hub→ctl →
-  // post-clear waiting_feed. Prime-only from LEAN_SOFT_ARM(22k): keep hubE≥HUB_SEND(200) without
-  // bat-driven drain that fights soft-band refill. Full bat ferry only once soft clear (≥25k).
+  // post-clear waiting_feed. Prime-only (hubE<HUB_SEND=200) without bat-driven drain that fights soft-band.
+  // Full bat ferry only once soft clear (≥25k).
+  // 02:4x 11-04 strategy: prime arm LEAN_SOFT_ARM(22k)→LEAN_ARM(15k). SoftCap thrash parks stor in
+  // the common 19–22k band for hours (live hubPrime flaps 0↔1; filler idles at POST with full carry
+  // while hubLinkE=0). Prime-only is one-shot ~200e then stable (SEND idle while ctlBat fat under
+  // softCap nUp≤2) — does not fight soft-band. Overmind linksRequestBelow=200 is storageBuffer-
+  // agnostic; home queen.standby uses defender floor (~LEAN_ARM). SoftCap hysteresis stays 22k.
   {
     const [hx, hy] = (L.ORDER.link && L.ORDER.link[0]) || [33, 34];
     const hubL = room.lookForAt(LOOK_STRUCTURES, hx, hy).find(s => s.structureType === STRUCTURE_LINK);
     const storE = room.storage && room.storage.store ? (room.storage.store[E] || 0) : 0;
-    const LEAN_SOFT_ARM = 22000, LEAN_SOFT = 25000, HUB_SEND = 200;
-    if (hubL && storE >= LEAN_SOFT_ARM) {
+    const LEAN_ARM = 15000, LEAN_SOFT = 25000, HUB_SEND = 200; // prime arm = leanBank emergency floor
+    if (hubL && storE >= LEAN_ARM) {
       const hubE = hubL.store[E] || 0;
       const freeL = hubL.store.getFreeCapacity ? hubL.store.getFreeCapacity(E) : Math.max(0, 800 - hubE);
       let bat = 0;

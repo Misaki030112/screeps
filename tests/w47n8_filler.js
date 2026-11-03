@@ -241,9 +241,10 @@ say('sink buffer ok');
   creeps = [];
 }
 say('sink rebuild/soft-band ok');
-// ---------- (H) 23:4x 11-03: hub-link ferry PRE-WARM during softCap bank (LEAN_SOFT_ARM..LEAN_SOFT)
-// Old gate stor≥25k left hubLinkE=0 through bank → post-clear waiting_feed. Prime-only at ≥22k (hubE<200);
-// bat-driven ferry only once soft clear (≥25k). Below ARM: no ferry.
+// ---------- (H) 23:4x/02:4x 11-04: hub-link ferry PRE-WARM during softCap bank
+// 23:4x: prime-only while soft bank; bat-driven only after soft clear (≥25k).
+// 02:4x: prime arm LEAN_SOFT_ARM(22k)→LEAN_ARM(15k) so thrash band 19–22k keeps hubPrime.
+// Below LEAN_ARM: no ferry. SoftCap hysteresis itself stays LEAN_SOFT_ARM=22k.
 {
   build(50); DUTY_RESET(); fillAll();
   // towers with free≥300 become jobs once hub is full — fill them so ferry idle path is reachable
@@ -262,14 +263,26 @@ say('sink rebuild/soft-band ok');
   assert.ok(hubFull(), 'hub duty full before ferry tests');
   assert.strictEqual(f.pos.x, F.POST[0]); assert.strictEqual(f.pos.y, F.POST[1]);
 
-  // (1) below ARM (19.5k) + empty hub + thin bat → NO ferry (stay at POST, hub stays 0)
-  room.storage.store.energy = 19500;
+  // (1) below LEAN_ARM (14k) + empty hub + thin bat → NO ferry (stay at POST, hub stays 0)
+  room.storage.store.energy = 14000;
   hubL.store.energy = 0; ctlL.store.energy = 0; ctlC.store.energy = 400; // bat 400 < 800
   const x0 = f.xfer, e0 = hubL.store.energy;
   for (let i = 0; i < 8; i++) step();
-  assert.strictEqual(hubL.store.energy, e0, 'below ARM: no ferry into hub link');
-  assert.strictEqual(f.xfer, x0, 'below ARM: no transfer');
-  assert.strictEqual(f.pos.x, F.POST[0], 'below ARM: stay at POST');
+  assert.strictEqual(hubL.store.energy, e0, 'below LEAN_ARM: no ferry into hub link');
+  assert.strictEqual(f.xfer, x0, 'below LEAN_ARM: no transfer');
+  assert.strictEqual(f.pos.x, F.POST[0], 'below LEAN_ARM: stay at POST');
+
+  // (1b) thrash band 19.5k (was below old LEAN_SOFT_ARM 22k): MUST prime — live gap this run
+  room.storage.store.energy = 19500;
+  hubL.store.energy = 0; ctlL.store.energy = 400; ctlC.store.energy = 1500; // bat fat
+  f.store.energy = 0;
+  f.pos = new RoomPosition(F.POST[0], F.POST[1]);
+  let thrashPrimed = false;
+  for (let i = 0; i < 40; i++) {
+    step();
+    if (hubL.store.energy >= 200) { thrashPrimed = true; break; }
+  }
+  assert.ok(thrashPrimed, 'thrash band 19.5k primes hub to ≥200: hubE=' + hubL.store.energy);
 
   // (2) soft bank 23k: prime-only — empty hub → withdraw+walk+transfer until hubE≥200; fat bat ignored for further fill
   room.storage.store.energy = 23000;
