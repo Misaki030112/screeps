@@ -427,12 +427,43 @@ function useMass(me, inR) {
   return _.sum(inR, h => { const r = rng(me, h.pos); return r <= 1 ? 10 : r === 2 ? 4 : 1; }) > 10;
 }
 const HEAL_URGENT = 0.6;
+// Most-damaged each tick (no sticky lock). Includes self so hurt healers self-heal.
+// Misaki 2026-11-04: rotate by ratio; never pin one id.
 function healPlan(me, mates) {
-  const hurt = [me].concat(mates || []).filter(x => x.hits < x.hitsMax);
+  const hurt = [me].concat(mates || []).filter(x => x && x.hits < x.hitsMax);
   if (!hurt.length) return null;
-  const t = hurt.reduce((a, x) => x.hits / x.hitsMax < a.hits / a.hitsMax ? x : a);
+  const t = hurt.reduce((a, x) => (x.hits / x.hitsMax < a.hits / a.hitsMax ? x : a));
   const r = t === me ? 0 : rng(me.pos, t.pos);
   return { id: t.id, ratio: t.hits / t.hitsMax, mode: r <= 1 ? 'heal' : r <= 3 ? 'ranged' : 'far', pos: t.pos };
+}
+// Full throughput: heal() on best adjacent (or self) AND rangedHeal() on best in 1-3.
+// Separate intents — fire both every tick. Misaki 2026-11-04 furious.
+function healDual(c, mates) {
+  if (!c.getActiveBodyparts(HEAL)) return null;
+  const hurt = [c].concat(mates || []).filter(x => x && x.hits < x.hitsMax)
+    .sort((a, b) => a.hits / a.hitsMax - b.hits / b.hitsMax);
+  if (!hurt.length) {
+    // Pre-heal: top nearest front even when full squad.
+    if (c.memory.kind === 'h') {
+      const f = c.pos.findInRange(FIND_MY_CREEPS, 3).filter(x => x.memory && (x.memory.kind === 'd' || x.memory.kind === 'm'));
+      const pf = f.length ? _.min(f, x => rng(c.pos, x.pos)) : null;
+      if (pf) {
+        if (c.pos.isNearTo(pf)) c.heal(pf);
+        if (c.pos.inRangeTo(pf, 3)) c.rangedHeal(pf);
+      }
+    }
+    return null;
+  }
+  const adj = hurt.find(x => x === c || c.pos.isNearTo(x));
+  if (adj) c.heal(adj);
+  else if (c.hits < c.hitsMax) c.heal(c);
+  const ranged = hurt.find(x => x !== c && c.pos.inRangeTo(x, 3) && (!adj || x !== adj));
+  if (ranged) c.rangedHeal(ranged);
+  else if (!adj) {
+    const only = hurt.find(x => x !== c && c.pos.inRangeTo(x, 3));
+    if (only) c.rangedHeal(only);
+  }
+  return healPlan(c, mates);
 }
 function armedParts(creeps) {
   let n = 0;
@@ -479,8 +510,29 @@ function world(room) {
 // Same-tick friendly swap/pull. Screeps lets A enter B's tile when B moves out (or into A's)
 // this tick — without this, raid creeps jam the mouth/tower lanes and healers never stick.
 // Misaki 2026-11-04: "creep 可以互相交换位置的。不要傻傻的"
+// Last move() wins per creep: if A swaps with B then B's later run() overwrites B.move,
+// the swap dies. YIELD records the partner's required step so honorYield locks it in.
 const OPP_DIR = { 1: 5, 2: 6, 3: 7, 4: 8, 5: 1, 6: 2, 7: 3, 8: 4 };
+let yieldTick = -1;
+const YIELD = Object.create(null); // creepId -> {x,y} they must step to this tick
+function resetYield() {
+  if (yieldTick === Game.time) return;
+  for (const k in YIELD) delete YIELD[k];
+  yieldTick = Game.time;
+}
+function honorYield(c) {
+  resetYield();
+  if (!c || c.fatigue) return false;
+  const y = YIELD[c.id];
+  if (!y) return false;
+  const dir = c.pos.getDirectionTo(y.x, y.y);
+  delete YIELD[c.id];
+  if (!dir) return false;
+  c.move(dir);
+  return true;
+}
 function stepFriend(c, nx, ny) {
+  resetYield();
   if (!c || c.fatigue || nx == null || ny == null) return false;
   if (nx < 0 || nx > 49 || ny < 0 || ny > 49) return false;
   if (c.room.getTerrain().get(nx, ny) === TERRAIN_MASK_WALL) return false;
@@ -489,13 +541,14 @@ function stepFriend(c, nx, ny) {
   const b = c.room.lookForAt(LOOK_CREEPS, nx, ny)[0];
   if (!b) { c.move(dir); return true; }
   if (!b.my || b.fatigue) return false;
-  // Swap: blocker steps into our tile; we step onto theirs. Prefer raid mates; still shove
-  // any non-fatigued own creep (enemy room rarely has civvies).
+  // Mutual swap this tick: B must enter our tile even if B.run() has not finished / already ran.
+  YIELD[b.id] = { x: c.pos.x, y: c.pos.y };
   b.move(OPP_DIR[dir]);
   c.move(dir);
   return true;
 }
 function go(c, x, y, range) {
+  if (honorYield(c)) return false;
   if (c.fatigue) return false;
   const r = range || 0;
   if (c.room.name === TARGET) {
@@ -557,9 +610,16 @@ function applyOrder(c, o) {
     const hp = c.getActiveBodyparts(HEAL) ? healPlan(c, squad(c)) : null;
     healT = hp && (hp.id === c.id ? c : Game.getObjectById(hp.id));
   } else if (healSpec) healT = resolveTarget(c, healSpec);
-  if (healT && c.getActiveBodyparts(HEAL)) {
-    if (c.pos.isNearTo(healT) || healT === c) c.heal(healT);
-    else if (c.pos.inRangeTo(healT, 3)) c.rangedHeal(healT);
+  if (c.getActiveBodyparts(HEAL)) {
+    // No single-id lock: ordered heal=ID is one candidate; still dual-fire most-damaged.
+    // heal=lowest / missing → pure rotate. Misaki 2026-11-04.
+    if (o.heal && o.heal !== 'lowest' && healT && healT.hits < healT.hitsMax) {
+      if (c.pos.isNearTo(healT) || healT === c) c.heal(healT);
+      else if (c.pos.inRangeTo(healT, 3)) c.rangedHeal(healT);
+      if (c.hits < c.hitsMax && healT !== c) c.heal(c);
+    } else {
+      healDual(c, squad(c));
+    }
   }
   const atk = resolveTarget(c, o.attack);
   if (atk) {
@@ -568,6 +628,7 @@ function applyOrder(c, o) {
   }
   const dis = resolveTarget(c, o.dismantle);
   if (dis && c.getActiveBodyparts(WORK) && c.pos.isNearTo(dis)) c.dismantle(dis);
+  if (honorYield(c)) return true;
   if (o.hold) return true;
   const mv = o.moveTo ? (Array.isArray(o.moveTo) ? { x: o.moveTo[0], y: o.moveTo[1] } : o.moveTo) : null;
   if (mv) {
@@ -584,29 +645,28 @@ function applyOrder(c, o) {
 }
 function strike(c, t, w, hp) {
   const melee = c.getActiveBodyparts(ATTACK) > 0, work = c.getActiveBodyparts(WORK) > 0, ra = c.getActiveBodyparts(RANGED_ATTACK) > 0;
+  // Prefer ordered/picked target; if none in reach, smash adjacent tower/rampart so assault keeps DPS up.
   if (work && t && c.pos.isNearTo(t)) c.dismantle(t);
   else if (work) {
-    const adj = c.pos.findInRange(FIND_HOSTILE_STRUCTURES, 1).find(s => s.structureType === STRUCTURE_RAMPART || s.structureType === STRUCTURE_WALL);
+    const adj = c.pos.findInRange(FIND_HOSTILE_STRUCTURES, 1).find(s =>
+      s.structureType === STRUCTURE_TOWER || s.structureType === STRUCTURE_RAMPART || s.structureType === STRUCTURE_WALL);
     if (adj) c.dismantle(adj);
   }
   if (melee) {
     if (t && c.pos.isNearTo(t)) c.attack(t);
     else {
       const adjC = (w.hc || []).find(h => c.pos.isNearTo(h));
-      const adjS = c.pos.findInRange(FIND_HOSTILE_STRUCTURES, 1).find(s => s.structureType !== STRUCTURE_CONTROLLER);
+      const adjTw = c.pos.findInRange(FIND_HOSTILE_STRUCTURES, 1).find(s => s.structureType === STRUCTURE_TOWER);
+      const adjS = adjTw || c.pos.findInRange(FIND_HOSTILE_STRUCTURES, 1).find(s => s.structureType !== STRUCTURE_CONTROLLER);
       const adj = adjC || adjS;
       if (adj) c.attack(adj);
     }
   }
-  const hr = hp && c.getActiveBodyparts(HEAL) ? hp : null;
-  const ht = hr && (hr.id === c.id ? c : Game.getObjectById(hr.id));
-  if (ht && hr.mode === 'heal') c.heal(ht);
-  else if (ht && hr.mode === 'ranged' && (hr.ratio < HEAL_URGENT || !ra || c.memory.kind === 'h')) { c.rangedHeal(ht); if (!ra) return; }
-  else if (!ht && c.memory.kind === 'h' && c.getActiveBodyparts(HEAL)) {
-    // Pre-heal: nobody hurt, keep the closest front creep topped (heal adj, rangedHeal at 2-3).
-    const f = c.pos.findInRange(FIND_MY_CREEPS, 3).filter(x => x.memory && (x.memory.kind === 'd' || x.memory.kind === 'm'));
-    const pf = f.length ? _.min(f, x => rng(c.pos, x.pos)) : null;
-    if (pf) { if (c.pos.isNearTo(pf)) c.heal(pf); else c.rangedHeal(pf); }
+  // Heal throughput: every tick heal() + rangedHeal() on current most-damaged (rotate, no lock).
+  if (c.getActiveBodyparts(HEAL)) {
+    const mates = c.room.find(FIND_MY_CREEPS).filter(x => x !== c && x.memory && x.memory.role === 'raid9');
+    healDual(c, mates);
+    if (!ra && c.memory.kind === 'h') return;
   }
   if (ra) {
     const inR = (w.hc || []).filter(h => c.pos.inRangeTo(h, 3));
@@ -669,7 +729,8 @@ function garrison(c) {
   const g = gSlotOf(c.memory.k);
   const hp = c.getActiveBodyparts(HEAL) ? healPlan(c, squad(c)) : null;
   const w = { hc: c.room.find(FIND_HOSTILE_CREEPS) };
-  if (w.hc.length || hp) strike(c, null, w, hp);
+  if (w.hc.length || hp || (c.getActiveBodyparts(HEAL) && c.hits < c.hitsMax)) strike(c, null, w, hp);
+  if (honorYield(c)) return;
   if (c.room.name === TARGET) {
     if (c.pos.x === ENTRY.x && c.pos.y === ENTRY.y) return c.move(BOTTOM);
     return go(c, ENTRY.x, ENTRY.y, 0);
@@ -681,7 +742,8 @@ function garrison(c) {
 function approach(c, P) {
   const hp = c.getActiveBodyparts(HEAL) ? healPlan(c, squad(c)) : null;
   const w = { hc: c.room.find(FIND_HOSTILE_CREEPS) };
-  if (w.hc.length || hp) strike(c, null, w, hp);
+  if (w.hc.length || hp || (c.getActiveBodyparts(HEAL) && c.hits < c.hitsMax)) strike(c, null, w, hp);
+  if (honorYield(c)) return;
   if (P.go) {
     if (c.room.name === STAGE) {
       if (c.pos.x === ENTRY.x && c.pos.y === 0) return c.move(TOP);
@@ -711,23 +773,39 @@ function fight(c, P) {
   let worst = 1;
   for (const f of front) if (f.hitsMax) worst = Math.min(worst, f.hits / f.hitsMax);
   const mode = pulls.kite && phase === 'breach' ? pullMode(worst, pulls.soft, pulls.hard) : null;
-  const chosen = pick(c.pos, w, {
+  let chosen = pick(c.pos, w, {
     phase: phase === 'fallback' ? 'inside_clean' : phase,
     mouth, sticky: c.memory.sticky, prio: P.prio, towerOrder: P.towerOrder,
   });
+  // Keep pushing assault: melee/dismantlers with no fight/seal target pile towers with the squad.
+  // Misaki 2026-11-04.
+  if ((kind === 'm' || kind === 'd') && !(chosen && (chosen.cls === 'fight' || chosen.cls === 'seal'))) {
+    const towerFocus = pickInside(c.pos, w, {
+      sticky: c.memory.sticky, towerOrder: P.towerOrder,
+      prio: ['towerRampart', 'tower', 'blocker', 'fight', 'filler', 'econ'],
+    });
+    if (towerFocus) chosen = towerFocus;
+  }
   if (chosen) c.memory.sticky = chosen.id; else delete c.memory.sticky;
   const t = chosen && Game.getObjectById(chosen.id);
   strike(c, t, w, hp);
+  // Partner already demanded our tile: step into theirs, do not path elsewhere this tick.
+  if (honorYield(c)) return;
   if (c.pos.x !== ENTRY.x && c.pos.y >= 49) return go(c, ENTRY.x, ENTRY.y, 0);
   let goal = { x: post.x, y: post.y };
-  // Melee escorts dismantlers: stand next to nearest work so attack covers the smash. Misaki 2026-11-04.
+  // Melee: escort dismantlers while seal/fight exists; else drive onto tower with squad.
   if (kind === 'm' && P.escort !== false) {
-    const ds = alive.filter(x => x.memory && x.memory.kind === 'd');
-    if (ds.length) {
-      const anchor = _.min(ds, x => rng(c.pos, x.pos));
-      goal = { x: anchor.pos.x, y: Math.min(48, anchor.pos.y + (anchor.pos.y >= c.pos.y ? 0 : 1)) };
-      if (t && c.pos.isNearTo(t)) { /* already striking */ }
-      else if (rng(c.pos, goal) > 1) return go(c, goal.x, goal.y, 1);
+    if (t && chosen && (chosen.cls === 'tower' || chosen.cls === 'towerRampart')) {
+      goal = { x: t.pos.x, y: t.pos.y };
+      if (!c.pos.isNearTo(t)) return go(c, goal.x, goal.y, 1);
+    } else {
+      const ds = alive.filter(x => x.memory && x.memory.kind === 'd');
+      if (ds.length) {
+        const anchor = _.min(ds, x => rng(c.pos, x.pos));
+        goal = { x: anchor.pos.x, y: Math.min(48, anchor.pos.y + (anchor.pos.y >= c.pos.y ? 0 : 1)) };
+        if (t && c.pos.isNearTo(t)) { /* already striking */ }
+        else if (rng(c.pos, goal) > 1) return go(c, goal.x, goal.y, 1);
+      }
     }
   }
   if (phase === 'punch') {
@@ -756,8 +834,10 @@ function fight(c, P) {
     if (c.hits / c.hitsMax >= hold) {
       const hurt = front.filter(x => x.hits < x.hitsMax);
       const anchor = hurt.length ? _.min(hurt, x => x.hits / x.hitsMax) : _.min(front, x => rng(c.pos, x.pos));
-      const dy = P.healGap == null ? 1 : P.healGap;
-      return go(c, anchor.pos.x, Math.min(48, anchor.pos.y + dy), 0);
+      // Adjacent (range 1): swap/pull onto a free neighbor of the tank, then heal/rangedHeal.
+      // Exact healGap tile jammed the line when a melee already stood there.
+      const gap = P.healGap == null ? 1 : P.healGap;
+      return go(c, anchor.pos.x, anchor.pos.y, Math.max(1, gap));
     }
     return go(c, post.x, Math.max(post.y, 47), 0);
   }
@@ -828,7 +908,7 @@ module.exports = {
   DISMANTLER, MELEE, RANGED, HEALER, healBody, bodyFor, costOf,
   raidActive, pauseCivilians, upgraderKeep, recycleSelf, applyPause, namesToRecycle, recycleCivilian,
   WAR_STOR, warFloor, warStorOk, fieldCaps, wantKind, wantSpawn, noteSpawned, mouthsOf, assignSeals, frontSlots, assignment,
-  swampStep, stepOntoSwamp, stepFriend, pullMode, inApproach, assaultReady, shouldRegroup, syncGo,
-  observe, syncPhase, pick, pickInside, shouldYield, manualOrder, useMass, healPlan, armedParts, overrun, clearStaleOverrun,
+  swampStep, stepOntoSwamp, stepFriend, honorYield, pullMode, inApproach, assaultReady, shouldRegroup, syncGo,
+  observe, syncPhase, pick, pickInside, shouldYield, manualOrder, useMass, healPlan, healDual, armedParts, overrun, clearStaleOverrun,
   gSlotOf, run,
 };

@@ -267,6 +267,26 @@ assert.ok(R.useMass(P(5, 5), [{ pos: P(5, 6) }, { pos: P(6, 6) }, { pos: P(6, 5)
 const H = (id, x, y, hits, hitsMax = 1000) => ({ id, pos: P(x, y), hits, hitsMax });
 assert.strictEqual(R.healPlan(H('me', 10, 10, 1000), []), null);
 assert.strictEqual(R.healPlan(H('me', 10, 10, 900), [H('a', 11, 10, 1000)]).mode, 'heal');
+// Rotate by most-damaged ratio each tick (includes self). No sticky id.
+{
+  const me = Object.assign(H('me', 10, 10, 500), { memory: { kind: 'h' } });
+  const d = Object.assign(H('d1', 12, 10, 700), { memory: { kind: 'd' } });
+  const plan = R.healPlan(me, [d]);
+  assert.strictEqual(plan.id, 'me', 'most damaged is self');
+  assert.strictEqual(plan.mode, 'heal');
+}
+{
+  const me = Object.assign(H('me', 10, 10, 900), { memory: { kind: 'h' } });
+  const d = Object.assign(H('d1', 12, 10, 700), { memory: { kind: 'd' } });
+  const plan = R.healPlan(me, [d]);
+  assert.strictEqual(plan.id, 'd1', 'rotate onto more damaged mate');
+  assert.strictEqual(plan.mode, 'ranged');
+}
+assert.ok(typeof R.healDual === 'function', 'healDual exported');
+assert.ok(src.includes('healDual'), 'dual heal+rangedHeal every tick');
+assert.ok(typeof R.honorYield === 'function', 'honorYield exported');
+assert.ok(src.includes('YIELD[b.id]'), 'swap records yield for partner');
+assert.ok(src.includes("prio: ['towerRampart', 'tower'"), 'melee piles towers when no fight');
 assert.ok(R.armedParts([{ attack: 20, ranged: 20 }, { attack: 0, ranged: 0 }]) >= 40);
 assert.ok(R.armedParts([{ attack: 0, ranged: 6 }]) < 40);
 const focused = R.mouthsOf({ focusSeal: { x: 39, y: 42 }, mouths: [{ x: 38, y: 42 }, { x: 39, y: 42 }] }, 'breach');
@@ -359,6 +379,20 @@ assert.ok(!src.includes('reusePath: 3, maxRooms: 1, swampCost: 5'), 'TARGET go n
   a3.room.getTerrain = () => ({ get: () => 0 });
   assert.strictEqual(R.stepFriend(a3, 38, 42), false);
   assert.deepStrictEqual(moves, []);
+  moves.length = 0;
+  // Later-running partner must honorYield so last move() does not cancel the swap.
+  Game.time = (Game.time || 1) + 1;
+  const b2 = mk('B', 38, 42);
+  const a4 = mk('A', 38, 43);
+  a4.room.lookForAt = () => [b2];
+  a4.room.getTerrain = () => ({ get: () => 0 });
+  b2.id = 'idB'; a4.id = 'idA';
+  assert.strictEqual(R.stepFriend(a4, 38, 42), true);
+  moves.length = 0; // clear A/B moves from stepFriend
+  // B's own logic would have moved elsewhere; honorYield re-asserts the swap step.
+  assert.strictEqual(R.honorYield(b2), true);
+  assert.deepStrictEqual(moves, [['B', 5]]);
+  assert.strictEqual(R.honorYield(b2), false, 'yield consumed');
 }
 
 console.log('raid9 ok');
