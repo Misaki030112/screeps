@@ -113,17 +113,17 @@ function wantKind(roomName, have, max, cap) {
   const P = typeof Memory !== 'undefined' && Memory.ops && Memory.ops.w47n9;
   const key = roomName === HOME ? 'preferHome' : roomName === STAGE ? 'preferStage' : null;
   const order = (key && P && Array.isArray(P[key]) && P[key].length) ? P[key] : (PREFER[roomName] || PREFER[HOME]);
-  // alternate=true: interleave under-cap attack kinds (d,m) — never flood all d then m (Misaki 2026-11-04).
+  // alternate=true: interleave under-cap kinds from prefer list (m/r/h when max.d=0). Misaki 2026-11-04.
   if (P && P.alternate) {
-    const atk = ['d', 'm'].filter(k => (have[k] || 0) < (max[k] || 0) && bodyFor(k, cap));
+    const pool = (order && order.length) ? order.slice() : ['d', 'm', 'r', 'h'];
+    const atk = pool.filter(k => (have[k] || 0) < (max[k] || 0) && bodyFor(k, cap));
     if (atk.length === 1) return atk[0];
     if (atk.length > 1) {
       atk.sort((a, b) => (have[a] || 0) - (have[b] || 0));
       if ((have[atk[0]] || 0) < (have[atk[1]] || 0)) return atk[0];
       const last = P.lastKind;
-      if (last === 'd' && atk.indexOf('m') >= 0) return 'm';
-      if (last === 'm' && atk.indexOf('d') >= 0) return 'd';
-      return atk[0];
+      const nxt = atk.filter(k => k !== last);
+      return (nxt.length ? nxt[0] : atk[0]);
     }
   }
   for (const k of order) {
@@ -701,15 +701,15 @@ function recycleSelf(c) {
 }
 function run(c) {
   const P = M();
-  if (P.recycle === true) return recycleSelf(c);
-  const order = manualOrder(c);
-  if (order) return applyOrder(c, order);
-  // forceGo: operator resume — clear stale flee/garrison/fallback (not SM). Misaki 2026-11-04.
+  // forceGo FIRST — before raidOrder early-return, else resume never clears flee. Misaki 2026-11-04.
   if (P.forceGo) {
     delete P.flee; delete P.garrison; delete P.recycle; delete P.safe; delete P.safeUntil;
     if (P.phase === 'fallback') P.phase = 'inside_towers';
     delete P.forceGo;
   }
+  if (P.recycle === true) return recycleSelf(c);
+  const order = manualOrder(c);
+  if (order) return applyOrder(c, order);
   const tr = Game.rooms[TARGET];
   if (tr && tr.controller && tr.controller.safeMode) {
     P.safeUntil = Game.time + tr.controller.safeMode;
