@@ -85,6 +85,35 @@ assert.strictEqual(run(linkedSoft3, 0, 1300, {
   storage: { store: { energy: 18000 } },
   _structs: [srcCont]
 }).role, 'w8hauler', 'links:true HMAX=4 spawns 4th hauler on loose>2000 under soft-cap');
+// 11-04 14:4x: post-abort maint — container debt arms builder without full spawn energy / %50 throttle
+Memory.ops = { w8model: { links: true, lcarry: 9, rcarry: 49, upw: 31 }, w8day: { softE: 1 } };
+const postAbort = {
+  a: mk('w8miner', 'W47N8', { si: 0 }), b: mk('w8miner', 'W47N8', { si: 1 }),
+  c: mk('w8hauler', 'W47N8'), d: mk('w8hauler', 'W47N8'),
+  e: mk('w8upgrader', 'W47N8'), f: mk('w8upgrader', 'W47N8'),
+  // fillers so filler rules do not claim the spawn
+  g: mk('w8filler', 'W47N8'), h: mk('w8filler', 'W47N8')
+};
+const weakCont = {
+  structureType: 'container', hits: 90000, hitsMax: 250000,
+  pos: { x: 13, y: 26 }, store: { energy: 0 }
+};
+Game.time = 1001; // odd — old %50 gate would miss
+assert.strictEqual(run(postAbort, 0, 3200, {
+  storage: { store: { energy: 18000 } },
+  energyCapacityAvailable: 5600,
+  _structs: [weakCont]
+}).role, 'w8builder', '14:4x: cont<50% spawns maint at eAvail 3200/5600 (not full cap)');
+// road-only debt still wants full cap (no builder when eAvail partial)
+const weakRoad = {
+  structureType: 'road', hits: 1000, hitsMax: 5000,
+  pos: { x: 34, y: 30 }
+};
+assert.strictEqual(run(postAbort, 0, 3200, {
+  storage: { store: { energy: 18000 } },
+  energyCapacityAvailable: 5600,
+  _structs: [weakRoad]
+}), null, '14:4x: roadCrit-only does not arm maint under partial spawn energy');
 delete Memory.ops;
 Object.assign(full, { e: mk('w8upgrader', 'W47N8'), f: mk('w8upgrader', 'W47N8') });
 assert.strictEqual(run(full, 3).role, 'w8builder');

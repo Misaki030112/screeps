@@ -12,16 +12,16 @@ Last full refresh: **2026-11-04 11:4x** (soft-band sticky preempt post-clear ctl
 5. **Growth after RCL4:** remote mining (W45N8 approved and live), then links; a 2nd room only with explicit Misaki approval (GCL 2 already allows a claim).
 6. **Major decisions need approval:** claim/expand, attack or provoke player neighbours, spend credits/pixels, activate safe mode, respawn.
 
-## Current state (2026-11-04 ~11:45 Asia/Shanghai)
+## Current state (2026-11-04 ~14:49 Asia/Hong_Kong)
 
 | Room | Notes |
 |------|-------|
-| W46N8 (home) | **RCL7** ~24.70%; 2h soft CLEARED ~84%; stor~16.0k ABOVE15k; upgFeed ok energy-bound; labs OFF |
-| W47N8 | **RCL7** ~10.47%; softCap2 ON softLeft~2.0k softBand1; hubReady1 hubPrime1 upgCeil6; upgKeep2; hMax3 looseE~1.4k nHaul4; sealPark1 roadCrit0; **11:4x soft-band sticky preempt** |
+| W46N8 (home) | **RCL7** ~24.92%; stor~15.0k ≈floor↑ (post-war drain from ~8.8k); labs OFF |
+| W47N8 | **RCL7** ~10.59%; softCap2 ON softLeft~2.1k softBand1 leanBank0; hubReady1 hubPrime1 upgCeil6; upgKeep2; hMax4 looseE~7k; sealPark1 roadCrit0; **contMinPct38** — **14:4x maint cont-debt under partial spawn** |
 
-Peacetime; remotes SAFE; roads.phase=done; CPU~16–17/20 bucket10k. Deploy **aa18731** → next soft-band sticky preempt commit.
+Peacetime + war fallback (W47N9 abort ~14:19; ops.w47n9.on=false phase=fallback); remotes SAFE; roads.phase=done; CPU~15–16/20 bucket10k. Deploy **c8f5082** → next maint-spawn split commit.
 
-Ideal vs actual: `tools/model.py` / Grafana / `upgFeed` / `w8day` (softCap2, softE/softArm/**softBand**, **upgKeep**, hMax, feedOk, sealPark, hubReady/**hubPrime**, contMinPct/roadCrit) / `w8soft` / `labReady`. **Peacetime priority:** hold softCap clear ≥25k with **soft-band preempt sticky ctl/hub** → nUp→ceil6 short≥70% → seal→1M under soft-gate → home floor ≥15k → labs KO (**no re-ask**). Detail: `docs/RCL7.md` 11:4x sticky preempt + 08:4x HMAX + 05:4x leanUpKeep.
+Ideal vs actual: `tools/model.py` / Grafana / `upgFeed` / `w8day` (softCap2, softE/softArm/**softBand**, **upgKeep**, hMax, feedOk, sealPark, hubReady/**hubPrime**, contMinPct/roadCrit) / `w8soft` / `labReady`. **Peacetime priority:** softCap bank→clear ≥25k with soft-band preempt + **cont debt reclaim** → nUp→ceil6 short≥70% → seal→1M under soft-gate → home floor ≥15k → labs KO (**no re-ask**). Detail: `docs/RCL7.md` 14:4x maint + 11:4x sticky preempt.
 ## Phases
 
 | Phase | Trigger | Goals | Exit |

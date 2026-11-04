@@ -258,12 +258,22 @@ function spawnRun(spawn) {
   // below 30%, link road 14,35/15,34 at 300 hits, about 3k ticks from vanishing). 1 maintenance builder while a kept road/container is critical.
   // 11:38 strategy: Overmind owns containers <50%; spawn earlier for container debt.
   // 14:4x: road maint threshold 20%→25% (= RoadLogistics criticalThreshold / w8day.roadCrit) so softCap-clear seal does not starve 10–25% roads.
-  if (!want && !raidPause && room.energyAvailable === cap && !n('w8builder') && Game.time % 50 === 0) {
-    const keep = new Set(require('./roads').ROADS.map(([x, y]) => x * 50 + y));
-    if (room.find(FIND_STRUCTURES, { filter: s =>
-      (s.structureType === STRUCTURE_CONTAINER && s.hits < s.hitsMax * 0.5)
-      || (s.structureType === STRUCTURE_ROAD && keep.has(s.pos.x * 50 + s.pos.y) && s.hits < s.hitsMax * 0.25)
-    }).length) want = 'w8builder';
+  // 11-04 14:4x strategy (post-abort): builders recycled to 0; contMinPct slid 46→38 (contLow=3) while softCap/leanBank rebuilt
+  // stor 0→22k. Old gate energyAvailable===cap + Game.time%50 left Spawn2 idle for long stretches at eAvail 3–5k/5600
+  // (fillers topping towers/ext while soft-band parks). Overmind WorkerOverlord sizes repair from containers <50% /
+  // RoadLogistics critical independent of fortifyDutyThreshold/storageBuffer — repair duty is not "wait for full spawn".
+  // Split: container debt arms at energyAvailable≥200 (min builder body) with no %50 throttle; roadCrit-only keeps
+  // full-cap + %50 (optional polish, not crash).
+  if (!want && !raidPause && !n('w8builder')) {
+    const contDebt = room.find(FIND_STRUCTURES, { filter: s =>
+      s.structureType === STRUCTURE_CONTAINER && s.hits < s.hitsMax * 0.5 }).length > 0;
+    if (contDebt && room.energyAvailable >= 200) want = 'w8builder';
+    else if (room.energyAvailable === cap && Game.time % 50 === 0) {
+      const keep = new Set(require('./roads').ROADS.map(([x, y]) => x * 50 + y));
+      if (room.find(FIND_STRUCTURES, { filter: s =>
+        s.structureType === STRUCTURE_ROAD && keep.has(s.pos.x * 50 + s.pos.y) && s.hits < s.hitsMax * 0.25
+      }).length) want = 'w8builder';
+    }
   }
   // 7) W47N7 remote (after all local roles): only while home's reserve7 holds the reservation for us
   if (!want && ours7) {

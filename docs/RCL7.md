@@ -1,5 +1,33 @@
 # Home W46N8 RCL7 readiness (strategy review 2026-10-19 18:4x UTC+8)
 
+## 2026-11-04 14:4x — post-abort maint spawn under softCap (container debt)
+
+**Question:** After Misaki aborted W47N9 (~14:19 Asia/Hong_Kong), raid recycle left `builders=0` while softCap/leanBank rebuilt W47 stor from ~0→22k. Live `contMinPct` slid 46→38 (`contLow` 2–3) and stayed there; maint spawn required `energyAvailable===cap` AND `Game.time%50`. During soft-band park, fillers keep topping towers/ext so eAvail often sits 3–5.5k/5600 for long stretches — does the full-cap+%50 gate freeze container reclaim post-abort?
+
+**Answer: YES — split the gate.** Container debt (`hits < 50%`) arms a maint `w8builder` at `energyAvailable≥200` with no `%50` throttle. RoadCrit-only (`hits < 25%` on `roads.js`) keeps the stricter full-cap + `%50` (optional polish, not crash). SoftCap/sealMinE/HUB_LINK/labs unchanged. **No softCap re-ask. No labs re-ask. No W47N9 reopen.**
+
+### Live (~14:43–14:49 Asia/Hong_Kong, deploy c8f5082, tick ~84062990–84063067)
+| Room | Notes |
+|------|-------|
+| W46N8 | RCL7 ~24.92%; stor~14.8–15.0k ≈UNDER/floor recovering from war drain ~8.8k; remotes SAFE |
+| W47N8 | RCL7 ~10.59%; leanBank0 softCap2 ON softE1 softLeft~2.1k softBand1; hubReady1 hubPrime1 hubLinkE~336 upgCeil6; upgKeep2 nUp=2; hMax4 looseE~7.3k; sealPark1 roadCrit0; **contMinPct38 contLow2**; eAvail~5500/5600 (shy of cap) |
+| Colony | peacetime+war fallback; ops.w47n9.on=false phase=fallback; warMode0; CPU~15–16/20 bkt10k; labs OFF (**no re-ask**); softCap widget outstanding (**no re-ask**); neighbor scans PAUSED; W47N9 10m war patrol stays paused |
+
+### Research
+1. **Our stack (pre-fix):** Maint shared one gate with seal surplus builders: `energyAvailable===cap && %50`. Seal raise is surplus polish; container decay under softCap bank is income infrastructure (miner stands / haul sinks). Post-abort recycle wiped builders while pauseCivilians/warMode residue drained spawn energy into fillers — eAvail rarely hit exactly 5600.
+2. **Overmind:** `WorkerOverlord` sizes workers from `repairTicks` (containers <50% hits fraction) and `RoadLogistics.criticalThreshold` (~0.25) — independent of `fortifyDutyThreshold` / `storageBuffer`. Repair duty does not wait for a full spawn bar.
+3. **TooAngel:** keeps a repairer warm under thin storage; logistics/repair ahead of fortify when economy is recovering.
+4. **Local safety kept:** Upgrader/hauler/filler floors still win the spawn queue before maint. Seal deep raise still wants full-cap. SoftCap thresholds / leanBank / hubPrime / HMAX valve untouched. RoadCrit stays strict so we do not churn tiny road patches every tick under partial energy.
+
+### Shipped
+1. `index.js` maint: contDebt → arm at eAvail≥200; roadCrit-only → full-cap+%50.
+2. `tests/w47n8.js`: cont<50% @3200/5600 → w8builder; road-only @3200/5600 → null.
+3. SoftCap / leanBank / sealMinE / HUB_LINK / labs / industry / market **unchanged**. **No re-ask.**
+
+**Expect after deploy:** while softCap parks nUp≤2 and eAvail sits shy of cap, a container under 50% still queues one maint builder; contMinPct climbs back toward ≥50 without waiting for a perfect full spawn tick.
+
+---
+
 ## 2026-11-04 11:4x — soft-band sticky preempt (post-clear ctl sk)
 
 **Question:** SoftCap clears briefly (≥25k) then storage bleeds 25→21k within minutes even while `ctlBat` stays ≥1200 (holdBand should be ON). 20:4x already made soft-band STRICT `se<LEAN_SOFT` independent of softE — so why do haulers keep feeding ctl through the post-clear dip? Is sticky `memory.sk` the gap?
