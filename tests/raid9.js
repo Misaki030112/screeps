@@ -263,4 +263,15 @@ const focused = R.mouthsOf({ focusSeal: { x: 39, y: 42 }, mouths: [{ x: 38, y: 4
 assert.strictEqual(focused[0].x, 39);
 assert.strictEqual(focused[1].x, 38);
 
+
+// alternate spawn: under-cap d/m interleave (never fill-all-d then m)
+Memory.ops.w47n9 = { on: true, alternate: true, lastKind: 'd', max: { d: 6, m: 6, r: 0, h: 0 } };
+assert.strictEqual(R.wantKind('W46N8', { d: 3, m: 0 }, { d: 6, m: 6, r: 0, h: 0 }, 5300), 'm', 'after d, next is m');
+Memory.ops.w47n9.lastKind = 'm';
+assert.strictEqual(R.wantKind('W46N8', { d: 3, m: 3 }, { d: 6, m: 6, r: 0, h: 0 }, 5300), 'd', 'after m, next is d when tied');
+assert.strictEqual(R.wantKind('W46N8', { d: 2, m: 4 }, { d: 6, m: 6, r: 0, h: 0 }, 5300), 'd', 'fewer d wins');
+Memory.ops.w47n9.alternate = false;
+assert.strictEqual(R.wantKind('W46N8', { d: 3, m: 0 }, { d: 6, m: 6, r: 0, h: 0 }, 5300), 'd', 'prefer order when alternate off');
+delete Memory.ops.w47n9;
+
 console.log('raid9 ok');

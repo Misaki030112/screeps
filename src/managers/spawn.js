@@ -514,7 +514,7 @@ function run1(spawn, onWait) {
   { const RD = require('../roles/raid9'), w = RD.wantSpawn(room, avail); if (w) {
     if (w.defer) { onWait('raid9', w.cost, avail); return ERR_NOT_ENOUGH_ENERGY; }
     const rv = spawn.spawnCreep(w.body, 'raid9_' + room.name + Game.time, { memory: w.mem, directions: birthDirs(spawn, 'raid9') });
-    if (rv === OK) RD.noteSpawned();
+    if (rv === OK) RD.noteSpawned(w.kind);
     return rv; } }
   for (const role of spawnOrder(count, T, nSites)) {
     if (!CIV.has(role)) continue;

@@ -282,7 +282,7 @@ function spawnRun(spawn) {
     if (w && w.defer) { FM.wait('raid9', w.cost, avail); return; }
     if (w) {
       const rv = spawn.spawnCreep(w.body, 'raid9_' + room.name + Game.time, { memory: w.mem, energyStructures: energyOrder(room) });
-      if (rv === OK) { RD.noteSpawned(); FM.spent(w.cost); return; }
+      if (rv === OK) { RD.noteSpawned(w.kind); FM.spent(w.cost); return; }
     }
   }
   if (!want) { FM.idle(); return; }

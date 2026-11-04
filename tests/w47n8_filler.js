@@ -254,6 +254,11 @@ say('sink buffer ok');
   // hungry ctl still wins (holdBand false) even with sticky storage wanting release path
   room.storage.store.energy = 23600; ctl.store.energy = 800; h.memory.sk = ctl.id; Game.time++;
   assert.strictEqual(RL._sink(room, h), ctl, 'ctl hungry: sticky ctl kept (no holdBand)');
+  // Wartime: soft-band park OFF — surplus stays on fill/ctl path (Misaki 2026-11-04).
+  Memory.ops.w47n9 = { on: true, pauseCivilians: true };
+  room.storage.store.energy = 17000; ctl.store.energy = 1500; h.memory.sk = undefined; Game.time++;
+  assert.strictEqual(RL._sink(room, h), ctl, 'war: soft-band skipped → ctl not storage');
+  delete Memory.ops.w47n9;
   creeps = [];
 }
 say('sink rebuild/soft-band ok');

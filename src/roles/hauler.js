@@ -160,7 +160,9 @@ module.exports = { pickups, handoff, ctlLow, mineralRun, labRun, hubPickup, home
   // With a live queen haulers stay off the queen stops (contention at 34,25/34,27) and feed filler container A instead;
   // they only walk the fill route themselves when there is no queen or the room is nearly empty (fallback).
   const hold = require('../managers/threat').holding(room.name); // collecting 1300 for a defender: fill extensions first
-  const lowE = room.energyAvailable < room.energyCapacityAvailable * (hold ? 1 : queens ? 0.3 : 0.9);
+  // Wartime: treat any missing spawn energy as lowE so haulers drain storage→extensions continuously.
+  let war = false; try { war = require('./raid9').pauseCivilians(); } catch (e) { war = false; }
+  const lowE = room.energyAvailable < room.energyCapacityAvailable * (hold || war ? 1 : queens ? 0.3 : 0.9);
   // One decision per load (patrol 10-17 15:40): spawn waves swing energyAvailable across the 30% line, so a loaded hauler
   // flipped ctl -> fill route -> ctl mid-trip (140t for a ~28t leg, ctl container hit 0). With a queen alive a hauler already
   // heading to a drop-off finishes it; once on the fill route (memory.fl) it stays there until empty or nothing needs energy.

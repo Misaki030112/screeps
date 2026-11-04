@@ -94,6 +94,13 @@ function haulPick(c) {
     for (const o of cands) { const left = amt(o) - (claimed[o.id] || 0), sc = (o.structureType ? (isHub(o) ? 0.5 : nf && isA(o) ? 3 : 1) : 2) * left / (c.pos.getRangeTo(o) + 10); if (Math.min(free, left) >= 50 && sc > bs) { bs = sc; t = o; } }
     c.memory.pt = t ? t.id : undefined;
   }
+  // Wartime: if no source/drop pile, drain storage into empty extensions (Misaki 2026-11-04 unlimited war supply).
+  if (!t) {
+    let war = false; try { war = require('../../roles/raid9').pauseCivilians(); } catch (e) { war = false; }
+    if (war && room.storage && (room.storage.store[E] || 0) > 0 && room.energyAvailable < room.energyCapacityAvailable) {
+      t = room.storage; c.memory.pt = t.id;
+    }
+  }
   if (!t) return false;
   // Misaki rule: deliver once over half full rather than walking to another pile
   if (!c.pos.isNearTo(t) && c.store[E] * 2 >= c.store.getCapacity()) { delete c.memory.pt; return false; }
@@ -138,6 +145,8 @@ function sink(room, c) {
   // ctl≥1200 and stor still under the soft floor.
   const softFloor = (se) => (se || 0) < 25000; // LEAN_SOFT strict (nUp hysteresis is index softE only)
   const holdBand = () => {
+    // Wartime: never soft-band park (Misaki 2026-11-04 drain storage→ext).
+    try { if (require('../../roles/raid9').pauseCivilians()) return false; } catch (e) { /* ok */ }
     if (!room.storage) return false;
     const se = room.storage.store[E] || 0;
     const ctlS = ctlCont();
@@ -160,7 +169,9 @@ function sink(room, c) {
   // softCap2/nUp only — park must still refill storage in the post-clear [ARM,SOFT) band.
   // Threat softCap (TH.localOn) does NOT force park here (predicate is energy floor, not softE).
   // Overmind keeps logistics topping storageBuffer while upgrade battery is saturated.
-  if (room.storage && free(room.storage)) {
+  // Wartime (pauseCivilians): never soft-park into storage — keep surplus on the fill path (Misaki 2026-11-04).
+  let warRefill = false; try { warRefill = require('../../roles/raid9').pauseCivilians(); } catch (e) { warRefill = false; }
+  if (!warRefill && room.storage && free(room.storage)) {
     const se = room.storage.store[E] || 0;
     const ctlS = ctlCont();
     const ctlE = ctlS ? (ctlS.store[E] || 0) : 0;
@@ -184,9 +195,11 @@ function fillTarget(c, tower, rng = 99) {
   // 03:00 once a trip has committed to a container sink (memory.sk), only divert to a fill target within 5 tiles: a loaded
   // w8hauler flipped 4x in 60 ticks between ctl cont 13,26 and hub ext 32,36 as Spawn2 drained/others refilled extensions
   const lim = Math.min(rng, c.memory.sk ? 5 : 99), fa = F.alive(c.room); // 17:5x alive, not active: a starved filler is fed via storage (haulers filling the hub themselves kept storage at 0 and the filler empty)
+  // Wartime: haulers may assist hub duty while spawn energy is short (filler alone cannot keep up with fat raid bodies).
+  let warHub = false; try { warHub = require('../../roles/raid9').pauseCivilians() && c.room.energyAvailable < c.room.energyCapacityAvailable; } catch (e) { warHub = false; }
   const cand = c.room.find(FIND_MY_STRUCTURES, { filter: s => s.store && s.store.getFreeCapacity(E) > 0 && c.pos.inRangeTo(s, lim) && (s.structureType === STRUCTURE_SPAWN
     || (s.structureType === STRUCTURE_EXTENSION && !taken.has(s.id)) || (tower && s.structureType === STRUCTURE_TOWER && s.store.getFreeCapacity(E) > 200))
-    && !(fa && F.isDuty(c.room, s)) }); // 17:4x: hub extensions/spawns are the w8filler's while it works (haulers: Spawn2 cluster + tower)
+    && !(fa && !warHub && F.isDuty(c.room, s)) }); // 17:4x: hub extensions/spawns are the w8filler's while it works (haulers: Spawn2 cluster + tower); warHub opens hub
   // 14:57 (Misaki): hub extensions/spawns/tower first, Spawn2 + its 5 temp extensions last (spawning drains them last too)
   const hub = cand.filter(s => !lastE(s)), t = c.pos.findClosestByRange(hub.length ? hub : cand);
   c.memory.ft = t ? t.id : undefined; return t;
@@ -545,7 +558,8 @@ const R = {
     // flipping ctl <-> hub (w8rhauler83738293 t8492-8568), and a range-3 limit still chained strip to strip (t83739964-40016). Now they
     // never detour for extensions: top up one adjacent extension/spawn in passing (transfer + move same tick) and walk on to ctl/hub
     // cont -> storage. Full fill duty only when spawn energy < 300 or no local w8hauler (extensions are the w8haulers' job).
-    const low = room.energyAvailable < 300 || !room.find(FIND_MY_CREEPS, { filter: x => x.memory.role === 'w8hauler' }).length;
+    let warLow = false; try { warLow = require('../../roles/raid9').pauseCivilians(); } catch (e) { warLow = false; }
+    const low = warLow ? room.energyAvailable < room.energyCapacityAvailable : (room.energyAvailable < 300 || !room.find(FIND_MY_CREEPS, { filter: x => x.memory.role === 'w8hauler' }).length);
     if (!low) delete c.memory.ft;
     const t = (low && fillTarget(c, false)) || sink(room, c) || room.storage;
     if (t && !low && !c.pos.isNearTo(t)) {

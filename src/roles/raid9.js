@@ -109,7 +109,23 @@ function fieldCaps(P) {
   };
 }
 function wantKind(roomName, have, max, cap) {
-  const order = PREFER[roomName] || PREFER[HOME];
+  // Memory.ops.w47n9.preferHome / preferStage override hardcoded PREFER (wartime force d/m).
+  const P = typeof Memory !== 'undefined' && Memory.ops && Memory.ops.w47n9;
+  const key = roomName === HOME ? 'preferHome' : roomName === STAGE ? 'preferStage' : null;
+  const order = (key && P && Array.isArray(P[key]) && P[key].length) ? P[key] : (PREFER[roomName] || PREFER[HOME]);
+  // alternate=true: interleave under-cap attack kinds (d,m) — never flood all d then m (Misaki 2026-11-04).
+  if (P && P.alternate) {
+    const atk = ['d', 'm'].filter(k => (have[k] || 0) < (max[k] || 0) && bodyFor(k, cap));
+    if (atk.length === 1) return atk[0];
+    if (atk.length > 1) {
+      atk.sort((a, b) => (have[a] || 0) - (have[b] || 0));
+      if ((have[atk[0]] || 0) < (have[atk[1]] || 0)) return atk[0];
+      const last = P.lastKind;
+      if (last === 'd' && atk.indexOf('m') >= 0) return 'm';
+      if (last === 'm' && atk.indexOf('d') >= 0) return 'd';
+      return atk[0];
+    }
+  }
   for (const k of order) {
     if ((have[k] || 0) >= (max[k] || 0)) continue;
     if (!bodyFor(k, cap)) continue;
@@ -154,7 +170,11 @@ function wantSpawn(room, avail) {
   if (haveE != null && haveE < cost) return { defer: true, role: 'raid9', body, mem, cost, kind };
   return { role: 'raid9', body, mem, cost, kind };
 }
-function noteSpawned() { const P = M(); P.n = (P.n | 0) + 1; }
+function noteSpawned(kind) {
+  const P = M();
+  P.n = (P.n | 0) + 1;
+  if (kind === 'd' || kind === 'm' || kind === 'r' || kind === 'h') P.lastKind = kind;
+}
 function mouthsOf(P, phase) {
   const base = (P && P.mouths && P.mouths.length) ? P.mouths.map(normPos)
     : (phase === 'inside_towers' || phase === 'inside_clean' ? MOUTH_WIDE : MOUTH_DUAL).map(p => ({ x: p.x, y: p.y }));

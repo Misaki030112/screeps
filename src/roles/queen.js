@@ -129,6 +129,8 @@ function fillRoute(c) {
 }
 
 function storageFloor(room) {
+  // Wartime: no storage floor — drain into extensions (Misaki 2026-11-04).
+  try { if (require('./raid9').pauseCivilians()) return 0; } catch (e) { /* raid9 optional in tests */ }
   const r = require('../managers/threat').reserve(room.name), W = require('../managers/walls'), base = r || room.energyCapacityAvailable;
   // wall step held (walls.stepHeld, home RCL6): no builder spends the fund, so it is not reserved in storage; the ferry keeps the
   // defense reserve (Memory.defense.reserveE) and storage above it goes to the controller (Misaki 10-19 20:51 "keep upgrading first").
