@@ -395,7 +395,7 @@ function run1(spawn, onWait) {
   // Joint defence (Misaki 17:34, explicit exception to 'rooms independent', defence only): ONE RA+MOVE defender for W47N8 when
   // the joint planner (src/rooms/w47n8/defense.js plan -> Memory.ops.w8roster) wants it and home has no player combat creeps.
   // Overrides the storage floor; queen first so home refill never stops.
-  { const J = (alive.queen || alive.filler) && require('../rooms/w47n8/index').homeWant(room); if (J) return go(J.role || 'w8defender', J.body, J.mem); }
+  { const J = (alive.queen || alive.filler) && require('../rooms/w47n8/index').homeWant(room); if (J) { const rv = go(J.role || 'w8defender', J.body, J.mem); if (rv === OK) return rv; /* energy short: fall through so raid9/logistics can use the pile */ } }
   if (hold) { if (!(count.queen || 0) && !(count.filler || 0)) return go('queen', B.queen(Math.max(300, avail))); return ERR_BUSY; }
   // 2b) one-off manual probe (roles/probe.js): only when Memory.ops.probe.spawn === true and storage >= 3100 (1300 defender reserve kept)
   const PR = require('../roles/probe');

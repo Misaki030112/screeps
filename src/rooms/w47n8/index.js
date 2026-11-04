@@ -1010,6 +1010,8 @@ function towerRun(room) {
 // Overrides the home storage floor (defence). The creep runs the w8defender role (home: W47N8) and idles by the north wall until its TTL ends (18:04: no recycle).
 const HOME = 'W46N8';
 function homeWant(room) {
+  // Wartime assault: do not bank a 5k joint w8defender ahead of raid9 melee (Misaki 2026-11-04 alternate spawn).
+  try { if (require('../../roles/raid9').pauseCivilians()) return null; } catch (e) { /* ok */ }
   const ro = Memory.ops && Memory.ops.w8roster;
   if (room.name !== HOME || !ro || !ro.home || Game.time - ro.t > 20) return null;
   if (require('../../managers/home').active(room)) return null;
