@@ -1,5 +1,40 @@
 # Home W46N8 RCL7 readiness (strategy review 2026-10-19 18:4x UTC+8)
 
+## 2026-11-04 17:4x — soft-band surplus trim (softCap hysteresis nUp4 thrash)
+
+**Question:** SoftCap near-clear / post-clear edge (softLeft <2k, stor~23–25k): do sealPark + soft-band + upgKeep correctly prevent thrash and premature deep seal while short is still recovering? Live cleared @15:57 (25181) then re-armed softCap by 16:26 (22685) — ~30 min bleed — with nUp=4 during soft-band hysteresis.
+
+**Answer: PARTIAL → YES after surplus trim.** sealPark (STRICT softThin <25k) and soft-band park (STRICT se<25k + sticky preempt) were already correct. The gap was softEnergyCap hysteresis (08:4x): softCap2 stays OFF in post-clear [ARM,SOFT) so base nUp stays 3 (good — avoids 3↔2 flicker), but `!softCap2` also armed surplus → nUp=4, and hub+fat ctl skipped the feed-gate ≤3 recycle. Overmind scales WORK only above `storageBuffer=100k`; TooAngel parks upgrade when thin. Gate surplus spawn on STRICT `stor≥LEAN_SOFT && !threatSoft`; recycle keep=3 while `stor<LEAN_SOFT` (soft-band surplus trim). SoftCap/sealMinE/HUB_LINK/labs unchanged. **No softCap re-ask. No labs re-ask. No W47N9 reopen.**
+
+### Live (~17:46 Asia/Hong_Kong, deploy 31c895b, tick ~84065600)
+| Room | Notes |
+|------|-------|
+| W46N8 | RCL7 ~25.40% (2.778M/10.935M); stor~16–17k ABOVE15k; smA=6; 1h progress ~18k ≈82% of ideal26 |
+| W47N8 | RCL7 ~11.02% (1.205M); stor**23598** softE0 softCap2**0** softLeft1402 softBand1 softArm22k; hubReady1 hubPrime1 hubLinkE800 upgCeil6 feedOk1; **upgraders=4** upgKeep was0 → **3 after trim**; sealPark1 sealRaise0; contMinPct48 contLow1 roadCrit0; builders1; hMax3 looseE~1.1k |
+| Remotes | W45N8 SAFE; W47N7 SAFE; **W45N7 DEFEND InvaderCore** (mission=core, defender arrived@84065499, cont hits90.4k, pauseStart84065370, no structureHitLoss) |
+| Colony | peacetime+war fallback; ops.w47n9.on=false phase=fallback; CPU~15–17/20 bkt10k; labs OFF (**no re-ask**); softCap widget outstanding (**no re-ask**) |
+
+Also verified post-31c895b cont reclaim: contMinPct 38→50 (16:59/17:23) → 48 live — residual one cont ~48%, builder=1 armed, roadCrit=0. Not the chosen question; healthy enough.
+
+Thrash proof earlier today: clear 15:57@25181 sealRaise1 nUp4 → 15:59 softLeft77 sealPark1 → 16:26 softCap2 RE-ARM@22685.
+
+### Research
+1. **Our stack (pre-fix):** 08:4x softEnergyCap clear@25k / re-arm@22k kept softCap2 OFF in [ARM,SOFT) so base spawn stayed 3. Surplus line used `!softCap2(stor)` — same hysteresis — so surplus armed mid soft-band. Recycle: softCap2→≤2; else feed-gate ≤3 only when `!hubLinkLive || ctlBat < FEED_MIN/2`. Live hubReady1 + ctlBat~1.7k skipped both → nUp=4 drain vs soft-band refill.
+2. **Overmind:** `UpgradeSite.settings.storageBuffer=100000` / `energyPerBodyUnit=25000` — upgrade power scales only from energy *above* buffer; `linksRequestBelow=200` keeps logistics topping independently. No surplus WORK while under buffer.
+3. **TooAngel:** parks upgrade when storage thin; keeps logistics warm (matches our soft-band STRICT park + HMAX overflow).
+4. **Local safety kept:** softCap2 hysteresis still protects base 3 (no 3↔2 flicker). softThin/sealDeepOk STRICT <25k unchanged. soft-band STRICT park + 11:4x sticky preempt unchanged. threatSoft ≤2 unchanged.
+
+### Shipped
+1. `index.js` surplus: `!threatSoft() && stor >= LEAN_SOFT` (not `!softCap2`).
+2. `index.js` recycle: `storE < LEAN_SOFT` → keep=3 (soft-band surplus trim) before feed-gate.
+3. `w8day.upgKeep`: 2=softCap / 3=soft-band trim / 0=clear≥25k.
+4. Tests: `w47n8_dayobs.js` hysteresis + hub+fat-bat trim; `w47n8.js` spawn blocks 4th at 23598, allows at 26000.
+5. SoftCap / leanBank / sealMinE / HUB_LINK / labs / industry / market **unchanged**. **No re-ask.**
+
+**Expect after deploy:** in post-clear [22k,25k) expect softE0 softCap20 softBand1 **upgKeep3** nUp≤3 (4th recycles); stor re-climbs to ≥25k instead of falling under 22k; true ≥25k still allows surplus toward ceil6.
+
+---
+
 ## 2026-11-04 14:4x — post-abort maint spawn under softCap (container debt)
 
 **Question:** After Misaki aborted W47N9 (~14:19 Asia/Hong_Kong), raid recycle left `builders=0` while softCap/leanBank rebuilt W47 stor from ~0→22k. Live `contMinPct` slid 46→38 (`contLow` 2–3) and stayed there; maint spawn required `energyAvailable===cap` AND `Game.time%50`. During soft-band park, fillers keep topping towers/ext so eAvail often sits 3–5.5k/5600 for long stretches — does the full-cap+%50 gate freeze container reclaim post-abort?

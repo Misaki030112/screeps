@@ -8,6 +8,10 @@ hauler upkeep (CARRY need = 10 × (round trip × 1.10 + 4) / 50, load split 75% 
 0.03/t each, builder-lite 1000/1500. Upgrade = net / (1 + upgrader upkeep 1150/1500/10). RCL5: 1800 cap, best of source-A link→ctl or hub→ctl link (3% loss).
 reserve7 (2 CLAIM) is spawned and paid by home.
 
+## 2026-11-04 17:4x — soft-band surplus vs softCap hysteresis
+
+Live thrash: clear@25.1k (15:57) → re-arm@22.7k (16:26) with nUp=4 while softBand ON. Model ideal ~30 assumes sustained WORK near ceil once soft clear holds; surplus WORK40 in the soft-band burns the cushion that soft-band haul is trying to refill. Soft-band surplus trim keeps WORK≤30 (base 3) until stor≥25k STRICT — matches Overmind scaling only above storageBuffer. See `docs/RCL7.md` 17:4x.
+
 ## 2026-11-04 14:4x — maint spawn vs softCap eAvail (post-abort)
 
 Live anomaly after W47N9 abort: `contMinPct` 46→38 while softCap rebuilt stor and eAvail sat shy of `eCap`. Model income assumes containers healthy (miner stands / haul sinks). Maint now arms on container debt without full-cap gate (see `docs/RCL7.md` 14:4x). SoftCap/leanBank/hub numbers unchanged. Watch `w8day.contMinPct` / `contLow` climb under softCap bank.

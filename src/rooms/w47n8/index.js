@@ -236,8 +236,12 @@ function spawnRun(spawn) {
     // 14:4x strategy: peacetime surplus needs ctlBattery≥FEED_MIN; without hub→ctl live, A→ctl ~8 e/t cannot sustain >base 3 (WORK30≈ideal).
     // SoftCap2 lift + stor-2000 surplus previously jumped to 4×10W=WORK40 → waiting_feed~30% while hub filled.
     // 05:4x: gate ceil on hubLinkLive (structure), not config.HUB_LINK alone — flip day-of site must not raise WORK before ferry.
+    // 17:4x 11-04 strategy: softEnergyCap hysteresis (08:4x) keeps softCap2 OFF in post-clear [ARM,SOFT) so base stays 3
+    // (avoid nUp 3↔2 flicker) — but !softCap2 also armed surplus → live nUp=4 @stor~23–25k drained 25.1k→22.7k in ~30m
+    // (15:57 clear → 16:26 re-arm). Overmind UpgradeSite only scales WORK above storageBuffer (100k); TooAngel parks
+    // upgrade when thin. Gate surplus on STRICT stor≥LEAN_SOFT (+ !threatSoft), not softCap2 hysteresis.
     const upgCeil = hubLinkLive(room) ? 6 : (bigBuild ? 2 : 3);
-    if (!want && !wallsLow && !energyBank(room) && !softCap2(stor) && ctlBattery(room) >= FEED_MIN && nUp() < Math.min(upgCeil, (bigBuild ? 2 : 3) + Math.floor(Math.max(0, loose + hubIdle + Math.max(0, stor - 2000) - 600) / 600))
+    if (!want && !wallsLow && !energyBank(room) && !threatSoft() && stor >= LEAN_SOFT && ctlBattery(room) >= FEED_MIN && nUp() < Math.min(upgCeil, (bigBuild ? 2 : 3) + Math.floor(Math.max(0, loose + hubIdle + Math.max(0, stor - 2000) - 600) / 600))
       && _.sum(cs.filter(c => c.memory.role === 'w8upgrader' && (c.spawning || !(c.ticksToLive <= 3 * (c.body || []).length + 60))), c => _.filter(c.body, p => p.type === WORK).length) + bodyFor('w8upgrader', cap).filter(p => p === WORK).length <= wcap + 5) want = 'w8upgrader'; // 15:55: a whole new body must fit (upw 31 made 4x10W = 40 WORK on ~30 e/t net) // 14:55: WORK cap = model net income (upw ~30) instead of fixed 24 // 21:20: 16->24 WORK; income ~20 local + ~13 W47N7 remote, ctl cont 1984/2000 full with 4x4W upgraders (WORK-bound)
   }
   // 6) wall builder from surplus (19:18): 1 builder while a seal wall is below target and spawn is full
@@ -531,6 +535,9 @@ function leanBankRecycle(room) {
   // 11:4x: softCap2 also recycles back to ≤2 while threat soft is on, even after stor≥LEAN_SOFT (4×10W waiting_feed).
   // 11:4x strategy: peacetime feed-starve — if softCap2 off but ctl battery thin, trim surplus above base 3 (keep stands saturable).
   // 05:4x: !hubLinkLive (not mere !HUB_LINK) — flag-on + 5k site still keeps ≤3 until structure stands.
+  // 17:4x 11-04: soft-band surplus trim — softCap2 hysteresis hold leaves softCap2 OFF in [ARM,SOFT) so the ≤2
+  // recycle does not fire, but hub+fat ctl also skips the feed-gate ≤3 trim → live nUp=4 drains soft-band.
+  // Keep base-3 hysteresis (08:4x intent); only recycle surplus above 3 while stor < LEAN_SOFT.
   // 17:2x patrol: reconcile each tick (prune dead; release kept upgraders). Prior append-only left stale names on
   // Memory.ops.w8recycle so a kept stand worker kept walking to Spawn2 after the surplus died → upgrade flat.
   const o = (Memory.ops = Memory.ops || {});
@@ -544,6 +551,7 @@ function leanBankRecycle(room) {
   let keep = Infinity;
   if (banking) keep = leanUpKeep(storE);
   else if (room.controller && room.controller.level >= 7 && softCap2(storE)) keep = 2;
+  else if (room.controller && room.controller.level >= 7 && storE < LEAN_SOFT) keep = 3; // soft-band surplus trim
   else if (room.controller && room.controller.level >= 7 && (!hubLinkLive(room) || ctlBattery(room) < Math.floor(FEED_MIN / 2))) keep = 3;
   else { o.w8recycle = nonUp(o.w8recycle); return; }
   const ups = [];
@@ -736,7 +744,8 @@ function dayObs(room) {
     softBand: (storE < LEAN_SOFT && ctlBattery(room) >= 1200) ? 1 : 0,
     softCap2: softCap2(storE) ? 1 : 0, // 11:4x/08:4x-11-03: ≤2 = threatSoft OR softEnergyCap
     // 05:4x 11-04: effective upgrader keep under leanBank/softCap (1 emergency / 2 rebuild|soft / Inf clear)
-    upgKeep: lb ? leanUpKeep(storE) : (softCap2(storE) ? 2 : 0),
+    // 17:4x: 2=softCap / 3=soft-band surplus trim (hysteresis hold) / 0=clear≥25k
+    upgKeep: lb ? leanUpKeep(storE) : (softCap2(storE) ? 2 : (storE < LEAN_SOFT ? 3 : 0)),
     warMode: warMode ? 1 : 0, // 14:4x: Memory.ops.w47n9 assault freeze
     ctlBat: ctlBattery(room), feedOk: ctlBattery(room) >= FEED_MIN ? 1 : 0, // 11:4x strategy: peacetime surplus needs feedOk
     sealMinE: TH.sealMinE(), // effective deep-seal gate (Memory override visible)

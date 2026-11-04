@@ -114,6 +114,39 @@ assert.strictEqual(run(postAbort, 0, 3200, {
   energyCapacityAvailable: 5600,
   _structs: [weakRoad]
 }), null, '14:4x: roadCrit-only does not arm maint under partial spawn energy');
+// 17:4x 11-04: soft-band surplus blocked — hysteresis softCap2 OFF must NOT spawn 4th while stor<LEAN_SOFT
+{
+  assert.strictEqual(Cfg.HUB_LINK, true);
+  const ctlCont = { structureType: 'container', store: { energy: 1500 }, pos: { x: Cfg.CTL_CONT[0], y: Cfg.CTL_CONT[1] } };
+  const ctlLink = { structureType: 'link', store: { energy: 400 }, pos: { x: Cfg.CTL_LINK[0], y: Cfg.CTL_LINK[1] } };
+  const hubLink = { structureType: 'link', store: { energy: 200 }, pos: { x: 33, y: 34 } };
+  const cells = {};
+  for (const s of [ctlCont, ctlLink, hubLink]) {
+    const k = s.pos.x * 50 + s.pos.y;
+    (cells[k] = cells[k] || []).push(s);
+  }
+  const look = (k, x, y) => k === LOOK_STRUCTURES ? (cells[x * 50 + y] || []) : [];
+  const base3 = {
+    a: mk('w8miner', 'W47N8', { si: 0 }), b: mk('w8miner', 'W47N8', { si: 1 }),
+    c: mk('w8hauler', 'W47N8'), d: mk('w8hauler', 'W47N8'), e: mk('w8hauler', 'W47N8'),
+    f: mk('w8upgrader', 'W47N8'), g: mk('w8upgrader', 'W47N8'), h: mk('w8upgrader', 'W47N8'),
+    i: mk('w8filler', 'W47N8'), j: mk('w8filler', 'W47N8')
+  };
+  Memory.ops = { w8model: { links: true, lcarry: 9, rcarry: 49, upw: 31 }, w8day: { softE: 0, leanBank: 0 } };
+  const softBandGot = run(base3, 0, 5600, {
+    storage: { store: { energy: 23598 } },
+    energyCapacityAvailable: 5600,
+    lookForAt: look
+  });
+  assert.ok(!softBandGot || softBandGot.role !== 'w8upgrader',
+    '17:4x: soft-band hysteresis must not surplus-spawn 4th upgrader: ' + JSON.stringify(softBandGot));
+  Memory.ops = { w8model: { links: true, lcarry: 9, rcarry: 49, upw: 31 }, w8day: { softE: 0, leanBank: 0 } };
+  assert.strictEqual(run(base3, 0, 5600, {
+    storage: { store: { energy: 26000 } },
+    energyCapacityAvailable: 5600,
+    lookForAt: look
+  }).role, 'w8upgrader', '17:4x: stor≥25k + hub+feedOk still allows surplus 4th');
+}
 delete Memory.ops;
 Object.assign(full, { e: mk('w8upgrader', 'W47N8'), f: mk('w8upgrader', 'W47N8') });
 assert.strictEqual(run(full, 3).role, 'w8builder');

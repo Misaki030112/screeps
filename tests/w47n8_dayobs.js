@@ -158,8 +158,9 @@ assert.strictEqual(Memory.ops.w8day.softE, 0, 'hysteresis hold softE off at 23k 
 assert.strictEqual(Memory.ops.w8day.softCap2, 0, 'softCap2 off in [ARM,SOFT) after clear');
 assert.strictEqual(Memory.ops.w8day.bankWhy, 'ready', 'bankWhy=ready in soft hysteresis hold');
 assert.strictEqual(Memory.ops.w8day.softBand, 0, 'still no ctl battery → softBand stays 0');
-// feed-gate may trim 4→≤3 without HUB_LINK; softCap must NOT recycle to ≤2 in the hold band
-assert.ok((Memory.ops.w8recycle || []).length <= 1, 'no softCap≤2 recycle while hysteresis hold: ' + JSON.stringify(Memory.ops.w8recycle));
+assert.strictEqual(Memory.ops.w8day.upgKeep, 3, '17:4x: soft-band surplus trim keep=3 (not softCap≤2)');
+// 17:4x: soft-band trims surplus 4→≤3; softCap must NOT recycle to ≤2 in the hold band
+assert.strictEqual((Memory.ops.w8recycle || []).length, 1, 'soft-band surplus trim 4→3 (not ≤2): ' + JSON.stringify(Memory.ops.w8recycle));
 // re-arm soft energy below LEAN_SOFT_ARM
 rSoftClear.storage.store.energy = 21000;
 W.dayObs(rSoftClear);
@@ -182,6 +183,38 @@ assert.ok((Memory.ops.w8recycle || []).length >= 2, 'soft re-arm recycles to ≤
   assert.strictEqual(Memory.ops.w8day.softBand, 1, 'softBand ON at 23k when ctl≥1200 (park≠softE)');
   cont.store.energy = 800; W.dayObs(rBand);
   assert.strictEqual(Memory.ops.w8day.softBand, 0, 'softBand off when ctl hungry even below SOFT');
+}
+// 17:4x 11-04: soft-band surplus trim with hubLinkLive + fat ctl — the live thrash gap.
+// softCap2 OFF (hysteresis) + hubReady + ctlBat≥FEED_MIN skipped BOTH ≤2 and old feed-gate ≤3 → nUp=4 drained 25→22k.
+{
+  const Ccfg = require(path.join(d, 'config'));
+  delete Memory.ops.w8recycle;
+  Memory.ops.w8day = { leanBank: 0, softE: 0 };
+  const hubBuilt = done.concat([[35, 33, 'terminal'], [37, 44, 'container'],
+    [Ccfg.CTL_CONT[0], Ccfg.CTL_CONT[1], 'container'], [Ccfg.CTL_LINK[0], Ccfg.CTL_LINK[1], 'link'],
+    [33, 34, 'link']]);
+  const rTrim = mk(7, hubBuilt, softUps, 0);
+  rTrim.storage.store.energy = 25000;
+  rTrim.terminal = { store: {} };
+  const ctlC = rTrim.lookForAt(LOOK_STRUCTURES, Ccfg.CTL_CONT[0], Ccfg.CTL_CONT[1])[0];
+  const ctlL = rTrim.lookForAt(LOOK_STRUCTURES, Ccfg.CTL_LINK[0], Ccfg.CTL_LINK[1])[0];
+  const hubL = rTrim.lookForAt(LOOK_STRUCTURES, 33, 34).find(s => s.structureType === 'link');
+  ctlC.store = { energy: 1500 }; ctlL.store = { energy: 400 }; hubL.store = { energy: 200 };
+  W.dayObs(rTrim); // clear softE
+  assert.strictEqual(Memory.ops.w8day.softE, 0);
+  assert.strictEqual(Memory.ops.w8day.upgKeep, 0, 'clear ≥25k upgKeep=0 (surplus allowed)');
+  assert.strictEqual((Memory.ops.w8recycle || []).length, 0, 'clear+hub+fat bat: no recycle');
+  delete Memory.ops.w8recycle;
+  rTrim.storage.store.energy = 23598; // live ~17:46 soft-band hysteresis
+  Memory.ops.w8day.leanBank = 0;
+  W.dayObs(rTrim);
+  assert.strictEqual(Memory.ops.w8day.softE, 0, 'hysteresis hold');
+  assert.strictEqual(Memory.ops.w8day.softCap2, 0);
+  assert.strictEqual(Memory.ops.w8day.softBand, 1, 'softBand ON (stor<25k + ctl≥1200)');
+  assert.strictEqual(Memory.ops.w8day.hubReady, 1);
+  assert.strictEqual(Memory.ops.w8day.feedOk, 1);
+  assert.strictEqual(Memory.ops.w8day.upgKeep, 3, 'soft-band keep=3');
+  assert.strictEqual((Memory.ops.w8recycle || []).length, 1, '17:4x soft-band trims 4→3 with hub+fat bat: ' + JSON.stringify(Memory.ops.w8recycle));
 }
 // re-arm leanBank below LEAN_ARM
 Memory.ops.w8day.leanBank = 0;
