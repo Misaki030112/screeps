@@ -3,8 +3,9 @@
 // Memory.creeps[name].raidOrder overrides that creep until clear or until.
 // NEVER calls activateSafeMode. Arm/abort is manual: tools/raid9.py (do not arm from a cloud agent).
 //
-// Field max d:4 m:6 r:6 h:10. GO once ≥ need.d dismantlers (default 2) plus one workable
-// melee or healer are on the W47N8 north lip or already in W47N9; then keep streaming.
+// Field max d:4 m:6 r:6 h:10. Squad mode (default): spawn balanced d+m+h (r optional).
+// GO once a full squad (need.d/m/h, default 1/1/1) is on the W47N8 north lip or in W47N9.
+// Enter together — do not trickle in alone. noOverrun (default) skips armed-parts flee.
 // Entry only (38,49). Swamp (38,47) is not walked; path via (37,47) or (39,47).
 // Pre-breach: max maxY43 dismantlers on y=43, and only on a seal whose dismantle dps
 // beats minDps (default 1240, two towers repairing). A mouth that would be left with
@@ -18,7 +19,7 @@ const MOUTH_WIDE = [{ x: 37, y: 42 }, { x: 38, y: 42 }, { x: 39, y: 42 }, { x: 4
 const TOWER_ORDER = [{ x: 39, y: 37 }, { x: 34, y: 28 }]; // T1 then T2; P.towerOrder replaces
 const LANE = [37, 38, 39, 40];
 const MAX = { d: 4, m: 6, r: 6, h: 10 };
-const NEED = { d: 2, m: 0, r: 0, h: 0 }; // GO dismantler count; melee/heal "workable" is separate
+const NEED = { d: 1, m: 1, r: 0, h: 1 }; // GO = one full squad (d+m+h) on the lip / in room
 const MIN_DPS = 1240; // ~2 tower repair / tick. One 24W dismantles at 1200 and loses.
 const DISMANTLE_HITS = 50; // per WORK per tick
 const WORKS = 24;
@@ -109,11 +110,27 @@ function fieldCaps(P) {
   };
 }
 function wantKind(roomName, have, max, cap) {
-  // Memory.ops.w47n9.preferHome / preferStage override hardcoded PREFER (wartime force d/m).
+  // Memory.ops.w47n9.preferHome / preferStage override hardcoded PREFER.
   const P = typeof Memory !== 'undefined' && Memory.ops && Memory.ops.w47n9;
   const key = roomName === HOME ? 'preferHome' : roomName === STAGE ? 'preferStage' : null;
   const order = (key && P && Array.isArray(P[key]) && P[key].length) ? P[key] : (PREFER[roomName] || PREFER[HOME]);
-  // alternate=true: interleave under-cap kinds from prefer list (m/r/h when max.d=0). Misaki 2026-11-04.
+  // Squad mode (default ON): keep d/m/h within 1; on ties prefer m then d then h — never flood healers/work with 0 attack.
+  // Set Memory.ops.w47n9.squad=false to fall back to prefer/alternate lists. Misaki 2026-11-04.
+  if (!P || P.squad !== false) {
+    const core = ['m', 'd', 'h'].filter(k => (max[k] || 0) > 0 && bodyFor(k, cap) && (have[k] || 0) < (max[k] || 0));
+    if (core.length) {
+      const rank = { m: 0, d: 1, h: 2 };
+      core.sort((a, b) => {
+        const ha = have[a] || 0, hb = have[b] || 0;
+        if (ha !== hb) return ha - hb;
+        return (rank[a] != null ? rank[a] : 9) - (rank[b] != null ? rank[b] : 9);
+      });
+      return core[0];
+    }
+    if ((max.r || 0) > 0 && bodyFor('r', cap) && (have.r || 0) < (max.r || 0)) return 'r';
+    return null;
+  }
+  // alternate=true: interleave under-cap kinds from prefer list.
   if (P && P.alternate) {
     const pool = (order && order.length) ? order.slice() : ['d', 'm', 'r', 'h'];
     const atk = pool.filter(k => (have[k] || 0) < (max[k] || 0) && bodyFor(k, cap));
@@ -251,17 +268,23 @@ function inApproach(c) {
   if (c.room.name === TARGET) return true;
   return c.room.name === STAGE && c.pos.y <= NEAR_EXIT;
 }
-// ≥ need.d dismantlers and at least one melee or healer already up where they can move.
+// Full squad on the lip / in room before GO. Defaults need 1d+1m+1h (r only if need.r>0).
+// Prevents lone dismantlers/healers rushing the breach with no attack escort. Misaki 2026-11-04.
 function assaultReady(creeps, need) {
   const nd = (need && need.d != null) ? need.d : NEED.d;
-  let d = 0, work = 0;
+  const nm = (need && need.m != null) ? need.m : NEED.m;
+  const nh = (need && need.h != null) ? need.h : NEED.h;
+  const nr = (need && need.r != null) ? need.r : NEED.r;
+  let d = 0, m = 0, h = 0, r = 0;
   for (const c of creeps || []) {
     if (!inApproach(c)) continue;
     const k = (c.memory && c.memory.kind) || 'm';
     if (k === 'd') d++;
-    else if (k === 'm' || k === 'h') work++;
+    else if (k === 'm') m++;
+    else if (k === 'h') h++;
+    else if (k === 'r') r++;
   }
-  return d >= nd && work >= 1;
+  return d >= nd && m >= nm && h >= nh && r >= nr;
 }
 function shouldRegroup(alive) {
   if (!alive || !alive.length) return true;
@@ -375,7 +398,12 @@ function pickPunch(me, w, mouth, opt) {
 function pick(me, w, opt) {
   opt = opt || {};
   const phase = opt.phase || 'inside_towers';
-  if (phase === 'breach') return pickBreach(w, opt.mouth || MOUTH_DUAL[0]);
+  if (phase === 'breach') {
+    // Seal first; once open (or gone) work 见什么拆什么 — smash fight/tower/blocker via inside prio.
+    const seal = pickBreach(w, opt.mouth || MOUTH_DUAL[0]);
+    if (seal) return seal;
+    return pickInside(me, w, opt);
+  }
   if (phase === 'punch') return pickPunch(me, w, opt.mouth || MOUTH_DUAL[0], opt);
   return pickInside(me, w, opt);
 }
@@ -411,16 +439,24 @@ function armedParts(creeps) {
   for (const h of creeps) n += (h.attack | 0) + (h.ranged | 0);
   return n;
 }
-// Only auto-flee when hostile ATTACK+RA parts are overwhelming. Operator Memory.flee still garrisons.
+// Only auto-flee when hostile ATTACK+RA parts are overwhelming AND noOverrun===false.
+// Operator Memory.flee (abort) and enemy Safe Mode still garrison. Misaki 2026-11-04.
 function overrun(room) {
-  // Misaki 2026-11-04: do NOT auto-retreat on armed hostiles — only enemy Safe Mode aborts.
-  // Memory.ops.w47n9.noOverrun=true (default wartime) disables this path; overrunMin raises the bar if re-enabled.
   const P = typeof Memory !== 'undefined' && Memory.ops && Memory.ops.w47n9;
   if (!P || P.noOverrun !== false) return false; // default OFF unless explicitly noOverrun=false
   const min = (P.overrunMin != null) ? P.overrunMin : 40;
   return armedParts(room.find(FIND_HOSTILE_CREEPS).map(h => ({
     attack: h.getActiveBodyparts(ATTACK), ranged: h.getActiveBodyparts(RANGED_ATTACK),
   }))) >= min;
+}
+// Stale flee.why=overrun from older LIVE builds must not keep the squad in garrison when noOverrun is on.
+function clearStaleOverrun(P) {
+  if (!P || P.noOverrun === false) return false;
+  if (!(P.flee && P.flee.why === 'overrun')) return false;
+  delete P.flee;
+  delete P.garrison;
+  if (P.phase === 'fallback') P.phase = 'breach';
+  return true;
 }
 function squad(c) { return c.room.find(FIND_MY_CREEPS).filter(x => x !== c && x.memory && x.memory.role === 'raid9'); }
 function world(room) {
@@ -642,6 +678,16 @@ function fight(c, P) {
   strike(c, t, w, hp);
   if (c.pos.x !== ENTRY.x && c.pos.y >= 49) return go(c, ENTRY.x, ENTRY.y, 0);
   let goal = { x: post.x, y: post.y };
+  // Melee escorts dismantlers: stand next to nearest work so attack covers the smash. Misaki 2026-11-04.
+  if (kind === 'm' && P.escort !== false) {
+    const ds = alive.filter(x => x.memory && x.memory.kind === 'd');
+    if (ds.length) {
+      const anchor = _.min(ds, x => rng(c.pos, x.pos));
+      goal = { x: anchor.pos.x, y: Math.min(48, anchor.pos.y + (anchor.pos.y >= c.pos.y ? 0 : 1)) };
+      if (t && c.pos.isNearTo(t)) { /* already striking */ }
+      else if (rng(c.pos, goal) > 1) return go(c, goal.x, goal.y, 1);
+    }
+  }
   if (phase === 'punch') {
     if (post.row === 'front' || post.row === 'melee') goal = { x: mouth.x, y: 41 };
     else if (post.row === 'reserve') goal = { x: mouth.x, y: 43 };
@@ -661,14 +707,14 @@ function fight(c, P) {
       return go(c, goal.x, goal.y, kind === 'h' ? 1 : r);
     }
   }
-  // Healers ride the front: stand 2 behind the most-hurt (else nearest) front creep so rangedHeal reaches,
-  // out of y<=44 RA reach; fall back to the heal row only when own HP < healerHold (default 0.6).
-  if (kind === 'h' && (phase === 'breach' || phase === 'punch') && front.length && P.healFront !== false) {
+  // Healers 贴身治疗: stand healGap (default 1) behind the most-hurt (else nearest) front creep.
+  // Fall back to the heal row only when own HP < healerHold (default 0.6). Misaki 2026-11-04.
+  if (kind === 'h' && (phase === 'breach' || phase === 'punch' || phase === 'inside_towers' || phase === 'inside_clean') && front.length && P.healFront !== false) {
     const hold = P.healerHold == null ? HEAL_URGENT : P.healerHold;
     if (c.hits / c.hitsMax >= hold) {
       const hurt = front.filter(x => x.hits < x.hitsMax);
       const anchor = hurt.length ? _.min(hurt, x => x.hits / x.hitsMax) : _.min(front, x => rng(c.pos, x.pos));
-      const dy = P.healGap == null ? 2 : P.healGap;
+      const dy = P.healGap == null ? 1 : P.healGap;
       return go(c, anchor.pos.x, Math.min(48, anchor.pos.y + dy), 0);
     }
     return go(c, post.x, Math.max(post.y, 47), 0);
@@ -704,9 +750,11 @@ function run(c) {
   // forceGo FIRST — before raidOrder early-return, else resume never clears flee. Misaki 2026-11-04.
   if (P.forceGo) {
     delete P.flee; delete P.garrison; delete P.recycle; delete P.safe; delete P.safeUntil;
-    if (P.phase === 'fallback') P.phase = 'inside_towers';
+    if (P.phase === 'fallback') P.phase = 'breach';
     delete P.forceGo;
   }
+  // noOverrun (default): drop stale overrun flees so Memory cannot keep us garrisoned.
+  clearStaleOverrun(P);
   if (P.recycle === true) return recycleSelf(c);
   const order = manualOrder(c);
   if (order) return applyOrder(c, order);
@@ -718,8 +766,8 @@ function run(c) {
     P.garrison = true;
     return garrison(c);
   }
-  // Auto-overrun retreat disabled by default (noOverrun !== false). Only SM above aborts.
-  if (c.room.name === TARGET && overrun(c.room)) {
+  // Opt-in only: overrun flee requires explicit noOverrun=false. Else only SM (above) or abort flee.
+  if (P.noOverrun === false && c.room.name === TARGET && overrun(c.room)) {
     P.flee = P.flee || { t: Game.time, why: 'overrun' };
     P.garrison = true;
     P.phase = 'fallback';
@@ -739,6 +787,6 @@ module.exports = {
   raidActive, pauseCivilians, upgraderKeep, recycleSelf, applyPause, namesToRecycle, recycleCivilian,
   WAR_STOR, warFloor, warStorOk, fieldCaps, wantKind, wantSpawn, noteSpawned, mouthsOf, assignSeals, frontSlots, assignment,
   swampStep, stepOntoSwamp, pullMode, inApproach, assaultReady, shouldRegroup, syncGo,
-  observe, syncPhase, pick, pickInside, shouldYield, manualOrder, useMass, healPlan, armedParts, overrun,
+  observe, syncPhase, pick, pickInside, shouldYield, manualOrder, useMass, healPlan, armedParts, overrun, clearStaleOverrun,
   gSlotOf, run,
 };

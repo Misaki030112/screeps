@@ -8,7 +8,7 @@ const _ = Object.assign({}, L, {
 });
 Object.assign(global, {
   _: _, TOUGH: 'tough', WORK: 'work', ATTACK: 'attack', MOVE: 'move', RANGED_ATTACK: 'ranged_attack', HEAL: 'heal',
-  Memory: {}, Game: { time: 1, creeps: {}, spawns: {} },
+  FIND_HOSTILE_CREEPS: 'hostile', Memory: {}, Game: { time: 1, creeps: {}, spawns: {} },
 });
 const R = require(path.join(__dirname, '..', 'src', 'roles', 'raid9.js'));
 const src = fs.readFileSync(path.join(__dirname, '..', 'src', 'roles', 'raid9.js'), 'utf8');
@@ -37,7 +37,7 @@ assert.strictEqual(R.healBody(5300).length, 34);
 assert.strictEqual(R.bodyFor('d', 5300).length, 50);
 assert.strictEqual(R.bodyFor('d', 2300), null);
 assert.deepStrictEqual(R.MAX, { d: 4, m: 6, r: 6, h: 10 });
-assert.deepStrictEqual(R.NEED, { d: 2, m: 0, r: 0, h: 0 });
+assert.deepStrictEqual(R.NEED, { d: 1, m: 1, r: 0, h: 1 });
 assert.deepStrictEqual(R.ENTRY, { x: 38, y: 49 });
 assert.strictEqual(R.MIN_DPS, 1240);
 assert.strictEqual(R.DPS_ONE, 1200);
@@ -46,12 +46,18 @@ const room = (name, avail, cap) => ({ name, energyAvailable: avail, energyCapaci
 Memory.ops = { w47n9: { on: true } };
 Game.creeps = {};
 assert.strictEqual(R.wantSpawn(room('W45N8', 8000)), null);
-assert.strictEqual(R.wantSpawn(room('W46N8', 8000)).mem.kind, 'd', 'home prefers dismantlers');
-assert.strictEqual(R.wantSpawn(room('W47N8', 8000)).mem.kind, 'h', 'colony prefers healers');
+assert.strictEqual(R.wantSpawn(room('W46N8', 8000)).mem.kind, 'm', 'squad: attack first when tied');
+assert.strictEqual(R.wantSpawn(room('W47N8', 8000)).mem.kind, 'm', 'squad shared roster — attack still first');
+// with one m alive, next is d
+Game.creeps = { c0: { memory: { role: 'raid9', kind: 'm', k: 0 } } };
+assert.strictEqual(R.wantSpawn(room('W46N8', 8000)).mem.kind, 'd', 'squad: d after m');
+Game.creeps = { c0: { memory: { role: 'raid9', kind: 'm', k: 0 } }, c1: { memory: { role: 'raid9', kind: 'd', k: 0 } } };
+assert.strictEqual(R.wantSpawn(room('W47N8', 8000)).mem.kind, 'h', 'squad: h completes the trio');
 assert.strictEqual(R.wantSpawn(room('W47N8', 8000)).body.length, 34, 'colony healer fits RCL7');
+Game.creeps = {};
 const defer = R.wantSpawn(room('W46N8', 500));
 assert.strictEqual(defer.defer, true);
-assert.strictEqual(defer.mem.kind, 'd');
+assert.strictEqual(defer.mem.kind, 'm');
 assert.ok(defer.cost > 500);
 Memory.ops.w47n9.pauseSpawn = true;
 assert.strictEqual(R.wantSpawn(room('W46N8', 8000)), null);
@@ -70,15 +76,15 @@ for (let i = 0; i < 40; i++) {
   R.noteSpawned();
 }
 assert.deepStrictEqual(got, { d: 4, m: 6, r: 6, h: 10 });
-assert.strictEqual(seq[0], 'Hd');
-assert.strictEqual(seq[1], 'Ch');
+assert.strictEqual(seq[0], 'Hm', 'squad starts with attack');
+assert.ok(seq[1] === 'Cd' || seq[1] === 'Cm', 'colony fills next scarcest');
 assert.strictEqual(R.wantSpawn(room('W46N8', 8000)), null);
 assert.strictEqual(R.wantSpawn(room('W47N8', 8000)), null);
 assert.ok(Memory.ops.w47n9.n >= 26);
 // a death frees a slot; stream does not wait for a wave
 delete Game.creeps.c0;
 const refill = R.wantSpawn(room('W47N8', 8000));
-assert.ok(refill && !refill.defer && refill.mem.kind === 'd');
+assert.ok(refill && !refill.defer && (refill.mem.kind === 'm' || refill.mem.kind === 'd' || refill.mem.kind === 'h'));
 
 Memory.ops.w47n9.garrison = true;
 assert.strictEqual(R.wantSpawn(room('W46N8', 8000)), null);
@@ -107,13 +113,13 @@ assert.ok(!R.warStorOk(thinHome), 'home under 12k blocks');
 assert.strictEqual(R.wantSpawn(thinHome), null, 'wantSpawn null under home floor');
 const okHome = Object.assign(room('W46N8', 8000), { storage: { store: { energy: 13000 } } });
 assert.ok(R.warStorOk(okHome));
-assert.strictEqual(R.wantSpawn(okHome).mem.kind, 'd');
+assert.strictEqual(R.wantSpawn(okHome).mem.kind, 'm', 'squad: attack first above floor');
 const thinCol = Object.assign(room('W47N8', 8000), { storage: { store: { energy: 14000 } } });
 assert.strictEqual(R.wantSpawn(thinCol), null, 'colony under 15k blocks');
 const okCol = Object.assign(room('W47N8', 8000), { storage: { store: { energy: 20000 } } });
-assert.strictEqual(R.wantSpawn(okCol).mem.kind, 'h');
+assert.strictEqual(R.wantSpawn(okCol).mem.kind, 'm', 'squad shared: attack first');
 Memory.ops.w47n9.storFloorHome = 5000;
-assert.ok(R.wantSpawn(thinHome).mem.kind === 'd', 'storFloorHome override');
+assert.ok(R.wantSpawn(thinHome).mem.kind === 'm', 'storFloorHome override');
 delete Memory.ops.w47n9.storFloorHome;
 
 const Tgt = { builder: 4, upgrader: 2, hauler: 1 };
@@ -237,15 +243,19 @@ const cleared = { memory: { raidOrder: { clear: true, attack: 'x' } } };
 assert.strictEqual(R.manualOrder(cleared), null);
 
 const cr = (kind, roomName, x, y) => ({ memory: { role: 'raid9', kind }, room: { name: roomName }, pos: { x, y } });
-assert.ok(R.assaultReady([cr('d', 'W47N8', 38, 1), cr('d', 'W47N8', 37, 1), cr('h', 'W47N8', 39, 2)]));
-assert.ok(R.assaultReady([cr('d', 'W47N8', 38, 1), cr('d', 'W47N9', 38, 45), cr('m', 'W47N8', 37, 1)]));
-assert.ok(!R.assaultReady([cr('d', 'W47N8', 38, 1), cr('d', 'W47N8', 37, 1)]));
-assert.ok(!R.assaultReady([cr('d', 'W47N8', 38, 1), cr('h', 'W47N8', 38, 2), cr('m', 'W47N8', 38, 2)]));
+// full squad 1d+1m+1h on lip
+assert.ok(R.assaultReady([cr('d', 'W47N8', 38, 1), cr('m', 'W47N8', 37, 1), cr('h', 'W47N8', 39, 2)]));
+assert.ok(R.assaultReady([cr('d', 'W47N9', 38, 45), cr('m', 'W47N8', 37, 1), cr('h', 'W47N8', 39, 2)]));
+assert.ok(!R.assaultReady([cr('d', 'W47N8', 38, 1), cr('d', 'W47N8', 37, 1)]), 'no attack+heal');
+assert.ok(!R.assaultReady([cr('d', 'W47N8', 38, 1), cr('h', 'W47N8', 38, 2)]), 'missing melee');
+assert.ok(!R.assaultReady([cr('m', 'W47N8', 38, 1), cr('h', 'W47N8', 38, 2)]), 'missing dismantler');
+// far from lip (y>3) does not count
+assert.ok(!R.assaultReady([cr('d', 'W47N8', 38, 10), cr('m', 'W47N8', 37, 10), cr('h', 'W47N8', 39, 10)]));
 assert.ok(!R.shouldRegroup([cr('d', 'W47N9', 38, 43)]));
 assert.ok(R.shouldRegroup([cr('h', 'W47N8', 38, 2)]));
 Game.time = 80;
 const go = { on: true };
-R.syncGo(go, [cr('d', 'W47N8', 38, 1), cr('d', 'W47N8', 37, 2), cr('m', 'W47N8', 39, 1)]);
+R.syncGo(go, [cr('d', 'W47N8', 38, 1), cr('m', 'W47N8', 37, 2), cr('h', 'W47N8', 39, 1)]);
 assert.strictEqual(go.go, 80);
 const stay = { on: true, go: 10 };
 R.syncGo(stay, [cr('h', 'W47N9', 38, 47), cr('d', 'W46N8', 1, 1)]);
@@ -264,14 +274,19 @@ assert.strictEqual(focused[0].x, 39);
 assert.strictEqual(focused[1].x, 38);
 
 
-// alternate spawn: under-cap d/m interleave (never fill-all-d then m)
-Memory.ops.w47n9 = { on: true, alternate: true, lastKind: 'd', max: { d: 6, m: 6, r: 0, h: 0 } };
+// alternate spawn (squad off): under-cap d/m interleave (never fill-all-d then m)
+Memory.ops.w47n9 = { on: true, squad: false, alternate: true, lastKind: 'd', max: { d: 6, m: 6, r: 0, h: 0 } };
 assert.strictEqual(R.wantKind('W46N8', { d: 3, m: 0 }, { d: 6, m: 6, r: 0, h: 0 }, 5300), 'm', 'after d, next is m');
 Memory.ops.w47n9.lastKind = 'm';
 assert.strictEqual(R.wantKind('W46N8', { d: 3, m: 3 }, { d: 6, m: 6, r: 0, h: 0 }, 5300), 'd', 'after m, next is d when tied');
 assert.strictEqual(R.wantKind('W46N8', { d: 2, m: 4 }, { d: 6, m: 6, r: 0, h: 0 }, 5300), 'd', 'fewer d wins');
 Memory.ops.w47n9.alternate = false;
 assert.strictEqual(R.wantKind('W46N8', { d: 3, m: 0 }, { d: 6, m: 6, r: 0, h: 0 }, 5300), 'd', 'prefer order when alternate off');
+// squad on: tied d/m/h → attack first
+Memory.ops.w47n9 = { on: true, squad: true };
+assert.strictEqual(R.wantKind('W46N8', { d: 0, m: 0, h: 0 }, { d: 4, m: 4, r: 2, h: 4 }, 5300), 'm', 'squad tie → m');
+assert.strictEqual(R.wantKind('W46N8', { d: 1, m: 1, h: 0 }, { d: 4, m: 4, r: 2, h: 4 }, 5300), 'h', 'squad completes trio');
+assert.strictEqual(R.wantKind('W46N8', { d: 2, m: 2, h: 2 }, { d: 4, m: 4, r: 2, h: 4 }, 5300), 'm', 'squad next wave attack');
 delete Memory.ops.w47n9;
 
 
@@ -280,6 +295,26 @@ Memory.ops.w47n9 = { on: true, noOverrun: true };
 assert.strictEqual(R.overrun({ find() { throw new Error('should not scan'); } }), false, 'noOverrun blocks before find');
 Memory.ops.w47n9 = { on: true }; // undefined noOverrun => still OFF
 assert.strictEqual(R.overrun({ find() { throw new Error('should not scan'); } }), false, 'default off');
+// stale flee.why=overrun is scrubbed when noOverrun is on
+Memory.ops.w47n9 = { on: true, noOverrun: true, flee: { t: 1, why: 'overrun' }, garrison: true, phase: 'fallback' };
+assert.ok(R.clearStaleOverrun(Memory.ops.w47n9));
+assert.ok(!Memory.ops.w47n9.flee);
+assert.ok(!Memory.ops.w47n9.garrison);
+assert.strictEqual(Memory.ops.w47n9.phase, 'breach');
+// abort flee is NOT scrubbed
+Memory.ops.w47n9 = { on: true, flee: { t: 1, why: 'abort' }, garrison: true, phase: 'fallback' };
+assert.ok(!R.clearStaleOverrun(Memory.ops.w47n9));
+assert.strictEqual(Memory.ops.w47n9.flee.why, 'abort');
+// opt-in overrun still works when noOverrun===false
+Memory.ops.w47n9 = { on: true, noOverrun: false, overrunMin: 40 };
+assert.ok(R.overrun({ find() { return [{ getActiveBodyparts: (p) => p === 'attack' ? 25 : (p === 'ranged_attack' ? 20 : 0) }]; } }));
+delete Memory.ops.w47n9;
+
+// squad=false restores prefer order
+Memory.ops.w47n9 = { on: true, squad: false };
+Game.creeps = {};
+assert.strictEqual(R.wantSpawn(room('W46N8', 8000)).mem.kind, 'd', 'squad off: home prefer d');
+assert.strictEqual(R.wantSpawn(room('W47N8', 8000)).mem.kind, 'h', 'squad off: colony prefer h');
 delete Memory.ops.w47n9;
 
 console.log('raid9 ok');
