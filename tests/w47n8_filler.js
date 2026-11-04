@@ -238,6 +238,22 @@ say('sink buffer ok');
   Memory.ops.w8day.softE = 0;
   room.storage.store.energy = 23000; h.memory.sk = undefined; Game.time++;
   assert.strictEqual(RL._sink(room, h), room.storage, 'strict soft-band 23k softE=0 → storage');
+  // 11:4x 11-04: soft-band preempts sticky ctl/hub (post-clear bleed gap)
+  room.storage.store.energy = 23600; ctl.store.energy = 1920;
+  h.memory.sk = ctl.id; Game.time++;
+  assert.strictEqual(RL._sink(room, h), room.storage, 'holdBand preempts sticky ctl → storage');
+  assert.strictEqual(h.memory.sk, room.storage.id, 'sk retargeted to storage');
+  // sticky hub also preempted
+  const hub = Object.values(OBJ).find(s => s.structureType === 'container' && s.pos.x === 33 && s.pos.y === 33)
+    || Object.values(OBJ).find(s => s.structureType === 'container' && s !== ctl && s !== room.storage);
+  if (hub) {
+    hub.store.energy = 500; // free capacity so sticky would otherwise stick
+    h.memory.sk = hub.id; Game.time++;
+    assert.strictEqual(RL._sink(room, h), room.storage, 'holdBand preempts sticky hub → storage');
+  }
+  // hungry ctl still wins (holdBand false) even with sticky storage wanting release path
+  room.storage.store.energy = 23600; ctl.store.energy = 800; h.memory.sk = ctl.id; Game.time++;
+  assert.strictEqual(RL._sink(room, h), ctl, 'ctl hungry: sticky ctl kept (no holdBand)');
   creeps = [];
 }
 say('sink rebuild/soft-band ok');

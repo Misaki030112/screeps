@@ -1,5 +1,35 @@
 # Home W46N8 RCL7 readiness (strategy review 2026-10-19 18:4x UTC+8)
 
+## 2026-11-04 11:4x — soft-band sticky preempt (post-clear ctl sk)
+
+**Question:** SoftCap clears briefly (≥25k) then storage bleeds 25→21k within minutes even while `ctlBat` stays ≥1200 (holdBand should be ON). 20:4x already made soft-band STRICT `se<LEAN_SOFT` independent of softE — so why do haulers keep feeding ctl through the post-clear dip? Is sticky `memory.sk` the gap?
+
+**Answer: YES — soft-band must preempt sticky ctl/hub.** `sink()` only released sticky *storage* when holdBand dropped; it never broke sticky ctl/hub when holdBand rose. Post-clear haulers kept `sk=ctl` from the ≥25k feed window and ignored the new soft-band park. SoftCap/sealMinE/HUB_LINK/labs unchanged. **No softCap re-ask.**
+
+### Live (~11:42–11:46 Asia/Shanghai, deploy aa18731, tick ~84060380–84060420)
+| Room | Notes |
+|------|-------|
+| W46N8 | RCL7 ~24.70%; stor~16.0–16.1k ABOVE15k; upgFeed why=ok nUp3 work42 energy-bound; 2h soft CLEARED ~84%; remotes SAFE |
+| W47N8 | RCL7 ~10.47%; leanBank0 softCap2 ON softE1 softLeft~2.0k softBand1; hubReady1 hubPrime1 hubLinkE~381 upgCeil6; upgKeep2 nUp=4 (2× recycle TTL~800); hMax3 looseE~1.4k nHaul4; sealPark1 roadCrit0 contMinPct50 |
+| Colony | peacetime; CPU~16–17/20 bkt10k; labs OFF propose/actOk (**no re-ask**); softCap widget outstanding (**no re-ask**); neighbor scans PAUSED |
+
+3h room_stats: only **2** soft clears (11:15, 11:31 @~25.1k) then fast bleed (11:31 25148 → 11:32 23619 ctl1920 → 11:40 21427). holdBand was true at ctl1920 but park did not retarget.
+
+### Research
+1. **Our stack (pre-fix):** 20:4x restored STRICT soft-band `se<25k && ctl≥1200`. Selection path was correct for *fresh* `sk=undefined`. Sticky path returned `was=ctl` whenever ctl had free capacity — holdBand never consulted for non-storage sk. Classic post-clear: sk stuck on ctl from the feed window.
+2. **Overmind:** `UpgradeSite.storageBuffer=100k` gates upgrader *scale*; logistics `requestInput`/`bufferChoices` retarget to storage whenever colony assets are under buffer — no sticky sink that ignores the buffer floor. Transport power stays warm while upgrade parks.
+3. **TooAngel:** parks upgrade when storage thin; deposit priority stays storage-first under healthy floors.
+4. **Local safety kept:** ctl≥1200 gate unchanged (pre-hub deadlock guard when ctl sat at 0). softE hysteresis still nUp-only. sealPark / hubPrime / HMAX valve untouched. Secondary watch: when ctl dips <1200 mid-bleed (live 11:35 ctl1100 @stor22k) holdBand drops — hub→ctl can cover that later if thrash persists.
+
+### Shipped
+1. `roles.js` `sink()`: if holdBand && storage free → clear sticky ctl/hub (`was=null`) so park retargets to storage.
+2. Tests filler: sticky ctl @23.6k/ctl1920 → storage; sticky hub → storage; ctl hungry <1200 keeps sticky ctl.
+3. SoftCap / leanBank / sealMinE / HUB_LINK / labs / industry / market **unchanged**. **No re-ask.**
+
+**Expect after deploy:** next soft clear → first dip under 25k with ctl≥1200 retargets haulers to storage within one load (no multi-minute 25→21k bleed from sticky ctl); softLeft drain resumes; softE re-arm under 22k less often.
+
+---
+
 ## 2026-11-04 08:4x — W47 link-era HMAX overflow valve (softCap bank)
 
 **Question:** Under softCap+leanBank, W47 keeps `looseE` ~3–5k (source-B south cont+drop, A overflow when ctl battery fat) while link-era `HMAX=3` is saturated and bank climb is slow. The surplus line comments "4th when >2k piles" but `Math.min(HMAX=3, 4)=3` made that dead. Should link-era HMAX allow a 4th hauler when loose is chronically high — matching Overmind logistics-still-moves-while-upgrade-parks?

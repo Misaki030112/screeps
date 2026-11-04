@@ -8,6 +8,12 @@ hauler upkeep (CARRY need = 10 × (round trip × 1.10 + 4) / 50, load split 75% 
 0.03/t each, builder-lite 1000/1500. Upgrade = net / (1 + upgrader upkeep 1150/1500/10). RCL5: 1800 cap, best of source-A link→ctl or hub→ctl link (3% loss).
 reserve7 (2 CLAIM) is spawned and paid by home.
 
+## 2026-11-04 11:4x — soft-band sticky vs post-clear storage Δ
+
+Live model window (~1560t @11:28): upgrade **15.36** vs ideal **30.08** (~51%); delivered hub 28.3 / ctl 1.4 (link-era attribution); waiting_feed ~0.39 averaged across softCap ON periods; stor~23–25k thrash. 3h room_stats: soft clears rare (2×) then storage Δ deeply negative for minutes while ctl still fat — haul sink sticky, not WORK/link capacity.
+
+**Model implication:** soft-band park must retarget mid-load when `se` crosses under LEAN_SOFT; otherwise actual storage Δ after a clear stays negative even with holdBand true and HMAX/hubPrime healthy. See `docs/RCL7.md` 11:4x.
+
 ## 2026-11-04 05:4x — leanBank rebuild-band vs model upgrade
 
 Live (c5334c8, ~05:45 Asia/Hong_Kong): W47 storage ~16–18k leanBank sticky + softCap ON; **nUp=1** → last3h ~8.7 e/t vs prior3h ~13.7 and model softCap-band target ~12–16 (2×10W under softCap≤2). Cause was leanBank hard keep=1 dual-stacked under softCap≤2 after Invader dip below LEAN_ARM — not a haul/link bottleneck (hubReady1 hubPrime1 feedOk; waiting_feed low).

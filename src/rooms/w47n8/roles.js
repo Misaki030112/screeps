@@ -145,6 +145,13 @@ function sink(room, c) {
     return softFloor(se) && ctlE >= 1200;
   };
   if (was && room.storage && was.id === room.storage.id && !bufLow() && !holdBand()) was = null;
+  // 11:4x 11-04 strategy: soft-band must PREEMPT sticky ctl/hub. Post-clear (stor just dipped under
+  // LEAN_SOFT) haulers still carried sk=ctl from the ≥25k feed window; line above only releases
+  // sticky STORAGE when holdBand drops — never breaks sticky ctl/hub when holdBand rises. Live
+  // 11:31 clear@25.1k → 11:32 stor23.6k ctl1920 (holdBand true) still bled →21k because sk stuck
+  // on ctl. Overmind logistics retargets to storageBuffer whenever under buffer; TooAngel parks
+  // upgrade when thin — we keep nUp hysteresis and only retarget the sink.
+  if (was && room.storage && was.id !== room.storage.id && holdBand() && free(room.storage)) was = null;
   if (was) return was;
   // 17:4x filler buffer: while a w8filler lives, storage below one hub refill (+200) comes before the ctl/hub containers
   if (room.storage && free(room.storage) && bufLow()) { c.memory.sk = room.storage.id; return room.storage; }

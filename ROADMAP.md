@@ -3,6 +3,13 @@
 Novice zone ends **2026-10-28 03:33 UTC+8** (past as of 10-29). Defence timeline: `docs/DEFENSE_NOVICE.md` (2026-10-16); detail `docs/DEFENSE.md` / geometry `docs/DEFENSE_PLAN.md`.
 **Safe mode: NEVER auto-activate** — alert Misaki.
 
+## 2026-11-04 11:4x strategy review: soft-band sticky preempt (post-clear ctl sk)
+- **Chose:** SoftCap clears ≥25k then stor bleeds 25→21k in minutes while ctlBat≥1200 — does sticky `sk=ctl` ignore soft-band park? (OUR ops haul; labs OFF no re-ask; neighbor scans paused; softCap widget outstanding — do not re-ask.)
+- **Findings (`docs/RCL7.md` 11:4x / `docs/MODEL_W47N8.md` / `docs/STRATEGY.md`):** (1) Live ~11:42–11:46 Asia/Shanghai aa18731: peacetime; home ~24.70% stor~16k ABOVE 2h~84% CLEARED; W47 ~10.47% softCap2 ON softLeft~2k softBand1 hubPrime1 upgKeep2 nUp4(2 recycle) hMax3; remotes SAFE; labs OFF. (2) 3h: only 2 clears (11:15/11:31) then fast bleed (25148→23619@ctl1920→21427) — holdBand true but park stuck on ctl sk. (3) Overmind logistics retargets under storageBuffer; TooAngel parks upgrade when thin. (4) Fix: preempt sticky ctl/hub when holdBand && storage free.
+- **Shipped:** `roles.js` sink sticky preempt; filler tests. SoftCap/sealMinE/HUB_LINK/labs/industry/market unchanged. **No softCap re-ask.**
+- **Reprioritise (peacetime):** (1) softCap bank→clear ≥25k with **soft-band preempt sticky ctl/hub**; (2) hold clear / nUp→ceil6 short≥70%; (3) keep roadCrit=0 + contMinPct≥50; (4) seal→1M under soft-gate; (5) home floor ≥15k; (6) **defer** labs KO (**no re-ask**) / boost / STATIONARY_FILL / industry / market.
+- **Plan check:** autonomous sticky preempt — no new Misaki decision. WakeParent **no** (anti-spam; softCap widget outstanding — do not re-ask; labs no re-ask).
+
 ## 2026-11-04 08:4x strategy review: W47 link HMAX overflow under softCap bank
 - **Chose:** Under softCap+leanBank, W47 looseE stays ~3–5k (B south overflow) while link-era HMAX=3 is saturated — should HMAX allow a 4th hauler when loose>2000? (OUR ops economy/pathing; labs OFF no re-ask; neighbor scans paused; softCap widget outstanding — do not re-ask.)
 - **Findings (`docs/RCL7.md` 08:4x / `docs/MODEL_W47N8.md` / `docs/STRATEGY.md`):** (1) Live ~08:48–08:52 Asia/Hong_Kong 9df28e6: peacetime; home ~24.18% stor~15–16k ABOVE; W47 ~10.09% leanBank1 softCap2 ON softLeft~10k hubPrime1 upgKeep2 nUp=2 **nHaul=3** **looseE~4.2–4.8k** waste_other~8.7; remotes SAFE; labs OFF. (2) Gap: surplus "4th when >2k" was dead under fixed HMAX=3 (`Math.min(3,4)=3`). src_A~0.07 is link-era meter artifact; B overflow is real. (3) Overmind transport power independent of storageBuffer; TooAngel keeps logistics warm while upgrade parks. (4) Fix: dynamic link HMAX 3/4 + `w8day.hMax`.
