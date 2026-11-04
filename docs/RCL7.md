@@ -1,6 +1,38 @@
 # Home W46N8 RCL7 readiness (strategy review 2026-10-19 18:4x UTC+8)
 
+## 2026-11-04 08:4x — W47 link-era HMAX overflow valve (softCap bank)
+
+**Question:** Under softCap+leanBank, W47 keeps `looseE` ~3–5k (source-B south cont+drop, A overflow when ctl battery fat) while link-era `HMAX=3` is saturated and bank climb is slow. The surplus line comments "4th when >2k piles" but `Math.min(HMAX=3, 4)=3` made that dead. Should link-era HMAX allow a 4th hauler when loose is chronically high — matching Overmind logistics-still-moves-while-upgrade-parks?
+
+**Answer: YES — dynamic link HMAX: 3 steady / 4 while `looseE>2000`. Floor stays 2. SoftCap / leanBank / seal / labs unchanged. No softCap re-ask.**
+
+### Live (~08:48–08:52 Asia/Hong_Kong, deploy 9df28e6, tick ~84057860–84057923)
+| Room | Notes |
+|------|-------|
+| W46N8 | RCL7 ~24.18%; stor~15.1–15.8k ABOVE; 2h soft ~67–70%; remotes SAFE post-W45N7 Invader clear |
+| W47N8 | RCL7 ~10.09%; leanBank1 bankLeft~4.7–5.4k softCap2 ON softLeft~9.7–10.4k softBand1; hubReady1 hubPrime1 upgKeep2 nUp=2; **nHaul=3 @HMAX**; **looseE~4.2–4.8k** (B cont~1.6k + drop~1.8k); model waste_other~8.7; contMinPct~46–48 contLow2 roadCrit0 sealPark1 |
+| Colony | peacetime; CPU~14–17/20 bkt10k; ~37–39 creeps; labs OFF (**no re-ask**); neighbor force scan PAUSED; softCap widget outstanding (**no re-ask**) |
+
+src_A meter ~0.07 is the **link-era harvest artifact** (A→ctl link, not idle mine). B has no link — overflow is real.
+
+### Research
+1. **Our stack (pre-fix):** 02:4x raised link HMAX 2→3 as overflow valve. Surplus rule still said `loose>2000 → 4`, but `Math.min(HMAX, 4)` with HMAX fixed at 3 never spawned a 4th. Soft-band correctly parks to storage when ctl≥1200; the pipe was CARRY-bound at 3×10C vs south B path + decay.
+2. **Overmind:** `UpgradeSite.storageBuffer` gates **upgrader scale** only. `TransportOverlord.neededTransportPower()` sizes transporters from mining `energyPerTick × distance` (± upgrade battery) **independent** of storageBuffer. Logistics `requestOutput` on saturated mining containers continues while upgrade parks; transporters deposit excess at storage/`bufferChoices`.
+3. **TooAngel / Screeps docs:** excess belongs in storage, not decaying at sources. Keep upgrade parked under soft floor; keep logistics warm.
+4. **Local safety:** softCap≤2 / leanBank upgKeep / soft-band STRICT park / sealPark / hubPrime already protect the cushion. A transient 4th hauler (+~0.5–1 e/t upkeep while piles>2k) only accelerates bank refill; ages out when loose drains below 2000 (HMAX→3).
+
+### Shipped
+1. Link-era `HMAX = looseE>2000 ? 4 : 3` (floor `hFloor=2` unchanged).
+2. `w8day.hMax` observability.
+3. Tests: 3rd under soft-cap still; **new** 4th when 3 haulers + loose>2000.
+4. SoftCap / leanBank / sealMinE / HUB_LINK / labs / industry / market **unchanged**. **No re-ask.**
+
+**Expect after deploy:** with looseE>2k → spawn 4th w8hauler → B cont+drop drain into storage via soft-band; bankLeft/softLeft fall faster; looseE→<2k → HMAX back to 3; waste_other shrinks. No softCap/labs decision needed.
+
+---
+
 ## 2026-11-04 05:4x — leanBank rebuild-band upgKeep (post-defense dual-stack)
+
 
 **Question:** After Invader/remote DEFEND drain re-arms leanBank (stor dipped below `LEAN_ARM` 15k), leanBank kept nUp at **0/1 until stor≥20k** even though softCap already caps ≤2 and soft-band+sealPark protect the climb. Live spent hours at ~8 e/t upgrade in the 15–18k band. Should post-minBuild leanBank in `[LEAN_ARM, LEAN_STOR)` allow softCap parity (≤2) instead of hard 0/1?
 

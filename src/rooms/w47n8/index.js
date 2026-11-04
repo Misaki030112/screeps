@@ -197,7 +197,12 @@ function spawnRun(spawn) {
   // 11-02 02:4x strategy: soft-cap ≤2 (LEAN_SOFT) saturates ctl cont → source conts fill → src_A harvest soft (~2 e/t).
   // HMAX=2 also blocked the loose>1200 surplus rule from spawning a 3rd hauler, so piles never drained into rebuild-band storage.
   // Cap 3 under links so overflow can park into storage without lifting the upgrader soft-cap (floor stays 2 via hFloor).
-  const HMAX = wm.links ? 3 : Math.max(3, Math.min(4, Math.ceil(((wm.lcarry || 20) + 10) / 10) + 1));
+  // 11-04 08:4x: link-era HMAX=3 + Math.min(..., loose>2000?4:3) still capped at 3 — the "4th when >2k" comment was dead.
+  // SoftCap+leanBank parks nUp≤2 while B (south, no link) + A-overflow pile to looseE~3–5k; 3×10C cannot clear into storage.
+  // Overmind transporters size off mining e/t×distance independent of storageBuffer; TooAngel keeps logistics warm while upgrade parks.
+  // Dynamic: links → 3 steady / 4 while loose>2000 (overflow valve). Floor stays 2.
+  const looseNow = looseE(room);
+  const HMAX = wm.links ? (looseNow > 2000 ? 4 : 3) : Math.max(3, Math.min(4, Math.ceil(((wm.lcarry || 20) + 10) / 10) + 1));
   const rCarry = (ttl) => cs.filter(c => c.memory.role === 'w8rhauler' && (c.spawning || c.ticksToLive > ttl)).reduce((a, c) => a + c.body.filter(p => p.type === CARRY).length, 0);
   if (!want && ours7 && lo7 > 1000 && n('w8rminer') && rCarry(150) < rNeed * (lo7 > 3000 ? 1 : 0.6)) want = 'w8rhauler';
   // 12:00: local loose ~2.9k (source conts 1090/2000) with hub 0 while spawn waited on a 1000-cost 4th builder (have 3). Surplus
@@ -728,6 +733,8 @@ function dayObs(room) {
     sealRaise: (TH.sealDeepOk(storE) && (TH.sealCap() > TH.STAGE3)) ? 1 : 0, // 02:4x: soft-gate (softCap2 + sticky park)
     sealPark: TH.sealParked() ? 1 : 0,
     towerMinE, towerHubE, towerNorthE, nf, eAvail, eCap, looseE: loose,
+    // 08:4x 11-04: effective local hauler cap (links: 3 steady / 4 while loose>2000)
+    hMax: ((Memory.ops && Memory.ops.w8model && Memory.ops.w8model.links) ? (loose > 2000 ? 4 : 3) : 4),
     hubLinkE, hubReady, hubLink: C.HUB_LINK ? 1 : 0, // 23:4x strategy: HUB_LINK plumbing obs
     // 23:4x 11-03: hubPrime=1 when hub link holds ≥HUB_SEND(200) — patrol sees pre-warm during softCap bank
     hubPrime: (hubReady && hubLinkE >= 200) ? 1 : 0,

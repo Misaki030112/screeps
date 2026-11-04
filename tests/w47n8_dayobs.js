@@ -57,6 +57,9 @@ assert.strictEqual(d0.eAvail, 1800);
 assert.strictEqual(d0.eCap, 2300);
 assert.ok('looseE' in d0, '08:4x looseE obs');
 assert.strictEqual(d0.looseE, 0, 'no drops/conts in mk → 0');
+assert.ok('hMax' in d0, '08:4x 11-04 hMax obs');
+assert.strictEqual(d0.hMax, 4, 'no w8model.links → pre-link hMax 4');
+
 // near RCL7
 W.dayObs(mk(6, base, [], 50000));
 assert.strictEqual(Memory.ops.w8day.why, 'near');

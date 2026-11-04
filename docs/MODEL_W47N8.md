@@ -151,6 +151,19 @@ Links **live and transferring**: A 26,12 → ctl 13,25 (both hold energy; hauler
 
 **Fix:** link-era `HMAX` 2→3; floor stays 2. See `docs/RCL7.md` "02:4x".
 
+## 2026-11-04 08:4x strategy: link HMAX 3→4 overflow under softCap bank
+
+**Symptom:** Peacetime softCap+leanBank: upgrade capped ≤2 (intentional); `looseE` stuck ~3–5k; nHaul=3 @HMAX; source-B cont+drop ~3.5k; model `waste_other` ~8–9; bank climb slow (~5k bankLeft).
+
+**Mechanism:** 02:4x set link-era `HMAX=3`. Surplus still coded `Math.min(HMAX, loose>2000?4:3)` — with HMAX fixed at 3 the 4th never spawned. B has no link; soft-band parks correctly to storage but 30 CARRY cannot clear south overflow + decay while A link saturates ctl.
+
+**Model note:** `w8model.lcarry≈9` / `links:true` still correct for **steady** link-fed upgrade. The 4th hauler is a **chronic-overflow valve** (same shape as the 3rd), not a return to pre-link floor. Expected upkeep +~0.5–1 e/t only while loose>2000; HMAX falls back to 3 after drain.
+
+**Research:** Overmind transporters sized from mining e/t×distance independent of `storageBuffer`; logistics keep `requestOutput` on full containers while UpgradeSite parks. TooAngel: excess → storage.
+
+**Fix:** `HMAX = links ? (loose>2000 ? 4 : 3) : …`. Floor stays 2. See `docs/RCL7.md` "08:4x".
+
+
 ## 2026-11-02 08:4x strategy: soft-band park vs soft-cap exit
 
 **Symptom:** Hours after HMAX 2→3: upgrade still ~16.5/30 (55%); `upgrader_work=20`; stor flat ~20.1k; ctl+hub full; looseE~4.8k; `src_A` still soft in 2h meter (~0.8 — link-path artifact + occasional stall).

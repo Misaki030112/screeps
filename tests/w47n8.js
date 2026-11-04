@@ -66,7 +66,7 @@ assert.strictEqual(run(full).role, 'w8upgrader');
 Memory.ops = { w8model: { links: true, lcarry: 9, rcarry: 49, upw: 31 } };
 const linked = { a: mk('w8miner', 'W47N8', { si: 0 }), b: mk('w8miner', 'W47N8', { si: 1 }), c: mk('w8hauler', 'W47N8'), d: mk('w8hauler', 'W47N8') };
 assert.strictEqual(run(linked).role, 'w8upgrader', 'links:true hauler floor is 2');
-// 11-02 02:4x: links HMAX=3 — under soft-cap (2 upgraders, stor<LEAN_SOFT) surplus spawns 3rd hauler when source conts overflow
+// 11-02 02:4x: links HMAX — under soft-cap (2 upgraders, stor<LEAN_SOFT) surplus spawns 3rd hauler when source conts overflow
 const linkedSoft = Object.assign({}, linked, {
   e: mk('w8upgrader', 'W47N8'), f: mk('w8upgrader', 'W47N8')
 });
@@ -78,7 +78,13 @@ const srcCont = {
 assert.strictEqual(run(linkedSoft, 0, 1300, {
   storage: { store: { energy: 18000 } },
   _structs: [srcCont]
-}).role, 'w8hauler', 'links:true HMAX=3 spawns 3rd hauler on loose>2000 under soft-cap');
+}).role, 'w8hauler', 'links:true HMAX spawns 3rd hauler on loose>2000 under soft-cap');
+// 11-04 08:4x: with 3 haulers already + loose>2000, HMAX rises to 4 (overflow valve for B/south)
+const linkedSoft3 = Object.assign({}, linkedSoft, { g: mk('w8hauler', 'W47N8') });
+assert.strictEqual(run(linkedSoft3, 0, 1300, {
+  storage: { store: { energy: 18000 } },
+  _structs: [srcCont]
+}).role, 'w8hauler', 'links:true HMAX=4 spawns 4th hauler on loose>2000 under soft-cap');
 delete Memory.ops;
 Object.assign(full, { e: mk('w8upgrader', 'W47N8'), f: mk('w8upgrader', 'W47N8') });
 assert.strictEqual(run(full, 3).role, 'w8builder');

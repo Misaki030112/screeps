@@ -3,7 +3,15 @@
 Novice zone ends **2026-10-28 03:33 UTC+8** (past as of 10-29). Defence timeline: `docs/DEFENSE_NOVICE.md` (2026-10-16); detail `docs/DEFENSE.md` / geometry `docs/DEFENSE_PLAN.md`.
 **Safe mode: NEVER auto-activate** — alert Misaki.
 
+## 2026-11-04 08:4x strategy review: W47 link HMAX overflow under softCap bank
+- **Chose:** Under softCap+leanBank, W47 looseE stays ~3–5k (B south overflow) while link-era HMAX=3 is saturated — should HMAX allow a 4th hauler when loose>2000? (OUR ops economy/pathing; labs OFF no re-ask; neighbor scans paused; softCap widget outstanding — do not re-ask.)
+- **Findings (`docs/RCL7.md` 08:4x / `docs/MODEL_W47N8.md` / `docs/STRATEGY.md`):** (1) Live ~08:48–08:52 Asia/Hong_Kong 9df28e6: peacetime; home ~24.18% stor~15–16k ABOVE; W47 ~10.09% leanBank1 softCap2 ON softLeft~10k hubPrime1 upgKeep2 nUp=2 **nHaul=3** **looseE~4.2–4.8k** waste_other~8.7; remotes SAFE; labs OFF. (2) Gap: surplus "4th when >2k" was dead under fixed HMAX=3 (`Math.min(3,4)=3`). src_A~0.07 is link-era meter artifact; B overflow is real. (3) Overmind transport power independent of storageBuffer; TooAngel keeps logistics warm while upgrade parks. (4) Fix: dynamic link HMAX 3/4 + `w8day.hMax`.
+- **Shipped:** `index.js` HMAX dynamic; dayobs `hMax`; tests 4th under soft-cap. SoftCap/sealMinE/HUB_LINK/labs/industry/market unchanged. **No softCap re-ask.**
+- **Reprioritise (peacetime):** (1) softCap bank→clear ≥25k with **looseE drain via HMAX=4 valve**; (2) leanBank [15k,20k) upgKeep=2; (3) keep roadCrit=0 + contMinPct≥50 (live ~46–48 — miner/standee repair); (4) seal→1M under soft-gate; (5) home floor ≥15k; (6) **defer** labs KO (**no re-ask**) / boost / STATIONARY_FILL / industry / market.
+- **Plan check:** autonomous HMAX overflow valve — no new Misaki decision. WakeParent **no** (anti-spam; softCap widget outstanding — do not re-ask; labs no re-ask).
+
 ## 2026-11-04 05:4x strategy review: leanBank rebuild-band upgKeep (post-defense)
+
 - **Chose:** After Invader drain re-arms leanBank (stor <15k), hard nUp 0/1 until 20k dual-stacks under softCap≤2 — freeze W47 ~8 e/t for hours in 15–18k. Allow softCap parity in [15k,20k)? (OUR ops; labs OFF no re-ask; neighbor scans paused; softCap widget outstanding — do not re-ask.)
 - **Findings (`docs/RCL7.md` 05:4x / `docs/STRATEGY.md` / `docs/MODEL_W47N8.md`):** (1) Live ~05:45 Asia/Hong_Kong c5334c8: peacetime; home ~23.74% stor~16k ABOVE last3h~19 e/t; W47 ~9.85% leanBank1 bankLeft~2.8k softCap2 ON softLeft~7.8k hubPrime1 upgraders=1 last3h~8.7 e/t; W45N7 SAFE post-core kill; labs OFF. (2) 6h: W47 ~23.5k→thrash19–22k→dip≤15k@~03:00→stuck15–18k. (3) Overmind single storageBuffer; TooAngel keeps upgrade floor when thin. soft-band+sealPark already protect [15k,25k). (4) Fix: `leanUpKeep` <15k→1 / else→2; spawn+recycle+`w8day.upgKeep`.
 - **Shipped:** `index.js` leanUpKeep + banded recycle/spawn; dayobs tests; SoftCap/sealMinE/HUB_LINK/labs/industry/market unchanged. **No softCap re-ask.**
