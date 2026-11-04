@@ -413,9 +413,14 @@ function armedParts(creeps) {
 }
 // Only auto-flee when hostile ATTACK+RA parts are overwhelming. Operator Memory.flee still garrisons.
 function overrun(room) {
+  // Misaki 2026-11-04: do NOT auto-retreat on armed hostiles — only enemy Safe Mode aborts.
+  // Memory.ops.w47n9.noOverrun=true (default wartime) disables this path; overrunMin raises the bar if re-enabled.
+  const P = typeof Memory !== 'undefined' && Memory.ops && Memory.ops.w47n9;
+  if (!P || P.noOverrun !== false) return false; // default OFF unless explicitly noOverrun=false
+  const min = (P.overrunMin != null) ? P.overrunMin : 40;
   return armedParts(room.find(FIND_HOSTILE_CREEPS).map(h => ({
     attack: h.getActiveBodyparts(ATTACK), ranged: h.getActiveBodyparts(RANGED_ATTACK),
-  }))) >= 40;
+  }))) >= min;
 }
 function squad(c) { return c.room.find(FIND_MY_CREEPS).filter(x => x !== c && x.memory && x.memory.role === 'raid9'); }
 function world(room) {
@@ -699,20 +704,28 @@ function run(c) {
   if (P.recycle === true) return recycleSelf(c);
   const order = manualOrder(c);
   if (order) return applyOrder(c, order);
-  if (P.garrison || P.safe || P.flee || P.phase === 'fallback') return garrison(c);
+  // forceGo: operator resume — clear stale flee/garrison/fallback (not SM). Misaki 2026-11-04.
+  if (P.forceGo) {
+    delete P.flee; delete P.garrison; delete P.recycle; delete P.safe; delete P.safeUntil;
+    if (P.phase === 'fallback') P.phase = 'inside_towers';
+    delete P.forceGo;
+  }
   const tr = Game.rooms[TARGET];
   if (tr && tr.controller && tr.controller.safeMode) {
     P.safeUntil = Game.time + tr.controller.safeMode;
     P.safe = P.safe || Game.time;
     P.phase = 'fallback';
+    P.garrison = true;
     return garrison(c);
   }
+  // Auto-overrun retreat disabled by default (noOverrun !== false). Only SM above aborts.
   if (c.room.name === TARGET && overrun(c.room)) {
     P.flee = P.flee || { t: Game.time, why: 'overrun' };
     P.garrison = true;
     P.phase = 'fallback';
     return garrison(c);
   }
+  if (P.garrison || P.safe || P.flee || P.phase === 'fallback') return garrison(c);
   const alive = allRaid();
   tickSquad(P, alive);
   if (P.phase === 'fallback' || P.garrison || P.flee) return garrison(c);

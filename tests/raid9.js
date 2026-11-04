@@ -274,4 +274,12 @@ Memory.ops.w47n9.alternate = false;
 assert.strictEqual(R.wantKind('W46N8', { d: 3, m: 0 }, { d: 6, m: 6, r: 0, h: 0 }, 5300), 'd', 'prefer order when alternate off');
 delete Memory.ops.w47n9;
 
+
+// noOverrun default: armed hostiles do NOT auto-flee (Misaki 2026-11-04 — only SM aborts)
+Memory.ops.w47n9 = { on: true, noOverrun: true };
+assert.strictEqual(R.overrun({ find() { throw new Error('should not scan'); } }), false, 'noOverrun blocks before find');
+Memory.ops.w47n9 = { on: true }; // undefined noOverrun => still OFF
+assert.strictEqual(R.overrun({ find() { throw new Error('should not scan'); } }), false, 'default off');
+delete Memory.ops.w47n9;
+
 console.log('raid9 ok');
