@@ -476,25 +476,67 @@ function world(room) {
     hc,
   };
 }
+// Same-tick friendly swap/pull. Screeps lets A enter B's tile when B moves out (or into A's)
+// this tick — without this, raid creeps jam the mouth/tower lanes and healers never stick.
+// Misaki 2026-11-04: "creep 可以互相交换位置的。不要傻傻的"
+const OPP_DIR = { 1: 5, 2: 6, 3: 7, 4: 8, 5: 1, 6: 2, 7: 3, 8: 4 };
+function stepFriend(c, nx, ny) {
+  if (!c || c.fatigue || nx == null || ny == null) return false;
+  if (nx < 0 || nx > 49 || ny < 0 || ny > 49) return false;
+  if (c.room.getTerrain().get(nx, ny) === TERRAIN_MASK_WALL) return false;
+  const dir = c.pos.getDirectionTo(nx, ny);
+  if (!dir) return false;
+  const b = c.room.lookForAt(LOOK_CREEPS, nx, ny)[0];
+  if (!b) { c.move(dir); return true; }
+  if (!b.my || b.fatigue) return false;
+  // Swap: blocker steps into our tile; we step onto theirs. Prefer raid mates; still shove
+  // any non-fatigued own creep (enemy room rarely has civvies).
+  b.move(OPP_DIR[dir]);
+  c.move(dir);
+  return true;
+}
 function go(c, x, y, range) {
   if (c.fatigue) return false;
+  const r = range || 0;
   if (c.room.name === TARGET) {
     const goal = { x, y };
+    if (rng(c.pos, goal) <= r) return true;
     const off = swampStep(c.pos, goal);
-    if (off) { c.move(c.pos.getDirectionTo(off.x, off.y)); return false; }
+    if (off) { stepFriend(c, off.x, off.y); return false; }
     if (stepOntoSwamp(c.pos, goal)) {
       const via = swampStep(SWAMP, goal);
-      c.move(c.pos.getDirectionTo(via.x, via.y));
+      stepFriend(c, via.x, via.y);
       return false;
     }
-    if (rng(c.pos, goal) <= (range || 0)) return true;
-    c.moveTo(new RoomPosition(x, y, TARGET), {
-      range: range || 0, reusePath: 3, maxRooms: 1, swampCost: 5,
-      costCallback(rn, m) { if (rn === TARGET) m.set(SWAMP.x, SWAMP.y, 255); return m; },
+    // Ignore creeps in PathFinder, then swap into the first step if a friend holds it.
+    // Waiting for MV stuck≥2 is too slow at the breach.
+    const res = PathFinder.search(c.pos, { pos: new RoomPosition(x, y, TARGET), range: r }, {
+      plainCost: 2, swampCost: 5, maxRooms: 1, maxOps: 800,
+      roomCallback(rn) {
+        if (rn !== TARGET) return false;
+        const room = Game.rooms[rn]; if (!room) return false;
+        const m = new PathFinder.CostMatrix();
+        m.set(SWAMP.x, SWAMP.y, 255);
+        for (const s of room.find(FIND_STRUCTURES)) {
+          if (s.structureType === STRUCTURE_ROAD) {
+            if (m.get(s.pos.x, s.pos.y) === 0) m.set(s.pos.x, s.pos.y, 1);
+          } else if (s.structureType !== STRUCTURE_CONTAINER
+            && !(s.structureType === STRUCTURE_RAMPART && (s.my || s.isPublic))) {
+            m.set(s.pos.x, s.pos.y, 255);
+          }
+        }
+        return m;
+      },
     });
-    return false;
+    if (res.path && res.path.length) {
+      const n = res.path[0];
+      stepFriend(c, n.x, n.y);
+      return false;
+    }
+    // Fallback: MV.to noDetour still swaps at stuck≥2 if PathFinder found nothing.
+    return MV.to(c, x, y, r, ND);
   }
-  return MV.to(c, x, y, range || 0, ND);
+  return MV.to(c, x, y, r, ND);
 }
 function resolveTarget(c, spec) {
   if (!spec) return null;
@@ -703,7 +745,7 @@ function fight(c, P) {
         if (anchor) goal = { x: anchor.pos.x, y: Math.min(48, anchor.pos.y + 1) };
       }
       if (rng(c.pos, goal) <= r && kind !== 'h') return;
-      if (hp && hp.mode === 'far' && hp.ratio < HEAL_URGENT) return c.moveTo(hp.pos, { range: 1, reusePath: 2, maxRooms: 1 });
+      if (hp && hp.mode === 'far' && hp.ratio < HEAL_URGENT) return go(c, hp.pos.x, hp.pos.y, 1);
       return go(c, goal.x, goal.y, kind === 'h' ? 1 : r);
     }
   }
@@ -786,7 +828,7 @@ module.exports = {
   DISMANTLER, MELEE, RANGED, HEALER, healBody, bodyFor, costOf,
   raidActive, pauseCivilians, upgraderKeep, recycleSelf, applyPause, namesToRecycle, recycleCivilian,
   WAR_STOR, warFloor, warStorOk, fieldCaps, wantKind, wantSpawn, noteSpawned, mouthsOf, assignSeals, frontSlots, assignment,
-  swampStep, stepOntoSwamp, pullMode, inApproach, assaultReady, shouldRegroup, syncGo,
+  swampStep, stepOntoSwamp, stepFriend, pullMode, inApproach, assaultReady, shouldRegroup, syncGo,
   observe, syncPhase, pick, pickInside, shouldYield, manualOrder, useMass, healPlan, armedParts, overrun, clearStaleOverrun,
   gSlotOf, run,
 };

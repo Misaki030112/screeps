@@ -317,4 +317,48 @@ assert.strictEqual(R.wantSpawn(room('W46N8', 8000)).mem.kind, 'd', 'squad off: h
 assert.strictEqual(R.wantSpawn(room('W47N8', 8000)).mem.kind, 'h', 'squad off: colony prefer h');
 delete Memory.ops.w47n9;
 
+
+// Friendly same-tick swap at the mouth (Misaki 2026-11-04).
+assert.ok(typeof R.stepFriend === 'function', 'stepFriend exported');
+assert.ok(src.includes('stepFriend'), 'src has stepFriend');
+assert.ok(src.includes('OPP_DIR'), 'src has OPP_DIR');
+assert.ok(!src.includes('reusePath: 3, maxRooms: 1, swampCost: 5'), 'TARGET go no longer raw moveTo');
+{
+  const moves = [];
+  const mk = (name, x, y, fatigue) => ({
+    name, fatigue: fatigue || 0, my: true, room: { name: 'W47N9', lookForAt: () => [], getTerrain: () => ({ get: () => 0 }) },
+    pos: { x, y, getDirectionTo(nx, ny) {
+      const dx = Math.sign(nx - x), dy = Math.sign(ny - y);
+      const map = { '0,-1': 1, '1,-1': 2, '1,0': 3, '1,1': 4, '0,1': 5, '-1,1': 6, '-1,0': 7, '-1,-1': 8 };
+      return map[dx + ',' + dy] || 0;
+    }},
+    move(d) { moves.push([name, d]); return 0; },
+    memory: { role: 'raid9', kind: 'm' },
+  });
+  // empty tile → just move TOP (1)
+  const a = mk('A', 38, 43);
+  a.room.lookForAt = () => [];
+  a.room.getTerrain = () => ({ get: () => 0 });
+  global.TERRAIN_MASK_WALL = 1;
+  global.LOOK_CREEPS = 'creeps';
+  assert.strictEqual(R.stepFriend(a, 38, 42), true);
+  assert.deepStrictEqual(moves, [['A', 1]]);
+  moves.length = 0;
+  // friend on goal → swap (A TOP, B BOTTOM)
+  const b = mk('B', 38, 42);
+  const a2 = mk('A', 38, 43);
+  a2.room.lookForAt = () => [b];
+  a2.room.getTerrain = () => ({ get: () => 0 });
+  assert.strictEqual(R.stepFriend(a2, 38, 42), true);
+  assert.deepStrictEqual(moves.sort(), [['A', 1], ['B', 5]].sort());
+  moves.length = 0;
+  // fatigued friend → no move
+  const bf = mk('B', 38, 42, 1);
+  const a3 = mk('A', 38, 43);
+  a3.room.lookForAt = () => [bf];
+  a3.room.getTerrain = () => ({ get: () => 0 });
+  assert.strictEqual(R.stepFriend(a3, 38, 42), false);
+  assert.deepStrictEqual(moves, []);
+}
+
 console.log('raid9 ok');
