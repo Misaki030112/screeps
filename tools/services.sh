@@ -39,6 +39,10 @@ if [ "$cur" != "$PGDIR" ]; then
   for f in postgresql.conf pg_hba.conf pg_ident.conf; do sudo cat /etc/postgresql/17/main/$f > var/pg17-conf/$f; done   # keep for next adopt
 fi
 if pg_lsclusters -h | awk '$1==17 && $2=="main"{print $4}' | grep -q online; then ok postgres; else start postgres; sudo pg_ctlcluster 17 main start || die "pg start"; fi
+# Apache Timescale: plain views stand in for continuous aggregates (Grafana); idempotent
+if [ -f db/views_apache.sql ]; then
+  PGPASSWORD=$PGPASSWORD psql -h 127.0.0.1 -U screeps -d screeps -v ON_ERROR_STOP=1 -f db/views_apache.sql >/dev/null && ok views_apache || echo "WARN views_apache failed"
+fi
 if [ -n "$NEED_RESTORE" ]; then tools/pg_backup.sh --restore || die restore; fi
 
 # 3. other services
