@@ -139,6 +139,7 @@ function hop(c, dest) {
   move.to(c, ex, ey, 0);
 }
 module.exports = { ROUTE_FIX, routeJob, remoteRoadSite, remoteRefill, pickSource, hop, run(c) {
+  if (require('../utils/cmd').yieldCreep(c)) return; // beats wartime recycleCivilian while the order is live
   const room = c.room, P = plan.get(c.memory.home || room.name) || plan.get(room.name);
   if (!P) return;
   // W47N9 wartime: walk home and recycle. Logistics (miner/hauler/filler/remote) are not builders.

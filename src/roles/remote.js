@@ -143,6 +143,7 @@ function flee(c) {
 }
 const roles = {
   rminer(c) {
+    if (require('../utils/cmd').yieldCreep(c)) return;
     const C = remote.CFG[c.memory.remote]; if (remote.paused(c.memory.remote, 'rminer')) return flee(c);
     if (viaGateOf(c, C, false) === 'home') return flee(c);
     // travel = ticks to reach range 1 of the container (the old miner still sits on it; measuring on the tile itself
@@ -164,6 +165,7 @@ const roles = {
     if (src && src.energy > 0) c.harvest(src);
   },
   rhauler(c) {
+    if (require('../utils/cmd').yieldCreep(c)) return;
     const C = remote.CFG[c.memory.remote]; if (remote.paused(c.memory.remote, 'rhauler')) return flee(c);
     const vg = viaGateOf(c, C, !!c.memory.full);
     if (vg === 'home') return flee(c);
@@ -202,6 +204,7 @@ const roles = {
     else if (c.store[RESOURCE_ENERGY] >= c.store.getCapacity() * 0.6 && (!k || k.store[RESOURCE_ENERGY] < 50) && (c.memory.wait = (c.memory.wait || 0) + 1) > 30) { c.memory.full = true; c.memory.load = c.store[RESOURCE_ENERGY]; c.memory.wait = 0; }
   },
   reserver(c) {
+    if (require('../utils/cmd').yieldCreep(c)) return;
     const C = remote.CFG[c.memory.remote]; if (remote.paused(c.memory.remote)) return flee(c);
     if (viaGateOf(c, C, false) === 'home') return flee(c);
     if (!go(c, c.memory.remote, C.ctl[0], C.ctl[1], 1)) return;
@@ -311,6 +314,7 @@ function patrol(c) {
 const act = (c, t) => c.body.filter(p => p.type === t && p.hits > 0).length;
 function threatInfo(c) { return { hits: c.hits, ra: act(c, RANGED_ATTACK), heal: act(c, HEAL) }; }
 roles.defender = function (c) {
+  if (require('../utils/cmd').yieldCreep(c)) return;
   // Reads the FSM only (managers/threat.js); the FSM decides when to fight.
   // While engaged in the assigned room, every combat hostile is a target (not only Invader). Patrol shots stay Invader-only.
   // Never operates in W47N9 (defend-only; do not attack that room).
@@ -407,6 +411,7 @@ roles.defender = function (c) {
 };
 // Vision fallback (no observer): 1 MOVE scout parks in the remote when nobody else gives vision (spawn.js decides when).
 roles.rscout = function (c) {
+  if (require('../utils/cmd').yieldCreep(c)) return;
   const C = remote.CFG[c.memory.remote], [x, y] = C.scout || C.cont;
   if (remote.paused(c.memory.remote)) return flee(c);
   go(c, c.memory.remote, x, y, 1);

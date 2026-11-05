@@ -2,6 +2,7 @@
 const plan = require('../utils/plan'), move = require('../utils/move'), rc = require('../utils/roomcache');
 const sign = require('../utils/sign'); // one-shot detour to sign when sign differs, then back to spot
 module.exports = { run(c) {
+  if (require('../utils/cmd').yieldCreep(c)) return;
   const room = c.room, P = plan.get(room.name), ctl = room.controller;
   if (ctl && ctl.my && sign.needs(ctl, (ctl.owner || {}).username)
       && !_.some(Game.creeps, x => x !== c && x.memory.signing)) {

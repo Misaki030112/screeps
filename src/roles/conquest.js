@@ -439,6 +439,7 @@ function runHauler(c) {
 }
 
 function run(c) {
+  if (require('../utils/cmd').yieldCreep(c)) return; // Memory.cmd beats ops.cq.cmd for this creep; release resumes it
   const P = M();
   P.status = P.status || {};
   P.status[c.memory.role] = P.status[c.memory.role] || {};

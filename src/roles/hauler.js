@@ -114,6 +114,7 @@ function hubPickup(room) {
 }
 function homeHauler(room) { return Object.values(Game.creeps || {}).some(x => x.memory.role === 'hauler' && (x.memory.home || x.room.name) === room.name); }
 module.exports = { pickups, handoff, ctlLow, mineralRun, labRun, hubPickup, homeHauler, idlePark, run(c) {
+  if (require('../utils/cmd').yieldCreep(c)) return; // Memory.cmd off => one check (docs/COMMANDER.md)
   const room = c.room, P = plan.get(room.name);
   if (mineralRun(c, room, P)) return;
   if (labRun(c, room)) return;

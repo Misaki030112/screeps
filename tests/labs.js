@@ -69,4 +69,20 @@ r = mk({}, {}, {}, { K: 500, O: 30000 }); assert.deepStrictEqual(L.task(r, r.lab
 r = mk({}, { O: 50 }, {}, { K: 500 }); assert.deepStrictEqual(L.task(r, r.labs), { from: 'a', to: 't', res: 'O' }, 'empty wrong');
 r = mk({ KO: 1500 }, { K: 2000 }, { O: 2000 }); assert.deepStrictEqual(L.task(r, r.labs), { from: 'o', to: 't', res: 'KO' }, 'unload output');
 Memory.ops = { labs: { W46N8: 'XX' } }; assert.strictEqual(L.cfg(r), null, 'unknown compound ignored');
+
+// Commander: an order on an input lab skips the reaction and does not clear ops.labs.
+const cmd = require(path.join(__dirname, '..', 'src', 'utils', 'cmd.js'));
+Memory.ops = { labs: { W46N8: 'KO' } };
+cmd.setStruct('a', { act: 'idle', ttl: 5 });
+ran = 0;
+r = mk({}, { K: 100 }, { O: 100 }, { K: 5000, O: 30000 });
+assert.strictEqual(L.run(r), 0, 'input lab order skips reaction');
+assert.strictEqual(ran, 0);
+assert.strictEqual(Memory.ops.labs.W46N8, 'KO');
+cmd.releaseStruct('a');
+cmd.disarm();
+ran = 0;
+r = mk({}, { K: 100 }, { O: 100 }, { K: 5000, O: 30000 });
+assert.strictEqual(L.run(r), 1, 'disarm resumes reaction');
+assert.strictEqual(ran, 1);
 console.log('labs ok');

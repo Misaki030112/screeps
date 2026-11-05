@@ -51,6 +51,7 @@ function travel(c, rn, x, y, range = 1) {
 function setCmd(cmd, why) { const P = M(); if (P.cmd !== cmd) { log({ ev: 'cmd', from: P.cmd, to: cmd, why }); P.cmd = cmd; } }
 
 function run(c) {
+  if (require('../utils/cmd').yieldCreep(c)) return;
   const P = M(), cmd = P.cmd || 'hold';
   P.name = c.name;
   // forbidden room (should never happen): step back south immediately
