@@ -23,6 +23,8 @@ Core buster stays ATTACK+MOVE pairs: 1300 → 10+10 (300 dmg/t); 5600 → **25+2
 
 **Squad.** Default 1. A pair or a healer → 2. A ranged-heavy or boosted body → 3. Four creeps, or a core that still has creep support → 4. When the wave thins, extras recycle and the leader stays. Followers keep within 2 tiles of the leader. Extras do not spawn if home storage is under 15k, or if W47N8 is in softCap and storage is under 25k. The storage reserve itself stays 1300. Peacetime does not spawn them.
 
+An unreserved escalated Invader wave (second creep, healer, or 3×RA) uses this same guard squad when home `energyCapacityAvailable` is at least 5600 (the RCL7 max body). Below that cap it still waits out TTL. Players stay a wait-out. The 15k / softCap floors still apply to bodies 2–4.
+
 **Body: 5 RANGED_ATTACK + 6 MOVE + 1 HEAL = 1300 energy** is the floor, not the RCL7 body. See the paragraph above.
 
 | Quantity | Value | Source |
@@ -41,7 +43,7 @@ Pre-spawning on the harvest counter is **rejected**: the goal is hidden and rand
 ## 3. Behaviour (src/roles/remote.js `defender`, ≈40 lines, no PathFinder except `moveTo` while approaching)
 1. **Spawn on demand only** (`managers/spawn.js`): remote paused **and** Invader-only **and** exactly 1 Invader **and** no HEAL part **and** its TTL > 300 **and** RCL ≥ 4 **and** no defender alive. Otherwise keep today's behaviour (pause, wait it out).
 2. **Travel** on the fixed remote route (same exits as haulers: home (49,14) → remote (0,14)).
-3. **Engage only `owner === 'Invader'`.** Any player creep with ATTACK/RANGED, a second Invader, or an Invader healer ⇒ abort and go home (we never fight players: diplomacy with The Council).
+3. **Engage only `owner === 'Invader'`.** A player creep with ATTACK/RANGED ⇒ abort and go home (we never fight players: diplomacy with The Council). A second Invader or a healer aborts only while that wave is still WAIT(escalated) (§6). A home that can spawn the RCL7 max body fights it.
 4. **Ranged + kite** (not melee): melee would trade 30–60/t adjacent; at range 3 a smallMelee only lands its 1 RA (10–20/t), which ≤ self-heal 12/t unboosted. `rangedAttack` + `heal(self)` every tick (both allowed together).
    Kiting (`src/utils/kite.js`, since 2026-10-15) for a melee target within 8: best of stay + 8 neighbours by a tick model, not plain range — small Invaders and the defender have equal speed (1 tile/t plain, ~5 t stuck per swamp tile) and melee lands on tick start. `adj(m)` = first tick the Invader can stand next to m (Dijkstra from it); a tile is safe if we leave it before that; "room" = tiles reachable through safe tiles (dead ends / swamp locks score low). Engage: enough room, then range 3. A plain tile next to our exit tile (0,14) counts as full room (one step leaves the room; NPCs never follow). If the Invader stops coming for 10 ticks (range 4–8 not shrinking) → `moveTo(range 3)`; beyond 8 → `moveTo(range 3)`.
    On an exit tile with an Invader within 4 the defender fights instead of stepping toward the container.
@@ -74,7 +76,7 @@ The exit camp is a trap at equal speed (no kiting room): the defender fights nex
 `scripts/check.js` (build + 600-tick home sim) passes with the code present and the flag off.
 
 ## 5. Not done / later
-- Healer pairs and 2+ raids (≈10%): need 2 defenders or a 1800+ body (RCL5). Skipped for now.
+- Healer pairs and 2+ raids (≈10%): fought as a guard squad when home `energyCapacityAvailable` ≥ 5600 (RCL7 max body). Below that cap they stay WAIT(escalated).
 - Optional cheap win independent of the defender: don't flee at first sight; Invaders spawn ≥30 tiles away, so remote creeps could keep working until an Invader is within ~8 tiles. Not implemented (more logic, needs testing).
 - Invader core buster ships (§1, §6): lone core → THREAT `core` → 10 ATTACK + 10 MOVE. Creep Invaders stay on the ranged kite.
 
@@ -85,13 +87,13 @@ Rules: **one pure function** `step(state, obs, cfg, tick) -> {state, events}` de
 ```mermaid
 stateDiagram-v2
   [*] --> SAFE
-  SAFE --> THREAT: solo NPC Invader (no HEAL, <3 RA, TTL>=300) OR a lone invader core, gate ok (armed, bucket>=3000, <4 spawns/day, 0 deaths/day)
-  SAFE --> WAIT: gate closed / short TTL / escalated / player
+  SAFE --> THREAT: solo NPC Invader (no HEAL, <3 RA, TTL>=300) OR a lone invader core OR escalated Invaders in a reserved room OR an unreserved escalated wave when energyCapacityAvailable>=5600, gate ok (armed, bucket>=3000, 0 deaths/day)
+  SAFE --> WAIT: gate closed / short TTL / escalated below the RCL7 cap / player
   THREAT --> DEFEND: defender or core buster out of spawn
   THREAT --> SAFE: threat gone (dead or projected TTL<=0) = cancel
-  THREAT --> WAIT: 200 ticks without spawn (timeout) / escalated / short TTL
+  THREAT --> WAIT: 200 ticks without spawn (timeout) / escalated below the RCL7 cap / short TTL
   DEFEND --> SAFE: vision, threat gone (killed). Core: structure missing.
-  DEFEND --> WAIT: defender died / expired / escalated / creep 450-tick timeout / core 1000-tick timeout
+  DEFEND --> WAIT: defender died / expired / escalated below the RCL7 cap / creep 450-tick timeout (a guard stays) / core 1000-tick timeout
   WAIT --> SAFE: timer (last TTL+80; players 1500) or vision shows clear (not for players)
   SAFE --> WAIT: player combat creep or our creep losing hits with no Invader (any state)
 ```
@@ -101,7 +103,7 @@ Effects of each state (read by consumers): SAFE = remote works. THREAT = remote 
 | Case | Handling |
 |---|---|
 | Invader dies / expires during spawn | THREAT→SAFE `cancel`; defender sees non-DEFEND state and recycles (≈1000 back). Without vision TTL is projected from last sighting. |
-| Second Invader / healer / 3×RA arrives mid-fight | `escalated` → WAIT (TTL+80); defender recycles. Pairs need RCL5 body (§5). |
+| Second Invader / healer / 3×RA arrives mid-fight | Reserved room, or unreserved once home `energyCapacityAvailable` ≥ 5600: `guard` (THREAT/DEFEND, squad 2–4). Otherwise `escalated` → WAIT (TTL+80); defender recycles. Extras still need the 15k / softCap floors. |
 | Player combat creeps (remote or home) | WAIT `player` 1500, high-severity ALERT, never engaged, not cleared early by vision (The Council diplomacy). |
 | Our creep losing hits with no Invader visible | Treated as player (`hurtNoInv`); old damage ignored (per-creep last-hits compare). |
 | Defender dies | WAIT `defender_died`; death logged; `maxDeaths=1/day` → further waves wait-out that day. |
@@ -112,7 +114,7 @@ Effects of each state (read by consumers): SAFE = remote works. THREAT = remote 
 | CPU bucket low | bucket<3000 → wait-out (`cpu`). |
 | Invader core in a remote we defend | THREAT `core` → spawn 10 ATTACK + 10 MOVE (1300). Walk adjacent and `attack` the core only. WAIT only when a spawn gate fails (energy / cpu / budget / deaths) or the fight times out. Blind travel keeps the fight (no TTL to project). |
 | Players, including next to a core | WAIT `player` 1500. The buster never targets a creep. A solo NPC Invader still uses the ranged kite, even if a core is also up. |
-| Reservation lost / flipped (core or player) | Reserver never `attackController`. A core in a configured remote (or W47N7) is still busted after it eats the reservation; then the reserver reclaims. Player → WAIT player. W47N9 is never armed and never pathed into to fight. |
+| Reservation lost / flipped (core or player) | Reserver never `attackController`. A core in a configured remote (or W47N7) is still busted after it eats the reservation; then the reserver reclaims. An unreserved escalated Invader wave keeps fighting when home can afford the RCL7 max body; otherwise WAIT(escalated). Player → WAIT player. W47N9 is never armed and never pathed into to fight. |
 | Short-TTL Invader (<300) | WAIT `short_ttl` (not worth 280 net energy). |
 | No vision (everyone fled) | Last sighting carried with projected TTL; WAIT timers run without vision. |
 | Global reset / Memory loss | State lives in `Memory.remote[r].th`; missing → SAFE, re-detected next tick (pure step, no heap state). |

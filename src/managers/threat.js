@@ -2,8 +2,9 @@
 //   sense(r)  : Game -> observation o          (only place that looks at hostiles for remotes)
 //   step(s,o) : (state, obs, cfg, t) -> {s, ev} (pure, unit-tested in tests/threat_fsm.js)
 //   roles / spawn / remote manager only READ: state(r), holding(home), wantDefender(home), armed(r).
-// States: SAFE -> THREAT (solo NPC Invader, OR any combat hostile in a room we currently reserve) -> DEFEND -> SAFE
-//         any -> WAIT (wait-out: players on the route/home, unreserved escalation, gate, timeouts, defender died) -> SAFE
+// States: SAFE -> THREAT (solo NPC Invader, any combat hostile in a room we currently reserve, OR an unreserved
+//         escalated Invader wave once home energyCapacityAvailable affords the RCL7 max body) -> DEFEND -> SAFE
+//         any -> WAIT (wait-out: players on the route/home, escalated below that cap, gate, timeouts, defender died) -> SAFE
 // A room is "reserved" when its controller reservation is still ours (Memory.remote[r].res, projected from m.seen),
 // Memory.ops.r7 says we hold W47N7, or Memory.ops.resRooms lists it.
 // Invader cores and solo/guard Invaders in remotes we defend are fights, not wait-outs. WAIT only when a spawn gate fails
@@ -24,6 +25,10 @@ const DEF = {
   maxDeaths: 1,       // after a defender death in 1 day: wait-out only
   minBucket: 3000,    // CPU bucket guard
   reserve: 1300,      // storage emergency reserve (RCL4+ with storage) = defender cost
+  // Home energyCapacityAvailable that affords the RCL7 max remote defender (spawn B.defender: 19 RA + 25 MOVE + 6 HEAL).
+  // At/above this, an unreserved escalated Invader wave takes the guard path. Below it, WAIT(escalated).
+  // Same number defenderOrder passes into B.defender / B.coreBuster (energyCapacityAvailable, else energyAvailable).
+  fullBody: 5600,
   stableTicks: 1500,  // RCL4 must have held (cap>=1300) this long
   hp: 0.6, hpBack: 0.95, // defender retreat / re-engage thresholds (role reads these)
 };
@@ -34,7 +39,8 @@ function roomCfg(r) {
 }
 const cfg = r => Object.assign({}, DEF, (roomCfg(r) || {}).threat || {});
 // ---------- pure core ----------
-// 'guard' = combat hostiles inside a room we currently reserve (players, dismantlers, or an escalated Invader wave).
+// 'guard' = combat hostiles inside a room we currently reserve (players, dismantlers, or an escalated Invader wave),
+// OR an unreserved escalated Invader wave when o.cap >= fullBody (home can spawn the RCL7 max body).
 // Route/home players stay 'player' (do not march a remote defender into our own base or a blocked highway).
 // Solo Invader is unchanged (ranged kite). A lone invader core is its own fight (melee buster).
 // Players outrank a core: never deploy the buster into a player. Short-TTL Invaders stay a wait-out.
@@ -49,14 +55,15 @@ function classify(o, c) {
   if (o.core && !inv.length) return 'core';
   if (!inv.length) return 'none';
   if (inv.length === 1 && !inv[0].heal && !inv[0].ranged3) return inv[0].ttl >= c.minTtl ? 'solo' : 'short';
-  return o.reserved ? 'guard' : 'invader'; // too many / healer / 3xRA: fight only while we still hold the room
+  // too many / healer / 3xRA. Reserved rooms always fight. Unreserved waves fight once home can afford the RCL7 max body.
+  return (o.reserved || (o.cap || 0) >= c.fullBody) ? 'guard' : 'invader';
 }
 const GATES = ['gate', 'cpu', 'budget', 'deaths']; // every reason gateReason() can return
 function gateReason(o, c, k) { // why we may not spawn a defender now ('' = ok); k = classify() kind
   if (!o.armed) return 'gate';
   if (o.bucket < c.minBucket) return 'cpu';
-  // Misaki: reserved remotes fight Invaders (solo/guard) and cores — do not WAIT/budget them out.
-  // maxPerDay still caps a 2nd defender via request2(); unreserved escalated waves stay WAIT(escalated).
+  // Misaki: reserved remotes, and unreserved escalated waves once they classify as guard, fight — do not WAIT/budget them out.
+  // maxPerDay still caps a 2nd defender via request2(). Below fullBody, unreserved escalated waves stay WAIT(escalated).
   if (k !== 'core' && k !== 'solo' && k !== 'guard' && (o.spawnsDay || 0) >= c.maxPerDay) return 'budget';
   if ((o.deathsDay || 0) >= c.maxDeaths) return 'deaths';
   return '';
@@ -119,7 +126,7 @@ function step(s, o, c, t) {
       else if (s.mission === 'core' && k !== 'core' && k !== 'none') waitNpc(k === 'short' ? 'short_ttl' : 'escalated'); // melee body does not duel creeps
       else if (k === 'invader') waitNpc('escalated');
       else if (k === 'core' && t - s.since > (c.coreDefendTimeout || 1000)) waitNpc('defend_timeout');
-      else if (k !== 'guard' && k !== 'core' && t - s.since > c.defendTimeout) waitNpc('defend_timeout'); // a reserved-room guard stays while hostiles remain
+      else if (k !== 'guard' && k !== 'core' && t - s.since > c.defendTimeout) waitNpc('defend_timeout'); // a guard stays while hostiles remain
       break;
     case S.WAIT:
       // legacy why=core (pre-buster): a visible core re-arms into THREAT the same tick; blind, keep the recheck
@@ -133,6 +140,7 @@ function step(s, o, c, t) {
       if (s.st === S.WAIT && GATES.includes(s.why) && !gateReason(o, c, k) && (k === 'solo' || k === 'guard' || k === 'core')) {
         delete s.until; s.inc = t; delete s.recycling; s.mission = k; go(S.THREAT, k, { inv: o.inv }); }
       // player-on-the-route WAIT, or an escalated wait, becomes a guard once the hostiles are inside a room we reserve
+      // or (unreserved Invaders) once o.cap reaches the RCL7 max body
       else if (k === 'guard' && !gateReason(o, c, k)) {
         delete s.until; s.inc = t; delete s.recycling; s.mission = 'guard'; go(S.THREAT, 'guard', { inv: o.inv }); }
       else if (s.why !== 'player' && o.vis && k === 'none') go(S.SAFE, 'clear_seen');
@@ -213,9 +221,12 @@ function armed(r) { // code-level enable gate: flag AND RCL4 stable AND (CLAIM2 
 }
 function body(h, t) { return h.body.some(p => p.type === t && p.hits > 0); }
 function sense(r) {
-  const C = roomCfg(r); if (!C) return { vis: false, inv: [], players: 0, hereP: 0, work: 0, reserved: false, core: false, hurtNoInv: false, bucket: Game.cpu.bucket, armed: false, def: 'none' };
+  const C = roomCfg(r); if (!C) return { vis: false, inv: [], players: 0, hereP: 0, work: 0, reserved: false, core: false, hurtNoInv: false, bucket: Game.cpu.bucket, armed: false, def: 'none', cap: 0 };
   const m = mem(r), room = Game.rooms[r], c = cfg(r), th = m.th || {};
-  const o = { vis: !!room, inv: [], players: 0, hereP: 0, work: 0, reserved: reservedByUs(r), core: false, hurtNoInv: false, bucket: Game.cpu.bucket, armed: armed(r) };
+  const homeRm = Game.rooms[C.home];
+  // Same energy defenderOrder/planDefender pass into B.defender and B.coreBuster.
+  const o = { vis: !!room, inv: [], players: 0, hereP: 0, work: 0, reserved: reservedByUs(r), core: false, hurtNoInv: false, bucket: Game.cpu.bucket, armed: armed(r),
+    cap: (homeRm && (homeRm.energyCapacityAvailable || homeRm.energyAvailable)) || 0 };
   // guardOnly (W47N7): hostiles in the colony room are that room's own defence. Counting them here would
   // WAIT-player the remote forever while BustJetter sits on the W47N8 seal.
   const scan = (C.guardOnly || C.dynamic) ? [r] : [r, C.home].concat(C.via || []);

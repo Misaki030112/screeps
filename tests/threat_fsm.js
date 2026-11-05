@@ -165,6 +165,77 @@ it('escalated invaders in a reserved room -> guard; unreserved stays wait-out', 
   assert.strictEqual(run([[1, { reserved: true, inv: solo().concat(solo()) }]]).s.why, 'guard');
   assert.strictEqual(run([[1, { inv: solo().concat(solo()) }]]).s.why, 'escalated');
 });
+const wave = () => solo().concat([{ ttl: 1500, heal: true, boosted: true }]);
+it('unreserved escalated + RCL7 cap -> guard and wants defenders', () => {
+  const r = run([[1, { inv: wave(), cap: C.fullBody }]]);
+  assert.strictEqual(r.s.st, 'THREAT');
+  assert.strictEqual(r.s.why, 'guard');
+  assert.strictEqual(r.s.mission, 'guard');
+  assert.ok(T.squadSize(r.s) >= 2);
+  assert.ok(T.squadAlive(r.s) < T.squadSize(r.s));
+  const prevM = global.Memory, prevG = global.Game;
+  global.Memory = { remote: { W45N7: { th: r.s } }, ops: {}, defense: { remoteDefender: true }, username: 'Misaki' };
+  global.Game = { time: 1, rooms: {}, creeps: {}, cpu: { bucket: 10000 } };
+  try { assert.strictEqual(T.wantDefender('W46N8'), 'W45N7'); }
+  finally { global.Memory = prevM; global.Game = prevG; }
+});
+it('unreserved escalated below the RCL7 cap stays WAIT', () => {
+  assert.strictEqual(run([[1, { inv: wave(), cap: C.fullBody - 1 }]]).s.why, 'escalated');
+  assert.strictEqual(run([[1, { inv: wave() }]]).s.why, 'escalated');
+});
+it('players still WAIT when the home could fight an escalated wave', () => {
+  assert.strictEqual(run([[1, { inv: wave(), cap: C.fullBody, players: 1, hereP: 1 }]]).s.why, 'player');
+  assert.strictEqual(run([[1, { cap: C.fullBody, players: 1, hereP: 0 }]]).s.why, 'player');
+  assert.strictEqual(run([[1, { reserved: true, cap: C.fullBody, hereP: 0, players: 1 }]]).s.why, 'player');
+  assert.strictEqual(run([[1, { inv: wave(), cap: C.fullBody, hurtNoInv: true }]]).s.why, 'player');
+});
+it('reserved escalated stays guard with or without the RCL7 cap', () => {
+  assert.strictEqual(run([[1, { reserved: true, inv: wave() }]]).s.why, 'guard');
+  assert.strictEqual(run([[1, { reserved: true, inv: wave(), cap: 1300 }]]).s.why, 'guard');
+  assert.strictEqual(run([[1, { reserved: true, inv: wave(), cap: C.fullBody }]]).s.why, 'guard');
+});
+it('WAIT(escalated) re-arms when cap reaches the RCL7 max body', () => {
+  const stuck = run([[1, { inv: wave(), cap: 1800 }]]);
+  assert.strictEqual(stuck.s.st, 'WAIT'); assert.strictEqual(stuck.s.why, 'escalated');
+  const re = run([[50, { inv: wave(), cap: C.fullBody }]], stuck.s);
+  assert.strictEqual(re.s.st, 'THREAT');
+  assert.strictEqual(re.s.mission, 'guard');
+  assert.ok(T.squadAlive(re.s) < T.squadSize(re.s));
+  const prevM = global.Memory, prevG = global.Game;
+  global.Memory = { remote: { W45N7: { th: re.s } }, ops: {}, defense: { remoteDefender: true }, username: 'Misaki' };
+  global.Game = { time: 50, rooms: {}, creeps: {}, cpu: { bucket: 10000 } };
+  try { assert.strictEqual(T.wantDefender('W46N8'), 'W45N7'); }
+  finally { global.Memory = prevM; global.Game = prevG; }
+});
+it('reservation lost mid-fight stays DEFEND at RCL7 cap and still wants defenders', () => {
+  const r = run([
+    [1, { reserved: true, inv: solo(), cap: C.fullBody }],
+    [40, { reserved: true, def: 'out', inv: solo(), cap: C.fullBody }],
+    [60, { def: 'out', inv: wave(), cap: C.fullBody }],
+  ]);
+  assert.strictEqual(r.states[1], 'DEFEND');
+  assert.strictEqual(r.s.st, 'DEFEND');
+  assert.notStrictEqual(r.s.why, 'escalated');
+  assert.ok(T.squadAlive(r.s) < T.squadSize(r.s));
+  const prevM = global.Memory, prevG = global.Game;
+  global.Memory = { remote: { W45N7: { th: r.s } }, ops: {}, defense: { remoteDefender: true }, username: 'Misaki' };
+  global.Game = { time: 60, rooms: {}, creeps: {}, cpu: { bucket: 10000 } };
+  try { assert.strictEqual(T.wantDefender('W46N8'), 'W45N7'); }
+  finally { global.Memory = prevM; global.Game = prevG; }
+});
+it('reservation lost mid-fight below the RCL7 cap still WAIT escalated', () => {
+  const r = run([[1, { reserved: true, inv: solo() }], [40, { reserved: true, def: 'out', inv: solo() }], [60, { def: 'out', inv: wave() }]]);
+  assert.strictEqual(r.s.st, 'WAIT'); assert.strictEqual(r.s.why, 'escalated');
+});
+it('RCL7 escalated fight still honors gate, cpu, and deaths', () => {
+  assert.strictEqual(run([[1, { inv: wave(), cap: C.fullBody, armed: false }]]).s.why, 'gate');
+  assert.strictEqual(run([[1, { inv: wave(), cap: C.fullBody, bucket: 1000 }]]).s.why, 'cpu');
+  assert.strictEqual(run([[1, { inv: wave(), cap: C.fullBody, deathsDay: 1 }]]).s.why, 'deaths');
+  assert.strictEqual(run([[1, { inv: wave(), cap: C.fullBody, spawnsDay: C.maxPerDay }]]).s.st, 'THREAT');
+});
+it('short-TTL solo stays wait-out even at the RCL7 cap', () => {
+  assert.strictEqual(run([[1, { inv: solo(200), cap: C.fullBody }]]).s.why, 'short_ttl');
+});
 it('dismantler (WORK, no attack) in a reserved room -> guard', () => {
   assert.strictEqual(run([[1, { reserved: true, work: 1 }]]).s.why, 'guard');
 });
@@ -247,6 +318,44 @@ it('armed() busts a core in a configured remote after the reservation is gone; W
   assert.strictEqual(R.cfgFor('W47N9'), null, 'W47N9 is never a core target');
   assert.strictEqual(T.reservedByUs('W47N9'), false);
   assert.strictEqual(T.armed('W47N9'), false);
+});
+it('sense() uses home energyCapacityAvailable for the escalated fight', () => {
+  const part = (type, boost) => ({ type, hits: 100, boost });
+  const creep = (user, body) => ({ owner: { username: user }, body, ticksToLive: 1400, hits: 800, hitsMax: 800, pos: { x: 10, y: 10 }, getActiveBodyparts: t => body.filter(p => p.type === t && p.hits).length });
+  const inv = creep('Invader', [part('heal'), part('move'), part('attack', 'XUH2O'), part('attack', 'XUH2O')]);
+  const remote = { name: 'W45N7', controller: {}, find: t => t === FIND_HOSTILE_CREEPS ? [inv] : [] };
+  const home = { name: 'W46N8', controller: { level: 7 }, energyCapacityAvailable: C.fullBody, energyAvailable: 400,
+    memory: { lastFull: 1 }, storage: { store: { energy: 20000 } }, find: () => [] };
+  global.Memory = { username: 'Misaki', remote: { W45N7: { claim2: 10000 } }, defense: { remoteDefender: true }, ops: {}, creeps: {} };
+  global.Game = { time: 10000, cpu: { bucket: 10000 }, rooms: { W46N8: home, W45N7: remote }, creeps: {} };
+  const o = T.sense('W45N7');
+  assert.strictEqual(o.cap, C.fullBody);
+  assert.strictEqual(o.armed, true);
+  const stepped = T.step({ st: 'SAFE', since: 1 }, o, T.cfg('W45N7'), Game.time);
+  assert.strictEqual(stepped.s.st, 'THREAT');
+  assert.strictEqual(stepped.s.mission, 'guard');
+  Memory.remote.W45N7.th = stepped.s;
+  assert.strictEqual(T.wantDefender('W46N8'), 'W45N7');
+  assert.ok(T.squadAlive(T.state('W45N7')) < T.squadSize(T.state('W45N7')));
+  home.energyCapacityAvailable = C.fullBody - 1;
+  home.energyAvailable = 9000;
+  const low = T.sense('W45N7');
+  assert.strictEqual(low.cap, C.fullBody - 1, 'capacity wins over energyAvailable');
+  assert.strictEqual(T.step({ st: 'SAFE', since: 1 }, low, T.cfg('W45N7'), Game.time).s.why, 'escalated');
+  home.energyCapacityAvailable = 0;
+  assert.strictEqual(T.sense('W45N7').cap, 9000, 'missing capacity falls back to energyAvailable, same as planDefender');
+  home.energyCapacityAvailable = C.fullBody;
+  const player = creep('Council', [part('attack')]);
+  remote.find = t => t === FIND_HOSTILE_CREEPS ? [player, inv] : [];
+  assert.strictEqual(T.step({ st: 'SAFE', since: 1 }, T.sense('W45N7'), T.cfg('W45N7'), Game.time).s.why, 'player');
+  remote.find = t => t === FIND_HOSTILE_CREEPS ? [inv] : [];
+  Memory.remote.W45N7.res = { username: 'Misaki', ticksToEnd: 4000 };
+  Memory.remote.W45N7.seen = Game.time;
+  home.energyCapacityAvailable = 1800;
+  const held = T.sense('W45N7');
+  assert.strictEqual(held.reserved, true);
+  assert.strictEqual(held.cap, 1800);
+  assert.strictEqual(T.step({ st: 'SAFE', since: 1 }, held, T.cfg('W45N7'), Game.time).s.why, 'guard');
 });
 for (const [n, f] of cases) { try { f(); pass++; console.log('ok   ' + n); } catch (e) { console.log('FAIL ' + n + '\n     ' + e.message); } }
 console.log(`${pass}/${cases.length} passed`); if (pass !== cases.length) process.exit(1);
