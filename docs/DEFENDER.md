@@ -17,7 +17,13 @@ Gate (code, `src/managers/threat.js armed()`, unit-tested): flag AND RCL≥4 wit
 | Invader cores | Level-0 cores (100k hits, no creeps) in a reserved or configured remote (W45N8, W45N7, W47N7, …) are a fight. Melee buster **10 ATTACK + 10 MOVE = 1300**, 300 dmg/t, `ceil(100000/300) = 334` ticks once adjacent. The ranged kite body is not used. Players are never a target. W47N9 is never a target. After the core dies the reserver reclaims. |
 
 ## 2. Cost model (RCL4, ≈3.9 s/tick, ≈22 150 ticks/day)
-**Body: 5 RANGED_ATTACK + 6 MOVE + 1 HEAL = 1300 energy, 12 parts, spawn 36 ticks.** Damage 50/t at range 1–3, self-heal 12/t, 1200 hp, speed 1 tile/t on plain/road (swamp 1/5).
+**Body (RCL7, sized to energy capacity).** 1 MOVE per other part so the kite stays full speed off-road.
+1300 still fits the old body: 5 RANGED_ATTACK + 6 MOVE + 1 HEAL. At a 5600 RCL7 cap the same formula is **19 RA + 25 MOVE + 6 HEAL** (190 dmg/t, 72 heal/t, 50 parts).
+Core buster stays ATTACK+MOVE pairs: 1300 → 10+10 (300 dmg/t); 5600 → **25+25 = 3250 energy, 750 dmg/t**.
+
+**Squad.** Default 1. A pair or a healer → 2. A ranged-heavy or boosted body → 3. Four creeps, or a core that still has creep support → 4. When the wave thins, extras recycle and the leader stays. Followers keep within 2 tiles of the leader. Extras do not spawn if home storage is under 15k, or if W47N8 is in softCap and storage is under 25k. The storage reserve itself stays 1300. Peacetime does not spawn them.
+
+**Body: 5 RANGED_ATTACK + 6 MOVE + 1 HEAL = 1300 energy** is the floor, not the RCL7 body. See the paragraph above.
 
 | Quantity | Value | Source |
 |---|---|---|

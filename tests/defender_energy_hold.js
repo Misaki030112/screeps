@@ -8,7 +8,7 @@ Object.assign(global, {
   STRUCTURE_SPAWN: 'spawn', STRUCTURE_EXTENSION: 'extension', STRUCTURE_TOWER: 'tower',
   CARRY: 'carry', MOVE: 'move', WORK: 'work', CLAIM: 'claim',
   RANGED_ATTACK: 'ranged_attack', HEAL: 'heal',
-  BODYPART_COST: { work: 100, carry: 50, move: 50, claim: 150, heal: 250, claim_attack: 150 },
+  BODYPART_COST: { work: 100, carry: 50, move: 50, attack: 80, ranged_attack: 150, heal: 250, claim: 600, tough: 10 },
   ERR_NOT_ENOUGH_ENERGY: -6, ERR_BUSY: -4, OK: 0,
   Game: { time: 1000, creeps: {} }, Memory: {},
   _: {
@@ -32,6 +32,7 @@ stub('utils/trace.js', { why: () => {} });
 stub('managers/threat.js', {
   holding: () => HOLD, wantDefender: () => WANT, armed: () => ARMED, energyHold: () => false,
   reserve: () => 1300, noteSpawn: (r, n) => { W.noted = [r, n]; },
+  state: () => ({ st: 'THREAT' }), squadAlive: () => 0, squadSize: () => 1,
 });
 stub('managers/home.js', { on: () => false, active: () => false, wantGuards: () => 0 });
 stub('managers/remote.js', { CFG: {}, paused: () => false, mem: () => ({}) });
@@ -103,8 +104,8 @@ const cases = [
   ['upgrader holding but still has energy: upgrades, no withdraw', () => {
     assert.deepStrictEqual(upRun({ hold: true, carry: 50, link: { store: { energy: 400 } } }), []);
   }],
-  ['spawn: want + avail>=1300 -> defender first', () => {
-    const r = spawnRun({ avail: 1500, creeps: { queen1: 'queen' } });
+  ['spawn: want + avail covers the cap-sized body -> defender first', () => {
+    const r = spawnRun({ avail: 1800, cap: 1800, creeps: { queen1: 'queen' } });
     assert.strictEqual(r.spawned[0] && r.spawned[0].role, 'defender');
     assert.deepStrictEqual(r.noted, ['W45N8', r.spawned[0].name]);
   }],

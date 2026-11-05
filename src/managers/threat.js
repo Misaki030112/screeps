@@ -266,13 +266,14 @@ function run(r) {
   if (s.st === S.DEFEND && o.defIn && !s.arrived) { s.arrived = Game.time; incident(r, s, { ev: 'arrive', travel: Game.time - s.since }, o); }
   if (s.st !== S.DEFEND) delete s.arrived;
   s.early = earlyNext(s, o.defIn);
-  if (s.st !== S.THREAT && s.st !== S.DEFEND) { if (s.def && !Game.creeps[s.def]) delete s.def; } // defender (if alive) reads state and recycles
+  if (s.st !== S.THREAT && s.st !== S.DEFEND) { if (s.def && !Game.creeps[s.def]) delete s.def; delete s.extra; } // defender (if alive) reads state and recycles
   if ((o.def === 'dead' || o.def === 'none') && s.def && !Game.creeps[s.def]) { delete s.def; delete s.recycling; }
+  if (s.squad) s.squad = s.squad.filter(n => Game.creeps[n]).slice(0, 4);
   if (s.def2 && !Game.creeps[s.def2]) delete s.def2;
   if (s.st !== S.DEFEND || (s.def && s.def2)) delete s.need2;
   if (!s.def && s.def2) { s.def = s.def2; delete s.def2; }
   // adopt a patrolling ranged defender instead of spawning a new one. A core needs ATTACK parts; do not adopt the kite body.
-  if (s.st === S.THREAT && !s.def && s.mission !== 'core' && s.why !== 'core') { const p = adoptable(r); if (p) { s.def = p.name; p.memory.remote = r; p.memory.patrol = false;
+  if (s.st === S.THREAT && !s.def && s.mission !== 'core' && s.why !== 'core') { const p = adoptable(r); if (p) { s.def = p.name; s.squad = [p.name]; p.memory.remote = r; p.memory.patrol = false;
     console.log('INCIDENT ' + JSON.stringify({ remote: r, tick: Game.time, inc: s.inc || null, state: s.st, ev: 'adopt', def: p.name, ttl: p.ticksToLive })); } }
   // Core missions need a melee buster. A leftover ranged kite body (prior solo/patrol) kept as th.def
   // flips THREAT→DEFEND via o.def==='out' and never spawns the buster — W45N7 core@83967273 sat at 100k
@@ -306,19 +307,51 @@ function remotesOf(home) {
   return names;
 }
 function coreMission(r) { const t = state(r); return t.mission === 'core' && (t.st === S.THREAT || t.st === S.DEFEND); }
+const SQUAD_MAX = 4;
+// 1 by default. 2 at a pair/healer, 3 if a body is ranged-heavy or boosted, 4 at a wave or a core that still has creeps.
+function squadSize(th) {
+  if (!th || (th.st !== S.THREAT && th.st !== S.DEFEND)) return 0;
+  const last = th.last || [];
+  const n = last.length;
+  const heal = last.some(i => i.heal);
+  const hard = last.some(i => i.ranged3 || i.boosted);
+  let w = 1;
+  if (n >= 2 || heal) w = 2;
+  if (n >= 3 || hard) w = 3;
+  if (n >= 4 || (th.mission === 'core' && n >= 1)) w = 4;
+  if (th.need2) w = Math.max(w, 2);
+  w += th.extra || 0;
+  return Math.max(1, Math.min(SQUAD_MAX, w));
+}
+function squadNames(th) {
+  if (!th) return [];
+  const names = [];
+  const push = n => { if (n && names.indexOf(n) < 0 && typeof Game !== 'undefined' && Game.creeps && Game.creeps[n]) names.push(n); };
+  if (th.squad) for (const n of th.squad) push(n);
+  push(th.def); push(th.def2);
+  return names.slice(0, SQUAD_MAX);
+}
+function squadAlive(th) { return squadNames(th).length; }
+function needsDefender(th) {
+  if (!th || (th.st !== S.THREAT && th.st !== S.DEFEND)) return false;
+  return squadAlive(th) < squadSize(th);
+}
 module.exports = { S, DEF, cfg, classify, step, sense, run, state, armed, ourName, reservedByUs, roomCfg, coreMission,
   // remote creeps stay home unless SAFE
   safe: (r, role) => state(r).st === S.SAFE || (!!role && EARLY.roles.includes(role) && !!state(r).early),
   earlyNext, EARLY,
-  // first remote of this home that needs a defender spawned now
-  wantDefender: home => remotesOf(home).find(r => (state(r).st === S.THREAT && !state(r).def) || (state(r).st === S.DEFEND && state(r).need2 && !state(r).def2)),
-  // defender could not win alone: ask for a 2nd one (2nd spawn still hits maxPerDay; cores/first fight exempt)
-  request2(r) { const m = mem(r), th = m.th, c = cfg(r); if (!th || th.st !== S.DEFEND || th.need2 || th.def2) return;
-    if (th.mission !== 'core' && hist(m, 'defSpawns', c).length >= c.maxPerDay) return; th.need2 = Game.time;
-    console.log('INCIDENT ' + JSON.stringify({ remote: r, tick: Game.time, inc: th.inc || null, state: th.st, ev: 'need2', def: th.def })); },
-  // home is collecting 1300 for a remote defender (clears once noteSpawn sets th.def): spawn holds all but queen,
-  // haulers fill extensions to 100%, upgraders pause withdrawals (spawn/ext economy). Home guards use home.js, not this.
-  holding: home => remotesOf(home).some(r => (state(r).st === S.THREAT && !state(r).def) || (state(r).st === S.DEFEND && state(r).need2 && !state(r).def2)) || module.exports.energyHold(home),
+  // first remote whose squad is short of squadSize (1..4)
+  wantDefender: home => remotesOf(home).find(r => needsDefender(state(r))),
+  // could not win: one more body, still capped at 4
+  request2(r) { const m = mem(r), th = m.th, c = cfg(r); if (!th || th.st !== S.DEFEND) return;
+    if (squadAlive(th) >= SQUAD_MAX || (th.extra || 0) >= SQUAD_MAX - 1) return;
+    if ((th.extra || 0) > 0 && squadAlive(th) < squadSize(th)) return; // already asked; wait for the spawn
+    if (th.mission !== 'core' && hist(m, 'defSpawns', c).length >= c.maxPerDay) return;
+    th.need2 = th.need2 || Game.time;
+    th.extra = Math.min(SQUAD_MAX - 1, (th.extra || 0) + 1);
+    console.log('INCIDENT ' + JSON.stringify({ remote: r, tick: Game.time, inc: th.inc || null, state: th.st, ev: 'need2', def: th.def, extra: th.extra })); },
+  // Collecting energy for defender #1 only. Extras do not freeze upgraders. Home guards use home.js.
+  holding: home => remotesOf(home).some(r => { const t = state(r); return needsDefender(t) && squadAlive(t) < 1; }) || module.exports.energyHold(home),
   // bootstrap reserve (W45N7 plan): a solo Invader is waited out ONLY because extensions are below 1300 -> hold spawns (queen still
   // refills) until energyAvailable reaches 1300; armed() then turns true and the FSM re-arms WAIT(gate) -> THREAT -> defender.
   energyHold: home => remotesOf(home).some(r => { const t = state(r), m = (Memory.remote || {})[r] || {};
@@ -330,6 +363,14 @@ module.exports = { S, DEF, cfg, classify, step, sense, run, state, armed, ourNam
   reserve: home => remotesOf(home).some(r => ((Memory.remote || {})[r] || {}).armed) ? DEF.reserve : 0,
   // the defender tells the FSM it is recycling itself (so its disappearance is not counted as a death)
   noteRecycle(r, name) { const th = mem(r).th; if (th) th.recycling = name; },
-  noteSpawn(r, name) { const m = mem(r); (m.defSpawns = m.defSpawns || []).push(Game.time); if (m.th.def && Game.creeps[m.th.def]) m.th.def2 = name; else m.th.def = name;
-    console.log('INCIDENT ' + JSON.stringify({ remote: r, tick: Game.time, inc: m.th.inc || null, state: m.th.st, ev: 'spawn_start', def: name, waited: Game.time - m.th.since })); },
+  noteSpawn(r, name) { const m = mem(r); (m.defSpawns = m.defSpawns || []).push(Game.time);
+    const th = m.th, prev = [];
+    const push = n => { if (n && prev.indexOf(n) < 0) prev.push(n); };
+    if (th.squad) for (const n of th.squad) if (Game.creeps[n]) push(n);
+    if (Game.creeps[th.def]) push(th.def);
+    if (Game.creeps[th.def2]) push(th.def2);
+    if (prev.indexOf(name) < 0 && prev.length < SQUAD_MAX) prev.push(name);
+    th.squad = prev; th.def = prev[0]; if (prev[1]) th.def2 = prev[1]; else delete th.def2;
+    console.log('INCIDENT ' + JSON.stringify({ remote: r, tick: Game.time, inc: th.inc || null, state: th.st, ev: 'spawn_start', def: name, n: prev.length, waited: Game.time - th.since })); },
+  squadSize, squadNames, squadAlive, SQUAD_MAX,
 };
