@@ -68,5 +68,6 @@ execSync('node ' + path.join(__dirname, '..', 'tests', 'w47n8_mminer.js'), { std
 execSync('node ' + path.join(__dirname, '..', 'tests', 'mineral_cap.js'), { stdio: 'pipe' });
 execSync('node ' + path.join(__dirname, '..', 'tests', 'raid9.js'), { stdio: 'pipe' });
 execSync('node ' + path.join(__dirname, '..', 'tests', 'commander.js'), { stdio: 'pipe' });
+execSync('node ' + path.join(__dirname, '..', 'tests', 'commander_roles.js'), { stdio: 'pipe' });
 execSync('node ' + path.join(__dirname, '..', 'tests', 'commander_tower.js'), { stdio: 'pipe' });
 console.log('threat FSM tests + defender energy hold + defender duel + kite + queen standby + spawn upgraders + builder remote + spawn rhauler + spawn remote gate + rcl5 gate + move detour + salvage passed');

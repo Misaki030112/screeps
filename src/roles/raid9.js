@@ -879,9 +879,15 @@ function run(c) {
   }
   // noOverrun (default): drop stale overrun flees so Memory cannot keep us garrisoned.
   clearStaleOverrun(P);
+  // Live Memory.cmd owns this body. forceGo above still clears squad flee. raidOrder is not touched.
+  // Conflict: live cmd (act or duty) > raidOrder > the raid script. Release resumes raidOrder.
+  const cmdApi = require('../utils/cmd');
+  if (cmdApi.yieldCreep(c)) return;
   if (P.recycle === true) return recycleSelf(c);
-  const order = manualOrder(c);
-  if (order) return applyOrder(c, order);
+  if (!cmdApi.suppressed(c)) {
+    const order = manualOrder(c);
+    if (order) return applyOrder(c, order);
+  }
   const tr = Game.rooms[TARGET];
   if (tr && tr.controller && tr.controller.safeMode) {
     P.safeUntil = Game.time + tr.controller.safeMode;

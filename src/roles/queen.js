@@ -247,8 +247,9 @@ function freeTrapped(c) {
   c.suicide(); return true;
 }
 module.exports = { fillRoute, storageFloor, buildZones, zoneDeficit, myStops, canEscape, run(c) {
+  if (c.room && c.room.memory) c.room.memory.queenAlive = Game.time; // haulers still see her while she is ordered
+  if (require('../utils/cmd').yieldCreep(c)) return;
   const room = c.room, P = plan.get(room.name);
-  room.memory.queenAlive = Game.time;
   if (c.memory.working && c.store[RESOURCE_ENERGY] === 0) c.memory.working = false;
   if (!c.memory.working && c.store.getFreeCapacity() === 0) c.memory.working = true;
   if (!c.memory.working && require('../utils/salvage').retire(c, 25)) return;

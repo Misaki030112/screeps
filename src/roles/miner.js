@@ -2,6 +2,7 @@
 const plan = require('../utils/plan'), move = require('../utils/move'), rc = require('../utils/roomcache');
 const N8 = [[-1, -1], [0, -1], [1, -1], [-1, 0], [1, 0], [-1, 1], [0, 1], [1, 1]];
 module.exports = { run(c) {
+  if (require('../utils/cmd').yieldCreep(c)) return;
   const src = Game.getObjectById(c.memory.sourceId); if (!src) return;
   if (!c.memory.spot) {
     const P = plan.get(c.room.name);

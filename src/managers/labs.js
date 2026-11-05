@@ -76,7 +76,13 @@ module.exports = { R, cfg, roles, task, PROPOSE_K, PROPOSE_O, ACT_HOME_STOR, ACT
   const c = cfg(room); if (!c) return 0;
   const labs = room.find(FIND_MY_STRUCTURES).filter(s => s.structureType === STRUCTURE_LAB), ro = roles(labs); if (!ro) return 0;
   const [a, b] = ro.ins, [ra, rb] = R[c];
-  if (require('../utils/cmd').consumeLab(ro.out)) return 0; // commander owns the output lab (docs/COMMANDER.md)
+  // Any lab with a live order yields. react on the output runs that reaction and skips auto.
+  // An idle/hold on an input also skips auto. Does not write Memory.ops.labs.
+  { const cmd = require('../utils/cmd'); if (cmd.armed()) {
+    const oo = cmd.structOrder(ro.out.id);
+    if (oo && oo.act === 'react') { cmd.consumeLab(ro.out); return 0; }
+    if ((oo && cmd.consumeLab(ro.out)) || ro.ins.some(l => cmd.consumeLab(l))) return 0;
+  } }
   if (ro.out.cooldown || amt(a, ra) < 5 || amt(b, rb) < 5) return 0;
   const k = kind(ro.out); if (k && k !== c) return 0;
   return ro.out.runReaction(a, b) === OK ? 1 : 0;

@@ -1,28 +1,35 @@
 # Commander overlay（指挥接管）
 
-中文摘要：这是指挥层的地基，不是把每个角色重写一遍。平时 `Memory.cmd` 不存在，脚本和现在一样跑。需要手动指挥时，对**单个 creep 或单个建筑**下一道命令（控制台 `CMD.setCreep` / `CMD.setStruct`，或直接写 `Memory.cmd`）。命令有效期间，这一个单位听指挥；`release`、到期（默认 200 tick）或 `CMD.disarm()` 之后，它回到原来的角色脚本。不会改 `Memory.ops`（包括 `w47n9`、softCap、`raidOrder`），不会自动开安全模式、claim、市场出售或开战。
+中文摘要：这是指挥层的地基，不是把每个角色重写一遍。平时 `Memory.cmd` 不存在，脚本和现在一样跑。需要手动指挥时，对**单个 creep、一队 creep、或单个建筑**下命令（`CMD.setCreep` / `CMD.setMany` / `CMD.setSquad` / `CMD.setStruct`）。命令有效期间这一个单位听指挥；`release`、到期（默认 200 tick）或 `CMD.disarm()` 之后回到原来的脚本。家里矿工、升级、建造、搬运、女王、filler、远程搬运/预订、以及 `raid9` 都已接上。优先级是：**活着的 cmd > raidOrder > 自动脚本**。不会改 `Memory.ops`（包括 `w47n9`、softCap），也不会改 `raidOrder` 本身，不会自动开安全模式、claim、市场出售或开战。核弹 `launch` 必须带 `allow: 1` 和坐标，否则不发射。
 
 English: a Red Alert-style takeover seam. Automation keeps the colony. A future commander bot (or a human on the console) can grab one creep or one structure, give it an order, then let go. The role script, raid orders, and softCap policy are still there when the order ends.
 
-This PR is phase 0: the contract, the memory key, the priority table, and a few wired examples. It does not move every role onto the scheduler.
+Home economy, home guard, remote haulers/reservers/defenders, and `raid9` all call `yieldCreep`. When `Memory.cmd` is off that is one falsy check. A live order does not rewrite `raidOrder`.
 
 ## What is wired now
 
 | Unit | Concrete `act` | Duty order (`duty`, no `act`) |
 |---|---|---|
-| Every creep (`main.js`, before `home.flee` and the role) | yes — role is skipped | stamp only, unless the role calls `intent.obey` |
-| Home hauler `roles/hauler.js` | yes | yes — `idle` / `hold` / `flee` / `fillSpawn` / `fillTower` / `bank` |
-| Home guard `roles/guard.js` | yes | yes — `idle` / `hold` / `kite` / `flee` (`focus` falls through to the guard script) |
-| Every W47N8 role (`rooms/w47n8/roles.js` wrapper), including `w8hauler` and `w8defender` | yes, and it beats `Memory.ops.w8recycle` | same duty list as above |
+| Every creep (`main.js`, before `home.flee` and the role) | yes — role is skipped | the role must call `yieldCreep` (the rows below do) |
+| Home hauler, miner, mminer, upgrader, builder, harvester, queen, filler, manager | yes | yes — `idle` / `hold` / `flee` / `fillSpawn` / `fillTower` / `bank` |
+| Home guard, remote `defender` | yes | yes — `idle` / `hold` / `kite` / `flee` (`focus` falls through to the combat script) |
+| Remote `rhauler`, `rminer`, `reserver`, and `reserve7` | yes | same duty list. A live order beats flee / `attackController` for that tick |
+| `raid9` | yes. `main.js` skips `run` for an act, so this creep does not apply `forceGo` that tick | yes, and a live duty also skips `raidOrder`. `forceGo` still runs at the top of `run` before the yield |
+| Every W47N8 role (`rooms/w47n8/roles.js`), including `w8hauler` and `w8defender` | yes, and it beats `Memory.ops.w8recycle` | same duty list |
 | Home towers and W47N8 towers | `attack` / `heal` / `repair` / `idle` / `hold` per tower | — |
 | Home links and W47N8 source/hub links | `transfer` / `idle` / `hold` | — |
-| Home output lab | `idle` / `hold` / `react` (explicit `in1`+`in2` only) | — |
+| Every lab (output and inputs) | `idle` / `hold` skips the auto reaction. `react` on the output needs `in1`+`in2`. Does not set `Memory.ops.labs` | — |
+| Observer | `observe` with `room: 'W47N9'`, or `idle` / `hold` | — |
+| Nuker | `launch` only with `allow: 1` and `pos`. Otherwise it waits and does not pick a room | — |
+| Factory | `produce` / `idle` / `hold` own the tick and call nothing (no factory code yet) | — |
 | Home spawn and Spawn2 | `idle` / `hold` / `recycle` / `spawn` | — |
-| W47N8 terminal | any live order **blocks** the automatic K send | phase 1 does **not** call `terminal.send` |
+| W47N8 terminal | any live order **blocks** the automatic K send | this phase does **not** call `terminal.send` |
 
 `act: 'spawn'` runs only when the order sets `allow: 1` and an explicit `body`. The default memory role is `hauler`. The framework does not invent a combat body.
 
-Unwired roles (miner, upgrader, builder, raid9 body, remotes, …) still accept a concrete `act` from `main.js`. A duty-only order on those roles is advisory until a later phase adds `intent.obey`. `raid9` is deliberately not edited: a live **act** skips that creep's `raid9.run` for the tick (so it cannot also apply `forceGo`), and `memory.raidOrder` is left untouched for the release.
+`cqsquad` / `cqatk` / `probe` / `quad` still take a concrete `act` from `main.js` only. A duty on those roles is advisory until they call `yieldCreep`.
+
+Conflict for a raid creep, highest first: **live `Memory.cmd` (act or duty) > `memory.raidOrder` > the raid script.** Releasing the commander order leaves `raidOrder` as it was.
 
 ## Memory schema (`Memory.cmd`)
 
@@ -122,8 +129,8 @@ Duty execution (`intent.obey`) writes no role memory:
 Highest first:
 
 1. **`Memory.cmd.on` and a live per-unit order with `act`.** That creep or structure does the act and nothing else this tick. Home `flee`, `w8recycle`, tower auto-fire, link transfer, lab reaction, spawn queue, and the role body all yield for that unit only. Neighbours are unchanged.
-2. **Live `duty` and no `act`, on a role that calls `intent.obey`.** The duties listed above run. Anything `obey` does not handle falls through to the role.
-3. **`memory.raidOrder`.** Only inside `raid9.run`, and only when this creep has no live commander act. The overlay never deletes `raidOrder`.
+2. **Live `duty` and no `act`.** Wired roles run the duties listed above. A duty the seam does not execute (`focus`, `haul`, `repair`, `lab`, `upgrade`) falls through to the role script. On `raid9` that fall-through is the raid script, not `raidOrder`: any live act or duty suppresses `raidOrder` for that tick.
+3. **`memory.raidOrder`.** Only inside `raid9.run`, and only when this creep has no live commander order. The overlay never deletes `raidOrder`.
 4. **Automation policy** — `Memory.ops.w47n9`, softCap / `w8day`, `w8recycle`, remote threat FSM, tower focus. The overlay does not write these.
 5. **The role script.**
 
@@ -137,11 +144,13 @@ Replacement: `setCreep` / `setStruct` replace that unit's order. They do not mer
 
 ### Raid / forceGo caveat
 
-`main.js` skips `raid9.run` for a creep that has a live act. Squad-level `Memory.ops.w47n9.forceGo` still runs if any other raid creep ticks. If every raid creep is under an act on that tick, `forceGo` waits until one of them is released. Prefer a duty/act on the creeps you are steering, not a blanket act on the whole squad in the same tick as `forceGo`.
+A **duty** enters `raid9.run`, so squad `forceGo` still clears flee / fallback before that creep yields. A concrete **act** is taken in `main.js` before `run`, so that creep does not apply `forceGo` on that tick. Another raid creep still will. If every raid creep is under an act, `forceGo` waits until one of them is released. Prefer `setSquad` with a duty when you also need `forceGo` the same tick.
+
+A live order also beats `Memory.ops.w47n9.recycle` for that creep. The flag stays. Release resumes the recycle walk. Builder `recycleCivilian` works the same way.
 
 ### Recycle caveat
 
-A W47N8 creep listed in `Memory.ops.w8recycle` is not recycled while its commander order is live. The name stays on the list. Release resumes the recycle walk.
+A W47N8 creep listed in `Memory.ops.w8recycle` is not recycled while its commander order is live. The name stays on the list. Release resumes the recycle walk. Commanding the queen still stamps `room.memory.queenAlive`, so haulers do not treat her as dead.
 
 ## Console
 
@@ -190,13 +199,48 @@ A missing target does not delete the role's target. The creep waits (or falls th
 
 Do not flip `steer` on for the whole colony in one deploy. Do not fold `Memory.cmd` into `Memory.ops.w47n9`.
 
+## War-command cookbook
+
+Squad helpers issue the same order object shape as `setCreep` (each creep gets its own copy, its own TTL). They do not read or write `raidOrder` or `Memory.ops.w47n9`. An empty selector matches nobody.
+
+```js
+// One healer, hold the lip. raidOrder on that creep is left alone.
+CMD.setSquad({ role: 'raid9', kind: 'h' }, { duty: 'hold', pos: { room: 'W47N8', x: 38, y: 46 }, ttl: 80, say: 'hold' })
+
+// Named list. Names may be issued before the creep exists; it obeys on the tick it spawns.
+CMD.setMany(['d1', 'm1', 'h1'], { duty: 'kite', pos: { room: 'W47N9', x: 20, y: 40 }, ttl: 40 })
+
+// Whole raid role in one room.
+CMD.setSquad({ role: 'raid9', room: 'W47N9' }, { act: 'rangedMassAttack', ttl: 15 })
+
+// Release the squad. raidOrder resumes on the next tick.
+CMD.releaseMany(['d1', 'm1', 'h1'])
+CMD.disarm()
+```
+
+`setSquad` filters: `role`, `kind` (`memory.kind`), `home`, `room` (where it stands now). A function is also a filter: `CMD.setSquad(c => c.hits < c.hitsMax * 0.5, { duty: 'flee', ttl: 30 })`.
+
+Structures in the same fight:
+
+```js
+CMD.setStruct(towerId, { act: 'attack', id: hostileId, ttl: 25 })
+CMD.setStruct(outputLabId, { act: 'idle', ttl: 50 })          // skip KO this tick; ops.labs stays
+CMD.setStruct(inputLabId, { act: 'hold', ttl: 50 })           // also skips the auto reaction
+CMD.setStruct(observerId, { act: 'observe', room: 'W48N9', ttl: 20 })
+CMD.setStruct(nukerId, { act: 'launch', allow: 1, pos: { room: 'W47N9', x: 25, y: 25 }, ttl: 5 })
+```
+
+`launch` without `allow: 1` does not fire. Do not leave a nuker order armed by accident. `CMD.disarm()` when the order is done.
+
 ## Files
 
-- `src/utils/cmd.js` — overlay, setters, executors
+- `src/utils/cmd.js` — overlay, `yieldCreep`, `setMany` / `setSquad`, executors
 - `src/utils/intent.js` — `rank` / `stamp` / `obey`
-- `src/main.js` — act gate before flee and the role
-- `src/roles/hauler.js`, `src/roles/guard.js` — home examples
+- `src/main.js` — act gate before flee and the role; `runHeldStructures` when armed
+- `src/roles/hauler.js`, `miner.js`, `mminer.js`, `upgrader.js`, `builder.js`, `harvester.js`, `queen.js`, `filler.js`, `manager.js`, `guard.js`
+- `src/roles/remote.js` — `rhauler`, `rminer`, `reserver`, `defender`
+- `src/roles/reserve7.js`, `src/roles/raid9.js`
 - `src/rooms/w47n8/roles.js` — colony wrapper (all `w8*` roles)
 - `src/managers/tower.js`, `links.js`, `labs.js`, `spawn.js` — home structures
 - `src/rooms/w47n8/index.js` — colony towers, links, Spawn2, terminal yield
-- `tests/commander.js`, `tests/commander_tower.js`
+- `tests/commander.js`, `tests/commander_tower.js`, `tests/commander_roles.js`

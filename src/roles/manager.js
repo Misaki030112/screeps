@@ -3,6 +3,7 @@
 const plan = require('../utils/plan'), move = require('../utils/move'), rc = require('../utils/roomcache');
 const N8 = [[-1, -1], [0, -1], [1, -1], [-1, 0], [1, 0], [-1, 1], [0, 1], [1, 1]];
 module.exports = { run(c) {
+  if (require('../utils/cmd').yieldCreep(c)) return;
   const room = c.room, P = plan.get(room.name), [x, y] = P.pos.manager;
   if (!move.to(c, x, y, 0)) return;
   if (!c.memory.n || Game.time % 200 === 0) {

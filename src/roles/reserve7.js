@@ -37,6 +37,7 @@ function walk(c) {
   return MV.to(c, ex[0], ex[1], 0, ND);
 }
 function run(c) {
+  if (require('../utils/cmd').yieldCreep(c)) return;
   seen();
   if (c.room.name !== ROOM || !c.pos.isNearTo(CTL[0], CTL[1])) return walk(c);
   const ctl = c.room.controller, res = ctl.reservation;

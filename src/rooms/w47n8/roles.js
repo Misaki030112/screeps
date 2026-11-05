@@ -651,11 +651,10 @@ function recycled(c) {
   if (c.pos.isNearTo(sp)) { sp.recycleCreep(c); Memory.ops.w8recycle = L.filter(n => n !== c.name && Game.creeps[n]); } else c.moveTo(sp, { range: 1, reusePath: 10 });
   return true;
 }
-// Commander act/duty beats w8recycle and the role body (docs/COMMANDER.md). Unarmed: two falsy checks.
-const cmd = require('../../utils/cmd'), intent = require('../../utils/intent');
+// Commander act/duty beats w8recycle and the role body (docs/COMMANDER.md). Unarmed: one check.
+const cmd = require('../../utils/cmd');
 module.exports = Object.fromEntries(Object.entries(R).map(([k, f]) => [k, { run(c) {
-  if (cmd.consumeCreep(c)) return;
-  if (intent.obey(c)) return;
+  if (cmd.yieldCreep(c)) return;
   return recycled(c) || f(c);
 } }]));
 Object.defineProperty(module.exports, '_fill', { value: fillTarget, enumerable: false }); // tests only

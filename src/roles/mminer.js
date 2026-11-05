@@ -4,6 +4,7 @@
 // while extractor + container stand, the mineral has amount and the container has room.
 const plan = require('../utils/plan'), move = require('../utils/move');
 module.exports = { run(c) {
+  if (require('../utils/cmd').yieldCreep(c)) return;
   const home = c.memory.home || c.room.name, room = Game.rooms[home] || c.room;
   // Recycle when spawn dropped the target (defLow pause / mineralCap): free the body energy back into storage.
   if ((((room.memory || {}).roleTargets || {}).mminer || 0) === 0) {

@@ -59,7 +59,7 @@ function ensure() {
 }
 function copyOrder(src, now) {
   const o = { on: 1, at: now, by: src.by || 'cmd' };
-  for (const k of ['duty', 'act', 'id', 'res', 'say', 'amount', 'range', 'in1', 'in2', 'name', 'role', 'heal', 'note']) {
+  for (const k of ['duty', 'act', 'id', 'res', 'say', 'amount', 'range', 'in1', 'in2', 'name', 'role', 'heal', 'note', 'room']) {
     if (src[k] != null && src[k] !== '') o[k] = src[k];
   }
   if (src.pos) o.pos = { room: src.pos.room || src.pos.roomName, x: src.pos.x | 0, y: src.pos.y | 0 };
@@ -306,13 +306,126 @@ function blocks(struct) {
   return !!structOrder(struct.id);
 }
 
+// One peacetime check. Act wins; a duty the seam knows how to do runs next.
+// Does not write role memory, raidOrder, or Memory.ops.
+function yieldCreep(c) {
+  if (!c || !armed()) return false;
+  if (consumeCreep(c)) return true;
+  return require('./intent').obey(c) === true;
+}
+// True while a live act or duty is addressed to this creep, even if this tick fell through
+// to the role (advisory duties such as focus). raid9 uses this to skip raidOrder.
+function suppressed(c) {
+  if (!c || !armed()) return false;
+  const o = creepOrder(c.name);
+  return !!(o && (o.act || o.duty));
+}
+
+function setMany(names, order, now) {
+  const out = [];
+  const list = Array.isArray(names) ? names : [];
+  for (let i = 0; i < list.length; i++) if (issue('c', list[i], order, now)) out.push(list[i]);
+  return out;
+}
+function squadNames(spec) {
+  const creeps = (typeof Game !== 'undefined' && Game && Game.creeps) || {};
+  if (typeof spec === 'function') {
+    const names = [];
+    for (const n in creeps) if (creeps[n] && spec(creeps[n])) names.push(n);
+    return names;
+  }
+  if (!spec || typeof spec !== 'object') return [];
+  if (!spec.role && !spec.home && !spec.kind && !spec.room) return [];
+  const names = [];
+  for (const n in creeps) {
+    const c = creeps[n];
+    if (!c || !c.memory) continue;
+    if (spec.role && c.memory.role !== spec.role) continue;
+    if (spec.kind && c.memory.kind !== spec.kind) continue;
+    if (spec.home && (c.memory.home || (c.room && c.room.name)) !== spec.home) continue;
+    if (spec.room && (!c.room || c.room.name !== spec.room)) continue;
+    names.push(n);
+  }
+  return names;
+}
+function setSquad(spec, order, now) { return setMany(squadNames(spec), order, now); }
+function releaseMany(names) {
+  let n = 0;
+  const list = Array.isArray(names) ? names : [];
+  for (let i = 0; i < list.length; i++) if (releaseCreep(list[i])) n++;
+  return n;
+}
+
+const OBS = () => (typeof STRUCTURE_OBSERVER !== 'undefined' ? STRUCTURE_OBSERVER : 'observer');
+const NUK = () => (typeof STRUCTURE_NUKER !== 'undefined' ? STRUCTURE_NUKER : 'nuker');
+const FAC = () => (typeof STRUCTURE_FACTORY !== 'undefined' ? STRUCTURE_FACTORY : 'factory');
+const LAB = () => (typeof STRUCTURE_LAB !== 'undefined' ? STRUCTURE_LAB : 'lab');
+
+// observe(roomName). Target room is order.room, not a game object id.
+function consumeObserver(obs) {
+  return consumeStruct(obs, o => {
+    if (o.act === 'idle' || o.act === 'hold') return true;
+    if (o.act === 'observe') {
+      const room = typeof o.room === 'string' ? o.room : null;
+      if (!room || typeof obs.observe !== 'function') return !o.fallback;
+      finish('s', obs.id, o, obs.observe(room));
+      return true;
+    }
+    return !o.fallback;
+  });
+}
+// launchNuke only with allow:1 and an explicit pos. Otherwise the nuker waits. Never picks a target.
+function consumeNuker(nuker) {
+  return consumeStruct(nuker, o => {
+    if (o.act === 'idle' || o.act === 'hold') return true;
+    if (o.act === 'launch') {
+      if (!(o.allow && o.pos && typeof nuker.launchNuke === 'function')) return true;
+      const pos = roomPos(o.pos.x, o.pos.y, o.pos.room || o.pos.roomName);
+      finish('s', nuker.id, o, nuker.launchNuke(pos));
+      return true;
+    }
+    return !o.fallback;
+  });
+}
+// Factory production is not implemented. produce/idle/hold own the tick and call nothing.
+function consumeFactory(fac) {
+  return consumeStruct(fac, () => true);
+}
+// Structures with no manager (observer, nuker, factory, labs outside the reaction) still
+// obey while Memory.cmd is armed. Tower/link/spawn managers consume first; the per-tick
+// cache makes a second pass a no-op. Not called when the overlay is off.
+function runHeldStructures() {
+  if (!armed()) return 0;
+  begin();
+  const bag = root().s;
+  if (!bag) return 0;
+  const t = time();
+  let n = 0;
+  for (const id in bag) {
+    if (!live(bag[id], t)) continue;
+    const s = obj(id);
+    if (!s) continue;
+    const k = s.structureType;
+    let held = false;
+    if (k === OBS()) held = consumeObserver(s);
+    else if (k === NUK()) held = consumeNuker(s);
+    else if (k === FAC()) held = consumeFactory(s);
+    else if (k === LAB()) held = consumeLab(s);
+    if (held) n++;
+  }
+  return n;
+}
+
 const api = {
   DEFAULT_TTL, OK, armed, live, dead, sweep, begin,
   creepOrder, structOrder,
   setCreep: (name, order, now) => issue('c', name, order, now),
   setStruct: (id, order, now) => issue('s', id, order, now),
+  setMany, setSquad, squadNames, releaseMany,
   releaseCreep, releaseStruct, releaseAll, disarm, arm,
+  yieldCreep, suppressed,
   consumeCreep, consumeTower, consumeLink, consumeLab, consumeSpawn, blocks,
+  consumeObserver, consumeNuker, consumeFactory, runHeldStructures,
 };
 if (typeof global !== 'undefined') global.CMD = api;
 module.exports = api;
