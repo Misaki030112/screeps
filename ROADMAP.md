@@ -3,6 +3,13 @@
 Novice zone ends **2026-10-28 03:33 UTC+8** (past as of 10-29). Defence timeline: `docs/DEFENSE_NOVICE.md` (2026-10-16); detail `docs/DEFENSE.md` / geometry `docs/DEFENSE_PLAN.md`.
 **Safe mode: NEVER auto-activate** — alert Misaki.
 
+## 2026-11-05 peacetime listener: one room slot (5:5:1:1)
+
+- **Chose:** A separate Grok Screeps指挥官 bot needs the second official websocket room slot. The old listener pinned W46N8 and rotated the other slot (W47N8 600s / W45N8 300s / W45N7 150s).
+- **Shipped (box only, no game deploy):** `tools/room_rot.py`. Peacetime holds one room, wall-clock W46N8 600s : W47N8 600s : W45N8 120s : W45N7 120s. Wartime: `touch metrics/listener_yield_rooms` drops that subscription within ~5s (console and cpu stay). The commander subscribes the battle rooms, both slots if the fight needs two. `rm` the file to resume. Docs: `docs/COMMANDER.md`, `docs/DATA.md`. Test: `tests/listener_rot_test.py`.
+- **Patrol:** home `creep_ticks` near 5/12 of ticks is the schedule, not a stall. STATS still ~40s. If `metrics/listener_yield_rooms` exists, room objects are intentionally off. Do not start a second listener.
+- **Not shipped:** the commander bot. No live listener restart in this change; ops deploys it after merge.
+
 ## 2026-11-05 commander overlay foundation (peacetime scripts unchanged)
 
 - **Chose:** Misaki wants creeps with clear duties whose priority can move with threat / storage / softCap / spawn pressure / remote defence / war, plus a Red Alert takeover (select unit → order → release → resume) for a future commander bot. Do not rewrite every role in one PR, and do not touch live `Memory.ops.w47n9` / softCap / `raidOrder`.

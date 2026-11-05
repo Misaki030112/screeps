@@ -240,6 +240,26 @@ CMD.setStruct(nukerId, { act: 'launch', allow: 1, pos: { room: 'W47N9', x: 25, y
 
 `launch` without `allow: 1` does not fire. Do not leave a nuker order armed by accident. `CMD.disarm()` when the order is done.
 
+## Websocket room slots (ops listener vs 指挥官)
+
+中文：平时分析监听只占 **一个** 官方房间订阅名额，按墙钟 **W46N8 : W47N8 : W45N8 : W45N7 = 5 : 5 : 1 : 1** 轮转（600s / 600s / 120s / 120s），第二个名额留给 Screeps指挥官。指挥官正在实战接管时，ops 必须把房间订阅全部停掉；这一场的战斗房间由指挥官自己订阅（两个官方名额按需要用）。交还之后删掉 yield 文件，ops 恢复这条单槽轮转。这是盒子上的操作，不是 `Memory.cmd`，也不改游戏代码。
+
+The official Screeps websocket allows two room subscriptions per user. Console (`user:<id>/console`) and cpu are not room slots. The listener keeps those in both peacetime and wartime, so STATS, alerts, and the memory-segment poll stay up.
+
+Peacetime (`tools/room_rot.py`, `tools/listener.py`):
+
+- Ops holds exactly one room. Schedule, wall clock: W46N8 600s, W47N8 600s, W45N8 120s, W45N7 120s, then repeat.
+- `metrics/live.json` is the W46N8 map only while that room holds the slot (`roomSlot` names the current room). Creep trails for the other three rooms still land in `creep_ticks` during their turns.
+- The other official slot stays empty for the commander bot. Do not start a second `listener.py` (it would take the slot and double-write `creep_ticks`).
+
+Wartime, when the commander bot is live-commanding a local campaign:
+
+1. Ops stops room subscriptions entirely: `touch metrics/listener_yield_rooms`. The listener drops its room within about 5 seconds. Console and cpu stay.
+2. The commander bot subscribes the battle rooms. A fight in two rooms uses both official slots. Ops must not also be subscribed, or the server answers `subscribe limit reached` and both sides lose ticks.
+3. Handback: the commander unsubscribes, then `rm metrics/listener_yield_rooms`. Ops resumes the same single-slot 5:5:1:1 schedule on the room it was holding, and that room's hold starts over. Do not leave the yield file in place during peacetime — home and W47N8 sampling stay off until it is removed.
+
+`Memory.cmd` does not subscribe rooms and does not read this file. Safe mode, claims, and attacks are still not armed from here.
+
 ## Files
 
 - `src/utils/cmd.js` — overlay, `yieldCreep`, `setMany` / `setSquad`, executors
@@ -253,3 +273,4 @@ CMD.setStruct(nukerId, { act: 'launch', allow: 1, pos: { room: 'W47N9', x: 25, y
 - `src/managers/tower.js`, `links.js`, `labs.js`, `spawn.js` — home structures
 - `src/rooms/w47n8/index.js` — colony towers, links, Spawn2, terminal yield
 - `tests/commander.js`, `tests/commander_tower.js`, `tests/commander_roles.js`
+- `tools/room_rot.py`, `tools/listener.py` — peacetime one room slot; wartime `metrics/listener_yield_rooms`. Not game code. `tests/listener_rot_test.py`
