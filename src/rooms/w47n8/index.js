@@ -103,18 +103,19 @@ function spawnRun(spawn) {
   // Reserved remote of this colony (W47N7, plus any other room we currently reserve next door).
   // Same `defender` role / threat FSM as W45N8. Local seal defence above still wins. Never W47N9.
   if (!want && room.controller && room.controller.level >= 4 && room.name) {
-    const TG = require('../../managers/threat'), g = TG.wantDefender(room.name);
-    if ((g && TG.armed(g)) || TG.energyHold(room.name)) {
-      const ord = require('../../managers/spawn').defenderOrder(g), body = ord.body, cost = _.sum(body, p => BODYPART_COST[p]);
-      if (g && TG.armed(g) && avail >= cost) {
+    const TG = require('../../managers/threat'), SP = require('../../managers/spawn');
+    const planD = SP.planDefender(room);
+    if (planD && (planD.remote || planD.hold)) {
+      if (planD.remote && avail >= planD.cost) {
         const name = 'rdef' + Game.time;
-        const mem = { role: 'defender', home: room.name, remote: g, born: Game.time, v2: 1 };
-        if (ord.core) mem.core = 1;
-        const rv = spawn.spawnCreep(body, name, { memory: mem, energyStructures: energyOrder(room) });
-        if (rv === OK) { TG.noteSpawn(g, name); FM.spent(cost); return; }
-        // spawnCreep failed (busy name, RCL, etc.): do not eat the tick; economy below still runs
-      } else if (!cs.some(c => c.memory.role === 'w8filler' || c.memory.role === 'w8hauler')) want = 'w8filler';
-      else { FM.wait('defender', cost, avail); return; }
+        const mem = { role: 'defender', home: room.name, remote: planD.remote, born: Game.time, squad: 1, v2: 1 };
+        if (planD.core) mem.core = 1;
+        const rv = spawn.spawnCreep(planD.body, name, { memory: mem, energyStructures: energyOrder(room) });
+        if (rv === OK) { TG.noteSpawn(planD.remote, name); FM.spent(planD.cost); return; }
+      } else if (planD.hold) {
+        if (!cs.some(c => c.memory.role === 'w8filler' || c.memory.role === 'w8hauler')) want = 'w8filler';
+        else { FM.wait('defender', planD.cost || 1300, avail); return; }
+      }
     }
   }
   // 1) miners per source: keep >=5 WORK (10 e/t) on each source. Replace at TTL<60; and since the first w8miners were 2 WORK

@@ -21,9 +21,21 @@ function birthDirs(spawn, role) {
 }
 const REMOTE_ROLES = new Set(['rminer', 'rhauler', 'reserver', 'defender', 'rscout']);
 const B = {
-  // anti-Invader: 5 RANGED_ATTACK + 6 MOVE + 1 HEAL = 1300 (RCL4 full cap); 50 dmg/t at range 3, 12 hp/t self-heal
-  defender: e => e >= 1300 ? [].concat(rep(5, RANGED_ATTACK), rep(6, MOVE), [HEAL]) : [].concat(rep(3, RANGED_ATTACK), rep(4, MOVE)),
-  // melee core buster: 10 ATTACK + 10 MOVE = 1300. 30 dmg × 10 = 300/t; 100k core dies in ceil(100000/300) = 334 ticks adjacent.
+  // Remote ranged defender. 1 MOVE per other part (full speed off-road).
+  // 1300 = 5 RA + 6 MOVE + 1 HEAL. Heals grow to 6, then RA fills the budget, 50 parts max.
+  // RCL7 cap 5600 = 19 RA + 25 MOVE + 6 HEAL (190 dmg / 72 heal).
+  defender: e => {
+    if (e < 1300) return [].concat(rep(3, RANGED_ATTACK), rep(4, MOVE));
+    let r = 5, h = 1;
+    const cost = () => r * 150 + h * 250 + (r + h) * 50;
+    while (r + h < 25) {
+      if (h < 6 && cost() + 300 <= e) { h++; continue; }
+      if (cost() + 200 <= e) { r++; continue; }
+      break;
+    }
+    return [].concat(rep(r, RANGED_ATTACK), rep(r + h, MOVE), rep(h, HEAL));
+  },
+  // Melee core buster: ATTACK+MOVE pairs (130e), max 25. 1300 → 10+10. RCL7 5600 → 25+25 (3250e, 750 dmg/t).
   coreBuster: e => { const n = Math.max(0, Math.min(25, Math.floor(e / 130))); return [].concat(rep(n, ATTACK), rep(n, MOVE)); },
   harvester: e => { const n = Math.max(1, Math.min(5, Math.floor(e / 200))); return [].concat(rep(n, WORK), rep(n, CARRY), rep(n, MOVE)); },
   miner: (e, carry) => { const c = carry ? 1 : 0; const w = Math.max(2, Math.min(5, Math.floor((e - 50 - c * 50) / 100)));
@@ -282,11 +294,37 @@ function spawnOrder(count, T, nSites) {
     ? ['queen', 'hauler', 'upgrader', 'REMOTE', 'filler', 'manager', 'builder', 'mminer']
     : ['queen', 'hauler', 'REMOTE', 'filler', 'manager', 'upgrader', 'builder', 'mminer'];
 }
-// Body + memory flag for the remote defender. Core missions get the melee buster; creep fights stay ranged.
-function defenderOrder(remote) {
+// Body sized to the room's energy capacity. Core → melee buster; creeps → ranged. 1300 only when cap is that small.
+function defenderOrder(remote, energy) {
   const threat = require('./threat');
   const core = threat.coreMission && threat.coreMission(remote) ? 1 : 0;
-  return { body: core ? B.coreBuster(1300) : B.defender(1300), core };
+  const e = energy > 0 ? energy : 1300;
+  return { body: core ? B.coreBuster(e) : B.defender(e), core };
+}
+// 2nd–4th bodies do not spawn under the home 15k floor, or under softCap (25k) in W47N8.
+// Defender #1 always spawns from extensions and does not change those floors.
+function extrasOk(room) {
+  if (!room || !room.storage || !room.storage.store) return true;
+  const stor = room.storage.store[RESOURCE_ENERGY] || room.storage.store.energy || 0;
+  const soft = room.name === 'W47N8' && Memory.ops && Memory.ops.w8day && Memory.ops.w8day.softCap2;
+  return stor >= (soft ? 25000 : 15000);
+}
+// null, or { remote, body, core, cost, hold }. hold freezes the queue for body #1 only.
+function planDefender(room) {
+  const threat = require('./threat');
+  if (!room || !room.controller || room.controller.level < 4) return null;
+  if (threat.energyHold(room.name) && !threat.wantDefender(room.name)) return { hold: true, cost: 1300 };
+  const g = threat.wantDefender(room.name);
+  if (!g || !threat.armed(g)) return null;
+  const th = threat.state(g);
+  const have = threat.squadAlive(th);
+  const want = threat.squadSize(th);
+  if (have >= want) return null;
+  if (have >= 1 && !extrasOk(room)) return null;
+  const cap = room.energyCapacityAvailable || room.energyAvailable || 1300;
+  const ord = defenderOrder(g, cap);
+  const cost = _.sum(ord.body, p => BODYPART_COST[p]);
+  return { remote: g, body: ord.body, core: ord.core, cost, hold: have < 1 };
 }
 
 // Refresh roleTargets even when every spawn is busy (patrol 2026-11-01 soft-upgrade): upgrader surplus-recycle and
@@ -325,7 +363,7 @@ function setRoleTargets(room) {
   room.memory.roleTargets = T;
   return T;
 }
-module.exports = { defLowUpgraders, setRoleTargets, rhTarget, birthDirs, targets, mineralCapped, rhaulerNeed, remoteNext, retiring, B, defenderOrder, reserverBody, nearFull, bodyEnergy, spawnOrder, run(spawn) {
+module.exports = { defLowUpgraders, setRoleTargets, rhTarget, birthDirs, targets, mineralCapped, rhaulerNeed, remoteNext, retiring, B, defenderOrder, planDefender, extrasOk, reserverBody, nearFull, bodyEnergy, spawnOrder, run(spawn) {
   // spawn-wait metric (Misaki 10-18 09:30: zero spawn idle due to refill). Memory.stats.sw[room] cumulative ticks:
   //   busy = spawning; wait = a creep was wanted, cost <= cap but energyAvailable < cost (refill wait); idle = nothing wanted.
   //   last = [role, cost, avail] of the latest wait.
@@ -364,15 +402,16 @@ function run1(spawn, onWait) {
   // 1b) defender: top of the queue. While collecting the 1300, hold EVERYTHING except queen (refill) —
   // miners used to keep spawning and stretched the wait to ~31t (invader_W45N8_499, 2026-10-16).
   // Holding ends the tick noteSpawn sets th.def (wantDefender/holding go false → upgraders resume).
-  const threat = require('./threat'), want = threat.wantDefender(room.name);
-  if (want && rcl >= 4 && threat.armed(want)) {
-    const ord = defenderOrder(want);
-    if (avail >= 1300) { const name = 'defender' + Game.time, mem = { role: 'defender', home: room.name, remote: want, born: Game.time };
-      if (ord.core) mem.core = 1;
-      const rv = spawn.spawnCreep(ord.body, name, { memory: mem, directions: birthDirs(spawn, 'defender') });
-      if (rv === OK) threat.noteSpawn(want, name); return rv; }
-    if (!(alive.queen || 0) && !(alive.filler || 0)) return go('queen', B.queen(Math.max(300, avail)));
-    return ERR_BUSY; // reserve energyAvailable for the defender; home guards (off) never reach here while want is set
+  const threat = require('./threat'), planD = planDefender(room);
+  if (planD && planD.remote) {
+    if (avail >= planD.cost) { const name = 'defender' + Game.time, mem = { role: 'defender', home: room.name, remote: planD.remote, born: Game.time, squad: 1, v2: 1 };
+      if (planD.core) mem.core = 1;
+      const rv = spawn.spawnCreep(planD.body, name, { memory: mem, directions: birthDirs(spawn, 'defender') });
+      if (rv === OK) threat.noteSpawn(planD.remote, name); return rv; }
+    if (planD.hold) { // body #1: queen may refill; nothing else spends the pile
+      if (!(alive.queen || 0) && !(alive.filler || 0)) return go('queen', B.queen(Math.max(300, avail)));
+      return ERR_BUSY;
+    }
   }
   // 1c) home guards while player combat creeps are in the room (managers/home); queen first so towers stay fed
   const H = require('./home'), homeThreat = H.on('guards') && H.active(room); // guards + spawn hold behind Memory.defense.guards
@@ -381,7 +420,7 @@ function run1(spawn, onWait) {
     if ((alive.guard || 0) < H.wantGuards(room)) { const b = B.guard(Math.max(500, Math.min(cap, avail))); // spawn now with what we have: towers carry the fight, speed matters
       return go('guard', b, { born: Game.time }); }
   }
-  const hold = !!want || homeThreat || threat.energyHold(room.name); // energyHold: collect 1300 for a gated remote defender // threat: no upgraders/builders/remote spawns until clear
+  const hold = !!(planD && planD.hold) || homeThreat || threat.energyHold(room.name); // first defender or energy gate holds the queue
   // 2) miners (pre-spawned for travel time)
   // miner83614486 (10-13) arrived 115 ticks early and idled next to its predecessor: unmeasured travel defaulted to 100 (real ~30)
   const lead = c => Math.min(c.memory.travel || 40, 80) + c.body.length * 3;

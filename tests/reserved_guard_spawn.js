@@ -15,7 +15,7 @@ Object.assign(global, { _, FIND_MY_STRUCTURES: 10, FIND_MY_CONSTRUCTION_SITES: 1
   STRUCTURE_INVADER_CORE: 'invaderCore', RESOURCE_ENERGY: 'energy', LOOK_STRUCTURES: 'ls', LOOK_CONSTRUCTION_SITES: 'lc', OK: 0,
   WORK: 'work', CARRY: 'carry', MOVE: 'move', ATTACK: 'attack', RANGED_ATTACK: 'ranged_attack', HEAL: 'heal', TOUGH: 'tough', CLAIM: 'claim',
   BODYPART_COST: { work: 100, carry: 50, move: 50, attack: 80, ranged_attack: 150, heal: 250, tough: 10, claim: 600 } });
-const home = { controller: { level: 6, my: true, ticksToDowngrade: 40000 }, energyCapacityAvailable: 2300, energyAvailable: 1800,
+const home = { controller: { level: 7, my: true, ticksToDowngrade: 40000 }, energyCapacityAvailable: 5600, energyAvailable: 5600,
   memory: { lastFull: 1 }, storage: { store: { energy: 20000 } }, find: () => [], lookForAt: () => [] };
 global.Game = { time: 5000, cpu: { bucket: 10000 }, rooms: { W47N8: null }, creeps: {}, spawns: {} };
 global.Memory = { username: 'Misaki', remote: {}, creeps: {}, defense: { remoteDefender: true },
@@ -39,7 +39,7 @@ W.spawnRun(spawn);
 assert.ok(spawned, 'expected a spawn');
 assert.strictEqual(spawned.role, 'defender');
 assert.strictEqual(spawned.remote, 'W47N7');
-assert.ok(spawned.cost <= 1300, 'defender body cost ' + spawned.cost);
+assert.ok(spawned.cost > 1300 && spawned.cost <= 5600, 'RCL7 defender body cost ' + spawned.cost);
 assert.strictEqual(Memory.remote.W47N7.th.def, spawned.name);
 // quiet reserved room: no defender, economy continues
 spawned = null;
