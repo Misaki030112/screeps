@@ -491,6 +491,22 @@ function clearStaleOverrun(P) {
   if (P.phase === 'fallback') P.phase = 'breach';
   return true;
 }
+// Squad memory only. Idempotent. main.js calls this once before creep acts so a concrete
+// Memory.cmd act cannot skip forceGo (raid9.run never starts for that creep). Does not
+// create Memory.ops.w47n9 and does not move a creep.
+function tickFlags(P) {
+  const o = P || (typeof Memory !== 'undefined' && Memory && Memory.ops && Memory.ops.w47n9);
+  if (!o) return false;
+  let changed = false;
+  if (o.forceGo) {
+    delete o.flee; delete o.garrison; delete o.recycle; delete o.safe; delete o.safeUntil;
+    if (o.phase === 'fallback') o.phase = 'breach';
+    delete o.forceGo;
+    changed = true;
+  }
+  if (clearStaleOverrun(o)) changed = true;
+  return changed;
+}
 function squad(c) { return c.room.find(FIND_MY_CREEPS).filter(x => x !== c && x.memory && x.memory.role === 'raid9'); }
 function world(room) {
   const hc = room.find(FIND_HOSTILE_CREEPS);
@@ -871,14 +887,8 @@ function recycleSelf(c) {
 }
 function run(c) {
   const P = M();
-  // forceGo FIRST — before raidOrder early-return, else resume never clears flee. Misaki 2026-11-04.
-  if (P.forceGo) {
-    delete P.flee; delete P.garrison; delete P.recycle; delete P.safe; delete P.safeUntil;
-    if (P.phase === 'fallback') P.phase = 'breach';
-    delete P.forceGo;
-  }
-  // noOverrun (default): drop stale overrun flees so Memory cannot keep us garrisoned.
-  clearStaleOverrun(P);
+  // Squad flags first (also once from main.js, before any act skips this function).
+  tickFlags(P);
   // Live Memory.cmd owns this body. forceGo above still clears squad flee. raidOrder is not touched.
   // Conflict: live cmd (act or duty) > raidOrder > the raid script. Release resumes raidOrder.
   const cmdApi = require('../utils/cmd');
@@ -917,6 +927,6 @@ module.exports = {
   raidActive, pauseCivilians, upgraderKeep, recycleSelf, applyPause, namesToRecycle, recycleCivilian,
   WAR_STOR, warFloor, warStorOk, fieldCaps, wantKind, wantSpawn, noteSpawned, mouthsOf, assignSeals, frontSlots, assignment,
   swampStep, stepOntoSwamp, stepFriend, honorYield, pullMode, inApproach, assaultReady, shouldRegroup, syncGo,
-  observe, syncPhase, pick, pickInside, shouldYield, manualOrder, useMass, healPlan, healDual, armedParts, overrun, clearStaleOverrun,
+  observe, syncPhase, pick, pickInside, shouldYield, manualOrder, useMass, healPlan, healDual, armedParts, overrun, clearStaleOverrun, tickFlags,
   gSlotOf, run,
 };

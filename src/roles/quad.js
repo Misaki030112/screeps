@@ -312,6 +312,7 @@ function fight(c, team, Q) {
 }
 
 function run(c) {
+  if (require('../utils/cmd').yieldCreep(c)) return;
   const P = M();
   if ((P.cmd||"hold")==="retreat") {
     fight(c, [c], {}); return c.moveTo(new RoomPosition(RALLY.x,RALLY.y,RALLY.room),{reusePath:10,costCallback:matrixLite});

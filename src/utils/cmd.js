@@ -360,6 +360,7 @@ const OBS = () => (typeof STRUCTURE_OBSERVER !== 'undefined' ? STRUCTURE_OBSERVE
 const NUK = () => (typeof STRUCTURE_NUKER !== 'undefined' ? STRUCTURE_NUKER : 'nuker');
 const FAC = () => (typeof STRUCTURE_FACTORY !== 'undefined' ? STRUCTURE_FACTORY : 'factory');
 const LAB = () => (typeof STRUCTURE_LAB !== 'undefined' ? STRUCTURE_LAB : 'lab');
+const POW = () => (typeof STRUCTURE_POWER_SPAWN !== 'undefined' ? STRUCTURE_POWER_SPAWN : 'powerSpawn');
 
 // observe(roomName). Target room is order.room, not a game object id.
 function consumeObserver(obs) {
@@ -391,6 +392,10 @@ function consumeNuker(nuker) {
 function consumeFactory(fac) {
   return consumeStruct(fac, () => true);
 }
+// Power spawn processing is not implemented. Do not call processPower.
+function consumePower(ps) {
+  return consumeStruct(ps, () => true);
+}
 // Structures with no manager (observer, nuker, factory, labs outside the reaction) still
 // obey while Memory.cmd is armed. Tower/link/spawn managers consume first; the per-tick
 // cache makes a second pass a no-op. Not called when the overlay is off.
@@ -410,6 +415,7 @@ function runHeldStructures() {
     if (k === OBS()) held = consumeObserver(s);
     else if (k === NUK()) held = consumeNuker(s);
     else if (k === FAC()) held = consumeFactory(s);
+    else if (k === POW()) held = consumePower(s);
     else if (k === LAB()) held = consumeLab(s);
     if (held) n++;
   }
@@ -425,7 +431,7 @@ const api = {
   releaseCreep, releaseStruct, releaseAll, disarm, arm,
   yieldCreep, suppressed,
   consumeCreep, consumeTower, consumeLink, consumeLab, consumeSpawn, blocks,
-  consumeObserver, consumeNuker, consumeFactory, runHeldStructures,
+  consumeObserver, consumeNuker, consumeFactory, consumePower, runHeldStructures,
 };
 if (typeof global !== 'undefined') global.CMD = api;
 module.exports = api;

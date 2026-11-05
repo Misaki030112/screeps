@@ -136,20 +136,60 @@ it('home and remote roles yield before their body', () => {
   }
 });
 
-it('observer observes, nuker waits without allow, factory calls nothing', () => {
+it('tickFlags clears forceGo with no creep run, and a second call is a no-op', () => {
+  Game.time = 7350;
+  const raid = require(src('roles/raid9.js'));
+  Memory.ops = { w47n9: { on: true, phase: 'fallback', forceGo: 1, flee: { t: 1, why: 'abort' }, garrison: 1, recycle: true } };
+  assert.strictEqual(raid.tickFlags(), true);
+  assert.strictEqual(Memory.ops.w47n9.forceGo, undefined);
+  assert.strictEqual(Memory.ops.w47n9.flee, undefined);
+  assert.strictEqual(Memory.ops.w47n9.garrison, undefined);
+  assert.strictEqual(Memory.ops.w47n9.recycle, undefined);
+  assert.strictEqual(Memory.ops.w47n9.phase, 'breach');
+  assert.strictEqual(Memory.ops.w47n9.on, true);
+  assert.strictEqual(raid.tickFlags(), false);
+  delete Memory.ops.w47n9;
+  assert.strictEqual(raid.tickFlags(), false);
+  assert.strictEqual(Memory.ops.w47n9, undefined);
+});
+
+it('conquest, probe, quad, and rscout yield before their scripts', () => {
+  Game.time = 7360;
+  const conquest = require(src('roles/conquest.js'));
+  const quad = require(src('roles/quad.js'));
+  const probe = require(src('roles/probe.js'));
+  const remote = require(src('roles/remote.js'));
+  const runs = [
+    ['cqsquad', conquest], ['cqatk', conquest], ['probe', probe], ['cqquad', quad], ['rscout', remote.rscout],
+  ];
+  for (const [role, mod] of runs) {
+    Game.time++;
+    const c = idle(role, role);
+    c.room.find = () => { throw new Error('find ' + role); };
+    (mod.run || mod)(c);
+    assert.deepStrictEqual(c.said, [role], role);
+    assert.strictEqual(Memory.ops.cq, undefined);
+    assert.strictEqual(Memory.ops.probe, undefined);
+  }
+});
+
+it('observer observes, nuker waits without allow, factory and power spawn call nothing', () => {
   Game.time = 7400;
-  let seen = null, launched = null, produced = 0;
+  let seen = null, launched = null, produced = 0, powered = 0;
   const obs = { id: 'ob', structureType: 'observer', observe(rn) { seen = rn; return 0; } };
   const nk = { id: 'nk', structureType: 'nuker', launchNuke(p) { launched = p; return 0; } };
   const fac = { id: 'fac', structureType: 'factory', produce() { produced++; return 0; } };
-  W.objs.ob = obs; W.objs.nk = nk; W.objs.fac = fac;
+  const ps = { id: 'ps', structureType: 'powerSpawn', processPower() { powered++; return 0; } };
+  W.objs.ob = obs; W.objs.nk = nk; W.objs.fac = fac; W.objs.ps = ps;
   cmd.setStruct('ob', { act: 'observe', room: 'W48N9', ttl: 5 });
   cmd.setStruct('nk', { act: 'launch', pos: { room: 'W47N9', x: 25, y: 25 }, ttl: 5 });
   cmd.setStruct('fac', { act: 'produce', ttl: 5 });
+  cmd.setStruct('ps', { act: 'idle', ttl: 5 });
   cmd.runHeldStructures();
   assert.strictEqual(seen, 'W48N9');
   assert.strictEqual(launched, null);
   assert.strictEqual(produced, 0);
+  assert.strictEqual(powered, 0);
   cmd.setStruct('nk', { act: 'launch', allow: 1, pos: { room: 'W47N9', x: 25, y: 25 }, once: 1, ttl: 5 });
   Game.time++;
   cmd.runHeldStructures();

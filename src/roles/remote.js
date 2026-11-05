@@ -399,6 +399,7 @@ roles.defender = function (c) {
 };
 // Vision fallback (no observer): 1 MOVE scout parks in the remote when nobody else gives vision (spawn.js decides when).
 roles.rscout = function (c) {
+  if (require('../utils/cmd').yieldCreep(c)) return;
   const C = remote.CFG[c.memory.remote], [x, y] = C.scout || C.cont;
   if (remote.paused(c.memory.remote)) return flee(c);
   go(c, c.memory.remote, x, y, 1);

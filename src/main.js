@@ -23,6 +23,7 @@ module.exports.loop = function () {
   err.wrap('roads', () => require('./managers/roads').run()); // RCL6 road plan (docs/ROADS.md), no-op below RCL6
   for (const n in Game.rooms) { const r = Game.rooms[n]; if (remote.CFG[n]) err.wrap('alerts ' + n, () => newAlerts.push(...(alerts.run(r) || []))); }
   if (require('./utils/cmd').armed()) err.wrap('cmd', () => require('./utils/cmd').runHeldStructures()); // observer / nuker / factory / extra labs
+  err.wrap('raidFlags', () => require('./roles/raid9').tickFlags()); // forceGo even if every raid creep is under a concrete act
   for (const n of cpuorder.order(Game.creeps, Game.cpu.bucket)) { const c = Game.creeps[n]; if (c.spawning) continue; if (cpuorder.shed(c, Game.cpu.bucket, Game.cpu.getUsed(), Game.cpu.tickLimit)) continue; /* no intents possible; avoids stuck-ladder repaths + false STUCK */ if (!c.memory.role) c.memory.role = 'harvester';
     if (!c.memory.v2) { for (const k of ['spot', '_move', '_m', 'src', 'dst', 't', 'sink', 'stop', 'repairId']) delete c.memory[k]; c.memory.v2 = 1; }
     // Commander act (docs/COMMANDER.md) beats home.flee and the role script. Absent Memory.cmd => one falsy check.

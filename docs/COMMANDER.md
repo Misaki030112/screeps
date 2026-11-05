@@ -1,6 +1,6 @@
 # Commander overlay（指挥接管）
 
-中文摘要：这是指挥层的地基，不是把每个角色重写一遍。平时 `Memory.cmd` 不存在，脚本和现在一样跑。需要手动指挥时，对**单个 creep、一队 creep、或单个建筑**下命令（`CMD.setCreep` / `CMD.setMany` / `CMD.setSquad` / `CMD.setStruct`）。命令有效期间这一个单位听指挥；`release`、到期（默认 200 tick）或 `CMD.disarm()` 之后回到原来的脚本。家里矿工、升级、建造、搬运、女王、filler、远程搬运/预订、以及 `raid9` 都已接上。优先级是：**活着的 cmd > raidOrder > 自动脚本**。不会改 `Memory.ops`（包括 `w47n9`、softCap），也不会改 `raidOrder` 本身，不会自动开安全模式、claim、市场出售或开战。核弹 `launch` 必须带 `allow: 1` 和坐标，否则不发射。
+中文摘要：这是指挥层的地基，不是把每个角色重写一遍。平时 `Memory.cmd` 不存在，脚本和现在一样跑。需要手动指挥时，对**单个 creep、一队 creep、或单个建筑**下命令（`CMD.setCreep` / `CMD.setMany` / `CMD.setSquad` / `CMD.setStruct`）。命令有效期间这一个单位听指挥；`release`、到期（默认 200 tick）或 `CMD.disarm()` 之后回到原来的脚本。家里矿工、升级、建造、搬运、女王、filler、远程搬运/预订、以及 `raid9` 都已接上。优先级是：**活着的 cmd > raidOrder > 自动脚本**。不会改 `Memory.ops`（包括 `w47n9`、softCap），也不会改 `raidOrder` 本身。`forceGo` 每 tick 在 creep 行动之前清一次，所以即使全队都是具体 `act` 也不会把小队旗标饿死。征服 / 探针 / 方阵也可以用 duty 指挥。不会自动开安全模式、claim、市场出售或开战。核弹 `launch` 必须带 `allow: 1` 和坐标，否则不发射。
 
 English: a Red Alert-style takeover seam. Automation keeps the colony. A future commander bot (or a human on the console) can grab one creep or one structure, give it an order, then let go. The role script, raid orders, and softCap policy are still there when the order ends.
 
@@ -14,22 +14,21 @@ Home economy, home guard, remote haulers/reservers/defenders, and `raid9` all ca
 | Home hauler, miner, mminer, upgrader, builder, harvester, queen, filler, manager | yes | yes — `idle` / `hold` / `flee` / `fillSpawn` / `fillTower` / `bank` |
 | Home guard, remote `defender` | yes | yes — `idle` / `hold` / `kite` / `flee` (`focus` falls through to the combat script) |
 | Remote `rhauler`, `rminer`, `reserver`, and `reserve7` | yes | same duty list. A live order beats flee / `attackController` for that tick |
-| `raid9` | yes. `main.js` skips `run` for an act, so this creep does not apply `forceGo` that tick | yes, and a live duty also skips `raidOrder`. `forceGo` still runs at the top of `run` before the yield |
+| `raid9` | yes. `main.js` skips `run` for an act | yes, and a live duty also skips `raidOrder`. `tickFlags` runs once per tick **before** acts, so `forceGo` is not starved |
+| Conquest (`cqsquad`, `cqbreaker`, `cqworker`, `cqhauler`, `cqatk`, `cqrh`, `cqminer`), `cqquad`, `probe`, remote `rscout` | yes | yes. A live order beats that creep's `Memory.ops.cq` / `Memory.ops.probe` script for the tick. Release resumes it. Status pings pause while the order is live |
 | Every W47N8 role (`rooms/w47n8/roles.js`), including `w8hauler` and `w8defender` | yes, and it beats `Memory.ops.w8recycle` | same duty list |
 | Home towers and W47N8 towers | `attack` / `heal` / `repair` / `idle` / `hold` per tower | — |
 | Home links and W47N8 source/hub links | `transfer` / `idle` / `hold` | — |
 | Every lab (output and inputs) | `idle` / `hold` skips the auto reaction. `react` on the output needs `in1`+`in2`. Does not set `Memory.ops.labs` | — |
 | Observer | `observe` with `room: 'W47N9'`, or `idle` / `hold` | — |
 | Nuker | `launch` only with `allow: 1` and `pos`. Otherwise it waits and does not pick a room | — |
-| Factory | `produce` / `idle` / `hold` own the tick and call nothing (no factory code yet) | — |
+| Factory, power spawn | `produce` / `idle` / `hold` own the tick and call nothing (`processPower` is not called) | — |
 | Home spawn and Spawn2 | `idle` / `hold` / `recycle` / `spawn` | — |
 | W47N8 terminal | any live order **blocks** the automatic K send | this phase does **not** call `terminal.send` |
 
 `act: 'spawn'` runs only when the order sets `allow: 1` and an explicit `body`. The default memory role is `hauler`. The framework does not invent a combat body.
 
-`cqsquad` / `cqatk` / `probe` / `quad` still take a concrete `act` from `main.js` only. A duty on those roles is advisory until they call `yieldCreep`.
-
-Conflict for a raid creep, highest first: **live `Memory.cmd` (act or duty) > `memory.raidOrder` > the raid script.** Releasing the commander order leaves `raidOrder` as it was.
+Conflict for a raid creep, highest first: **live `Memory.cmd` (act or duty) > `memory.raidOrder` > the raid script.** Releasing the commander order leaves `raidOrder` as it was. The same order applies to conquest / probe / quad: live `Memory.cmd` beats `Memory.ops.cq.cmd` and `Memory.ops.probe.cmd` for that creep only.
 
 ## Memory schema (`Memory.cmd`)
 
@@ -142,9 +141,9 @@ TTL: setters default `ttl: 200` and `until: now + ttl` (`Game.time < until`). `s
 
 Replacement: `setCreep` / `setStruct` replace that unit's order. They do not merge.
 
-### Raid / forceGo caveat
+### Raid / forceGo
 
-A **duty** enters `raid9.run`, so squad `forceGo` still clears flee / fallback before that creep yields. A concrete **act** is taken in `main.js` before `run`, so that creep does not apply `forceGo` on that tick. Another raid creep still will. If every raid creep is under an act, `forceGo` waits until one of them is released. Prefer `setSquad` with a duty when you also need `forceGo` the same tick.
+`raid9.tickFlags()` runs once from `main.js` before any creep act. It applies `Memory.ops.w47n9.forceGo` (clear flee / garrison / recycle / safe, fallback → breach, delete the flag) and drops a stale overrun flee. A concrete act on every raid creep no longer skips that. The same call is idempotent inside `raid9.run`, so a duty still sees the flag already cleared. It does not create `Memory.ops.w47n9` and it does not move a creep. Use `setSquad` + a duty when you want the squad to hold or kite; use `act` when you want one exact intent (`rangedAttack`, `move`, …). Both are safe next to `forceGo`.
 
 A live order also beats `Memory.ops.w47n9.recycle` for that creep. The flag stays. Release resumes the recycle walk. Builder `recycleCivilian` works the same way.
 
@@ -199,21 +198,30 @@ A missing target does not delete the role's target. The creep waits (or falls th
 
 Do not flip `steer` on for the whole colony in one deploy. Do not fold `Memory.cmd` into `Memory.ops.w47n9`.
 
+Takeover of every current creep role is in this foundation. Still out: `steer` actually changing peacetime behavior, `terminal.send`, factory / power-spawn production, and a commander bot. Those are later phases, not blockers for reviewing the overlay.
+
 ## War-command cookbook
 
 Squad helpers issue the same order object shape as `setCreep` (each creep gets its own copy, its own TTL). They do not read or write `raidOrder` or `Memory.ops.w47n9`. An empty selector matches nobody.
 
 ```js
-// One healer, hold the lip. raidOrder on that creep is left alone.
+// Preferred while a squad flag may also be set this tick: duty, not a raw act.
+// forceGo is cleared by tickFlags even if every creep is under an act; a duty
+// still lets the creep path itself (hold / kite) instead of one hard intent.
+Memory.ops.w47n9.forceGo = 1
 CMD.setSquad({ role: 'raid9', kind: 'h' }, { duty: 'hold', pos: { room: 'W47N8', x: 38, y: 46 }, ttl: 80, say: 'hold' })
 
 // Named list. Names may be issued before the creep exists; it obeys on the tick it spawns.
 CMD.setMany(['d1', 'm1', 'h1'], { duty: 'kite', pos: { room: 'W47N9', x: 20, y: 40 }, ttl: 40 })
 
-// Whole raid role in one room.
+// One exact shot. Safe beside forceGo: the flag is cleared before this act runs.
 CMD.setSquad({ role: 'raid9', room: 'W47N9' }, { act: 'rangedMassAttack', ttl: 15 })
 
-// Release the squad. raidOrder resumes on the next tick.
+// Conquest / probe / quad take the same duty orders.
+CMD.setSquad({ role: 'cqsquad' }, { duty: 'hold', pos: { room: 'W47N8', x: 24, y: 8 }, ttl: 50 })
+CMD.setCreep('probe1', { duty: 'idle', ttl: 30, say: 'wait' })
+
+// Release the squad. raidOrder and ops.cq.cmd resume on the next tick.
 CMD.releaseMany(['d1', 'm1', 'h1'])
 CMD.disarm()
 ```
@@ -239,7 +247,8 @@ CMD.setStruct(nukerId, { act: 'launch', allow: 1, pos: { room: 'W47N9', x: 25, y
 - `src/main.js` — act gate before flee and the role; `runHeldStructures` when armed
 - `src/roles/hauler.js`, `miner.js`, `mminer.js`, `upgrader.js`, `builder.js`, `harvester.js`, `queen.js`, `filler.js`, `manager.js`, `guard.js`
 - `src/roles/remote.js` — `rhauler`, `rminer`, `reserver`, `defender`
-- `src/roles/reserve7.js`, `src/roles/raid9.js`
+- `src/roles/reserve7.js`, `src/roles/raid9.js` (`tickFlags` before acts)
+- `src/roles/conquest.js`, `src/roles/quad.js`, `src/roles/probe.js` — duty as well as act
 - `src/rooms/w47n8/roles.js` — colony wrapper (all `w8*` roles)
 - `src/managers/tower.js`, `links.js`, `labs.js`, `spawn.js` — home structures
 - `src/rooms/w47n8/index.js` — colony towers, links, Spawn2, terminal yield
