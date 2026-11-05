@@ -241,13 +241,19 @@ function coreBuster(c) {
   const C = (remote.cfgFor && remote.cfgFor(rm)) || remote.CFG[rm];
   if (!C) return;
   const th = threat.state(rm);
-  const fighting = (th.def === c.name || th.def2 === c.name) && (th.st === threat.S.DEFEND || th.st === threat.S.THREAT);
+  const fighting = threat.squadNames(th).indexOf(c.name) >= 0 && (th.st === threat.S.DEFEND || th.st === threat.S.THREAT);
   const edge = c.pos.x === 0 || c.pos.x === 49 || c.pos.y === 0 || c.pos.y === 49;
   let core = null;
   if (c.room.name === rm && c.room.find) core = c.room.find(FIND_HOSTILE_STRUCTURES).find(s => s.structureType === STRUCTURE_INVADER_CORE) || null;
   if (core) c.memory.cp = [core.pos.x, core.pos.y];
   const cp = c.memory.cp || th.corePos || C.cont;
   const range = core ? Math.max(Math.abs(c.pos.x - core.pos.x), Math.abs(c.pos.y - core.pos.y)) : 99;
+  const mates = threat.squadNames ? threat.squadNames(th) : [];
+  const lead = (mates[0] && Game.creeps[mates[0]]) || (th.def && Game.creeps[th.def]);
+  if (!core && lead && lead !== c && (c.room.name !== lead.room.name || !c.pos.inRangeTo(lead, 2))) {
+    if (c.room.name === lead.room.name) return move.to(c, lead.pos.x, lead.pos.y, 1);
+    return go(c, lead.room.name, lead.pos.x, lead.pos.y, 1);
+  }
   const act = coreAct({ room: c.room.name, remote: rm, fighting, edge, hasCore: !!core, range });
   if (act === 'attack') { if (c.body.some(p => p.type === ATTACK && p.hits > 0)) c.attack(core); return; }
   if (act === 'approach' || act === 'hold') { if (cp) move.to(c, cp[0], cp[1], 1); return; }
@@ -316,13 +322,19 @@ roles.defender = function (c) {
   const inRoom = inAssigned || !!(remote.CFG && remote.CFG[c.room.name]) || (C.via || []).includes(c.room.name);
   // Invaders stay targets until dead (the last part is often MOVE). Other hostiles only while a combat part is live.
   const armedFoe = h => h.owner.username === 'Invader' || h.body.some(p => (p.type === 'attack' || p.type === 'ranged_attack' || p.type === 'heal' || p.type === 'work') && p.hits > 0);
-  const fightingNow = (th.def === c.name || th.def2 === c.name) && (th.st === threat.S.DEFEND || th.st === threat.S.THREAT);
+  const names = (threat.squadNames ? threat.squadNames(th) : []).slice();
+  if (th.def && names.indexOf(th.def) < 0) names.unshift(th.def);
+  if (th.def2 && names.indexOf(th.def2) < 0) names.push(th.def2);
+  const idx = names.indexOf(c.name);
+  const fightingNow = idx >= 0 && (th.st === threat.S.DEFEND || th.st === threat.S.THREAT);
   const inv = inRoom ? c.room.find(FIND_HOSTILE_CREEPS).filter(h => (inAssigned && fightingNow) ? armedFoe(h) : h.owner.username === 'Invader') : [];
   // heal: hurt -> self; Invader within 4 -> pre-heal (damage lands this tick)
   if (c.hits < c.hitsMax || inv.some(h => c.pos.inRangeTo(h, 4))) c.heal(c);
   const here = c.room.name === rm;
-  const mine = th.def === c.name || th.def2 === c.name, edge = c.pos.x === 0 || c.pos.x === 49 || c.pos.y === 0 || c.pos.y === 49;
-  const fighting = mine && (th.st === threat.S.DEFEND || th.st === threat.S.THREAT);
+  const edge = c.pos.x === 0 || c.pos.x === 49 || c.pos.y === 0 || c.pos.y === 49;
+  const fighting = fightingNow;
+  const wantN = threat.squadSize ? threat.squadSize(th) : Math.max(1, names.length);
+  const slim = fighting && idx > 0 && idx >= wantN; // wave thinned: extras recycle, leader stays
   if (c.ticksToLive < 10) threat.noteRecycle(rm, c.name); // natural death (patrol to TTL) is not a combat loss
   // patrol until TTL instead of recycling (FSM adopts us for the next THREAT); the old TTL<80 recycle stays when patrol is off
   if (!fighting && patrolOn() && !c.memory.hurt && !C.guardOnly && !C.dynamic) {
@@ -331,7 +343,7 @@ roles.defender = function (c) {
     return patrol(c);
   }
   c.memory.patrol = false;
-  c.memory.recycle = !patrolOn() && (!fighting || c.ticksToLive < 80); // recomputed each tick: a returning defender can be reused by a new THREAT
+  c.memory.recycle = slim || (!patrolOn() && (!fighting || c.ticksToLive < 80)); // recomputed each tick: a returning defender can be reused by a new THREAT
   if (c.hits < c.hitsMax * K.hp) c.memory.hurt = true; else if (c.hits >= c.hitsMax * K.hpBack) c.memory.hurt = false;
   if (c.memory.recycle || c.memory.hurt) {
     delete c.memory.lk;
@@ -348,15 +360,15 @@ roles.defender = function (c) {
     if (c.pos.isNearTo(sp)) { threat.noteRecycle(rm, c.name); sp.recycleCreep(c); } else move.to(c, sp.pos.x, sp.pos.y, 1);
     return;
   }
-  // can't win alone (heal >= our net / boosted out-trade): ask for a 2nd defender, wait at the rally point until it is near
-  const partner = Game.creeps[th.def === c.name ? th.def2 : th.def];
-  const rally = C.via ? [C.via[C.via.length - 1], 24, 43] : [C.home].concat(C.park || [46, 21]);
-  const t0 = here && inv.length ? F.pickDef(c.pos, threatInfo(c).ra, inv, c.memory.tg) : null;
-  if (t0 && !partner && !F.canWin(threatInfo(c), t0.h, inv)) threat.request2(rm);
-  if ((threat.state(rm).need2 && !partner) || (partner && !partner.spawning && !(partner.room.name === c.room.name && c.pos.inRangeTo(partner, 6)))) {
-    const t = inv.find(h => c.pos.inRangeTo(h, 3)); if (t) c.rangedAttack(t);
-    return c.room.name === rally[0] ? move.to(c, rally[1], rally[2], 2) : go(c, rally[0], rally[1], rally[2], 2);
+  // Squad (编队): leader engages; the others stay within 2 of the leader and shoot on the way.
+  const lead = names[0] && Game.creeps[names[0]];
+  if (fighting && !c.memory.recycle && lead && lead !== c && !lead.spawning && (c.room.name !== lead.room.name || !c.pos.inRangeTo(lead, 2))) {
+    const near = inv.find(h => c.pos.inRangeTo(h, 3)); if (near) c.rangedAttack(near);
+    if (c.room.name === lead.room.name) return move.to(c, lead.pos.x, lead.pos.y, 2);
+    return go(c, lead.room.name, lead.pos.x, lead.pos.y, 2);
   }
+  const t0 = here && inv.length ? F.pickDef(c.pos, threatInfo(c).ra, inv, c.memory.tg) : null;
+  if (t0 && !F.canWin(threatInfo(c), t0.h, inv)) threat.request2(rm);
   // on an exit tile with an Invader within 4 (exit campers): fight from here instead of blindly stepping toward the container
   if (!here || (edge && !inv.some(h => c.pos.inRangeTo(h, 4)))) return go(c, rm, C.cont[0], C.cont[1], 2);
   const P = t0, t = P ? P.h : null;

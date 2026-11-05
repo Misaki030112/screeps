@@ -128,7 +128,7 @@ Memory.defense = { remoteDefender: true };
 Memory.remote.W45N7 = { res: { username: 'Misaki', ticksToEnd: 2000 }, seen: 90000, claim2: 90000,
   th: { st: 'THREAT', mission: 'core', why: 'core', since: 89900 } };
 const home = {
-  name: 'W46N8', energyAvailable: 1400, energyCapacityAvailable: 1800,
+  name: 'W46N8', energyAvailable: 1400, energyCapacityAvailable: 1300,
   controller: { level: 5 }, storage: { store: { energy: 5000 } },
   memory: { lastFull: 89990, sources: [] }, find: () => [],
 };
