@@ -3,7 +3,7 @@
 // Rampart top-up only while storage holds the defender reserve (threat.reserve): tower refills for the 16 RCL4 ramparts
 // (~4k energy to 50k) competed with spawn refills and storage fell 1040 -> 200 (10-14 02:45), no 1300 for a defender. Below it only
 // ramparts under RAMPART_FLOOR are repaired, so fresh ramparts (1 hit, decay 300/100t) never die.
-const plan = require('../utils/plan'), rc = require('../utils/roomcache');
+const plan = require('../utils/plan'), rc = require('../utils/roomcache'), cmd = require('../utils/cmd');
 const FIRE_FLOOR = 300; // keep for emergencies (docs/DEFENSE.md)
 const RAMPART_TARGET = [0, 0, 0, 20000, 50000, 100000, 300000, 1000000, 3000000], RAMPART_FLOOR = 5000;
 // Growth throttle: a rampart already above the previous RCL's target is only "growing" -> repair it every 5th tick (<= 2 e/t per
@@ -40,11 +40,15 @@ module.exports = { growthPaused, upkeep, run(room) {
     mem.focus = p ? p.h.id : undefined; mem.focusE = p ? shooters.length * 10 : 0;
     // 17:48 (Misaki): a friendly creep < 60% (no-HEAL first, lowest %) is healed instead of attacking this tick
     const hurt = F.healPick(room.find(FIND_MY_CREEPS), !F.hostileArmed(hostiles)); // 18:00: no armed/healing hostile -> heal to full
-    if (hurt) { for (const t of towers) t.heal(hurt); return; }
-    if (p) { for (const t of shooters) t.attack(p.h); return; }
+    // Peel commanded towers before any auto shot/heal so an order on a tower that is
+    // not in `shooters` still runs (the others keep the focus plan).
+    const auto = cmd.armed() ? towers.filter(t => !cmd.consumeTower(t)) : towers;
+    const autoShoot = auto.length === towers.length ? shooters : shooters.filter(t => auto.includes(t));
+    if (hurt) { for (const t of auto) t.heal(hurt); return; }
+    if (p) { for (const t of autoShoot) t.attack(p.h); return; }
     // holding fire: repair only critical barriers (<2000) and keep >=500 for the next shot window
     const crit = !hurt && rc.all(room, STRUCTURE_RAMPART).concat(rc.all(room, STRUCTURE_WALL)).filter(s => s.hits < 2000)[0];
-    for (const t of towers) { if (hurt) t.heal(hurt); else if (crit && t.store[RESOURCE_ENERGY] > 500) t.repair(crit); }
+    for (const t of auto) { if (crit && t.store[RESOURCE_ENERGY] > 500) t.repair(crit); }
     return;
   }
   if (Game.time % 10 === 0) {
@@ -71,6 +75,7 @@ module.exports = { growthPaused, upkeep, run(room) {
   const rep = mem.towerRep && Game.getObjectById(mem.towerRep);
   const fl = mem.rampFloorRep && Game.getObjectById(mem.rampFloorRep);
   for (const t of towers) {
+    if (cmd.armed() && cmd.consumeTower(t)) continue; // commander owns this tower; the others keep peace repair
     if (heal && heal.hits < heal.hitsMax && t.store[RESOURCE_ENERGY] >= PEACE_HEAL_E) t.heal(heal); // floor: keep a combat reserve
     else if (!rep && fl && fl.hits < (mem.rampHW || 0) && t.store[RESOURCE_ENERGY] > 600) t.repair(fl);
     else if (rep && t.store[RESOURCE_ENERGY] > 800 && !growthPaused(rep, room.controller.level, Game.time)) t.repair(rep); // keep ≥800 for combat (novice ends 2026-10-28)

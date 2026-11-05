@@ -114,6 +114,9 @@ function hubPickup(room) {
 }
 function homeHauler(room) { return Object.values(Game.creeps || {}).some(x => x.memory.role === 'hauler' && (x.memory.home || x.room.name) === room.name); }
 module.exports = { pickups, handoff, ctlLow, mineralRun, labRun, hubPickup, homeHauler, idlePark, run(c) {
+  // Commander overlay (docs/COMMANDER.md). No-op unless Memory.cmd is armed for this creep.
+  if (require('../utils/cmd').consumeCreep(c)) return;
+  if (require('../utils/intent').obey(c)) return;
   const room = c.room, P = plan.get(room.name);
   if (mineralRun(c, room, P)) return;
   if (labRun(c, room)) return;

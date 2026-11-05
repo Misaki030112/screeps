@@ -11,6 +11,7 @@ Last full refresh: **2026-11-04 17:4x** (soft-band surplus trim / softCap hyster
 4. **Defence = towers + ramparts + Misaki-controlled safe mode.** Towers do most early work; ramparts protect spawn/tower/core. **NEVER auto-activate safe mode** — alert Misaki and wait for her decision (standing rule since 2026-10-12).
 5. **Growth after RCL4:** remote mining (W45N8 approved and live), then links; a 2nd room only with explicit Misaki approval (GCL 2 already allows a claim).
 6. **Major decisions need approval:** claim/expand, attack or provoke player neighbours, spend credits/pixels, activate safe mode, respawn.
+7. **Commander overlay is opt-in.** `Memory.cmd` (docs/COMMANDER.md) can take one creep or one structure and hand it back. It does not replace roles, and it must not write `Memory.ops` / `raidOrder` / softCap. Absent `Memory.cmd` means peacetime scripts are unchanged.
 
 ## Current state (2026-11-04 ~17:46 Asia/Hong_Kong)
 
@@ -21,7 +22,7 @@ Last full refresh: **2026-11-04 17:4x** (soft-band surplus trim / softCap hyster
 
 Peacetime + war fallback (ops.w47n9.on=false phase=fallback); W45N7 InvaderCore DEFEND (defender arrived, no hitLoss); W45N8/W47N7 SAFE; roads.phase=done; CPU~15–17/20 bucket10k. Deploy **31c895b** → **17:4x soft-band surplus trim**.
 
-Ideal vs actual: `tools/model.py` / Grafana / `upgFeed` / `w8day` (softCap2, softE/softArm/**softBand**, **upgKeep** 2|3|0, hMax, feedOk, sealPark, hubReady/**hubPrime**, contMinPct/roadCrit) / `w8soft` / `labReady`. **Peacetime priority:** hold soft clear ≥25k with soft-band park + **surplus trim (nUp≤3 while stor<25k)** → nUp→ceil6 only at true ≥25k → contMinPct≥50 → seal→1M under soft-gate → home floor ≥15k → labs KO (**no re-ask**). Detail: `docs/RCL7.md` 17:4x.
+Ideal vs actual: `tools/model.py` / Grafana / `upgFeed` / `w8day` (softCap2, softE/softArm/**softBand**, **upgKeep** 2|3|0, hMax, feedOk, sealPark, hubReady/**hubPrime**, contMinPct/roadCrit) / `w8soft` / `labReady`. **Peacetime priority:** hold soft clear ≥25k with soft-band park + **surplus trim (nUp≤3 while stor<25k)** → nUp→ceil6 only at true ≥25k → contMinPct≥50 → seal→1M under soft-gate → home floor ≥15k → labs KO (**no re-ask**). Detail: `docs/RCL7.md` 17:4x. Commander takeover, when wanted, is a separate key (`docs/COMMANDER.md`); it is off until `Memory.cmd` is armed and does not change this order.
 ## Phases
 
 | Phase | Trigger | Goals | Exit |
@@ -43,3 +44,4 @@ Ideal vs actual: `tools/model.py` / Grafana / `upgFeed` / `w8day` (softCap2, sof
 - Remote: flee + pause on player combat; **NPC Invader defender ON** (W45N8); never attack players.
 - Safe mode: **alert only** — Misaki decides.
 - Patrol owns `state/next_iteration.json` cadence; strategy review updates docs/roadmap and small safe code fixes.
+- Commander (phase 0, 2026-11-05): takeover lives in `Memory.cmd`, not in `Memory.ops.w47n9`. Release / TTL / `CMD.disarm()` restores the role. Do not auto-arm war, safe mode, claim, or market from that channel. Detail: `docs/COMMANDER.md`.

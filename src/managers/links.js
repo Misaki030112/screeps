@@ -2,7 +2,7 @@
 // Senders (source links, hub) push to the controller link when it is below CTL_LOW and they hold >= SEND.
 // The hub link is filled by the queen from storage surplus above the defender floor (queen.standby).
 // With STATIONARY_FILL on, filler links (stamp centres) are also served before the hub.
-const plan = require('../utils/plan'), rc = require('../utils/roomcache');
+const plan = require('../utils/plan'), rc = require('../utils/roomcache'), cmd = require('../utils/cmd');
 const CTL_LOW = 400, SEND = 400;
 const at = (links, p) => p && links.find(l => l.pos.x === p[0] && l.pos.y === p[1]);
 function roles(room) {
@@ -20,6 +20,6 @@ function target(R, room) { const noUp = room && require('./walls').noUpgrade(roo
 module.exports = { CTL_LOW, SEND, roles, ctlLinkLow, run(room) {
   if (Game.time % 3) return;
   const R = roles(room); if (R.links.length < 2) return;
-  for (const s of R.sources) { if (s.cooldown || e(s) < SEND) continue; const t = target(R, room) || R.hub; if (t && t !== s) s.transferEnergy(t); }
-  if (R.hub && !R.hub.cooldown && e(R.hub) >= SEND) { const t = target(R, room); if (t) R.hub.transferEnergy(t); }
+  for (const s of R.sources) { if ((cmd.armed() && cmd.consumeLink(s)) || s.cooldown || e(s) < SEND) continue; const t = target(R, room) || R.hub; if (t && t !== s) s.transferEnergy(t); }
+  if (R.hub && !(cmd.armed() && cmd.consumeLink(R.hub)) && !R.hub.cooldown && e(R.hub) >= SEND) { const t = target(R, room); if (t) R.hub.transferEnergy(t); }
 } };

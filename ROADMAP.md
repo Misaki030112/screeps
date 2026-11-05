@@ -3,6 +3,15 @@
 Novice zone ends **2026-10-28 03:33 UTC+8** (past as of 10-29). Defence timeline: `docs/DEFENSE_NOVICE.md` (2026-10-16); detail `docs/DEFENSE.md` / geometry `docs/DEFENSE_PLAN.md`.
 **Safe mode: NEVER auto-activate** — alert Misaki.
 
+## 2026-11-05 commander overlay foundation (peacetime scripts unchanged)
+
+- **Chose:** Misaki wants creeps with clear duties whose priority can move with threat / storage / softCap / spawn pressure / remote defence / war, plus a Red Alert takeover (select unit → order → release → resume) for a future commander bot. Do not rewrite every role in one PR, and do not touch live `Memory.ops.w47n9` / softCap / `raidOrder`.
+- **Findings:** Roles are a `memory.role` dispatch in `main.js`. Multi-tasking is inside each file (hauler deliver ladder, guard kite, `w8defender` plan). Wartime already mutates spawn and raid creeps through `Memory.ops` and per-creep `raidOrder`. There was no shared duty table and no per-structure override that yields back to automation.
+- **Shipped:** `docs/COMMANDER.md`. `src/utils/cmd.js` (`Memory.cmd`, TTL 200, disarm/release, creep + tower/link/lab/spawn executors, terminal yields without `terminal.send`). `src/utils/intent.js` `rank()` (pure, no `room.find`). Wired: home hauler, home guard, every W47N8 role (beats `w8recycle` only while the order is live), both tower managers, links, output lab, both spawns. `steer` stamps an advisory duty and does not change behavior. Tests `tests/commander.js` + `tests/commander_tower.js`.
+- **Not shipped:** commander bot, phase-2 steer-as-behavior, terminal send, safe mode, claim, market, arming W47N9, rewriting miner/upgrader/builder/raid9 internals.
+- **Next:** console or a future bot issues orders in a fight; disarm when done. One role per later PR if `steer` should actually drive peacetime.
+- **Plan check:** architecture only. No new Misaki nod. No deploy from this change until review.
+
 ## 2026-11-04 17:4x strategy review: soft-band surplus trim (post-clear nUp4 thrash)
 - **Chose:** SoftCap near-clear edge (softLeft<2k, stor~23.6k, softCap2 hysteresis OFF, softBand1, sealPark1, nUp=4): is sealPark+soft-band+upgKeep preventing thrash / premature deep seal while short recovering? (Live 15:57 clear→16:26 re-arm; post-31c895b cont 38→48 OK enough — not redoing 14:4x.) Labs OFF no re-ask; softCap widget outstanding — do not re-ask; war patrol stays paused; W45N7 InvaderCore noted (defender engaged) — economy impact secondary.
 - **Findings (`docs/RCL7.md` 17:4x / `docs/STRATEGY.md` / `docs/MODEL_W47N8.md`):** (1) Live ~17:46 Asia/Hong_Kong 31c895b t~84065600: peacetime+war fallback; home ~25.40% stor~16–17k ABOVE; W47 ~11.02% softE0 softCap2**0** softLeft~1.4k softBand1 hubReady/Prime1 upgCeil6 **nUp4** sealPark1 contMinPct48; W45N7 DEFEND core; labs OFF. (2) Gap: softEnergyCap hysteresis keeps softCap2 OFF in [ARM,SOFT) (base 3 OK) but surplus used `!softCap2` → 4th upgrader; hub+fat ctl skipped feed-gate ≤3 recycle. (3) Overmind UpgradeSite scales WORK only above storageBuffer=100k; TooAngel parks upgrade when thin. (4) Fix: surplus STRICT stor≥LEAN_SOFT; recycle keep=3 while stor<LEAN_SOFT; upgKeep obs 2|3|0.

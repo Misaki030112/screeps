@@ -73,6 +73,7 @@ function spawnRun(spawn) {
   const storPark = room.storage ? (room.storage.store[RESOURCE_ENERGY] || 0) : 0;
   TH.updateSealPark(storPark, nUp(), sites);
   if (spawn.spawning) return;
+  if (require('../../utils/cmd').consumeSpawn(spawn)) return; // commander owns Spawn2 this tick (docs/COMMANDER.md)
   const cap = room.energyCapacityAvailable, avail = room.energyAvailable;
   let want = null, mem = {};
   const raidPause = require('../../roles/raid9').pauseCivilians();
@@ -613,6 +614,8 @@ function mineralSend(room) {
   if (!C.RCL6_MINERALS) { w.sendWhy = 'gate'; return; }
   const term = room.terminal;
   if (!term) { w.sendWhy = 'noTerm'; return; }
+  // A live commander order yields the terminal. Phase 1 does not call terminal.send (no market, no extra sends).
+  if (require('../../utils/cmd').blocks(term)) { w.sendWhy = 'cmd'; return; }
   if (term.cooldown > 0) { w.sendWhy = 'cd'; w.cd = term.cooldown; return; }
   const K = (typeof RESOURCE_KEANIUM !== 'undefined') ? RESOURCE_KEANIUM : 'K';
   const k = term.store[K] || 0;
@@ -949,12 +952,13 @@ function linkRun() {
   const [hx, hy] = (L.ORDER.link && L.ORDER.link[0]) || [33, 34];
   const h = linkAt([hx, hy]);
   const CTL_LOW = 400, HUB_SEND = 200; // home uses SEND=400; allow 200 so intermittent battery recovers sooner
-  if (a && k && !a.cooldown) {
+  const cmd = require('../../utils/cmd'), cmdOn = cmd.armed();
+  if (a && k && !a.cooldown && !(cmdOn && cmd.consumeLink(a))) {
     const have = a.store[RESOURCE_ENERGY] || 0, free = k.store.getFreeCapacity(RESOURCE_ENERGY) || 0;
     if (have >= 50 && free > 0) a.transferEnergy(k, Math.min(have, free));
   }
   // Hub→ctl independent of A (own cooldown). No-op while HUB_LINK=false (no structure). Prefer A first above.
-  if (h && k && h !== a && !h.cooldown) {
+  if (h && k && h !== a && !h.cooldown && !(cmdOn && cmd.consumeLink(h))) {
     const have = h.store[RESOURCE_ENERGY] || 0, ke = k.store[RESOURCE_ENERGY] || 0;
     const free = k.store.getFreeCapacity(RESOURCE_ENERGY) || 0;
     if (ke < CTL_LOW && have >= HUB_SEND && free > 0) h.transferEnergy(k, Math.min(have, free));
@@ -1013,7 +1017,9 @@ function towerRun(room) {
   const inBaseThreat = !!p && p.h.pos.y > D.SEAL_Y && D.armed(p.h);
   room.memory.threat8 = p ? { t: Game.time, id: p.h.id, inBase: inBaseThreat, e: p.shooters.length * 10 } : undefined;
   const fire = new Set(p ? p.shooters.map(s => s.t) : []);
+  const cmd = require('../../utils/cmd'), cmdOn = cmd.armed();
   for (const t of towers) {
+    if (cmdOn && cmd.consumeTower(t)) continue; // this tower obeys Memory.cmd; the rest keep threat8 / repair
     if (hurt && (!peace || t.store[RESOURCE_ENERGY] >= 200)) t.heal(hurt);
     else if (fire.has(t)) t.attack(p.h);
     else if (t.store[RESOURCE_ENERGY] > 600) { // 17:20 hold/decay; 14:4x/17:4x soft staging to SOFT_RAMP (see rampHold)

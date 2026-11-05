@@ -416,6 +416,8 @@ function shouldYield(pos, kind, mates, focus) {
     return p && (k === 'd' || k === 'm') && rng(p, focus) > my;
   });
 }
+// Commander orders (Memory.cmd, docs/COMMANDER.md) are applied in main.js before run().
+// They do not clear raidOrder / Memory.ops.w47n9. Release resumes manualOrder then the raid script.
 function manualOrder(c) {
   const o = c && c.memory && c.memory.raidOrder;
   if (!o) return null;
