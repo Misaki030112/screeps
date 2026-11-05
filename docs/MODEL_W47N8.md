@@ -8,6 +8,10 @@ hauler upkeep (CARRY need = 10 × (round trip × 1.10 + 4) / 50, load split 75% 
 0.03/t each, builder-lite 1000/1500. Upgrade = net / (1 + upgrader upkeep 1150/1500/10). RCL5: 1800 cap, best of source-A link→ctl or hub→ctl link (3% loss).
 reserve7 (2 CLAIM) is spawned and paid by home.
 
+## 2026-11-05 20:2x — post-war repairTicks vs 1 maint builder
+
+Live softCap bank (~20k) with **contMinPct~12 / contLow4 / roadCrit~62**: container decay was beating one 6W builder. Overmind `repairTicks` would wishlist 2–5 workers; we raise maint max to 2 when `contDebtN≥3` (still under softCap — not a fortifyDuty burst). Expect contMinPct↑ then roadCrit↓ before soft clear unlocks deep seal.
+
 ## 2026-11-04 17:4x — soft-band surplus vs softCap hysteresis
 
 Live thrash: clear@25.1k (15:57) → re-arm@22.7k (16:26) with nUp=4 while softBand ON. Model ideal ~30 assumes sustained WORK near ceil once soft clear holds; surplus WORK40 in the soft-band burns the cushion that soft-band haul is trying to refill. Soft-band surplus trim keeps WORK≤30 (base 3) until stor≥25k STRICT — matches Overmind scaling only above storageBuffer. See `docs/RCL7.md` 17:4x.

@@ -3,6 +3,14 @@
 Novice zone ends **2026-10-28 03:33 UTC+8** (past as of 10-29). Defence timeline: `docs/DEFENSE_NOVICE.md` (2026-10-16); detail `docs/DEFENSE.md` / geometry `docs/DEFENSE_PLAN.md`.
 **Safe mode: NEVER auto-activate** — alert Misaki.
 
+## 2026-11-05 20:2x 12h strategic review: post-W47N9 peacetime reclaim (severe cont debt)
+
+- **Chose:** Full-board 12h review after W47N9 abort (~17:30) + peacetime handback. SoftCap/labs/industry/market widgets outstanding — **never re-ask**. War_* stay stopped (`aborted_by_misaki`). Is the peacetime order still right, and is post-war repair debt a small safe ship?
+- **Findings (`docs/RCL7.md` 20:2x / `docs/STRATEGY.md`):** (1) Live ~20:20–20:24 Asia/Shanghai tip **0cafc00** HEAD a57d878(+this): PEACETIME; listener single-slot 5:5:1:1 roomSlot=W46N8; yield gone; raidLeft=0; labs OFF. Home RCL7 ~29.20% stor~15.7k ABOVE exact2h recovered CLEAR; W47 ~13.05% stor~19.8–20.2k softCap2 ON softLeft~5k INTENTIONAL bankWhy=hold hubReady/Prime1 upgKeep2 sealPark1 **contMinPct~12 contLow4 roadCrit~62** (sliding 20→16→12 since 18:23 — 1 builder losing). Remotes SAFE. CPU~15–20/20 bkt10k. (2) Community: Overmind WorkerOverlord sizes workers from `repairTicks` (containers <50% / pave) up to MAX_WORKERS=5; `fortifyDutyThreshold=500k` / `barrierHits[7]=1M` are separate from repair; UpgradeSite `storageBuffer=100k` — we stay far thinner (LEAN_SOFT 25k) so labs/boost/industry stay deferred. TooAngel parks upgrade when thin, keeps logistics+repair warm. Docs: remotes/energy first at RCL7; labs/XGH2O after buffer, not while reclaiming war debt. (3) Gap: 14:4x armed the **1st** maint builder under partial spawn; severe debt (≥3 conts <50%) still capped at 1 → decay wins.
+- **Shipped:** `index.js` maint — 2nd `w8builder` when `contDebtN≥3` at eAvail≥200 (cap 2); `tests/w47n8.js` 20:2x. SoftCap/sealMinE/HUB_LINK/labs/industry/market **unchanged**. **No softCap/labs re-ask. No war_* restart. No W47N9 reopen.**
+- **Reprioritise (peacetime next 1–3):** (1) **Reclaim W47 repair debt** — drive contMinPct≥50 + roadCrit→0 with 1–2 maint builders under softCap (this ship); (2) **softCap bank→clear ≥25k** then nUp→ceil6 only at true clear / short≥70%; (3) **seal→1M under soft-gate** after (1)(2); then home floor≥15k hold. **Defer** labs KO / boost / STATIONARY_FILL / industry / market (**no re-ask**). Optional later nod-only: SK remotes / new claim — not this run.
+- **Plan check:** autonomous severe-debt 2nd builder — no new Misaki decision. WakeParent **no** (anti-spam; softCap/labs widgets outstanding — do not re-ask).
+
 ## 2026-11-05 peacetime listener: one room slot (5:5:1:1)
 
 - **Chose:** A separate Grok Screeps指挥官 bot needs the second official websocket room slot. The old listener pinned W46N8 and rotated the other slot (W47N8 600s / W45N8 300s / W45N7 150s).

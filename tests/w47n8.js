@@ -114,6 +114,26 @@ assert.strictEqual(run(postAbort, 0, 3200, {
   energyCapacityAvailable: 5600,
   _structs: [weakRoad]
 }), null, '14:4x: roadCrit-only does not arm maint under partial spawn energy');
+// 11-05 20:2x: severe cont debt (≥3 <50%) arms a 2nd maint builder while softCap bank (Overmind repairTicks)
+{
+  const withOne = Object.assign({}, postAbort, { i: mk('w8builder', 'W47N8') });
+  const threeWeak = [
+    { structureType: 'container', hits: 30000, hitsMax: 250000, pos: { x: 13, y: 26 }, store: { energy: 0 } },
+    { structureType: 'container', hits: 40000, hitsMax: 250000, pos: { x: 26, y: 11 }, store: { energy: 0 } },
+    { structureType: 'container', hits: 50000, hitsMax: 250000, pos: { x: 11, y: 43 }, store: { energy: 0 } }
+  ];
+  assert.strictEqual(run(withOne, 0, 3200, {
+    storage: { store: { energy: 18000 } },
+    energyCapacityAvailable: 5600,
+    _structs: threeWeak
+  }).role, 'w8builder', '20:2x: contLow≥3 spawns 2nd maint at eAvail 3200/5600');
+  // two weak conts + 1 builder: do NOT spawn 3rd / 2nd
+  assert.strictEqual(run(withOne, 0, 3200, {
+    storage: { store: { energy: 18000 } },
+    energyCapacityAvailable: 5600,
+    _structs: threeWeak.slice(0, 2)
+  }), null, '20:2x: only 2 conts <50% keeps max 1 maint builder');
+}
 // 17:4x 11-04: soft-band surplus blocked — hysteresis softCap2 OFF must NOT spawn 4th while stor<LEAN_SOFT
 {
   assert.strictEqual(Cfg.HUB_LINK, true);

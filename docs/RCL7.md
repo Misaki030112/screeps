@@ -1,5 +1,33 @@
 # Home W46N8 RCL7 readiness (strategy review 2026-10-19 18:4x UTC+8)
 
+## 2026-11-05 20:2x — 12h strategic review (post-W47N9 peacetime / severe cont debt)
+
+**Question:** After W47N9 abort (~17:30 Asia/Shanghai) and peacetime handback, does the softCap→clear→seal order still hold, and is post-war container/road debt bad enough for a small safe ship? SoftCap/labs/industry/market widgets outstanding — **never re-ask**. Do not restart war_*.
+
+**Answer: YES order holds; ship 2nd maint builder for severe debt.** SoftCap bank (intentional ~20k, softLeft~5k) + soft-band park + sealPark remain correct. Gap: 14:4x armed the 1st maint under partial spawn, but live contMinPct slid **20→16→12** (contLow4) and roadCrit~62 with builders=1 working~14% — container decay (~50 hits/t × N) was winning. Overmind sizes workers from repairTicks (containers <50%) up to MAX_WORKERS=5, independent of fortifyDutyThreshold=500k / storageBuffer=100k. TooAngel keeps repair warm while upgrade parks. Our LEAN_SOFT=25k is far below Overmind's 100k buffer → labs/boost/industry stay deferred (no re-ask).
+
+### Live (~20:20–20:24 Asia/Shanghai, tip 0cafc00, tick ~84087960–88020)
+| Room | Notes |
+|------|-------|
+| W46N8 | RCL7 ~29.20% (3.193M/10.935M); stor~15.7k ABOVE15k; exact2h recovered CLEAR post-war; smA=6 |
+| W47N8 | RCL7 ~13.05% (1.427M); stor~19.8–20.2k softCap2 ON softLeft~5k softBand1 bankWhy=hold leanBank0; hubReady1 hubPrime1 upgKeep2 sealPark1; **contMinPct~12 contLow4 roadCrit~62**; builders1; hMax4 |
+| Remotes | W45N8 / W47N7 / W45N7 SAFE (QQ); raidLeft=0 |
+| Colony | PEACETIME; war_cmd pause `aborted_by_misaki`; listener single-slot 5:5:1:1 roomSlot=W46N8; yield gone; CPU~15–20/20 bkt10k; labs OFF (**no re-ask**); softCap widget outstanding (**no re-ask**) |
+
+### Research
+1. **Overmind WorkerOverlord:** `repairStructures` includes owned containers with hits <50% hitsMax; `numWorkers` from `repairTicks + paveTicks (+ fortifyTicks only if assets.energy > fortifyDutyThreshold 500k)`; MAX_WORKERS=5. Fortify to `barrierHits[7]=1e6` is gated separately — repair is not "wait for fat bank".
+2. **Overmind UpgradeSite:** `storageBuffer=100000` / `energyPerBodyUnit=25000` — surplus WORK only above 100k. We park at 25k; do not rush labs while thin.
+3. **TooAngel / community RCL7:** remotes + energy buffer before lab reaction queues / XGH2O boosts; common mistake = flip labs while storage thrash or repair debt unpaid.
+4. **Local:** 14:4x 1st-builder gate stays; raise max maint to 2 only when `contDebtN≥3`.
+
+### Shipped
+1. `index.js` maint: `contDebtN≥3 && nB<2 && eAvail≥200` → 2nd `w8builder`.
+2. `tests/w47n8.js` 20:2x (≥3 conts → 2nd; 2 conts → stay at 1).
+3. SoftCap / leanBank / sealMinE / HUB_LINK / labs / industry / market **unchanged**. **No re-ask.**
+
+**Expect after deploy:** builders 1→2 while contLow≥3; contMinPct climb toward ≥50 then roadCrit fall; softCap climb undisturbed (2 builders ≪ fortify burst).
+
+---
 ## 2026-11-04 17:4x — soft-band surplus trim (softCap hysteresis nUp4 thrash)
 
 **Question:** SoftCap near-clear / post-clear edge (softLeft <2k, stor~23–25k): do sealPark + soft-band + upgKeep correctly prevent thrash and premature deep seal while short is still recovering? Live cleared @15:57 (25181) then re-armed softCap by 16:26 (22685) — ~30 min bleed — with nUp=4 during soft-band hysteresis.

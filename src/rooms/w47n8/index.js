@@ -270,11 +270,17 @@ function spawnRun(spawn) {
   // RoadLogistics critical independent of fortifyDutyThreshold/storageBuffer — repair duty is not "wait for full spawn".
   // Split: container debt arms at energyAvailable≥200 (min builder body) with no %50 throttle; roadCrit-only keeps
   // full-cap + %50 (optional polish, not crash).
-  if (!want && !raidPause && !n('w8builder')) {
-    const contDebt = room.find(FIND_STRUCTURES, { filter: s =>
-      s.structureType === STRUCTURE_CONTAINER && s.hits < s.hitsMax * 0.5 }).length > 0;
-    if (contDebt && room.energyAvailable >= 200) want = 'w8builder';
-    else if (room.energyAvailable === cap && Game.time % 50 === 0) {
+  // 11-05 20:2x 12h strategy: post-W47N9 war drain, contMinPct slid 20→12 / roadCrit~62 with only 1 maint builder
+  // (motion working~14% — losing to container decay 50 hits/t × N). Overmind sizes workers from repairTicks up to
+  // MAX_WORKERS=5; fortifyDutyThreshold=500k is a separate gate. Allow a 2nd builder when ≥3 containers sit <50%
+  // so reclaim beats decay under softCap (still caps at 2 — not a seal/fortify burst).
+  if (!want && !raidPause) {
+    const contDebtN = room.find(FIND_STRUCTURES, { filter: s =>
+      s.structureType === STRUCTURE_CONTAINER && s.hits < s.hitsMax * 0.5 }).length;
+    const nB = n('w8builder');
+    if (contDebtN > 0 && nB < 1 && room.energyAvailable >= 200) want = 'w8builder';
+    else if (contDebtN >= 3 && nB < 2 && room.energyAvailable >= 200) want = 'w8builder';
+    else if (!nB && room.energyAvailable === cap && Game.time % 50 === 0) {
       const keep = new Set(require('./roads').ROADS.map(([x, y]) => x * 50 + y));
       if (room.find(FIND_STRUCTURES, { filter: s =>
         s.structureType === STRUCTURE_ROAD && keep.has(s.pos.x * 50 + s.pos.y) && s.hits < s.hitsMax * 0.25
