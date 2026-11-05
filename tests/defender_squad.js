@@ -30,6 +30,11 @@ assert.strictEqual(n(big, MOVE), 25);
 assert.strictEqual(big.length, 50);
 assert.strictEqual(cost(big), 5600);
 assert.ok(cost(S.B.defender(4000)) <= 4000);
+assert.strictEqual(T.DEF.fullBody, 5600);
+assert.strictEqual(cost(S.B.defender(T.DEF.fullBody)), T.DEF.fullBody, 'fullBody is the max defender recipe cost');
+assert.strictEqual(S.B.defender(T.DEF.fullBody).length, 50);
+assert.ok(S.B.defender(T.DEF.fullBody - 1).length < 50, 'one energy under fullBody is not the max body');
+assert.strictEqual(n(S.B.coreBuster(T.DEF.fullBody), ATTACK), 25, 'same cap maxes the core buster');
 
 const bust = S.B.coreBuster(1300);
 assert.strictEqual(n(bust, ATTACK), 10);
