@@ -29,8 +29,13 @@ First spawn `Spawn1` at W46N8 (35,28), placed 2026-10-12. Novice protection unti
 
 ## Observability
 - **Websocket listener** (`tools/listener.py`, kept alive by `tools/run_listener.sh`): subscribes to
-  `user:<id>/console`, `user:<id>/cpu`, `room:shard3/W46N8`. Writes `metrics/console.log`, `metrics/errors.log`,
-  `metrics/metrics.jsonl` (STATS line the bot logs every 10 ticks ≈ 40 s), `metrics/live.json` (live room objects, updated every tick ≈ 4 s).
+  `user:<id>/console`, `user:<id>/cpu`, and **one** room slot. Peacetime rotates that slot
+  W46N8 : W47N8 : W45N8 : W45N7 = 5 : 5 : 1 : 1 wall-clock (600s / 600s / 120s / 120s, `tools/room_rot.py`).
+  The second official room slot stays free. Writes `metrics/console.log`, `metrics/errors.log`,
+  `metrics/metrics.jsonl` (STATS line the bot logs every 10 ticks ≈ 40 s), `metrics/live.json`
+  (W46N8 objects only while home holds the slot; `roomSlot` says which room is on).
+  Wartime: `touch metrics/listener_yield_rooms` drops the room subscription within ~5s so the
+  Screeps指挥官 bot can subscribe the battle rooms (both slots if needed). `rm` that file after handback.
   Start: `nohup tools/run_listener.sh >/dev/null 2>&1 &`  Stop: `kill $(cat metrics/listener.pid); pkill -f "[l]istener.py"`
 - **Dashboard**: `nohup tools/run_dashboard.sh > metrics/dashboard.out 2>&1 &` → http://127.0.0.1:8787/tools/dashboard.html (box browser; refreshes every 2 s: room map, stats, errors, console).
 - `python3 status.py` (summary incl. websocket data) · `.venv/bin/python status.py --map` → `metrics/room_live.png`.

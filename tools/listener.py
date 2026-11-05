@@ -1,29 +1,26 @@
 #!/usr/bin/env python3
-"""Websocket listener: streams console + cpu + room objects from screeps.com into metrics/.
+"""Websocket listener: streams console + cpu + one room from screeps.com into metrics/.
   metrics/console.log   every console line (UTC+8 stamp)      metrics/errors.log  error lines only
-  TimescaleDB (tools/ingest.py): creep_ticks, creep_cpu, path_arrivals, room_stats, events, alert_state            metrics/live.json   latest snapshot for dashboard
+  TimescaleDB (tools/ingest.py): creep_ticks, creep_cpu, path_arrivals, room_stats, events, alert_state
+  metrics/live.json   latest W46N8 snapshot while that room holds the slot (tools/room_rot.py)
+Peacetime: one room subscription, weights W46N8:W47N8:W45N8:W45N7 = 5:5:1:1.
+Wartime: touch metrics/listener_yield_rooms to drop it (docs/COMMANDER.md). Console and cpu stay.
 Run via tools/run_listener.sh (auto-restart)."""
 import json, os, sys, time, threading, zlib, base64, html
 import websocket
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-import ingest
+import ingest, room_rot as R
 from ingest import now as utcnow
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'scripts'))
 from api import TOKEN, ROOT, req
-ROOM, SHARD = 'W46N8', 'shard3'
-WATCH = 'W45N8'  # remote: watch events + creep trail
-TRAIL = ('W45N7', 'W47N8')  # other remotes: creep trail only (creep_ticks), not mixed into live.json
-# The server delivers at most 2 room subscriptions per user per tick: with 3 it answers 'err@room:… subscribe limit reached'
-# in rotation and every room loses ~25-60% of ticks (test 10-17 01:35: 2 rooms 10/10 ticks, 3 rooms 7-8/10 each; home coverage
-# fell ~95% -> 35-70% after W45N7 was added 16:25). So: ROOM always, plus ONE remote slot rotating WATCH / TRAIL rooms.
-# W47N8 (claimed 10-18 15:18, developing) gets the longest slot: Misaki diagnoses its creeps from DB trajectory history,
-# and it was missing from ROT (0 creep_ticks rows for W47N8 until 10-18 16:2x).
-ROT = (('W47N8', 600), (WATCH, 300), ('W45N7', 150))  # (room, seconds held)
-rot = {'i': 0}
+# One peacetime room slot, weights 5:5:1:1. The second official slot stays free for the
+# Screeps指挥官 bot. Wartime yield: metrics/listener_yield_rooms. See tools/room_rot.py and docs/COMMANDER.md.
+SHARD, WATCH, TRAIL = R.SHARD, R.WATCH, R.TRAIL
+rot = {'i': 0, 'room': None, 'authed': False}
 watch = {'objects': {}, 'last': None}
 M = os.path.join(ROOT, 'metrics'); os.makedirs(M, exist_ok=True)
 UID = req('auth/me')['_id']
-live = {'uid': None, 'stats': None, 'cpu': None, 'objects': {}, 'gameTime': None, 'console_tail': [], 'errors_tail': [], 'updated': None}
+live = {'uid': None, 'stats': None, 'cpu': None, 'objects': {}, 'gameTime': None, 'roomSlot': None, 'console_tail': [], 'errors_tail': [], 'updated': None}
 live['uid'] = UID
 lock = threading.Lock()
 stamp = lambda: time.strftime('%F %T')
@@ -47,9 +44,16 @@ def decode(msg):
 def on_message(ws, msg):
     msg = decode(msg)
     if msg.startswith('auth ok'):
-        for ch in (f'user:{UID}/console', f'user:{UID}/cpu', f'room:{SHARD}/{ROOM}'): ws.send('subscribe ' + ch)
-        sub_remote(ws, ROT[rot['i']][0])
-        append('console.log', f'{stamp()} [listener] subscribed'); return
+        # console + cpu are not room slots. The single room slot is subscribe_slot (or none, if yielded).
+        for ch in (f'user:{UID}/console', f'user:{UID}/cpu'): ws.send('subscribe ' + ch)
+        try:
+            if yielding():
+                append('console.log', f'{stamp()} [listener] subscribed console+cpu; room slot yielded ({R.YIELD_FILE})')
+            elif not rot.get('room'):
+                subscribe_slot(ws)
+        finally:
+            rot['authed'] = True  # rotator must run even if the first room subscribe fails
+        return
     if msg.startswith('auth failed'): append('errors.log', f'{stamp()} [listener] auth failed'); ws.close(); return
     if not msg.startswith('['): return
     ch, data = json.loads(msg)
@@ -107,7 +111,11 @@ def on_message(ws, msg):
     elif ch.split('/')[-1] in TRAIL:
         record_room(ch.split('/')[-1], data)
     elif ch.startswith('room:'):
-        record_room(ch.split('/')[-1], data)
+        room = ch.split('/')[-1]
+        record_room(room, data)
+        # live.json is the home map only, and only while this slot is actually on home.
+        # A tick still in flight after we rotate away must not freeze the dashboard on old creeps.
+        if room != R.HOME or rot.get('room') != R.HOME: return
         with lock:
             for oid, o in (data.get('objects') or {}).items():
                 if o is None: live['objects'].pop(oid, None)
@@ -116,17 +124,60 @@ def on_message(ws, msg):
         write_live()
 last_stats = [time.time()]
 errs = {}
-def sub_remote(ws, room):
-    """(re)subscribe the single remote slot; drop cached objects so a returning room never replays stale creeps"""
+def yield_path():
+    return os.path.join(M, R.YIELD_FILE)
+def yielding():
+    """Wartime handoff: file present => ops holds zero room subscriptions so the commander can use both slots."""
+    return os.path.exists(yield_path())
+def forget_room(room):
+    """Drop cached objects so a returning room never replays stale creeps, and home does not freeze on the dashboard."""
+    if not room: return
     rooms_state.pop(room, None)
     if room == WATCH: watch['objects'] = {}
+    if room == R.HOME:
+        with lock: live['objects'] = {}
+def subscribe_slot(ws):
+    """Hold the one peacetime room (R.PEACETIME_SLOTS)."""
+    room, hold = R.ROT[rot['i']]
+    forget_room(room)
     ws.send(f'subscribe room:{SHARD}/{room}')
+    rot['room'] = room
+    with lock: live['roomSlot'] = room
+    append('console.log', f'{stamp()} [listener] room slot {room} {hold}s (1 slot, weights 5:5:1:1)')
+    write_live()
+def drop_slot(ws, why):
+    """Unsubscribe the room. Console and cpu stay. Both official room slots are then free."""
+    room = rot.get('room')
+    if not room: return
+    ws.send(f'unsubscribe room:{SHARD}/{room}')
+    rot['room'] = None
+    forget_room(room)
+    with lock: live['roomSlot'] = None
+    append('console.log', f'{stamp()} [listener] room slot released ({why})')
+    write_live()
 def rotator(ws):
+    """One room at a time. Poll the yield file so a wartime handoff frees the slot within ~5s, not after a 600s hold."""
+    while not rot['authed']: time.sleep(0.2)
     while True:
-        time.sleep(ROT[rot['i']][1])
-        old = ROT[rot['i']][0]; rot['i'] = (rot['i'] + 1) % len(ROT)
-        try: ws.send(f'unsubscribe room:{SHARD}/{old}'); sub_remote(ws, ROT[rot['i']][0])
-        except Exception as ex: append('errors.log', f'{stamp()} [listener] rotate {ex}')
+        try:
+            if yielding():
+                if rot.get('room'): drop_slot(ws, 'wartime: metrics/' + R.YIELD_FILE)
+                time.sleep(5); continue
+            if not rot.get('room'): subscribe_slot(ws)
+            deadline = time.time() + R.ROT[rot['i']][1]
+            while time.time() < deadline:
+                if yielding(): break
+                time.sleep(min(5.0, max(0.0, deadline - time.time())))
+            if yielding() or not rot.get('room'): continue
+            old = rot['room']
+            ws.send(f'unsubscribe room:{SHARD}/{old}')
+            rot['room'] = None
+            forget_room(old)
+            rot['i'] = (rot['i'] + 1) % len(R.ROT)
+            subscribe_slot(ws)
+        except Exception as ex:
+            append('errors.log', f'{stamp()} [listener] rotate {ex}')
+            time.sleep(5)
 # ---- continuous telemetry: every creep, every room update (no in-game CPU) ----
 rooms_state = {}  # room -> {oid: obj}
 role_of = lambda n: ''.join(ch for ch in (n or '') if ch.isalpha()) or None

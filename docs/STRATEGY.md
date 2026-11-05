@@ -45,3 +45,4 @@ Ideal vs actual: `tools/model.py` / Grafana / `upgFeed` / `w8day` (softCap2, sof
 - Safe mode: **alert only** — Misaki decides.
 - Patrol owns `state/next_iteration.json` cadence; strategy review updates docs/roadmap and small safe code fixes.
 - Commander (phase 0, 2026-11-05): takeover lives in `Memory.cmd`, not in `Memory.ops.w47n9`. Release / TTL / `CMD.disarm()` restores the role. Do not auto-arm war, safe mode, claim, or market from that channel. Detail: `docs/COMMANDER.md`.
+- Websocket rooms (2026-11-05): peacetime ops listener holds one slot, wall-clock W46N8:W47N8:W45N8:W45N7 = 5:5:1:1 (`tools/room_rot.py`). While the commander bot is live-commanding, ops drops room subscriptions (`touch metrics/listener_yield_rooms`); the commander subscribes the battle rooms and may use both official slots. Remove the file after handback. This is box ops, not `Memory.cmd`.

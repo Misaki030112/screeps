@@ -18,6 +18,14 @@ Load is tiny: ~15 creeps × 1 row per tick (≈3.9 s/tick) ≈ 4 rows/s.
 - Websocket listener (`tools/run_listener.sh`) writes through `tools/ingest.py`: one background writer, batches every 2 s, retries on DB errors. The old dashboard at http://127.0.0.1:8787/tools/dashboard.html still uses `metrics/live.json` (cache only) and `metrics/creep_audit.json`.
 - There is no systemd. After a box restart, run `tools/services.sh` (the patrol does this every iteration).
 
+## Listener room slot (2026-11-05)
+
+Official limit: 2 room subscriptions per user. Peacetime ops holds **one**, wall-clock weights **W46N8 : W47N8 : W45N8 : W45N7 = 5 : 5 : 1 : 1** (600s / 600s / 120s / 120s, cycle 1440s, `tools/room_rot.py`). The second slot stays free for the Screeps指挥官 bot. Console and cpu are not room slots.
+
+`creep_ticks` for a room arrives only while that room holds the slot. Over a full cycle the shares are 5/12, 5/12, 1/12, 1/12. A gap shorter than the off-interval (840s for W46N8 or W47N8, 1320s for W45N8 or W45N7) is the rotation, not a dead listener. The watchdog still keys off the STATS console line (~40s), which keeps flowing.
+
+Wartime handoff (`docs/COMMANDER.md`): `touch metrics/listener_yield_rooms` drops the room subscription within ~5s (coverage intentionally zero). The commander subscribes the battle rooms, both slots if needed. `rm` the file after handback. Patrols: if that file exists, do not treat missing `creep_ticks` as an outage, and do not start a second listener.
+
 ## Box restarts and persistence (incident 2026-10-15)
 - **Incident:** the box was stuck 20:57–23:28 (UTC+8) and came back from a fresh system image. `/workspace` and `/home/box` were kept, but system dirs (`/usr`, `/etc`, `/var/lib`) and apt packages were reset. PGDATA was at the Debian default `/var/lib/postgresql/17/main`, so the TimescaleDB data was lost. `services.sh` only started services and could not reinstall them. The 23:33 run reinstalled the packages and initialised an empty DB. No old cluster survived anywhere (searched for PG_VERSION). Recovered: the pre-Timescale archive `metrics/archive/` (10-12 17:20 → 10-13 10:19, via backfill) plus deploy rows `ef368d3` and `10f881a`. The data from 10-13 10:19 to 10-15 23:33 is gone.
 - **Now:** PGDATA = `var/pg17` and its conf templates in `var/pg17-conf`. Grafana data is in `grafana/data`, the Grafana .deb is in `var/pkgs`, and Python deps are in `requirements.txt`. All of these are under /workspace and gitignored where needed.
@@ -80,7 +88,7 @@ SELECT time_bucket('1 hour', ts) h, count(*) FILTER (WHERE store > 0 AND room='W
 ```
 
 ## Motion audit (tools/creep_motion.py, 2026-10-16)
-Per creep from the websocket trail (now W46N8 + W45N8 + W45N7) and segment-90 windows: swamp fatigue ticks, circling (revisits within one leg),
+Per creep from the websocket trail (one room at a time: W46N8, W47N8, W45N8, W45N7 — see "Listener room slot" above) and segment-90 windows: swamp fatigue ticks, circling (revisits within one leg),
 A-B-A bounces, non-legit idle by reason (in-game codes), partial rhauler departures, empty-move share, cpu/t, cpu_max (worst single tick), fails
 (intents returning an error other than ERR_NOT_IN_RANGE). Ranked by estimated creep-ticks lost per hour. Patrol: `.venv/bin/python tools/creep_motion.py --hours 1 --patrol`
 (exit 1 = some creep loses >= 60 ticks/h, a tick costs >= 2 ms, or an intent failed). `idle_by_reason` view must exist (re-apply db/schema.sql after a DB reinstall).
