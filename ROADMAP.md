@@ -3,6 +3,14 @@
 Novice zone ends **2026-10-28 03:33 UTC+8** (past as of 10-29). Defence timeline: `docs/DEFENSE_NOVICE.md` (2026-10-16); detail `docs/DEFENSE.md` / geometry `docs/DEFENSE_PLAN.md`.
 **Safe mode: NEVER auto-activate** — alert Misaki.
 
+## 2026-11-06 08:1x 12h strategic review: peacetime plan holds (softCap clear next)
+
+- **Chose:** Full-board 12h review (~12h after 20:2x severe-cont 2nd maint). SoftCap/labs/industry/market widgets outstanding — **never re-ask**. War_* stay stopped (`aborted_by_misaki`). Cont/road debt status? SoftCap→clear→seal still right? Any small safe ship?
+- **Findings (`docs/RCL7.md` 08:1x / `docs/STRATEGY.md` / `docs/MODEL_W47N8.md`):** (1) Live ~08:09–08:12 Asia/Shanghai LIVE **6dcd577** @84088055: PEACETIME; listener single-slot 5:5:1:1; yield gone; raidLeft=0; labs OFF. Home RCL7 ~31.10% stor~15.5–16.2k ABOVE exact2h ~72–78% CLEAR (12h Δp~208k ≈20.2/26 ≈78%); W47 ~13.89% stor~16.7–17.7k softCap2 ON softLeft~8.3k INTENTIONAL bankWhy=hold hubReady/Prime1 upgKeep2 sealPark1 **contMinPct~46–50 contLow0–1 roadCrit~32** (was 12/4/62 — cont reclaim worked). Remotes ALL SAFE. CPU~15–17/20 bkt10k. (2) Community: Overmind UpgradeSite `storageBuffer=100k` — we stay at LEAN_SOFT 25k so soft clear remains the gate before ceil6/labs; WorkerOverlord repairTicks independent of fortifyDutyThreshold=500k; screepers/wiki: XGH2O after mineral+buffer, not while softCap thrash. TooAngel parks upgrade when thin. (3) Residual roadCrit under softCap is **by design** (`energyBank`/`mvp` pauses roadNeed 0.25/0.6; only cont<50% + road<10%). Do not unpause mid-bank. No small safe ship this run.
+- **Shipped:** **nothing** (docs only). SoftCap/sealMinE/HUB_LINK/labs/industry/market/war_*/listener **unchanged**. **No softCap/labs re-ask. No war_* restart.**
+- **Reprioritise (peacetime next 1–3):** (1) **softCap bank→clear ≥25k** with soft-band + surplus trim; (2) **true clear → nUp→ceil6 / short≥70%** + roadCrit→0 as mvp lifts; (3) **seal→1M under soft-gate** then home floor≥15k. **Defer** labs KO / boost / STATIONARY_FILL / industry / market / new remotes (**no re-ask**).
+- **Plan check:** plan holds — no new Misaki decision. WakeParent **no** (anti-spam; softCap/labs widgets outstanding — do not re-ask).
+
 ## 2026-11-05 20:2x 12h strategic review: post-W47N9 peacetime reclaim (severe cont debt)
 
 - **Chose:** Full-board 12h review after W47N9 abort (~17:30) + peacetime handback. SoftCap/labs/industry/market widgets outstanding — **never re-ask**. War_* stay stopped (`aborted_by_misaki`). Is the peacetime order still right, and is post-war repair debt a small safe ship?

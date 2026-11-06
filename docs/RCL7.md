@@ -1,5 +1,35 @@
 # Home W46N8 RCL7 readiness (strategy review 2026-10-19 18:4x UTC+8)
 
+## 2026-11-06 08:1x — 12h strategic review (peacetime plan holds / softCap clear next)
+
+**Question:** After ~12h peacetime since the 20:2x severe-cont-debt ship (`6dcd577` @84088055), does softCap→clear→seal still hold? Cont/road debt reclaim status? Any small safe ship, or labs/boost/new-remote timing?
+
+**Answer: PLAN HOLDS — docs only; nothing shipped.** Cont reclaim largely succeeded (contMinPct 12→~46–50, contLow4→0–1). Residual `roadCrit~32` under softCap is **by design**: `energyBank`/`mvp` pauses roadNeed(0.25/0.6) so only containers<50% + roads<10% run while banking (15:5x/08:4x). SoftCap bank (softLeft~8.3k, stor~16–20k thrash→climb) remains the bottleneck. SoftCap/labs/industry/market widgets outstanding — **never re-ask**. War_* stay stopped (`aborted_by_misaki`).
+
+### Live (~08:09–08:12 Asia/Shanghai, LIVE **6dcd577** deploy@84088055, tick ~84097840–870)
+| Room | Notes |
+|------|-------|
+| W46N8 | RCL7 **31.10%** (3.401M/10.935M); stor~15.5–16.2k ABOVE15k knife-edge; exact2h ~72–78% CLEAR (12h Δp~208k ≈20.2 e/t / ideal26 ≈78%); smA=6; upgFeed why=ok rem SAFE |
+| W47N8 | RCL7 **13.89%** (1.519M); stor~16.7–17.7k softCap2 **ON** softLeft~8.3k softBand1 bankWhy=hold leanBank0; hubReady1 hubPrime1 upgKeep2 sealPark1; **contMinPct~46–50 contLow0–1 roadCrit~32** (was 12/4/62 @20:2x); builders1; hMax3; phase=ready |
+| Remotes | W45N8 / W45N7 / W47N7 **ALL SAFE**; raidLeft=0; ops.w47n9.on=false phase=fallback ABORT |
+| Colony | PEACETIME; war_cmd pause `aborted_by_misaki`; listener single-slot 5:5:1:1 roomSlot rotates; yield gone; CPU~15–17/20 bkt10k; labs OFF labReady propose/actOk (**no re-ask**); softCap widget outstanding (**no re-ask**) |
+
+12h hourly (Timescale): home 29.2%→31.1%; W47 13.05%→13.89% under softCap park (~8.9 e/t vs ideal~30 intentional). Overnight W47 stor dipped ~5k @00:00 then rebuilt.
+
+### Research (community + our stack)
+1. **Overmind UpgradeSite:** `storageBuffer=100000` / `energyPerBodyUnit=25000` — scale WORK only above 100k. We park at LEAN_SOFT=25k; soft clear is the right next gate before ceil6 / labs.
+2. **Overmind WorkerOverlord:** containers <50% + RoadLogistics critical=25% size `repairTicks` independent of `fortifyDutyThreshold=500k` / `barrierHits[7]=1M`. Our 20:2x 2nd maint when contDebtN≥3 matched that; cont reclaim done. RoadCrit mid-band stays paused under `energyBank` (mvp) — do **not** unpause mid softCap bank (would burn the cushion the soft-band is refilling).
+3. **Screeps docs / screepers wiki:** RCL7 unlocks 6 labs + factory; XGH2O upgrade boosts matter once mineral network + buffer exist. Common mistake = flip labs/reactions while storage thrash or repair debt unpaid — we still sit ~17k vs Overmind's 100k buffer.
+4. **TooAngel / Harabi remotes:** energy + remotes first; new remotes need spawn budget + Misaki nod. CPU~16/20 with 2 rooms — 3rd room still nod-only and CPU-tight (`docs/CPU.md`).
+
+### Next 1–3 (unchanged order, advanced past debt reclaim)
+1. **softCap bank→clear ≥25k** (soft-band park + surplus trim nUp≤3 while stor<25k) — current bottleneck.
+2. **On true clear:** nUp→ceil6 / short≥70%; `mvp` off restores roadCrit→0 reclaim (no code change).
+3. **seal→1M under soft-gate** after clear sticks; home floor≥15k hold. **Defer** labs KO / boost / industry / market / new remotes (**no re-ask**).
+
+### Shipped
+**Nothing** (docs + ROADMAP only). SoftCap / leanBank / sealMinE / HUB_LINK / labs / industry / market / war_* / listener **unchanged**.
+
 ## 2026-11-05 20:2x — 12h strategic review (post-W47N9 peacetime / severe cont debt)
 
 **Question:** After W47N9 abort (~17:30 Asia/Shanghai) and peacetime handback, does the softCap→clear→seal order still hold, and is post-war container/road debt bad enough for a small safe ship? SoftCap/labs/industry/market widgets outstanding — **never re-ask**. Do not restart war_*.
