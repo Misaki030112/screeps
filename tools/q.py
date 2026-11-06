@@ -2,7 +2,7 @@
 """Live console query: python3 tools/q.py '<js expr returning JSON-able>' -> evaluated in game.
 Result comes back through the console stream (metrics/console.log, written by tools/listener.py), so it costs no
 GET user/memory quota (1440/day; exhausted 2026-10-18 14:09 by q.py polling -> HTTP 429 for ~6h).
-Falls back to Memory._q + user/memory only if the console line never shows up (listener down) or fails to parse."""
+Never falls back to Memory._q / user/memory — a miss used to burn the 1440/day quota and trigger hours of 429."""
 import sys, os, json, time
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
 sys.path.insert(0, os.path.join(ROOT, 'scripts')); import api
@@ -41,24 +41,16 @@ def q(expr, timeout=40):
     tag = 'QQ' + str(time.time()).replace('.', '')
     wrapped = f"(function(){{try{{return ({expr});}}catch(e){{return 'ERR '+e.stack}}}})()"
     send(f"'{tag}'+JSON.stringify({{t:Game.time,v:{wrapped}}})")
-    end = time.time() + min(timeout, 25)
+    end = time.time() + min(timeout, 35)
     while time.time() < end:
         for line in _tail().splitlines():
             if tag in line and "'" + tag not in line:
                 try:
                     m = json.loads(line.split(tag, 1)[1]); m['tag'] = tag; return m
                 except ValueError: end = 0; break
-        time.sleep(1.5)
-    tag = str(time.time())  # fallback: Memory._q via user/memory (rate-limited)
-    send(f"Memory._q={{tag:'{tag}',t:Game.time,v:{wrapped}}}")
-    end = time.time() + timeout
-    while time.time() < end:
-        try:
-            m = api.memory('_q')
-            if isinstance(m, dict) and m.get('tag') == tag: return m
-        except Exception: pass
-        time.sleep(2)
-    raise SystemExit('timeout')
+        time.sleep(1.2)
+    # NEVER fall back to user/memory — that endpoint is 1440/day and a miss triggers hours of 429.
+    raise SystemExit('timeout waiting for console.log (no memory fallback)')
 if __name__ == '__main__':
     # `q.py --help` used to send the JS expression `--help` -> 'help is not defined' console error events (3 patrols, 10-20 03:2x-03:4x)
     if len(sys.argv) != 2 or sys.argv[1].startswith('-'): raise SystemExit(__doc__.strip() + "\nusage: tools/q.py '<js expr>' (nothing sent)")
