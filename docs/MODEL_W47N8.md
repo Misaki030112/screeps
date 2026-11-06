@@ -8,6 +8,10 @@ hauler upkeep (CARRY need = 10 × (round trip × 1.10 + 4) / 50, load split 75% 
 0.03/t each, builder-lite 1000/1500. Upgrade = net / (1 + upgrader upkeep 1150/1500/10). RCL5: 1800 cap, best of source-A link→ctl or hub→ctl link (3% loss).
 reserve7 (2 CLAIM) is spawned and paid by home.
 
+## 2026-11-06 20:1x — leanBank rebuild vs softCap park (plan holds)
+
+12h window: W47 upgrade ~12 e/t vs ideal ~30 (softCap+leanBank intentional; model_w8 2h actual~6.7 under WORK20 park). Cont held ~48; **roadCrit 32→0**. Afternoon stor dip ~6.7k re-armed leanBank (phase=bank20); softLeft~9k climbing toward clear≥25k. Do not treat leanBank rebuild as a new bottleneck class — it is the softCap-bank path after a threat/thrash dip. See `docs/RCL7.md` 20:1x.
+
 ## 2026-11-06 08:1x — softCap park vs roadCrit (plan holds)
 
 12h window: W47 upgrade ~8.9 e/t vs ideal ~30 (softCap intentional). Cont reclaim 12→~50 worked under 20:2x 2nd maint. Residual roadCrit~32 while softCap ON is expected: `energyBank`/`mvp` skips roadNeed(0.25/0.6) so soft-band can refill storage — roadCrit reclaim resumes after soft clear (≥25k). Model ideal still assumes healthy roads; do not treat mid-bank roadCrit as a spawn-gate bug. See `docs/RCL7.md` 08:1x.

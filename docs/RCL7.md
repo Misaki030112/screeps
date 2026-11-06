@@ -1,5 +1,35 @@
 # Home W46N8 RCL7 readiness (strategy review 2026-10-19 18:4x UTC+8)
 
+## 2026-11-06 20:1x — 12h strategic review (peacetime plan holds / softCap clear next; leanBank rebuild)
+
+**Question:** After ~12h since 08:1x (plan holds / softCap clear next), mid-day softLeft near-clear (~1.8k) then leanBank re-arm (W47 stor~6.7k @18:24): does softCap→clear→seal still hold? Labs/boost/new-remote timing? Any small safe ship?
+
+**Answer: PLAN HOLDS — docs + ops q.py only; nothing game-shipped.** Cont reclaim held (~48%); **roadCrit 32→0** under softCap (better than 08:1x "paused by design" residual). SoftCap bank remains the gate: live softLeft~8.7–9.7k with **leanBank1 / phase=bank20** climbing from the afternoon dip. SoftCap/labs/industry/market widgets outstanding — **never re-ask**. War_* stay stopped (`aborted_by_misaki`).
+
+### Live (~20:18–20:20 Asia/Shanghai, LIVE **6dcd577** deploy@84088055, tick ~84107980–999)
+| Room | Notes |
+|------|-------|
+| W46N8 | RCL7 **33.07%** (3.617M/10.935M); stor~15.9–16.1k ABOVE15k knife-edge; exact2h ~20.8/26 = **~80% CLEAR** (12h Δp~213k; short floor_bank/ok nUp1 work14); smA=6; upgFeed rem SAFE |
+| W47N8 | RCL7 **15.03%** (1.644M); stor~16.3k softCap2 **ON** softLeft~8.7–9.7k softBand1 bankWhy=bank leanBank1 phase=bank20 bankLeft~3.7–4.7k; hubReady1 hubPrime1 upgKeep2 sealPark1; **contMinPct~48 contLow1 roadCrit0**; builders1; hMax3 |
+| Remotes | W45N8 / W45N7 / W47N7 **ALL SAFE** (res~2.1–2.7k; W45N7 fhl Spawn1 gone; W47N7 killed); raidLeft=0; ops.w47n9.on=false phase=fallback ABORT |
+| Colony | PEACETIME; war_cmd pause `aborted_by_misaki`; listener single-slot 5:5:1:1; yield gone; CPU~12–13/20 bkt10k; labs OFF labReady propose/actOk (**no re-ask**); softCap widget outstanding (**no re-ask**); termO~127k termK~69k |
+
+12h hourly (Timescale): home 31.1%→33.1%; W47 13.9%→15.0% under softCap park (~12 e/t vs ideal~30 intentional). Afternoon W47 stor dipped ~6.7k @18:24 then rebuilt to ~16k.
+
+### Research (community + our stack)
+1. **Overmind UpgradeSite:** `storageBuffer=100000` / `energyPerBodyUnit=25000` — scale WORK only above 100k. We park at LEAN_SOFT=25k (and leanBank rebuild under 20k); soft clear remains the gate before ceil6 / labs. Live ~16k ≪ 100k.
+2. **Overmind WorkerOverlord:** containers <50% + RoadLogistics critical=25% size `repairTicks` independent of `fortifyDutyThreshold=500k` / `barrierHits[7]=1M`. Cont~48 / roadCrit0 — repair duty satisfied enough; do **not** unpark deep seal mid softCap/leanBank (soft-gate + sealPark already correct).
+3. **screepspl.us Intermediate / TooAngel:** XGH2O / mineral reactions after energy buffer + mineral network; TooAngel parks upgrade when thin, keeps logistics warm. Our O+K stocks are fat (termO~127k termK~69k) but energy cushion is not — flipping `ops.labs=KO` now would compete with softCap climb (**no re-ask**).
+4. **Harabi remotes / `docs/CPU.md`:** new remotes need spawn budget + Misaki nod; CPU~13/20 with 2 rooms — 3rd room / extra remote still nod-only and CPU-tight.
+
+### Next 1–3 (same order; leanBank is the current softCap-bank phase)
+1. **leanBank→20k → softCap bank→clear ≥25k** (soft-band park + surplus trim nUp≤3 while stor<25k) — current bottleneck.
+2. **On true clear:** nUp→ceil6 / short≥70%; hold contMinPct≥50 (roadCrit already 0).
+3. **seal→1M under soft-gate** after clear sticks; home floor≥15k hold. **Defer** labs KO / boost / industry / market / new remotes (**no re-ask**).
+
+### Shipped
+**Docs + `tools/q.py` (no user/memory fallback — ops safety).** SoftCap / leanBank / sealMinE / HUB_LINK / labs / industry / market / war_* / listener **unchanged**. No game deploy.
+
 ## 2026-11-06 08:1x — 12h strategic review (peacetime plan holds / softCap clear next)
 
 **Question:** After ~12h peacetime since the 20:2x severe-cont-debt ship (`6dcd577` @84088055), does softCap→clear→seal still hold? Cont/road debt reclaim status? Any small safe ship, or labs/boost/new-remote timing?
