@@ -69,4 +69,38 @@ assert.strictEqual(S.extrasOk(soft), false);
 Memory.ops.w8day.softCap2 = 0;
 assert.strictEqual(S.extrasOk(Object.assign({}, soft, { storage: { store: { energy: 16000 } } })), true);
 
+// 12h 2026-11-07: body #1 sizes to current ea (≥1300), not full RCL7 cap — peacetime soft
+// economies rarely hit lastFull, so waiting for cost=5600 held the spawn forever on solo Invaders.
+{
+  const orig = {
+    wantDefender: T.wantDefender, armed: T.armed, state: T.state,
+    squadAlive: T.squadAlive, squadSize: T.squadSize, energyHold: T.energyHold,
+  };
+  T.wantDefender = () => 'W45N8';
+  T.armed = () => true;
+  T.state = () => ({ st: 'THREAT', mission: 'solo', last: [{ ttl: 1400 }] });
+  T.squadAlive = () => 0;
+  T.squadSize = () => 1;
+  T.energyHold = () => false;
+  try {
+    const softRoom = { name: 'W46N8', controller: { level: 7 }, energyCapacityAvailable: 5600, energyAvailable: 4680, storage: { store: { energy: 19000 } } };
+    const planSoft = S.planDefender(softRoom);
+    assert.ok(planSoft, 'plan #1 under soft ea');
+    assert.ok(planSoft.cost <= 4680, 'body #1 cost ' + planSoft.cost + ' must fit ea 4680 (not wait for 5600)');
+    assert.ok(planSoft.cost >= 1300, 'body #1 still fight-capable');
+    assert.strictEqual(planSoft.hold, true);
+    const planFull = S.planDefender(Object.assign({}, softRoom, { energyAvailable: 5600 }));
+    assert.strictEqual(planFull.cost, 5600, 'full ea still builds max body');
+    // extras (have≥1) keep full-cap sizing
+    T.squadAlive = () => 1;
+    T.squadSize = () => 2;
+    const planExtra = S.planDefender(Object.assign({}, softRoom, { energyAvailable: 4680, storage: { store: { energy: 20000 } } }));
+    assert.ok(planExtra, 'extra body plans under fat stor');
+    assert.strictEqual(planExtra.cost, 5600, 'extra body still sized to full cap');
+    assert.strictEqual(planExtra.hold, false);
+  } finally {
+    Object.assign(T, orig);
+  }
+}
+
 console.log('defender squad ok');

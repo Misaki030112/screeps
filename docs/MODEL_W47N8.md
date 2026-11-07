@@ -8,6 +8,10 @@ hauler upkeep (CARRY need = 10 × (round trip × 1.10 + 4) / 50, load split 75% 
 0.03/t each, builder-lite 1000/1500. Upgrade = net / (1 + upgrader upkeep 1150/1500/10). RCL5: 1800 cap, best of source-A link→ctl or hub→ctl link (3% loss).
 reserve7 (2 CLAIM) is spawned and paid by home.
 
+## 2026-11-07 20:2x — leanBank rebuild after near-clear thrash (plan holds)
+
+12h window: W47 upgrade ~15 e/t vs ideal ~30 (softCap+leanBank intentional; model_w8 ~15.0/30 under WORK20 park). Hit near-clear ~19:28 (softLeft~78 / stor~25.2k) then bled to ~18–19k leanBank re-arm — softLeft~6.0k / bankLeft~1.0k phase=bank20 climbing. **contMinPct50 contLow0 roadCrit0** (repair DONE under softCap). Soft clear ≥25k remains the gate to ceil6. See `docs/RCL7.md` 20:2x.
+
 ## 2026-11-07 08:1x — leanBank climb vs softCap park (plan holds)
 
 12h window: W47 upgrade ~12 e/t vs ideal ~30 (softCap+leanBank intentional; model_w8 ~10.2/30 under WORK20 park). softLeft 9→12→**8.4k** (overnight dip then rebuild); bankLeft~3.4k phase=bank20. Cont mid-band ~46–52 with **builders=2**; roadCrit≈1. Do not treat leanBank rebuild as a new bottleneck class — it is the softCap-bank path after a thrash dip. Soft clear ≥25k remains the gate to ceil6. See `docs/RCL7.md` 08:1x.

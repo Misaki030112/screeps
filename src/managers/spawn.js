@@ -322,7 +322,13 @@ function planDefender(room) {
   if (have >= want) return null;
   if (have >= 1 && !extrasOk(room)) return null;
   const cap = room.energyCapacityAvailable || room.energyAvailable || 1300;
-  const ord = defenderOrder(g, cap);
+  const avail = room.energyAvailable || 0;
+  // Body #1: size to what we can afford now (≥1300), not full RCL7 cap.
+  // 12h 2026-11-07: solo W45N7 THREAT held spawn 125+t for cost=5600 while ea~4680 (lastFull stale
+  // ~43k ticks under peacetime floor_bank). Original hold was "collect the 1300" — RCL7 cap scaling
+  // turned that into a never-fill wait. Extras (have≥1) still use full cap + extrasOk floors.
+  const eBudget = have < 1 ? Math.min(cap, Math.max(avail, 1300)) : cap;
+  const ord = defenderOrder(g, eBudget);
   const cost = _.sum(ord.body, p => BODYPART_COST[p]);
   return { remote: g, body: ord.body, core: ord.core, cost, hold: have < 1 };
 }

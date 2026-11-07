@@ -3,6 +3,14 @@
 Novice zone ends **2026-10-28 03:33 UTC+8** (past as of 10-29). Defence timeline: `docs/DEFENSE_NOVICE.md` (2026-10-16); detail `docs/DEFENSE.md` / geometry `docs/DEFENSE_PLAN.md`.
 **Safe mode: NEVER auto-activate** — alert Misaki.
 
+## 2026-11-07 20:2x 12h strategic review: peacetime plan holds (leanBank→softCap clear; defender #1 ea-budget)
+
+- **Chose:** Full-board 12h review (~12h after 08:1x plan-holds / leanBank rebuild). SoftCap/labs/industry/market widgets outstanding — **never re-ask**. War_* stay stopped (`aborted_by_misaki`). SoftCap near-clear@19:28 then leanBank re-arm; cont reclaim status; labs/boost/new-remote timing; any small safe ship?
+- **Findings (`docs/RCL7.md` 20:2x / `docs/STRATEGY.md` / `docs/MODEL_W47N8.md`):** (1) Live ~20:18–20:25 Asia/Hong_Kong: PEACETIME; listener single-slot 5:5:1:1; yield gone; raidLeft=0; labs OFF. Home RCL7 **36.73%** stor~19.1k ABOVE model2h **~71% SOFT** (12h 34.9→36.7%); W47 **17.31%** softCap2 ON softLeft~6.0k INTENTIONAL bankWhy=bank leanBank1 phase=bank20 bankLeft~1.0k hubReady1 upgKeep2 sealPark1 **contMinPct50 contLow0 roadCrit0** (repair DONE). Remotes W45N8/W47N7 SAFE; **W45N7 solo THREAT**. CPU~14–17/20 bkt10k. SoftCap near-clear@19:28 (softLeft~78/stor~25.2k) then leanBank thrash — still the softCap-bank path. (2) Community (re-checked Overmind UpgradeSite / WorkerOverlord + screepspl.us Maturity Matrix / StructureLab): `storageBuffer=100k` — scale WORK only above 100k; `fortifyDutyThreshold=500k` / `barrierHits[7]=1M` separate from container repair; XGH2O after mineral network + fat energy buffer; remotes = spawn-budget + Misaki nod + CPU-tight on 20. TooAngel parks upgrade when thin. Our O+K fat but energy ~18–19k ≪ 100k → labs deferred (**no re-ask**). (3) Ops gap: `planDefender` body #1 sized to full RCL7 cap 5600 while ea~4680 → spawn held 125+t on solo Invader (`lastFull` stale ~43k ticks). Ship ea-budget for body #1.
+- **Shipped:** `planDefender` body #1 `eBudget=min(cap,max(avail,1300))`; `tests/defender_squad.js`; deploy **8c9556e+dirty** @84127622 (live `defender84127622` W45N7). SoftCap/sealMinE/HUB_LINK/labs/industry/market/war_*/listener **unchanged**. **No softCap/labs re-ask. No war_* restart.**
+- **Reprioritise (peacetime next 1–3):** (1) **leanBank rebuild → softCap bank→clear ≥25k** (soft-band + surplus trim; current softLeft~6.0k / bankLeft~1.0k); (2) **true clear → nUp→ceil6 / short≥70%** + hold contMinPct≥50 (already 50 / roadCrit0); (3) **seal→1M under soft-gate** then home floor≥15k. **Defer** labs KO / boost / STATIONARY_FILL / industry / market / new remotes (**no re-ask**).
+- **Plan check:** plan holds; autonomous standing-ops defender sizing — no new Misaki decision. WakeParent **no** (anti-spam; softCap/labs widgets outstanding — do not re-ask).
+
 
 ## 2026-11-07 08:1x 12h strategic review: peacetime plan holds (leanBank→softCap clear)
 

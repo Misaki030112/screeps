@@ -145,3 +145,8 @@ exit is valid, matching open-source checkExit. Raid-proof: W46N8, W47N7 (while n
 - `metrics/invader_counters.jsonl`: W47N8 120.6k at t83792153 (06:00 UTC+8) -> 1.8k at t83792551 (06:30). `room_stats` for W47N8 has 40 samples (~every 12 t) over t83792100-83792600, all `hostiles 0`; no `alert_state`/`events` row for a W47N8 Invader; patrols 06:2x/06:5x hostiles 0. So the counter reset and no raid spawned, exactly like home (05:30) and W47N7 (04:32).
 - Conclusion: the 10-21 12:34 W47N8 raid was a one-off. W46N8, W47N7 and W47N8 are raid-proof while their neighbours stay owned/reserved (W47N9 BustJetter, W48N8 Evans_702, W47N6 yousukeman3, W45N8 reserved by us). **Re-open trigger:** any neighbour of W47N8 losing its owner (W47N9 or W48N8 unclaimed) makes that exit valid again.
 - Remotes still raid on schedule: W45N8 reset at t~83795700 with the 10:16 Invader (consistent); W45N7 88.4k at 11:30, next raid due ~0-4k t (~11:30-16:30 UTC+8), on-demand defender covers it.
+
+## 6b. Body #1 energy budget (2026-11-07 20:2x 12h review)
+
+`planDefender` sizes **defender #1** to `min(cap, max(energyAvailable, 1300))`, not always full `energyCapacityAvailable`.
+RCL7 cap 5600 left peacetime soft economies holding the spawn forever (ea stuck ~4.5–5k, `lastFull` stale under floor_bank) while a solo Invader sat in W45N7. Original design was "collect the 1300". Extras (bodies 2–4) still size to full cap and respect the 15k / softCap 25k floors. Live: `defender84127622` (40 parts) spawned immediately after deploy @84127622.
