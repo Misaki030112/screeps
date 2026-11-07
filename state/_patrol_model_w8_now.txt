@@ -1,13 +1,13 @@
- Memory.ops.w8model <- {"t":84123771,"v":"{\"rcarry\":49,\"lcarry\":9,\"upw\":31,\"links\":true,\"t\":84123771}","tag":"QQ17940362741423647"}
-W47N8 RCL7 1835055/10935000 cap 2800  tick 4.42s  window 4680t cov 1
+ Memory.ops.w8model <- {"t":84124466,"v":"{\"rcarry\":49,\"lcarry\":9,\"upw\":31,\"links\":true,\"t\":84124466}","tag":"QQ17940396668894806"}
+W47N8 RCL7 1846835/10935000 cap 2800  tick 4.46s  window 4130t cov 1
 stage                     ideal   actual
-w8.upgrade                30.08     12.1 e/t
+w8.upgrade                30.08    12.28 e/t
 w8.net                    32.39        - e/t
-w8.carry_local              9.0       30 CARRY
-w8.carry_remote            48.6       90 CARRY
+w8.carry_local              9.0       40 CARRY
+w8.carry_remote            48.6       60 CARRY
 w8.upgrader_work             31       20 WORK
 w8.upgrade_rcl5           30.08        - e/t
-w8.eta_rcl5_h             371.8    924.4 h
+w8.eta_rcl5_h             374.2    916.5 h
 w8.src_A                    9.6        - e/t
 w8.src_B              9.899999999999999        - e/t
 w8.src_R1                   9.5        - e/t
@@ -16,8 +16,8 @@ w8.src_R2                   9.5        - e/t
  B: rt 37t carry 9.0 hauler 0.45 miner 0.37 loss 0.1 net 9.08  routes {'ctl': {'dist': 16, 'swamp': 0, 'unpaved': 0, 'rt': 32}, 'hub': {'dist': 26, 'swamp': 0, 'unpaved': 1, 'rt': 53}}
  R1: rt 93t carry 21.2 hauler 1.18 miner 0.53 loss 0.5 net 7.79  routes {'ctl': {'dist': 45, 'swamp': 0, 'unpaved': 2, 'rt': 92}, 'hub': {'dist': 43, 'swamp': 0, 'unpaved': 9, 'rt': 95}}
  R2: rt 121t carry 27.4 hauler 1.52 miner 0.53 loss 0.5 net 7.45  routes {'ctl': {'dist': 59, 'swamp': 0, 'unpaved': 2, 'rt': 120}, 'hub': {'dist': 57, 'swamp': 0, 'unpaved': 9, 'rt': 123}}
- shared {'roads': 0.192, 'ramparts': 0.24, 'builder_lite': 0.667, 'reserver(home-paid)': 0.0}  upkeep_live {'whauler': 1.5, 'wrhauler': 5.0, 'wupgrader': 1.53, 'wfiller': 2.4, 'wminer': 0.93, 'wbuilder': 1.6, 'wrminer': 1.07, 'reserve': 2.17}
- rcl5 linkA->ctl 30.08  stores {'W47N8:cont26,11': 24, 'W47N8:cont11,43': 1097, 'W47N8:cont37,44': 0, 'W47N8:cont13,26': 1778, 'W47N8:cont33,33': 0, 'W47N8:stor35,32': 15364, 'W47N7:cont18,17': 1028, 'W47N7:cont31,34': 1600}
- alloc e/t {'harvest': 28.1, 'upgrade': 12.1, 'build_repair': None, 'storage': 0.4, 'upkeep': 14.0, 'waste_other': 1.6}  (waste_other = decay + container/stock change + tower + unmeasured)
- delivered {}  spent {}  storage_delta 0.4
- idle {'wupgrader': {'spawning': 0.02, 'moving': 0.07, 'waiting_feed': 0.22, 'working': 0.7}, 'wrhauler': {'moving': 0.81, 'working': 0.02, 'waiting_pickup': 0.09, 'spawning': 0.07}, 'wfiller': {'moving': 0.54, 'spawning': 0.01, 'working': 0.1, 'target_full': 0.36}, 'wminer': {'spawning': 0.02, 'moving': 0.08, 'working': 0.44, 'source_empty': 0.45}, 'wrminer': {'moving': 0.11, 'spawning': 0.04, 'working': 0.73, 'source_empty': 0.13}, 'whauler': {'waiting_pickup': 0.23, 'spawning': 0.04, 'moving': 0.72, 'working': 0.01}, 'wbuilder': {'working': 0.14, 'no_task': 0.47, 'moving': 0.36, 'spawning': 0.03}}
+ shared {'roads': 0.192, 'ramparts': 0.24, 'builder_lite': 0.667, 'reserver(home-paid)': 0.0}  upkeep_live {'wfiller': 3.6, 'wminer': 1.4, 'wupgrader': 1.53, 'wbuilder': 1.6, 'wrhauler': 3.33, 'whauler': 2.0, 'wrminer': 1.07}
+ rcl5 linkA->ctl 30.08  stores {'W47N8:cont26,11': 24, 'W47N8:cont11,43': 882, 'W47N8:cont37,44': 0, 'W47N8:cont13,26': 1528, 'W47N8:cont33,33': 0, 'W47N8:stor35,32': 16095, 'W47N7:cont18,17': 1398, 'W47N7:cont31,34': 1490}
+ alloc e/t {'harvest': 29.0, 'upgrade': 12.28, 'build_repair': None, 'storage': 0.3, 'upkeep': 14.5, 'waste_other': 2.0}  (waste_other = decay + container/stock change + tower + unmeasured)
+ delivered {}  spent {}  storage_delta 0.3
+ idle {'wupgrader': {'spawning': 0.03, 'moving': 0.07, 'waiting_feed': 0.22, 'working': 0.68}, 'wrhauler': {'moving': 0.83, 'working': 0.02, 'waiting_pickup': 0.09, 'spawning': 0.05}, 'wfiller': {'moving': 0.52, 'spawning': 0.01, 'working': 0.1, 'target_full': 0.37}, 'wminer': {'spawning': 0.02, 'moving': 0.08, 'working': 0.47, 'source_empty': 0.44}, 'wrminer': {'moving': 0.09, 'spawning': 0.03, 'working': 0.74, 'source_empty': 0.14}, 'whauler': {'waiting_pickup': 0.21, 'spawning': 0.04, 'moving': 0.73, 'working': 0.01}, 'wbuilder': {'working': 0.14, 'no_task': 0.45, 'moving': 0.38, 'spawning': 0.03}}
