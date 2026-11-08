@@ -1,5 +1,38 @@
 # Home W46N8 RCL7 readiness (strategy review 2026-10-19 18:4x UTC+8)
 
+## 2026-11-08 08:1x — 12h strategic review (peacetime plan holds / leanBank→softCap clear)
+
+**Question:** After ~12h since 20:2x (plan holds / leanBank→softCap clear + defender #1 ea-budget): did a softCap clear stick? Overnight W45N7 InvaderCore + home 04:31 SOFT then recover — still the same order? Labs/boost/new-remote timing? Any small safe ship?
+
+**Answer: PLAN HOLDS — docs only; nothing game-shipped.** SoftCap bank remains the gate. W47 near-cleared twice this window (19:00 max stor 25172, already noted last review; **21:00 max 25391** after that review) then bled through leanBank (morning dip min~13.3k @05–07). Live now climbing again: softLeft~6.7k / bankLeft~1.7k / phase=bank20 / stor~18.3k — same band as 20:2x (softLeft~6.0k / bankLeft~1.0k). Two near-clears that do not stick is the known softCap-thrash path, not a new bottleneck class. SoftCap/labs/industry/market widgets outstanding — **never re-ask**. War_* stay stopped (`aborted_by_misaki`).
+
+Overnight W45N7 InvaderCore@[3,37] (since 84132510, `defender84132511` next tick) was CLEARED by ~03:26 — standing defence, and live proof the 20:2x ea-budget ship works. Home exact2h dipped to 68.9% SOFT consec-soft=1 FIRST @04:31 then recovered CLEAR by 05:23 (last hourly @07:23 72.7% CLEAR consec-soft=0). Storage knife-tipped ~15k and recovered ABOVE.
+
+### Live (~08:16 Asia/Hong_Kong, LIVE **87d8c84** deploy@84127638, tick 84137532–542)
+| Room | Notes |
+|------|-------|
+| W46N8 | RCL7 **38.58%** (4.220M/10.935M); stor~17.4k ABOVE15k; nUp3 work42 why=ok surplus~2.4k; last hourly exact2h **72.7% CLEAR** consec-soft=0 (12h 36.73→38.58%, +204k ≈20.5/26 ≈79%); smA=6 |
+| W47N8 | RCL7 **18.42%** (2.014M); stor~18.3k softCap2 **ON** softLeft~6.7k softBand1 bankWhy=bank leanBank1 phase=bank20 bankLeft~1.7k; hubReady1 hubPrime1 upgKeep2 sealPark1; **contMinPct50 contLow0 roadCrit24** (mvp pause under softCap); hMax4 |
+| Remotes | W45N8 / W45N7 / W47N7 **ALL SAFE** (vis; foes0 cores0; res~2111/2078/2831); raidLeft=0; ops.w47n9.on=false phase=fallback ABORT |
+| Colony | PEACETIME; war_cmd pause `aborted_by_misaki`; listener single-slot 5:5:1:1; yield gone; CPU~15.5/20 bkt10k n~38; labs OFF labReady propose/actOk/ready (**no re-ask**); softCap widget outstanding (**no re-ask**); termO~127k termK~69k Ostor~17.3k |
+
+12h Timescale: home 36.73%→38.58% (Δp~+204k / 9960t ≈20.5 e/t); W47 17.31%→18.42% (Δp~+121k ≈12.1 e/t vs ideal~30, intentional park). W47 stor: near-clear 25172@19:00 and 25391@21:00, then 16k→13k morning dip, now 18.3k climbing.
+
+### Research (community + our stack)
+1. **Overmind UpgradeSite** (re-checked github master `upgradeSite.ts` 2026-11-08): `energyBuffer=100000` / `energyPerBodyUnit=10000` (prior reviews cited 25k at blob 2eae97b — the **100k buffer gate is unchanged**). Scale WORK only above 100k; `linksRequestBelow=200`. We park at LEAN_SOFT=25k (and leanBank rebuild under 20k); soft clear remains the gate before ceil6 / labs. Live ~17–18k ≪ 100k.
+2. **Overmind WorkerOverlord** (re-checked master `worker.ts`): containers <50% + RoadLogistics size `repairTicks` independent of `fortifyDutyThreshold=500k` / `barrierHits[7]=1M`. Cont50 / contLow0 — repair duty satisfied; roadCrit24 under softCap is the known `energyBank`/`mvp` pause (do **not** unpark deep seal mid leanBank; KEY 300k DONE).
+3. **screepspl.us Intermediate / StructureLab / TooAngel:** RCL7 unlocks 6 labs; XGH2O / reactions after energy buffer + mineral network, not while storage thrash. TooAngel parks upgrade when thin, keeps logistics+repair warm. Our O+K stocks are fat (termO~127k termK~69k) but energy cushion is not — flipping `ops.labs=KO` now would compete with softCap climb (**no re-ask**).
+4. **Harabi remotes / `docs/CPU.md`:** new remotes need spawn budget + Misaki nod; CPU~15–16/20 with 2 rooms — 3rd room / extra remote still nod-only and CPU-tight.
+5. **Standing remote defence:** overnight W45N7 core spawned `defender84132511` the next tick (20:2x ea-budget). Recurrence is normal remote cadence (~1 core + earlier solo invader this window), not a new strategic topic.
+
+### Next 1–3 (same order; leanBank is the current softCap-bank phase)
+1. **leanBank→20k → softCap bank→clear ≥25k** (soft-band park + surplus trim nUp≤3 while stor<25k) — current bottleneck (softLeft~6.7k / bankLeft~1.7k; two near-clears this window did not stick).
+2. **On true clear:** nUp→ceil6 / short≥70%; hold contMinPct≥50 (already 50; roadCrit residual drains after mvp lifts).
+3. **seal→1M under soft-gate** after clear sticks; home floor≥15k hold. **Defer** labs KO / boost / industry / market / new remotes (**no re-ask**).
+
+### Shipped
+**Nothing** (docs + ROADMAP only). SoftCap / leanBank / sealMinE / HUB_LINK / labs / industry / market / war_* / listener **unchanged**. No game deploy.
+
 ## 2026-11-07 20:2x — 12h strategic review (peacetime plan holds / leanBank→softCap clear; defender #1 ea-budget)
 
 **Question:** After ~12h since 08:1x (plan holds / leanBank→softCap clear): did softCap clear stick? Cont reclaim done? Labs/boost/new-remote timing? Any small safe ship?

@@ -150,3 +150,5 @@ exit is valid, matching open-source checkExit. Raid-proof: W46N8, W47N7 (while n
 
 `planDefender` sizes **defender #1** to `min(cap, max(energyAvailable, 1300))`, not always full `energyCapacityAvailable`.
 RCL7 cap 5600 left peacetime soft economies holding the spawn forever (ea stuck ~4.5–5k, `lastFull` stale under floor_bank) while a solo Invader sat in W45N7. Original design was "collect the 1300". Extras (bodies 2–4) still size to full cap and respect the 15k / softCap 25k floors. Live: `defender84127622` (40 parts) spawned immediately after deploy @84127622.
+
+Overnight proof (2026-11-08 ~02:21–03:26 Asia/Hong_Kong): W45N7 InvaderCore@[3,37] since 84132510; `defender84132511` spawned the next tick (ea-budget path) and the core was CLEARED by ~03:26. Standing remote defence — not a new strategic topic. See `docs/RCL7.md` 08:1x.
