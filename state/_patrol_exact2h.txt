@@ -1,17 +1,22 @@
-=== W46N8 n=postheal
-  GAP 84135150->84135910 =760t  2026-11-08 05:25:25+08:00 -> 2026-11-08 06:20:11+08:00
-  GAP 84136000->84136810 =810t  2026-11-08 06:26:41+08:00 -> 2026-11-08 07:25:19+08:00
-  GAP 84137100->84137520 =420t  2026-11-08 07:46:18+08:00 -> 2026-11-08 08:16:50+08:00
-  WALL2h start=84135910@2026-11-08 06:20:11+08:00 prog=4179847 stor=15978
-         end=84137590@2026-11-08 08:21:55+08:00 prog=4221027 stor=17956
-         dticks=1680 rate=24.5119 pct=94.3% CLEAR
-         rcl%=38.60
-  SHORT postheal 84137520->84137590 dt=70 rate=21.1429 pct=81.3% CLEAR samp=8 stor 17366->17956
-  postheal cpu min=15.4 max=17.6 avg~16.6 bkt=10000
+=== W46N8 exact2h @ 2026-11-09 07:27 Asia/Hong_Kong
+  GAP 84153400->84154090 =690t  2026-11-09 03:32:59+08:00 -> 2026-11-09 04:23:46+08:00  (already logged prior)
+  GAP 84154240->84154910 =670t  2026-11-09 04:34:49+08:00 -> 2026-11-09 05:24:04+08:00  (already logged last patrol)
+  GAP 84155090->84156390 =1300t 2026-11-09 05:37:22+08:00 -> 2026-11-09 07:19:30+08:00  NEW this hour ~102min/6128s
+  WALL2h start=84154940@2026-11-09 05:26:19+08:00 prog=4552877 stor=14392
+         end=84156480@2026-11-09 07:26:03+08:00 prog=4581788 stor=15182
+         dticks=1540 rate=18.7734 pct=72.2% CLEAR
+         live end=84156483 prog=4581830 stor=15232 rate=18.764 pct=72.2%
+         rcl%=41.90
+         derr vs 3.6s/t: wall=7183s expected=5544s derr=+1639s shard~4.66s/t
+  SHORT postheal 84156390->84156480 dt=90 rate=14.0000 pct=53.8% SOFT samp=10 stor 15188->14088->15782->15182 (floor_bank tUp1 entire island; <allowExtra 16k)
+  last60t 84156420->84156480 dt=60 rate=14.0000 pct=53.8% SOFT
+  1h: no sample at now-1h 06:26 (inside unseen1300t); spanning 84155090@05:37:22->84156480@07:26:03 dt=1390 (~109min) rate=18.2914 pct=70.4% CLEAR
+      unseen1300t@84155090-84156390 rate=18.5885 pct=71.5% stor15372->15188
+      contig extras 84155010->84155090 dt=80 rate=28.0000 stor16672->15372
+  postheal cpu min=15.20 max=21.62 avg~17.9 bkt=10000
 === W47N8
-  WALL2h start=84135910 prog=2002605 stor=14746 end=84137590 prog=2014865 stor=18234
-         dticks=1680 rate=7.2976 pct=24.3% SOFT (softCap intentional)
-         rcl%=18.43
-  SHORT postheal 84137520->84137590 dt=70 rate=15.8571 pct=52.7% samp=8 stor 18345->17445->18234
-HOME contiguous-pairs rate=22.6162 pct=87.0% over 370t
-W47 contiguous-pairs rate=7.8649 pct=26.1% over 370t
+  WALL2h start=84154940 prog=2208775 stor=16423 end=84156480 prog=2227555 stor=13884
+         dticks=1540 rate=12.1948 pct=40.5% SOFT (softCap+leanBank intentional)
+         rcl%=20.37
+  SHORT postheal progress FROZEN 2227555 for 90t stor13511->15484->13884 leanBank keep-throttle
+  unseen1300t 2209815->2227555 rate=13.646 stor19562->13511
