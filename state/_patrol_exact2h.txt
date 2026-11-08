@@ -1,7 +1,17 @@
-W46N8 exact2h ticks 84134350->84135950 dt=1600 prog 4150356->4181019 dp=30663 upg=19.16/26.0=73.7% CLEAR stor 14853->16378 secs=6918
-W46N8 shortPostHeal ticks 84135910->84135950 dt=40 dp=1172 upg=29.30/26.0=112.7% stor 15978->16378
-W46N8 live tip tick84135954 hp=4181187 hs=16428 RCL7 38.24%
-W47N8 exact2h ticks 84134350->84135950 dt=1600 upg=10.58/30.08=35.2% softCap intentional stor 16945->15243
-W47N8 shortPostHeal ticks 84135910->84135950 dt=40 upg=10.00/30.08=33.2% softCap stor 14746->15243
-model2h upgrade_meas~19.48/26=74.9% CLEAR≈ideal; exact2h CLEAR governs Soft/Clear
-gap 84135150->84135910=760 self-healed@06:20
+=== W46N8 n=postheal
+  GAP 84135150->84135910 =760t  2026-11-08 05:25:25+08:00 -> 2026-11-08 06:20:11+08:00
+  GAP 84136000->84136810 =810t  2026-11-08 06:26:41+08:00 -> 2026-11-08 07:25:19+08:00
+  GAP 84137100->84137520 =420t  2026-11-08 07:46:18+08:00 -> 2026-11-08 08:16:50+08:00
+  WALL2h start=84135910@2026-11-08 06:20:11+08:00 prog=4179847 stor=15978
+         end=84137590@2026-11-08 08:21:55+08:00 prog=4221027 stor=17956
+         dticks=1680 rate=24.5119 pct=94.3% CLEAR
+         rcl%=38.60
+  SHORT postheal 84137520->84137590 dt=70 rate=21.1429 pct=81.3% CLEAR samp=8 stor 17366->17956
+  postheal cpu min=15.4 max=17.6 avg~16.6 bkt=10000
+=== W47N8
+  WALL2h start=84135910 prog=2002605 stor=14746 end=84137590 prog=2014865 stor=18234
+         dticks=1680 rate=7.2976 pct=24.3% SOFT (softCap intentional)
+         rcl%=18.43
+  SHORT postheal 84137520->84137590 dt=70 rate=15.8571 pct=52.7% samp=8 stor 18345->17445->18234
+HOME contiguous-pairs rate=22.6162 pct=87.0% over 370t
+W47 contiguous-pairs rate=7.8649 pct=26.1% over 370t
