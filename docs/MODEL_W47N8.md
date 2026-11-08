@@ -8,6 +8,10 @@ hauler upkeep (CARRY need = 10 × (round trip × 1.10 + 4) / 50, load split 75% 
 0.03/t each, builder-lite 1000/1500. Upgrade = net / (1 + upgrader upkeep 1150/1500/10). RCL5: 1800 cap, best of source-A link→ctl or hub→ctl link (3% loss).
 reserve7 (2 CLAIM) is spawned and paid by home.
 
+## 2026-11-08 20:1x — leanBank rebuild after noon 22.3k peak (plan holds)
+
+12h window: W47 upgrade **10.13** e/t vs ideal **30.08** (`tools/model_w8.py --hours 12`; WORK20 park; 18.42→19.34%, +101.5k ≈10.2 e/t). No 25k near-clear this window (peak stor **22280@12:51** tick 84141310); then bled to min **10524** (17:00 hour); live stor~15.2k softLeft~9.8k / bankLeft~4.8k phase=bank20 climbing again. **contMinPct48 contLow1**; roadCrit38 is the known mvp pause under softCap (not a new repair-debt class). Soft clear ≥25k remains the gate to ceil6. See `docs/RCL7.md` 20:1x.
+
 ## 2026-11-08 08:1x — leanBank rebuild after two near-clears (plan holds)
 
 12h window: W47 upgrade ~12.1 e/t vs ideal ~30 (softCap+leanBank intentional; 17.31→18.42%). Near-cleared twice (stor max 25172@19:00 and **25391@21:00**) then bled; morning dip min~13.3k; live stor~18.3k softLeft~6.7k / bankLeft~1.7k phase=bank20 climbing again. **contMinPct50 contLow0** held; roadCrit24 is the known mvp pause under softCap (not a new repair-debt class). Soft clear ≥25k remains the gate to ceil6. See `docs/RCL7.md` 08:1x.

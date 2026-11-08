@@ -1,5 +1,40 @@
 # Home W46N8 RCL7 readiness (strategy review 2026-10-19 18:4x UTC+8)
 
+## 2026-11-08 20:1x — 12h strategic review (peacetime plan holds / leanBank→softCap clear)
+
+**Question:** After ~12h since 08:1x (plan holds / leanBank→softCap clear): did a softCap clear stick? Home upgrade oscillated around the 70% line (hourly notify @17:24 then recover) and storage hugged the 15k floor; W45N7 saw two more InvaderCore waves; W47 bankLeft went 1.7k→4.8k after a noon peak. Still the same order? Labs/boost/new-remote timing? Any small safe ship?
+
+**Answer: PLAN HOLDS — docs only; nothing game-shipped.** SoftCap bank remains the gate. This window did **not** produce a 25k near-clear (unlike the previous window's 25172@19:00 and 25391@21:00). W47 storage peaked at **22280@12:51** (tick 84141310) then bled, with the 17:00 hour min **10524**, and is climbing again at ~15.2k (softLeft~9.8k / bankLeft~4.8k / phase=bank20). A ~22.3k peak that does not stick is the known softCap-thrash / leanBank-rebuild path, not a new bottleneck class. SoftCap/labs/industry/market widgets outstanding — **never re-ask**. War_* stay stopped (`aborted_by_misaki`).
+
+Home exact2h oscillated around the 70% soft line (13:28 60.9% SOFT FIRST → 14:32 76.4% → 15:30 84.1% → 16:29 69.1% FIRST → 17:24 65.1% consec-soft=2 FIRST-FIRE notify → 18:25 83.1% RESET → 19:32 71.9% hold). Storage hugged the 15k floor, dipping on W45N7 remote_pause / floor_bank (19:32 tip 14267 consec-under=1 FIRST; live ~14.5–15.3k knife-edge). Both are the known floor_bank + remote-pause coupling, not a code gap.
+
+W45N7 had two more InvaderCore waves this window after the overnight clear: (1) InvaderCore[7,44] inc=84143284 / dispatched@84143452 / CLEARED since 84143693; (2) pauseStart=84145966 / defender84146005 / CLEARED since 84146395 dur 429. Standing ea-budget defender handled both. Do **not** restart war_cmd.
+
+### Live (~20:20–20:22 Asia/Hong_Kong, LIVE **87d8c84** deploy@84127638, tick 84147479–494)
+| Room | Notes |
+|------|-------|
+| W46N8 | RCL7 **40.35%** (4.412M/10.935M); stor knife-edge ~14.5–15.3k (q 15276@84147479; room_stats 14476@84147480; labReady homeStor 14526@84147486); nUp3 work42 tUp2 why=ok surplus~-524; last hourly exact2h **71.9% CLEAR** consec-soft=0 (12h 38.58→40.35%, +192k ≈19.3/26 ≈74%); smA=6 |
+| W47N8 | RCL7 **19.34%** (2.115M); stor~15.2k softCap2 **ON** softLeft~9.8k softBand1 bankWhy=bank leanBank1 phase=bank20 bankLeft~4.8k; hubReady1 hubPrime1 upgKeep2 sealPark1; **contMinPct48 contLow1 roadCrit38** (mvp pause under softCap); hMax4 builders1 |
+| Remotes | W45N8 / W45N7 / W47N7 **ALL SAFE** (vis; foes0 cores0; res~2353/1934/2535); W45N7 why=killed (today's waves CLEARED); r7.on end=84150021 by=Misaki; raidLeft=0; ops.w47n9.on=false phase=fallback ABORT |
+| Colony | PEACETIME; war_cmd pause `aborted_by_misaki`; listener single-slot 5:5:1:1; yield gone; CPU live~13–15 / 12h model avg 16.7 / bkt10k n~35–36; labs OFF labReady propose/ready actOk=0 actGaps=homeStor (**no re-ask**); softCap widget outstanding (**no re-ask**); termO~127k termK~80.3k Ostor~17.3k |
+
+12h Timescale (from 08:16): home 4.220M→4.412M (Δp~+193k / 9970t ≈19.3 e/t); W47 2.014M→2.115M (Δp~+101.5k ≈10.2 e/t vs ideal 30.08, intentional park). `tools/model.py --hours 12` measured upgrade **19.32**/26.00; `tools/model_w8.py --hours 12` **10.13**/30.08 (WORK20 park). W47 stor this window: max **22280@12:51**, min **10524** (17:00 hour), avg~16.8k.
+
+### Research (community + our stack)
+1. **Overmind UpgradeSite** (re-checked github master `upgradeSite.ts` 2026-11-08 evening): `energyBuffer=100000` / `energyPerBodyUnit=10000` / `linksRequestBelow=200` (same as 08:1x; blob 2eae97b still has `storageBuffer=100000` / `energyPerBodyUnit=25000` — the **100k buffer gate is unchanged**). Scale WORK only above 100k. We park at LEAN_SOFT=25k (and leanBank rebuild under 20k); soft clear remains the gate before ceil6 / labs. Live ~14.5–15.3k ≪ 100k.
+2. **Overmind WorkerOverlord** (re-checked master `worker.ts`): containers <50% + RoadLogistics size `repairTicks` independent of `fortifyDutyThreshold=500k` / `barrierHits[7]=1M`. Cont48 / contLow1 — repair duty mid-band, not severe debt; roadCrit38 under softCap is the known `energyBank`/`mvp` pause (do **not** unpark deep seal mid leanBank; KEY 300k DONE).
+3. **screepspl.us Intermediate / StructureLab / TooAngel:** RCL7 unlocks 6 labs; XGH2O / reactions after energy buffer + mineral network, not while storage thrash. TooAngel parks upgrade when thin, keeps logistics+repair warm. Our O+K stocks are fat (termO~127k termK~80k) but energy cushion is not — flipping `ops.labs=KO` now would compete with softCap climb (**no re-ask**).
+4. **Harabi remotes / `docs/CPU.md`:** new remotes need spawn budget + Misaki nod; CPU~13–17/20 with 2 rooms (12h model avg 16.7) — 3rd room / extra remote still nod-only and CPU-tight.
+5. **Standing remote defence:** two W45N7 InvaderCore waves this window were CLEARED by the existing ea-budget defender (dur 429 on the latest). Recurrence is normal remote cadence, not a new strategic topic and not a reason to restart war_cmd.
+
+### Next 1–3 (same order; leanBank is the current softCap-bank phase)
+1. **leanBank→20k → softCap bank→clear ≥25k** (soft-band park + surplus trim nUp≤3 while stor<25k) — current bottleneck (softLeft~9.8k / bankLeft~4.8k; noon peak 22.3k did not stick).
+2. **On true clear:** nUp→ceil6 / short≥70%; hold contMinPct≥50 (now 48 / contLow1; roadCrit residual drains after mvp lifts).
+3. **seal→1M under soft-gate** after clear sticks; home floor≥15k hold. **Defer** labs KO / boost / industry / market / new remotes (**no re-ask**).
+
+### Shipped
+**Nothing** (docs + ROADMAP only). SoftCap / leanBank / sealMinE / HUB_LINK / labs / industry / market / war_* / listener **unchanged**. No game deploy.
+
 ## 2026-11-08 08:1x — 12h strategic review (peacetime plan holds / leanBank→softCap clear)
 
 **Question:** After ~12h since 20:2x (plan holds / leanBank→softCap clear + defender #1 ea-budget): did a softCap clear stick? Overnight W45N7 InvaderCore + home 04:31 SOFT then recover — still the same order? Labs/boost/new-remote timing? Any small safe ship?
