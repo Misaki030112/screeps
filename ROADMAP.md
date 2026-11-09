@@ -3,6 +3,14 @@
 Novice zone ends **2026-10-28 03:33 UTC+8** (past as of 10-29). Defence timeline: `docs/DEFENSE_NOVICE.md` (2026-10-16); detail `docs/DEFENSE.md` / geometry `docs/DEFENSE_PLAN.md`.
 **Safe mode: NEVER auto-activate** — alert Misaki.
 
+## 2026-11-09 14:3x north-star: T3 kiter development plan (docs + Page)
+
+- **Chose:** Misaki set full-T3 RA+self-heal kiter (Tom-Roy class) + dismantle pair as the colony development goal. Arrange phases against that target without breaking the peacetime energy order.
+- **Findings:** Live ~14:29 Asia/Hong_Kong tip~15667 / W47~14864; RCL7 42.95% / 20.76%; labs OFF labsN=3; O≈144k K_home≈105k + W47 K≈33k; H/X/Z/L/U not in this snapshot. One kiter needs spawn 6740 + boostE 1000 + 1500 compounds. Energy pad ~15k ≪ Overmind ~100k industry buffer. RCL8 unlocks lab 10 (we have 3 of 6 at RCL7).
+- **Shipped:** living Page「通向三级风筝兵的发展规划」; `docs/STRATEGY.md` North star section. **No game code. Labs/market/war_* unchanged. No softCap/labs re-ask.**
+- **Reprioritise:** (0) leanBank→20k→softCap≥25k labs OFF; (1) nUp ceil6 + seal; (2) RCL8; (3) ~100k buffer + labs→10 + missing minerals decision; (4) T3 react → first kiter stock → sustain. Capability ≠ assault.
+- **Plan check:** extends peacetime HOLDS; war_cmd stays `aborted_by_misaki`.
+
 ## 2026-11-09 08:1x 12h strategic review: peacetime plan holds (leanBank→softCap clear)
 
 - **Chose:** Full-board 12h review (~12h after 20:1x plan-holds / leanBank→softCap clear). SoftCap/labs/industry/market widgets outstanding — **never re-ask**. War_* stay stopped (`aborted_by_misaki`). Overnight home exact2h SOFT streak then recover; W47 peaked ~21.3k then bled to ~10.7k; four W45N7 cores including one after the 07:27 patrol. Does leanBank→softCap≥25k→nUp ceil6→seal still hold? Any small safe ship?
