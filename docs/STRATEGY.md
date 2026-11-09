@@ -33,18 +33,27 @@ Last full refresh: **2026-11-09 17:1x** (autonomous push — docs/canvas scorebo
 - One-line verdict: `waiting on ticks` | `small safe ship` | `phase exit` — capability to stock a kiter ≠ order to fight.
 
 
-## Current state (2026-11-09 ~17:1x Asia/Hong_Kong · local metrics only)
+## Current state (2026-11-09 ~21:1x JST · 12h review)
 
 | Room | Notes |
 |------|-------|
-| W46N8 (home) | **RCL7** ~43.35% (4.740M/10.935M); stor **15309** ABOVE the 15k floor; labs OFF; LIVE **87d8c84** |
-| W47N8 | **RCL7** ~20.97% (2.293M); stor **14579**; softCap2 **ON** softLeft≈10421 softBand1 leanBank1 phase=**bank20** bankLeft≈5421; upgKeep2 sealPark1; contMinPct~50 roadCrit residual under mvp pause (by design) |
+| W46N8 (home) | **RCL7** 43.89% (4.80M/10.935M, rem ≈6.14M); stor **15742** ABOVE 15k floor; ~21 e/t → RCL8 ≈14–15 days; labs OFF; LIVE **87d8c84** |
+| W47N8 | **RCL7** 21.19% (2.317M, rem ≈8.62M); stor **11051** (24h band 9.1–21.3k); ~10.8 e/t; leanBank phase=bank20; walls 502–589k, ramparts ~300k |
 
-PEACETIME; war_cmd pause `aborted_by_misaki`; remotes held SAFE this afternoon (W45N7 CLEARED since84163037 earlier window); raidLeft=0; listener single-slot 5:5:1:1; CPU~15–16/20 bucket10k. KEY~300k DONE.
+PEACETIME; war_cmd pause `aborted_by_misaki`; remotes SAFE (W45N7 cores ~7/day absorbed by home defenders); listener single-slot 5:5:1:1; CPU ~16–17/20 bucket 10k.
 
-**Phase0 status (T3 north-star):** still **waiting on ticks** — leanBank→20k not stuck on a code lever (noon-style peak-then-bleed continues; 14:29 tip bankLeft~5136 / softLeft~10136; 15:19 bankLeft 4166 / softLeft 9166 / roadCrit34; 17:15 live tip bankLeft≈5421 / softLeft≈10421). Home floor held ABOVE. Labs stay OFF. No softCap/labs/industry/market re-ask. No war_* restart.
+**12h scorecard (21:1x JST):**
+- **Phase0 energy pad:** home floor **pass** (15.7k); W47 bank20/softCap clear **waiting** — stor oscillates 10–21k, no ≥25k clear for ~3 days (bankLeft≈8.9k, softLeft≈13.9k); labs **OFF** ✔.
+- **Phase1 upgrade pull:** **blocked** (gated on Phase0 exit).
+- **Phase2 RCL8 prep:** home 43.89% (≈14–15 d), W47 21.19% (≈40+ d at current pace) — observe; home is the lead room.
+- **Phase3+ industry:** deferred (~100k buffer + RCL8 labs) — no re-ask.
+- **Verdict:** `small safe ship` (box-only `tools/ledger.py`); game plan `waiting on ticks`.
 
-Ideal vs actual: `tools/model.py` / Grafana / `upgFeed` / `w8day` (softCap2, softE/softArm/**softBand**, **upgKeep** 2|3|0, hMax, feedOk, sealPark, hubReady/**hubPrime**, leanBank/phase/bankLeft, contMinPct/roadCrit) / `w8soft` / `labReady`. **Peacetime priority = Phase0:** **leanBank→20k → softCap bank→clear ≥25k** (soft-band park + surplus trim nUp≤3 while stor<25k) → nUp→ceil6 only at true ≥25k / short≥70% → seal→1M under soft-gate → home floor ≥15k → labs KO (**no re-ask**). Long-term north-star after that pad: RCL8 + ~100k energy buffer + T3 kiter industry (see **North star** above) — still **no labs/market/war re-ask**. Living checklist: Page「通向三级风筝兵的发展规划」. Detail: `docs/RCL7.md`. Commander takeover, when wanted, is a separate key (`docs/COMMANDER.md`); it is off until `Memory.cmd` is armed and does not change this order.
+**Wall/threat note (21:1x):** threatSoft's 100k urgent floor is a no-op while seal walls ≥500k / ramparts ~300k; wall repair ≈0.6 e/t over 10 days. Do not throttle it. Spawn-side defender cost is the larger, attributable sink (`tools/ledger.py diff`).
+
+**RCL8 funnel (planned, not coded):** when home reaches RCL8 its upgrade caps at 15 e/t; surplus goes by terminal to W47 (range 1, ≈3% send cost) — community-standard "feed the room still climbing". Code this when home ≥~90%.
+
+Ideal vs actual: `tools/model.py` / Grafana / `upgFeed` / `w8day` / `w8soft` / `labReady` / **`tools/ledger.py diff`** (spawn-by-role vs repair vs upgrade e/t). Peacetime order unchanged: leanBank→20k → softCap clear ≥25k → nUp→ceil6 → seal→1M → home floor ≥15k → labs KO (**no re-ask**); north-star after RCL8 + ~100k buffer. Commander stays a separate key (`docs/COMMANDER.md`).
 
 ## Phases
 

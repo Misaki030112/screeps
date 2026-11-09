@@ -1,6 +1,19 @@
 <!-- 2026-11-09 17:1x: Phase0 waiting on ticks; see STRATEGY Current state + ROADMAP 17:1x; 12h reviews must score T3 Phase0/1/2. -->
 # Home W46N8 RCL7 readiness (strategy review 2026-10-19 18:4x UTC+8)
 
+## 2026-11-09 21:1x JST — 12h strategic review (plan holds; W47 walls not the sink; RCL7→8 funnel)
+
+**Board.** Home 43.89% stor 15.7k (~21 e/t → RCL8 ≈14–15 d). W47 21.19% stor 11.1k (~10.8 e/t; bank20 equilibrium 10–21k, no 25k clear for ~3 d). Remotes SAFE; CPU ~17, bucket 10k.
+
+**W47 threatSoft wall question.** Seal walls 502–589k, ramparts 297–303k at the 20:08 JST hostile → threat floor 100k (`TH.urgentTarget`) queued nothing. Ledger (~190k t): `rw`+`tw` ≈ 0.6 e/t. The 6.4k drop = 5400 e first remote defender (full extension budget for one W47N7 Invader) + routine respawns while remote hauling paused. **No wall cap/throttle change.**
+
+**Community (RCL7→8):**
+- screepspl.us RCL: 7→8 costs 10.935M; RCL8 caps upgrading at 15 e/t. Common practice (jonwinsley "For Science", Harabi logistics) = terminal-funnel the capped room's surplus to the room still climbing; send only on explicit need, closest donor.
+- Overmind: upgrade WORK scales only above a fat energy buffer (100k); `barrierHits[7]=1M`, fortify duty ~500k → our walls/ramparts are within norms for a non-war RCL7.
+- Overmind `RangedDefenseOverlord.computeNeededHydraliskAmount` sizes defenders from hostile healing and our damage, i.e. threat-sized bodies; our defender #1 is budget-sized (min(cap, energyAvailable)). Candidate change, needs Misaki nod.
+
+**Moves:** (1) home = RCL8 lead room, unchanged pull; (2) plan home→W47 terminal funnel for post-RCL8 (code at home ≥~90%); (3) propose threat-sized defender #1 for solo NPC Invaders. Shipped: `tools/ledger.py` (box-only).
+
 ## 2026-11-09 08:1x — 12h strategic review (peacetime plan holds / leanBank→softCap clear)
 
 **Question:** After ~12h since 20:1x (plan holds / leanBank→softCap clear): did a softCap clear stick? Overnight home exact2h went SOFT then recovered; W47 peaked ~21.3k then bled; W45N7 saw more InvaderCore waves (one after the 07:27 patrol). Still the same order? Labs/boost/new-remote timing? Any small safe ship?

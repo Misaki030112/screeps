@@ -92,3 +92,10 @@ Per creep from the websocket trail (one room at a time: W46N8, W47N8, W45N8, W45
 A-B-A bounces, non-legit idle by reason (in-game codes), partial rhauler departures, empty-move share, cpu/t, cpu_max (worst single tick), fails
 (intents returning an error other than ERR_NOT_IN_RANGE). Ranked by estimated creep-ticks lost per hour. Patrol: `.venv/bin/python tools/creep_motion.py --hours 1 --patrol`
 (exit 1 = some creep loses >= 60 ticks/h, a tick costs >= 2 ms, or an intent failed). `idle_by_reason` view must exist (re-apply db/schema.sql after a DB reinstall).
+
+## Energy ledger snapshots (tools/ledger.py, 2026-11-09)
+
+`Memory.ledger` (src/utils/ledger.js) is cumulative since its t0, so one read cannot say where the last hour went.
+`python3 tools/ledger.py snap` appends one console read to `state/ledger_snaps.jsonl`; `diff [HOURS]` prints per-room e/t by
+category (spawn by role, creep/tower wall vs road repair, upgrade, build) between the newest snapshot and one ≥HOURS old.
+`snapdiff 1` in a patrol attributes a storage drop (e.g. W47 20:08 JST 2026-11-09: 5.4k defender spawn, not walls).
