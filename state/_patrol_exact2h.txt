@@ -1,22 +1,24 @@
-=== W46N8 exact2h @ 2026-11-09 07:27 Asia/Hong_Kong
-  GAP 84153400->84154090 =690t  2026-11-09 03:32:59+08:00 -> 2026-11-09 04:23:46+08:00  (already logged prior)
-  GAP 84154240->84154910 =670t  2026-11-09 04:34:49+08:00 -> 2026-11-09 05:24:04+08:00  (already logged last patrol)
-  GAP 84155090->84156390 =1300t 2026-11-09 05:37:22+08:00 -> 2026-11-09 07:19:30+08:00  NEW this hour ~102min/6128s
-  WALL2h start=84154940@2026-11-09 05:26:19+08:00 prog=4552877 stor=14392
-         end=84156480@2026-11-09 07:26:03+08:00 prog=4581788 stor=15182
-         dticks=1540 rate=18.7734 pct=72.2% CLEAR
-         live end=84156483 prog=4581830 stor=15232 rate=18.764 pct=72.2%
-         rcl%=41.90
-         derr vs 3.6s/t: wall=7183s expected=5544s derr=+1639s shard~4.66s/t
-  SHORT postheal 84156390->84156480 dt=90 rate=14.0000 pct=53.8% SOFT samp=10 stor 15188->14088->15782->15182 (floor_bank tUp1 entire island; <allowExtra 16k)
-  last60t 84156420->84156480 dt=60 rate=14.0000 pct=53.8% SOFT
-  1h: no sample at now-1h 06:26 (inside unseen1300t); spanning 84155090@05:37:22->84156480@07:26:03 dt=1390 (~109min) rate=18.2914 pct=70.4% CLEAR
-      unseen1300t@84155090-84156390 rate=18.5885 pct=71.5% stor15372->15188
-      contig extras 84155010->84155090 dt=80 rate=28.0000 stor16672->15372
-  postheal cpu min=15.20 max=21.62 avg~17.9 bkt=10000
+=== W46N8 exact2h @ 2026-11-09 08:29 Asia/Hong_Kong
+  GAP 84155090->84156390 =1300t 2026-11-09 05:37:22+08:00 -> 2026-11-09 07:19:30+08:00  (already logged last patrol ~102min/6128s)
+  GAP 84156550->84156670 =120t  2026-11-09 07:31:06+08:00 -> 2026-11-09 07:39:44+08:00  NEW this hour ~8.6min/518s reconnect@07:38:52 firstSTATS@07:39:44
+  GAP 84156750->84157150 =400t  2026-11-09 07:45:29+08:00 -> 2026-11-09 08:14:42+08:00  NEW this hour ~29min/1753s reconnect@08:14:01 firstSTATS@08:14:42
+  GAP 84157230->84157280 =50t   2026-11-09 08:20:35+08:00 -> 2026-11-09 08:24:10+08:00  NEW this hour ~3.6min/216s reconnect@08:23:33 firstSTATS@08:24:10
+  WALL closest-sample 84155090@2026-11-09 05:37:22+08:00 prog=4556363 stor=15372
+         end=84157340@2026-11-09 08:28:32+08:00 prog=4595004 stor=16124
+         dticks=2250 (~2h51m) rate=17.1738 pct=66.1% SOFT
+  INTERP exact2h (now-2h 06:28:32 fell inside unseen1300t): tick~84155741.2 p~4568468.6
+         end=84157340 p=4595004 dt=1598.8 dprog=26535.4 wall=7200s rate=16.5975 pct=63.8% SOFT
+         live tip stor=16124@84157340 / 16024@84157330
+         rcl%=42.02 (p4595004/10935000)
+         derr vs 3.6s/t spanning: wall=10140s expected=8100s derr=+2040s shard~4.51s/t
+  SHORT postheal 84157280->84157340 dt=60 rate=14.0000 pct=53.8% SOFT samp=7 stor 15168->14850->16124 (floor_bank 14 e/t entire island; crossed allowExtra 16000 @84157330 tip16024; extras spawning, not yet upgrading)
+  last60t 84157280->84157340 dt=60 rate=14.0000 pct=53.8% SOFT
+  1h 84156480@07:26:02->84157340@08:28:32 dt=860 dprog=13216 rate=15.3674 pct=59.1% SOFT
+  segments in/near 2h: unseen1300t@18.59 (already logged) + contig160t@14.00 stor15188->14590 + unseen120t@14.00 stor14590->15776 + contig80t@14.00 stor15776->14162 + unseen400t@17.06 stor14162->15460 + contig80t@14.00 stor15460->14068 (dip13968@84157220) + unseen50t@13.08 stor14068->15168 + postheal60t@14.00 stor15168->16124
+  now why=ok nUp1+2spawning work14 tUp4 upBank=0 surplus=+1024 floor=15000 pausedNet=0 idealAdj=26 boundHint=ok rem SAFE
 === W47N8
-  WALL2h start=84154940 prog=2208775 stor=16423 end=84156480 prog=2227555 stor=13884
-         dticks=1540 rate=12.1948 pct=40.5% SOFT (softCap+leanBank intentional)
-         rcl%=20.37
-  SHORT postheal progress FROZEN 2227555 for 90t stor13511->15484->13884 leanBank keep-throttle
-  unseen1300t 2209815->2227555 rate=13.646 stor19562->13511
+  INTERP exact2h tick~84155741 p~2218702 -> 84157340 p=2233935 dt~1599 dprog~15233 rate=9.53 pct=31.7% SOFT (softCap+leanBank intentional)
+  spanning 84155090 p2209815 -> 84157340 p2233935 dt=2250 rate=10.72 pct=35.6%
+  rcl%=20.43 (p2233935/10935000)
+  frozen 2227555 from 84156390 through 84156750 (upgrader replacements / keep-throttle) then unseen400t 6.95 e/t then 20 e/t @84157150-84157320 then 10 e/t last20t (upgKeep=1)
+  live stor=14659 leanBank1 phase=bank20 bankWhy=bank bankLeft=5341 softLeft=10341 upgKeep=1
