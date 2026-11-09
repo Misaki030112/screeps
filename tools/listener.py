@@ -17,6 +17,24 @@ from api import TOKEN, ROOT, req
 # Screeps指挥官 bot. Wartime yield: metrics/listener_yield_rooms. See tools/room_rot.py and docs/COMMANDER.md.
 SHARD, WATCH, TRAIL = R.SHARD, R.WATCH, R.TRAIL
 rot = {'i': 0, 'room': None, 'authed': False}
+# Rotation position survives restarts. The box hibernates ~45 min of every hour and each wake relaunches this process;
+# starting at index 0 every time meant W46N8 held the slot almost always and W47N8 / remotes went hours-days without
+# a creep trail (11-09). Hold time counts awake (monotonic) seconds, so 5:5:1:1 holds over live time.
+ROT_FILE = 'listener_rot.json'
+def load_rot():
+    try:
+        d = json.load(open(os.path.join(ROOT, 'metrics', ROT_FILE)))
+        i = int(d.get('i', 0)) % len(R.ROT); left = float(d.get('left', 0))
+        rot['i'] = i
+        if 0 < left <= R.ROT[i][1]: rot['left'] = left
+        else: rot['i'] = (i + 1) % len(R.ROT)
+    except Exception: pass
+def save_rot(left):
+    try:
+        tmp = os.path.join(M, ROT_FILE + '.tmp')
+        json.dump({'i': rot['i'], 'room': R.ROT[rot['i']][0], 'left': round(max(0.0, left), 1), 'at': stamp()}, open(tmp, 'w'))
+        os.replace(tmp, os.path.join(M, ROT_FILE))
+    except Exception: pass
 watch = {'objects': {}, 'last': None}
 M = os.path.join(ROOT, 'metrics'); os.makedirs(M, exist_ok=True)
 UID = req('auth/me')['_id']
@@ -139,6 +157,7 @@ def forget_room(room):
 def subscribe_slot(ws):
     """Hold the one peacetime room (R.PEACETIME_SLOTS)."""
     room, hold = R.ROT[rot['i']]
+    hold = int(rot.get('left') or hold)
     forget_room(room)
     ws.send(f'subscribe room:{SHARD}/{room}')
     rot['room'] = room
@@ -164,16 +183,19 @@ def rotator(ws):
                 if rot.get('room'): drop_slot(ws, 'wartime: metrics/' + R.YIELD_FILE)
                 time.sleep(5); continue
             if not rot.get('room'): subscribe_slot(ws)
-            deadline = time.time() + R.ROT[rot['i']][1]
-            while time.time() < deadline:
+            # monotonic: a hibernated box must not burn the slot (wall clock jumps ~45 min on wake)
+            deadline = time.monotonic() + (rot.pop('left', None) or R.ROT[rot['i']][1])
+            while time.monotonic() < deadline:
                 if yielding(): break
-                time.sleep(min(5.0, max(0.0, deadline - time.time())))
+                save_rot(deadline - time.monotonic())
+                time.sleep(min(5.0, max(0.0, deadline - time.monotonic())))
             if yielding() or not rot.get('room'): continue
             old = rot['room']
             ws.send(f'unsubscribe room:{SHARD}/{old}')
             rot['room'] = None
             forget_room(old)
             rot['i'] = (rot['i'] + 1) % len(R.ROT)
+            save_rot(R.ROT[rot['i']][1])
             subscribe_slot(ws)
         except Exception as ex:
             append('errors.log', f'{stamp()} [listener] rotate {ex}')
@@ -248,11 +270,30 @@ def prof_poll():
             if isinstance(v, (int, float)): ingest.put('cpu_prof', (ts, t, k, v, b, cm))
     except Exception as ex: append('errors.log', f'{stamp()} [listener] prof poll {ex}')
 STALE_S = 180  # STATS arrive every 10 ticks (~40 s); a silent-but-alive socket gets closed so run_listener.sh reconnects
+PAUSE_S = 60   # wall clock moved this much more than the monotonic clock => the box itself was frozen
 def watchdog(ws):
+    """Two exits, both relaunched by run_listener.sh within ~10 s:
+    1. Box freeze (11-09 root cause of the hourly 40-55 min gaps): the box VM hibernates when no agent is active
+       (/run/anyrun-hibernate-hook; kernel boot epoch = wall - monotonic sits days after the real boot). Every process,
+       this one included, stops; nothing local can run then. On resume the wall clock jumps but CLOCK_MONOTONIC does not,
+       so we log the frozen span as a 'box_pause' event (not a listener fault) and reconnect at once (the socket is dead).
+    2. Silent socket: no STATS for STALE_S while the box was running."""
+    w0, m0 = time.time(), time.monotonic()
     while True:
-        time.sleep(30)
-        if time.time() - last_stats[0] > STALE_S:
-            append('errors.log', f'{stamp()} [listener] no STATS for {int(time.time()-last_stats[0])}s, reconnecting')
+        time.sleep(5)
+        w, m = time.time(), time.monotonic()
+        jump = (w - w0) - (m - m0)
+        if jump > PAUSE_S:
+            t0 = time.strftime('%F %T', time.localtime(w0 + 5))
+            append('errors.log', f'{stamp()} [listener] box frozen ~{int(jump)}s since {t0} (VM hibernated; wall jumped, monotonic did not), reconnecting')
+            append('box_pauses.jsonl', json.dumps({'from': t0, 'to': stamp(), 'sec': int(jump)}))
+            try:
+                ingest.put('events', (utcnow(), live.get('gameTime'), 'box_pause', None, None, None, f'box frozen ~{int(jump)}s since {t0}', json.dumps({'sec': int(jump), 'from': t0})))
+                time.sleep(3)  # ingest flushes every 2 s
+            finally: os._exit(0)
+        w0, m0 = w, m
+        if w - last_stats[0] > STALE_S:
+            append('errors.log', f'{stamp()} [listener] no STATS for {int(w-last_stats[0])}s, reconnecting')
             # 10-21 12:5x: ws.close() on a dead socket blocked the watchdog (stalls ran 396 s / 747 s instead of ~180-210 s,
             # 12:34-12:47 blind window hid an Invader raid on W47N8). Exit first; the OS closes the socket, run_listener.sh relaunches.
             os._exit(0)
@@ -265,6 +306,7 @@ if __name__ == '__main__':
     _single = open(os.path.join(M, 'listener.lock'), 'w')
     try: fcntl.flock(_single, fcntl.LOCK_EX | fcntl.LOCK_NB)
     except OSError: print(f'{stamp()} another listener.py holds metrics/listener.lock; exiting', flush=True); sys.exit(0)
+    load_rot()
     ws = websocket.WebSocketApp('wss://screeps.com/socket/websocket', on_open=on_open, on_message=on_message, on_error=on_error)
     threading.Thread(target=watchdog, args=(ws,), daemon=True).start()
     threading.Thread(target=rotator, args=(ws,), daemon=True).start()
