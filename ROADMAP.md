@@ -3,6 +3,14 @@
 Novice zone ends **2026-10-28 03:33 UTC+8** (past as of 10-29). Defence timeline: `docs/DEFENSE_NOVICE.md` (2026-10-16); detail `docs/DEFENSE.md` / geometry `docs/DEFENSE_PLAN.md`.
 **Safe mode: NEVER auto-activate** — alert Misaki.
 
+## 2026-11-09 17:1x autonomous push: T3 north-star docs enforce (waiting on bank20)
+
+- **Chose:** Misaki t439u — advance the peacetime path to the T3 kiter north-star autonomously; create specialist bots only if needed (parent owns bot-creation; this half = code/docs). SoftCap/labs/industry/market widgets outstanding — **never re-ask**. War_* stay stopped (`aborted_by_misaki`).
+- **Findings (local metrics only, ~17:15 Asia/Hong_Kong live.json tip + 15:19 patrol; no Screeps HTTP):** LIVE **87d8c84**. Home RCL7 **43.35%** stor **15309** ABOVE. W47 RCL7 **20.97%** stor **14579** leanBank1 phase=bank20 bankLeft≈**5421** softLeft≈**10421** softCap2 ON; 15:19 w8day roadCrit34 contMinPct50 upgKeep2 (mvp pause residual). Same noon-peak-then-bleed / leanBank rebuild class as 08:1x–14:3x — **no new bottleneck class**. roadCrit under softCap remains **by design**. No safe reversible game-code lever that clearly shortens bank20 without touching labs/market/war or unpausing roads mid-bank.
+- **Shipped:** **docs only** — `docs/STRATEGY.md` Current state →17:1x + mandatory **12h review scorecard** (Phase0/1/2/3+ vs T3 north-star); this ROADMAP entry; living Page「通向三级风筝兵的发展规划」numbers refreshed. SoftCap/sealMinE/HUB_LINK/labs/industry/market/war_*/listener **unchanged**. **No softCap/labs re-ask. No war_* restart. No game deploy.**
+- **Reprioritise (peacetime next 1–3 = Phase0 HOLDS):** (1) leanBank→20k → softCap clear ≥25k; (2) hold home floor ≥15k; (3) only then nUp→ceil6 / seal. Industry / labs / T3 stock stay deferred until ~100k-style buffer + RCL8. Capability ≠ assault.
+- **Plan check:** plan holds — waiting on ticks. WakeParent **no** (anti-spam; autonomous docs push; softCap/labs widgets outstanding — do not re-ask). Specialist bot: **not needed now** (commander + ops already cover; bank20 is energy time, not a missing role).
+
 ## 2026-11-09 14:3x north-star: T3 kiter development plan (docs + Page)
 
 - **Chose:** Misaki set full-T3 RA+self-heal kiter (Tom-Roy class) + dismantle pair as the colony development goal. Arrange phases against that target without breaking the peacetime energy order.

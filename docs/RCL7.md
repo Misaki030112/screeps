@@ -1,3 +1,4 @@
+<!-- 2026-11-09 17:1x: Phase0 waiting on ticks; see STRATEGY Current state + ROADMAP 17:1x; 12h reviews must score T3 Phase0/1/2. -->
 # Home W46N8 RCL7 readiness (strategy review 2026-10-19 18:4x UTC+8)
 
 ## 2026-11-09 08:1x — 12h strategic review (peacetime plan holds / leanBank→softCap clear)
