@@ -1,7 +1,7 @@
 // Live energy ledger (docs/LEDGER.md). Cumulative counters in Memory.ledger = {t0, r:{room:{cat:energy}}, s:{srcId:[room,harvested,wastedAtRegen]}}.
 // Read two snapshots and divide by the tick delta: tools/ledger.py. Cost ~0.01 ms/intent + ~0.02 ms/tick (sources only on regen tick).
 // Categories: up upgrade, b build, rw rep wall, rr rep road, rc rep container, ro rep other, sp:<role> spawn body cost,
-// tw/tr/th tower wall-or-rampart repair / road-or-other repair / attack+heal, dr dropped, lk link transfer loss (3%).
+// rf:<role> recycle refund (estimate), tw/tr/th tower wall-or-rampart repair / road-or-other repair / attack+heal, dr dropped, lk link transfer loss (3%).
 let done = false;
 const add = (room, k, v) => { if (!v) return; const L = Memory.ledger || (Memory.ledger = { t0: Game.time, r: {}, s: {} }); const R = L.r[room] || (L.r[room] = {}); R[k] = (R[k] || 0) + v; };
 const rcat = t => !t ? 'ro' : (t.structureType === STRUCTURE_WALL || t.structureType === STRUCTURE_RAMPART) ? 'w' : t.structureType === STRUCTURE_ROAD ? 'r' : t.structureType === STRUCTURE_CONTAINER ? 'c' : 'o';
@@ -17,6 +17,10 @@ function wrap() {
   hook(typeof Creep !== 'undefined' && Creep, 'repair', { ok(c, [s]) { add(c.room.name === home(c) ? c.room.name : home(c), 'r' + rcat(s) + (c.room.name !== home(c) ? '@' + c.room.name : ''), Math.min(c.getActiveBodyparts(WORK), c.store[RESOURCE_ENERGY])); } });
   hook(typeof Creep !== 'undefined' && Creep, 'drop', { pre: (c, [res, n]) => res === RESOURCE_ENERGY ? (n || c.store[RESOURCE_ENERGY]) : 0, ok(c, a, n) { add(c.room.name, 'dr', n); } });
   hook(typeof StructureSpawn !== 'undefined' && StructureSpawn, 'spawnCreep', { ok(sp, [body, name, o]) { if (o && o.dryRun) return; add(sp.room.name, 'sp:' + ((o && o.memory && o.memory.role) || '?'), body.reduce((s, p) => s + BC[p], 0)); } });
+  // rf:<role> recycle refund estimate (12h review 2026-11-10): sp:<role> is gross body cost, so floor-bank upgrader churn
+  // (spawn at 16k, recycle young extras below 14.5k) looked like ~14 e/t. Engine drops body*ttl/lifetime (+carry) on recycle.
+  hook(typeof StructureSpawn !== 'undefined' && StructureSpawn, 'recycleCreep', { pre: (sp, [c]) => c && c.body ? Math.floor(c.body.reduce((s, p) => s + BC[p.type], 0) * Math.min(1, (c.ticksToLive || 0) / (c.body.some(p => p.type === CLAIM) ? 600 : 1500))) : 0,
+    ok(sp, [c], n) { add(sp.room.name, 'rf:' + ((c && c.memory && c.memory.role) || '?'), n); } });
   hook(typeof StructureTower !== 'undefined' && StructureTower, 'repair', { ok(t, [s]) { add(t.room.name, rcat(s) === 'w' ? 'tw' : 'tr', 10); } });
   hook(typeof StructureTower !== 'undefined' && StructureTower, 'attack', { ok(t) { add(t.room.name, 'th', 10); } });
   hook(typeof StructureTower !== 'undefined' && StructureTower, 'heal', { ok(t) { add(t.room.name, 'th', 10); } });

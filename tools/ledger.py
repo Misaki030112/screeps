@@ -5,7 +5,7 @@ Memory.ledger is cumulative since t0 (2026-11-09: ~190k ticks), so a single read
                                         {ts, t, ledger} to state/ledger_snaps.jsonl (one line ~1-2 KB)
   python3 tools/ledger.py diff [HOURS]  e/t per room/category between the newest snapshot and the newest one >= HOURS old
                                         (default: the previous snapshot). Categories: up upgrade, b build, rw/rr/rc/ro creep repair
-                                        (wall/road/container/other, '@room' = remote), sp:<role> spawn body cost, tw/tr tower repair,
+                                        (wall/road/container/other, '@room' = remote), sp:<role> spawn body cost, rf:<role> recycle refund est., tw/tr tower repair,
                                         th tower attack/heal, dr dropped, lk link loss. Note: `up` undercounts ~13% (docs/MODEL.md).
   python3 tools/ledger.py snapdiff [HOURS]  snap, then diff.
 Read-only in game (one console expression). Added 2026-11-09 12h review: attribute W47 storage drops (defender spawn vs walls)."""
@@ -40,9 +40,10 @@ def diff(hours=None):
         A, B = a['ledger']['r'].get(rn, {}), b['ledger']['r'][rn]
         rows = sorted(((k, (B[k] - A.get(k, 0)) / dt) for k in B), key=lambda kv: -kv[1])
         rows = [(k, v) for k, v in rows if v > 0.005]
-        sp = sum(v for k, v in rows if k.startswith('sp:')); rep = sum(v for k, v in rows if k[:1] == 'r' or k in ('tw', 'tr'))
+        sp = sum(v for k, v in rows if k.startswith('sp:')); rep = sum(v for k, v in rows if (k[:1] == 'r' and not k.startswith('rf:')) or k in ('tw', 'tr'))
+        rf = sum(v for k, v in rows if k.startswith('rf:'))
         wall = sum(v for k, v in rows if k in ('rw', 'tw'))
-        print(f"{rn}: spawn {sp:.2f} e/t | repair {rep:.2f} (walls/ramparts {wall:.2f}) | up {B.get('up', 0) and (B['up'] - A.get('up', 0)) / dt:.2f} | build {(B.get('b', 0) - A.get('b', 0)) / dt:.2f}")
+        print(f"{rn}: spawn {sp:.2f} e/t (recycle refund {rf:.2f}, net {sp - rf:.2f}) | repair {rep:.2f} (walls/ramparts {wall:.2f}) | up {B.get('up', 0) and (B['up'] - A.get('up', 0)) / dt:.2f} | build {(B.get('b', 0) - A.get('b', 0)) / dt:.2f}")
         print('   ' + '  '.join(f'{k}={v:.2f}' for k, v in rows))
 if __name__ == '__main__':
     a = sys.argv[1:]
