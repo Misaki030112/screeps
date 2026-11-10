@@ -9,6 +9,61 @@ const plan = require('../utils/plan'), move = require('../utils/move'), rc = req
 const N8 = [[-1,-1],[0,-1],[1,-1],[-1,0],[1,0],[-1,1],[0,1],[1,1]];
 const FILL = new Set([STRUCTURE_SPAWN, STRUCTURE_EXTENSION, STRUCTURE_TOWER]);
 const H = {}; // room -> {t, zones: stop[][]}
+const PASS = { road: 1, container: 1, rampart: 1 };
+
+// Tiles a queen can stand on and walk between (same blocks as move.js cost < 255: walls,
+// non-pass structures, construction sites). Returns (x, y, range) => some tile in range sits
+// in the main component. Dead-end roads 31,33 and 31,35 are their own components, so a
+// range-1 goal that can only be stood on from those tiles is not reachable.
+function openReach(room, at) {
+  const T = room.getTerrain && room.getTerrain();
+  const WALL = typeof TERRAIN_MASK_WALL !== 'undefined' ? TERRAIN_MASK_WALL : 1;
+  const block = new Uint8Array(2500);
+  const mark = s => { if (s && s.pos && !PASS[s.structureType]) block[s.pos.x * 50 + s.pos.y] = 1; };
+  if (typeof rc.sites === 'function') for (const s of rc.sites(room)) mark(s);
+  if (room.find && typeof FIND_HOSTILE_CONSTRUCTION_SITES !== 'undefined') for (const s of room.find(FIND_HOSTILE_CONSTRUCTION_SITES) || []) mark(s);
+  const pass = new Uint8Array(2500);
+  for (let x = 0; x < 50; x++) for (let y = 0; y < 50; y++) {
+    if (T && T.get(x, y) === WALL) continue;
+    const k = x * 50 + y;
+    if (block[k]) continue;
+    const e = at[k];
+    if (e && !Object.keys(e).every(t => PASS[t])) continue;
+    pass[k] = 1;
+  }
+  const comp = new Int16Array(2500);
+  comp.fill(-1);
+  const stack = [];
+  let cid = 0, best = -1, bestN = 0;
+  for (let i = 0; i < 2500; i++) {
+    if (!pass[i] || comp[i] !== -1) continue;
+    const id = cid++;
+    let n = 0;
+    stack.push(i); comp[i] = id;
+    while (stack.length) {
+      const k = stack.pop(); n++;
+      const x = (k / 50) | 0, y = k % 50;
+      for (let d = 0; d < 8; d++) {
+        const nx = x + N8[d][0], ny = y + N8[d][1];
+        if (nx < 0 || nx > 49 || ny < 0 || ny > 49) continue;
+        const j = nx * 50 + ny;
+        if (!pass[j] || comp[j] !== -1) continue;
+        comp[j] = id; stack.push(j);
+      }
+    }
+    if (n > bestN) { bestN = n; best = id; }
+  }
+  // Graph too small to be the base (bad terrain): keep every stop rather than drop the room.
+  if (bestN < 30) return () => true;
+  return (x, y, r) => {
+    for (let dx = -r; dx <= r; dx++) for (let dy = -r; dy <= r; dy++) {
+      const nx = x + dx, ny = y + dy;
+      if (nx < 0 || nx > 49 || ny < 0 || ny > 49) continue;
+      if (comp[nx * 50 + ny] === best) return true;
+    }
+    return false;
+  };
+}
 
 function buildZones(room) {
   let h = H[room.name];
@@ -45,6 +100,14 @@ function buildZones(room) {
     const d1 = Math.max(Math.abs(s.pos.x - c1[0]), Math.abs(s.pos.y - c1[1]));
     (d0 <= d1 ? z0.st : z1.st).push({ x: s.pos.x, y: s.pos.y, ids: [s.id], r: 1, n: 1 });
   }
+  // 2026-11-10 11:26: hasEscape drops filler stands 31,33 and 31,35, then the extensions only
+  // they covered are re-added as range-1 orphans. Extension 31,34's eight neighbours are
+  // structures or those enclosed roads (move.js sets them to 255). A loaded queen PathFinds
+  // that goal every retarget (incomplete, uncached, reason 'n') and orbits 33,33/34,34/33,35.
+  // Keep a stop only when its range touches the main walkable component.
+  const reach = openReach(room, at);
+  z0.st = z0.st.filter(s => reach(s.x, s.y, s.r));
+  z1.st = z1.st.filter(s => reach(s.x, s.y, s.r));
   // prefer stops that reach many extensions (sort desc coverage for park pick)
   z0.st.sort((a, b) => b.n - a.n); z1.st.sort((a, b) => b.n - a.n);
   h = H[room.name] = { t: Game.time, zones: [z0.st, z1.st] };
