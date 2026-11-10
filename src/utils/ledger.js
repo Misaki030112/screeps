@@ -19,7 +19,7 @@ function wrap() {
   hook(typeof StructureSpawn !== 'undefined' && StructureSpawn, 'spawnCreep', { ok(sp, [body, name, o]) { if (o && o.dryRun) return; add(sp.room.name, 'sp:' + ((o && o.memory && o.memory.role) || '?'), body.reduce((s, p) => s + BC[p], 0)); } });
   // rf:<role> recycle refund estimate (12h review 2026-11-10): sp:<role> is gross body cost, so floor-bank upgrader churn
   // (spawn at 16k, recycle young extras below 14.5k) looked like ~14 e/t. Engine drops body*ttl/lifetime (+carry) on recycle.
-  hook(typeof StructureSpawn !== 'undefined' && StructureSpawn, 'recycleCreep', { pre: (sp, [c]) => c && c.body ? Math.floor(c.body.reduce((s, p) => s + BC[p.type], 0) * Math.min(1, (c.ticksToLive || 0) / (c.body.some(p => p.type === CLAIM) ? 600 : 1500))) : 0,
+  hook(typeof StructureSpawn !== 'undefined' && StructureSpawn, 'recycleCreep', { pre: (sp, [c]) => c && c.body ? Math.floor(c.body.reduce((s, p) => s + Math.min(125, BC[p.type]), 0) * Math.min(1, (c.ticksToLive || 0) / (c.body.some(p => p.type === CLAIM) ? 600 : 1500))) : 0,
     ok(sp, [c], n) { add(sp.room.name, 'rf:' + ((c && c.memory && c.memory.role) || '?'), n); } });
   hook(typeof StructureTower !== 'undefined' && StructureTower, 'repair', { ok(t, [s]) { add(t.room.name, rcat(s) === 'w' ? 'tw' : 'tr', 10); } });
   hook(typeof StructureTower !== 'undefined' && StructureTower, 'attack', { ok(t) { add(t.room.name, 'th', 10); } });
