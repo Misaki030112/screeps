@@ -33,7 +33,16 @@ Last full refresh: **2026-11-09 17:1x** (autonomous push — docs/canvas scorebo
 - One-line verdict: `waiting on ticks` | `small safe ship` | `phase exit` — capability to stock a kiter ≠ order to fight.
 
 
-## Current state (2026-11-09 ~21:1x JST · 12h review)
+## Current state (2026-11-10 ~09:2x JST · 12h review)
+
+| Room | Notes |
+|------|-------|
+| W46N8 (home) | **RCL7** 45.68% (4.995M/10.935M); +195k/12h ≈ 20 e/t → RCL8 ≈ 15 days; stor **14659** upBank=1 nUp1; labs OFF; LIVE **b9c984e** (ledger-only change on top of 87d8c84 behaviour) |
+| W47N8 | **RCL7** 21.99% (2.404M); +87k/12h ≈ 8.9 e/t; stor **14380**; leanBank phase=bank20 equilibrium |
+
+**09:2x scorecard:** Phase0 home floor **wobbling** (5 patrols <15k overnight after defender spend; back ~15k); W47 bank20 **waiting**; labs OFF ✔. Phase1 blocked. Phase2 home lead (~15 d). Phase3+ deferred. Verdict: `small safe ship` (ledger recycle refund) + next lever = home upgrader churn under floor-bank (sp:upgrader gross 13.8 e/t vs up 17 e/t; measure net first).
+
+### Previous (2026-11-09 ~21:1x JST · 12h review)
 
 | Room | Notes |
 |------|-------|

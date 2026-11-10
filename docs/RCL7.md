@@ -1,6 +1,16 @@
 <!-- 2026-11-09 17:1x: Phase0 waiting on ticks; see STRATEGY Current state + ROADMAP 17:1x; 12h reviews must score T3 Phase0/1/2. -->
 # Home W46N8 RCL7 readiness (strategy review 2026-10-19 18:4x UTC+8)
 
+## 2026-11-10 09:2x JST — 12h strategic review (plan holds; upgrader churn under floor-bank)
+
+**Board.** Home 45.68% stor 14.7k (~20 e/t → RCL8 ≈15 d). W47 21.99% stor 14.4k (~8.9 e/t). Remotes SAFE (routine W45N7 cores). CPU ~16, bucket 10k.
+
+**Finding.** Ledger 12h: home sp:upgrader **13.78 e/t gross** vs upgrade 17.07 e/t. Floor-bank hysteresis (enter <14.5k / leave ≥16k) spawns 2–3 extra 17-part upgraders at 16k, storage dips, extras recycled young (4 spawned 84176010–245, all gone by 84176975). Refund is TTL-proportional (≤125/part) and haulers salvage, so net loss unmeasured until now → shipped `rf:<role>` ledger hook (b9c984e).
+
+**Community.** Overmind upgrade power = 1 + floor((energy − 100k)/10–25k) WORK, upgraders spawned only above the buffer and never recycled for banking — stable counts, no spawn/recycle oscillation.
+
+**Moves:** (1) measure net upgrader spawn; fix churn if net >~5 e/t (don't recycle TTL>1000 under upBank / wider leave band); (2) home = RCL8 lead, funnel at ~90%; (3) defender threat-sizing awaits Misaki.
+
 ## 2026-11-09 21:1x JST — 12h strategic review (plan holds; W47 walls not the sink; RCL7→8 funnel)
 
 **Board.** Home 43.89% stor 15.7k (~21 e/t → RCL8 ≈14–15 d). W47 21.19% stor 11.1k (~10.8 e/t; bank20 equilibrium 10–21k, no 25k clear for ~3 d). Remotes SAFE; CPU ~17, bucket 10k.
