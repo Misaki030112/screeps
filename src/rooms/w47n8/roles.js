@@ -345,7 +345,14 @@ const R = {
     const src = Game.rooms[C.ROOM].lookForAt(LOOK_SOURCES, S.src[0], S.src[1])[0];
     // 22:05: learn the walk on first reaching the source (any adjacent tile). Measuring on the stand tile counted the overlap
     // spent harvesting beside the old miner, so the lead crept up every cycle (si1 146->157, replacement ~94 ticks early).
-    if (src && !c.memory.arr && c.pos.isNearTo(src)) { c.memory.arr = Game.time; const o = Memory.ops = Memory.ops || {}; (o.w8lead = o.w8lead || {})[c.memory.si | 0] = Game.time - (c.memory.born || Game.time) - 3 * c.body.length; }
+    // 11-10 patrol: a lost si0 miner arrived after a 1400-tick east-of-wall detour and wrote
+    // w8lead[0]≈1378. Existing si0 miners then had TTL < lead, so they were not 'live' and a
+    // third miner spawned. Same cap as w8rlead: only record a real walk, not a detour.
+    if (src && !c.memory.arr && c.pos.isNearTo(src)) {
+      c.memory.arr = Game.time;
+      const t = Game.time - (c.memory.born || Game.time) - 3 * c.body.length;
+      if (t > 0 && t <= 300) { const o = Memory.ops = Memory.ops || {}; (o.w8lead = o.w8lead || {})[c.memory.si | 0] = t; }
+    }
     if (c.pos.x !== x || c.pos.y !== y) {
       // stand taken (e.g. a cqminer from home still mining): harvest from any tile next to the source
       if (Game.rooms[C.ROOM].lookForAt(LOOK_CREEPS, x, y).length && src) return c.pos.isNearTo(src) ? c.harvest(src) : MV.to(c, src.pos.x, src.pos.y, 1);

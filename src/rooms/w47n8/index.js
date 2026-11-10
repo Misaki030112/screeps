@@ -120,10 +120,15 @@ function spawnRun(spawn) {
   }
   // 1) miners per source: keep >=5 WORK (10 e/t) on each source. Replace at TTL<60; and since the first w8miners were 2 WORK
   // (cap 300) and would run at 40% for ~1000 ticks, add a bigger one once cap allows (17:25), counting any cqminer still there.
-  for (let i = 0; i < C.SOURCES.length && !want; i++) {
+  // Always walk every source (even after want is set) so a surplus si0 miner still gets recycled this tick.
+  for (let i = 0; i < C.SOURCES.length; i++) {
     // 20:20: replace at TTL < walk time + spawn time (learned per source by w8miner on arrival). TTL<60 left source 11,44 unmined
     // ~150 ticks (5W1M walks 5-25 ticks/tile; spawn->11,43 took ~170 ticks), regen wasted at 3000/3000.
-    const S = C.SOURCES[i], lead = Math.max(60, ((Memory.ops && Memory.ops.w8lead && Memory.ops.w8lead[i]) || 5 * spawn.pos.getRangeTo(S.stand[0], S.stand[1])) + 3 * 6 + 10);
+    const S = C.SOURCES[i];
+    // 11-10 patrol: ignore a poisoned w8lead (>300, e.g. a 1400-tick detour arrival) and fall back to the range estimate.
+    const learned = Memory.ops && Memory.ops.w8lead && Memory.ops.w8lead[i];
+    const walk = (learned > 0 && learned <= 300) ? learned : 5 * spawn.pos.getRangeTo(S.stand[0], S.stand[1]);
+    const lead = Math.max(60, walk + 3 * 6 + 10);
     // 11-10 patrol: a si0 miner can walk the long east-of-wall detour from hub spawns 33-34,30 for
     // hundreds of ticks without arr; TTL still > lead so it blocked a replacement while source A sat
     // unmined. Count as live only if spawning, arrived, or still within lead+80 of birth (or no born).
@@ -138,7 +143,20 @@ function spawnRun(spawn) {
     const cq = room.find(FIND_MY_CREEPS, { filter: c => c.memory.role === 'cqminer' && c.ticksToLive > 60 && c.pos.inRangeTo(S.src[0], S.src[1], 1) });
     const works = _.sum(live.concat(cq), c => c.getActiveBodyparts(WORK) || _.filter(c.body, p => p.type === WORK).length);
     const add = bodyFor('w8miner', cap).filter(p => p === WORK).length;
-    if (!live.length || (works < 5 && live.length < 2 && add > (live[0] ? live[0].getActiveBodyparts(WORK) : 0))) { want = 'w8miner'; mem.si = i; }
+    // Enough WORK already on this source: recycle extras (keep stand / higher WORK / earlier arr).
+    const arrived = live.filter(c => c.memory.arr && !c.spawning);
+    if (arrived.length > 1 && works >= 5) {
+      const [sx, sy] = S.stand;
+      const workOf = c => c.getActiveBodyparts(WORK) || _.filter(c.body, p => p.type === WORK).length;
+      const onStand = c => c.pos && c.pos.x === sx && c.pos.y === sy ? 1 : 0;
+      const named = c => c.name || (Object.keys(Game.creeps).find(n => Game.creeps[n] === c));
+      arrived.sort((a, b) => onStand(b) - onStand(a) || workOf(b) - workOf(a) || (a.memory.arr || 0) - (b.memory.arr || 0));
+      const o = Memory.ops = Memory.ops || {};
+      const L = o.w8recycle || [];
+      for (const c of arrived.slice(1)) { const n = named(c); if (n && !L.includes(n)) L.push(n); }
+      o.w8recycle = L;
+    }
+    if (!want && (!live.length || (works < 5 && live.length < 2 && add > (live[0] ? live[0].getActiveBodyparts(WORK) : 0)))) { want = 'w8miner'; mem.si = i; }
   }
   // 2) haulers 2, 3) upgraders 2 (3 when no sites), 4) builders while sites
   // 04:47: base 3 (was 2): with 2 haulers and 0 sites RCL3 fell ~22 -> ~7.5 e/t (t83731005..1169), ctl cont 0-114 while source conts

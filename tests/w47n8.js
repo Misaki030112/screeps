@@ -181,5 +181,22 @@ const lost = mk('w8miner', 'W47N8', { si: 0, born: 100 }); // age 900, no arr
 assert.strictEqual(run({ a: lost }).si, 0, 'lost walker (no arr, age >> lead) does not cover its source');
 assert.strictEqual(run({ a: mk('w8miner', 'W47N8', { si: 0, born: 100, arr: 200 }) }).si, 1, 'arrived miner still covers');
 assert.strictEqual(run({ a: mk('w8miner', 'W47N8', { si: 0, born: 980 }) }).si, 1, 'young walker still covers');
+// 11-10 patrol: a 1400-tick detour arrival wrote w8lead[0]≈1378; existing si0 miners had TTL < lead
+// so they were not live and a third si0 miner spawned. Ignore learned walks > 300 (same cap as w8rlead).
+Memory.ops = Object.assign({}, Memory.ops, { w8lead: { 0: 1378 } });
+assert.strictEqual(run({ a: mk('w8miner', 'W47N8', { si: 0, born: 100, arr: 200 }) }).si, 1, 'poisoned w8lead must not evict an arrived miner');
+const stand = Cfg.SOURCES[0].stand;
+const keep = mk('w8miner', 'W47N8', { si: 0, born: 800, arr: 880 });
+keep.name = 'w8minerKeep'; keep.pos = { x: stand[0], y: stand[1] };
+const extra = mk('w8miner', 'W47N8', { si: 0, born: 900, arr: 980 });
+extra.name = 'w8minerExtra'; extra.pos = { x: stand[0] + 1, y: stand[1] };
+const got = run({ w8minerKeep: keep, w8minerExtra: extra });
+assert.strictEqual(got && got.si, 1, 'two arrived si0 miners cover source A, next want is si 1');
+assert.ok((Memory.ops.w8recycle || []).includes('w8minerExtra'), 'surplus si0 miner is recycled');
+assert.ok(!(Memory.ops.w8recycle || []).includes('w8minerKeep'), 'stand miner is kept');
+delete Memory.ops.w8lead;
+Memory.ops.w8recycle = [];
+const rolesSrc = require('fs').readFileSync(path.join(__dirname, '..', 'src/rooms/w47n8/roles.js'), 'utf8');
+assert.ok(rolesSrc.includes('t <= 300') && rolesSrc.includes('w8lead'), 'w8miner arrival must cap w8lead like w8rlead');
 Game.time = 5;
 console.log('w47n8 ok');
