@@ -17,6 +17,7 @@ ok('W45N7 back north', R.exitTile('W45N7', 'W45N7', 'W45N8').join() === '21,0');
 ok('W45N8 legacy exits', R.exitTile('W45N8', 'W46N8', 'W45N8').join() === '49,14' && R.exitTile('W45N8', 'W45N8', 'W46N8').join() === '0,14');
 const C7 = R.CFG.W45N7;
 ok('container not on the Council site', C7.cont.join() !== '22,15' && C7.avoid.some(a => a.join() === '22,15'));
+ok('haul fleet unchanged (5 / gap 60 / steady 240)', C7.haulers === 5 && C7.rhGap === 60 && C7.rhGapSteady === 240);
 const T = fs.readFileSync(path.join(ROOT, 'data/terrain_W45N7.txt'), 'utf8'), wall = (x, y) => T[y * 50 + x] === '1' || T[y * 50 + x] === '3';
 ok('container tile is open and next to the source', !wall(...C7.cont) && Math.max(Math.abs(C7.cont[0] - C7.src[0]), Math.abs(C7.cont[1] - C7.src[1])) === 1);
 ok('patrol/scout tiles open', !wall(...C7.scout));
@@ -60,14 +61,51 @@ Memory.remote.W45N7.needE = false; ok('no hold when the gate is not energy', !TH
 Memory.remote.W45N7.needE = true; Memory.remote.W45N7.th.last = [{ heal: true }]; ok('no hold for healer group', !TH.energyHold('W46N8'));
 console.log(`w45n7 + energyHold: ${n} ok`);
 
-// 5) stageOut: empty rhauler via-staging when container is drained
-const { stageOut, STAGE } = require(src('roles/remote.js'));
+// 5) stageOut: non-full rhaulers (half-full included) via-stage when the container is drained
+const { stageOut, STAGE, waiterOrder, pocketAct, POCKET, waitStand, stepOffAvoid } = require(src('roles/remote.js'));
 ok('low energy + 2 waiters: outsider stages', stageOut(null, 40, ['a', 'b']));
 ok('low energy + 1 waiter: outsider enters', !stageOut(null, 40, ['a']));
 ok('buffered energy: outsider enters even if 3 wait', !stageOut(null, STAGE.energy, ['a', 'b', 'c']));
 ok('in-room closest 2 stay', !stageOut('a', 40, ['a', 'b', 'c']) && !stageOut('b', 40, ['a', 'b', 'c']));
 ok('in-room 3rd leaves', stageOut('c', 40, ['a', 'b', 'c']));
 ok('in-room alone stays', !stageOut('a', 40, ['a']));
+const pocket = [
+  { name: 'half', full: false, x: 21, y: 14 }, // partial load on a legal stand, dist 1
+  { name: 'onavoid', full: false, x: 22, y: 15 }, // also dist 1; still a slot, but not a legal stand
+  { name: 'leaving', full: true, x: 20, y: 14 }, // full, walking out, does not hold a slot
+  { name: 'far', full: false, x: 21, y: 2 }, // empty, still in the remote, dist 13
+];
+const slots = waiterOrder(pocket, C7.cont[0], C7.cont[1]);
+ok('waiter list keeps half-full, drops the full hauler', slots.join() === 'half,onavoid,far');
+ok('stageOut: half-full waiter occupies a slot', stageOut(null, 40, ['half', 'empty']) && !stageOut(null, 40, ['half']));
+ok('stageOut: third non-full leaves, half-full stays', stageOut('far', 40, slots) && !stageOut('half', 40, slots) && !stageOut('onavoid', 40, slots));
+ok('stageOut: outsider stages while non-full haulers already fill the cap', stageOut(null, 40, slots));
+ok('stageOut: energy bypass still lets a new empty in', !stageOut(null, STAGE.energy, slots));
+// 5b) pocket: withdraw a thin container; 8C8M at 200 leaves after a short thin streak
+ok('withdraw 1 on a thin container', pocketAct(0, 1, 0, 400).act === 'withdraw');
+ok('withdraw 30 (below the old 50 gate)', pocketAct(0, 30, 40, 400).act === 'withdraw' && pocketAct(0, 30, 40, 400).wait === 0);
+ok('withdraw 49', pocketAct(200, 49, 80, 400).act === 'withdraw');
+ok('empty container does not withdraw', pocketAct(0, 0, 0, 400).act === 'wait');
+ok('200 before the wait stays', pocketAct(200, 0, POCKET.wait - 2, 400).act === 'wait');
+ok('leave-early at 200 after the wait', pocketAct(200, 0, POCKET.wait - 1, 400).act === 'leave' && pocketAct(200, 0, 83, 400).act === 'leave');
+ok('100 after the wait leaves', pocketAct(POCKET.leave, 0, POCKET.wait - 1, 400).act === 'leave');
+ok('below 100 does not leave', pocketAct(POCKET.leave - 1, 0, 80, 400).act === 'wait');
+ok('empty never leaves on a thin streak', pocketAct(0, 0, 80, 400).act === 'wait');
+ok('road hauler at 200 still waits', pocketAct(200, 0, POCKET.wait - 1, 1200).act === 'wait');
+ok('road hauler still leaves at 60% after 31 thin ticks', pocketAct(720, 0, 30, 1200).act === 'leave' && pocketAct(720, 0, 29, 1200).act === 'wait');
+// 5c) avoid (22,15) is not a wait stand; a creep on it steps to a legal neighbor
+ok('avoid tile is not a wait stand', !waitStand(22, 15, C7.cont, C7.avoid, wall));
+ok('container and the wall beside it are not wait stands', !waitStand(21, 15, C7.cont, C7.avoid, wall) && !waitStand(20, 15, C7.cont, C7.avoid, wall));
+ok('legal pocket stands', [[20, 14], [21, 14], [22, 14], [22, 16]].every(([x, y]) => waitStand(x, y, C7.cont, C7.avoid, wall)));
+const DELTA = { 1: [0, -1], 2: [1, -1], 3: [1, 0], 4: [1, 1], 5: [0, 1], 6: [-1, 1], 7: [-1, 0], 8: [-1, -1] };
+const stepTo = (dir, x, y) => [x + DELTA[dir][0], y + DELTA[dir][1]];
+const off = stepOffAvoid(22, 15, C7.cont, C7.avoid, (x, y) => wall(x, y) || (x === C7.src[0] && y === C7.src[1]));
+const landed = stepTo(off, 22, 15);
+ok('step off avoid onto a wait stand', off > 0 && waitStand(landed[0], landed[1], C7.cont, C7.avoid, wall) && landed.join() === '22,14');
+const offBusy = stepOffAvoid(22, 15, C7.cont, C7.avoid, (x, y) => wall(x, y) || (x === 22 && y === 14) || (x === C7.src[0] && y === C7.src[1]));
+const landedBusy = stepTo(offBusy, 22, 15);
+ok('avoid with 22,14 taken steps to 22,16', waitStand(landedBusy[0], landedBusy[1], C7.cont, C7.avoid, wall) && landedBusy.join() === '22,16');
+ok('not on avoid: no step', stepOffAvoid(21, 14, C7.cont, C7.avoid, wall) === 0);
 // 6) viaTake: staged rhauler takes one load from the via (W45N8) container, leaving VIA_KEEP for its own haulers
 const { viaTake, VIA_KEEP } = require(src('roles/remote.js'));
 ok('via full container: take', viaTake(2000, 400));
