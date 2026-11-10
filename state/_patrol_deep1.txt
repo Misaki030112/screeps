@@ -1,74 +1,131 @@
+TIP 84191790 2026-11-11 02:23:38.941212+08:00 home p 5305188 stor 14369 ea 5000 ctl 692 ema 828 nUp 1
+W47 84191790 2026-11-11 02:23:38.941266+08:00 p 2613434 stor 22368
+
+=== home storage path last 30 samples and under/over ===
+n 35 first (84190990, datetime.datetime(2026, 11, 11, 1, 24, 54, 952321, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 16735, 2, 1526, 1443) last (84191790, datetime.datetime(2026, 11, 11, 2, 23, 38, 941212, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 14369, 1, 692, 828)
+under15k samples 10 min 14069 max 17109
+under rows:
+  84191080 2026-11-11 01:31:31.691094+08:00 14815 nUp 3 ctl 1494
+  84191090 2026-11-11 01:32:15.650463+08:00 14915 nUp 2 ctl 1502
+  84191100 2026-11-11 01:33:01.006200+08:00 14815 nUp 2 ctl 1772
+  84191110 2026-11-11 01:33:46.078404+08:00 14915 nUp 2 ctl 1646
+  84191130 2026-11-11 01:35:14.034997+08:00 14955 nUp 2 ctl 1786
+  84191740 2026-11-11 02:19:59.407667+08:00 14769 nUp 2 ctl 1070
+  84191750 2026-11-11 02:20:44.924858+08:00 14069 nUp 2 ctl 860
+  84191760 2026-11-11 02:21:29.264777+08:00 14169 nUp 2 ctl 734
+  84191770 2026-11-11 02:22:12.883176+08:00 14569 nUp 1 ctl 692
+  84191790 2026-11-11 02:23:38.941212+08:00 14369 nUp 1 ctl 692
+last 12:
+  84191520 2026-11-11 02:03:42.827428+08:00 stor 16909 nUp 2 ctl 300 ema 965
+  84191530 2026-11-11 02:04:26.481763+08:00 stor 17009 nUp 2 ctl 258 ema 945
+  84191540 2026-11-11 02:05:11.685906+08:00 stor 17109 nUp 2 ctl 556 ema 928
+  84191550 2026-11-11 02:05:54.850536+08:00 stor 16909 nUp 2 ctl 220 ema 908
+  84191560 2026-11-11 02:06:38.452637+08:00 stor 16629 nUp 2 ctl 0 ema 880
+  84191570 2026-11-11 02:07:44.571484+08:00 stor 16429 nUp 2 ctl 0 ema 850
+  84191740 2026-11-11 02:19:59.407667+08:00 stor 14769 nUp 2 ctl 1070 ema 825
+  84191750 2026-11-11 02:20:44.924858+08:00 stor 14069 nUp 2 ctl 860 ema 828
+  84191760 2026-11-11 02:21:29.264777+08:00 stor 14169 nUp 2 ctl 734 ema 828
+  84191770 2026-11-11 02:22:12.883176+08:00 stor 14569 nUp 1 ctl 692 ema 828
+  84191780 2026-11-11 02:22:55.936234+08:00 stor 15069 nUp 1 ctl 692 ema 828
+  84191790 2026-11-11 02:23:38.941212+08:00 stor 14369 nUp 1 ctl 692 ema 828
+
+=== short from room_stats ignoring sleep gaps ===
+ last30t avail n=4 realspan=30 rate=14.00 pct=53.8% stor 14169->14369 84191760->84191790
+ last70t avail n=6 realspan=50 rate=15.84 pct=60.9% stor 14769->14369 84191740->84191790
+ last100t avail n=6 realspan=50 rate=15.84 pct=60.9% stor 14769->14369 84191740->84191790
+ last200t avail n=6 realspan=50 rate=15.84 pct=60.9% stor 14769->14369 84191740->84191790
+
 === UPGRADER traces this hour ===
-upgrader84189539: n=742 first t=84190160 W46N8(30,30) st=loaded store=22
-       last t=84190950 W46N8(30,30) st=loaded store=36 hits=1700
-       on_ctl ticks=742 long_sits=[(84190160, 84190950, 742, ('W46N8', 30, 30), 36, 'loaded')]
-       state_changes(3): [(84190160, 'loaded', 'W46N8', 30, 30), (84190177, 'empty', 'W46N8', 30, 30), (84190178, 'loaded', 'W46N8', 30, 30)] 
-upgrader84190077: n=741 first t=84190160 W46N8(30,29) st=empty store=0
-       last t=84190900 W46N8(34,29) st=empty store=0 hits=1700
-       on_ctl ticks=336 long_sits=[(84190164, 84190491, 328, ('W46N8', 31, 30), 0, 'empty'), (84190500, 84190900, 401, ('W46N8', 34, 29), 0, 'empty')]
-       state_changes(3): [(84190160, 'empty', 'W46N8', 30, 29), (84190165, 'loaded', 'W46N8', 31, 30), (84190491, 'empty', 'W46N8', 31, 30)] 
-upgrader84190808: n=92 first t=84190810 W46N8(30,34) st=spawning store=0
-       last t=84190950 W46N8(31,30) st=loaded store=8 hits=1700
-       on_ctl ticks=31 long_sits=[(84190810, 84190858, 49, ('W46N8', 30, 34), 0, 'spawning')]
-       state_changes(3): [(84190810, 'spawning', 'W46N8', 30, 34), (84190859, 'empty', 'W46N8', 29, 35), (84190896, 'loaded', 'W46N8', 31, 30)] 
+upgraders [('upgrader84189539', 84190940, 84191089, 150), ('upgrader84190077', 84190940, 84191000, 61), ('upgrader84190808', 84190940, 84191797, 821), ('upgrader84191008', 84191009, 84191059, 51), ('upgrader84191060', 84191061, 84191760, 663)]
 
-=== HOME miner traces ===
-miner84188724: n=41 84190210@(38,32) -> 84190250@(38,32) st=loaded tiles={(38, 32): 41}
-miner84189890: n=702 84190210@(31,12) -> 84190960@(31,12) st=loaded tiles={(31, 12): 702}
-miner84190186: n=702 84190210@(35,28) -> 84190960@(38,32) st=loaded tiles={(35, 28): 3, (35, 29): 1, (34, 30): 1, (34, 31): 1, (35, 32): 1, (36, 32): 1, (37, 32): 22, (38, 31): 12, (38, 32): 660}
+upgrader84189539: n=150 first t=84190940 W46N8(30,30) st=loaded store=8
+       last t=84191089 W46N8(30,30) st=loaded store=8 hits=1700
+       long_sits [(84190940, 84191089, 150, ('W46N8', 30, 30), 4, 36, 'loaded')]
+       state_changes [(84190940, 'loaded', 'W46N8', 30, 30, 8)]  nch 1
 
-=== RMINER traces (all rooms) ===
-rminer84189116: n=436 84190210 W45N7(21,15) -> 84190645 W45N7(21,15) hits=1000 store=50 st=loaded top=[(('W45N7', 21, 15), 401), (('W45N7', 21, 14), 35)] at(10,33)=0
-rminer84189377: n=696 84190210 W45N8(13,11) -> 84190905 W45N8(12,10) hits=1000 store=50 st=loaded top=[(('W45N8', 13, 11), 692), (('W45N8', 12, 10), 4)] at(10,33)=0
-rminer84190415: n=512 84190416 W46N8(35,28) -> 84190949 W45N7(21,15) hits=1000 store=50 st=loaded top=[(('W45N7', 21, 15), 317), (('W45N7', 21, 14), 37), (('W46N8', 35, 28), 29), (('W46N8', 34, 30), 2), (('W46N8', 47, 17), 2), (('W46N8', 48, 18), 2)] at(10,33)=2
-rminer84190736: n=186 84190737 W46N8(35,28) -> 84190922 W45N8(13,11) hits=1000 store=50 st=loaded top=[(('W45N8', 8, 9), 96), (('W46N8', 35, 28), 29), (('W45N8', 13, 11), 21), (('W45N8', 12, 10), 6), (('W46N8', 44, 19), 2), (('W45N8', 1, 14), 2)] at(10,33)=0
+upgrader84190077: n=61 first t=84190940 W46N8(34,29) st=empty store=0
+       last t=84191000 W46N8(34,29) st=empty store=0 hits=1700
+       long_sits [(84190940, 84191000, 61, ('W46N8', 34, 29), 0, 0, 'empty')]
+       state_changes [(84190940, 'empty', 'W46N8', 34, 29, 0)]  nch 1
 
-=== (10,33) any rminer this hour ===
-count 2 rows [(84190498, 'rminer84190415', 'rminer', 0, 'empty'), (84190499, 'rminer84190415', 'rminer', 0, 'empty')] 
+upgrader84190808: n=821 first t=84190940 W46N8(31,30) st=loaded store=22
+       last t=84191797 W46N8(31,30) st=loaded store=8 hits=1700
+       long_sits [(84190940, 84191700, 761, ('W46N8', 31, 30), 0, 50, 'loaded'), (84191738, 84191797, 60, ('W46N8', 31, 30), 4, 36, 'loaded')]
+       state_changes [(84190940, 'loaded', 'W46N8', 31, 30, 22), (84190974, 'empty', 'W46N8', 31, 30, 0), (84190975, 'loaded', 'W46N8', 31, 30, 50), (84191513, 'empty', 'W46N8', 31, 30, 0), (84191517, 'loaded', 'W46N8', 31, 30, 50), (84191577, 'empty', 'W46N8', 31, 30, 0), (84191582, 'loaded', 'W46N8', 31, 30, 50), (84191669, 'empty', 'W46N8', 31, 30, 0), (84191679, 'loaded', 'W46N8', 31, 30, 50)]  nch 9
 
-=== GHOST check: creeps frozen same tile long after likely death ===
-rminer84187988 n 691 first (84189410, 'W45N8', 13, 11, 50, 1000, 'loaded') last (84190100, 'W45N8', 13, 11, 50, 1000, 'loaded') unique tiles 2
-w8miner84186469 NO ROWS this window
+upgrader84191008: n=51 first t=84191009 W46N8(35,28) st=spawning store=0
+       last t=84191059 W46N8(35,29) st=empty store=0 hits=1700
+       long_sits [(84191009, 84191058, 50, ('W46N8', 35, 28), 0, 0, 'spawning')]
+       state_changes [(84191009, 'spawning', 'W46N8', 35, 28, 0), (84191059, 'empty', 'W46N8', 35, 29, 0)]  nch 2
 
---- auto ghost candidates (frozen >=80t at end of their series, last tick < room_max-10) ---
-creeps ended >=20t before room tip (possible deaths/ghosts):
-  ('hauler84188599', 'hauler', 'W46N8', 84190010, 84190078, 84190960, 882)
-  ('w8rminer84188497', 'wrminer', 'W47N7', 84190010, 84190026, 84190900, 874)
-  ('reserver84189461', 'reserver', 'W45N8', 84190010, 84190072, 84190922, 850)
-  ('rhauler84188676', 'rhauler', 'W45N7', 84190010, 84190109, 84190949, 840)
-  ('rminer84187988', 'rminer', 'W45N8', 84190010, 84190100, 84190922, 822)
-  ('rhauler84188676', 'rhauler', 'W46N8', 84190154, 84190184, 84190960, 776)
-  ('rhauler84188918', 'rhauler', 'W45N7', 84190097, 84190176, 84190949, 773)
-  ('rhauler84188676', 'rhauler', 'W45N8', 84190110, 84190153, 84190922, 769)
-  ('reserve784189576', 'reserve', 'W47N7', 84190010, 84190187, 84190900, 713)
-  ('miner84188724', 'miner', 'W46N8', 84190010, 84190250, 84190960, 710)
-  ('rhauler84188918', 'rhauler', 'W45N8', 84190020, 84190214, 84190922, 708)
-  ('w8rhauler84188931', 'wrhauler', 'W47N7', 84190161, 84190237, 84190900, 663)
-  ('queen84188823', 'queen', 'W46N8', 84190010, 84190383, 84190960, 577)
-  ('reserver84190342', 'reserver', 'W46N8', 84190344, 84190397, 84190960, 563)
-  ('rhauler84188918', 'rhauler', 'W46N8', 84190010, 84190417, 84190960, 543)
-  ('rminer84190415', 'rminer', 'W46N8', 84190416, 84190475, 84190960, 485)
-  ('reserver84190342', 'reserver', 'W45N8', 84190398, 84190443, 84190922, 479)
-  ('rhauler84189168', 'rhauler', 'W45N8', 84190017, 84190493, 84190922, 429)
-  ('reserver84190503', 'reserver', 'W46N8', 84190505, 84190543, 84190960, 417)
-  ('queen84190485', 'queen', 'W46N8', 84190487, 84190559, 84190960, 401)
-  ('queen84189016', 'queen', 'W46N8', 84190010, 84190566, 84190960, 394)
-  ('rminer84190415', 'rminer', 'W45N8', 84190476, 84190547, 84190922, 375)
-  ('w8miner84189008', 'wminer', 'W47N8', 84190010, 84190531, 84190900, 369)
-  ('w8rhauler84189660', 'wrhauler', 'W47N7', 84190019, 84190560, 84190900, 340)
-  ('w8hauler84189029', 'whauler', 'W47N8', 84190010, 84190573, 84190900, 327)
-  ('w8rhauler84189218', 'wrhauler', 'W47N7', 84190155, 84190595, 84190900, 305)
-  ('rminer84189116', 'rminer', 'W45N7', 84190010, 84190645, 84190949, 304)
-  ('w8rhauler84189519', 'wrhauler', 'W47N7', 84190021, 84190597, 84190900, 303)
-  ('w8builder84189050', 'wbuilder', 'W47N8', 84190010, 84190603, 84190900, 297)
-  ('w8rhauler84190402', 'wrhauler', 'W47N7', 84190541, 84190611, 84190900, 289)
-  ('reserve784190538', 'reserve', 'W47N8', 84190539, 84190623, 84190900, 277)
-  ('rhauler84189168', 'rhauler', 'W46N8', 84190057, 84190691, 84190960, 269)
-  ('rhauler84189473', 'rhauler', 'W45N7', 84190089, 84190719, 84190949, 230)
-  ('w8rhauler84190481', 'wrhauler', 'W47N7', 84190629, 84190671, 84190900, 229)
-  ('rminer84190736', 'rminer', 'W46N8', 84190737, 84190790, 84190960, 170)
-  ('rhauler84190205', 'rhauler', 'W45N8', 84190295, 84190754, 84190922, 168)
-  ('rhauler84189473', 'rhauler', 'W45N8', 84190010, 84190756, 84190922, 166)
-  ('rhauler84190205', 'rhauler', 'W45N7', 84190549, 84190833, 84190949, 116)
-  ('rhauler84190760', 'rhauler', 'W46N8', 84190762, 84190849, 84190960, 111)
-  ('rhauler84190455', 'rhauler', 'W46N8', 84190457, 84190877, 84190960, 83)
+upgrader84191060: n=663 first t=84191061 W46N8(35,28) st=spawning store=0
+       last t=84191760 W46N8(34,29) st=empty store=0 hits=1700
+       long_sits [(84191061, 84191110, 50, ('W46N8', 35, 28), 0, 0, 'spawning'), (84191128, 84191700, 573, ('W46N8', 30, 30), 0, 50, 'loaded'), (84191738, 84191747, 10, ('W46N8', 30, 30), 0, 36, 'empty')]
+       state_changes [(84191061, 'spawning', 'W46N8', 35, 28, 0), (84191111, 'empty', 'W46N8', 35, 29, 0), (84191112, 'empty', 'W46N8', 34, 30, 0), (84191116, 'empty', 'W46N8', 33, 30, 0), (84191120, 'loaded', 'W46N8', 32, 29, 50), (84191124, 'loaded', 'W46N8', 31, 29, 50), (84191128, 'loaded', 'W46N8', 30, 30, 22), (84191514, 'empty', 'W46N8', 30, 30, 0), (84191519, 'loaded', 'W46N8', 30, 30, 50), (84191560, 'empty', 'W46N8', 30, 30, 0), (84191561, 'loaded', 'W46N8', 30, 30, 50), (84191574, 'empty', 'W46N8', 30, 30, 0)] ... nch 22
+
+=== (10,33) W45N8/W45N7 this hour ===
+W45N8 (10,33) [('rhauler84190760', 'rhauler', 84191043, 84191621, 4), ('rhauler84190455', 'rhauler', 84191061, 84191463, 3), ('rhauler84191010', 'rhauler', 84191121, 84191577, 2), ('rhauler84189963', 'rhauler', 84191001, 84191214, 2), ('rhauler84191492', 'rhauler', 84191579, 84191579, 1), ('rhauler84190205', 'rhauler', 84191129, 84191129, 1), ('rhauler84191250', 'rhauler', 84191490, 84191490, 1), ('reserver84191561', 'reserver', 84191622, 84191622, 1)]
+W45N7 (10,33) []
+
+=== possible history ghosts: creeps frozen last 80t of a published chunk then absent elsewhere ===
+overlapping room stays (>=80t one side):
+  ('rhauler84189963', 'rhauler', 'W45N8', 84190790, 84191700, 431, 26, 40, 'W46N8', 84190792, 84191462, 266, 35, 29)
+  ('rhauler84190800', 'rhauler', 'W45N8', 84190932, 84191667, 420, 0, 14, 'W46N8', 84190802, 84191700, 434, 33, 30)
+  ('w8rminer84190697', 'wrminer', 'W47N7', 84190901, 84191700, 400, 18, 17, 'W47N8', 84190790, 84191400, 511, 13, 39)
+  ('rhauler84190455', 'rhauler', 'W45N7', 84190790, 84191614, 350, 21, 0, 'W45N8', 84190896, 84191652, 262, 0, 21)
+  ('rhauler84190455', 'rhauler', 'W45N7', 84190790, 84191614, 350, 21, 0, 'W46N8', 84190845, 84191700, 209, 41, 22)
+  ('rhauler84190760', 'rhauler', 'W45N7', 84190888, 84191700, 290, 21, 14, 'W45N8', 84190939, 84191654, 274, 21, 49)
+  ('rhauler84190760', 'rhauler', 'W45N7', 84190888, 84191700, 290, 21, 14, 'W46N8', 84190790, 84191790, 290, 38, 30)
+  ('rhauler84190760', 'rhauler', 'W45N8', 84190939, 84191654, 274, 21, 49, 'W46N8', 84190790, 84191790, 290, 38, 30)
+  ('w8rhauler84189739', 'wrhauler', 'W47N7', 84190896, 84191198, 268, 18, 0, 'W47N8', 84190790, 84191276, 219, 34, 32)
+  ('rhauler84190205', 'rhauler', 'W45N7', 84190790, 84191451, 266, 21, 0, 'W46N8', 84190872, 84191700, 375, 32, 28)
+  ('rhauler84190205', 'rhauler', 'W45N7', 84190790, 84191451, 266, 21, 0, 'W45N8', 84190926, 84191490, 194, 0, 21)
+  ('rhauler84190455', 'rhauler', 'W45N8', 84190896, 84191652, 262, 0, 21, 'W46N8', 84190845, 84191700, 209, 41, 22)
+  ('rhauler84191010', 'rhauler', 'W45N7', 84191148, 84191667, 233, 21, 0, 'W45N8', 84191110, 84191700, 191, 3, 26)
+  ('rhauler84191010', 'rhauler', 'W45N7', 84191148, 84191667, 233, 21, 0, 'W46N8', 84191011, 84191565, 209, 49, 21)
+  ('w8rhauler84190481', 'wrhauler', 'W47N7', 84191216, 84191629, 215, 18, 0, 'W47N8', 84190790, 84191700, 531, 31, 24)
+  ('rhauler84190205', 'rhauler', 'W45N8', 84190926, 84191490, 194, 0, 21, 'W46N8', 84190872, 84191700, 375, 32, 28)
+  ('rhauler84191010', 'rhauler', 'W45N8', 84191110, 84191700, 191, 3, 26, 'W46N8', 84191011, 84191565, 209, 49, 21)
+  ('rhauler84189963', 'rhauler', 'W45N7', 84190869, 84191291, 176, 21, 0, 'W45N8', 84190790, 84191700, 431, 26, 40)
+  ('rhauler84189963', 'rhauler', 'W45N7', 84190869, 84191291, 176, 21, 0, 'W46N8', 84190792, 84191462, 266, 35, 29)
+  ('w8rhauler84190990', 'wrhauler', 'W47N7', 84191196, 84191700, 160, 28, 29, 'W47N8', 84191087, 84191542, 342, 18, 49)
+
+=== critical role presence (from room_stats creeps json, home samples) ===
+  miner zero-count samples 0/35 [] 
+  queen zero-count samples 0/35 [] 
+  rminer zero-count samples 0/35 [] 
+  reserver zero-count samples 5/35 [(84191120, '2026-11-11 01:34:30.324972+08:00'), (84191130, '2026-11-11 01:35:14.034997+08:00'), (84191140, '2026-11-11 01:35:57.336474+08:00'), (84191150, '2026-11-11 01:36:41.444417+08:00'), (84191160, '2026-11-11 01:37:25.872698+08:00')] 
+  upgrader zero-count samples 0/35 [] 
+  w8filler zero-count samples 0/35 [] 
+  w8miner zero-count samples 0/35 [] 
+  w8upgrader zero-count samples 0/35 [] 
+  reserve7 zero-count samples 6/35 [(84191150, '2026-11-11 01:36:41.444417+08:00'), (84191160, '2026-11-11 01:37:25.872698+08:00'), (84191470, '2026-11-11 02:00:03.206622+08:00'), (84191480, '2026-11-11 02:00:46.627786+08:00'), (84191490, '2026-11-11 02:01:30.440240+08:00'), (84191500, '2026-11-11 02:02:14.920833+08:00')] 
+  hauler zero-count samples 0/35 [] 
+
+=== incidents last 8 ===
+ INC (datetime.datetime(2026, 11, 10, 21, 3, 29, 521444, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84187414, 'W47N7', 84187155, 'cleared', 'DEFEND', 'SAFE', 'killed', 0, 0, 'out', 259, {'ev': 'cleared', 'def': 'out', 'dur': 259, 'inc': 84187155, 'inv': 0, 'why': 'killed', 'from': 'DEFEND', 'tick': 84187414, 'state': 'SAFE', 'invTtl': 0, 'remote': 'W47N7', 'delivered': 0})
+ INC (datetime.datetime(2026, 11, 10, 21, 0, 48, 905211, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84187378, 'W47N7', 84187155, 'arrive', None, 'DEFEND', None, 1, 1276, 'out', None, {'ev': 'arrive', 'def': 'out', 'inc': 84187155, 'inv': 1, 'tick': 84187378, 'state': 'DEFEND', 'invTtl': 1276, 'remote': 'W47N7', 'travel': 78, 'delivered': 0})
+ INC (datetime.datetime(2026, 11, 10, 16, 4, 8, 688528, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84183331, 'W47N7', 84183115, 'cleared', 'DEFEND', 'SAFE', 'killed', 0, 0, 'out', 216, {'ev': 'cleared', 'def': 'out', 'dur': 216, 'inc': 84183115, 'inv': 0, 'why': 'killed', 'from': 'DEFEND', 'tick': 84183331, 'state': 'SAFE', 'invTtl': 0, 'remote': 'W47N7', 'delivered': 0})
+ INC (datetime.datetime(2026, 11, 10, 15, 5, 39, 668241, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84182537, 'W45N7', 84182410, 'defend', 'THREAT', 'DEFEND', 'dispatched', 0, 0, 'out', 127, {'ev': 'defend', 'def': 'out', 'dur': 127, 'inc': 84182410, 'inv': 0, 'why': 'dispatched', 'from': 'THREAT', 'tick': 84182537, 'state': 'DEFEND', 'invTtl': 0, 'remote': 'W45N7', 'delivered': 2095456})
+ INC (datetime.datetime(2026, 11, 10, 1, 27, 42, 447897, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84171381, 'W47N7', 84171229, 'defend', 'THREAT', 'DEFEND', 'dispatched', 0, 0, 'out', 152, {'ev': 'defend', 'def': 'out', 'dur': 152, 'inc': 84171229, 'inv': 0, 'why': 'dispatched', 'from': 'THREAT', 'tick': 84171381, 'state': 'DEFEND', 'invTtl': 0, 'remote': 'W47N7', 'delivered': 0})
+ INC (datetime.datetime(2026, 11, 9, 15, 22, 7, 812401, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84163037, 'W45N7', 84162849, 'cleared', 'DEFEND', 'SAFE', 'killed', 0, 0, 'out', 188, {'ev': 'cleared', 'def': 'out', 'dur': 188, 'inc': 84162849, 'inv': 0, 'why': 'killed', 'from': 'DEFEND', 'tick': 84163037, 'state': 'SAFE', 'invTtl': 0, 'remote': 'W45N7', 'delivered': 1879560})
+ INC (datetime.datetime(2026, 11, 9, 15, 20, 43, 670318, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84163018, 'W45N7', 84162849, 'arrive', None, 'DEFEND', None, 1, 1330, 'out', None, {'ev': 'arrive', 'def': 'out', 'inc': 84162849, 'inv': 1, 'tick': 84163018, 'state': 'DEFEND', 'invTtl': 1330, 'remote': 'W45N7', 'travel': 69, 'delivered': 1878760})
+ INC (datetime.datetime(2026, 11, 9, 7, 45, 56, 196992, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84156756, 'W45N7', 84156537, 'arrive', None, 'DEFEND', None, 0, 0, 'out', None, {'ev': 'arrive', 'def': 'out', 'inc': 84156537, 'inv': 0, 'tick': 84156756, 'state': 'DEFEND', 'invTtl': 0, 'remote': 'W45N7', 'travel': 68, 'delivered': 1815594})
+
+=== hostiles this hour ===
+W46N8 hostile n 0 []
+W47N8 hostile n 0 []
+W45N8 hostile n 0 []
+W45N7 hostile n 0 []
+W47N7 hostile n 0 []
+
+=== box_pause events ===
+  (datetime.datetime(2026, 11, 10, 20, 57, 33, 616952, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84187081, 'box_pause', 'box frozen ~1100s since 2026-11-10 20:39:07', {'sec': 1100, 'from': '2026-11-10 20:39:07'})
+  (datetime.datetime(2026, 11, 10, 21, 18, 40, 758232, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84187397, 'box_pause', 'box frozen ~771s since 2026-11-10 21:05:49', {'sec': 771, 'from': '2026-11-10 21:05:49'})
+  (datetime.datetime(2026, 11, 10, 21, 57, 45, 359920, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84187862, 'box_pause', 'box frozen ~1276s since 2026-11-10 21:36:28', {'sec': 1276, 'from': '2026-11-10 21:36:28'})
+  (datetime.datetime(2026, 11, 10, 22, 26, 5, 783598, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84188198, 'box_pause', 'box frozen ~1238s since 2026-11-10 22:05:27', {'sec': 1238, 'from': '2026-11-10 22:05:27'})
+  (datetime.datetime(2026, 11, 10, 23, 2, 28, 498993, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84188730, 'box_pause', 'box frozen ~1347s since 2026-11-10 22:39:56', {'sec': 1347, 'from': '2026-11-10 22:39:56'})
+  (datetime.datetime(2026, 11, 10, 23, 20, 49, 674120, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84189123, 'box_pause', 'box frozen ~635s since 2026-11-10 23:10:07', {'sec': 635, 'from': '2026-11-10 23:10:07'})
+  (datetime.datetime(2026, 11, 11, 0, 20, 16, 459360, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84189955, 'box_pause', 'box frozen ~423s since 2026-11-11 00:13:07', {'sec': 423, 'from': '2026-11-11 00:13:07'})
+  (datetime.datetime(2026, 11, 11, 0, 37, 25, 811380, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84190295, 'box_pause', 'box frozen ~195s since 2026-11-11 00:34:05', {'sec': 195, 'from': '2026-11-11 00:34:05'})
+  (datetime.datetime(2026, 11, 11, 2, 19, 32, 377395, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), None, 'box_pause', 'box frozen ~692s since 2026-11-11 02:07:59', {'sec': 692, 'from': '2026-11-11 02:07:59'})
