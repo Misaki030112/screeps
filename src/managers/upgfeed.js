@@ -1,6 +1,6 @@
 // Home upgrade-feed observability (strategy 2026-10-31 02:4x).
 // Writes Memory.ops.upgFeed — diagnose waiting_feed vs remote pause vs thin surplus vs floor_bank.
-// No spawn/link behavior change. 2026-11-02 05:4x: +floor_bank/upBank/tUp/allowExtra/boundHint. Overmind UpgradeSite requests link receive below ~200 and
+// No spawn/link behavior change. 2026-11-02 05:4x: +floor_bank/upBank/tUp/allowExtra/boundHint. 2026-11-10 20:1x: allowExtra is floor+5k (sticky 20k/300t), plus upExtra/upExtraSince. Overmind UpgradeSite requests link receive below ~200 and
 // logistics input when battery <50%; we keep CTL_LOW/SEND=400 + supply-follows-demand
 // (no 3rd upgrader without surplus). See docs/MODEL.md "2026-10-31 02:4x".
 const plan = require('../utils/plan'), rc = require('../utils/roomcache');
@@ -47,7 +47,9 @@ function run(room) {
   const upBank = room.memory.upBank ? 1 : 0;
   const tUp = (room.memory.roleTargets && room.memory.roleTargets.upgrader != null)
     ? room.memory.roleTargets.upgrader : null;
-  const allowExtra = floor + 1000; // 3rd upgrader gate (spawn SURPLUS)
+  const allowExtra = floor + 5000; // sticky 3rd gate (spawn UP_EXTRA_ARM, floor+5k → 20k)
+  const upExtra = room.memory.upExtra ? 1 : 0;
+  const upExtraSince = room.memory.upExtraSince || 0;
   // 14:4x wartime: applyPause freezes surplus; surface warMode for patrols.
   let warMode = 0;
   try { warMode = require('../roles/raid9').pauseCivilians() ? 1 : 0; } catch (e) { warMode = 0; }
@@ -63,7 +65,7 @@ function run(room) {
   const out = {
     t: Game.time, storE, floor, surplus: Math.round(surplus), allowExtra,
     ctl, ctlEma, ctlLinkE, hubLinkE, srcLinkE,
-    nUp, tUp, work, hungry, upBank, boundHint, warMode,
+    nUp, tUp, work, hungry, upBank, upExtra, upExtraSince, boundHint, warMode,
     pausedNet: Math.round(pausedNet * 100) / 100, idealAdj,
     rem: Object.keys(rem).map(r => r + ':' + rem[r]).join(','),
     why,

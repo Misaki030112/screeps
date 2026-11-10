@@ -1,8 +1,8 @@
 // Home upgrader double-start (patrol 2026-11-10 12:24, W46N8 RCL7).
-// Storage crossing allowExtra (floor 15000 + SURPLUS 1000 = 16000) clears upBank and sets tUp=2.
+// Storage crossing the 15k recover line (reserve+1000 = 16000) clears upBank and sets tUp=2.
 // spawnCreep does not put the creep in Game.creeps until the next tick, so two idle spawns both
-// saw nUp 1 and each started a 1550 — live nUp 3. tUp=2 must stay nUp 2. The 3rd-upgrader gate
-// (ctl EMA >= 700) may still start the two bodies that land on tUp=3.
+// saw nUp 1 and each started a 1550 — live nUp 3. tUp=2 must stay nUp 2.
+// The 3rd-upgrader sticky gate (20k + ctlEma>=1200 for 300t) is separate and must not reopen at 16k.
 // node tests/upgrader_double_spawn.js -> exits 1 on failure
 const path = require('path'), assert = require('assert');
 const src = p => path.join(__dirname, '..', 'src', p);
@@ -85,11 +85,11 @@ function pair(o) {
   for (const c of [creep('queen'), creep('queen'), creep('hauler')].concat(ups)) Game.creeps[c.name] = c;
   const room = {
     name: 'W46N8',
-    energyAvailable: 5600,
+    energyAvailable: o.avail == null ? 5600 : o.avail,
     energyCapacityAvailable: 5600,
     controller: { level: 7, ticksToDowngrade: 100000 },
     storage: { store: { energy: o.storage } },
-    memory: { upBank: o.upBank, sources: [], ctlEma: o.ema || 0, ctlEmaT: o.time, lastFull: o.time },
+    memory: { upBank: o.upBank, upExtra: o.upExtra, upExtraSince: o.upExtraSince, sources: [], ctlEma: o.ema || 0, ctlEmaT: o.time, lastFull: o.time },
     find: () => [],
   };
   const spawned = [];
@@ -129,11 +129,11 @@ const cases = [
     const r = pair({ time: 841030, storage: 16000, upgraders: 0, visible: true });
     assert.strictEqual(r.ups.length, 2, JSON.stringify(r.spawned));
   }],
-  ['3rd-upgrader gate stays: ctl EMA 700 at 16000, tUp=3, one alive -> two starts (nUp 3)', () => {
+  ['old 16k + ema 700 gate no longer opens a 3rd: tUp=2, one start', () => {
     const r = pair({ time: 841040, storage: 16000, upBank: 1, upgraders: 1, ema: 700 });
-    assert.strictEqual(r.T.upgrader, 3, 'allowExtra + EMA still opens the third');
-    assert.strictEqual(r.ups.length, 2, JSON.stringify(r.spawned));
-    assert.strictEqual(1 + r.ups.length, 3);
+    assert.strictEqual(r.T.upgrader, 2, '16k must not open the third');
+    assert.strictEqual(r.ups.length, 1, JSON.stringify(r.spawned));
+    assert.strictEqual(1 + r.ups.length, 2);
   }],
   ['just under allowExtra with upBank: tUp stays 1, no second upgrader', () => {
     const r = pair({ time: 841050, storage: 15999, upBank: 1, upgraders: 1 });
@@ -145,6 +145,21 @@ const cases = [
     const r = pair({ time: 841060, storage: 16000, upgraders: 1, spawning: true });
     assert.strictEqual(r.T.upgrader, 2);
     assert.strictEqual(r.ups.length, 0, JSON.stringify(r.spawned));
+  }],
+  ['latched 3rd at 20k / ema 1200, one alive, full pile: two starts (nUp 3)', () => {
+    const r = pair({ time: 841070, storage: 20000, upgraders: 1, ema: 1200, upExtra: 1 });
+    assert.strictEqual(r.T.upgrader, 3);
+    assert.strictEqual(r.ups.length, 2, JSON.stringify(r.spawned));
+  }],
+  ['latched 3rd waits when energyAvailable is under cap-1550', () => {
+    const r = pair({ time: 841080, storage: 20000, upgraders: 2, ema: 1200, upExtra: 1, avail: 4049 });
+    assert.strictEqual(r.T.upgrader, 3, 'quota stays 3 so an existing 3rd is not recycled');
+    assert.strictEqual(r.ups.length, 0, 'must not start the 3rd on a thin pile ' + JSON.stringify(r.spawned));
+  }],
+  ['latched 3rd starts once energyAvailable reaches cap-1550', () => {
+    const r = pair({ time: 841090, storage: 20000, upgraders: 2, ema: 1200, upExtra: 1, avail: 4050 });
+    assert.strictEqual(r.T.upgrader, 3);
+    assert.strictEqual(r.ups.length, 1, JSON.stringify(r.spawned));
   }],
 ];
 let fail = 0;

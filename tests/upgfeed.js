@@ -113,7 +113,8 @@ setUps([50, 50]);
 assert.strictEqual(out.why, 'floor_bank');
 assert.strictEqual(out.upBank, 1);
 assert.strictEqual(out.tUp, 0);
-assert.strictEqual(out.allowExtra, 16000);
+assert.strictEqual(out.allowExtra, 20000);
+assert.strictEqual(out.upExtra, 0);
 assert.strictEqual(out.boundHint, 'energy'); // 28 WORK > ideal 26
 
 // Case 6: remote_pause still beats floor_bank

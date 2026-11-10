@@ -72,6 +72,40 @@ function mineralCapped(room, type) {
   const have = s => (s && s.store && s.store[type]) || 0;
   return have(room.storage) + have(room.terminal) >= cap;
 }
+// Home 3rd-upgrader sticky surplus (12h review 2026-11-10 20:1x).
+// Measured feed ≈21.7 e/t cannot support 3×14W (42). The old gate (floor+1000=16k
+// and ctlEma/700) started a 1550 body that dipped storage under 15k and recycled
+// the 3rd on birth (8–12 failed 3rds / 6h; home stor under 15k 32% of last 12h).
+// Same shape as W47 keep=2 until 40k/500t: enter only on sustained surplus.
+const UP_EXTRA_ARM = 5000;    // enter: storageFloor + this (20k at the 15k floor)
+const UP_EXTRA_REARM = 3000;  // leave: storageFloor + this (18k)
+const UP_EXTRA_EMA = 1200;    // enter ctlEma
+const UP_EXTRA_EMA_OFF = 700; // leave ctlEma
+const UP_EXTRA_T = 300;       // consecutive enter ticks
+const UP_EXTRA_BODY = 1550;   // 14W1C2M; don't start a 3rd while avail < cap - this
+function upExtraTick(room, storE, ctlEnergy, floor) {
+  const mem = room.memory || (room.memory = {});
+  const t = (typeof Game !== 'undefined' && Game.time) || 0;
+  if (floor == null) floor = 0;
+  if (!room.storage) { delete mem.upExtra; delete mem.upExtraSince; return true; }
+  const enter = storE >= floor + UP_EXTRA_ARM && ctlEnergy >= UP_EXTRA_EMA;
+  const leave = storE < floor + UP_EXTRA_REARM || ctlEnergy < UP_EXTRA_EMA_OFF;
+  if (mem.upExtra) {
+    if (leave) { delete mem.upExtra; delete mem.upExtraSince; }
+  } else if (enter) {
+    if (!mem.upExtraSince) mem.upExtraSince = t;
+    if (t && t - mem.upExtraSince >= UP_EXTRA_T) mem.upExtra = 1;
+  } else { delete mem.upExtraSince; }
+  return !!mem.upExtra;
+}
+// Base 1–2 upgraders still spawn on a thin pile; the 3rd waits until extensions
+// can pay 1550 without also starving the queen ferry (cap - 1550 at RCL7 = 4050).
+function extraUpReady(role, haveN, nSites, avail, cap) {
+  if (role !== 'upgrader') return true;
+  const base = nSites ? 1 : 2;
+  if (haveN >= base && avail < cap - UP_EXTRA_BODY) return false;
+  return true;
+}
 function targets(room, count, backlog, ctlEnergy, sites) {
   const rcl = room.controller.level, P = plan.get(room.name);
   const st = !!room.storage, links = rc.all(room, STRUCTURE_LINK).length;
@@ -90,13 +124,12 @@ function targets(room, count, backlog, ctlEnergy, sites) {
   T.manager = plan.STATIONARY_FILL && st && rcl >= 5 ? 1 : 0; // manager tile 36,30 is also a queen stop
   // Supply-follows-demand on the smoothed ctl container level (ctlEnergy = ~300-tick EMA): an empty container means upgraders
   // outnumber the feed. A snapshot rule (3 + level/700) spawned 4x7 WORK for ~11/t feed -> upgraders idle 55% waiting_feed (10-13 17:30).
-  // With storage, the 3rd+ upgrader needs real surplus: storage SURPLUS above the queen's ferry floor (max(defender reserve, cap)).
-  // Below that the queen still ferries storage->ctl, so a full ctl container is only a transient (e.g. a container A backlog drain).
-  // Gate at the bare reserve (1300) spawned a 3rd 10W at ~08:00 10-14 while the ferry had not even started (floor+carry 1700):
-  // waiting_feed 0-18% (2 upgraders, 07:30-07:59) -> 45-47% (3 upgraders, 08:00-08:14). (patrol 10-14 04:53 had the same: storage ~100.)
-  const SURPLUS = 1000;
+  // With storage, the 3rd+ upgrader needs *sustained* surplus the 42W feed can actually burn (12h review 2026-11-10 20:1x).
+  // The old floor+1000=16k / ctlEma/700 gate yo-yoed a 1550 body and recycled it on birth. Pre-storage: EMA only.
+  const floor = st ? require('../roles/queen').storageFloor(room) : 0;
+  const storE = st ? (room.storage.store[RESOURCE_ENERGY] || 0) : 0;
   const extra = Math.floor(ctlEnergy / 700);
-  const allowExtra = !st || room.storage.store[RESOURCE_ENERGY] >= require('../roles/queen').storageFloor(room) + SURPLUS;
+  const allowExtra = upExtraTick(room, storE, ctlEnergy, floor);
   T.upgrader = rcl >= 8 ? 1 : Math.min(P.pos.upgraders.length, (sites ? 1 : 2) + (allowExtra ? extra : 0));
   // RCL6+ wall banking (managers/walls.js): one upgrader until storage reaches the wall start (20k), then the latch releases it.
   if (rcl >= 6 && rcl < 8 && ['bank', 'roads'].includes(require('./walls').phase(room))) T.upgrader = Math.min(T.upgrader, 1);
@@ -400,7 +433,7 @@ function setRoleTargets(room) {
   room.memory.roleTargets = T;
   return T;
 }
-module.exports = { defLowUpgraders, setRoleTargets, rhTarget, birthDirs, targets, mineralCapped, rhaulerNeed, remoteNext, retiring, pendingSpawn, notePendingSpawn, B, defenderOrder, planDefender, extrasOk, reserverBody, nearFull, bodyEnergy, spawnOrder, run(spawn) {
+module.exports = { defLowUpgraders, upExtraTick, extraUpReady, UP_EXTRA_ARM, UP_EXTRA_REARM, UP_EXTRA_EMA, UP_EXTRA_EMA_OFF, UP_EXTRA_T, UP_EXTRA_BODY, setRoleTargets, rhTarget, birthDirs, targets, mineralCapped, rhaulerNeed, remoteNext, retiring, pendingSpawn, notePendingSpawn, B, defenderOrder, planDefender, extrasOk, reserverBody, nearFull, bodyEnergy, spawnOrder, run(spawn) {
   // spawn-wait metric (Misaki 10-18 09:30: zero spawn idle due to refill). Memory.stats.sw[room] cumulative ticks:
   //   busy = spawning; wait = a creep was wanted, cost <= cap but energyAvailable < cost (refill wait); idle = nothing wanted.
   //   last = [role, cost, avail] of the latest wait.
@@ -575,7 +608,7 @@ function run1(spawn, onWait) {
   if (room.storage && room.storage.store[RESOURCE_ENERGY] > ((Memory.defense && Memory.defense.reserveE) || 0) + 10000) {
     // Wartime pause already zeros upgrader/builder. Don't let a mineral miner spend the pile the raid body is banking.
     const pauseCiv = require('../roles/raid9').pauseCivilians();
-    const need = ['hauler', 'upgrader', 'mminer', 'builder'].find(r => have(r) < (T[r] || 0) && !(pauseCiv && r !== 'hauler'));
+    const need = ['hauler', 'upgrader', 'mminer', 'builder'].find(r => have(r) < (T[r] || 0) && !(pauseCiv && r !== 'hauler') && extraUpReady(r, have(r), nSites, avail, cap));
     const cw = need && !indep8 && require('../roles/conquest').wantSpawn(room);
     // cqTurn expires after 150t: remotes spawned ahead of CQ kept it set 83720845..83721136 and home got no upgrader for ~300t
     const cqTurn = room.memory.cqTurn && Game.time - room.memory.cqTurn < 150;
@@ -616,6 +649,7 @@ function run1(spawn, onWait) {
   for (const role of spawnOrder(count, T, nSites)) {
     if (!CIV.has(role)) continue;
     if (have(role) >= T[role]) continue;
+    if (!extraUpReady(role, have(role), nSites, avail, cap)) { onWait(role, cap - UP_EXTRA_BODY, avail); return ERR_NOT_ENOUGH_ENERGY; }
     return homeRole(role);
   }
 }

@@ -33,7 +33,16 @@ Last full refresh: **2026-11-09 17:1x** (autonomous push — docs/canvas scorebo
 - One-line verdict: `waiting on ticks` | `small safe ship` | `phase exit` — capability to stock a kiter ≠ order to fight.
 
 
-## Current state (2026-11-10 ~09:2x JST · 12h review)
+## Current state (2026-11-10 ~20:2x Asia/Hong_Kong · 12h review)
+
+| Room | Notes |
+|------|-------|
+| W46N8 (home) | **RCL7** 47.52% (5.196M/10.935M); +200k/12h ≈ 20.50 e/t → RCL8 ≈ **14.6 days**; stor avg 15.3k max 19.1k, **32% under 15k** (16k 3rd-upgrader yo-yo); labs OFF; LIVE **17b61c0** (PR 34) plus this review's sticky 20k gate |
+| W47N8 | **RCL7** 23.13% (2.529M); +125k/12h ≈ 12.76 e/t (was 8.9); stor avg 19.4k max 25.7k (7.2% ≥25k, 0% ≥40k); keep=2 / 40k sticky not armed |
+
+**20:2x scorecard:** Phase0 home floor **wobbling** (32% of 12h under 15k — this ship is the lever); W47 bank20 at the 25k edge but 40k sticky **waiting**; labs OFF ✔. Phase1 blocked. Phase2 home lead (~14.6 d), W47 ~34 d. Phase3+ deferred. Verdict: `small safe ship` (home 3rd-upgrader sticky 20k/300t; net spawn waste was only 3 e/t, the yo-yo was the limiter).
+
+### Previous (2026-11-10 ~09:2x JST · 12h review)
 
 | Room | Notes |
 |------|-------|

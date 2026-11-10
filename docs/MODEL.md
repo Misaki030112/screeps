@@ -53,7 +53,7 @@ Fluctuation (hourly W46N8 rate 10-16 00–15h, W45N8 only): 17.0–23.4, median 
 
 - `upgrade_max_ideal` summed A + B + W45N8 only (21.8). tools/flow.py already had W45N7 (net 4.54 after its rminer, 4x8C haulers, reserver), and the hauler need was fixed for the same gap at 21:5x. The ideal is now 26.0 (3-source value kept as `upgrade_max_ideal_3src`). `upgrade_max_live_comp` / `upgrader_bound` still use 3 sources; read them with that in mind.
 - 6h balance: upgrade 22.7 + builder 2.4 + storage -0.2, plus upgrader upkeep ~1.7, comes to ~26.9 of a flow net of 28.1, so ~1.2 e/t is overhead above the model (extra queen/rhauler bodies). Energy is not lost. Live at 00:4x the ctl container was full (2000) with 2x12W: WORK-bound, not energy-bound.
-- Lever: 14W1C2M upgraders at RCL6-7 (e1df502). 28 WORK sits just above the ~26 feed, so the room stays slightly energy-bound and the 3rd-upgrader gate (storage >= floor+1000, ctlEma >= 700) stays for real surplus only.
+- Lever: 14W1C2M upgraders at RCL6-7 (e1df502). 28 WORK sits just above the ~26 feed, so the room stays slightly energy-bound and the 3rd-upgrader gate is a sticky surplus latch (storage ≥ floor+5000 / ctlEma ≥ 1200 for 300 t, leave floor+3000 or ema<700; 12h review 2026-11-10 20:2x). The old floor+1000 / ema 700 gate yo-yoed a 1550 body the ≈21.7 e/t feed cannot support.
 
 ## 2026-10-20 02:4x strategy review: does home still need its hauler at RCL6?
 
@@ -168,7 +168,7 @@ Reading: storage pinned at the 15k floor means upgrade = income - upkeep - event
 - Δ pre-core → core ≈ **3.6 e/t** ≈ W45N7 flow net 4.54 / 1.072. Carry "54 vs need 72.8" includes paused W45N7's 48 design CARRY — not a hauler bug.
 - 2×14W = 28 WORK capacity; at ~70% working ≈ 19.6 e/t matches measured. Queens ~40% `target_full` (thin surplus 0–2k above floor) — ferry already maxed under supply-follows-demand.
 - ctlLink / SEND=400 / CTL_LOW=400 already match Overmind-ish receive threshold (Overmind `linksRequestBelow=200`; we are more aggressive). Lowering SEND further would thrash cooldown without raising long-run rate while income is capped by pause.
-- Overmind `UpgradeSite`: scales WORK only with storage surplus above `energyBuffer=100k` — we correctly gate the 3rd upgrader on `stor≥floor+1k` and `ctlEma≥700`. **Do not add WORK while feed-starved.**
+- Overmind `UpgradeSite`: scales WORK only with storage surplus above `energyBuffer=100k` — we now gate the 3rd upgrader on a sticky `stor≥floor+5k` and `ctlEma≥1200` for 300 t (leave floor+3k or ema<700). The old floor+1k / ema 700 gate was too tight and spawn-then-recycled. **Do not add WORK while feed-starved.**
 
 **Do / don't:**
 | Do | Don't |

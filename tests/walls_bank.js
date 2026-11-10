@@ -22,11 +22,11 @@ const up = o => { const r = room(o); return S.targets(r, {}, 0, W.ema, W.sites).
 const player = { owner: { username: 'BustJetter' }, body: [{ type: 'attack', hits: 100 }] };
 const now = Date.now;
 const cases = [
-  ['RCL5: no banking (2 + extras as before)', () => assert.strictEqual(up({ rcl: 5, storage: 9000 }), 3)],
+  ['RCL5: no banking, 3rd only with sticky surplus latch', () => { assert.strictEqual(up({ rcl: 5, storage: 9000 }), 2); assert.strictEqual(up({ rcl: 5, storage: 9000, mem: { upExtra: 1 } }), 3); }],
   ['RCL6 core build (sites): 1 upgrader', () => assert.strictEqual(up({ sites: 3 }), 1)],
   ['RCL6 sites=0, storage 5k: bank -> 1 upgrader', () => assert.strictEqual(up({ storage: 5000 }), 1)],
   ['RCL6 storage 19999: still bank', () => assert.strictEqual(up({ storage: 19999 }), 1)],
-  ['storage 20000 calm: latch build, extras allowed', () => { const m = {}; assert.strictEqual(up({ storage: 20000, mem: m }), 3); assert.strictEqual(m.walls.why, 'bank'); }],
+  ['storage 20000 calm: latch build, extras allowed when upExtra is on', () => { const m = { upExtra: 1 }; assert.strictEqual(up({ storage: 20000, mem: m }), 3); assert.strictEqual(m.walls.why, 'bank'); }],
   ['latched: dip below 20k never re-banks', () => { const m = { walls: { started: 5 } }; assert.strictEqual(up({ storage: 1000, ema: 1500, mem: m }), 2); }],
   ['storage 25k but remote threat holding: keep banking', () => { const m = {}; assert.strictEqual(up({ storage: 25000, holding: true, mem: m }), 1); assert.ok(!m.walls); }],
   ['storage 25k but hostile in home: keep banking', () => { Date.now = () => WL.NOVICE_END - 1; const m = {}; assert.strictEqual(up({ storage: 25000, hostiles: [player], mem: m }), 1); assert.ok(!m.walls); Date.now = now; }],

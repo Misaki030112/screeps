@@ -1,5 +1,6 @@
 // Upgrader target (src/managers/spawn.js targets): base 2 (1 with sites); extra ones from the ctl container EMA (1 per 700)
-// only when storage holds SURPLUS 1000 above the queen ferry floor max(defender reserve, spawn capacity). No storage: EMA only.
+// only when the sticky surplus latch is on (storageFloor+5k and ctlEma>=1200 for 300t; leave below floor+3k or ema<700).
+// No storage: EMA only.
 // node tests/spawn_upgraders.js -> exits 1 on failure
 const path = require('path'), assert = require('assert');
 const src = p => path.join(__dirname, '..', 'src', p);
@@ -16,15 +17,46 @@ stub('managers/threat.js', { reserve: () => W.reserve, holding: () => false });
 const S = require(src('managers/spawn.js'));
 function up(o) {
   W = Object.assign({ reserve: 1300, storage: 0, ema: 900, sites: 0, hasStorage: true }, o);
-  const room = { name: 'W46N8', controller: { level: 4 }, energyCapacityAvailable: 1300, storage: W.hasStorage ? { store: { energy: W.storage } } : undefined };
+  const room = { name: 'W46N8', memory: Object.assign({}, W.mem || {}), controller: { level: 4 }, energyCapacityAvailable: 1300, storage: W.hasStorage ? { store: { energy: W.storage } } : undefined };
   return S.targets(room, {}, 0, W.ema, W.sites).upgrader;
 }
 const cases = [
-  ['storage at old gate 1300 (ferry not started) -> 2', () => assert.strictEqual(up({ storage: 1300 }), 2)],
-  ['storage 2299 < floor 1300 + 1000 -> 2', () => assert.strictEqual(up({ storage: 2299 }), 2)],
-  ['storage 2300 + ctl EMA 900 -> 3', () => assert.strictEqual(up({ storage: 2300 }), 3)],
-  ['storage surplus but ctl EMA low -> 2', () => assert.strictEqual(up({ storage: 5000, ema: 300 }), 2)],
-  ['higher defender reserve raises the floor', () => { assert.strictEqual(up({ storage: 2300, reserve: 2000 }), 2); assert.strictEqual(up({ storage: 3000, reserve: 2000 }), 3); }],
+  ['storage at old 16k-style gate (floor+1000) stays 2', () => assert.strictEqual(up({ storage: 2300, ema: 900 }), 2)],
+  ['storage 16k + ema 700 (old allowExtra) stays 2', () => assert.strictEqual(up({ storage: 16000, ema: 700, reserve: 15000 }), 2)],
+  ['enter band without latch (20k / ema 1200, 0t) stays 2', () => assert.strictEqual(up({ storage: 20000, ema: 1200, reserve: 15000 }), 2)],
+  ['pre-latched 20k / ema 1200 -> 3', () => assert.strictEqual(up({ storage: 20000, ema: 1200, reserve: 15000, mem: { upExtra: 1 } }), 3)],
+  ['latched but stor left 18k band or ema off -> 2', () => {
+    assert.strictEqual(up({ storage: 17999, ema: 1200, reserve: 15000, mem: { upExtra: 1 } }), 2);
+    assert.strictEqual(up({ storage: 20000, ema: 699, reserve: 15000, mem: { upExtra: 1 } }), 2);
+    assert.strictEqual(up({ storage: 18000, ema: 700, reserve: 15000, mem: { upExtra: 1 } }), 3); }],
+  ['300 consecutive enter ticks arms the latch', () => {
+    const prev = global.Game;
+    try {
+      const room = { memory: {}, storage: { store: { energy: 20000 } } };
+      global.Game = { time: 1000 };
+      assert.strictEqual(S.upExtraTick(room, 20000, 1200, 15000), false);
+      assert.strictEqual(room.memory.upExtraSince, 1000);
+      global.Game.time = 1299;
+      assert.strictEqual(S.upExtraTick(room, 20000, 1200, 15000), false);
+      global.Game.time = 1300;
+      assert.strictEqual(S.upExtraTick(room, 20000, 1200, 15000), true);
+      assert.strictEqual(room.memory.upExtra, 1);
+      const r2 = { memory: {}, storage: {} };
+      global.Game.time = 2000;
+      S.upExtraTick(r2, 20000, 1200, 15000);
+      global.Game.time = 2100;
+      assert.strictEqual(S.upExtraTick(r2, 19000, 1200, 15000), false);
+      assert.strictEqual(r2.memory.upExtraSince, undefined);
+    } finally {
+      if (prev === undefined) delete global.Game; else global.Game = prev;
+    }
+  }],
+  ['storage surplus but ctl EMA low -> 2', () => assert.strictEqual(up({ storage: 25000, ema: 300, reserve: 15000 }), 2)],
+  ['upExtraTick leave/enter lines are floor-relative', () => {
+    assert.strictEqual(S.upExtraTick({ memory: { upExtra: 1 }, storage: {} }, 4999, 1200, 2000), false);
+    assert.strictEqual(S.upExtraTick({ memory: { upExtra: 1 }, storage: {} }, 5000, 1200, 2000), true);
+    assert.strictEqual(S.upExtraTick({ memory: {}, storage: {} }, 7000, 1200, 2000), false);
+  }],
   ['no storage: EMA only (pre-storage behaviour)', () => assert.strictEqual(up({ hasStorage: false, ema: 1400 }), 3)],
   ['defLow: upBank hysteresis — enter below reserve-500, stay until reserve+1000; keep 1 while banking; no hold -> 0 (1 on downgrade risk)', () => {
     const mem = {};
@@ -41,7 +73,7 @@ const cases = [
     assert.strictEqual(S.defLowUpgraders(2, 12999, 15000, true, false, {}), 1);
     assert.strictEqual(S.defLowUpgraders(2, 14400, 15000, false, false, {}), 0);
     assert.strictEqual(S.defLowUpgraders(2, 5000, 15000, false, true, {}), 1); }],
-  ['capped by upgrader spots', () => assert.strictEqual(up({ storage: 9000, ema: 5000 }), 3)],
+  ['capped by upgrader spots', () => assert.strictEqual(up({ storage: 25000, ema: 5000, reserve: 15000, mem: { upExtra: 1 } }), 3)],
   ['sites: base 1', () => assert.strictEqual(up({ sites: 2, storage: 0 }), 1)],
   ['road/build mode: upgrader body 700e (6W1C1M), normal mode cap; other roles unaffected', () => {
     assert.strictEqual(S.bodyEnergy('upgrader', 1850, 1850, 1850, true, true, undefined, true), 700);

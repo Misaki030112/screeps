@@ -1,6 +1,17 @@
 <!-- 2026-11-09 17:1x: Phase0 waiting on ticks; see STRATEGY Current state + ROADMAP 17:1x; 12h reviews must score T3 Phase0/1/2. -->
 # Home W46N8 RCL7 readiness (strategy review 2026-10-19 18:4x UTC+8)
 
+## 2026-11-10 20:2x Asia/Hong_Kong — 12h strategic review (plan holds; sticky 20k 3rd-upgrader gate shipped)
+
+**Board.** Home 47.52% stor avg 15.3k max 19.1k (20.50 e/t → RCL8 ≈14.6 d; 32% of 12h under 15k). W47 23.13% stor avg 19.4k max 25.7k (12.76 e/t → RCL8 ≈34 d; 7.2% ≥25k, 0% ≥40k, keep=2). Remotes SAFE. CPU avg 17.57, bucket 10k. LIVE 17b61c0 + this ship.
+
+**Finding.** Ledger net sp:upgrader **2.98 e/t** (gross 11.30 − refund 8.32) is under the morning 5 e/t energy-waste gate, but the 16k `allowExtra` + `ctlEma≥700` gate still yo-yos a 1550 body the ≈21.7 e/t feed cannot support (last hour nUp hit 6; 1h upgrade 62%). Two 14W already demand 28 and are energy-bound; the 3rd does not raise long-run e/t.
+
+**Community.** Overmind `UpgradeSite` sizes WORK from a stable buffer (100k) and never spawn-then-recycles. Our 1k band was the anti-pattern. New gate matches W47's 40k/500t latch, sized to the 15k floor.
+
+**Moves:** (1) shipped sticky enter 20k + ctlEma≥1200 for 300 t, leave 18k or ema<700, no 3rd start while `energyAvailable < cap-1550`; (2) home = RCL8 lead, funnel at ~90%; (3) W47 40k sticky + defender threat-sizing still waiting.
+
+
 ## 2026-11-10 09:2x JST — 12h strategic review (plan holds; upgrader churn under floor-bank)
 
 **Board.** Home 45.68% stor 14.7k (~20 e/t → RCL8 ≈15 d). W47 21.99% stor 14.4k (~8.9 e/t). Remotes SAFE (routine W45N7 cores). CPU ~16, bucket 10k.
