@@ -158,9 +158,9 @@ assert.strictEqual(Memory.ops.w8day.softE, 0, 'hysteresis hold softE off at 23k 
 assert.strictEqual(Memory.ops.w8day.softCap2, 0, 'softCap2 off in [ARM,SOFT) after clear');
 assert.strictEqual(Memory.ops.w8day.bankWhy, 'ready', 'bankWhy=ready in soft hysteresis hold');
 assert.strictEqual(Memory.ops.w8day.softBand, 0, 'still no ctl battery → softBand stays 0');
-assert.strictEqual(Memory.ops.w8day.upgKeep, 3, '17:4x: soft-band surplus trim keep=3 (not softCap≤2)');
-// 17:4x: soft-band trims surplus 4→≤3; softCap must NOT recycle to ≤2 in the hold band
-assert.strictEqual((Memory.ops.w8recycle || []).length, 1, 'soft-band surplus trim 4→3 (not ≤2): ' + JSON.stringify(Memory.ops.w8recycle));
+assert.strictEqual(Memory.ops.w8day.upgKeep, 2, '11-10: [22k,25k) stays keep=2 until the 40k latch (no 3↔2 flicker)');
+assert.strictEqual(Memory.ops.w8day.upLatched, 0, '23k is not the 40k sticky bank');
+assert.strictEqual((Memory.ops.w8recycle || []).length, 2, '23k trims 4→2: ' + JSON.stringify(Memory.ops.w8recycle));
 // re-arm soft energy below LEAN_SOFT_ARM
 rSoftClear.storage.store.energy = 21000;
 W.dayObs(rSoftClear);
@@ -200,10 +200,11 @@ assert.ok((Memory.ops.w8recycle || []).length >= 2, 'soft re-arm recycles to ≤
   const ctlL = rTrim.lookForAt(LOOK_STRUCTURES, Ccfg.CTL_LINK[0], Ccfg.CTL_LINK[1])[0];
   const hubL = rTrim.lookForAt(LOOK_STRUCTURES, 33, 34).find(s => s.structureType === 'link');
   ctlC.store = { energy: 1500 }; ctlL.store = { energy: 400 }; hubL.store = { energy: 200 };
-  W.dayObs(rTrim); // clear softE
+  W.dayObs(rTrim); // clear softE — seal hysteresis only; upgraders stay at 2
   assert.strictEqual(Memory.ops.w8day.softE, 0);
-  assert.strictEqual(Memory.ops.w8day.upgKeep, 0, 'clear ≥25k upgKeep=0 (surplus allowed)');
-  assert.strictEqual((Memory.ops.w8recycle || []).length, 0, 'clear+hub+fat bat: no recycle');
+  assert.strictEqual(Memory.ops.w8day.upgKeep, 2, 'clear ≥25k does not open surplus (keep=2 until 40k sticky)');
+  assert.strictEqual(Memory.ops.w8day.upLatched, 0);
+  assert.strictEqual((Memory.ops.w8recycle || []).length, 2, '25k + hub + fat bat still trims 4→2: ' + JSON.stringify(Memory.ops.w8recycle));
   delete Memory.ops.w8recycle;
   rTrim.storage.store.energy = 23598; // live ~17:46 soft-band hysteresis
   Memory.ops.w8day.leanBank = 0;
@@ -213,8 +214,8 @@ assert.ok((Memory.ops.w8recycle || []).length >= 2, 'soft re-arm recycles to ≤
   assert.strictEqual(Memory.ops.w8day.softBand, 1, 'softBand ON (stor<25k + ctl≥1200)');
   assert.strictEqual(Memory.ops.w8day.hubReady, 1);
   assert.strictEqual(Memory.ops.w8day.feedOk, 1);
-  assert.strictEqual(Memory.ops.w8day.upgKeep, 3, 'soft-band keep=3');
-  assert.strictEqual((Memory.ops.w8recycle || []).length, 1, '17:4x soft-band trims 4→3 with hub+fat bat: ' + JSON.stringify(Memory.ops.w8recycle));
+  assert.strictEqual(Memory.ops.w8day.upgKeep, 2, 'soft-band keep=2 (not the old surplus trim of 3)');
+  assert.strictEqual((Memory.ops.w8recycle || []).length, 2, '11-10 soft-band trims 4→2 with hub+fat bat: ' + JSON.stringify(Memory.ops.w8recycle));
 }
 // re-arm leanBank below LEAN_ARM
 Memory.ops.w8day.leanBank = 0;
@@ -368,18 +369,18 @@ assert.strictEqual(W.softCap2(30000), false, 'neighbor camp does not hold ≤2')
 assert.strictEqual(Memory.ops.w8day.threatSoft, 0);
 assert.strictEqual(Memory.ops.w8day.softCap2, 0);
 assert.strictEqual(Memory.ops.w8day.bankWhy, 'ready');
-// w8threatN alone must NOT softCap2-recycle to ≤2; thin battery may still trim surplus 4→≤3 (feed-gate).
-assert.ok((Memory.ops.w8recycle || []).length <= 1, 'w8threatN must not softCap2-recycle to ≤2: ' + JSON.stringify(Memory.ops.w8recycle));
-if ((Memory.ops.w8recycle || []).length) {
-  assert.strictEqual((Memory.ops.w8recycle || []).length, 1, 'feed-starve only trims surplus above 3');
-}
+// 30k without the 40k latch stays keep=2. Neighbor threat is not what holds it; the bank latch is.
+assert.strictEqual(Memory.ops.w8day.upLatched, 0);
+assert.strictEqual(Memory.ops.w8day.upgKeep, 2, '30k without sticky stays 2');
+assert.strictEqual((Memory.ops.w8recycle || []).length, 2, '30k trims 4→2: ' + JSON.stringify(Memory.ops.w8recycle));
 delete Memory.ops.w8threatN;
 delete Memory.ops.w8recycle;
 W.dayObs(rThreat);
 assert.strictEqual(Memory.ops.w8day.bankWhy, 'ready', 'window clear → normal soft-cap resumes');
 assert.strictEqual(Memory.ops.w8day.softCap2, 0);
 assert.strictEqual(Memory.ops.w8day.feedOk, 0, 'peace ≥25k still feedOk=0 without CTL battery');
-assert.ok((Memory.ops.w8recycle || []).length >= 1, '11:4x strategy: thin ctl battery recycles 4→≤3: ' + JSON.stringify(Memory.ops.w8recycle));
+assert.strictEqual(Memory.ops.w8day.upgKeep, 2);
+assert.strictEqual((Memory.ops.w8recycle || []).length, 2, 'unsticky 30k trims 4→2: ' + JSON.stringify(Memory.ops.w8recycle));
 // peacetime ≥25k + ctl battery filled → no recycle (surplus allowed once feedOk)
 delete Memory.ops.w8recycle;
 Memory.ops.w8day = { leanBank: 0 };
@@ -401,12 +402,12 @@ assert.strictEqual(Memory.ops.w8day.ctlBat, 1900);
 assert.strictEqual(Memory.ops.w8day.feedOk, 1, 'battery ≥FEED_MIN → feedOk');
 // Live default HUB_LINK is on (Misaki nod). No structure yet: still recycle 4→≤3, hubReady 0, upgCeil 3.
 assert.strictEqual(Ccfg.HUB_LINK, true, 'live HUB_LINK armed');
-assert.ok((Memory.ops.w8recycle || []).length >= 1, 'no structure: recycle surplus above base 3: ' + JSON.stringify(Memory.ops.w8recycle));
+assert.strictEqual((Memory.ops.w8recycle || []).length, 2, 'no structure: trim 4→2 (not sticky): ' + JSON.stringify(Memory.ops.w8recycle));
 assert.ok('hubLinkE' in Memory.ops.w8day, '23:4x hubLinkE obs');
 assert.strictEqual(Memory.ops.w8day.hubLinkE, -1, 'no hub link structure → -1');
 assert.strictEqual(Memory.ops.w8day.hubReady, 0, 'flag on, no structure → hubReady 0');
 assert.strictEqual(Memory.ops.w8day.hubLink, 1, 'hubLink flag obs 1 while armed');
-assert.strictEqual(Memory.ops.w8day.upgCeil, 3, '17:3x: no structure → upgCeil 3');
+assert.strictEqual(Memory.ops.w8day.upgCeil, 2, '11-10: unsticky ceiling is 2');
 assert.strictEqual(Memory.ops.w8day.feedBound, 1, '17:3x: nUp≥3 + soft clear + !hubLinkLive → feedBound');
 // Flag-off path still recycles (explicit; live default stays true).
 {
@@ -416,7 +417,7 @@ assert.strictEqual(Memory.ops.w8day.feedBound, 1, '17:3x: nUp≥3 + soft clear +
   W.dayObs(rFeed);
   assert.strictEqual(Memory.ops.w8day.hubLink, 0, 'hubLink flag obs 0 when off');
   assert.strictEqual(Memory.ops.w8day.hubReady, 0, 'HUB_LINK off → hubReady 0');
-  assert.ok((Memory.ops.w8recycle || []).length >= 1, 'no HUB_LINK: recycle surplus above base 3: ' + JSON.stringify(Memory.ops.w8recycle));
+  assert.strictEqual((Memory.ops.w8recycle || []).length, 2, 'no HUB_LINK: trim 4→2: ' + JSON.stringify(Memory.ops.w8recycle));
   Ccfg.HUB_LINK = true;
 }
 
@@ -430,7 +431,7 @@ assert.strictEqual(Memory.ops.w8day.feedBound, 1, '17:3x: nUp≥3 + soft clear +
   W.dayObs(rFeed);
   assert.strictEqual(Memory.ops.w8day.hubLink, 1, 'flag obs 1 while HUB_LINK true');
   assert.strictEqual(Memory.ops.w8day.hubReady, 0, 'no structure → hubReady 0 even with flag');
-  assert.ok((Memory.ops.w8recycle || []).length >= 1, 'flag-on site-phase still recycles >3: ' + JSON.stringify(Memory.ops.w8recycle));
+  assert.strictEqual((Memory.ops.w8recycle || []).length, 2, 'flag-on site-phase still trims 4→2: ' + JSON.stringify(Memory.ops.w8recycle));
   // Structure stands + battery full → hubReady 1, surplus allowed (no recycle)
   delete Memory.ops.w8recycle;
   Memory.ops.w8day = { leanBank: 0 };
@@ -452,8 +453,9 @@ assert.strictEqual(Memory.ops.w8day.feedBound, 1, '17:3x: nUp≥3 + soft clear +
   assert.strictEqual(Memory.ops.w8day.hubReady, 1, 'structure + flag → hubReady 1');
   assert.strictEqual(Memory.ops.w8day.hubLinkE, 200, 'hubLinkE from structure store');
   assert.strictEqual(Memory.ops.w8day.hubPrime, 1, '23:4x 11-03: hubE≥200 → hubPrime 1');
-  assert.ok(!(Memory.ops.w8recycle || []).length, 'hub live + feedOk → no recycle: ' + JSON.stringify(Memory.ops.w8recycle));
-  assert.strictEqual(Memory.ops.w8day.upgCeil, 6, '17:3x: hub live → upgCeil 6');
+  assert.strictEqual((Memory.ops.w8recycle || []).length, 2, 'hub live at 30k is not the 40k latch — trim 4→2: ' + JSON.stringify(Memory.ops.w8recycle));
+  assert.strictEqual(Memory.ops.w8day.upgCeil, 2, '11-10: hub live no longer raises ceil to 6');
+  assert.strictEqual(Memory.ops.w8day.upLatched, 0);
   assert.strictEqual(Memory.ops.w8day.feedBound, 0, '17:3x: hub live clears feedBound');
   // empty hub → hubPrime 0 (patrol sees pre-warm gap during softCap bank)
   hubL.store = { energy: 0 };

@@ -409,14 +409,28 @@ module.exports = { defLowUpgraders, setRoleTargets, rhTarget, birthDirs, targets
   require('../rooms/w47n8/fillmeter').tick(spawn); // 17:5x refill meter (Memory.ops.fm[room]: delivered, ticks below cap, episodes, queen transfers)
   if (spawn.spawning) { sw.busy++; setRoleTargets(spawn.room); return; }
   // Commander owns this spawn (idle / recycle / explicit spawn). Do not arm the idle-skip window.
-  if (require('../utils/cmd').consumeSpawn(spawn)) { sw.idle++; return; }
-  // CPU (strategy review 2026-10-19): run1 costs ~2.4 ms a call and finds nothing to spawn on ~36% of ticks
-  // (sw busy 15268 / idle 8853 / wait 231; prof.spawn EMA 0.91). After an idle pass, re-check every IDLE_EVERY ticks;
-  // any hostile in the room forces a full pass. Worst case a replacement starts IDLE_EVERY-1 ticks later.
-  if (sw.ne && Game.time < sw.ne && !spawn.room.find(FIND_HOSTILE_CREEPS).length) { sw.idle++; sw.skip = (sw.skip || 0) + 1; return; }
+  const cmd = require('../utils/cmd');
+  if (cmd.consumeSpawn(spawn)) { sw.idle++; return; }
+  // CPU (strategy review 2026-10-19): run1 costs ~2.4 ms a call and finds nothing to spawn on ~36% of ticks.
+  // After an idle pass, re-check every IDLE_EVERY ticks. 11-10: also while the room wants a creep but
+  // energyAvailable is still short of that body (the 15k-floor churn kept both RCL7 spawns on run1).
+  // A tick that can pay the queued cost, a hostile, or a live commander order still runs the full pass.
+  // Worst case a replacement starts IDLE_EVERY-1 ticks later.
+  const hostile = typeof FIND_HOSTILE_CREEPS !== 'undefined' && spawn.room.find(FIND_HOSTILE_CREEPS).length;
+  const cmdOn = !!(cmd.armed && cmd.armed());
+  const canPay = sw.waitCost > 0 && (spawn.room.energyAvailable || 0) >= sw.waitCost;
+  if (sw.ne && Game.time < sw.ne && !hostile && !cmdOn && !canPay) {
+    if (sw.waitCost) sw.wait++; else sw.idle++;
+    sw.skip = (sw.skip || 0) + 1; return;
+  }
   let waited = false, done = false, rv;
   try { rv = run1(spawn, (role, cost, avail) => { if (!waited) { waited = true; sw.wait++; sw.last = [role, cost, avail, Game.time]; } }); done = true; return rv; }
-  finally { if (!waited && !spawn.spawning) sw.idle++; sw.ne = done && rv === undefined && !waited ? Game.time + IDLE_EVERY : 0; }
+  finally {
+    if (!done) { sw.ne = 0; sw.waitCost = 0; }
+    else if (waited) { sw.waitCost = sw.last ? sw.last[1] : 0; sw.ne = Game.time + IDLE_EVERY; }
+    else if (rv === undefined) { if (!spawn.spawning) sw.idle++; sw.waitCost = 0; sw.ne = Game.time + IDLE_EVERY; }
+    else { if (!spawn.spawning) sw.idle++; sw.waitCost = 0; sw.ne = 0; }
+  }
 } };
 const IDLE_EVERY = 4;
 function run1(spawn, onWait) {

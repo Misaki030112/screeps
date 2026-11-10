@@ -22,35 +22,42 @@ assert.strictEqual(Memory.ops.labReady.why, 'noK', 'no K in terminal/storage');
 assert.strictEqual(Memory.ops.labReady.propose, 0);
 assert.strictEqual(Memory.ops.labReady.hasCode, 1);
 
+const bump = () => { Game.time += L.READY_EVERY; };
 r = mk({}, {}, {}, { K: 1000, O: 30000 });
+bump();
 L.readyObs(r);
 assert.strictEqual(Memory.ops.labReady.propose, 1, 'K≥1000 + O → propose');
 assert.strictEqual(Memory.ops.labReady.why, 'ready');
 assert.strictEqual(Memory.ops.labReady.k, 1000);
 
 r = mk({}, {}, {}, { K: 500, O: 30000 }, { K: 600 });
+bump();
 L.readyObs(r);
 assert.strictEqual(Memory.ops.labReady.propose, 1, 'K term+stor counts');
 assert.strictEqual(Memory.ops.labReady.k, 1100);
 
 r = mk({}, {}, {}, { K: 1000, O: 50 });
+bump();
 L.readyObs(r);
 assert.strictEqual(Memory.ops.labReady.why, 'noO');
 assert.strictEqual(Memory.ops.labReady.propose, 0);
 
 // 23:4x actOk checklist: propose can fire at K≥1k, but safe nod wants kBuf≥3k + homeStor≥15k
 r = mk({}, {}, {}, { K: 1000, O: 30000 }, { energy: 20000 });
+bump();
 L.readyObs(r);
 assert.strictEqual(Memory.ops.labReady.propose, 1);
 assert.strictEqual(Memory.ops.labReady.actOk, 0, 'kTerm 1k < ACT_K_BUF 3k');
 assert.ok(Memory.ops.labReady.actGaps.includes('kBuf'));
 
 r = mk({}, {}, {}, { K: 3000, O: 30000 }, { energy: 10000 });
+bump();
 L.readyObs(r);
 assert.strictEqual(Memory.ops.labReady.actOk, 0, 'homeStor under floor');
 assert.ok(Memory.ops.labReady.actGaps.includes('homeStor'));
 
 r = mk({ KO: 100 }, {}, {}, { K: 5000, O: 30000, KO: 200 }, { energy: 16000 });
+bump();
 L.readyObs(r);
 assert.strictEqual(Memory.ops.labReady.actOk, 1, 'floors met');
 assert.strictEqual(Memory.ops.labReady.actGaps, '');
@@ -85,4 +92,29 @@ ran = 0;
 r = mk({}, { K: 100 }, { O: 100 }, { K: 5000, O: 30000 });
 assert.strictEqual(L.run(r), 1, 'disarm resumes reaction');
 assert.strictEqual(ran, 1);
+
+// Dormant readyObs: one FIND_MY_STRUCTURES, then skip until READY_EVERY. Does not arm labs or react.
+{
+  assert.ok(L.READY_EVERY >= 10 && L.READY_EVERY <= 50, 'READY_EVERY in 10–50');
+  let finds = 0;
+  const room = mk({}, {}, {}, { K: 0, O: 0 });
+  room.find = () => { finds++; return room.labs; };
+  delete Memory.ops.labs;
+  Game.time += L.READY_EVERY;
+  assert.strictEqual(L.run(room), 0, 'labs off does not react');
+  assert.strictEqual(finds, 1, 'first dormant tick scans');
+  assert.ok(!Memory.ops.labs, 'scan does not flip ops.labs');
+  const why = Memory.ops.labReady.why;
+  Game.time += 1;
+  room.terminal.store = { K: 9000, O: 9000 };
+  assert.strictEqual(L.run(room), 0);
+  assert.strictEqual(finds, 1, 'next tick while labs are off does not scan');
+  assert.strictEqual(Memory.ops.labReady.why, why, 'snapshot held across the skipped tick');
+  Game.time += L.READY_EVERY - 1;
+  L.readyObs(room);
+  assert.strictEqual(finds, 2, 'scan resumes once the window elapses');
+  assert.strictEqual(Memory.ops.labReady.propose, 1, 'fresh scan sees the new terminal stock');
+  assert.strictEqual(L.run(room), 0, 'still no reaction');
+  assert.ok(!Memory.ops.labs);
+}
 console.log('labs ok');
