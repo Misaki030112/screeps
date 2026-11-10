@@ -1,8 +1,8 @@
 {
   "ok": true,
   "routine": "Screeps 半小时轨迹补数",
-  "finished_at": "2026-11-11T00:08:43+08:00",
-  "finished_at_hkt": "2026-11-11 00:08 Asia/Hong_Kong",
+  "finished_at": "2026-11-11T01:07:59+08:00",
+  "finished_at_hkt": "2026-11-11 01:07 Asia/Hong_Kong",
   "shard": "shard3",
   "rooms": [
     "W46N8",
@@ -12,87 +12,93 @@
     "W47N7"
   ],
   "minutes": 40,
-  "game_time": 84189917,
-  "published_bases": "84189200..84189800",
+  "game_time": 84190705,
+  "live_game_time_at_finish": 84190750,
+  "published_bases": "84190000..84190600",
   "ticks": {
-    "min": 84189201,
-    "max": 84189900,
+    "min": 84190001,
+    "max": 84190700,
     "span": 700
   },
-  "tick_s": 4.375,
-  "missing_chunks": 0,
-  "missing_chunk_list": [],
-  "missing_chunk_note": "34/35 official history chunks OK on first fetch. W47N7@84189800 (ticks 84189801..84189900) 404 on first fetch (latest published base; neighbor W47N7@84189700 and the other four rooms @84189800 OK). Retry ~8s later succeeded: 100 ticks, inserted=481. Final 35/35, all five rooms distinct=700/700.",
-  "creep_rows_reconstructed": 23985,
-  "already_in_db": 6190,
-  "inserted": 17795,
-  "inserted_first_pass": 17314,
-  "inserted_retry": 481,
-  "ts_realigned": 0,
+  "tick_s": 4.361,
+  "missing_chunks": 2,
+  "missing_chunk_list": [
+    "W47N8@84190300",
+    "W47N8@84190400"
+  ],
+  "missing_chunk_note": "30/35 official history chunks OK on first fetch. First-pass 404s: W47N8@84190300, W47N8@84190400, W47N8@84190600, W45N8@84190600, W47N7@84190600. Retry ~8s later recovered W47N8@84190600 and W45N8@84190600 (inserted=2812). Retry ~10s later recovered W47N7@84190600 (inserted=332). W47N8@84190300 and W47N8@84190400 404'd three times over ~2 minutes (01:04–01:06 Asia/Hong_Kong); treated as an official unpublished hole, same class as earlier W47N8@84187900 / W47N8@84185500. Final 33/35. W47N8 remaining gap 84190301..84190430 (130t); listener had 70 remnant ticks 84190431..84190500 in the 84190400 chunk. Other four rooms distinct=700/700.",
+  "creep_rows_reconstructed_first_pass": 21120,
+  "already_in_db_first_pass": 10750,
+  "inserted": 13514,
+  "inserted_first_pass": 10370,
+  "inserted_retry": 3144,
+  "ts_realigned": 2416,
   "per_room": {
     "W46N8": {
       "ticks": 700,
-      "new": 3784,
-      "rows_after": 6923,
+      "new": 3097,
+      "rows_after": 6743,
       "distinct": 700
     },
     "W47N8": {
-      "ticks": 700,
-      "new": 7560,
-      "rows_after": 10983,
-      "distinct": 700
+      "ticks": 570,
+      "new": 5009,
+      "rows_after": 10822,
+      "distinct": 570,
+      "official_404_gap": "84190301..84190430"
     },
     "W45N8": {
       "ticks": 700,
-      "new": 2640,
-      "rows_after": 3493,
+      "new": 2019,
+      "rows_after": 3071,
       "distinct": 700
     },
     "W45N7": {
       "ticks": 700,
-      "new": 1921,
-      "rows_after": 2174,
+      "new": 1698,
+      "rows_after": 2053,
       "distinct": 700
     },
     "W47N7": {
       "ticks": 700,
-      "new": 1890,
-      "rows_after": 2508,
+      "new": 1691,
+      "rows_after": 2520,
       "distinct": 700
     }
   },
   "db_after": {
-    "W45N7": "84189201..84189900 rows=2174 distinct=700",
-    "W45N8": "84189201..84189900 rows=3493 distinct=700",
-    "W46N8": "84189201..84189900 rows=6923 distinct=700",
-    "W47N7": "84189201..84189900 rows=2508 distinct=700",
-    "W47N8": "84189201..84189900 rows=10983 distinct=700"
+    "W45N7": "84190001..84190700 rows=2053 distinct=700",
+    "W45N8": "84190001..84190700 rows=3071 distinct=700",
+    "W46N8": "84190001..84190700 rows=6743 distinct=700",
+    "W47N7": "84190001..84190700 rows=2520 distinct=700",
+    "W47N8": "84190001..84190700 rows=10822 distinct=570 gap=84190301..84190430"
   },
   "listener": {
     "ok": true,
     "single_slot": true,
     "room": "W46N8",
     "yield": false,
-    "reconnected_at": "2026-11-11 00:04:09",
-    "live_game_time": 84189939,
-    "live_updated": "2026-11-11 00:07:57",
-    "note": "box slept 23:38:10-00:04:22 (1572s); run_listener.sh pid 4035476 already looping since Nov 9, listener.py auto-relaunched after wake (pid 1023611 started 00:04:09); did not kill/relaunch again or start a second listener; peacetime rotate 5:5:1:1 unchanged (W46N8 i=0, left~70s at 00:07:57). Pulled recent CPU/path buffers after reconnect (at 00:05:50: creep_cpu max 84189900, path_arrivals max 84189900, room_stats max 84189910; live.json updated 00:05:51, stats.t 84189910, roomSlot W46N8). This run inserted=17795 into ticks 84189201..84189900 (first pass 17314; W47N7@84189800 retry +481). No war_cmd/pulse restart."
+    "reconnected_at": "2026-11-11 00:37:38",
+    "live_game_time": 84190750,
+    "live_updated": "2026-11-11 01:07:17",
+    "note": "box slept ~00:34:00-00:37:28; room_stats last pre-pause 84190290 @ 00:34:00, run_listener.sh restart log 00:37:28, listener.py pid 1035146 started 00:37:38, first post-wake room_stats 84190350 @ 00:38:04. run_listener.sh pid 4035476 already looping since Nov 9; did not kill/relaunch again or start a second listener; peacetime rotate 5:5:1:1 unchanged (now W46N8 i=0, left~39.9s at 2026-11-11 01:07:15). Pulled recent CPU/path buffers after reconnect (at finish: creep_cpu max 84190740, path_arrivals max 84190740, room_stats max 84190740; live.json updating, stats.t flowing). This run inserted=13514 into ticks 84190001..84190700 (first pass 10370; retries +3144). No war_cmd/pulse restart."
   },
   "last_box_pause": {
-    "from": "2026-11-10 23:38:10",
-    "to": "2026-11-11 00:04:22",
-    "sec": 1572
+    "from": "2026-11-11 00:34:00",
+    "to": "2026-11-11 00:37:28",
+    "sec": 208,
+    "room_stats_resume": "2026-11-11 00:38:04"
   },
   "prior_box_pause": {
-    "from": "2026-11-10 23:10:07",
-    "to": "2026-11-10 23:20:49",
-    "sec": 635
+    "from": "2026-11-11 00:13:07",
+    "to": "2026-11-11 00:20:16",
+    "sec": 423
   },
   "sleep_gap": {
-    "ticks": "84189531..84189889",
-    "span": 359,
-    "filled_by_history": "Latest sleep gap 84189531..84189889 (359t, 1572s, 23:38:10-00:04:22; room_stats last pre-pause 84189530 @ 23:38:10, first post-wake 84189890 @ 00:04:22): published portion now all 5 rooms 359/359 (including W47N7@84189800 which 404'd on first fetch and was inserted 481 rows ~8s later). No unpublished sleep tail (wake at 84189890 is inside published history through 84189900). Previous sleep 84189141..84189299 still 159/159 all 5 rooms.",
-    "unpublished_lag": "84189901..84189917 at backfill start (expected; current chunk not published yet, next run will catch). Previous unpublished 84189401..84189425 now filled 25/25 all 5 rooms. No official 404s remaining in this window after retry. Lingering older official 404s outside this window unchanged: W47N8@84187900 (ticks 84187901..84188000) 0/100; W47N8@84185500 (ticks 84185501..84185600) 0/100; W46N8@84185600 (ticks 84185601..84185700) 29/100 live remnants; W47N7@84185600 (ticks 84185601..84185700) 0/100; W45N7@84188700 (ticks 84188701..84188800) 0/100; W47N7@84188800 (ticks 84188801..84188900) 0/100."
+    "ticks": "84190291..84190349",
+    "span": 59,
+    "filled_by_history": "Latest sleep gap 84190291..84190349 (59t, ~208s listener-down 00:34:00-00:37:28; room_stats last pre-pause 84190290 @ 00:34:00, first post-wake 84190350 @ 00:38:04): published portion 59/59 in W46N8, W45N8, W45N7, W47N7. W47N8 only 10/59 (84190291..84190300 from chunk 84190200; 84190301..84190349 sits inside official 404 W47N8@84190300). Previous sleep 84190001..84190109 still 109/109 all 5 rooms.",
+    "unpublished_lag": "84190701..84190750 at finish (expected; current chunk not published yet, next run will catch). Previous unpublished 84190201..84190218 now filled 18/18 all 5 rooms. Remaining official 404s in this window: W47N8@84190300 (ticks 84190301..84190400) 0/100; W47N8@84190400 (ticks 84190401..84190500) 70/100 listener remnants 84190431..84190500, so contiguous hole 84190301..84190430 (130t). Older official 404s outside this window were not re-fetched."
   },
-  "summary": "ok: 40min official history backfill shard3 5 rooms, ticks 84189201..84189900 (700), missing_chunks=0 after retry (W47N7@84189800 first-fetch 404, ok ~8s later inserted=481), inserted=17795, already_in_db=6190, reconstructed=23985, ts_realigned=0; all five rooms 700 distinct; new sleep gap 84189531-84189889 (1572s, 23:38:10-00:04:22) filled 359/359 all 5 rooms; previous unpublished 84189401-84189425 filled 25/25 all 5 rooms; previous sleep 84189141-84189299 still 159/159 all 5 rooms; unpublished now 84189901-84189917 next run; lingering older official 404s outside window unchanged (W47N8@84187900, W47N8@84185500, W46N8@84185600 29/100, W47N7@84185600, W45N7@84188700, W47N7@84188800)"
+  "summary": "ok: 40min official history backfill shard3 5 rooms, ticks 84190001..84190700 (700), missing_chunks=2 after retry (W47N8@84190300 and W47N8@84190400 official 404 x3; latest-chunk 404s for W47N8/W45N8/W47N7@84190600 recovered on retry), inserted=13514, already_in_db first_pass=10750, reconstructed first_pass=21120, ts_realigned=2416; four rooms 700 distinct; W47N8 distinct=570 with official hole 84190301..84190430 (130t); new sleep gap 84190291-84190349 (~00:34:00-00:37:28) filled 59/59 in four rooms, W47N8 10/59; previous unpublished 84190201-84190218 filled 18/18 all 5 rooms; previous sleep 84190001-84190109 still 109/109 all 5 rooms; unpublished now 84190701-84190750 next run"
 }

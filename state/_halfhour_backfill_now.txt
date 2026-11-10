@@ -1,21 +1,25 @@
-game.time=84189917 published_bases=84189200..84189800 rooms=W46N8,W47N8,W45N8,W45N7,W47N7 dry=False
-tick_s=4.375
-reconstructed ticks=84189201..84189900 (700) creep_rows=23985 missing_chunks=0
-already_in_db=6190 would_insert=17795
-per_room W46N8:700t/3784new W47N8:700t/7560new W45N8:700t/2640new W45N7:700t/1921new W47N7:700t/1890new
-inserted=17795
-ts_realigned=0
+game.time=84190705 published_bases=84190000..84190600 rooms=W46N8,W47N8,W45N8,W45N7,W47N7 dry=False
+tick_s=4.361
+reconstructed ticks=84190001..84190700 (700) creep_rows first_pass=21120 missing_chunks first_pass=5 after_retry=2
+already_in_db first_pass=10750 would_insert first_pass=10370
+per_room W46N8:700t/3097new W47N8:570t/5009new W45N8:700t/2019new W45N7:700t/1698new W47N7:700t/1691new
+inserted=13514
+inserted_first_pass=10370 inserted_retry=3144 (2812+332)
+ts_realigned=2416
 db_after
-  W45N7 ticks=84189201..84189900 rows=2174 distinct=700
-  W45N8 ticks=84189201..84189900 rows=3493 distinct=700
-  W46N8 ticks=84189201..84189900 rows=6923 distinct=700
-  W47N7 ticks=84189201..84189900 rows=2508 distinct=700
-  W47N8 ticks=84189201..84189900 rows=10983 distinct=700
-retry_404s: W47N7@84189800 first-fetch 404, ok ~8s later inserted=481 ticks 84189801..84189900
-inserted_total=17795
-sleep_gap 84189531..84189889 published all 5 rooms 359/359 (incl. W47N7@84189800 after retry)
-prev_sleep 84189141..84189299 all 5 rooms 159/159
-prev_unpublished 84189401..84189425 filled 25/25 all 5 rooms
-current_unpublished 84189901..84189917
-listener_reconnected 00:04:09 after box_pause 23:38:10-00:04:22 (1572s) single_slot W46N8
-finished_at 2026-11-11 00:08 Asia/Hong_Kong
+  W45N7 ticks=84190001..84190700 rows=2053 distinct=700
+  W45N8 ticks=84190001..84190700 rows=3071 distinct=700
+  W46N8 ticks=84190001..84190700 rows=6743 distinct=700
+  W47N7 ticks=84190001..84190700 rows=2520 distinct=700
+  W47N8 ticks=84190001..84190700 rows=10822 distinct=570
+retry_404s: first-pass 404 W47N8@84190300 W47N8@84190400 W47N8@84190600 W45N8@84190600 W47N7@84190600
+  retry~8s W47N8@84190600+W45N8@84190600 ok inserted=2812
+  retry~10s W47N7@84190600 ok inserted=332
+  W47N8@84190300 and W47N8@84190400 still 404 after 3 fetches (~2min); remaining gap 84190301..84190430 (130t); listener remnants 84190431..84190500 (70t)
+inserted_total=13514
+sleep_gap 84190291..84190349 published 59/59 W46N8,W45N8,W45N7,W47N7; W47N8 10/59 (84190291..84190300 only; 84190301..84190349 inside official 404)
+prev_sleep 84190001..84190109 all 5 rooms 109/109
+prev_unpublished 84190201..84190218 filled 18/18 all 5 rooms
+current_unpublished 84190701..84190750
+listener_reconnected 00:37:38 after box_pause ~00:34:00-00:37:28 (room_stats last 84190290 @ 00:34:00, restart log 00:37:28, first stats 84190350 @ 00:38:04) single_slot W46N8
+finished_at 2026-11-11 01:07 Asia/Hong_Kong
