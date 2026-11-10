@@ -32,6 +32,15 @@ The box VM hibernates when no agent session is active (`/run/anyrun-hibernate-ho
 - Rotation position + remaining hold persist in `metrics/listener_rot.json` (awake seconds). Before, every wake restarted at W46N8, so W47N8 and the remotes almost never got the slot (W47 trail hours stale, remotes ~1 day).
 - Patrols: treat `box_pause` spans as box sleep, not listener failure. The segment-90 ring (300 ticks) still backfills the last ~300 ticks of creep_cpu / path_arrivals on wake.
 
+## History backfill (2026-11-10)
+`tools/history_backfill.py` batch-pulls official room-history into `creep_ticks`. Endpoint: `GET https://screeps.com/room-history/shard3/{room}/{base}.json` (public, no token, no websocket room slot, not `user/memory`). Chunks are 100 ticks (`/api/version` `historyChunkSize`). The in-progress chunk is 404 until it closes, so the newest ~100 ticks (~6-8 min at current shard3 rate) cannot be recovered yet. Older published chunks go back much further than 20 minutes (the official client keeps hundreds of thousands of ticks).
+
+History tick T is the room *after* that tick's intents. The websocket listener stores the same snapshot as `gameTime` T+1 (measured 2026-11-10, W46N8 84177954–84177990, 100% match on x/y/hits/store). The script writes T+1 so rows join with live trails and `creep_cpu`. Opening tick of a chunk is sometimes JSON null; state is carried over from the previous chunk. Existing `(creep,tick)` rows are left untouched.
+
+A 20-minute collect is 5 rooms × 3–4 chunks ≈ 15–20 GETs in about 20 seconds (global cap 120 req/min). It fills hibernation holes and rooms the 5:5:1:1 rotator never visits (W47N7 had no `creep_ticks` at all). It cannot recover `room_stats` (STATS console: cpu, bucket), `creep_cpu` / `path_arrivals` beyond segment 90's last 300 ticks, or console events/alerts. Do not add an in-game position ring without an explicit deploy ask.
+
+Usage: `.venv/bin/python tools/history_backfill.py --minutes 20` (optional `--dry-run`).
+
 ## Box restarts and persistence (incident 2026-10-15)
 - **Incident:** the box was stuck 20:57–23:28 (UTC+8) and came back from a fresh system image. `/workspace` and `/home/box` were kept, but system dirs (`/usr`, `/etc`, `/var/lib`) and apt packages were reset. PGDATA was at the Debian default `/var/lib/postgresql/17/main`, so the TimescaleDB data was lost. `services.sh` only started services and could not reinstall them. The 23:33 run reinstalled the packages and initialised an empty DB. No old cluster survived anywhere (searched for PG_VERSION). Recovered: the pre-Timescale archive `metrics/archive/` (10-12 17:20 → 10-13 10:19, via backfill) plus deploy rows `ef368d3` and `10f881a`. The data from 10-13 10:19 to 10-15 23:33 is gone.
 - **Now:** PGDATA = `var/pg17` and its conf templates in `var/pg17-conf`. Grafana data is in `grafana/data`, the Grafana .deb is in `var/pkgs`, and Python deps are in `requirements.txt`. All of these are under /workspace and gitignored where needed.
