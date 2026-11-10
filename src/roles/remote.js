@@ -61,12 +61,21 @@ function awayFrom(c, cx, cy) {
   if (r.path.length) c.move(c.pos.getDirectionTo(r.path[0]));
 }
 // Multi-hop (W45N7): container has ~3 free neighbours. Empty rhaulers piled on them (patrol 10-16 18:00:
-// tiles 20-22,14 + 22,16 dominated traffic; 6× waiting_pickup lost/h 300-676). Cap concurrent empty waiters
+// tiles 20-22,14 + 22,16 dominated traffic; 6× waiting_pickup lost/h 300-676). Cap concurrent waiters
 // in the remote; extras hold in the last via room until the container buffers energy for a load.
+// 2026-11-10 ~84185280: the cap only counted store===0, so two half-full sitters were invisible and a
+// third still walked in. Every non-full rhauler already in the remote occupies a slot (half-full included).
 const STAGE = { waiters: 2, energy: 350 };
-// pure: should `me` stay out / leave? inRemote = empty-rhauler names in remote, closest-to-cont first.
+// 8C8M carry is 400. Leave-early used to require 60% (240), so a creep stuck at 200 never left
+// (rhauler84184815 sat 84 ticks at 21,14). 100 is a useful partial on the ~230t trip and is below 60%.
+// 18 consecutive ticks with nothing to withdraw: long enough that a live 10 e/t drip (which resets the
+// streak) still fills the creep, short enough that a starved sitter does not hold the tile for a minute.
+// Road haulers (carry > 400, W45N8 16C8M/24C12M) keep the old 60% / 31-tick rule so they don't walk
+// home with a trickle during source regen. Both bodies withdraw any positive container energy (the old
+// >= 50 gate left a 1-49 drip sitting in a pocket that cycles 0-60).
+const POCKET = { leave: 100, wait: 18 };
+// pure: should `me` stay out / leave? inRemote = non-full rhauler names in the remote, closest-to-cont first.
 // me = creep name when already in remote, falsy when still in via/home.
-// inRemote = empty-rhauler names in remote, closest-to-container first.
 function stageOut(me, contE, inRemote, waiters, energy) {
   waiters = waiters === undefined ? STAGE.waiters : waiters;
   energy = energy === undefined ? STAGE.energy : energy;
@@ -74,20 +83,82 @@ function stageOut(me, contE, inRemote, waiters, energy) {
   if (me) return inRemote.length >= waiters && inRemote.slice(0, waiters).indexOf(me) < 0;
   return inRemote.length >= waiters; // outside: don't enter once remote already has its waiter slots
 }
+// list: {name, full, x, y}. Non-full only (any store, including a half load). Closest to the container first.
+function waiterOrder(list, cx, cy) {
+  return list.filter(o => o && !o.full).slice().sort((a, b) => {
+    const da = Math.max(Math.abs(a.x - cx), Math.abs(a.y - cy));
+    const db = Math.max(Math.abs(b.x - cx), Math.abs(b.y - cy));
+    return da - db || String(a.name).localeCompare(String(b.name));
+  }).map(o => o.name);
+}
+// pure: parked at the container with nothing else to pick up.
+// contE > 0 -> withdraw (do not wait for 50). Else count a thin tick; a useful partial leaves.
+// returns {act:'withdraw'|'leave'|'wait', wait}
+function pocketAct(store, contE, wait, cap) {
+  store = store || 0; contE = contE || 0; wait = wait || 0;
+  if (contE > 0) return { act: 'withdraw', wait: 0 };
+  const w = wait + 1, carry = cap > 0 ? cap : 400;
+  const partial = carry <= 400 && store >= POCKET.leave && w >= POCKET.wait;
+  const mostly = store >= carry * 0.6 && w > 30;
+  if (partial || mostly) return { act: 'leave', wait: 0 };
+  return { act: 'wait', wait: w };
+}
+function onAvoid(x, y, avoid) {
+  if (!avoid) return false;
+  for (let i = 0; i < avoid.length; i++) if (avoid[i][0] === x && avoid[i][1] === y) return true;
+  return false;
+}
+// A wait stand is range 1 of the container, not the container tile itself, not an avoid tile, not a wall.
+function waitStand(x, y, cont, avoid, wall) {
+  if (!cont || (x === cont[0] && y === cont[1])) return false;
+  if (Math.max(Math.abs(x - cont[0]), Math.abs(y - cont[1])) !== 1) return false;
+  if (onAvoid(x, y, avoid)) return false;
+  if (wall && wall(x, y)) return false;
+  return true;
+}
+// Direction off an avoid tile, or 0 if `x,y` is not on one / no legal step.
+// Prefer a range-1 neighbor of the container (a real wait stand); never the container tile or another avoid tile.
+// blocked(x, y) is terrain / creeps / the source. Scan N then clockwise so a free (22,14) wins from W45N7 (22,15).
+function stepOffAvoid(x, y, cont, avoid, blocked) {
+  if (!onAvoid(x, y, avoid)) return 0;
+  const dirs = [[0, -1, 1], [1, -1, 2], [1, 0, 3], [1, 1, 4], [0, 1, 5], [-1, 1, 6], [-1, 0, 7], [-1, -1, 8]];
+  let best = 0, rank = 99, dist = 99;
+  for (let i = 0; i < dirs.length; i++) {
+    const dx = dirs[i][0], dy = dirs[i][1], dir = dirs[i][2], nx = x + dx, ny = y + dy;
+    if (nx <= 0 || ny <= 0 || nx >= 49 || ny >= 49) continue;
+    if (onAvoid(nx, ny, avoid)) continue;
+    if (cont && nx === cont[0] && ny === cont[1]) continue;
+    if (blocked && blocked(nx, ny)) continue;
+    const d = cont ? Math.max(Math.abs(nx - cont[0]), Math.abs(ny - cont[1])) : 0;
+    const r = d <= 1 ? 0 : 1;
+    if (r < rank || (r === rank && d < dist)) { best = dir; rank = r; dist = d; }
+  }
+  return best;
+}
+// Collecting rhauler already standing on C.avoid (foreign site gone, but the tile is still reserved).
+// go(container, range 1) treats it as arrived. Step off to a legal neighbor instead of parking.
+function leaveAvoid(c, C) {
+  if (!C || c.memory.full || !c.room || c.room.name !== c.memory.remote || !onAvoid(c.pos.x, c.pos.y, C.avoid)) return false;
+  const T = c.room.getTerrain(), src = C.src;
+  const blocked = (x, y) => T.get(x, y) === TERRAIN_MASK_WALL
+    || (src && x === src[0] && y === src[1])
+    || c.room.lookForAt(LOOK_CREEPS, x, y).some(o => o !== c);
+  const dir = stepOffAvoid(c.pos.x, c.pos.y, C.cont, C.avoid, blocked);
+  if (!dir) return false;
+  delete c.memory._m; c.move(dir); return true;
+}
 // pure: take a full load from the via container only while it keeps >= VIA_KEEP for its own haulers.
 const VIA_KEEP = 800;
 function viaTake(contE, free) { return free > 0 && (contE || 0) - free >= VIA_KEEP; }
 function stageVia(c, C) {
+  // This creep only stages while empty. A half-full sitter is not walked back to via (leave-early delivers);
+  // it still fills a slot in the count below, so a new empty stays out.
   if (!C.via || c.memory.full || c.store[RESOURCE_ENERGY] > 0) return false;
   const m = remote.mem(c.memory.remote), e = (m.cont && m.cont.e) || 0;
   const [cx, cy] = C.cont;
   const inR = _.filter(Game.creeps, o => o.memory.role === 'rhauler' && o.memory.remote === c.memory.remote
-    && !o.memory.full && (o.store[RESOURCE_ENERGY] || 0) === 0 && o.room && o.room.name === c.memory.remote);
-  const ordered = inR.slice().sort((a, b) => {
-    const da = Math.max(Math.abs(a.pos.x - cx), Math.abs(a.pos.y - cy));
-    const db = Math.max(Math.abs(b.pos.x - cx), Math.abs(b.pos.y - cy));
-    return da - db || a.name.localeCompare(b.name);
-  }).map(o => o.name);
+    && !o.memory.full && o.room && o.room.name === c.memory.remote);
+  const ordered = waiterOrder(inR.map(o => ({ name: o.name, full: !!o.memory.full, x: o.pos.x, y: o.pos.y })), cx, cy);
   const inRemote = c.room.name === c.memory.remote;
   if (!stageOut(inRemote ? c.name : null, e, ordered)) return false;
   const via = C.via[C.via.length - 1];
@@ -175,8 +246,8 @@ const roles = {
       return; }
     if (c.memory.working && !c.memory.full && c.room.name === C.home && c.store[RESOURCE_ENERGY] > 0) return require('./hauler').run(c); // finish a home job after a pause
     c.memory.working = false;
-    if (!c.memory.full && c.store.getFreeCapacity() === 0) { c.memory.full = true; c.memory.load = c.store[RESOURCE_ENERGY]; }
-    if (c.memory.full && c.store[RESOURCE_ENERGY] === 0) { c.memory.full = false; c.memory.trips = (c.memory.trips || 0) + 1;
+    if (!c.memory.full && c.store.getFreeCapacity() === 0) { c.memory.full = true; c.memory.load = c.store[RESOURCE_ENERGY]; c.memory.wait = 0; }
+    if (c.memory.full && c.store[RESOURCE_ENERGY] === 0) { c.memory.full = false; c.memory.trips = (c.memory.trips || 0) + 1; c.memory.wait = 0;
       const m = remote.mem(c.memory.from || c.memory.remote); m.delivered = (m.delivered || 0) + (c.memory.load || 0); c.memory.load = 0; delete c.memory.from; }
     if (c.memory.full) {
       if (c.memory.dep && c.room.name === C.home && c.pos.x < 48) { c.memory.rt = Game.time - c.memory.dep; delete c.memory.dep; } // measured round trip
@@ -195,13 +266,17 @@ const roles = {
     if (c.room.name === C.home && !c.memory.dep) c.memory.dep = Game.time;
     if (c.room.name === c.memory.remote && c.pos.x > 0 && c.pos.x < 49) { const sv = S.pick(c); if (sv) { if (move.to(c, sv.pos.x, sv.pos.y, 1)) S.take(c, sv); return; } }
     if (vg !== 'nostage' && stageVia(c, C)) return;
+    if (leaveAvoid(c, C)) return; // (22,15) is range 1 of the container; do not park on C.avoid
     if (!go(c, c.memory.remote, C.cont[0], C.cont[1], 1)) return;
     if (yieldToMiner(c, C)) return;
     const drop = c.pos.findInRange(FIND_DROPPED_RESOURCES, 2).find(r => r.resourceType === RESOURCE_ENERGY && r.amount >= 30);
     if (drop) { if (c.pickup(drop) === ERR_NOT_IN_RANGE) c.moveTo(drop, { costCallback: move.foreignSites }); return; }
     const k = c.room.lookForAt(LOOK_STRUCTURES, C.cont[0], C.cont[1]).find(s => s.structureType === STRUCTURE_CONTAINER);
-    if (k && k.store[RESOURCE_ENERGY] >= 50) c.withdraw(k, RESOURCE_ENERGY);
-    else if (c.store[RESOURCE_ENERGY] >= c.store.getCapacity() * 0.6 && (!k || k.store[RESOURCE_ENERGY] < 50) && (c.memory.wait = (c.memory.wait || 0) + 1) > 30) { c.memory.full = true; c.memory.load = c.store[RESOURCE_ENERGY]; c.memory.wait = 0; }
+    const contE = k ? k.store[RESOURCE_ENERGY] || 0 : 0;
+    const act = pocketAct(c.store[RESOURCE_ENERGY] || 0, contE, c.memory.wait || 0, c.store.getCapacity());
+    c.memory.wait = act.wait;
+    if (act.act === 'withdraw') c.withdraw(k, RESOURCE_ENERGY);
+    else if (act.act === 'leave') { c.memory.full = true; c.memory.load = c.store[RESOURCE_ENERGY]; }
   },
   reserver(c) {
     if (require('../utils/cmd').yieldCreep(c)) return;
@@ -416,4 +491,4 @@ roles.rscout = function (c) {
   if (remote.paused(c.memory.remote)) return flee(c);
   go(c, c.memory.remote, x, y, 1);
 };
-module.exports = { viaGate, repairNow, inward, stageOut, STAGE, viaTake, VIA_KEEP, coreAct, reserverAct, rminer: { run: roles.rminer }, rhauler: { run: roles.rhauler }, reserver: { run: roles.reserver }, defender: { run: roles.defender }, rscout: { run: roles.rscout } };
+module.exports = { viaGate, repairNow, inward, stageOut, STAGE, waiterOrder, pocketAct, POCKET, onAvoid, waitStand, stepOffAvoid, viaTake, VIA_KEEP, coreAct, reserverAct, rminer: { run: roles.rminer }, rhauler: { run: roles.rhauler }, reserver: { run: roles.reserver }, defender: { run: roles.defender }, rscout: { run: roles.rscout } };
