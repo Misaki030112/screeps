@@ -325,8 +325,12 @@ const R = {
     if (src && !c.memory.arr && c.pos.isNearTo(src)) { c.memory.arr = Game.time; const o = Memory.ops = Memory.ops || {}; (o.w8lead = o.w8lead || {})[c.memory.si | 0] = Game.time - (c.memory.born || Game.time) - 3 * c.body.length; }
     if (c.pos.x !== x || c.pos.y !== y) {
       // stand taken (e.g. a cqminer from home still mining): harvest from any tile next to the source
-      if (Game.rooms[C.ROOM].lookForAt(LOOK_CREEPS, x, y).length && src) return c.pos.isNearTo(src) ? c.harvest(src) : go(c, src.pos.x, src.pos.y, 1);
-      c.memory.wk = 1; return go(c, x, y, 0);
+      if (Game.rooms[C.ROOM].lookForAt(LOOK_CREEPS, x, y).length && src) return c.pos.isNearTo(src) ? c.harvest(src) : MV.to(c, src.pos.x, src.pos.y, 1);
+      // 11-10 patrol: native go() reusePath 10 expires during 6W1C1M fatigue (~8 t/tile). moveTo then
+      // treats the wait as stuck and backtracks. si0 miner born 84177534 oscillated in the 35,11 pocket
+      // east of the terrain wall for ~1200 t and never reached stand 26,11 (source A sat at 3000).
+      // MV.to keeps the path across fatigue, ignores creeps, swaps when blocked.
+      c.memory.wk = 1; return MV.to(c, x, y, 0);
     }
     const cont = c.pos.lookFor(LOOK_STRUCTURES).find(s => s.structureType === STRUCTURE_CONTAINER);
     if (cont && cont.hits < cont.hitsMax * 0.5 && c.store[E] > 0) return c.repair(cont);
@@ -344,7 +348,7 @@ const R = {
   w8mminer(c) {
     if (!home(c)) return;
     const [x, y] = C.MINERAL_CONT || [37, 44];
-    if (c.pos.x !== x || c.pos.y !== y) return go(c, x, y, 0);
+    if (c.pos.x !== x || c.pos.y !== y) return MV.to(c, x, y, 0);
     const m = c.memory.min ? Game.getObjectById(c.memory.min) : c.pos.findInRange(FIND_MINERALS, 1)[0];
     if (!m) return; c.memory.min = m.id;
     const ex = m.pos.lookFor(LOOK_STRUCTURES).find(s => s.structureType === STRUCTURE_EXTRACTOR);

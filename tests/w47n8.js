@@ -175,4 +175,11 @@ Memory.ops = { w8move: { phase: 'build', t0: 4 } };
 assert.strictEqual(W.selfSufficient(), true, 'planned spawn move (build phase) -> no home pioneers');
 Memory.ops.w8move.phase = 'done'; assert.strictEqual(W.selfSufficient(), false, 'move done + no spawn visible -> pioneers allowed (real loss)');
 delete Memory.ops;
+// 11-10 patrol: a long-walking si0 miner with no arr must not cover source A
+Game.time = 1000;
+const lost = mk('w8miner', 'W47N8', { si: 0, born: 100 }); // age 900, no arr
+assert.strictEqual(run({ a: lost }).si, 0, 'lost walker (no arr, age >> lead) does not cover its source');
+assert.strictEqual(run({ a: mk('w8miner', 'W47N8', { si: 0, born: 100, arr: 200 }) }).si, 1, 'arrived miner still covers');
+assert.strictEqual(run({ a: mk('w8miner', 'W47N8', { si: 0, born: 980 }) }).si, 1, 'young walker still covers');
+Game.time = 5;
 console.log('w47n8 ok');

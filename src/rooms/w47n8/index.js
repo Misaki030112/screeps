@@ -124,7 +124,17 @@ function spawnRun(spawn) {
     // 20:20: replace at TTL < walk time + spawn time (learned per source by w8miner on arrival). TTL<60 left source 11,44 unmined
     // ~150 ticks (5W1M walks 5-25 ticks/tile; spawn->11,43 took ~170 ticks), regen wasted at 3000/3000.
     const S = C.SOURCES[i], lead = Math.max(60, ((Memory.ops && Memory.ops.w8lead && Memory.ops.w8lead[i]) || 5 * spawn.pos.getRangeTo(S.stand[0], S.stand[1])) + 3 * 6 + 10);
-    const live = cs.filter(c => c.memory.role === 'w8miner' && (c.memory.si | 0) === i && (c.spawning || c.ticksToLive > lead));
+    // 11-10 patrol: a si0 miner can walk the long east-of-wall detour from hub spawns 33-34,30 for
+    // hundreds of ticks without arr; TTL still > lead so it blocked a replacement while source A sat
+    // unmined. Count as live only if spawning, arrived, or still within lead+80 of birth (or no born).
+    const live = cs.filter(c => {
+      if (c.memory.role !== 'w8miner' || (c.memory.si | 0) !== i) return false;
+      if (!(c.spawning || c.ticksToLive > lead)) return false;
+      if (c.spawning || c.memory.arr) return true;
+      const born = c.memory.born;
+      if (!born) return true;
+      return (Game.time - born) <= lead + 80;
+    });
     const cq = room.find(FIND_MY_CREEPS, { filter: c => c.memory.role === 'cqminer' && c.ticksToLive > 60 && c.pos.inRangeTo(S.src[0], S.src[1], 1) });
     const works = _.sum(live.concat(cq), c => c.getActiveBodyparts(WORK) || _.filter(c.body, p => p.type === WORK).length);
     const add = bodyFor('w8miner', cap).filter(p => p === WORK).length;
