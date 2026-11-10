@@ -12,6 +12,9 @@ const PROPOSE_O = 1000;
 const ACT_HOME_STOR = 15000;  // = reserveE / upgFeed.floor — keep upgrade pressure
 const ACT_K_BUF = 3000;       // ≥1k load + ≥2k residual for continuous KO / thin-send jitter
 const ACT_O_BUF = 3000;
+// Dormant readyObs is a FIND_MY_STRUCTURES every tick (~0.10 CPU) while Memory.ops.labs is off.
+// Rescan every READY_EVERY ticks (inside 10–50). Turning labs on scans immediately. Never starts a reaction.
+const READY_EVERY = 20;
 function cfg(room) { const o = typeof Memory !== 'undefined' && Memory.ops && Memory.ops.labs; return o && R[o[room.name]] ? o[room.name] : null; }
 function roles(labs) {
   if (labs.length < 3) return null;
@@ -35,6 +38,10 @@ function task(room, labs) {
 // (storage floor + terminal buffer). Reaction still needs no lab energy; boost waits KO≥900.
 function readyObs(room) {
   if (!room || room.name !== 'W46N8') return;
+  const ops0 = (typeof Memory !== 'undefined' && Memory && (Memory.ops = Memory.ops || {})) || null;
+  const prev = ops0 && ops0.labReady;
+  // Labs off: keep the last snapshot until READY_EVERY ticks have passed. No find on the skipped ticks.
+  if (!cfg(room) && prev && typeof prev.t === 'number' && Game.time > prev.t && Game.time - prev.t < READY_EVERY) return;
   const term = room.terminal, stor = room.storage;
   const labs = room.find(FIND_MY_STRUCTURES).filter(s => s.structureType === STRUCTURE_LAB);
   const kTerm = (term && term.store && (term.store.K || 0)) || 0;
@@ -71,7 +78,7 @@ function readyObs(room) {
     actHome: ACT_HOME_STOR, actK: ACT_K_BUF, actO: ACT_O_BUF,
   };
 }
-module.exports = { R, cfg, roles, task, PROPOSE_K, PROPOSE_O, ACT_HOME_STOR, ACT_K_BUF, ACT_O_BUF, readyObs, run(room) {
+module.exports = { R, cfg, roles, task, PROPOSE_K, PROPOSE_O, ACT_HOME_STOR, ACT_K_BUF, ACT_O_BUF, READY_EVERY, readyObs, run(room) {
   readyObs(room);
   const c = cfg(room); if (!c) return 0;
   const labs = room.find(FIND_MY_STRUCTURES).filter(s => s.structureType === STRUCTURE_LAB), ro = roles(labs); if (!ro) return 0;

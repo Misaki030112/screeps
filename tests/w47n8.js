@@ -18,6 +18,7 @@ const Cfg = require(path.join(__dirname, '..', 'src', 'rooms', 'w47n8', 'config.
 const cost = b => b.reduce((s, p) => s + BODYPART_COST[p], 0);
 for (const e of [300, 550, 800, 1300]) for (const r of ['w8miner', 'w8hauler', 'w8upgrader', 'w8builder']) assert.ok(cost(W.bodyFor(r, e)) <= e, r + '@' + e);
 function run(creeps, sites = 0, avail = 300, roomExtra = {}) {
+  if (Memory.ops) delete Memory.ops.w8sg; // each scenario is its own tick of planning state
   Game.creeps = creeps; let got = null;
   const room = Object.assign({
     name: 'W47N8', energyCapacityAvailable: Math.max(avail, 300), energyAvailable: avail,
@@ -161,11 +162,13 @@ assert.strictEqual(run(postAbort, 0, 3200, {
   assert.ok(!softBandGot || softBandGot.role !== 'w8upgrader',
     '17:4x: soft-band hysteresis must not surplus-spawn 4th upgrader: ' + JSON.stringify(softBandGot));
   Memory.ops = { w8model: { links: true, lcarry: 9, rcarry: 49, upw: 31 }, w8day: { softE: 0, leanBank: 0 } };
-  assert.strictEqual(run(base3, 0, 5600, {
+  const clearGot = run(base3, 0, 5600, {
     storage: { store: { energy: 26000 } },
     energyCapacityAvailable: 5600,
     lookForAt: look
-  }).role, 'w8upgrader', '17:4x: stor≥25k + hub+feedOk still allows surplus 4th');
+  });
+  assert.ok(!clearGot || clearGot.role !== 'w8upgrader',
+    '11-10: stor≥25k must not surplus-spawn a 4th: ' + JSON.stringify(clearGot));
 }
 delete Memory.ops;
 Object.assign(full, { e: mk('w8upgrader', 'W47N8'), f: mk('w8upgrader', 'W47N8') });
@@ -201,6 +204,8 @@ Memory.ops.w8recycle = [];
 Game.time = 900000;
 Memory.ops = { w8leanBank: false };
 function runTwo(creeps) {
+  Game.time += 1;
+  if (Memory.ops) delete Memory.ops.w8sg;
   Game.creeps = creeps;
   const spawned = [];
   const room = {
@@ -215,7 +220,9 @@ function runTwo(creeps) {
       return [];
     },
   };
+  let n = 0;
   const one = () => ({
+    name: 'Spawn' + (++n),
     spawning: null, pos: { x: 34, y: 30, getRangeTo: () => 10 }, room,
     spawnCreep: (b, n, o) => { spawned.push(o.memory.role); return OK; },
   });

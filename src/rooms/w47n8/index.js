@@ -62,20 +62,62 @@ function energyOrder(room) {
 // 10-19 22:4x patrol: + 60 queue margin. First live replacement at 18,17 was ordered at old TTL 43 (lead 140): Spawn2 was busy with
 // 2 hauler-floor spawns (45t each) + a local miner from TTL 140 on, so the source sat unmined ~77 ticks. Overlap costs ~0.5 e/t-tick.
 const rmLead8 = (i, c) => Math.min(180, Math.max(40, (Memory.ops && Memory.ops.w8rlead && Memory.ops.w8rlead[i]) || 90)) + 3 * ((c && c.body) || []).length + 20 + 60;
+// 11-10: one planning pass per room per tick, plus an idle/wait throttle (home IDLE_EVERY).
+// Hostiles and a live commander order skip the throttle. A second idle spawn does not
+// repeat the find cascade; it still runs when the first spawn actually started a creep.
+const IDLE_EVERY = 4;
+function spawnForce(room) {
+  if (typeof FIND_HOSTILE_CREEPS !== 'undefined') {
+    try { if (room.find(FIND_HOSTILE_CREEPS).length) return true; } catch (e) { /* test stubs */ }
+  }
+  try { const cmd = require('../../utils/cmd'); if (cmd.armed && cmd.armed()) return true; } catch (e) { /* ok */ }
+  return false;
+}
+function spawnGate(spawn) {
+  const room = spawn.room;
+  const o = (Memory.ops = Memory.ops || {});
+  const mem = (o.w8sg = o.w8sg || {});
+  const stor = room.storage && room.storage.store ? (room.storage.store[RESOURCE_ENERGY] || 0) : 0;
+  upBankTick(stor); // every tick, even while the cascade is throttled (streak must not skip)
+  let g = room._sg;
+  if (!g || g.t !== Game.time) {
+    const force = spawnForce(room);
+    const canPay = mem.waitCost > 0 && (room.energyAvailable || 0) >= mem.waitCost;
+    const throttled = !force && mem.ne > Game.time && !canPay;
+    g = room._sg = { t: Game.time, throttled, planned: 0, spawned: 0, passes: 0, who: '', mem, force };
+    mem.passes = 0; mem.skipTick = 0;
+  }
+  return g;
+}
 function spawnRun(spawn) {
   FM.tick(spawn); // 17:3x spawn-energy meter (Memory.ops.w8fm)
-  const room = spawn.room, cs = mine(), n = r => cs.filter(c => c.memory.role === r).length;
+  const room = spawn.room;
+  const g = spawnGate(spawn);
+  const sid = spawn.name || spawn.id || '';
+  if (g.throttled) { g.mem.skipTick++; return; }
+  // Commander owns this spawn before we count it as the room's planning pass.
+  if (!spawn.spawning && require('../../utils/cmd').consumeSpawn(spawn)) return;
+  if (!spawn.spawning && sid && g.planned && !g.spawned && g.who && g.who !== sid) { g.mem.skipTick++; return; }
+  if (!spawn.spawning) {
+    if (sid) g.who = g.who || sid;
+    g.planned = 1; g.passes++; g.mem.passes = g.passes;
+  }
+  const markSpawn = () => { g.spawned++; if (sid) { g.mem.waitCost = 0; g.mem.ne = 0; } };
+  const markIdle = () => { if (sid) { g.mem.waitCost = 0; g.mem.ne = Game.time + IDLE_EVERY; } FM.idle(); };
+  const markWait = (role, cost, avail) => { if (sid) { g.mem.waitCost = cost; g.mem.ne = Game.time + IDLE_EVERY; } FM.wait(role, cost, avail); };
+  // Census is per pass. A second idle spawn returns above and never gets here. A pass that
+  // actually starts a creep reads Game.creeps again so the sibling sees that body (plus pending).
+  const cs = mine(), n = r => cs.filter(c => c.memory.role === r).length;
+  const sites = room.find(FIND_MY_CONSTRUCTION_SITES).length;
+  const storPark = room.storage ? (room.storage.store[RESOURCE_ENERGY] || 0) : 0;
+  TH.updateSealPark(storPark, cs.filter(c => c.memory.role === 'w8upgrader' && (c.spawning || !(c.ticksToLive <= 3 * (c.body || []).length + 60))).length
+    + require('../../managers/spawn').pendingSpawn(room, 'w8upgrader'), sites);
   // 17:5x (patrol: 2 upgraders died within 40 ticks, upgrade fell to ~10 e/t): upgraders count only while they outlive a replacement
   // (spawn 3/part + ~60 ticks Spawn2 -> ctl stands), so the next one is queued before the old one dies.
   // Same-tick intents (home overshoot, 2026-11-10): the other idle spawn's spawnCreep is not in Game.creeps yet.
   const nUp = () => cs.filter(c => c.memory.role === 'w8upgrader' && (c.spawning || !(c.ticksToLive <= 3 * (c.body || []).length + 60))).length
     + require('../../managers/spawn').pendingSpawn(room, 'w8upgrader');
-  const sites = room.find(FIND_MY_CONSTRUCTION_SITES).length;
-  // 11-03 02:4x: refresh seal park every tick (even while spawning) so live wallJob sees sticky gate same tick
-  const storPark = room.storage ? (room.storage.store[RESOURCE_ENERGY] || 0) : 0;
-  TH.updateSealPark(storPark, nUp(), sites);
   if (spawn.spawning) return;
-  if (require('../../utils/cmd').consumeSpawn(spawn)) return; // commander owns Spawn2 this tick (docs/COMMANDER.md)
   const cap = room.energyCapacityAvailable, avail = room.energyAvailable;
   let want = null, mem = {};
   const raidPause = require('../../roles/raid9').pauseCivilians();
@@ -113,10 +155,10 @@ function spawnRun(spawn) {
         const mem = { role: 'defender', home: room.name, remote: planD.remote, born: Game.time, squad: 1, v2: 1 };
         if (planD.core) mem.core = 1;
         const rv = spawn.spawnCreep(planD.body, name, { memory: mem, energyStructures: energyOrder(room) });
-        if (rv === OK) { TG.noteSpawn(planD.remote, name); FM.spent(planD.cost); return; }
+        if (rv === OK) { TG.noteSpawn(planD.remote, name); FM.spent(planD.cost); markSpawn(); return; }
       } else if (planD.hold) {
         if (!cs.some(c => c.memory.role === 'w8filler' || c.memory.role === 'w8hauler')) want = 'w8filler';
-        else { FM.wait('defender', planD.cost || 1300, avail); return; }
+        else { markWait('defender', planD.cost || 1300, avail); return; }
       }
     }
   }
@@ -217,7 +259,7 @@ function spawnRun(spawn) {
     && !raidPause && !cs.some(c => c.memory.role === 'w8builder' && (c.spawning || c.ticksToLive >= 700))) want = 'w8builder';
   if (!want && wallsLow && nUp() < (raidPause ? require('../../roles/raid9').upgraderKeep(room) : (room.controller.ticksToDowngrade < 10000 || stock8() > 3000 ? 2 : 1))) want = 'w8upgrader';
   else if (!want && !raidPause && wallsLow && n('w8builder') < 3) want = 'w8builder';
-  else if (!want && !wallsLow && nUp() < (raidPause ? require('../../roles/raid9').upgraderKeep(room) : (energyBank(room) ? (() => { const se = room.storage && room.storage.store ? (room.storage.store[RESOURCE_ENERGY] || 0) : 0; if (se < LEAN_ARM) return room.controller.ticksToDowngrade < 20000 ? 1 : 0; return 2; })() : (() => { const m = dayofMiss(room); if (m.missSpawn || m.missTower) return 1; const base = sites ? 2 : 3; const se = room.storage && room.storage.store ? (room.storage.store[RESOURCE_ENERGY] || 0) : 0; return softCap2(se) ? Math.min(base, 2) : base; })()))) want = 'w8upgrader'; // 15:5x: 0 upgraders while moving unless downgrade < 20k // 13:39 spawn move // 10-31 19:1x: 1 upg while day-of misses spawn2/tower3 // 11-01 02:4x+05:4x: soft-cap ≤2 while stor<LEAN_SOFT (survives gate flip) // 11-02 11:4x: softCap2 also while threatSoft (localOn), even after stor≥LEAN_SOFT // 11-04 05:4x: leanBank banded — <LEAN_ARM emergency 0/1; [ARM,STOR) ≤2 softCap parity
+  else if (!want && !wallsLow && nUp() < (raidPause ? require('../../roles/raid9').upgraderKeep(room) : upgTarget(room))) want = 'w8upgrader'; // 15:5x move bank // 11-04 leanBank bands // 11-10: peacetime 2 until 40k/500 sticky, then 3; threatSoft stays ≤2
   // 14:55 model-driven (tools/model_w8.py -> Memory.ops.w8model): remote fleet sized by CARRY need = sum 10 x (rt x 1.1 + 4) / 50 over
   // both W47N7 sources (~52 at 14:55) instead of loose-pile thresholds (live 88 CARRY: rhaulers 82% moving/12% blocked, +1.8 e/t upkeep).
   // Floor (ahead of builders): 60% of need; full need + a backlog term (+16 CARRY per 2000 loose above 3000) in step 7.
@@ -244,37 +286,12 @@ function spawnRun(spawn) {
   // 04:10: size by remaining build work, not site count: 3 cheap road sites (~900 left) brought a 4th builder while the ctl cont sat at 0,
   // wbuilder idle 0.69 (6h) and 4 upgraders energy-starved
   else if (!want && !raidPause && sites && n('w8builder') < (siteRem(room) >= 3000 ? 4 : siteRem(room) >= 1200 ? 2 : 1)) want = 'w8builder'; // 17:20: 1 for a small backlog (2 road sites ~480 kept 3x 6W builders, 2.4 e/t upkeep) // 17:05: Spawn2 sat idle at 300/300 with 5 ext sites
-  // 5) surplus (17:52: 1.8k energy lying on the ground/in source containers, spenders only ~7 WORK of 20 e/t income):
-  // +1 hauler above 1200 loose (max 3), +1 upgrader per 600 loose above 600 (max 6)
+  // 5) hauler surplus only. The upgrader surplus that jumped to 4–6 the tick stor crossed LEAN_SOFT
+  // is gone (11-10): that rule spent a thin 25k bank (25.4k→16k and 25.7k→14.7k the same day) for ~+2.7 e/t
+  // the feed could not support. Peacetime count is upgTarget — 2 until the 40k/500 latch, then a steady 3.
   if (!want && !raidPause) {
     const loose = looseE(room);
-    // 03:20 hub container energy counts toward upgraders once no sites near the hub use it (2000 full + ctl 652, Spawn2 idle 718/800,
-    // only 2 upgraders = 12 WORK for ~40 e/t local+W47N7 income; RCL3 ~14.6 e/t)
-    const hubC = room.lookForAt(LOOK_STRUCTURES, C.HUB_CONT[0], C.HUB_CONT[1]).find(s => s.structureType === STRUCTURE_CONTAINER);
-    const hubIdle = hubC && !room.find(FIND_MY_CONSTRUCTION_SITES, { filter: s => s.structureType !== STRUCTURE_WALL && s.pos.inRangeTo(C.HUB_CONT[0], C.HUB_CONT[1], 5) }).length ? hubC.store[RESOURCE_ENERGY] : 0;
     if (loose > 1200 && n('w8hauler') < Math.min(HMAX, loose > 2000 ? 4 : 3)) want = 'w8hauler'; // 18:20: 4th when >2k piles (far south source)
-    // 23:45: 7th above 3.5k while sites exist: with 6 haulers loose still rose 3.2k -> 3.96k in 146 ticks (~5 e/t), 11,43 full 2000 + 126 dropped,
-    // Spawn2 idle 600/600, 4 builders mostly queue_blocked, builds fell to ~5.5 e/t
-    // 23:20: 6th already above 2.5k while sites exist: loose 3048 -> 2736 by t83726755 (just under 3k, so Spawn2 sat idle 600/600) while 4 builders
-    // were queue_blocked ~100/113 samples and 5 upgraders ~75/69-tick windows (creep_motion 0.25h); builds ~7.5 e/t + RCL3 ~6 e/t
-    // 23:10: 6th above 3k: loose 2763 -> 3048 in ~95t (11,43 at 1690) while hub builders sat queue_blocked ~70% of ticks and the ctl cont ran down to 137 (RCL3 ~4 e/t)
-    // 21:10: 5th above 2.5k: source conts rose 894/820 -> 1194/1320 in 161t while the ctl cont fell 1984 -> 1386 (haul-bound, not WORK-bound)
-    // 15:10 model: base by remaining build work (3 road sites = ~700 left held upgraders at 2 = 20 WORK of ~30 e/t net), and storage
-    // above 2k counts as stock (rhaulers now overflow there); WORK cap = model upw + 5 per 5k stored (max 40, 4 stands x 10W)
-    const stor = room.storage ? room.storage.store[RESOURCE_ENERGY] : 0, bigBuild = siteRem(room) >= 3000;
-    const wcap = Math.max(24, Math.min(40, (wm.upw || 0) + 5 * Math.floor(stor / 5000)));
-    // 02:4x: no surplus upgraders while cushion thin (stor < LEAN_SOFT) — soft-cap holds at ≤2 from the base rule above.
-    // 11:4x: softCap2 also blocks surplus while threat soft is on, so stor≥25k cannot expand to 4×10W.
-    // 14:4x strategy: peacetime surplus needs ctlBattery≥FEED_MIN; without hub→ctl live, A→ctl ~8 e/t cannot sustain >base 3 (WORK30≈ideal).
-    // SoftCap2 lift + stor-2000 surplus previously jumped to 4×10W=WORK40 → waiting_feed~30% while hub filled.
-    // 05:4x: gate ceil on hubLinkLive (structure), not config.HUB_LINK alone — flip day-of site must not raise WORK before ferry.
-    // 17:4x 11-04 strategy: softEnergyCap hysteresis (08:4x) keeps softCap2 OFF in post-clear [ARM,SOFT) so base stays 3
-    // (avoid nUp 3↔2 flicker) — but !softCap2 also armed surplus → live nUp=4 @stor~23–25k drained 25.1k→22.7k in ~30m
-    // (15:57 clear → 16:26 re-arm). Overmind UpgradeSite only scales WORK above storageBuffer (100k); TooAngel parks
-    // upgrade when thin. Gate surplus on STRICT stor≥LEAN_SOFT (+ !threatSoft), not softCap2 hysteresis.
-    const upgCeil = hubLinkLive(room) ? 6 : (bigBuild ? 2 : 3);
-    if (!want && !wallsLow && !energyBank(room) && !threatSoft() && stor >= LEAN_SOFT && ctlBattery(room) >= FEED_MIN && nUp() < Math.min(upgCeil, (bigBuild ? 2 : 3) + Math.floor(Math.max(0, loose + hubIdle + Math.max(0, stor - 2000) - 600) / 600))
-      && _.sum(cs.filter(c => c.memory.role === 'w8upgrader' && (c.spawning || !(c.ticksToLive <= 3 * (c.body || []).length + 60))), c => _.filter(c.body, p => p.type === WORK).length) + bodyFor('w8upgrader', cap).filter(p => p === WORK).length <= wcap + 5) want = 'w8upgrader'; // 15:55: a whole new body must fit (upw 31 made 4x10W = 40 WORK on ~30 e/t net) // 14:55: WORK cap = model net income (upw ~30) instead of fixed 24 // 21:20: 16->24 WORK; income ~20 local + ~13 W47N7 remote, ctl cont 1984/2000 full with 4x4W upgraders (WORK-bound)
   }
   // 6) wall builder from surplus (19:18): 1 builder while a seal wall is below target and spawn is full
   // 19:31: 2 while >1500 loose energy piles (2.8k at 19:30 with the ctl container full and upgraders at the WORK cap)
@@ -331,23 +348,24 @@ function spawnRun(spawn) {
   // and spawns small. defer banks the partial pile instead of dropping it into an upgrader/builder.
   if (!want) {
     const RD = require('../../roles/raid9'), w = RD.wantSpawn(room, avail);
-    if (w && w.defer) { FM.wait('raid9', w.cost, avail); return; }
+    if (w && w.defer) { markWait('raid9', w.cost, avail); return; }
     if (w) {
       const rv = spawn.spawnCreep(w.body, 'raid9_' + room.name + Game.time, { memory: w.mem, energyStructures: energyOrder(room) });
-      if (rv === OK) { RD.noteSpawned(w.kind); FM.spent(w.cost); return; }
+      if (rv === OK) { RD.noteSpawned(w.kind); FM.spent(w.cost); markSpawn(); return; }
     }
   }
-  if (!want) { FM.idle(); return; }
+  if (!want) { markIdle(); return; }
   // emergency: nothing alive that refills -> spawn with what we have
   const starving = !n('w8hauler') || !n('w8miner');
   const e = starving ? Math.max(200, avail) : cap;
   const body = body7 || bodyFor(want, e), cost = _.sum(body, p => BODYPART_COST[p]);
-  if (avail < cost) { FM.wait(want, cost, avail); return; }
+  if (avail < cost) { markWait(want, cost, avail); return; }
   const born = want + Game.time;
   const rv = spawn.spawnCreep(body, born, { memory: Object.assign({ role: want, home: C.ROOM, born: Game.time, v2: 1 }, mem), energyStructures: energyOrder(room) });
   if (rv === OK) {
     if (want === 'w8upgrader') require('../../managers/spawn').notePendingSpawn(room, want, born);
     FM.spent(cost);
+    markSpawn();
   }
 }
 const isGate = (x, y) => (C.GATE || []).some(([a, b]) => a === x && b === y);
@@ -476,6 +494,39 @@ const LEAN_SOFT = 25000;
 // LEAN_SOFT (Misaki rejected sealMinE 35k / accepted 25k edge). softThin/sealDeepOk stay STRICT
 // <LEAN_SOFT so seal still waits for a true ≥25k clear.
 const LEAN_SOFT_ARM = 22000;
+// 11-10: upgrader latch, separate from LEAN_SOFT / seal. Hold keep=2 until storage has stayed
+// >= 40k for 500 consecutive ticks, then a steady 3. Re-arm to 2 below 30k. A brief cross of
+// the 25k seal line must not spawn 4–6, and must not sit at 3 on that thin edge either.
+const UP_STICKY = 40000;
+const UP_STICKY_T = 500;
+const UP_REARM = 30000;
+function upBankTick(storE) {
+  const o = (Memory.ops = Memory.ops || {});
+  const s = (o.w8up = o.w8up || { on: 0, since: 0 });
+  const e = storE || 0;
+  if (e < UP_REARM) { s.on = 0; s.since = 0; return false; }
+  if (s.on) return true;
+  if (e >= UP_STICKY) {
+    if (!s.since) s.since = Game.time;
+    if (Game.time - s.since >= UP_STICKY_T) { s.on = 1; return true; }
+    return false;
+  }
+  s.since = 0;
+  return false;
+}
+// Peacetime w8upgrader target. leanBank / day-of miss stay as they were. threatSoft caps at 2
+// even after the sticky bank. Never 4–6.
+function upgTarget(room) {
+  const se = room.storage && room.storage.store ? (room.storage.store[RESOURCE_ENERGY] || 0) : 0;
+  if (energyBank(room)) {
+    if (se < LEAN_ARM) return room.controller.ticksToDowngrade < 20000 ? 1 : 0;
+    return 2;
+  }
+  const m = dayofMiss(room);
+  if (m.missSpawn || m.missTower) return 1;
+  if (threatSoft()) return 2;
+  return upBankTick(se) ? 3 : 2;
+}
 // 11:4x 2026-11-02 (Misaki): reversible ≤2 w8upgrader soft-cap while threat soft is on.
 // threatSoft = TH.localOn() — Memory.ops.w8threat within TH.WINDOW (1500). Same predicate as
 // rampHold's w8soft.why==='threat' (soft-ramp raise blocked; towers keep energy for combat,
@@ -592,10 +643,11 @@ function leanBankRecycle(room) {
   const banking = leanBank(room);
   const storE = room.storage && room.storage.store ? (room.storage.store[RESOURCE_ENERGY] || 0) : 0;
   let keep = Infinity;
+  // 11-10: RCL7 peacetime keep is 2 until the 40k/500 latch, then 3. threatSoft stays at 2.
+  // The old soft-band trim (keep 3 in [22k,25k)) and the 4–6 surplus path are both gone,
+  // so a 25k clear cannot leave four upgraders walking to Spawn2.
   if (banking) keep = leanUpKeep(storE);
-  else if (room.controller && room.controller.level >= 7 && softCap2(storE)) keep = 2;
-  else if (room.controller && room.controller.level >= 7 && storE < LEAN_SOFT) keep = 3; // soft-band surplus trim
-  else if (room.controller && room.controller.level >= 7 && (!hubLinkLive(room) || ctlBattery(room) < Math.floor(FEED_MIN / 2))) keep = 3;
+  else if (room.controller && room.controller.level >= 7) keep = (threatSoft() || !upBankTick(storE)) ? 2 : 3;
   else { o.w8recycle = nonUp(o.w8recycle); return; }
   const ups = [];
   for (const n in Game.creeps) {
@@ -780,17 +832,19 @@ function dayObs(room) {
       } else if ((s.hits || 0) < (s.hitsMax || 0) * 0.25) roadCrit++;
     }
   }
+    const upLatched = rcl >= 7 && upBankTick(storE);
+    const upKeepN = lb ? leanUpKeep(storE) : (rcl >= 7 ? ((threatSoft() || !upLatched) ? 2 : 3) : 0);
     o.w8day = { t: Game.time, rcl, need, siteRem: siteRemV, builders, upgraders, storE, bill,
     missSpawn: missSpawn ? 1 : 0, missTower: missTower ? 1 : 0, missExt, why, phase,
     bankLeft, bankEta, leanBank: lb ? 1 : 0, bankArm: LEAN_ARM, bankSoft: LEAN_SOFT, softArm: LEAN_SOFT_ARM, bankWhy, softLeft,
     threatSoft: threatSoft() ? 1 : 0,
-    softE: softEnergyCap(storE) ? 1 : 0, // 08:4x 11-03: energy-half sticky for softCap2/nUp only
+    softE: softEnergyCap(storE) ? 1 : 0, // 08:4x 11-03: energy-half sticky for seal/softCap2, not the upgrader count
     // 20:4x 11-03: soft-band park is STRICT se<LEAN_SOFT (roles); obs diverges from softE in post-clear [ARM,SOFT)
     softBand: (storE < LEAN_SOFT && ctlBattery(room) >= 1200) ? 1 : 0,
-    softCap2: softCap2(storE) ? 1 : 0, // 11:4x/08:4x-11-03: ≤2 = threatSoft OR softEnergyCap
-    // 05:4x 11-04: effective upgrader keep under leanBank/softCap (1 emergency / 2 rebuild|soft / Inf clear)
-    // 17:4x: 2=softCap / 3=soft-band surplus trim (hysteresis hold) / 0=clear≥25k
-    upgKeep: lb ? leanUpKeep(storE) : (softCap2(storE) ? 2 : (storE < LEAN_SOFT ? 3 : 0)),
+    softCap2: softCap2(storE) ? 1 : 0, // 11:4x/08:4x-11-03: seal/energy half. Upgrader count uses upLatched.
+    // 11-10: 1 emergency lean / 2 until 40k sticky (or threat) / 3 after the latch. Never 0 (surplus) or 4–6.
+    upgKeep: upKeepN,
+    upLatched: upLatched ? 1 : 0, upArm: UP_STICKY, upRearm: UP_REARM, upStickyT: UP_STICKY_T,
     warMode: warMode ? 1 : 0, // 14:4x: Memory.ops.w47n9 assault freeze
     ctlBat: ctlBattery(room), feedOk: ctlBattery(room) >= FEED_MIN ? 1 : 0, // 11:4x strategy: peacetime surplus needs feedOk
     sealMinE: TH.sealMinE(), // effective deep-seal gate (Memory override visible)
@@ -802,8 +856,8 @@ function dayObs(room) {
     hubLinkE, hubReady, hubLink: C.HUB_LINK ? 1 : 0, // 23:4x strategy: HUB_LINK plumbing obs
     // 23:4x 11-03: hubPrime=1 when hub link holds ≥HUB_SEND(200) — patrol sees pre-warm during softCap bank
     hubPrime: (hubReady && hubLinkE >= 200) ? 1 : 0,
-    // 17:3x strategy: effective upgCeil + feedBound (at non-hub WORK ceiling → gap is hub→ctl, not softCap/seal/roads)
-    upgCeil: hubLinkLive(room) ? 6 : (siteRemV >= 3000 ? 2 : 3),
+    // 11-10: effective ceiling is the keep (2, or 3 after the sticky bank). The old hub-live ceil of 6 is retired.
+    upgCeil: rcl >= 7 ? upKeepN : (siteRemV >= 3000 ? 2 : 3),
     feedBound: (!hubLinkLive(room) && !softCap2(storE) && !warMode && upgraders >= (siteRemV >= 3000 ? 2 : 3)) ? 1 : 0,
     contMinPct, contLow, roadCrit }; // 11:38: repair debt (containers <50% / roads <25%)
   leanBankRecycle(room);
@@ -1097,4 +1151,4 @@ function selfSufficient() {
   const r = Game.rooms[C.ROOM]; if (!r || !r.find(FIND_MY_SPAWNS).length) return false;
   return mine().some(c => c.memory.role === 'w8miner'); // Spawn2 + its own miner -> home stops cq pioneers/haulers (guard stays)
 }
-module.exports = { sealAt, banking, BANK_HOLD, LEAN_STOR, LEAN_ARM, LEAN_SOFT, LEAN_SOFT_ARM, FEED_MIN, threatSoft, softEnergyCap, softCap2, ctlBattery, hubLinkLive, leanBank, leanMinBuild, leanUpKeep, energyBank, dayofMiss, moveRun, moveReady, rampNeeded, homeWant, linkAt, linkRun, rampHold, dayObs, mineralSend, swapTemp, extBatch, energyOrder, ROOM: C.ROOM, spawnRun, layoutRun, towerRun, selfSufficient, bodyFor, rmLead8 };
+module.exports = { sealAt, banking, BANK_HOLD, LEAN_STOR, LEAN_ARM, LEAN_SOFT, LEAN_SOFT_ARM, UP_STICKY, UP_STICKY_T, UP_REARM, IDLE_EVERY, FEED_MIN, threatSoft, softEnergyCap, softCap2, upBankTick, upgTarget, ctlBattery, hubLinkLive, leanBank, leanMinBuild, leanUpKeep, energyBank, dayofMiss, moveRun, moveReady, rampNeeded, homeWant, linkAt, linkRun, rampHold, dayObs, mineralSend, swapTemp, extBatch, energyOrder, ROOM: C.ROOM, spawnRun, layoutRun, towerRun, selfSufficient, bodyFor, rmLead8 };

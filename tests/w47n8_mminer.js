@@ -343,8 +343,8 @@ C.RCL6_MINERALS = true;
   C.RCL6_MINERALS = false;
 }
 
-// 11:4x: threat soft (TH.localOn / w8threat) keeps w8upgrader ≤2 after stor≥LEAN_SOFT.
-// Peace / w8threatN-only still spawn the 3rd (no sites → base 3) once the cushion is full.
+// 11:4x + 11-10: threat soft keeps w8upgrader ≤2. Peace at 30k stays at 2 until the 40k/500 latch.
+// After that latch a steady 3 is allowed; w8threatN does not block it, local threat still does.
 {
   const savedT = Game.time;
   Game.time = savedT + 100; // bust fill.js duty cache from earlier spawnRuns
@@ -397,10 +397,14 @@ C.RCL6_MINERALS = true;
     return got && got.role;
   };
   C.RCL6_MINERALS = true;
-  assert.strictEqual(run(2, 30000, {}), 'w8upgrader', 'peace stor≥25k no sites → 3rd upgrader');
+  assert.strictEqual(run(2, 30000, {}), null, 'peace 30k without 40k sticky stays ≤2');
+  assert.strictEqual(run(2, 26000, {}), null, 'brief stor≥25k does not spawn a 3rd, let alone 4–6');
+  assert.strictEqual(run(2, 45000, { w8up: { on: 1, since: 1 } }), 'w8upgrader', 'sticky bank allows a steady 3rd');
+  assert.strictEqual(run(3, 45000, { w8up: { on: 1, since: 1 } }), null, 'sticky bank does not spawn a 4th');
+  assert.strictEqual(run(2, 45000, { w8up: { on: 1, since: 1 }, w8threat: Game.time }), null, 'threat soft caps at 2 even when sticky');
   assert.strictEqual(run(2, 30000, { w8threat: Game.time }), null, 'threat soft stor≥25k → stay ≤2');
   assert.strictEqual(run(1, 30000, { w8threat: Game.time }), 'w8upgrader', 'threat soft still fills up to 2');
-  assert.strictEqual(run(2, 30000, { w8threatN: Game.time }), 'w8upgrader', 'w8threatN alone does not hold ≤2');
+  assert.strictEqual(run(2, 45000, { w8up: { on: 1, since: 1 }, w8threatN: Game.time }), 'w8upgrader', 'w8threatN does not hold the 3rd once sticky');
   assert.strictEqual(run(2, 20000, {}), null, 'stor<LEAN_SOFT still ≤2 with threat off');
   assert.strictEqual(W.threatSoft(), false);
   assert.strictEqual(W.softCap2(20000), true);
