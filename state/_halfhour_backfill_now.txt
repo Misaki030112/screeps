@@ -1,25 +1,23 @@
-game.time=84191482 published_bases=84190700..84191300 rooms=W46N8,W47N8,W45N8,W45N7,W47N7 dry=False
-tick_s=4.310
-reconstructed ticks=84190701..84191400 (700) creep_rows first_pass=24685 missing_chunks first_pass=1 after_retry=1
-already_in_db first_pass=10734 would_insert first_pass=13951
-per_room W46N8:700t/3093new W47N8:600t/5721new W45N8:700t/1429new W45N7:700t/1144new W47N7:700t/2564new
-inserted=13951
-inserted_first_pass=13951 inserted_retry=0
-ts_realigned=9497
+game.time=84192342 published_bases=84191600..84192200 rooms=W46N8,W47N8,W45N8,W45N7,W47N7 dry=False
+tick_s=4.513
+reconstructed ticks=84191601..84192300 (700) creep_rows first_pass=24893 missing_chunks first_pass=2 after_retry=2
+already_in_db first_pass=11753 would_insert first_pass=13140
+per_room W46N8:700t/3861new W47N8:700t/4848new W45N8:600t/1573new W45N7:600t/1091new W47N7:700t/1767new
+inserted=13140
+inserted_first_pass=13140 inserted_retry=0
+ts_realigned=12158
 db_after
-  W45N7 ticks=84190701..84191400 rows=2439 distinct=700
-  W45N8 ticks=84190701..84191400 rows=2674 distinct=700
-  W46N8 ticks=84190701..84191400 rows=7166 distinct=700
-  W47N7 ticks=84190701..84191400 rows=3004 distinct=700
-  W47N8 ticks=84190701..84191400 rows=11868 distinct=600
-retry_404s: first-pass 404 W47N8@84190900
-  retry~12s and ~30s direct probes still 404
-  W47N8@84190900 still official hole; remaining gap 84190901..84191000 (100t)
-inserted_total=13951
-sleep_gap 84191161..84191469 published 240/240 all 5 rooms (84191161..84191400); W47N8 also live 84191463..84191469 (7t) after reconnect (247/309)
-prev_sleep 84190001..84190109 all 5 rooms 109/109
-prev_sleep 84190291..84190349 published 59/59 W46N8,W45N8,W45N7,W47N7; W47N8 10/59 (84190291..84190300 only; 84190301..84190349 inside official 404)
-prev_unpublished 84191001..84191137 filled 137/137 all 5 rooms
-current_unpublished 84191401..84191500 (W47N8 live from 84191463)
-listener new pid 1063320 since 01:59:26 after ping/pong timeout 01:59:13 / restart 01:59:16; room_stats gap 01:37:25@84191160 -> 02:00:03@84191470; single_slot W47N8
-finished_at 2026-11-11 02:02 Asia/Hong_Kong
+  W45N7 ticks=84191601..84192300 rows=2109 distinct=600
+  W45N8 ticks=84191601..84192300 rows=3118 distinct=617
+  W46N8 ticks=84191601..84192300 rows=6742 distinct=700
+  W47N7 ticks=84191601..84192300 rows=3184 distinct=700
+  W47N8 ticks=84191601..84192300 rows=11084 distinct=700
+inserted_total=13140
+sleep_gap 84192031..84192329 published 270/270 W46N8,W47N8,W47N7; W45N8 207/270; W45N7 200/270 (box frozen ~02:42:00-03:02:27; room_stats last 84192030 at 02:41:25, resume 84192330 at 03:03:23)
+official_404 W45N8@84192000 and W45N7@84192000 (ticks 84192001..84192100) persistent after 3 retries; W45N8 has 17 live ticks 84192021..84192037
+prev_unpublished 84191901..84192000 filled 100/100 all 5 rooms
+prev_pong_hole 84191911..84191939 filled 29/29 all 5 rooms
+prev_sleep 84191571..84191739 published 169/169 all 5 rooms
+current_unpublished 84192301..84192400 (W46N8 live 16, W45N7 live 28, W45N8 live 8; W47N8/W47N7 wait for next published chunk)
+listener new pid 1078098 since 03:02:39 after box-sleep 02:42:00-03:02:27 / restart 03:02:30; room_stats gap 02:41:25@84192030 -> 03:03:23@84192330; single_slot now W46N8
+finished_at 2026-11-11 03:07 Asia/Hong_Kong
