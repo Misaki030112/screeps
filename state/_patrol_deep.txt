@@ -1,42 +1,135 @@
-=== creep_ticks distinct per room 84193201..84195000 and gaps >=20 ===
-  W46N8 84193201..84194985 distinct=1706 span=1785
-    GAP 84194901..84194979 = 79t
-  W47N8 84193301..84195048 distinct=1563 span=1748
-    GAP 84193601..84193700 = 100t
-    GAP 84194901..84194985 = 85t
-  W45N8 84193201..84194900 distinct=1700 span=1700
-  W45N7 84193201..84194900 distinct=1376 span=1700
-    GAP 84193308..84193484 = 177t
-    GAP 84193506..84193552 = 47t
-    GAP 84194001..84194100 = 100t
-  W47N7 84193201..84194900 distinct=1700 span=1700
+=== nearest samples to 2h/300t ===
+W46N8 tip 84195810 2026-11-11 07:19:53.962416 p=5378420 stor=16637 target=84194180
+  cand 84193980 2026-11-11 05:04:54.331205 p=5342868 stor=14785 dt=1830 19.43=74.7%
+  cand 84193990 2026-11-11 05:05:37.922601 p=5343008 stor=14585 dt=1820 19.46=74.8%
+  cand 84194000 2026-11-11 05:06:22.073003 p=5343148 stor=15085 dt=1810 19.49=75.0%
+  cand 84194010 2026-11-11 05:07:06.681364 p=5343288 stor=15185 dt=1800 19.52=75.1%
+  cand 84194020 2026-11-11 05:07:51.529528 p=5343428 stor=15285 dt=1790 19.55=75.2%
+  cand 84194270 2026-11-11 05:26:24.781770 p=5347498 stor=14855 dt=1540 20.08=77.2%
+  cand 84194280 2026-11-11 05:27:08.622013 p=5347638 stor=15355 dt=1530 20.12=77.4%
+  cand 84194290 2026-11-11 05:27:53.500738 p=5347716 stor=15155 dt=1520 20.20=77.7%
+  cand 84194300 2026-11-11 05:28:37.944108 p=5347856 stor=14335 dt=1510 20.24=77.9%
+  cand 84194310 2026-11-11 05:29:23.492129 p=5347996 stor=14435 dt=1500 20.28=78.0%
+  cand 84194320 2026-11-11 05:30:05.564392 p=5348076 stor=14535 dt=1490 20.37=78.3%
+  cand 84194330 2026-11-11 05:30:50.701734 p=5348076 stor=14635 dt=1480 20.50=78.9%
+  cand 84194340 2026-11-11 05:31:34.228025 p=5348216 stor=15935 dt=1470 20.55=79.0%
+  cand 84194350 2026-11-11 05:32:18.071765 p=5348356 stor=15235 dt=1460 20.59=79.2%
+  cand 84194360 2026-11-11 05:33:03.611097 p=5348464 stor=15335 dt=1450 20.66=79.5%
+  cand 84194370 2026-11-11 05:33:47.053394 p=5348478 stor=15435 dt=1440 20.79=80.0%
+  cand 84194380 2026-11-11 05:34:31.306248 p=5348618 stor=15535 dt=1430 20.84=80.2%
+  INTERP t=84194180 p0=5346032.8 dt=1630 19.87=76.4%
+  around last300 target 84195510:
+  long_sleep: 84195220->84195610 dt=390 dp=9274 23.78=91.5% stor 15939->15427
+  post_wake_80t: 84195610->84195690 dt=80 dp=2220 27.75=106.7% stor 15427->16077
+  second_pause_plus: 84195690->84195810 dt=120 dp=2918 24.32=93.5% stor 16077->16637
+W47N8 tip 84195810 2026-11-11 07:19:53.962466 p=2677306 stor=24585 target=84194180
+  cand 84193980 2026-11-11 05:04:54.331276 p=2646546 stor=21353 dt=1830 16.81=55.9%
+  cand 84193990 2026-11-11 05:05:37.922658 p=2646746 stor=21528 dt=1820 16.79=55.8%
+  cand 84194000 2026-11-11 05:06:22.073051 p=2646946 stor=21528 dt=1810 16.77=55.8%
+  cand 84194010 2026-11-11 05:07:06.681415 p=2647146 stor=22028 dt=1800 16.76=55.7%
+  cand 84194020 2026-11-11 05:07:51.529565 p=2647346 stor=22028 dt=1790 16.74=55.6%
+  cand 84194270 2026-11-11 05:26:24.781848 p=2651846 stor=21387 dt=1540 16.53=55.0%
+  cand 84194280 2026-11-11 05:27:08.622104 p=2651946 stor=21387 dt=1530 16.58=55.1%
+  cand 84194290 2026-11-11 05:27:53.500846 p=2652046 stor=21387 dt=1520 16.62=55.2%
+  cand 84194300 2026-11-11 05:28:37.944155 p=2652146 stor=21387 dt=1510 16.66=55.4%
+  cand 84194310 2026-11-11 05:29:23.492216 p=2652246 stor=21677 dt=1500 16.71=55.5%
+  cand 84194320 2026-11-11 05:30:05.564449 p=2652346 stor=21677 dt=1490 16.75=55.7%
+  cand 84194330 2026-11-11 05:30:50.701785 p=2652446 stor=21677 dt=1480 16.80=55.8%
+  cand 84194340 2026-11-11 05:31:34.228113 p=2652546 stor=21677 dt=1470 16.84=56.0%
+  cand 84194350 2026-11-11 05:32:18.071824 p=2652646 stor=21359 dt=1460 16.89=56.2%
+  cand 84194360 2026-11-11 05:33:03.611146 p=2652746 stor=21359 dt=1450 16.94=56.3%
+  cand 84194370 2026-11-11 05:33:47.053449 p=2652846 stor=20209 dt=1440 16.99=56.5%
+  cand 84194380 2026-11-11 05:34:31.306308 p=2652946 stor=20209 dt=1430 17.03=56.6%
+  INTERP t=84194180 p0=2650226.0 dt=1630 16.61=55.2%
+  around last300 target 84195510:
+  long_sleep: 84195220->84195610 dt=390 dp=6750 17.31=57.5% stor 19062->22744
+  post_wake_80t: 84195610->84195690 dt=80 dp=1150 14.38=47.8% stor 22744->22891
+  second_pause_plus: 84195690->84195810 dt=120 dp=1090 9.08=30.2% stor 22891->24585
 
-=== known official 404 windows: any rows? ===
-  W47N8 84193201..84193300 distinct=0 rows=0
-  W47N8 84193601..84193700 distinct=0 rows=0
-  W45N7 84194001..84194100 distinct=0 rows=0
-  W45N7 84192401..84192500 distinct=0 rows=0
+=== events last 3h ===
+(datetime.datetime(2026, 11, 11, 4, 24, 30, 64257), 84193271, 'box_pause', None, None, 'box frozen ~557s since 2026-11-11 04:15:13', {'sec': 557, 'from': '2026-11-11 04:15:13'})
+(datetime.datetime(2026, 11, 11, 4, 28, 40, 284681), 84193487, 'alert_escalated', 'W45N7', 'high', 'Invader', {'body': {'move': 5, 'work': 1, 'tough': 1, 'attack': 1, 'ranged_attack': 1}, 'room': 'W45N7', 'tick': 84193487, 'owner': 'Invader', 'bodies': [{'move': 5, 'work': 1, 'tough': 2, 'attack': 1, 'ranged_attack': 1}], 'creeps': 1, 'damaged': [], 'episode': 'W45N7-Invader-84193264', 'severity': 'high', 'positions': [[21, 3]], 'eventDamage': 20, 'totalDamage': 20, 'structureHitLoss': 0})
+(datetime.datetime(2026, 11, 11, 4, 29, 47, 106741), None, 'error', None, None, '< QQ17943425856909444{"t":84193502,"v":{"t":84193502,"lab":null,"labR":{"t":84193497,"mode":null,"kTerm":136268,"oTerm":126976,"k":136268,"o":144300,"labsN":3,"ready":1,"propose":1,"why":"ready","hasCode":1,"proposeK":1000,"homeStor":14544,"koTerm":36,"koLab":0,"ko":36,"actOk":0,"actGaps":"homeStor","actHome":15000,"actK":3000,"actO":3000},"w8min":{"t":84193500,"rcl":7,"storE":12419,"kAmt":0,"kTerm":52,"hasTerm":1,"hasExt":1,"hasMinCont":1,"miners":0,"minOk":1,"labsOk":0,"hasCode":1,"sendOk":1,"termE":1345,"sendWhy":"noK","lastSend":84178932,"lastAmt":552,"needE":0,"cd":0,"homeFree":37076,"batch":1000,"fee":19,"minerPrio":1,"gaps":"miner,stor20k","why":"miner","flipReady":0,"flipGaps":"homeStor,already","homeStor":14594,"minBuild":0},"cmd":{"on":1,"c":{},"at":84102716,"by":"cmd","v":1},"w9":{"on":false,"n":15,"garrison":true,"flee":{"t":0,"why":"abort"},"phase":"fallback","pauseSpawn":true,"note":"ABORT Misaki: withdraw recycle end wartime","recycle":true},"O":17324,"termO":126976,"termK":136268,"termE":0,"nErr":0,"err0":"83976899 creep rhauler83976443: TypeError: Cannot read properties of undefined (reading \'via\') |     at viaGateOf (roles.remote:131:10) |     at Object.rhauler [as run] (roles.remote:168:16)","hs":14594}}', None)
+(datetime.datetime(2026, 11, 11, 4, 29, 51, 615665), 84193503, 'alert_ended', 'W45N7', 'low', None, {'room': 'W45N7', 'tick': 84193503, 'ended': True, 'action': 'remote resumed', 'remote': 'W45N7', 'episode': 'remote-W45N7-84193264', 'severity': 'low'})
+(datetime.datetime(2026, 11, 11, 4, 33, 30, 403466), 84193552, 'alert_ended', 'W45N7', 'high', 'Invader', {'room': 'W45N7', 'tick': 84193552, 'ended': True, 'owner': 'Invader', 'episode': 'W45N7-Invader-84193264', 'duration': 228, 'severity': 'high', 'maxCreeps': 1, 'totalDamage': 340})
+(datetime.datetime(2026, 11, 11, 4, 34, 39, 849178), None, 'watch', 'W45N8', None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'builder84192220'], ['6010ee96cbca26e9512da6f0', 'rhauler84192238'], ['6010ee96cbca26e9512da6f0', 'rhauler84192319'], ['6010ee96cbca26e9512da6f0', 'rhauler84192559'], ['6010ee96cbca26e9512da6f0', 'rminer84192126'], ['6010ee96cbca26e9512da6f0', 'rminer84193014']], 'container': [12], 'reservation': [{'user': '6010ee96cbca26e9512da6f0', 'endTime': 84195721}]})
+(datetime.datetime(2026, 11, 11, 4, 35, 35, 894840), 84193581, 'watch', 'W45N8', None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'builder84192220'], ['6010ee96cbca26e9512da6f0', 'rhauler84192238'], ['6010ee96cbca26e9512da6f0', 'rhauler84192319'], ['6010ee96cbca26e9512da6f0', 'rhauler84192559'], ['6010ee96cbca26e9512da6f0', 'rminer84192126'], ['6010ee96cbca26e9512da6f0', 'rminer84193014']], 'container': [0], 'reservation': [{'user': '6010ee96cbca26e9512da6f0', 'endTime': 84195721}]})
+(datetime.datetime(2026, 11, 11, 4, 35, 57, 907598), 84193586, 'watch', 'W45N8', None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'builder84192220'], ['6010ee96cbca26e9512da6f0', 'defender84193265'], ['6010ee96cbca26e9512da6f0', 'rhauler84192238'], ['6010ee96cbca26e9512da6f0', 'rhauler84192319'], ['6010ee96cbca26e9512da6f0', 'rhauler84192559'], ['6010ee96cbca26e9512da6f0', 'rminer84192126'], ['6010ee96cbca26e9512da6f0', 'rminer84193014']], 'container': [0], 'reservation': [{'user': '6010ee96cbca26e9512da6f0', 'endTime': 84195721}]})
+(datetime.datetime(2026, 11, 11, 4, 36, 20, 600738), 84193591, 'watch', 'W45N8', None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'builder84192220'], ['6010ee96cbca26e9512da6f0', 'defender84193265'], ['6010ee96cbca26e9512da6f0', 'rhauler84192238'], ['6010ee96cbca26e9512da6f0', 'rhauler84192319'], ['6010ee96cbca26e9512da6f0', 'rminer84192126'], ['6010ee96cbca26e9512da6f0', 'rminer84193014']], 'container': [0], 'reservation': [{'user': '6010ee96cbca26e9512da6f0', 'endTime': 84195721}]})
+(datetime.datetime(2026, 11, 11, 4, 36, 25, 30217), 84193592, 'watch', 'W45N8', None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'builder84192220'], ['6010ee96cbca26e9512da6f0', 'defender84193265'], ['6010ee96cbca26e9512da6f0', 'rhauler84192238'], ['6010ee96cbca26e9512da6f0', 'rhauler84192319'], ['6010ee96cbca26e9512da6f0', 'rhauler84193504'], ['6010ee96cbca26e9512da6f0', 'rminer84192126'], ['6010ee96cbca26e9512da6f0', 'rminer84193014']], 'container': [0], 'reservation': [{'user': '6010ee96cbca26e9512da6f0', 'endTime': 84195721}]})
+(datetime.datetime(2026, 11, 11, 4, 36, 29, 304723), 84193593, 'watch', 'W45N8', None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'builder84192220'], ['6010ee96cbca26e9512da6f0', 'defender84193265'], ['6010ee96cbca26e9512da6f0', 'rhauler84192238'], ['6010ee96cbca26e9512da6f0', 'rhauler84192319'], ['6010ee96cbca26e9512da6f0', 'rhauler84193504'], ['6010ee96cbca26e9512da6f0', 'rminer84192126'], ['6010ee96cbca26e9512da6f0', 'rminer84193014']], 'container': [12], 'reservation': [{'user': '6010ee96cbca26e9512da6f0', 'endTime': 84195721}]})
+(datetime.datetime(2026, 11, 11, 5, 0, 36, 339471), 84193701, 'box_pause', None, None, 'box frozen ~959s since 2026-11-11 04:44:31', {'sec': 959, 'from': '2026-11-11 04:44:31'})
+(datetime.datetime(2026, 11, 11, 5, 25, 31, 25255), 84193980, 'box_pause', None, None, 'box frozen ~1020s since 2026-11-11 05:08:24', {'sec': 1020, 'from': '2026-11-11 05:08:24'})
+(datetime.datetime(2026, 11, 11, 5, 32, 8, 977523), None, 'watch', 'W45N8', None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'rhauler84193504'], ['6010ee96cbca26e9512da6f0', 'rhauler84193984'], ['6010ee96cbca26e9512da6f0', 'rhauler84194224'], ['6010ee96cbca26e9512da6f0', 'rminer84193552']], 'container': [602], 'reservation': [{'user': '6010ee96cbca26e9512da6f0', 'endTime': 84196775}]})
+(datetime.datetime(2026, 11, 11, 5, 32, 13, 301142), 84194349, 'watch', 'W45N8', None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'rhauler84193504'], ['6010ee96cbca26e9512da6f0', 'rhauler84193665'], ['6010ee96cbca26e9512da6f0', 'rhauler84193984'], ['6010ee96cbca26e9512da6f0', 'rhauler84194224'], ['6010ee96cbca26e9512da6f0', 'rminer84193552']], 'container': [614], 'reservation': [{'user': '6010ee96cbca26e9512da6f0', 'endTime': 84196775}]})
+(datetime.datetime(2026, 11, 11, 5, 32, 17, 985329), 84194350, 'watch', 'W45N8', None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'rhauler84193504'], ['6010ee96cbca26e9512da6f0', 'rhauler84193665'], ['6010ee96cbca26e9512da6f0', 'rhauler84193984'], ['6010ee96cbca26e9512da6f0', 'rhauler84194224'], ['6010ee96cbca26e9512da6f0', 'rminer84193552']], 'container': [626], 'reservation': [{'user': '6010ee96cbca26e9512da6f0', 'endTime': 84196775}]})
+(datetime.datetime(2026, 11, 11, 5, 32, 22, 667606), 84194351, 'watch', 'W45N8', None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'rhauler84193504'], ['6010ee96cbca26e9512da6f0', 'rhauler84193665'], ['6010ee96cbca26e9512da6f0', 'rhauler84193984'], ['6010ee96cbca26e9512da6f0', 'rhauler84194224'], ['6010ee96cbca26e9512da6f0', 'rminer84193552']], 'container': [638], 'reservation': [{'user': '6010ee96cbca26e9512da6f0', 'endTime': 84196775}]})
+(datetime.datetime(2026, 11, 11, 5, 32, 27, 675553), 84194352, 'watch', 'W45N8', None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'rhauler84193504'], ['6010ee96cbca26e9512da6f0', 'rhauler84193665'], ['6010ee96cbca26e9512da6f0', 'rhauler84193984'], ['6010ee96cbca26e9512da6f0', 'rminer84193552']], 'container': [650], 'reservation': [{'user': '6010ee96cbca26e9512da6f0', 'endTime': 84196775}]})
+(datetime.datetime(2026, 11, 11, 5, 32, 32, 302753), 84194353, 'watch', 'W45N8', None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'rhauler84193504'], ['6010ee96cbca26e9512da6f0', 'rhauler84193665'], ['6010ee96cbca26e9512da6f0', 'rhauler84193984'], ['6010ee96cbca26e9512da6f0', 'rminer84193552']], 'container': [662], 'reservation': [{'user': '6010ee96cbca26e9512da6f0', 'endTime': 84196775}]})
+(datetime.datetime(2026, 11, 11, 5, 32, 36, 654938), 84194354, 'watch', 'W45N8', None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'rhauler84193504'], ['6010ee96cbca26e9512da6f0', 'rhauler84193665'], ['6010ee96cbca26e9512da6f0', 'rhauler84193984'], ['6010ee96cbca26e9512da6f0', 'rminer84193552']], 'container': [674], 'reservation': [{'user': '6010ee96cbca26e9512da6f0', 'endTime': 84196775}]})
+(datetime.datetime(2026, 11, 11, 5, 32, 40, 915160), 84194355, 'watch', 'W45N8', None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'rhauler84193504'], ['6010ee96cbca26e9512da6f0', 'rhauler84193665'], ['6010ee96cbca26e9512da6f0', 'rhauler84193984'], ['6010ee96cbca26e9512da6f0', 'rminer84193552']], 'container': [686], 'reservation': [{'user': '6010ee96cbca26e9512da6f0', 'endTime': 84196775}]})
+(datetime.datetime(2026, 11, 11, 5, 32, 45, 222377), 84194356, 'watch', 'W45N8', None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'rhauler84193504'], ['6010ee96cbca26e9512da6f0', 'rhauler84193665'], ['6010ee96cbca26e9512da6f0', 'rhauler84193984'], ['6010ee96cbca26e9512da6f0', 'rminer84193552']], 'container': [698], 'reservation': [{'user': '6010ee96cbca26e9512da6f0', 'endTime': 84196775}]})
+(datetime.datetime(2026, 11, 11, 5, 32, 49, 848288), 84194357, 'watch', 'W45N8', None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'rhauler84193504'], ['6010ee96cbca26e9512da6f0', 'rhauler84193665'], ['6010ee96cbca26e9512da6f0', 'rhauler84193984'], ['6010ee96cbca26e9512da6f0', 'rminer84193552']], 'container': [710], 'reservation': [{'user': '6010ee96cbca26e9512da6f0', 'endTime': 84196775}]})
+(datetime.datetime(2026, 11, 11, 5, 32, 54, 396949), 84194358, 'watch', 'W45N8', None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'rhauler84193504'], ['6010ee96cbca26e9512da6f0', 'rhauler84193665'], ['6010ee96cbca26e9512da6f0', 'rhauler84193984'], ['6010ee96cbca26e9512da6f0', 'rminer84193552']], 'container': [722], 'reservation': [{'user': '6010ee96cbca26e9512da6f0', 'endTime': 84196775}]})
+(datetime.datetime(2026, 11, 11, 5, 32, 58, 886456), 84194359, 'watch', 'W45N8', None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'rhauler84193504'], ['6010ee96cbca26e9512da6f0', 'rhauler84193665'], ['6010ee96cbca26e9512da6f0', 'rhauler84193984'], ['6010ee96cbca26e9512da6f0', 'rminer84193552'], ['6010ee96cbca26e9512da6f0', 'rminer84194272']], 'container': [734], 'reservation': [{'user': '6010ee96cbca26e9512da6f0', 'endTime': 84196775}]})
+(datetime.datetime(2026, 11, 11, 5, 33, 3, 100193), 84194360, 'watch', 'W45N8', None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'rhauler84193504'], ['6010ee96cbca26e9512da6f0', 'rhauler84193665'], ['6010ee96cbca26e9512da6f0', 'rhauler84193984'], ['6010ee96cbca26e9512da6f0', 'rminer84193552'], ['6010ee96cbca26e9512da6f0', 'rminer84194272']], 'container': [746], 'reservation': [{'user': '6010ee96cbca26e9512da6f0', 'endTime': 84196775}]})
+(datetime.datetime(2026, 11, 11, 5, 33, 7, 446999), 84194361, 'watch', 'W45N8', None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'rhauler84193504'], ['6010ee96cbca26e9512da6f0', 'rhauler84193665'], ['6010ee96cbca26e9512da6f0', 'rhauler84193984'], ['6010ee96cbca26e9512da6f0', 'rminer84193552'], ['6010ee96cbca26e9512da6f0', 'rminer84194272']], 'container': [758], 'reservation': [{'user': '6010ee96cbca26e9512da6f0', 'endTime': 84196775}]})
+(datetime.datetime(2026, 11, 11, 5, 33, 11, 698572), 84194362, 'watch', 'W45N8', None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'rhauler84193504'], ['6010ee96cbca26e9512da6f0', 'rhauler84193665'], ['6010ee96cbca26e9512da6f0', 'rhauler84193984'], ['6010ee96cbca26e9512da6f0', 'rminer84193552'], ['6010ee96cbca26e9512da6f0', 'rminer84194272']], 'container': [770], 'reservation': [{'user': '6010ee96cbca26e9512da6f0', 'endTime': 84196775}]})
+(datetime.datetime(2026, 11, 11, 5, 33, 16, 98000), 84194363, 'watch', 'W45N8', None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'rhauler84193665'], ['6010ee96cbca26e9512da6f0', 'rhauler84193984'], ['6010ee96cbca26e9512da6f0', 'rminer84193552'], ['6010ee96cbca26e9512da6f0', 'rminer84194272']], 'container': [12], 'reservation': [{'user': '6010ee96cbca26e9512da6f0', 'endTime': 84196775}]})
+(datetime.datetime(2026, 11, 11, 5, 33, 33, 620511), 84194367, 'watch', 'W45N8', None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'rhauler84193665'], ['6010ee96cbca26e9512da6f0', 'rhauler84193744'], ['6010ee96cbca26e9512da6f0', 'rhauler84193984'], ['6010ee96cbca26e9512da6f0', 'rminer84193552'], ['6010ee96cbca26e9512da6f0', 'rminer84194272']], 'container': [12], 'reservation': [{'user': '6010ee96cbca26e9512da6f0', 'endTime': 84196775}]})
+(datetime.datetime(2026, 11, 11, 5, 33, 46, 740496), 84194370, 'watch', 'W45N8', None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'defender84193265'], ['6010ee96cbca26e9512da6f0', 'rhauler84193665'], ['6010ee96cbca26e9512da6f0', 'rhauler84193744'], ['6010ee96cbca26e9512da6f0', 'rhauler84193984'], ['6010ee96cbca26e9512da6f0', 'rminer84193552'], ['6010ee96cbca26e9512da6f0', 'rminer84194272']], 'container': [12], 'reservation': [{'user': '6010ee96cbca26e9512da6f0', 'endTime': 84196775}]})
+(datetime.datetime(2026, 11, 11, 5, 33, 59, 868743), 84194373, 'watch', 'W45N8', None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'defender84193265'], ['6010ee96cbca26e9512da6f0', 'rhauler84193665'], ['6010ee96cbca26e9512da6f0', 'rhauler84193744'], ['6010ee96cbca26e9512da6f0', 'rhauler84193984'], ['6010ee96cbca26e9512da6f0', 'rminer84193552'], ['6010ee96cbca26e9512da6f0', 'rminer84194272']], 'container': [0], 'reservation': [{'user': '6010ee96cbca26e9512da6f0', 'endTime': 84196775}]})
+(datetime.datetime(2026, 11, 11, 5, 34, 8, 693216), 84194375, 'watch', 'W45N8', None, None, {'creeps': [], 'container': [], 'reservation': []})
+(datetime.datetime(2026, 11, 11, 5, 56, 28, 419007), 84194429, 'box_pause', None, None, 'box frozen ~1087s since 2026-11-11 05:38:12', {'sec': 1087, 'from': '2026-11-11 05:38:12'})
+(datetime.datetime(2026, 11, 11, 6, 18, 24, 587047), 84194781, 'box_pause', None, None, 'box frozen ~859s since 2026-11-11 06:04:02', {'sec': 859, 'from': '2026-11-11 06:04:02'})
+(datetime.datetime(2026, 11, 11, 6, 29, 5, 642748), None, 'watch', 'W45N8', None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'reserver84194777'], ['6010ee96cbca26e9512da6f0', 'rhauler84193744'], ['6010ee96cbca26e9512da6f0', 'rhauler84195031'], ['6010ee96cbca26e9512da6f0', 'rminer84194904']], 'container': [560], 'reservation': [{'user': '6010ee96cbca26e9512da6f0', 'endTime': 84197307}]})
+(datetime.datetime(2026, 11, 11, 6, 29, 9, 111858), 84195122, 'watch', 'W45N8', None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'reserver84194777'], ['6010ee96cbca26e9512da6f0', 'rhauler84193744'], ['6010ee96cbca26e9512da6f0', 'rhauler84195031'], ['6010ee96cbca26e9512da6f0', 'rminer84194904']], 'container': [572], 'reservation': [{'endTime': 84197309}]})
+(datetime.datetime(2026, 11, 11, 6, 29, 13, 491448), 84195123, 'watch', 'W45N8', None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'reserver84194777'], ['6010ee96cbca26e9512da6f0', 'rhauler84193744'], ['6010ee96cbca26e9512da6f0', 'rhauler84195031'], ['6010ee96cbca26e9512da6f0', 'rminer84194904']], 'container': [584], 'reservation': [{'endTime': 84197311}]})
+(datetime.datetime(2026, 11, 11, 6, 29, 18, 16295), 84195124, 'watch', 'W45N8', None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'reserver84194777'], ['6010ee96cbca26e9512da6f0', 'rhauler84193744'], ['6010ee96cbca26e9512da6f0', 'rhauler84195031'], ['6010ee96cbca26e9512da6f0', 'rminer84194904']], 'container': [596], 'reservation': [{'endTime': 84197313}]})
+(datetime.datetime(2026, 11, 11, 6, 29, 22, 239078), 84195125, 'watch', 'W45N8', None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'reserver84194777'], ['6010ee96cbca26e9512da6f0', 'rhauler84193744'], ['6010ee96cbca26e9512da6f0', 'rhauler84195031'], ['6010ee96cbca26e9512da6f0', 'rminer84194904']], 'container': [608], 'reservation': [{'endTime': 84197315}]})
+(datetime.datetime(2026, 11, 11, 6, 29, 26, 901327), 84195126, 'watch', 'W45N8', None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'reserver84194777'], ['6010ee96cbca26e9512da6f0', 'rhauler84193744'], ['6010ee96cbca26e9512da6f0', 'rhauler84195031'], ['6010ee96cbca26e9512da6f0', 'rminer84194904']], 'container': [620], 'reservation': [{'endTime': 84197317}]})
+(datetime.datetime(2026, 11, 11, 6, 29, 31, 586975), 84195127, 'watch', 'W45N8', None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'reserver84194777'], ['6010ee96cbca26e9512da6f0', 'rhauler84193744'], ['6010ee96cbca26e9512da6f0', 'rhauler84195031'], ['6010ee96cbca26e9512da6f0', 'rminer84194904']], 'container': [632], 'reservation': [{'endTime': 84197319}]})
+(datetime.datetime(2026, 11, 11, 6, 29, 35, 783337), 84195128, 'watch', 'W45N8', None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'reserver84194777'], ['6010ee96cbca26e9512da6f0', 'rhauler84193744'], ['6010ee96cbca26e9512da6f0', 'rhauler84195031'], ['6010ee96cbca26e9512da6f0', 'rminer84194904']], 'container': [644], 'reservation': [{'endTime': 84197321}]})
+(datetime.datetime(2026, 11, 11, 6, 29, 40, 170249), 84195129, 'watch', 'W45N8', None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'reserver84194777'], ['6010ee96cbca26e9512da6f0', 'rhauler84193744'], ['6010ee96cbca26e9512da6f0', 'rhauler84195031'], ['6010ee96cbca26e9512da6f0', 'rminer84194904']], 'container': [656], 'reservation': [{'endTime': 84197323}]})
+(datetime.datetime(2026, 11, 11, 6, 29, 44, 353511), 84195130, 'watch', 'W45N8', None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'reserver84194777'], ['6010ee96cbca26e9512da6f0', 'rhauler84193744'], ['6010ee96cbca26e9512da6f0', 'rhauler84195031'], ['6010ee96cbca26e9512da6f0', 'rminer84194904']], 'container': [668], 'reservation': [{'endTime': 84197325}]})
+(datetime.datetime(2026, 11, 11, 6, 29, 48, 627304), 84195131, 'watch', 'W45N8', None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'reserver84194777'], ['6010ee96cbca26e9512da6f0', 'rhauler84193744'], ['6010ee96cbca26e9512da6f0', 'rhauler84195031'], ['6010ee96cbca26e9512da6f0', 'rminer84194904']], 'container': [680], 'reservation': [{'endTime': 84197327}]})
+(datetime.datetime(2026, 11, 11, 6, 29, 53, 332527), 84195132, 'watch', 'W45N8', None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'reserver84194777'], ['6010ee96cbca26e9512da6f0', 'rhauler84193744'], ['6010ee96cbca26e9512da6f0', 'rhauler84195031'], ['6010ee96cbca26e9512da6f0', 'rminer84194904']], 'container': [692], 'reservation': [{'endTime': 84197329}]})
+(datetime.datetime(2026, 11, 11, 6, 29, 57, 878232), 84195133, 'watch', 'W45N8', None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'reserver84194777'], ['6010ee96cbca26e9512da6f0', 'rhauler84193744'], ['6010ee96cbca26e9512da6f0', 'rhauler84195031'], ['6010ee96cbca26e9512da6f0', 'rminer84194904']], 'container': [704], 'reservation': [{'endTime': 84197331}]})
+(datetime.datetime(2026, 11, 11, 6, 30, 2, 248604), 84195134, 'watch', 'W45N8', None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'reserver84194777'], ['6010ee96cbca26e9512da6f0', 'rhauler84193744'], ['6010ee96cbca26e9512da6f0', 'rhauler84195031'], ['6010ee96cbca26e9512da6f0', 'rminer84194904']], 'container': [716], 'reservation': [{'endTime': 84197333}]})
+(datetime.datetime(2026, 11, 11, 6, 30, 6, 706148), 84195135, 'watch', 'W45N8', None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'reserver84194777'], ['6010ee96cbca26e9512da6f0', 'rhauler84193744'], ['6010ee96cbca26e9512da6f0', 'rhauler84195031'], ['6010ee96cbca26e9512da6f0', 'rminer84194904']], 'container': [728], 'reservation': [{'endTime': 84197335}]})
+(datetime.datetime(2026, 11, 11, 6, 30, 11, 46297), 84195136, 'watch', 'W45N8', None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'reserver84194777'], ['6010ee96cbca26e9512da6f0', 'rhauler84193744'], ['6010ee96cbca26e9512da6f0', 'rhauler84195031'], ['6010ee96cbca26e9512da6f0', 'rminer84194904']], 'container': [740], 'reservation': [{'endTime': 84197337}]})
+(datetime.datetime(2026, 11, 11, 6, 30, 15, 682434), 84195137, 'watch', 'W45N8', None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'reserver84194777'], ['6010ee96cbca26e9512da6f0', 'rhauler84193744'], ['6010ee96cbca26e9512da6f0', 'rhauler84195031'], ['6010ee96cbca26e9512da6f0', 'rminer84194904']], 'container': [752], 'reservation': [{'endTime': 84197339}]})
+(datetime.datetime(2026, 11, 11, 6, 30, 20, 264878), 84195138, 'watch', 'W45N8', None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'reserver84194777'], ['6010ee96cbca26e9512da6f0', 'rhauler84193744'], ['6010ee96cbca26e9512da6f0', 'rhauler84195031'], ['6010ee96cbca26e9512da6f0', 'rminer84194904']], 'container': [764], 'reservation': [{'endTime': 84197341}]})
+(datetime.datetime(2026, 11, 11, 6, 30, 24, 541330), 84195139, 'watch', 'W45N8', None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'reserver84194777'], ['6010ee96cbca26e9512da6f0', 'rhauler84193744'], ['6010ee96cbca26e9512da6f0', 'rhauler84195031'], ['6010ee96cbca26e9512da6f0', 'rminer84194904']], 'container': [776], 'reservation': [{'endTime': 84197343}]})
+(datetime.datetime(2026, 11, 11, 6, 30, 28, 810417), 84195140, 'watch', 'W45N8', None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'reserver84194777'], ['6010ee96cbca26e9512da6f0', 'rhauler84193744'], ['6010ee96cbca26e9512da6f0', 'rhauler84195031'], ['6010ee96cbca26e9512da6f0', 'rminer84194904']], 'container': [788], 'reservation': [{'endTime': 84197345}]})
+(datetime.datetime(2026, 11, 11, 6, 30, 33, 8367), 84195141, 'watch', 'W45N8', None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'reserver84194777'], ['6010ee96cbca26e9512da6f0', 'rhauler84193744'], ['6010ee96cbca26e9512da6f0', 'rhauler84195031'], ['6010ee96cbca26e9512da6f0', 'rminer84194904']], 'container': [800], 'reservation': [{'endTime': 84197347}]})
+(datetime.datetime(2026, 11, 11, 6, 30, 37, 803784), 84195142, 'watch', 'W45N8', None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'reserver84194777'], ['6010ee96cbca26e9512da6f0', 'rhauler84193744'], ['6010ee96cbca26e9512da6f0', 'rhauler84195031'], ['6010ee96cbca26e9512da6f0', 'rminer84194904']], 'container': [812], 'reservation': [{'endTime': 84197349}]})
+(datetime.datetime(2026, 11, 11, 6, 30, 42, 251580), 84195143, 'watch', 'W45N8', None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'reserver84194777'], ['6010ee96cbca26e9512da6f0', 'rhauler84193744'], ['6010ee96cbca26e9512da6f0', 'rhauler84195031'], ['6010ee96cbca26e9512da6f0', 'rminer84194904']], 'container': [824], 'reservation': [{'endTime': 84197351}]})
+(datetime.datetime(2026, 11, 11, 6, 30, 46, 735703), 84195144, 'watch', 'W45N8', None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'reserver84194777'], ['6010ee96cbca26e9512da6f0', 'rhauler84193744'], ['6010ee96cbca26e9512da6f0', 'rhauler84195031'], ['6010ee96cbca26e9512da6f0', 'rminer84194904']], 'container': [836], 'reservation': [{'endTime': 84197353}]})
+(datetime.datetime(2026, 11, 11, 6, 30, 51, 139040), 84195145, 'watch', 'W45N8', None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'reserver84194777'], ['6010ee96cbca26e9512da6f0', 'rhauler84193744'], ['6010ee96cbca26e9512da6f0', 'rhauler84195031'], ['6010ee96cbca26e9512da6f0', 'rminer84194904']], 'container': [848], 'reservation': [{'endTime': 84197355}]})
+(datetime.datetime(2026, 11, 11, 6, 30, 55, 442966), 84195146, 'watch', 'W45N8', None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'reserver84194777'], ['6010ee96cbca26e9512da6f0', 'rhauler84193744'], ['6010ee96cbca26e9512da6f0', 'rhauler84195031'], ['6010ee96cbca26e9512da6f0', 'rminer84194904']], 'container': [860], 'reservation': [{'endTime': 84197357}]})
+(datetime.datetime(2026, 11, 11, 6, 31, 0, 93821), 84195147, 'watch', 'W45N8', None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'reserver84194777'], ['6010ee96cbca26e9512da6f0', 'rhauler84193744'], ['6010ee96cbca26e9512da6f0', 'rhauler84195031'], ['6010ee96cbca26e9512da6f0', 'rminer84194904']], 'container': [872], 'reservation': [{'endTime': 84197359}]})
+(datetime.datetime(2026, 11, 11, 6, 31, 4, 144560), 84195148, 'watch', 'W45N8', None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'reserver84194777'], ['6010ee96cbca26e9512da6f0', 'rhauler84193744'], ['6010ee96cbca26e9512da6f0', 'rhauler84195031'], ['6010ee96cbca26e9512da6f0', 'rminer84194904']], 'container': [884], 'reservation': [{'endTime': 84197361}]})
+(datetime.datetime(2026, 11, 11, 7, 4, 8, 708181), 84195229, 'box_pause', None, None, 'box frozen ~1608s since 2026-11-11 06:37:20', {'sec': 1608, 'from': '2026-11-11 06:37:20'})
+(datetime.datetime(2026, 11, 11, 7, 17, 19, 92075), 84195679, 'box_pause', None, None, 'box frozen ~341s since 2026-11-11 07:11:37', {'sec': 341, 'from': '2026-11-11 07:11:37'})
 
-=== HOME upgraders 84194300+ (on-station / presence) ===
-  upgrader84193867 84194300..84194985 n=607 xy=30,30-30,30 onctl=607
-  upgrader84194428 84194429..84194484 n=56 xy=34,28-35,30 onctl=0
-  upgrader84194533 84194535..84194584 n=50 xy=35,28-35,29 onctl=0
-  upgrader84194666 84194668..84194985 n=239 xy=31,28-35,30 onctl=181
+=== db freshness ===
+room_stats (84195810, datetime.datetime(2026, 11, 11, 7, 19, 53, 962466, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), datetime.datetime(2026, 11, 11, 7, 20, 32, 694945), Decimal('38.732479'))
+creep_ticks (84195818, datetime.datetime(2026, 11, 11, 7, 20, 29, 748488, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), datetime.datetime(2026, 11, 11, 7, 20, 32, 694945), Decimal('2.946457'))
+creep_cpu (84195800, datetime.datetime(2026, 11, 11, 7, 19, 34, 587203, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), datetime.datetime(2026, 11, 11, 7, 20, 32, 694945), Decimal('58.107742'))
 
-=== HOME nUp from creep_ticks (every 50t bucket) 84194300+ ===
-  84194300 ticks=50 nUp 1-1 avg=1.00
-  84194350 ticks=50 nUp 1-1 avg=1.00
-  84194400 ticks=50 nUp 1-2 avg=1.42
-  84194450 ticks=50 nUp 1-2 avg=1.70
-  84194500 ticks=50 nUp 1-2 avg=1.30
-  84194550 ticks=50 nUp 1-2 avg=1.70
-  84194600 ticks=50 nUp 1-1 avg=1.00
-  84194650 ticks=50 nUp 1-2 avg=1.64
-  84194700 ticks=50 nUp 2-2 avg=2.00
-  84194750 ticks=50 nUp 2-2 avg=2.00
-  84194800 ticks=50 nUp 2-2 avg=2.00
-  84194850 ticks=50 nUp 2-2 avg=2.00
-  84194900 ticks=1 nUp 2-2 avg=2.00
-  84194950 ticks=6 nUp 2-2 avg=2.00
+=== box_pause events 6h ===
+(datetime.datetime(2026, 11, 11, 2, 19, 32, 377395), None, 'box frozen ~692s since 2026-11-11 02:07:59', {'sec': 692, 'from': '2026-11-11 02:07:59'})
+(datetime.datetime(2026, 11, 11, 3, 2, 27, 273849), None, 'box frozen ~1220s since 2026-11-11 02:42:00', {'sec': 1220, 'from': '2026-11-11 02:42:00'})
+(datetime.datetime(2026, 11, 11, 3, 22, 13, 616885), 84192420, 'box frozen ~725s since 2026-11-11 03:10:00', {'sec': 725, 'from': '2026-11-11 03:10:00'})
+(datetime.datetime(2026, 11, 11, 4, 5, 42, 159770), 84192862, 'box frozen ~1369s since 2026-11-11 03:42:46', {'sec': 1369, 'from': '2026-11-11 03:42:46'})
+(datetime.datetime(2026, 11, 11, 4, 24, 30, 64257), 84193271, 'box frozen ~557s since 2026-11-11 04:15:13', {'sec': 557, 'from': '2026-11-11 04:15:13'})
+(datetime.datetime(2026, 11, 11, 5, 0, 36, 339471), 84193701, 'box frozen ~959s since 2026-11-11 04:44:31', {'sec': 959, 'from': '2026-11-11 04:44:31'})
+(datetime.datetime(2026, 11, 11, 5, 25, 31, 25255), 84193980, 'box frozen ~1020s since 2026-11-11 05:08:24', {'sec': 1020, 'from': '2026-11-11 05:08:24'})
+(datetime.datetime(2026, 11, 11, 5, 56, 28, 419007), 84194429, 'box frozen ~1087s since 2026-11-11 05:38:12', {'sec': 1087, 'from': '2026-11-11 05:38:12'})
+(datetime.datetime(2026, 11, 11, 6, 18, 24, 587047), 84194781, 'box frozen ~859s since 2026-11-11 06:04:02', {'sec': 859, 'from': '2026-11-11 06:04:02'})
+(datetime.datetime(2026, 11, 11, 7, 4, 8, 708181), 84195229, 'box frozen ~1608s since 2026-11-11 06:37:20', {'sec': 1608, 'from': '2026-11-11 06:37:20'})
+(datetime.datetime(2026, 11, 11, 7, 17, 19, 92075), 84195679, 'box frozen ~341s since 2026-11-11 07:11:37', {'sec': 341, 'from': '2026-11-11 07:11:37'})
 
-=== new creeps first-seen in any room 84194780..84194990 (possible spawns during 2nd sleep) ===
+=== W47 upgrader traces last 400 published ticks ===
+cols ['ts', 'tick', 'room', 'creep', 'role', 'x', 'y', 'hits', 'store', 'state', 'commit']
