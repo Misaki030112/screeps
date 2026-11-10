@@ -31,7 +31,10 @@ function score(o, d, free, claimed, all) {
   let a = amt(o, all) - (claimed || 0);
   if (!o.store) a -= Math.ceil(amt(o, all) / 1000) * d; // dropped piles decay on the way
   const get = Math.min(a, free);
-  return a >= MIN && d <= maxRange(o, all) && get >= WORTH + PER_TILE * d ? get : 0;
+  // Carry-capped `get` ties an Invader tomb with a source energy pile; minerals do not respawn
+  // and tombstones expire, so loot gets a bonus that beats ordinary energy of the same load.
+  const bonus = all && amt(o, true) > amt(o, false) ? 1000 : 0;
+  return a >= MIN && d <= maxRange(o, all) && get >= WORTH + PER_TILE * d ? get + bonus : 0;
 }
 function tileOpen(room, x, y) {
   if (x < 1 || x > 48 || y < 1 || y > 48) return false;
