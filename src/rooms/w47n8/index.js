@@ -66,8 +66,10 @@ function spawnRun(spawn) {
   FM.tick(spawn); // 17:3x spawn-energy meter (Memory.ops.w8fm)
   const room = spawn.room, cs = mine(), n = r => cs.filter(c => c.memory.role === r).length;
   // 17:5x (patrol: 2 upgraders died within 40 ticks, upgrade fell to ~10 e/t): upgraders count only while they outlive a replacement
-  // (spawn 3/part + ~60 ticks Spawn2 -> ctl stands), so the next one is queued before the old one dies
-  const nUp = () => cs.filter(c => c.memory.role === 'w8upgrader' && (c.spawning || !(c.ticksToLive <= 3 * (c.body || []).length + 60))).length;
+  // (spawn 3/part + ~60 ticks Spawn2 -> ctl stands), so the next one is queued before the old one dies.
+  // Same-tick intents (home overshoot, 2026-11-10): the other idle spawn's spawnCreep is not in Game.creeps yet.
+  const nUp = () => cs.filter(c => c.memory.role === 'w8upgrader' && (c.spawning || !(c.ticksToLive <= 3 * (c.body || []).length + 60))).length
+    + require('../../managers/spawn').pendingSpawn(room, 'w8upgrader');
   const sites = room.find(FIND_MY_CONSTRUCTION_SITES).length;
   // 11-03 02:4x: refresh seal park every tick (even while spawning) so live wallJob sees sticky gate same tick
   const storPark = room.storage ? (room.storage.store[RESOURCE_ENERGY] || 0) : 0;
@@ -341,7 +343,12 @@ function spawnRun(spawn) {
   const e = starving ? Math.max(200, avail) : cap;
   const body = body7 || bodyFor(want, e), cost = _.sum(body, p => BODYPART_COST[p]);
   if (avail < cost) { FM.wait(want, cost, avail); return; }
-  if (spawn.spawnCreep(body, want + Game.time, { memory: Object.assign({ role: want, home: C.ROOM, born: Game.time, v2: 1 }, mem), energyStructures: energyOrder(room) }) === 0) FM.spent(cost);
+  const born = want + Game.time;
+  const rv = spawn.spawnCreep(body, born, { memory: Object.assign({ role: want, home: C.ROOM, born: Game.time, v2: 1 }, mem), energyStructures: energyOrder(room) });
+  if (rv === OK) {
+    if (want === 'w8upgrader') require('../../managers/spawn').notePendingSpawn(room, want, born);
+    FM.spent(cost);
+  }
 }
 const isGate = (x, y) => (C.GATE || []).some(([a, b]) => a === x && b === y);
 function placeSeal(room) {

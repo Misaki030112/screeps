@@ -196,6 +196,42 @@ assert.ok((Memory.ops.w8recycle || []).includes('w8minerExtra'), 'surplus si0 mi
 assert.ok(!(Memory.ops.w8recycle || []).includes('w8minerKeep'), 'stand miner is kept');
 delete Memory.ops.w8lead;
 Memory.ops.w8recycle = [];
+// Same-tick race as home (RCL7 has two spawns). softCap holds tUp at 2; one w8upgrader alive.
+// spawnCreep does not publish the creep, so the second spawn must count the intent or nUp becomes 3.
+Game.time = 900000;
+Memory.ops = { w8leanBank: false };
+function runTwo(creeps) {
+  Game.creeps = creeps;
+  const spawned = [];
+  const room = {
+    name: 'W47N8', energyCapacityAvailable: 5600, energyAvailable: 5600,
+    controller: { level: 7, ticksToDowngrade: 100000 },
+    storage: { store: { energy: 18000 } },
+    find: () => [],
+    lookForAt: (k, x, y) => {
+      if (k !== LOOK_STRUCTURES) return [];
+      if (x === 33 && y === 30) return [{ structureType: 'spawn', pos: { x, y } }];
+      if (x === 22 && y === 7) return [{ structureType: 'tower', pos: { x, y } }];
+      return [];
+    },
+  };
+  const one = () => ({
+    spawning: null, pos: { x: 34, y: 30, getRangeTo: () => 10 }, room,
+    spawnCreep: (b, n, o) => { spawned.push(o.memory.role); return OK; },
+  });
+  W.spawnRun(one());
+  W.spawnRun(one());
+  return spawned;
+}
+const w8base = {
+  a: mk('w8miner', 'W47N8', { si: 0 }), b: mk('w8miner', 'W47N8', { si: 1 }),
+  c: mk('w8hauler', 'W47N8'), d: mk('w8hauler', 'W47N8'), e: mk('w8hauler', 'W47N8'),
+};
+const w8one = runTwo(Object.assign({ u: mk('w8upgrader', 'W47N8') }, w8base));
+assert.strictEqual(w8one.filter(r => r === 'w8upgrader').length, 1, 'two spawns, softCap tUp=2, one alive: one start ' + JSON.stringify(w8one));
+const w8none = runTwo(Object.assign({}, w8base));
+assert.strictEqual(w8none.filter(r => r === 'w8upgrader').length, 2, 'none alive, tUp=2: each spawn may start one ' + JSON.stringify(w8none));
+delete Memory.ops;
 const rolesSrc = require('fs').readFileSync(path.join(__dirname, '..', 'src/rooms/w47n8/roles.js'), 'utf8');
 assert.ok(rolesSrc.includes('t <= 300') && rolesSrc.includes('w8lead'), 'w8miner arrival must cap w8lead like w8rlead');
 Game.time = 5;

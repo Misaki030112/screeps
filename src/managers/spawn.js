@@ -164,6 +164,37 @@ function defLowUpgraders(t, e, reserve, held, downgradeRisk, mem) {
 // sat at 0 and 3 upgraders (36W) did ~3/t for ~90t (patrol 10-14 14:36). Miners/rhaulers/reservers have their own leads.
 const PRESPAWN = new Set(['upgrader', 'hauler', 'queen']);
 function retiring(c) { return PRESPAWN.has(c.memory.role) && !c.memory.remote && !c.spawning && c.ticksToLive <= c.body.length * 3 + 30; }
+// Same-tick spawn intents. spawnCreep is applied at end of tick, so the new creep is not in
+// Game.creeps while the room's other idle spawn still decides (RCL7 has two). Patrol 2026-11-10
+// 12:24: storage crossed allowExtra (floor+1000 = 16000), upBank released tUp to 2 with one
+// upgrader already up, and both spawns started a 1550 — live nUp 3 pulled storage back under 15k.
+// The bag sits on the room object for this tick only (not Memory). A name already visible in
+// Game.creeps is not counted again, so a runtime that inserts synchronously does not double-count.
+function creepCensus() { return (typeof Game !== 'undefined' && Game && Game.creeps) || null; }
+function pendingBag(room) {
+  const t = (typeof Game !== 'undefined' && Game && Game.time) || 0;
+  const creeps = creepCensus();
+  // Same census object for the whole tick in production. A harness that swaps Game.creeps
+  // is a new world; drop the bag so a prior scenario's intent cannot suppress this one.
+  if (!room._spawnPending || room._spawnPending.t !== t || room._spawnPending.creeps !== creeps) room._spawnPending = { t, creeps, names: {} };
+  return room._spawnPending;
+}
+function notePendingSpawn(room, role, name) {
+  if (!room || !role) return;
+  const bag = pendingBag(room);
+  const list = bag.names[role] || (bag.names[role] = []);
+  if (name == null) name = role + ':' + list.length;
+  if (!list.includes(name)) list.push(name);
+}
+function pendingSpawn(room, role) {
+  const t = (typeof Game !== 'undefined' && Game && Game.time) || 0;
+  const creeps = creepCensus();
+  const bag = room && room._spawnPending;
+  if (!bag || bag.t !== t || bag.creeps !== creeps || !bag.names || !bag.names[role]) return 0;
+  let n = 0;
+  for (const name of bag.names[role]) if (!creeps || !creeps[name]) n++;
+  return n;
+}
 // Pure rule for remote hauler early-replace (exported for unit tests).
 function rhaulerNeed(liveCount, allCount, target) {
   target = target === undefined ? 2 : target;
@@ -369,7 +400,7 @@ function setRoleTargets(room) {
   room.memory.roleTargets = T;
   return T;
 }
-module.exports = { defLowUpgraders, setRoleTargets, rhTarget, birthDirs, targets, mineralCapped, rhaulerNeed, remoteNext, retiring, B, defenderOrder, planDefender, extrasOk, reserverBody, nearFull, bodyEnergy, spawnOrder, run(spawn) {
+module.exports = { defLowUpgraders, setRoleTargets, rhTarget, birthDirs, targets, mineralCapped, rhaulerNeed, remoteNext, retiring, pendingSpawn, notePendingSpawn, B, defenderOrder, planDefender, extrasOk, reserverBody, nearFull, bodyEnergy, spawnOrder, run(spawn) {
   // spawn-wait metric (Misaki 10-18 09:30: zero spawn idle due to refill). Memory.stats.sw[room] cumulative ticks:
   //   busy = spawning; wait = a creep was wanted, cost <= cap but energyAvailable < cost (refill wait); idle = nothing wanted.
   //   last = [role, cost, avail] of the latest wait.
@@ -396,11 +427,16 @@ function run1(spawn, onWait) {
   const mine = _.filter(Game.creeps, c => c.memory.home === room.name || (!c.memory.home && c.room.name === room.name));
   const count = _.countBy(mine.filter(c => !retiring(c)), c => c.memory.role); // replacement targets
   const alive = _.countBy(mine, c => c.memory.role); // who can refill the spawn right now (retiring ones still work)
+  // In-progress spawnCreep from the other spawn this tick (creep not in Game.creeps yet).
+  const have = role => (count[role] || 0) + pendingSpawn(room, role);
   const P = plan.get(room.name);
   const go = (role, body, mem = {}) => {
     const cost = _.sum(body, p => BODYPART_COST[p]);
     if (avail < cost) { if (cost <= cap) onWait(role, cost, avail); return ERR_NOT_ENOUGH_ENERGY; }
-    return spawn.spawnCreep(body, role + Game.time, { memory: Object.assign({ role, home: room.name }, mem), directions: birthDirs(spawn, role) });
+    const name = role + Game.time;
+    const rv = spawn.spawnCreep(body, name, { memory: Object.assign({ role, home: room.name }, mem), directions: birthDirs(spawn, role) });
+    if (rv === OK && role === 'upgrader') notePendingSpawn(room, role, name);
+    return rv;
   };
   // 1) emergency: nothing can refill the spawn
   if (!(alive.hauler || 0) && !(alive.queen || 0) && !(alive.harvester || 0) && !(alive.filler || 0))
@@ -453,7 +489,7 @@ function run1(spawn, onWait) {
   // 2b1) W47N9 raid waits until logistics below are filled. A fat body must not idle-wait here
   // ahead of miners (already spawned) / haulers / fillers / remotes. See the pass after remoteSpawn.
   // 2b2) refill staff before heavy conquest bodies: a 2nd 16C8M queen (1200) cuts the 2300e refill gap roughly in half
-  if ((count.queen || 0) < 2 && !(count.filler || 0) && room.energyCapacityAvailable >= 1300) {
+  if (have('queen') < 2 && !(count.filler || 0) && room.energyCapacityAvailable >= 1300) {
     const rQ = go('queen', B.queen(bodyEnergy('queen', E, cap, avail, !!alive.hauler, !!room.storage)));
     if (rQ === OK || rQ === ERR_NOT_ENOUGH_ENERGY) return rQ;
   }
@@ -525,7 +561,7 @@ function run1(spawn, onWait) {
   if (room.storage && room.storage.store[RESOURCE_ENERGY] > ((Memory.defense && Memory.defense.reserveE) || 0) + 10000) {
     // Wartime pause already zeros upgrader/builder. Don't let a mineral miner spend the pile the raid body is banking.
     const pauseCiv = require('../roles/raid9').pauseCivilians();
-    const need = ['hauler', 'upgrader', 'mminer', 'builder'].find(r => (count[r] || 0) < (T[r] || 0) && !(pauseCiv && r !== 'hauler'));
+    const need = ['hauler', 'upgrader', 'mminer', 'builder'].find(r => have(r) < (T[r] || 0) && !(pauseCiv && r !== 'hauler'));
     const cw = need && !indep8 && require('../roles/conquest').wantSpawn(room);
     // cqTurn expires after 150t: remotes spawned ahead of CQ kept it set 83720845..83721136 and home got no upgrader for ~300t
     const cqTurn = room.memory.cqTurn && Game.time - room.memory.cqTurn < 150;
@@ -555,7 +591,7 @@ function run1(spawn, onWait) {
   for (const role of spawnOrder(count, T, nSites)) {
     if (CIV.has(role)) continue;
     if (role === 'REMOTE') { const r = remoteSpawn(room, go, avail); if (r !== undefined) return r; continue; }
-    if ((count[role] || 0) >= T[role]) continue;
+    if (have(role) >= T[role]) continue;
     return homeRole(role);
   }
   { const RD = require('../roles/raid9'), w = RD.wantSpawn(room, avail); if (w) {
@@ -565,7 +601,7 @@ function run1(spawn, onWait) {
     return rv; } }
   for (const role of spawnOrder(count, T, nSites)) {
     if (!CIV.has(role)) continue;
-    if ((count[role] || 0) >= T[role]) continue;
+    if (have(role) >= T[role]) continue;
     return homeRole(role);
   }
 }
