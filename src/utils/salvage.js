@@ -7,7 +7,7 @@
 // Reachable (patrol 2026-10-30): skip piles on tiles with no walkable neighbour (fully enclosed by
 // structures, e.g. ex-filler stop 31,33 after RCL7 stamp). Haulers otherwise oscillate at range 2 forever
 // while the pile decays (~1 e/t).
-const MIN = 50, WORTH = 50, PER_TILE = 8, MAX_RANGE = 25, DANGER = 5;
+const MIN = 50, WORTH = 50, PER_TILE = 8, MAX_RANGE = 25, MAX_RANGE_LOOT = 49, DANGER = 5;
 const N8 = [[-1, -1], [0, -1], [1, -1], [-1, 0], [1, 0], [-1, 1], [0, 1], [1, 1]];
 const PASS = { road: 1, container: 1, rampart: 1 };
 const R = {}; // heap: tick -> {id: claimed amount}
@@ -24,11 +24,14 @@ const amt = (o, all) => o.store ? (o.store[RESOURCE_ENERGY] || 0) + (all ? LOOT_
   : o.resourceType === RESOURCE_ENERGY ? o.amount : all ? LOOT_W * o.amount : 0;
 const armed = h => h.body.some(p => (p.type === ATTACK || p.type === RANGED_ATTACK) && p.hits > 0);
 // pure scoring, exported for tests: energy we expect to collect, or 0 if not worth it
+// Energy-only piles stay inside MAX_RANGE. Mineral/boost loot (Invaders die on room edges)
+// is worth a cross-room walk when storage can take it: PER_TILE still drops tiny far piles.
+function maxRange(o, all) { return all && amt(o, true) > amt(o, false) ? MAX_RANGE_LOOT : MAX_RANGE; }
 function score(o, d, free, claimed, all) {
   let a = amt(o, all) - (claimed || 0);
   if (!o.store) a -= Math.ceil(amt(o, all) / 1000) * d; // dropped piles decay on the way
   const get = Math.min(a, free);
-  return a >= MIN && d <= MAX_RANGE && get >= WORTH + PER_TILE * d ? get : 0;
+  return a >= MIN && d <= maxRange(o, all) && get >= WORTH + PER_TILE * d ? get : 0;
 }
 function tileOpen(room, x, y) {
   if (x < 1 || x > 48 || y < 1 || y > 48) return false;
@@ -92,4 +95,4 @@ function retire(c, need) {
   if (c.pos.isNearTo(sp)) sp.recycleCreep(c); else require('./move').to(c, sp.pos.x, sp.pos.y, 1);
   return true;
 }
-module.exports = { pick, take, dump, retire, score, reachable, MIN, WORTH, PER_TILE };
+module.exports = { pick, take, dump, retire, score, reachable, MIN, WORTH, PER_TILE, MAX_RANGE, MAX_RANGE_LOOT };

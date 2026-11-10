@@ -31,6 +31,9 @@ const cases = [
     setup({ 118: [t] }, [c]); assert.strictEqual(S.pick(c).id, 'i'); let got; c.withdraw = (o, k) => { got = k; return 0; }; S.take(c, t); assert.strictEqual(got, 'GO'); assert.strictEqual(c.memory.salv, 'i'); STOR = null; }],
   ['loot: energy withdrawn before minerals', () => { STOR = { my: true, pos: pos(35, 28), store: { getFreeCapacity: () => 1e5 } }; const c = creep('h', 30, 30, 700); const t = { id: 'i', pos: pos(31, 30), store: { energy: 60, GO: 10 } }; setup({ 118: [t] }, [c]);
     let got; c.withdraw = (o, k) => { got = k; return 0; }; S.take(c, t); assert.strictEqual(got, 'energy'); STOR = null; }],
+  ['loot: mineral tombstone at range 32 is worth the walk (edge Invader)', () => { STOR = { my: true, pos: pos(35, 32), store: { getFreeCapacity: () => 1e5 } }; const c = creep('h', 22, 34, 750); const t = { id: 'i', pos: pos(30, 2), store: { energy: 582, GO: 95, KO: 17, ZH: 23, UH: 11 } };
+    setup({ 118: [t] }, [c]); assert.strictEqual(S.pick(c).id, 'i'); STOR = null; }],
+  ['energy-only tombstone at range 32 stays outside MAX_RANGE', () => { STOR = { my: true, pos: pos(35, 32), store: { getFreeCapacity: () => 1e5 } }; const c = creep('h', 22, 34, 750); setup({ 118: [tomb('t', 30, 2, 582)] }, [c]); assert.strictEqual(S.pick(c), null); STOR = null; }],
   ['dump: carrying GO goes to storage first', () => { const st = { my: true, pos: pos(31, 30), store: { getFreeCapacity: () => 1e5 } }; STOR = st; const c = creep('h', 30, 30, 700); c.store.GO = 10; c.memory.home = 'W46N8'; setup({}, [c]);
     let tr; c.transfer = (s, k) => { tr = k; return 0; }; assert.strictEqual(S.dump(c), true); assert.strictEqual(tr, 'GO'); STOR = null; }],
   ['enclosed drop (no walkable neighbour) ignored', () => {

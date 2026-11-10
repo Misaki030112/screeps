@@ -315,6 +315,29 @@ function termFuel(c) {
   if (c.pos.isNearTo(st)) c.withdraw(st, E); else go8(c, st.pos.x, st.pos.y);
   return true;
 }
+
+// Invader loot (2026-11-10, W47N8 30,2): haulPick / rhauler piles scored and withdrew energy only,
+// so GO/KO/ZH/UH in the tombstone were left to decay. Reuse utils/salvage (minerals weighted,
+// sticky until empty, dump to storage). mineralRun still delivers held minerals to the terminal
+// when the RCL6 gate is on; salvage.dump is the fallback. Pick decaying loot before starting a
+// mineral-container run or walking an empty rhauler out to W47N7.
+const S = require('../../utils/salvage');
+function holdingLoot(c) { return Object.keys(c.store).some(k => k !== E && c.store[k] > 0); }
+function lootDump(c) {
+  if (!holdingLoot(c)) return false;
+  if (c.memory.role === 'w8hauler' && mineralRun(c)) return true;
+  return S.dump(c);
+}
+function lootPick(c) {
+  if (c.memory.w) return false;
+  if (c.store.getFreeCapacity && c.store.getFreeCapacity() < S.WORTH) return false;
+  const sv = S.pick(c); if (!sv) return false;
+  delete c.memory.pt; delete c.memory.mr;
+  if (c.pos.isNearTo(sv)) S.take(c, sv);
+  else if (c.room.name === C.ROOM) go8(c, sv.pos.x, sv.pos.y);
+  else rmove(c, c.room.name, sv.pos.x, sv.pos.y, 1);
+  return true;
+}
 const R = {
   w8miner(c) {
     if (!home(c)) return;
@@ -356,6 +379,8 @@ const R = {
   },
   w8hauler(c) {
     if (!home(c)) return;
+    if (lootDump(c)) return;
+    if (lootPick(c)) return;
     if (mineralRun(c)) return;
     if (termFuel(c)) return;
     toggle(c);
@@ -514,6 +539,7 @@ const R = {
       return;
     }
     toggle(c);
+    if (holdingLoot(c)) { if (!home(c)) return; if (lootDump(c)) return; }
     // one-off sign of W47N7 with home's text (22:21): only while it differs, one hauler at a time, then back to work
     if (c.room.name === RM.room && c.room.controller) {
       const SG = require('../../utils/sign'), ct = c.room.controller;
@@ -527,6 +553,7 @@ const R = {
     // Under 90 ttl: carry what I have home, never start a new pickup (energy stays in the container for the next hauler).
     if (!c.memory.w && c.ticksToLive < 90) { if (c.store[E] > 0) c.memory.w = true; else { c.suicide(); return; } }
     if (!c.memory.w) {
+      if (lootPick(c)) return;
       // 17:45: W47N7 over-hauled (75 CARRY, conts 120/520, rhaulers waiting) while W47N8 source B cont 11,43 hit 1826/2000 (local haulers
       // busy refilling extensions). The rhauler exit path passes beside 11,43 (12,42): when W47N7 holds < 800, take a load there -> ctl.
       if (c.room.name === C.ROOM) {
@@ -669,4 +696,6 @@ Object.defineProperty(module.exports, '_wallJob', { value: wallJob, enumerable: 
 Object.defineProperty(module.exports, '_rmove', { value: rmove, enumerable: false }); // tests only
 Object.defineProperty(module.exports, '_home', { value: home, enumerable: false }); // tests only
 Object.defineProperty(module.exports, '_mineralRun', { value: mineralRun, enumerable: false }); // tests only
+Object.defineProperty(module.exports, '_lootPick', { value: lootPick, enumerable: false });
+Object.defineProperty(module.exports, '_lootDump', { value: lootDump, enumerable: false });
 Object.defineProperty(module.exports, '_termFuel', { value: termFuel, enumerable: false }); // tests only
