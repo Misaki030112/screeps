@@ -8,6 +8,10 @@ hauler upkeep (CARRY need = 10 × (round trip × 1.10 + 4) / 50, load split 75% 
 0.03/t each, builder-lite 1000/1500. Upgrade = net / (1 + upgrader upkeep 1150/1500/10). RCL5: 1800 cap, best of source-A link→ctl or hub→ctl link (3% loss).
 reserve7 (2 CLAIM) is spawned and paid by home.
 
+## 2026-11-11 20:2x — keep=2 delivered a 25–32k band, then leanBank rebuild (plan holds)
+
+12h window: W47 upgrade **16.99** e/t vs ideal **30.08** (`tools/model_w8.py --hours 12`; keep=2; 24.62→26.14%, +166k ≈16.99 e/t, was 16.65). **46.2% of samples ≥25k** (was 18.4%), max stor **32259** @14:58–15:01 (longest ≥25k **980 t**); **0% ≥40k** — 40k/500t latch still waiting. Evening W45N7 + W47N7 Invader bills (two ×5200e defenders) plus mutual w8guard/w8defender bled storage to min **9478**; live 13.9k phase=bank20 leanBank1 upgKeep=1 (stor <15k) threatSoft leftover WINDOW 1500 from the W47N7 seen-tick — not a new bottleneck class and not a reason to move the 40k latch. **contMinPct56 contLow0 roadCrit0**. See `docs/RCL7.md` 20:2x.
+
 ## 2026-11-09 08:1x — leanBank rebuild after 21.3k peak (plan holds)
 
 12h window: W47 upgrade **11.94** e/t vs ideal **30.08** (`tools/model_w8.py --hours 12`; WORK20 park; 19.34→20.40%, +116k ≈11.94 e/t). No 25k near-clear this window (peak stor **21275@23:00**); touched leanBank target **20057@00:00** then bled to min **10682** (04:00 hour); live stor 17329 softLeft 7671 / bankLeft 2671 phase=bank20 climbing again (upgKeep 2 after a brief keep=1 dip <15k). **contMinPct49 contLow1**; roadCrit 38→3 is the known mvp pause draining (not a new repair-debt class). Soft clear ≥25k remains the gate to ceil6. See `docs/RCL7.md` 08:1x.

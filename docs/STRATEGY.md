@@ -33,7 +33,17 @@ Last full refresh: **2026-11-09 17:1x** (autonomous push — docs/canvas scorebo
 - One-line verdict: `waiting on ticks` | `small safe ship` | `phase exit` — capability to stock a kiter ≠ order to fight.
 
 
-## Current state (2026-11-11 ~08:2x Asia/Hong_Kong · 12h review)
+## Current state (2026-11-11 ~20:2x Asia/Hong_Kong · 12h review)
+
+| Room | Notes |
+|------|-------|
+| W46N8 (home) | **RCL7** 51.27% (5.606M/10.935M); +207k/12h ≈ 21.23 e/t → RCL8 ≈ **12.9 days**; stor avg 15.8k max 20.6k min 8574, **25% under 15k** (was 27%); live tip 19.1k why=ok nUp=2 upExtra=0; labs OFF (actOk=1); LIVE **d09e9c4** (#40 @84202370) |
+| W47N8 | **RCL7** 26.14% (2.859M); +166k/12h ≈ 16.99 e/t (was 16.65) → RCL8 ≈ **24.3 days**; stor avg 24.0k max 32259 min 9478 (46.2% ≥25k, 0% ≥40k); keep=2 / 40k sticky not armed (closest 32.3k); phase=bank20 leanBank1 bankWhy=threat softCap2 ON threatSoft leftover WINDOW 1500 |
+
+**20:2x scorecard:** Phase0 home floor **wobbling but improved** (25% of 12h under 15k; 8.6k evening dip + 19:29 2h 63.5% SOFT FIRST were two 5200e remote-defender bills, then designed 15k-floor recovery — the 20k gate never latched, best ≥20k streak 90 t); W47 reached a real 25–32k band (46% of samples ≥25k) then leanBank rebuild after the same bills, 40k sticky **waiting**; labs OFF ✔. Phase1 blocked. Phase2 home lead (~12.9 d), W47 ~24.3 d (pace up). Phase3+ deferred. Verdict: `waiting on ticks` (20k gate + keep=2 / 40k latch held; no new game code).
+
+### Previous (2026-11-11 ~08:2x Asia/Hong_Kong · 12h review)
+
 
 | Room | Notes |
 |------|-------|

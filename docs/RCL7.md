@@ -1,6 +1,19 @@
 <!-- 2026-11-09 17:1x: Phase0 waiting on ticks; see STRATEGY Current state + ROADMAP 17:1x; 12h reviews must score T3 Phase0/1/2. -->
 # Home W46N8 RCL7 readiness (strategy review 2026-10-19 18:4x UTC+8)
 
+## 2026-11-11 20:2x Asia/Hong_Kong — 12h strategic review (plan holds; designed recovery after two 5200e defenders, docs only)
+
+**Board.** Home 51.27% stor avg 15.8k max 20.6k min 8574 (21.23 e/t → RCL8 ≈12.9 d; 25% of 12h under 15k, was 27%; live tip 19.1k why=ok nUp=2 upExtra=0). W47 26.14% stor avg 24.0k max 32259 min 9478 (16.99 e/t → RCL8 ≈24.3 d, was 16.65 / ~25.3 d; 46.2% ≥25k, 0% ≥40k, keep=2). Remotes SAFE. CPU avg 17.80 p95 21.05 max 31.75, bucket min 9932. LIVE d09e9c4 held (#40 @84202370).
+
+**Finding.** The sticky 20k/300t 3rd-upgrader gate still did its job, including through an evening defense spend. Ledger 9809 t: home sp:upgrader **3.00 gross / 1.18 refund / net 1.82 e/t** (was 1.18; well under the 5 e/t waste gate). Longest ≥20k stretch was **90 t** (max 20640 @15:12–15:18 HKT); a single 20017 sample at 20:19 did not hold, so upExtra never latched. Two full-budget remote defenders this window, both **5200e** (not the proposed ~2500 cap): W45N7 Invader 84204603–84204845 (242 t, defender84204604) then W47N7 Invader pause 84205796 SAFE since 84206031 (235 t, rdef84205797, still alive ttl~1012 — leave-alive policy). Home stor min **8574** @18:31, under-15k 1010 t, recrossed 15k @84205610 / 19:22, now 19.1k why=ok — designed floor recovery, not a new policy bug. The 19:29 exact2h 63.5% SOFT FIRST is that same episode (next hourly is the formal ALERT watch). W47 keep=2 delivered a slight pace rise and a real 25–32k band (longest ≥25k **980 t**, max 32259); then bled to 9478 after the defender bills + mutual w8guard/w8defender (aged out ~20:17) and is in leanBank keep=1 rebuild. threatSoft leftover is not stuck and did **not** postpone the 32k peak: w8threat=84206020 is the W47N7 seen-tick, WINDOW=1500, expires ~84207520; current stor <15k would keep softE on anyway; keep=2 until 40k is unchanged.
+
+**Community.** Overmind `UpgradeSite` (blob 2eae97b) still `storageBuffer=100000` / `energyPerBodyUnit=25000`; upgraders spawn only above that buffer and are not recycled for banking. Our 20k/300t latch is the same shape at the 15k floor. TooAngel parks upgrade when thin, keeps logistics+repair warm. Labs / XGH2O still wait on an Overmind-style ~100k energy cushion (live home 19.1k / W47 13.9k ≪ 100k) even though termO~127k termK~136k are fat. New remotes stay nod-only: CPU 12h avg 17.80 / 20 is tight. Standing remote defence cleared both Invaders (waited=1 both times); do not restart war_cmd.
+
+**Moves:** (1) keep the 20k gate, home stays the RCL8 lead (~12.9 d); funnel still coded only at home ≥~90%. (2) W47 stays Phase0 — keep=2 until 40k sticky 500 t (closest this window: 32.3k); do not unpark ceil/seal mid leanBank rebuild. (3) Defer labs KO / boost / industry / market / new remotes (**no re-ask**). Defender #1 threat-sizing still awaiting Misaki (proposed 11-09; two more 5200e first-bodies tonight; not re-asked).
+
+**Shipped:** Nothing (docs + ROADMAP only). SoftCap / leanBank / sealMinE / HUB_LINK / labs / industry / market / war_* / listener **unchanged**. No game deploy.
+
+
 ## 2026-11-11 08:2x Asia/Hong_Kong — 12h strategic review (plan holds; 20k gate settled, docs only)
 
 **Board.** Home 49.37% stor avg 15.6k max 21.1k (20.63 e/t → RCL8 ≈13.7 d; 27% of 12h under 15k, was 32%; live tip 14.2k floor_bank). W47 24.62% stor avg 21.0k max 26.2k (16.65 e/t → RCL8 ≈25.3 d, was 12.76 / ~34 d; 18.4% ≥25k, 0% ≥40k, keep=2). Remotes SAFE. CPU avg 17.52 p95 21.16, bucket min 9952. LIVE c27c44f held.
