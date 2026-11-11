@@ -1,6 +1,18 @@
-retry missing chunks from this 40min window + prior persistent 404
+retry start game.time=84203220
+  pre  W45N7@84202700 live/db distinct=0 range=None..None
+  pre  W47N8@84201700 live/db distinct=19 range=84201701..84201719
+  pre  W47N7@84202000 live/db distinct=0 range=None..None
+  pre  W47N7@84202100 live/db distinct=0 range=None..None
+  pre  W47N8@84201400 live/db distinct=0 range=None..None
+retry W45N7@84202700 still 404
 retry W47N8@84201700 still 404
 retry W47N7@84202000 still 404
 retry W47N7@84202100 still 404
 retry W47N8@84201400 still 404
-recovered=0 still_404=[('W47N8', 84201700), ('W47N7', 84202000), ('W47N7', 84202100), ('W47N8', 84201400)]
+  post W45N7@84202700 distinct=0/100 range=None..None
+  post W47N8@84201700 distinct=19/100 range=84201701..84201719
+  post W47N7@84202000 distinct=0/100 range=None..None
+  post W47N7@84202100 distinct=0/100 range=None..None
+  post W47N8@84201400 distinct=0/100 range=None..None
+recovered=[] still_404=[('W45N7', 84202700), ('W47N8', 84201700), ('W47N7', 84202000), ('W47N7', 84202100), ('W47N8', 84201400)] inserted_retry=0
+finished

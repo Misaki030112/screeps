@@ -1,25 +1,39 @@
 {
-  "finished_at": "2026-11-11 15:30 Asia/Hong_Kong",
-  "game_time_at_backfill": 84202349,
-  "published_bases": "84201600..84202200",
-  "reconstructed": "84201601..84202300",
-  "inserted": 8020,
-  "already_in_db": 16701,
-  "ts_realigned": 11094,
-  "missing_chunks_first_pass": 3,
-  "missing_chunks_after_retry": 3,
-  "still_404": [
-    "W47N8@84201700 persistent official 404 ticks 84201701..84201800; 19 live 84201701..84201719",
-    "W47N7@84202000 persistent official 404 ticks 84202001..84202100; 0 live",
-    "W47N7@84202100 persistent official 404 ticks 84202101..84202200; 0 live",
-    "W47N8@84201400 prior persistent official 404 ticks 84201401..84201500; 0 live (outside this 40min window, retried anyway still 404)"
+  "ok": true,
+  "routine": "Screeps 1-hour peacetime ops patrol",
+  "finished_at_hkt": "2026-11-11 16:25 Asia/Hong_Kong",
+  "shard": "shard3",
+  "rooms": [
+    "W46N8",
+    "W47N8",
+    "W45N8",
+    "W45N7",
+    "W47N7"
   ],
-  "db_after_distinct": {
-    "W46N8": 700,
-    "W47N8": 619,
-    "W45N8": 700,
-    "W45N7": 700,
-    "W47N7": 500
+  "minutes": 40,
+  "game_time": 84203191,
+  "published_bases": "84202400..84203000",
+  "ticks": {
+    "min": 84202401,
+    "max": 84203100,
+    "span": 700
   },
-  "tick_s": 4.344
+  "tick_s": 4.366,
+  "missing_chunks": 1,
+  "missing_chunk_list": [
+    "W45N7@84202700"
+  ],
+  "inserted": 6024,
+  "already_in_db": 22967,
+  "ts_realigned": 1257,
+  "inserted_retry": 0,
+  "missing_chunks_after_retry": 1,
+  "per_room_distinct": {
+    "W46N8": 700,
+    "W47N8": 700,
+    "W45N8": 700,
+    "W45N7": 600,
+    "W47N7": 700
+  },
+  "summary": "ok: 40min official history backfill shard3 5 rooms, ticks 84202401..84203100 (700), missing_chunks=1 after retry (W45N7@84202700 persistent official 404 for 84202701..84202800 / 0 live), inserted=6024 already_in_db=22967 ts_realigned=1257; W46N8/W47N8/W45N8/W47N7 distinct=700, W45N7 distinct=600; dark 84202541-84202619 filled 79/79 all 5; dark 84202711-84202929 filled 219/219 four rooms and 129/219 W45N7 (90t official 404 W45N7@84202700 overlapping 84202711..84202800 / 0 live; 29t previously unpublished now filled); known 404s retried still 404: W45N7@84202700, W47N8@84201700 (19 live), W47N7@84202000, W47N7@84202100, W47N8@84201400; trailing unpublished after 84203100"
 }
