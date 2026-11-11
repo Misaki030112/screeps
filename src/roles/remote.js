@@ -182,10 +182,18 @@ function stageVia(c, C) {
   }
   const ex = remote.exitTile(c.memory.remote, via, c.memory.remote);
   if (!ex) return false;
-  if (Math.max(Math.abs(c.pos.x - ex[0]), Math.abs(c.pos.y - ex[1])) <= 2) {
-    require('../utils/trace').why(c, 'p'); return true;
-  }
+  const a = viaHold(c.pos.x, c.pos.y, ex);
+  if (a === 'stepin') { require('../utils/trace').why(c, 'p'); delete c.memory._m; c.move(stepIn(c)); return true; }
+  if (a === 'hold') { require('../utils/trace').why(c, 'p'); return true; }
   move.to(c, ex[0], ex[1], 2); return true;
+}
+// Staging hold in the via room (patrol 11-11 15:2x JST): rhauler84200251 got onto W45N8 21,49 (the W45N7 exit tile, within the
+// <=2 hold radius) and "held" there; end of tick the border moved it to W45N7 21,0, where stageOut sent it straight back via
+// go() -> 22 ticks of 21,49<->21,0 bouncing. Holding on an exit tile is never a hold: step inward instead.
+// pure: viaHold(x, y, ex) -> 'stepin' | 'hold' | 'move'
+function viaHold(x, y, ex) {
+  if (Math.max(Math.abs(x - ex[0]), Math.abs(y - ex[1])) > 2) return 'move';
+  return x === 0 || x === 49 || y === 0 || y === 49 ? 'stepin' : 'hold';
 }
 // Via gate (patrol 10-21 21:5x): W45N7 stayed SAFE while W45N8 (its only way in) had a solo Invader in THREAT, so the
 // replacement rminer83785547 walked past it and was shot to 30/1000. While any via remote is not SAFE: creeps at home stay
@@ -491,4 +499,4 @@ roles.rscout = function (c) {
   if (remote.paused(c.memory.remote)) return flee(c);
   go(c, c.memory.remote, x, y, 1);
 };
-module.exports = { viaGate, repairNow, inward, stageOut, STAGE, waiterOrder, pocketAct, POCKET, onAvoid, waitStand, stepOffAvoid, viaTake, VIA_KEEP, coreAct, reserverAct, rminer: { run: roles.rminer }, rhauler: { run: roles.rhauler }, reserver: { run: roles.reserver }, defender: { run: roles.defender }, rscout: { run: roles.rscout } };
+module.exports = { viaHold, viaGate, repairNow, inward, stageOut, STAGE, waiterOrder, pocketAct, POCKET, onAvoid, waitStand, stepOffAvoid, viaTake, VIA_KEEP, coreAct, reserverAct, rminer: { run: roles.rminer }, rhauler: { run: roles.rhauler }, reserver: { run: roles.reserver }, defender: { run: roles.defender }, rscout: { run: roles.rscout } };

@@ -39,4 +39,9 @@ ok('healed >30%: off', !th.earlyNext(Object.assign({}, D, { last: I(400), early:
 ok('not DEFEND: off', !th.earlyNext({ st: 'WAIT', last: null, early: true }, true));
 Memory.remote = { W45N8: { th: { st: 'DEFEND', early: true } } };
 ok('safe(): rminer/rhauler only', th.safe('W45N8', 'rminer') && th.safe('W45N8', 'rhauler') && !th.safe('W45N8', 'reserver') && !th.safe('W45N8'));
+// 6) via staging hold never sits on an exit tile (11-11 rhauler84200251 21,49<->21,0 bounce)
+{ const { viaHold } = require(path.join(ROOT, 'src/roles/remote.js'));
+  ok('on exit tile within hold radius: step in', viaHold(21, 49, [21, 49]) === 'stepin' && viaHold(22, 49, [21, 49]) === 'stepin');
+  ok('inside near exit: hold', viaHold(22, 48, [21, 49]) === 'hold' && viaHold(21, 47, [21, 49]) === 'hold');
+  ok('far: move', viaHold(21, 40, [21, 49]) === 'move'); }
 console.log(`remote_fixes tests passed (${n})`);
