@@ -28,7 +28,11 @@ module.exports = {
   // 19:08 jam fix: ctl container 13,26 has 7 open neighbours (14,25 wall). Upgraders hold UPG_STAND; CTL_HAUL stays free for
   // unloading haulers, who exit south via row 28 (13,25 is a dead end whose only exit is the container tile).
   // 13,25 dropped from the stands (19:12): an upgrader walking in and the trapped hauler walking out swap-deadlocked on 13,26
-  UPG_STAND: [[12, 25], [12, 26], [14, 26], [14, 27]], CTL_HAUL: [[13, 27], [12, 27]],
+  // 15:xx (w8upgrader84200878): 12,26 was a stand AND the west-wrap trunk road into the ctl pocket.
+  // Haulers on 12,26 made pickTile fail; the 1C upgrader then fell through to getEnergy and walked the
+  // south hub exit (14,28 / 13,29 / 12,28) while the ctl cont was 2000/2000, so loaded haulers going to
+  // the hub turned around onto the 1-wide west wrap (8,18-22). 15,26 is in range 3, off both trunks.
+  UPG_STAND: [[12, 25], [15, 26], [14, 26], [14, 27]], CTL_HAUL: [[13, 27], [12, 27]],
   UPG_EXTRA: [[15, 26], [15, 27], [15, 28], [16, 28], [14, 28]], // in range 3, off the hauler corridors (11,26-12,28 west, 13,28 south)
   // K mineral @37,45 (wall tile). Only walkable harvest stands in range 1: 37,44 / 38,44 (plain). Container+mminer on 37,44
   // (also in roads.MINERAL). Strategy 23:4x lean KO: home already has 3 labs — colony labs deferred (RCL6_LABS).
