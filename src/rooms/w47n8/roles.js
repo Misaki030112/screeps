@@ -444,7 +444,17 @@ const R = {
         else { const lk = c.room.lookForAt(LOOK_STRUCTURES, C.CTL_LINK[0], C.CTL_LINK[1]).find(s => s.structureType === STRUCTURE_LINK && s.store[E] > 0 && c.pos.isNearTo(s));
           if (c.store[E] < 2 * c.getActiveBodyparts(WORK) && (lk || cont.store[E])) c.withdraw(lk || cont, E); /* CPU 21:20: refill only when ~2 ticks left (0.2/intent) */ if (c.store[E] || cont.store[E] || stay) return; }
         // container empty and I'm empty: fall through and fetch from the piles
-      } else delete c.memory.st;
+      } else {
+        // 15:xx: pickTile miss (haulers parked on the 12,26 stand/trunk) used to drop into getEnergy even
+        // for 1C stay while the battery was full — w8upgrader84200878 walked 13,27-14,28-12,28 and jammed
+        // the only short ctl→hub road. Stay in range and upgrade/withdraw; do not roam the trunks.
+        delete c.memory.st;
+        const stay = c.store.getCapacity() <= 50;
+        const lk = c.room.lookForAt(LOOK_STRUCTURES, C.CTL_LINK[0], C.CTL_LINK[1]).find(s => s.structureType === STRUCTURE_LINK && s.store[E] > 0 && c.pos.isNearTo(s));
+        if (c.store[E] < 2 * c.getActiveBodyparts(WORK) && (lk || (cont.store[E] && c.pos.isNearTo(cont)))) c.withdraw(lk || cont, E);
+        if (c.store[E] && c.pos.inRangeTo(ctl, 3)) c.upgradeController(ctl);
+        if (c.store[E] || cont.store[E] || stay) return;
+      }
     }
     toggle(c);
     if (!c.memory.w) getEnergy(c);
