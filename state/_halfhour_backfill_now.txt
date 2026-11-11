@@ -1,25 +1,26 @@
-game.time=84197599 published_bases=84196800..84197400 rooms=W46N8,W47N8,W45N8,W45N7,W47N7 dry=False
-tick_s=4.352
-reconstructed ticks=84196801..84197500 (700) creep_rows first_pass=25836 missing_chunks first_pass=2 after_retry=2
-already_in_db first_pass=25836 would_insert first_pass=0
-per_room W46N8:600t/0new W47N8:700t/0new W45N8:700t/0new W45N7:700t/0new W47N7:600t/0new
+game.time=84198386 published_bases=84197600..84198200 rooms=W46N8,W47N8,W45N8,W45N7,W47N7 dry=False
+tick_s=4.420
+reconstructed ticks=84197601..84198300 (700) creep_rows first_pass=30321 missing_chunks first_pass=1 after_retry=1
+already_in_db first_pass=30321 would_insert first_pass=0
+per_room W46N8:700t/0new W47N8:700t/0new W45N8:600t/0new W45N7:700t/0new W47N7:700t/0new
 inserted=0
 inserted_first_pass=0 inserted_retry=0
-ts_realigned=3098
+ts_realigned=0
 ts_realigned_retry=0
 db_after
-  W45N7 ticks=84196801..84197500 rows=2351 distinct=700
-  W45N8 ticks=84196801..84197500 rows=3564 distinct=700
-  W46N8 ticks=84196801..84197500 rows=5906 distinct=600
-  W47N7 ticks=84196801..84197500 rows=2363 distinct=600
-  W47N8 ticks=84196801..84197500 rows=10950 distinct=700
+  W45N7 ticks=84197601..84198300 rows=3360 distinct=700
+  W45N8 ticks=84197601..84198300 rows=2775 distinct=626
+  W46N8 ticks=84197601..84198300 rows=7852 distinct=700
+  W47N7 ticks=84197601..84198300 rows=2408 distinct=700
+  W47N8 ticks=84197601..84198300 rows=14191 distinct=700
 inserted_total=0
-sleep_gap 84197221..84197529 published 84197221..84197500 filled 280/280 all 5 rooms; unpublished tail 84197501..84197529 W46N8 live 7t (84197523..84197529)
-prev_sleep 84196891..84197129 now 239/239 W47N8/W45N8/W45N7; W46N8 139/239 (official 404 @84196900); W47N7 139/239 (now-persistent official 404 @84197000 after retry)
+hourly_patrol_prefilled first_pass inserted=8300 retry inserted=2680 (same window); this run already_in_db=30321
+sleep_gap 84197221..84197529 still filled 309/309 all 5 rooms (no new box-sleep since 09:26)
+prev_sleep 84196891..84197129 still 239/239 W47N8/W45N8/W45N7; W46N8 139/239 (official 404 @84196900); W47N7 139/239 (official 404 @84197000)
 prev_sleep 84196751..84196799 still 49/49 all 5 rooms
 prev_sleep 84196171..84196409 still 239/239 all 5 rooms
-prev_unpublished 84197101..84197170 now 70/70 all 5 rooms
-current_unpublished 84197501..84197630 (W46N8 live 84197523..84197607 after 09:26:45 reconnect; W47N8 live 84197608..84197635 current slot; W45N8/W45N7/W47N7 none)
-official_404 this window after retry: W46N8@84196900 (0 live, later chunk 84197000 published); W47N7@84197000 (0 live, later chunks 84197100..84197400 published, now persistent mid-window); known outside: W45N8@84196500 still 28 live 84196531..84196558
-listener pid 1168210 since 09:26:45 after restart 09:26:36 (prior 08:57:11); room_stats skip 09:04:21@84197220 -> 09:27:21@84197530 (box-sleep 09:04:54-09:26:33 / 1298s); single_slot rotate W46N8 then W47N8
-finished_at 2026-11-11 09:35 Asia/Hong_Kong
+prev_unpublished 84198001..84198040 now 40/40 W46N8/W47N8/W45N7/W47N7; W45N8 0/40 (official 404 @84198000)
+current_unpublished 84198301..84198410 (W47N8 live 84198301..84198393 previous slot; W45N8 live 84198394..84198412 current slot; W46N8/W45N7/W47N7 none)
+official_404 this window after retry: W45N8@84198000 (84198001..84198100; 26 live 84198070..84198095; still missing 69+5=74 ticks); known outside: W46N8@84196900 (0 live); W47N7@84197000 (0 live); W45N8@84196500 still 28 live 84196531..84196558
+listener pid 1168210 since 09:26:45 after restart 09:26:36 (no new restart); room_stats continuous since 09:27:21@84197530; single_slot rotate current W45N8
+finished_at 2026-11-11 10:33 Asia/Hong_Kong
