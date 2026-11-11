@@ -33,7 +33,17 @@ Last full refresh: **2026-11-09 17:1x** (autonomous push — docs/canvas scorebo
 - One-line verdict: `waiting on ticks` | `small safe ship` | `phase exit` — capability to stock a kiter ≠ order to fight.
 
 
-## Current state (2026-11-10 ~20:2x Asia/Hong_Kong · 12h review)
+## Current state (2026-11-11 ~08:2x Asia/Hong_Kong · 12h review)
+
+| Room | Notes |
+|------|-------|
+| W46N8 (home) | **RCL7** 49.37% (5.398M/10.935M); +202k/12h ≈ 20.63 e/t → RCL8 ≈ **13.7 days**; stor avg 15.6k max 21.1k, **27% under 15k** (was 32%); live tip 14.2k floor_bank nUp=1 upExtra=0; labs OFF (actOk=0 homeStor); LIVE **c27c44f** |
+| W47N8 | **RCL7** 24.62% (2.693M); +163k/12h ≈ 16.65 e/t (was 12.76) → RCL8 ≈ **25.3 days**; stor avg 21.0k max 26.2k (18.4% ≥25k, 0% ≥40k); keep=2 / 40k sticky not armed; phase=ready bankWhy=soft softCap2 ON softLeft~4.6k |
+
+**08:2x scorecard:** Phase0 home floor **wobbling but improved** (27% of 12h under 15k; overnight formal ALERT was defender bills, not the 16k yo-yo — that lever is settled); W47 25k touches did **not** stick, 40k sticky **waiting**; labs OFF ✔. Phase1 blocked. Phase2 home lead (~13.7 d), W47 ~25 d (pace up). Phase3+ deferred. Verdict: `waiting on ticks` (last review's 20k/300t gate held; no new game code).
+
+### Previous (2026-11-10 ~20:2x Asia/Hong_Kong · 12h review)
+
 
 | Room | Notes |
 |------|-------|
