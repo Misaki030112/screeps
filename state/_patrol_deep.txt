@@ -1,38 +1,203 @@
-=== W47 N-exit bounce W47N8 18,49 <-> W47N7 18,0 after last patrol / after deploy ===
- -- since last patrol 84209720: creeps on exit tiles=10 rows=24
- -- after deploy 84206586: creeps on exit tiles=26 rows=132
-=== 31e43f8 residual: W46N8 49,21 <-> W45N8 0,21 and W45N8 21,49 <-> W45N7 21,0 since last patrol ===
- -- W46N8 49,21 <-> W45N8 0,21: creeps=8
- -- W45N8 21,49 <-> W45N7 21,0: creeps=6
-  rhauler84208959 role=rhauler flips=8 first=(84209755, 'W45N7', 'rhauler84208959', 'rhauler', 21, 0) last=(84210326, 'W45N8', 'rhauler84208959', 'rhauler', 21, 49) n=15
-=== #37 W47N8 31,48 visits since last patrol ===
- visits=0 creeps=[]
-=== high-ABA filler traces w8filler84206255 / 84206363 ===
- w8filler84206255: NO PATH
- w8filler84206363: NO PATH
- w8hauler84205786: NO PATH
- w8rhauler84205404: NO PATH
- rhauler84205578: NO PATH
-=== filler pair tile occupancy / swap pattern (after last patrol) ===
- w8filler84206255 transitions top: []
-  longest two-tile dance: None
- w8filler84206363 transitions top: []
-  longest two-tile dance: None
-=== w8miner harvest fails (fail counts in motion) ===
- w8miner84205757 (None, None, 0, None, None, None)
- w8miner84206111 (None, None, 0, None, None, None)
- w8rminer84205873 (None, None, 0, None, None, None)
- w8rminer84206524 (None, None, 0, None, None, None)
-=== room_stats commit / live after deploy ===
- first post-deploy samples (84206580, datetime.datetime(2026, 11, 11, 20, 34, 10, 748237, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 'd09e9c4', 19.07, 10000)
- first post-deploy samples (84206590, datetime.datetime(2026, 11, 11, 20, 34, 53, 740671, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 'e98671f', 22.01, 9935)
- first post-deploy samples (84206600, datetime.datetime(2026, 11, 11, 20, 35, 39, 397095, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 'e98671f', 25.45, 9955)
- first post-deploy samples (84206610, datetime.datetime(2026, 11, 11, 20, 36, 26, 127196, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 'e98671f', 15.02, 9981)
- first post-deploy samples (84206620, datetime.datetime(2026, 11, 11, 20, 37, 10, 664460, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 'e98671f', 17.45, 10000)
- first post-deploy samples (84206630, datetime.datetime(2026, 11, 11, 20, 37, 55, 36661, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 'e98671f', 15.08, 10000)
- first post-deploy samples (84206640, datetime.datetime(2026, 11, 11, 20, 38, 39, 260216, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 'e98671f', 17.0, 10000)
- first post-deploy samples (84206650, datetime.datetime(2026, 11, 11, 20, 40, 33, 845393, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 'e98671f', 20.05, 10000)
- latest (84210510, datetime.datetime(2026, 11, 12, 1, 22, 32, 906409, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 'e98671f', 14.34, 10000)
- latest (84210500, datetime.datetime(2026, 11, 12, 1, 21, 47, 960552, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 'e98671f', 20.2, 10000)
- latest (84210490, datetime.datetime(2026, 11, 12, 1, 21, 3, 380561, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 'e98671f', 15.82, 10000)
+=== events / incidents since last patrol ===
+events cols ['ts', 'tick', 'kind', 'room', 'severity', 'episode', 'msg', 'data']
+ sample [(datetime.datetime(2026, 11, 12, 3, 24, 36, 275503, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84212176, 'watch', 'W45N8', None, None, None, {'creeps': [], 'container': [], 'reservation': []}), (datetime.datetime(2026, 11, 12, 3, 24, 31, 982331, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84212175, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'reserver84211927'], ['6010ee96cbca26e9512da6f0', 'rhauler84210968'], ['6010ee96cbca26e9512da6f0', 'rhauler84211293'], ['6010ee96cbca26e9512da6f0', 'rminer84211479']], 'container': [164], 'reservation': [{'endTime': 84214257}]})]
+incidents cols ['ts', 'tick', 'remote', 'inc', 'ev', 'from_state', 'state', 'why', 'inv', 'inv_ttl', 'def', 'dur', 'data']
+ sample [(datetime.datetime(2026, 11, 11, 19, 36, 24, 105444, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84205797, 'W47N7', 84205796, 'spawn_start', None, 'THREAT', None, None, None, 'rdef84205797', None, {'n': 1, 'ev': 'spawn_start', 'def': 'rdef84205797', 'inc': 84205796, 'tick': 84205797, 'state': 'THREAT', 'remote': 'W47N7', 'waited': 1}), (datetime.datetime(2026, 11, 11, 18, 26, 21, 207060, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84204845, 'W45N7', 84204603, 'cleared', 'DEFEND', 'SAFE', 'killed', 0, 0, 'out', 242, {'ev': 'cleared', 'def': 'out', 'dur': 242, 'inc': 84204603, 'inv': 0, 'why': 'killed', 'from': 'DEFEND', 'tick': 84204845, 'state': 'SAFE', 'invTtl': 0, 'remote': 'W45N7', 'delivered': 2318249})]
+telemetry_event cols ['created', 'tag', 'body']
+ err relation "telemetry_event" does not exist
+LINE 1: SELECT * FROM telemetry_event ORDER BY 1 DESC LIMIT 5
+                      ^
+incidents detailed cols ['ts', 'tick', 'remote', 'inc', 'ev', 'from_state', 'state', 'why', 'inv', 'inv_ttl', 'def', 'dur', 'data']
+SQL SELECT * FROM incidents WHERE tick >= %s OR (ts IS NOT NULL AND ts > now() - int n= 0
+SQL SELECT * FROM events WHERE tick >= %s ORDER BY tick DESC LIMIT 30 n= 30
+  (datetime.datetime(2026, 11, 12, 3, 24, 36, 275503, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84212176, 'watch', 'W45N8', None, None, None, {'creeps': [], 'container': [], 'reservation': []})
+  (datetime.datetime(2026, 11, 12, 3, 24, 31, 982331, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84212175, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'reserver84211927'], ['6010ee96cbca26e9512da6f0', 'rhauler84210968'], ['6010ee96cbca26e9512da6f0', 'rhauler84211293'], ['6010ee96cbca26e9512da6f0', 'rminer84211479']], 'container': [164], 'reservation': [{'endTime': 84214257}]})
+  (datetime.datetime(2026, 11, 12, 3, 24, 27, 710822, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84212174, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'reserver84211927'], ['6010ee96cbca26e9512da6f0', 'rhauler84210855'], ['6010ee96cbca26e9512da6f0', 'rhauler84210968'], ['6010ee96cbca26e9512da6f0', 'rhauler84211293'], ['6010ee96cbca26e9512da6f0', 'rminer84211479']], 'container': [152], 'reservation': [{'endTime': 84214255}]})
+  (datetime.datetime(2026, 11, 12, 3, 24, 23, 549987, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84212173, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'reserver84211927'], ['6010ee96cbca26e9512da6f0', 'rhauler84210855'], ['6010ee96cbca26e9512da6f0', 'rhauler84210968'], ['6010ee96cbca26e9512da6f0', 'rhauler84211293'], ['6010ee96cbca26e9512da6f0', 'rminer84211479']], 'container': [140], 'reservation': [{'endTime': 84214253}]})
+  (datetime.datetime(2026, 11, 12, 3, 24, 18, 962722, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84212172, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'reserver84211927'], ['6010ee96cbca26e9512da6f0', 'rhauler84210855'], ['6010ee96cbca26e9512da6f0', 'rhauler84210968'], ['6010ee96cbca26e9512da6f0', 'rhauler84211293'], ['6010ee96cbca26e9512da6f0', 'rminer84211479']], 'container': [128], 'reservation': [{'endTime': 84214251}]})
+  (datetime.datetime(2026, 11, 12, 3, 24, 14, 566645, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84212171, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'reserver84211927'], ['6010ee96cbca26e9512da6f0', 'rhauler84210855'], ['6010ee96cbca26e9512da6f0', 'rhauler84210968'], ['6010ee96cbca26e9512da6f0', 'rhauler84211293'], ['6010ee96cbca26e9512da6f0', 'rminer84211479']], 'container': [116], 'reservation': [{'endTime': 84214249}]})
+  (datetime.datetime(2026, 11, 12, 3, 24, 10, 173978, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84212170, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'reserver84211927'], ['6010ee96cbca26e9512da6f0', 'rhauler84210855'], ['6010ee96cbca26e9512da6f0', 'rhauler84210968'], ['6010ee96cbca26e9512da6f0', 'rhauler84211293'], ['6010ee96cbca26e9512da6f0', 'rminer84211479']], 'container': [104], 'reservation': [{'endTime': 84214247}]})
+  (datetime.datetime(2026, 11, 12, 3, 24, 5, 615136, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84212169, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'reserver84211927'], ['6010ee96cbca26e9512da6f0', 'rhauler84210855'], ['6010ee96cbca26e9512da6f0', 'rhauler84210968'], ['6010ee96cbca26e9512da6f0', 'rhauler84211293'], ['6010ee96cbca26e9512da6f0', 'rminer84211479']], 'container': [92], 'reservation': [{'endTime': 84214245}]})
+  (datetime.datetime(2026, 11, 12, 3, 24, 1, 59971, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84212168, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'reserver84211927'], ['6010ee96cbca26e9512da6f0', 'rhauler84210855'], ['6010ee96cbca26e9512da6f0', 'rhauler84210968'], ['6010ee96cbca26e9512da6f0', 'rhauler84211293'], ['6010ee96cbca26e9512da6f0', 'rminer84211479']], 'container': [80], 'reservation': [{'endTime': 84214243}]})
+  (datetime.datetime(2026, 11, 12, 3, 23, 56, 547415, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84212167, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'reserver84211927'], ['6010ee96cbca26e9512da6f0', 'rhauler84210855'], ['6010ee96cbca26e9512da6f0', 'rhauler84210968'], ['6010ee96cbca26e9512da6f0', 'rhauler84211293'], ['6010ee96cbca26e9512da6f0', 'rminer84211479']], 'container': [68], 'reservation': [{'endTime': 84214241}]})
+  (datetime.datetime(2026, 11, 12, 3, 23, 52, 214485, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84212166, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'reserver84211927'], ['6010ee96cbca26e9512da6f0', 'rhauler84210855'], ['6010ee96cbca26e9512da6f0', 'rhauler84210968'], ['6010ee96cbca26e9512da6f0', 'rhauler84211293'], ['6010ee96cbca26e9512da6f0', 'rminer84211479']], 'container': [56], 'reservation': [{'endTime': 84214239}]})
+  (datetime.datetime(2026, 11, 12, 3, 23, 48, 241877, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84212165, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'reserver84211927'], ['6010ee96cbca26e9512da6f0', 'rhauler84210855'], ['6010ee96cbca26e9512da6f0', 'rhauler84210968'], ['6010ee96cbca26e9512da6f0', 'rhauler84211293'], ['6010ee96cbca26e9512da6f0', 'rminer84211479']], 'container': [44], 'reservation': [{'endTime': 84214237}]})
+  (datetime.datetime(2026, 11, 12, 3, 23, 43, 933153, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84212164, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'reserver84211927'], ['6010ee96cbca26e9512da6f0', 'rhauler84210855'], ['6010ee96cbca26e9512da6f0', 'rhauler84210968'], ['6010ee96cbca26e9512da6f0', 'rhauler84211534'], ['6010ee96cbca26e9512da6f0', 'rminer84211479']], 'container': [32], 'reservation': [{'endTime': 84214235}]})
+  (datetime.datetime(2026, 11, 12, 3, 23, 39, 388347, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84212163, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'reserver84211927'], ['6010ee96cbca26e9512da6f0', 'rhauler84210855'], ['6010ee96cbca26e9512da6f0', 'rhauler84210968'], ['6010ee96cbca26e9512da6f0', 'rhauler84211534'], ['6010ee96cbca26e9512da6f0', 'rminer84211479']], 'container': [20], 'reservation': [{'endTime': 84214233}]})
+  (datetime.datetime(2026, 11, 12, 3, 23, 34, 886147, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84212162, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'reserver84211927'], ['6010ee96cbca26e9512da6f0', 'rhauler84210855'], ['6010ee96cbca26e9512da6f0', 'rhauler84210968'], ['6010ee96cbca26e9512da6f0', 'rhauler84211534'], ['6010ee96cbca26e9512da6f0', 'rminer84211479']], 'container': [12], 'reservation': [{'endTime': 84214231}]})
+  (datetime.datetime(2026, 11, 12, 3, 23, 30, 388078, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84212161, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'reserver84211927'], ['6010ee96cbca26e9512da6f0', 'rhauler84210855'], ['6010ee96cbca26e9512da6f0', 'rhauler84210968'], ['6010ee96cbca26e9512da6f0', 'rhauler84211534'], ['6010ee96cbca26e9512da6f0', 'rminer84211479']], 'container': [12], 'reservation': [{'endTime': 84214229}]})
+  (datetime.datetime(2026, 11, 12, 3, 23, 26, 225788, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84212160, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'reserver84211927'], ['6010ee96cbca26e9512da6f0', 'rhauler84210855'], ['6010ee96cbca26e9512da6f0', 'rhauler84210968'], ['6010ee96cbca26e9512da6f0', 'rhauler84211534'], ['6010ee96cbca26e9512da6f0', 'rminer84211479']], 'container': [12], 'reservation': [{'endTime': 84214227}]})
+  (datetime.datetime(2026, 11, 12, 3, 23, 22, 97227, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84212159, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'reserver84211927'], ['6010ee96cbca26e9512da6f0', 'rhauler84210855'], ['6010ee96cbca26e9512da6f0', 'rhauler84210968'], ['6010ee96cbca26e9512da6f0', 'rhauler84211534'], ['6010ee96cbca26e9512da6f0', 'rminer84211479']], 'container': [12], 'reservation': [{'endTime': 84214225}]})
+  (datetime.datetime(2026, 11, 12, 3, 23, 17, 684208, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84212158, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'reserver84211927'], ['6010ee96cbca26e9512da6f0', 'rhauler84210855'], ['6010ee96cbca26e9512da6f0', 'rhauler84210968'], ['6010ee96cbca26e9512da6f0', 'rhauler84211534'], ['6010ee96cbca26e9512da6f0', 'rminer84211479']], 'container': [12], 'reservation': [{'endTime': 84214223}]})
+  (datetime.datetime(2026, 11, 12, 3, 23, 13, 398096, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84212157, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'reserver84211927'], ['6010ee96cbca26e9512da6f0', 'rhauler84210855'], ['6010ee96cbca26e9512da6f0', 'rhauler84210968'], ['6010ee96cbca26e9512da6f0', 'rhauler84211534'], ['6010ee96cbca26e9512da6f0', 'rminer84211479']], 'container': [12], 'reservation': [{'endTime': 84214221}]})
+  (datetime.datetime(2026, 11, 12, 3, 23, 8, 932600, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84212156, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'reserver84211927'], ['6010ee96cbca26e9512da6f0', 'rhauler84210855'], ['6010ee96cbca26e9512da6f0', 'rhauler84210968'], ['6010ee96cbca26e9512da6f0', 'rhauler84211534'], ['6010ee96cbca26e9512da6f0', 'rminer84211479']], 'container': [12], 'reservation': [{'endTime': 84214219}]})
+  (datetime.datetime(2026, 11, 12, 3, 23, 4, 457369, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84212155, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'reserver84211927'], ['6010ee96cbca26e9512da6f0', 'rhauler84210855'], ['6010ee96cbca26e9512da6f0', 'rhauler84210968'], ['6010ee96cbca26e9512da6f0', 'rhauler84211534'], ['6010ee96cbca26e9512da6f0', 'rminer84211479']], 'container': [12], 'reservation': [{'endTime': 84214217}]})
+  (datetime.datetime(2026, 11, 12, 3, 23, 0, 15594, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84212154, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'reserver84211927'], ['6010ee96cbca26e9512da6f0', 'rhauler84210855'], ['6010ee96cbca26e9512da6f0', 'rhauler84210968'], ['6010ee96cbca26e9512da6f0', 'rhauler84211534'], ['6010ee96cbca26e9512da6f0', 'rminer84211479']], 'container': [12], 'reservation': [{'endTime': 84214215}]})
+  (datetime.datetime(2026, 11, 12, 3, 22, 55, 516500, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84212153, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'reserver84211927'], ['6010ee96cbca26e9512da6f0', 'rhauler84210855'], ['6010ee96cbca26e9512da6f0', 'rhauler84210968'], ['6010ee96cbca26e9512da6f0', 'rhauler84211534'], ['6010ee96cbca26e9512da6f0', 'rminer84211479']], 'container': [12], 'reservation': [{'endTime': 84214213}]})
+  (datetime.datetime(2026, 11, 12, 3, 22, 51, 313085, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84212152, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'reserver84211927'], ['6010ee96cbca26e9512da6f0', 'rhauler84210855'], ['6010ee96cbca26e9512da6f0', 'rhauler84210968'], ['6010ee96cbca26e9512da6f0', 'rhauler84211534'], ['6010ee96cbca26e9512da6f0', 'rminer84211479']], 'container': [0], 'reservation': [{'endTime': 84214211}]})
+
+=== W47N8 hostiles room_stats context ===
+84211900 2026-11-12 03:04:24 HKT host 0 stor 25278 e 5600 cpu 18.49 creeps {'miner': 2, 'queen': 2, 'hauler': 1, 'rminer': 2, 'rhauler': 7, 'w8miner': 3, 'reserve7': 1, 'reserver': 1, 'upgrader': 2, 'w8filler': 2, 'w8hauler': 4, 'w8rminer': 3, 'w8builder': 1, 'w8rhauler': 6, 'w8upgrader': 2}
+84211910 2026-11-12 03:05:09 HKT host 0 stor 25278 e 5600 cpu 16.0 creeps {'miner': 2, 'queen': 2, 'hauler': 1, 'rminer': 2, 'rhauler': 7, 'w8miner': 2, 'reserve7': 1, 'reserver': 1, 'upgrader': 2, 'w8filler': 2, 'w8hauler': 4, 'w8rminer': 3, 'w8builder': 1, 'w8rhauler': 6, 'w8upgrader': 2}
+84211920 2026-11-12 03:05:54 HKT host 0 stor 25278 e 5600 cpu 17.25 creeps {'miner': 3, 'queen': 2, 'hauler': 1, 'rminer': 2, 'rhauler': 7, 'w8miner': 2, 'reserve7': 1, 'reserver': 1, 'upgrader': 2, 'w8filler': 2, 'w8hauler': 4, 'w8rminer': 3, 'w8builder': 1, 'w8rhauler': 6, 'w8upgrader': 2}
+84211930 2026-11-12 03:06:38 HKT host 0 stor 24978 e 5600 cpu 18.58 creeps {'miner': 3, 'queen': 2, 'hauler': 1, 'rminer': 2, 'rhauler': 7, 'w8miner': 2, 'reserve7': 1, 'reserver': 2, 'upgrader': 2, 'w8filler': 2, 'w8hauler': 4, 'w8rminer': 3, 'w8builder': 1, 'w8rhauler': 6, 'w8upgrader': 2}
+84211940 2026-11-12 03:07:22 HKT host 0 stor 24978 e 5600 cpu 20.65 creeps {'miner': 3, 'queen': 2, 'hauler': 1, 'rminer': 2, 'rhauler': 7, 'w8miner': 2, 'reserve7': 1, 'reserver': 2, 'upgrader': 2, 'w8filler': 2, 'w8hauler': 4, 'w8rminer': 3, 'w8builder': 1, 'w8rhauler': 6, 'w8upgrader': 2}
+84211950 2026-11-12 03:08:07 HKT host 0 stor 25719 e 5600 cpu 17.38 creeps {'miner': 3, 'queen': 2, 'hauler': 1, 'rminer': 2, 'rhauler': 7, 'w8miner': 2, 'reserve7': 1, 'reserver': 2, 'upgrader': 2, 'w8filler': 2, 'w8hauler': 4, 'w8rminer': 3, 'w8builder': 1, 'w8rhauler': 6, 'w8upgrader': 2}
+84211960 2026-11-12 03:08:52 HKT host 0 stor 25519 e 5600 cpu 17.48 creeps {'miner': 3, 'queen': 2, 'hauler': 1, 'rminer': 2, 'rhauler': 7, 'w8miner': 2, 'reserve7': 1, 'reserver': 2, 'upgrader': 2, 'w8filler': 2, 'w8hauler': 4, 'w8rminer': 3, 'w8builder': 1, 'w8rhauler': 6, 'w8upgrader': 2}
+84211970 2026-11-12 03:09:36 HKT host 0 stor 25519 e 5600 cpu 18.0 creeps {'miner': 3, 'queen': 2, 'hauler': 1, 'rminer': 2, 'rhauler': 7, 'w8miner': 2, 'reserve7': 1, 'reserver': 2, 'upgrader': 2, 'w8filler': 2, 'w8hauler': 4, 'w8rminer': 3, 'w8builder': 1, 'w8rhauler': 6, 'w8upgrader': 2}
+84211980 2026-11-12 03:10:20 HKT host 0 stor 25519 e 5600 cpu 18.04 creeps {'miner': 3, 'queen': 2, 'hauler': 1, 'rminer': 2, 'rhauler': 7, 'w8miner': 2, 'reserve7': 1, 'reserver': 2, 'upgrader': 2, 'w8filler': 2, 'w8hauler': 4, 'w8rminer': 3, 'w8builder': 1, 'w8rhauler': 6, 'w8upgrader': 2}
+84211990 2026-11-12 03:11:05 HKT host 0 stor 25519 e 5600 cpu 18.43 creeps {'miner': 3, 'queen': 2, 'hauler': 1, 'rminer': 2, 'rhauler': 6, 'w8miner': 2, 'reserve7': 1, 'reserver': 2, 'upgrader': 2, 'w8filler': 2, 'w8hauler': 4, 'w8rminer': 3, 'w8builder': 1, 'w8rhauler': 6, 'w8upgrader': 2}
+84212000 2026-11-12 03:11:49 HKT host 0 stor 25519 e 5600 cpu 18.51 creeps {'miner': 3, 'queen': 2, 'hauler': 1, 'rminer': 2, 'rhauler': 6, 'w8miner': 2, 'reserve7': 1, 'reserver': 2, 'upgrader': 2, 'w8filler': 2, 'w8hauler': 4, 'w8rminer': 3, 'w8builder': 1, 'w8rhauler': 6, 'w8upgrader': 2}
+84212010 2026-11-12 03:12:33 HKT host 1 stor 25519 e 3580 cpu 17.03 creeps {'miner': 3, 'queen': 2, 'hauler': 1, 'rminer': 2, 'rhauler': 6, 'w8guard': 1, 'w8miner': 2, 'reserve7': 1, 'reserver': 2, 'upgrader': 2, 'w8filler': 2, 'w8hauler': 4, 'w8rminer': 3, 'w8builder': 1, 'w8rhauler': 6, 'w8defender': 1, 'w8upgrader': 2}
+84212020 2026-11-12 03:13:18 HKT host 0 stor 25119 e 3880 cpu 19.9 creeps {'miner': 2, 'queen': 2, 'hauler': 1, 'rminer': 2, 'rhauler': 7, 'w8guard': 1, 'w8miner': 2, 'reserve7': 1, 'reserver': 2, 'upgrader': 2, 'w8filler': 2, 'w8hauler': 4, 'w8rminer': 2, 'w8builder': 1, 'w8rhauler': 6, 'w8defender': 1, 'w8upgrader': 2}
+84212030 2026-11-12 03:14:01 HKT host 0 stor 25119 e 4880 cpu 16.36 creeps {'miner': 2, 'queen': 2, 'hauler': 1, 'rminer': 2, 'rhauler': 7, 'w8guard': 1, 'w8miner': 2, 'reserve7': 1, 'reserver': 2, 'upgrader': 2, 'w8filler': 2, 'w8hauler': 4, 'w8rminer': 2, 'w8builder': 1, 'w8rhauler': 6, 'w8defender': 1, 'w8upgrader': 2}
+84212040 2026-11-12 03:16:15 HKT host 0 stor 23919 e 4880 cpu 19.6 creeps {'miner': 2, 'queen': 2, 'hauler': 1, 'rminer': 2, 'rhauler': 7, 'w8guard': 1, 'w8miner': 2, 'reserve7': 1, 'reserver': 2, 'upgrader': 2, 'w8filler': 2, 'w8hauler': 4, 'w8rminer': 2, 'w8builder': 1, 'w8rhauler': 6, 'w8defender': 1, 'w8upgrader': 2}
+84212050 2026-11-12 03:16:15 HKT host 0 stor 24784 e 5080 cpu 16.58 creeps {'miner': 2, 'queen': 2, 'hauler': 1, 'rminer': 2, 'rhauler': 7, 'w8guard': 1, 'w8miner': 2, 'reserve7': 1, 'reserver': 2, 'upgrader': 1, 'w8filler': 2, 'w8hauler': 4, 'w8rminer': 2, 'w8builder': 1, 'w8rhauler': 5, 'w8defender': 1, 'w8upgrader': 2}
+84212060 2026-11-12 03:16:15 HKT host 0 stor 24784 e 5100 cpu 17.9 creeps {'miner': 2, 'queen': 2, 'hauler': 1, 'rminer': 2, 'rhauler': 7, 'w8guard': 1, 'w8miner': 2, 'reserve7': 1, 'reserver': 2, 'upgrader': 1, 'w8filler': 2, 'w8hauler': 4, 'w8rminer': 2, 'w8builder': 1, 'w8rhauler': 5, 'w8defender': 1, 'w8upgrader': 2}
+84212140 2026-11-12 03:22:00 HKT host 0 stor 24481 e 4800 cpu 16.12 creeps {'miner': 2, 'queen': 2, 'hauler': 1, 'rminer': 2, 'rhauler': 7, 'w8guard': 1, 'w8miner': 3, 'reserve7': 1, 'reserver': 2, 'upgrader': 1, 'w8filler': 3, 'w8hauler': 4, 'w8rminer': 2, 'w8builder': 1, 'w8rhauler': 5, 'w8defender': 1, 'w8upgrader': 2}
+84212150 2026-11-12 03:22:43 HKT host 0 stor 24481 e 4800 cpu 16.93 creeps {'miner': 2, 'queen': 2, 'hauler': 1, 'rminer': 2, 'rhauler': 7, 'w8guard': 1, 'w8miner': 3, 'reserve7': 1, 'reserver': 2, 'upgrader': 1, 'w8filler': 3, 'w8hauler': 4, 'w8rminer': 2, 'w8builder': 1, 'w8rhauler': 5, 'w8defender': 1, 'w8upgrader': 2}
+84212160 2026-11-12 03:23:27 HKT host 0 stor 24481 e 4800 cpu 21.45 creeps {'miner': 2, 'queen': 2, 'hauler': 1, 'rminer': 2, 'rhauler': 7, 'w8guard': 1, 'w8miner': 3, 'reserve7': 1, 'reserver': 2, 'upgrader': 1, 'w8filler': 3, 'w8hauler': 4, 'w8rminer': 2, 'w8builder': 1, 'w8rhauler': 5, 'w8defender': 1, 'w8upgrader': 2}
+84212170 2026-11-12 03:24:11 HKT host 0 stor 24981 e 4800 cpu 16.24 creeps {'miner': 2, 'queen': 2, 'hauler': 1, 'rminer': 2, 'rhauler': 7, 'w8guard': 1, 'w8miner': 3, 'reserve7': 1, 'reserver': 1, 'upgrader': 1, 'w8filler': 3, 'w8hauler': 4, 'w8rminer': 2, 'w8builder': 1, 'w8rhauler': 5, 'w8defender': 1, 'w8upgrader': 2}
+84212180 2026-11-12 03:24:55 HKT host 0 stor 23681 e 5300 cpu 17.31 creeps {'miner': 2, 'queen': 2, 'hauler': 1, 'rminer': 2, 'rhauler': 7, 'w8guard': 1, 'w8miner': 3, 'reserve7': 1, 'reserver': 1, 'upgrader': 1, 'w8filler': 3, 'w8hauler': 4, 'w8rminer': 2, 'w8builder': 1, 'w8rhauler': 5, 'w8defender': 1, 'w8upgrader': 2}
+
+=== W46N8 storage+ctl+nUp this hour ===
+84211410 2026-11-12 02:28:42 HKT stor 16150 ctl 1866 ema 992 eAv 5500 nUp 1 reserver 1 w8g None w8d None
+84211420 2026-11-12 02:29:27 HKT stor 17450 ctl 1782 ema 1022 eAv 5500 nUp 1 reserver 1 w8g None w8d None
+84211430 2026-11-12 02:30:12 HKT stor 17550 ctl 1782 ema 1046 eAv 5500 nUp 2 reserver 1 w8g None w8d None
+84211440 2026-11-12 02:30:55 HKT stor 17350 ctl 1782 ema 1066 eAv 4350 nUp 2 reserver 1 w8g None w8d None
+84211450 2026-11-12 02:31:39 HKT stor 17450 ctl 1694 ema 1086 eAv 4650 nUp 2 reserver 1 w8g None w8d None
+84211460 2026-11-12 02:32:24 HKT stor 16750 ctl 1568 ema 1106 eAv 4900 nUp 2 reserver None w8g None w8d None
+84211470 2026-11-12 02:33:07 HKT stor 16850 ctl 1568 ema 1123 eAv 5400 nUp 2 reserver None w8g None w8d None
+84211480 2026-11-12 02:33:51 HKT stor 16950 ctl 1568 ema 1133 eAv 4700 nUp 2 reserver None w8g None w8d None
+84211490 2026-11-12 02:34:34 HKT stor 16250 ctl 1922 ema 1163 eAv 3500 nUp 3 reserver None w8g None w8d None
+84211500 2026-11-12 02:35:17 HKT stor 15550 ctl 1788 ema 1185 eAv 3600 nUp 3 reserver None w8g None w8d None
+84211510 2026-11-12 02:36:02 HKT stor 15650 ctl 1788 ema 1205 eAv 4550 nUp 3 reserver None w8g None w8d None
+84211520 2026-11-12 02:36:46 HKT stor 15750 ctl 1532 ema 1219 eAv 4800 nUp 3 reserver None w8g None w8d None
+84211530 2026-11-12 02:37:29 HKT stor 15850 ctl 1238 ema 1224 eAv 5200 nUp 3 reserver None w8g None w8d None
+84211540 2026-11-12 02:38:13 HKT stor 15150 ctl 2000 ema 1236 eAv 4400 nUp 3 reserver None w8g None w8d None
+84211550 2026-11-12 02:38:56 HKT stor 15250 ctl 2000 ema 1261 eAv 4700 nUp 3 reserver None w8g None w8d None
+84211560 2026-11-12 02:39:40 HKT stor 15350 ctl 1694 ema 1279 eAv 4200 nUp 3 reserver 1 w8g None w8d None
+84211570 2026-11-12 02:40:24 HKT stor 14650 ctl 1394 ema 1287 eAv 4300 nUp 2 reserver 1 w8g None w8d None
+84211580 2026-11-12 02:41:08 HKT stor 14750 ctl 1142 ema 1287 eAv 4600 nUp 2 reserver 1 w8g None w8d None
+84211590 2026-11-12 02:41:52 HKT stor 14850 ctl 1142 ema 1287 eAv 5000 nUp 2 reserver 1 w8g None w8d None
+84211600 2026-11-12 02:42:37 HKT stor 14550 ctl 970 ema 1281 eAv 5000 nUp 2 reserver 1 w8g None w8d None
+84211610 2026-11-12 02:43:21 HKT stor 14650 ctl 634 ema 1264 eAv 5400 nUp 2 reserver 1 w8g None w8d None
+84211620 2026-11-12 02:44:04 HKT stor 14850 ctl 466 ema 1239 eAv 5500 nUp 2 reserver 1 w8g None w8d None
+84211630 2026-11-12 02:44:49 HKT stor 14950 ctl 466 ema 1211 eAv 5500 nUp 2 reserver 1 w8g None w8d None
+84211640 2026-11-12 02:45:32 HKT stor 15050 ctl 210 ema 1182 eAv 5500 nUp 2 reserver 1 w8g None w8d None
+84211870 2026-11-12 03:02:13 HKT stor 17010 ctl 854 ema 950 eAv 5500 nUp 2 reserver 1 w8g None w8d None
+84211880 2026-11-12 03:02:57 HKT stor 17110 ctl 598 ema 943 eAv 5500 nUp 2 reserver 1 w8g None w8d None
+84211890 2026-11-12 03:03:41 HKT stor 17210 ctl 346 ema 927 eAv 5500 nUp 2 reserver 1 w8g None w8d None
+84211900 2026-11-12 03:04:24 HKT stor 17310 ctl 536 ema 911 eAv 5500 nUp 2 reserver 1 w8g None w8d None
+84211910 2026-11-12 03:05:09 HKT stor 17410 ctl 536 ema 901 eAv 5500 nUp 2 reserver 1 w8g None w8d None
+84211920 2026-11-12 03:05:54 HKT stor 17100 ctl 280 ema 885 eAv 4910 nUp 2 reserver 1 w8g None w8d None
+84211930 2026-11-12 03:06:38 HKT stor 17200 ctl 28 ema 859 eAv 4200 nUp 2 reserver 2 w8g None w8d None
+84211940 2026-11-12 03:07:22 HKT stor 16080 ctl 0 ema 829 eAv 4200 nUp 2 reserver 2 w8g None w8d None
+84211950 2026-11-12 03:08:07 HKT stor 16180 ctl 0 ema 799 eAv 4500 nUp 2 reserver 2 w8g None w8d None
+84211960 2026-11-12 03:08:52 HKT stor 16280 ctl 1100 ema 781 eAv 5300 nUp 2 reserver 2 w8g None w8d None
+84211970 2026-11-12 03:09:36 HKT stor 16180 ctl 806 ema 786 eAv 5300 nUp 2 reserver 2 w8g None w8d None
+84211980 2026-11-12 03:10:20 HKT stor 16280 ctl 596 ema 783 eAv 5400 nUp 2 reserver 2 w8g None w8d None
+84211990 2026-11-12 03:11:05 HKT stor 16380 ctl 596 ema 773 eAv 5500 nUp 2 reserver 2 w8g None w8d None
+84212000 2026-11-12 03:11:49 HKT stor 16480 ctl 740 ema 768 eAv 5500 nUp 2 reserver 2 w8g None w8d None
+84212010 2026-11-12 03:12:33 HKT stor 16580 ctl 488 ema 763 eAv 500 nUp 2 reserver 2 w8g 1 w8d 1
+84212020 2026-11-12 03:13:18 HKT stor 15880 ctl 320 ema 753 eAv 304 nUp 2 reserver 2 w8g 1 w8d 1
+84212030 2026-11-12 03:14:01 HKT stor 14330 ctl 706 ema 752 eAv 1104 nUp 2 reserver 2 w8g 1 w8d 1
+84212040 2026-11-12 03:16:15 HKT stor 14430 ctl 660 ema 752 eAv 1504 nUp 2 reserver 2 w8g 1 w8d 1
+84212050 2026-11-12 03:16:15 HKT stor 13730 ctl 492 ema 745 eAv 2404 nUp 1 reserver 2 w8g 1 w8d 1
+84212060 2026-11-12 03:16:15 HKT stor 13830 ctl 366 ema 735 eAv 3004 nUp 1 reserver 2 w8g 1 w8d 1
+84212140 2026-11-12 03:22:00 HKT stor 14084 ctl 64 ema 634 eAv 5304 nUp 1 reserver 2 w8g 1 w8d 1
+84212150 2026-11-12 03:22:43 HKT stor 14184 ctl 64 ema 614 eAv 5402 nUp 1 reserver 2 w8g 1 w8d 1
+84212160 2026-11-12 03:23:27 HKT stor 14284 ctl 64 ema 594 eAv 5500 nUp 1 reserver 2 w8g 1 w8d 1
+84212170 2026-11-12 03:24:11 HKT stor 14384 ctl 0 ema 574 eAv 5500 nUp 1 reserver 1 w8g 1 w8d 1
+84212180 2026-11-12 03:24:55 HKT stor 14484 ctl 0 ema 554 eAv 5500 nUp 1 reserver 1 w8g 1 w8d 1
+84212190 2026-11-12 03:25:40 HKT stor 14684 ctl 0 ema 534 eAv 4700 nUp 1 reserver 1 w8g 1 w8d 1
+
+=== W47 N-exit bounce W47N8 18,49 <-> W47N7 18,0 ===
+ -- since last 84211410: rows=20 creeps=7
+   w8rhauler84211304 role=wrhauler n=3 flips=0 maxrun=1 first=(84211441, 'W47N8', 'w8rhauler84211304', 'wrhauler', 18, 49) last=(84211963, 'W47N8', 'w8rhauler84211304', 'wrhauler', 18, 49)
+   w8rhauler84211172 role=wrhauler n=5 flips=0 maxrun=1 first=(84211512, 'W47N8', 'w8rhauler84211172', 'wrhauler', 18, 49) last=(84212012, 'W47N8', 'w8rhauler84211172', 'wrhauler', 18, 49)
+   w8rhauler84211645 role=wrhauler n=4 flips=0 maxrun=1 first=(84211783, 'W47N8', 'w8rhauler84211645', 'wrhauler', 18, 49) last=(84212141, 'W47N8', 'w8rhauler84211645', 'wrhauler', 18, 49)
+   w8rhauler84211656 role=wrhauler n=3 flips=0 maxrun=1 first=(84211792, 'W47N8', 'w8rhauler84211656', 'wrhauler', 18, 49) last=(84212070, 'W47N8', 'w8rhauler84211656', 'wrhauler', 18, 49)
+ -- after deploy 84206586: rows=196 creeps=34
+   w8rhauler84205479 role=wrhauler n=5 flips=0 maxrun=1 first=(84206611, 'W47N7', 'w8rhauler84205479', 'wrhauler', 18, 0) last=(84206972, 'W47N8', 'w8rhauler84205479', 'wrhauler', 18, 49)
+   w8rhauler84205494 role=wrhauler n=4 flips=0 maxrun=1 first=(84206727, 'W47N8', 'w8rhauler84205494', 'wrhauler', 18, 49) last=(84206920, 'W47N7', 'w8rhauler84205494', 'wrhauler', 18, 0)
+   w8rhauler84206808 role=wrhauler n=9 flips=0 maxrun=1 first=(84206944, 'W47N8', 'w8rhauler84206808', 'wrhauler', 18, 49) last=(84208043, 'W47N7', 'w8rhauler84206808', 'wrhauler', 18, 0)
+   w8rhauler84206825 role=wrhauler n=7 flips=0 maxrun=1 first=(84206965, 'W47N8', 'w8rhauler84206825', 'wrhauler', 18, 49) last=(84208222, 'W47N8', 'w8rhauler84206825', 'wrhauler', 18, 49)
+   w8rhauler84206900 role=wrhauler n=6 flips=0 maxrun=1 first=(84207038, 'W47N8', 'w8rhauler84206900', 'wrhauler', 18, 49) last=(84208220, 'W47N8', 'w8rhauler84206900', 'wrhauler', 18, 49)
+   w8rhauler84206915 role=wrhauler n=8 flips=0 maxrun=1 first=(84207052, 'W47N8', 'w8rhauler84206915', 'wrhauler', 18, 49) last=(84208025, 'W47N7', 'w8rhauler84206915', 'wrhauler', 18, 0)
+   w8rhauler84207243 role=wrhauler n=9 flips=0 maxrun=1 first=(84207389, 'W47N8', 'w8rhauler84207243', 'wrhauler', 18, 49) last=(84208729, 'W47N8', 'w8rhauler84207243', 'wrhauler', 18, 49)
+   w8rhauler84208296 role=wrhauler n=10 flips=0 maxrun=1 first=(84208442, 'W47N8', 'w8rhauler84208296', 'wrhauler', 18, 49) last=(84209785, 'W47N8', 'w8rhauler84208296', 'wrhauler', 18, 49)
+   w8rhauler84208145 role=wrhauler n=13 flips=0 maxrun=1 first=(84208448, 'W47N8', 'w8rhauler84208145', 'wrhauler', 18, 49) last=(84209582, 'W47N7', 'w8rhauler84208145', 'wrhauler', 18, 0)
+   w8rhauler84208336 role=wrhauler n=10 flips=0 maxrun=1 first=(84208476, 'W47N8', 'w8rhauler84208336', 'wrhauler', 18, 49) last=(84209810, 'W47N7', 'w8rhauler84208336', 'wrhauler', 18, 0)
+   w8rhauler84208386 role=wrhauler n=11 flips=0 maxrun=1 first=(84208527, 'W47N8', 'w8rhauler84208386', 'wrhauler', 18, 49) last=(84209874, 'W47N7', 'w8rhauler84208386', 'wrhauler', 18, 0)
+   w8rhauler84208714 role=wrhauler n=15 flips=0 maxrun=1 first=(84208851, 'W47N8', 'w8rhauler84208714', 'wrhauler', 18, 49) last=(84210059, 'W47N8', 'w8rhauler84208714', 'wrhauler', 18, 49)
+   w8rhauler84209616 role=wrhauler n=9 flips=0 maxrun=1 first=(84209764, 'W47N8', 'w8rhauler84209616', 'wrhauler', 18, 49) last=(84211058, 'W47N8', 'w8rhauler84209616', 'wrhauler', 18, 49)
+   w8rhauler84209757 role=wrhauler n=10 flips=0 maxrun=1 first=(84209896, 'W47N8', 'w8rhauler84209757', 'wrhauler', 18, 49) last=(84211058, 'W47N8', 'w8rhauler84209757', 'wrhauler', 18, 49)
+   w8rhauler84209807 role=wrhauler n=10 flips=0 maxrun=1 first=(84210203, 'W47N8', 'w8rhauler84209807', 'wrhauler', 18, 49) last=(84211158, 'W47N7', 'w8rhauler84209807', 'wrhauler', 18, 0)
+   w8rhauler84209857 role=wrhauler n=10 flips=0 maxrun=1 first=(84210227, 'W47N8', 'w8rhauler84209857', 'wrhauler', 18, 49) last=(84211323, 'W47N7', 'w8rhauler84209857', 'wrhauler', 18, 0)
+   w8rhauler84210185 role=wrhauler n=12 flips=0 maxrun=1 first=(84210324, 'W47N8', 'w8rhauler84210185', 'wrhauler', 18, 49) last=(84211575, 'W47N7', 'w8rhauler84210185', 'wrhauler', 18, 0)
+   w8rhauler84210516 role=wrhauler n=8 flips=0 maxrun=1 first=(84210653, 'W47N8', 'w8rhauler84210516', 'wrhauler', 18, 49) last=(84211961, 'W47N8', 'w8rhauler84210516', 'wrhauler', 18, 49)
+   w8rhauler84211304 role=wrhauler n=3 flips=0 maxrun=1 first=(84211441, 'W47N8', 'w8rhauler84211304', 'wrhauler', 18, 49) last=(84211963, 'W47N8', 'w8rhauler84211304', 'wrhauler', 18, 49)
+   w8rhauler84211172 role=wrhauler n=5 flips=0 maxrun=1 first=(84211512, 'W47N8', 'w8rhauler84211172', 'wrhauler', 18, 49) last=(84212012, 'W47N8', 'w8rhauler84211172', 'wrhauler', 18, 49)
+   w8rhauler84211645 role=wrhauler n=4 flips=0 maxrun=1 first=(84211783, 'W47N8', 'w8rhauler84211645', 'wrhauler', 18, 49) last=(84212141, 'W47N8', 'w8rhauler84211645', 'wrhauler', 18, 49)
+   w8rhauler84211656 role=wrhauler n=3 flips=0 maxrun=1 first=(84211792, 'W47N8', 'w8rhauler84211656', 'wrhauler', 18, 49) last=(84212070, 'W47N8', 'w8rhauler84211656', 'wrhauler', 18, 49)
+
+=== crossing quality 18,49->? and 18,0->? since last ===
+ transitions {'W47N8 18,49 -> W47N7 18,1,W47N7 19,2': 9, 'W47N7 18,0 -> W47N8 18,48,W47N8 17,47': 3, 'W47N8 18,49 -> W47N8 18,48,W47N8 17,47': 6, 'W47N7 18,0 -> GONE': 2}
+ bounce 0 good_in_18,1_or_off_18,48 12
+
+=== 31e43f8 residual W45 edges since last ===
+ -- W46N8 49,21 <-> W45N8 0,21: rows=36 creeps=10
+ -- W45N8 21,49 <-> W45N7 21,0: rows=65 creeps=9
+  rhauler84210968 role=rhauler flips=1 first=(84211492, 'W45N8', 'rhauler84210968', 'rhauler', 21, 49) last=(84212048, 'W45N7', 'rhauler84210968', 'rhauler', 21, 0) n=10
+  rhauler84211293 role=rhauler flips=16 first=(84211505, 'W45N7', 'rhauler84211293', 'rhauler', 21, 0) last=(84212095, 'W45N7', 'rhauler84211293', 'rhauler', 21, 0) n=23
+  rhauler84211534 role=rhauler flips=8 first=(84211645, 'W45N8', 'rhauler84211534', 'rhauler', 21, 49) last=(84212086, 'W45N8', 'rhauler84211534', 'rhauler', 21, 49) n=13
+
+=== #37 W47N8 31,48 visits since last / after deploy ===
+ since 84211410 visits (0, None)
+ since 84206586 visits (0, None)
+
+=== PR34 cap-of-2 (22,15) and (10,33) since last ===
+  (22,15) rows=0 unique_ticks=0 max_on_tile=0 ticks_with_2+=0
+  (10,33) rows=0 unique_ticks=0 max_on_tile=0 ticks_with_2+=0
+
+=== filler aba / two-tile dances since last ===
+ fillers ['w8filler84210632', 'w8filler84210740', 'w8filler84212091']
+  w8filler84210632 n=704 top_trans=[(('W47N8 34,32', 'W47N8 33,31'), 33), (('W47N8 33,31', 'W47N8 34,32'), 30), (('W47N8 33,31', 'W47N8 32,30'), 4), (('W47N8 34,31', 'W47N8 34,32'), 3), (('W47N8 34,32', 'W47N8 35,31'), 3)] longest_dance_steps=18 pair=(('W47N8', 33, 31), ('W47N8', 34, 32))
+  w8filler84210740 n=704 top_trans=[(('W47N8 33,31', 'W47N8 34,32'), 30), (('W47N8 34,32', 'W47N8 33,31'), 28), (('W47N8 32,30', 'W47N8 33,31'), 4), (('W47N8 26,35', 'W47N8 27,35'), 4), (('W47N8 27,35', 'W47N8 28,35'), 4)] longest_dance_steps=12 pair=(('W47N8', 33, 31), ('W47N8', 34, 32))
+  w8filler84212091 n=21 top_trans=[] longest_dance_steps=0 pair=None
+ fillers ['w8filler84210632', 'w8filler84210740', 'w8filler84212091']
+  w8filler84210632 n=704 top_trans=[(('W47N8 34,32', 'W47N8 33,31'), 33), (('W47N8 33,31', 'W47N8 34,32'), 30), (('W47N8 33,31', 'W47N8 32,30'), 4), (('W47N8 34,31', 'W47N8 34,32'), 3), (('W47N8 34,32', 'W47N8 35,31'), 3)] longest_dance_steps=18 pair=(('W47N8', 33, 31), ('W47N8', 34, 32))
+  w8filler84210740 n=704 top_trans=[(('W47N8 33,31', 'W47N8 34,32'), 30), (('W47N8 34,32', 'W47N8 33,31'), 28), (('W47N8 32,30', 'W47N8 33,31'), 4), (('W47N8 26,35', 'W47N8 27,35'), 4), (('W47N8 27,35', 'W47N8 28,35'), 4)] longest_dance_steps=12 pair=(('W47N8', 33, 31), ('W47N8', 34, 32))
+  w8filler84212091 n=21 top_trans=[] longest_dance_steps=0 pair=None
+
+=== home / w8 upgrader traces since last ===
+  upgrader84210012 upgrader n=153 first=84211410 W46N8 30,30 st=loaded last=84211562 W46N8 30,30 st=loaded top_tiles=[(('W46N8', 30, 30), 153)]
+  upgrader84211430 upgrader n=669 first=84211432 W46N8 35,28 st=spawning last=84212100 W46N8 31,30 st=loaded top_tiles=[(('W46N8', 31, 30), 607), (('W46N8', 35, 28), 49), (('W46N8', 34, 30), 4), (('W46N8', 33, 30), 4)]
+  upgrader84211481 upgrader n=565 first=84211483 W46N8 35,28 st=spawning last=84212047 W46N8 34,29 st=empty top_tiles=[(('W46N8', 29, 30), 471), (('W46N8', 35, 28), 49), (('W46N8', 30, 29), 14), (('W46N8', 33, 30), 9)]
+
+=== critical role coverage holes since last (from creep_ticks, presence by tick) ===
+  W46N8 miner present_ticks=700/700 holes>=50t=[] n_holes=0 miss=0
+  W46N8 queen present_ticks=700/700 holes>=50t=[] n_holes=0 miss=0
+  W46N8 upgrader present_ticks=700/700 holes>=50t=[] n_holes=0 miss=0
+  W46N8 rminer present_ticks=65/700 holes>=50t=[(84211401, 84211480, 80), (84211546, 84212100, 555)] n_holes=2 miss=635
+  reserver_any reserver present_ticks=605/700 holes>=50t=[(84211459, 84211553, 95)] n_holes=1 miss=95
+  W47N8 w8miner present_ticks=0/700 holes>=50t=[(84211401, 84212100, 700)] n_holes=1 miss=700
+  W47N8 w8filler present_ticks=0/700 holes>=50t=[(84211401, 84212100, 700)] n_holes=1 miss=700
+  W47N8 w8upgrader present_ticks=0/700 holes>=50t=[(84211401, 84212100, 700)] n_holes=1 miss=700
+  reserve7_any reserve7 present_ticks=0/700 holes>=50t=[(84211401, 84212100, 700)] n_holes=1 miss=700
+  w8rminer_any w8rminer present_ticks=0/700 holes>=50t=[(84211401, 84212100, 700)] n_holes=1 miss=700
+
+=== reserver / reserve7 positions last 50 ticks of backfill + live-ish ===
+reserver rows 401
+  reserver84211552 n=201 first=(84211900, 'W45N7', 'reserver84211552', 6, 39, 400, 0, 'empty') last=(84212100, 'W45N7', 'reserver84211552', 6, 39, 400, 0, 'empty')
+  reserver84211927 n=200 first=(84211928, 'W46N8', 'reserver84211927', 30, 34, 400, 0, 'spawning') last=(84212175, 'W45N8', 'reserver84211927', 7, 37, 400, 0, 'empty')
+reserve7 rows 0
+rdef rows 0
+w8guard rows 0
+w8defender rows 0
+
+=== w8rminer swamp / harvest fails (84210486) ===
+w8rminer84210486 n 606 tiles [(('W47N7', 18, 17), 598), (('W47N7', 18, 16), 6), (('W47N7', 19, 16), 2)] states Counter({'loaded': 600, 'empty': 6}) first (84211410, 'W47N7', 18, 17, 'loaded', 50) last (84212015, 'W47N7', 18, 16, 'loaded', 50)
+w8rminer84211806 n 204 tiles [(('W47N8', 16, 10), 201), (('W47N8', 17, 9), 2), (('W47N8', 18, 9), 1)] states Counter({'empty': 204}) first (84211897, 'W47N8', 18, 9, 'empty', 0) last (84212100, 'W47N8', 16, 10, 'empty', 0)
 === DEEP DONE ===
