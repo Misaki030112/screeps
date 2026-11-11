@@ -1,5 +1,6 @@
 // W47N8 roles (w8miner / w8hauler / w8upgrader / w8builder). Simple, room-local; no safe mode anywhere.
 const C = require('./config');
+const CMV = require('../../utils/combatmove');
 const go = (c, x, y, r = 1) => c.moveTo(new RoomPosition(x, y, C.ROOM), { range: r, reusePath: 10, maxRooms: 1 });
 const E = 'energy';
 const FM = require('./fillmeter');
@@ -459,7 +460,7 @@ const R = {
     if (!home(c)) return;
     const D = require('./defense');
     const cb = (rn, m) => { if (rn !== C.ROOM) return false; for (let i = 0; i < 50; i++) { for (let y = 0; y <= 3; y++) m.set(i, y, 255); m.set(0, i, 255); m.set(49, i, 255); m.set(i, 49, 255); } return m; };
-    const mv = (pos, r) => c.moveTo(pos.x, pos.y, { range: r, maxRooms: 1, reusePath: 3, costCallback: cb });
+    const mv = (pos, r) => CMV.to(c, pos.x, pos.y, r, cb, 3); // creeps ignored, detour only when stuck (utils/combatmove)
     const room = c.room, hs = room.find(FIND_HOSTILE_CREEPS).filter(x => !x.my), mem = c.memory;
     if (hs.length || TH.invasion()) mem.seen = Game.time;
     const towers = room.find(FIND_MY_STRUCTURES, { filter: s => s.structureType === STRUCTURE_TOWER }).map(t => t.pos);
@@ -492,7 +493,7 @@ const R = {
       healer: (room.find(FIND_MY_CREEPS, { filter: x => x.memory.role === 'w8healer' && x.getActiveBodyparts(HEAL) > 0 })[0] || {}).pos });
     mem.hurt = p.hurt;
     if (p.hit) c.attack(p.hit);
-    const mv = (pos, r) => c.moveTo(pos.x, pos.y, { range: r, maxRooms: 1, reusePath: 2, costCallback: cb });
+    const mv = (pos, r) => CMV.to(c, pos.x, pos.y, r, cb, 2); // creeps ignored, detour only when stuck (utils/combatmove)
     if (p.move === 'retreat') return c.pos.inRangeTo(p.goal.x, p.goal.y, 1) || mv(p.goal, 1);
     if (p.move === 'approach' || p.move === 'sally') return mv(p.goal, 1);
     if (p.move === 'post') return mv(p.goal, 0);
@@ -501,7 +502,7 @@ const R = {
     if (!home(c)) return;
     const D = require('./defense'), room = c.room, hs = room.find(FIND_HOSTILE_CREEPS).filter(x => !x.my), mem = c.memory;
     const cb = (rn, m) => { if (rn !== C.ROOM) return false; for (let i = 0; i < 50; i++) { for (let y = 0; y <= 4; y++) m.set(i, y, 255); m.set(0, i, 255); m.set(49, i, 255); m.set(i, 49, 255); } return m; };
-    const mv = (pos, r) => c.moveTo(pos.x, pos.y, { range: r, maxRooms: 1, reusePath: 3, costCallback: cb });
+    const mv = (pos, r) => CMV.to(c, pos.x, pos.y, r, cb, 3); // creeps ignored, detour only when stuck (utils/combatmove)
     const defs = room.find(FIND_MY_CREEPS, { filter: x => x.memory.role === 'w8defender' });
     const towers = room.find(FIND_MY_STRUCTURES, { filter: s => s.structureType === STRUCTURE_TOWER }).map(t => t.pos);
     const idx = _.filter(Game.creeps, x => x.memory.role === 'w8healer').map(x => x.name).sort().indexOf(c.name);

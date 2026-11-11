@@ -112,6 +112,11 @@ function hubPickup(room) {
   const R = require('../managers/links').roles(room);
   return R.hub && R.sources.length ? R.hub : null;
 }
+function linkFed(room, a) {
+  if (!a) return false;
+  let ls = []; try { ls = require('../managers/links').roles(room).sources || []; } catch (err) { ls = []; }
+  return ls.some(l => l && l.pos && Math.max(Math.abs(l.pos.x - a[0]), Math.abs(l.pos.y - a[1])) <= 1);
+}
 function homeHauler(room) { return Object.values(Game.creeps || {}).some(x => x.memory.role === 'hauler' && (x.memory.home || x.room.name) === room.name); }
 module.exports = { pickups, handoff, ctlLow, mineralRun, labRun, hubPickup, homeHauler, idlePark, run(c) {
   if (require('../utils/cmd').yieldCreep(c)) return; // Memory.cmd off => one check (docs/COMMANDER.md)
@@ -140,7 +145,10 @@ module.exports = { pickups, handoff, ctlLow, mineralRun, labRun, hubPickup, home
       trace.why(c, 'p'); return;
     }
     // fallbacks: container missing, or waited > 60 ticks without filling (miner dead/absent) -> one nearest-energy trip
-    if (!cont || c.memory.lp) return legacyPickup(c, room, P);
+    // Link-fed miner (A on 31,12 beside source link 30,11 since RCL6): its container only gets the overflow (patrol 2026-11-11:
+    // 0-49 energy on 1941 of 2100 ticks). Waiting there cost every home hauler / old rhauler finishing at home a 27-tile walk,
+    // the 60 t timeout and a walk back empty (hauler84198886 idle 1064 of 1188 t). legacyPickup still takes it at >= 100.
+    if (!cont || c.memory.lp || linkFed(room, a)) return legacyPickup(c, room, P);
     if (!move.to(c, a[0], a[1], 1)) return;
     if (!c.memory.wt) c.memory.wt = Game.time;
     if (Game.time - c.memory.wt > 60) { delete c.memory.wt; if (c.store[RESOURCE_ENERGY] > 0) c.memory.working = true; else c.memory.lp = 1; return; }

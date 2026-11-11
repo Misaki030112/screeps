@@ -7,7 +7,24 @@ const rep = (n, p) => Array(Math.max(0, n)).fill(p);
 // upgrader83620552 (10W1C1M) needed 274 ticks from spawn to 31,30 (10-13 22:27). Born outside the stamp first;
 // queen/fillers inside (any stamp tile counts as inside). All 8 directions stay in the list, so a blocked side falls back to the engine default.
 const DXY = { 1: [0, -1], 2: [1, -1], 3: [1, 0], 4: [1, 1], 5: [0, 1], 6: [-1, 1], 7: [-1, 0], 8: [-1, -1] };
+// Birth tile with no walkable neighbour (stamp B filler tiles 31,33 / 31,35 are boxed in by extensions + Spawn3 30,34): the
+// creep can never leave, so queen.freeTrapped recycles it on its first live tick. Patrol 2026-11-11: 15 queens in 24h, e.g.
+// queen84199179 / queen84199252 born on 31,33 at 84199250 / 84199323 and recycled the same tick (72 t of spawn time each).
+// Such a direction is never offered (fallback to the full list only if every side were trapped).
+const N8 = [[-1, -1], [0, -1], [1, -1], [-1, 0], [1, 0], [-1, 1], [0, 1], [1, 1]];
+function trappedTile(room, x, y) {
+  if (!room || typeof room.getTerrain !== 'function') return false;
+  const at = rc.get(room).at, T = room.getTerrain();
+  const free = (px, py) => px >= 0 && px <= 49 && py >= 0 && py <= 49 && T.get(px, py) !== TERRAIN_MASK_WALL
+    && Object.keys(at[px * 50 + py] || {}).every(t => t === 'road' || t === 'container' || t === 'rampart');
+  return !N8.some(([dx, dy]) => free(x + dx, y + dy));
+}
 function birthDirs(spawn, role) {
+  const d = birthDirs0(spawn, role); if (!d) return d;
+  const ok = d.filter(k => !trappedTile(spawn.room, spawn.pos.x + DXY[k][0], spawn.pos.y + DXY[k][1]));
+  return ok.length ? ok : d;
+}
+function birthDirs0(spawn, role) {
   const P = plan.get(spawn.room.name); if (!P) return undefined;
   const inside = new Set([].concat(...Object.values(P.raw.stamps).map(st => Object.keys(st.tiles))).map(k => { const [x, y] = k.split(',').map(Number); return plan.key(x, y); }));
   const isIn = d => inside.has(plan.key(spawn.pos.x + DXY[d][0], spawn.pos.y + DXY[d][1]));
@@ -181,7 +198,11 @@ function targets(room, count, backlog, ctlEnergy, sites) {
 // (patrol 2026-11-01 11:0x). Hysteresis: enter room.memory.upBank below reserve-UP_NOISE; leave only at reserve+UP_RECOVER.
 // Patrol 2026-11-02 16:56: T→0 recycled ALL upgraders (surplus) then a second cohort while stor oscillated 14.2–16.8k
 // → ~280t upgrade blackout (progress flat 84022948–84023230). Keep 1 while upBank so extras recycle but feed never zeroes.
-const UP_NOISE = 500, UP_RECOVER = 1000;
+// Patrol 2026-11-11: the exit band must also pay for the upgrader it releases. Leaving at reserve+1000 (16.0k) started a 1550
+// 14W body whose refill pulled storage to ~14.0-14.4k (< reserve-500) before birth -> upBank again -> the newborn was surplus and
+// recycled on its first ticks (upgrader84198023 born 84198073 at stor 14.7k after a 16.0k start; upgrader84198220 born 84198270
+// at 14.0k after 15.9k; ~6 such in the 15h before). Leave only when storage stays above the noise band after paying the body.
+const UP_NOISE = 500, UP_BODY = 1550, UP_RECOVER = UP_BODY + 1000; // leave at reserve + 2550 (17.55k at the 15k floor)
 function defLowUpgraders(t, e, reserve, held, downgradeRisk, mem) {
   mem = mem || {};
   if (!held) { delete mem.upBank; return downgradeRisk ? 1 : 0; }

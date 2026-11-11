@@ -42,7 +42,7 @@ function run(room) {
   }
   // Ideal ~26 assumes all remotes; pause-adjusted ≈ ideal - pausedNet/(1+upkeep≈0.072)
   const idealAdj = Math.round((26 - pausedNet / 1.072) * 10) / 10;
-  // upBank hysteresis (spawn.js): enter below reserve-500, leave at reserve+1000 → freezes nUp.
+  // upBank hysteresis (spawn.js): enter below reserve-500, leave at reserve+2550 (11-11: body cost + 1000) → freezes nUp.
   // Expose so patrol can tell designed energy-bound (28W>26 feed) from floor-bank short soft.
   const upBank = room.memory.upBank ? 1 : 0;
   const tUp = (room.memory.roleTargets && room.memory.roleTargets.upgrader != null)
