@@ -1,11 +1,16 @@
-retry start game.time=84204539
+retry start game.time=84206572
+  pre  W46N8@84205900 distinct=0 range=None..None
+retry W46N8@84205900 still 404
+  post W46N8@84205900 distinct=0/100 range=None..None
+  pre  W45N7@84205900 distinct=11 range=84205907..84205917
+retry W45N7@84205900 still 404
+  post W45N7@84205900 distinct=11/100 range=84205907..84205917
+  pre  W47N7@84204600 distinct=0 range=None..None
+retry W47N7@84204600 still 404
+  post W47N7@84204600 distinct=0/100 range=None..None
   pre  W47N8@84203800 distinct=0 range=None..None
 retry W47N8@84203800 still 404
   post W47N8@84203800 distinct=0/100 range=None..None
-  pre  W47N7@84204400 distinct=0 range=None..None
-retry W47N7@84204400 OK ticks=100 ts=1794391369141
-  inserted 537 new rows (reconstructed 537; seeded_prev=True)
-  post W47N7@84204400 distinct=100/100 range=84204401..84204500 ts_realigned=0
   pre  W45N7@84203200 distinct=0 range=None..None
 retry W45N7@84203200 still 404
   post W45N7@84203200 distinct=0/100 range=None..None
@@ -24,11 +29,20 @@ retry W47N7@84202100 still 404
   pre  W47N8@84201400 distinct=0 range=None..None
 retry W47N8@84201400 still 404
   post W47N8@84201400 distinct=0/100 range=None..None
-retry2 start game.time=84204541 pending=[('W47N8', 84203800)]
-  pre  W47N8@84203800 distinct=0 range=None..None
-retry W47N8@84203800 still 404
-  post W47N8@84203800 distinct=0/100 range=None..None
-recovered=[('W47N7', 84204400, 100, 537, 100)]
-still_404=[('W45N7', 84203200, 0, None, None), ('W45N7', 84202700, 0, None, None), ('W47N8', 84201700, 19, 84201701, 84201719), ('W47N7', 84202000, 0, None, None), ('W47N7', 84202100, 0, None, None), ('W47N8', 84201400, 0, None, None), ('W47N8', 84203800, 0, None, None)]
-inserted_retry=537 ts_realigned_retry=0
+retry2 start game.time=84206575 pending=[('W46N8', 84205900), ('W45N7', 84205900)]
+  pre  W46N8@84205900 distinct=0 range=None..None
+retry2 W46N8@84205900 still 404
+  post W46N8@84205900 distinct=0/100 range=None..None
+  pre  W45N7@84205900 distinct=11 range=84205907..84205917
+retry2 W45N7@84205900 still 404
+  post W45N7@84205900 distinct=11/100 range=84205907..84205917
+recovered=[]
+still_404=[('W47N7', 84204600, 0, None, None), ('W47N8', 84203800, 0, None, None), ('W45N7', 84203200, 0, None, None), ('W45N7', 84202700, 0, None, None), ('W47N8', 84201700, 19, 84201701, 84201719), ('W47N7', 84202000, 0, None, None), ('W47N7', 84202100, 0, None, None), ('W47N8', 84201400, 0, None, None), ('W46N8', 84205900, 0, None, None), ('W45N7', 84205900, 11, 84205907, 84205917)]
+inserted_retry=0 ts_realigned_retry=0
+db_after_final
+  W45N7 ticks=84205801..84206500 rows=2607 distinct=611
+  W45N8 ticks=84205801..84206500 rows=3680 distinct=700
+  W46N8 ticks=84205801..84206500 rows=6121 distinct=600
+  W47N7 ticks=84205801..84206500 rows=2385 distinct=681
+  W47N8 ticks=84205801..84206500 rows=13004 distinct=700
 finished
