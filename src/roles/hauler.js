@@ -36,7 +36,11 @@ function assignPickup(c, room, P) {
 // through swamp 30,28 to spot 29,30 (walk-in 100 t vs 10-34 t usual, ctl container full meanwhile).
 function idlePark(c, room, P) {
   const [dx, dy] = P.pos.controllerDrop, ups = P.pos.upgraders || [];
-  const ok = (x, y) => Math.max(Math.abs(x - dx), Math.abs(y - dy)) <= 3 && !ups.some(([ux, uy]) => Math.max(Math.abs(ux - x), Math.abs(uy - y)) <= 1);
+  // 11-11: not beside a spawn either — with no fixed pickup at A the newborn hauler84200355 parked on 34,29, Spawn1's birth /
+  // recycle tile (upgrader84197643 sat 301 t on that tile waiting to recycle earlier the same day).
+  const sps = (room.find && typeof FIND_MY_SPAWNS !== 'undefined' ? room.find(FIND_MY_SPAWNS) : []).map(s => s.pos);
+  const ok = (x, y) => Math.max(Math.abs(x - dx), Math.abs(y - dy)) <= 3 && !ups.some(([ux, uy]) => Math.max(Math.abs(ux - x), Math.abs(uy - y)) <= 1)
+    && !sps.some(p => Math.max(Math.abs(p.x - x), Math.abs(p.y - y)) <= 1);
   let pk = c.memory.pk;
   if (!pk || !ok(pk[0], pk[1])) {
     const t = room.getTerrain(), cands = [];
