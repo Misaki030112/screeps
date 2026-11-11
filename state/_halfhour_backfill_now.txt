@@ -1,31 +1,37 @@
-game.time=84195616 published_bases=84194900..84195500 rooms=W46N8,W47N8,W45N8,W45N7,W47N7 dry=False
-tick_s=4.384
-reconstructed ticks=84194901..84195600 (700) creep_rows first_pass=29419 missing_chunks first_pass=0 after_retry=0
-already_in_db first_pass=7762 would_insert first_pass=21657
-per_room W46N8:700t/6008new W47N8:700t/8274new W45N8:700t/2600new W45N7:700t/2707new W47N7:700t/2068new
-inserted=21657
-inserted_first_pass=21657 inserted_retry=0
-ts_realigned=0
+game.time=84196432 published_bases=84195700..84196300 rooms=W46N8,W47N8,W45N8,W45N7,W47N7 dry=False
+tick_s=4.471
+reconstructed ticks=84195701..84196400 (700) creep_rows first_pass=26252 missing_chunks first_pass=2 after_retry=2
+already_in_db first_pass=8287 would_insert first_pass=17965
+per_room W46N8:700t/3820new W47N8:700t/7962new W45N8:600t/2324new W45N7:700t/1475new W47N7:600t/2384new
+inserted=17965
+inserted_first_pass=17965 inserted_retry=0
+ts_realigned=5
+ts_realigned_retry=0
 db_after
-  W45N7 ticks=84194901..84195600 rows=2636 distinct=700
-  W45N8 ticks=84194901..84195600 rows=3569 distinct=700
-  W46N8 ticks=84194901..84195600 rows=8829 distinct=700
-  W47N7 ticks=84194901..84195600 rows=2272 distinct=700
-  W47N8 ticks=84194901..84195600 rows=13028 distinct=700
-inserted_total=21657
-sleep_gap 84195221..84195609 published 84195221..84195600 filled 380/380 all 5 rooms; unpub tail 84195601..84195609 W46N8 live from 84195602 (84195601 1-tick reconnect hole)
-prev_unpublished 84195101..84195160 filled 60/60 all 5 rooms
+  W45N7 ticks=84195701..84196400 rows=2294 distinct=700
+  W45N8 ticks=84195701..84196400 rows=2686 distinct=607
+  W46N8 ticks=84195701..84196400 rows=7028 distinct=700
+  W47N7 ticks=84195701..84196400 rows=2366 distinct=600
+  W47N8 ticks=84195701..84196400 rows=11350 distinct=700
+inserted_total=17965
+sleep_gap 84196171..84196409 published 84196171..84196400 filled 230/230 all 5 rooms (box-sleep 07:47:25-08:03:37 / 972s); unpublished remainder 84196401..84196409 W47N8 live 9/9 others 0/9
+new_sleep 84196051..84196129 filled 79/79 all 5 rooms (box-sleep 07:38:13-07:43:02 / 282s)
+prev_sleep 84195691..84195779 still 89/89 all 5 rooms
+prev_sleep 84195221..84195609 still 389/389 all 5 rooms
+prev_unpublished 84195901..84196024 filled 124/124 all 5 rooms (reconnect hole 84195941..84195954 14/14 all 5)
+prev_unpublished 84195601..84195647 still 47/47 all 5 rooms
+prev_unpublished 84195101..84195160 still 60/60 all 5 rooms
 prev_sleep 84194781..84194979 still 199/199 all 5 rooms
 prev_sleep 84194421..84194689 still 269/269 all 5 rooms
 prev_sleep 84194021..84194269 W46N8/W47N8/W45N8/W47N7 249/249; W45N7 169/249
-prev_sleep 84193701..84193929 now 229/229 all 5 rooms
+prev_sleep 84193701..84193929 still 229/229 all 5 rooms
 prev_sleep 84193301..84193439 W46N8/W47N8/W45N8/W47N7 139/139; W45N7 7/139
-prev_sleep 84192861..84193179 previously filled
+prev_sleep 84192861..84193179 still 319/319 all 5 rooms
 prev_sleep 84192411..84192589 W46N8/W47N8/W45N8/W47N7 179/179; W45N7 89/179
 prev_sleep 84192031..84192329 W46N8/W47N8/W47N7 299/299; W45N8 236/299; W45N7 229/299
 prev_pong_hole 84191911..84191939 filled 29/29 all 5 rooms
 prev_sleep 84191571..84191739 published 169/169 all 5 rooms
-current_unpublished 84195601..84195647 (W46N8 live 84195602..84195647 current slot; W47N8/W45N8/W45N7/W47N7 history through 84195600)
-official_404 none this window; known outside: W45N7@84194000 (ticks 84194001..84194100)
-listener pid 1129865 since 07:04:21 after box-sleep 06:36:27-07:04:11 / restart 07:04:11; room_stats gap 06:36:27@84195220 -> 07:05:03@84195610; single_slot rotate W46N8 i=0 left=140.0
-finished_at 2026-11-11 07:07 Asia/Hong_Kong
+current_unpublished 84196401..84196507 (W47N8 live 84196401..84196507 current slot after 08:03:50 reconnect; W46N8/W45N8/W45N7/W47N7 none)
+official_404 this window after retry: W45N8@84195800 (7 live 84195894..84195900) W47N7@84195800 (0/100); no longer newest-base (later chunks 84195900..84196300 published); known outside: W45N7@84194000 (ticks 84194001..84194100)
+listener pid 1146080 since 08:03:50 after prior restart 07:43:05; room_stats skip 07:47:08@84196170 -> 08:04:34@84196410 (box-sleep 07:47:25-08:03:37); also sleep 07:38:13-07:43:02 room_stats 07:37:49@84196050 -> 07:43:45@84196130; single_slot rotate W47N8 i=1 left=107.7
+finished_at 2026-11-11 08:11 Asia/Hong_Kong
