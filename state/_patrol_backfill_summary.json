@@ -1,7 +1,8 @@
 {
   "ok": true,
-  "routine": "Screeps 1-hour peacetime ops patrol",
-  "finished_at_hkt": "2026-11-11 16:25 Asia/Hong_Kong",
+  "routine": "Screeps 1小时巡检",
+  "finished_at": "2026-11-11T17:32:19.078153+08:00",
+  "finished_at_hkt": "2026-11-11 17:32 Asia/Hong_Kong",
   "shard": "shard3",
   "rooms": [
     "W46N8",
@@ -11,29 +12,40 @@
     "W47N7"
   ],
   "minutes": 40,
-  "game_time": 84203191,
-  "published_bases": "84202400..84203000",
+  "game_time": 84204013,
+  "published_bases": "84203300..84203900",
   "ticks": {
-    "min": 84202401,
-    "max": 84203100,
+    "min": 84203301,
+    "max": 84204000,
     "span": 700
   },
-  "tick_s": 4.366,
-  "missing_chunks": 1,
-  "missing_chunk_list": [
-    "W45N7@84202700"
+  "tick_s": 4.305,
+  "inserted_first_pass": 6039,
+  "already_in_db_first_pass": 18959,
+  "ts_realigned_first_pass": 13244,
+  "missing_chunks_first_pass": 4,
+  "missing_first_pass": [
+    "W47N8@84203800",
+    "W47N8@84203900",
+    "W45N8@84203900",
+    "W47N7@84203900"
   ],
-  "inserted": 6024,
-  "already_in_db": 22967,
-  "ts_realigned": 1257,
-  "inserted_retry": 0,
+  "inserted_retry": 2478,
+  "recovered_retry": [
+    "W47N8@84203900",
+    "W45N8@84203900",
+    "W47N7@84203900"
+  ],
   "missing_chunks_after_retry": 1,
-  "per_room_distinct": {
-    "W46N8": 700,
-    "W47N8": 700,
-    "W45N8": 700,
-    "W45N7": 600,
-    "W47N7": 700
-  },
-  "summary": "ok: 40min official history backfill shard3 5 rooms, ticks 84202401..84203100 (700), missing_chunks=1 after retry (W45N7@84202700 persistent official 404 for 84202701..84202800 / 0 live), inserted=6024 already_in_db=22967 ts_realigned=1257; W46N8/W47N8/W45N8/W47N7 distinct=700, W45N7 distinct=600; dark 84202541-84202619 filled 79/79 all 5; dark 84202711-84202929 filled 219/219 four rooms and 129/219 W45N7 (90t official 404 W45N7@84202700 overlapping 84202711..84202800 / 0 live; 29t previously unpublished now filled); known 404s retried still 404: W45N7@84202700, W47N8@84201700 (19 live), W47N7@84202000, W47N7@84202100, W47N8@84201400; trailing unpublished after 84203100"
+  "missing_chunk_list": [
+    "W47N8@84203800"
+  ],
+  "missing_chunk_note": "This window: W47N8@84203800 persistent official 404 (ticks 84203801..84203900; 0 live; other 4 rooms published this base). 84203900 404s on first pass were publish lag and recovered on retry (100/100 those 3 rooms). Known persistent 404s retried, still 404: W45N7@84203200, W45N7@84202700, W47N8@84201700 (19 live), W47N7@84202000, W47N7@84202100, W47N8@84201400.",
+  "db_after_retry": {
+    "W46N8": "84203301..84204000 distinct=700",
+    "W47N8": "84203301..84204000 distinct=600",
+    "W45N8": "84203301..84204000 distinct=700",
+    "W45N7": "84203301..84204000 distinct=700",
+    "W47N7": "84203301..84204000 distinct=700"
+  }
 }

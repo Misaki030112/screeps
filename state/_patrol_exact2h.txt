@@ -1,274 +1,53 @@
-=== freshness ===
-room_stats (84203220, datetime.datetime(2026, 11, 11, 16, 26, 35, 541454, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), datetime.timedelta(seconds=25, microseconds=270709))
-creep_ticks (84203225, datetime.datetime(2026, 11, 11, 16, 26, 57, 21610, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), datetime.timedelta(seconds=3, microseconds=818309))
-creep_cpu (84203220, datetime.datetime(2026, 11, 11, 16, 26, 49, 73594, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), datetime.timedelta(seconds=12, microseconds=8206))
---- creep_ticks per room ---
-creep_ticks ('W45N7', 84203136, datetime.timedelta(seconds=397, microseconds=161704), 129)
-creep_ticks ('W45N8', 84203109, datetime.timedelta(seconds=515, microseconds=337153), 66)
-creep_ticks ('W46N8', 84203225, datetime.timedelta(seconds=4, microseconds=252150), 1123)
-creep_ticks ('W47N7', 84203100, datetime.timedelta(seconds=552, microseconds=584150), 11)
-creep_ticks ('W47N8', 84203100, datetime.timedelta(seconds=552, microseconds=584150), 222)
-creep_ticks ('W47N9', 84085592, datetime.timedelta(days=5, seconds=82616, microseconds=838424), 0)
---- room_stats now ---
-('W46N8', 84203220, datetime.datetime(2026, 11, 11, 16, 26, 35, 541404, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 7, 5547220, 15660, 4570, 5600, 22.28, 10000, 'd09e9c4', 1250, 632, {'miner': 2, 'queen': 2, 'hauler': 1, 'rminer': 4, 'rhauler': 7, 'w8miner': 3, 'reserve7': 1, 'upgrader': 2, 'w8filler': 2, 'w8hauler': 4, 'w8rminer': 2, 'w8builder': 2, 'w8rhauler': 6, 'w8upgrader': 2})
-('W47N8', 84203220, datetime.datetime(2026, 11, 11, 16, 26, 35, 541454, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 7, 2803696, 27388, 5400, 5600, 22.28, 10000, 'd09e9c4', 2000, None, {'miner': 2, 'queen': 2, 'hauler': 1, 'rminer': 4, 'rhauler': 7, 'w8miner': 3, 'reserve7': 1, 'upgrader': 2, 'w8filler': 2, 'w8hauler': 4, 'w8rminer': 2, 'w8builder': 2, 'w8rhauler': 6, 'w8upgrader': 2})
-=== deploy (first room_stats tick per commit) ===
-('d09e9c4', datetime.datetime(2026, 11, 11, 15, 24, 48, 892056, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84202380)
-('2cd3b31', datetime.datetime(2026, 11, 11, 15, 21, 51, 10705, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84202340)
-('c52f100', datetime.datetime(2026, 11, 11, 14, 32, 38, 39430, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84201670)
-('31e43f8', datetime.datetime(2026, 11, 11, 14, 28, 54, 829951, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84201620)
-('eb48ae4', datetime.datetime(2026, 11, 11, 13, 43, 25, 174622, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84201010)
-('75ef3ef', datetime.datetime(2026, 11, 11, 13, 2, 8, 918731, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84200450)
-('a9e8eb4', datetime.datetime(2026, 11, 11, 12, 56, 18, 492636, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84200370)
-('66bf215', datetime.datetime(2026, 11, 11, 9, 35, 25, 376061, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84197640)
-=== shard tick_s (recent 290t samples) 4.408 ===
-=== exact rates (nearest + interpolated) ===
-NOW W46N8 tick=84203220 ts=2026-11-11 16:26:35 HKT p=5547220 RCL7 50.73% stor=15660 ea=4570/? cpu=22.28 bucket=10000 commit=d09e9c4 ctl=1250 ema=632 creeps={'miner': 2, 'queen': 2, 'hauler': 1, 'rminer': 4, 'rhauler': 7, 'w8miner': 3, 'reserve7': 1, 'upgrader': 2, 'w8filler': 2, 'w8hauler': 4, 'w8rminer': 2, 'w8builder': 2, 'w8rhauler': 6, 'w8upgrader': 2}
-  exact2h INTERP tick=84201589.89 ts=2026-11-11 14:26:35 HKT p=5504396.5 stor=17142.9 dt=1630.11 dprog=42823.5 26.27 e/t = 101.0% wall_s=7200 shard_s/t=4.417
-  exact2h nearest-wall cands [(84201590, datetime.datetime(2026, 11, 11, 14, 26, 36, 47891, tzinfo=zoneinfo.ZoneInfo(key='Asia/Hong_Kong')), 5504398, 17144), (84201600, datetime.datetime(2026, 11, 11, 14, 27, 20, 442773, tzinfo=zoneinfo.ZoneInfo(key='Asia/Hong_Kong')), 5504538, 17244), (84201580, datetime.datetime(2026, 11, 11, 14, 25, 50, 164238, tzinfo=zoneinfo.ZoneInfo(key='Asia/Hong_Kong')), 5504258, 17044), (84201570, datetime.datetime(2026, 11, 11, 14, 25, 4, 870968, tzinfo=zoneinfo.ZoneInfo(key='Asia/Hong_Kong')), 5504118, 16944)]
-  exact2h NEAREST (84201590, datetime.datetime(2026, 11, 11, 14, 26, 36, 47891, tzinfo=zoneinfo.ZoneInfo(key='Asia/Hong_Kong')), 5504398, 17144) dt=1630 dprog=42822 26.27 e/t = 101.0% wall_s=7199
-  1h INTERP tick=84202403.74 ts=2026-11-11 15:26:35 HKT p=5525214.6 stor=16858.5 dt=816.26 dprog=22005.4 26.96 e/t = 103.7% wall_s=3600 shard_s/t=4.410
-NOW W47N8 tick=84203220 ts=2026-11-11 16:26:35 HKT p=2803696 RCL7 25.64% stor=27388 ea=5400/? cpu=22.28 bucket=10000 commit=d09e9c4 ctl=2000 ema=None creeps={'miner': 2, 'queen': 2, 'hauler': 1, 'rminer': 4, 'rhauler': 7, 'w8miner': 3, 'reserve7': 1, 'upgrader': 2, 'w8filler': 2, 'w8hauler': 4, 'w8rminer': 2, 'w8builder': 2, 'w8rhauler': 6, 'w8upgrader': 2}
-  exact2h INTERP tick=84201589.89 ts=2026-11-11 14:26:35 HKT p=2775971.8 stor=27317.0 dt=1630.11 dprog=27724.2 17.01 e/t = 56.5% wall_s=7200 shard_s/t=4.417
-  exact2h nearest-wall cands [(84201590, datetime.datetime(2026, 11, 11, 14, 26, 36, 47961, tzinfo=zoneinfo.ZoneInfo(key='Asia/Hong_Kong')), 2775974, 27317), (84201600, datetime.datetime(2026, 11, 11, 14, 27, 20, 442835, tzinfo=zoneinfo.ZoneInfo(key='Asia/Hong_Kong')), 2776174, 27317), (84201580, datetime.datetime(2026, 11, 11, 14, 25, 50, 164289, tzinfo=zoneinfo.ZoneInfo(key='Asia/Hong_Kong')), 2775774, 27317), (84201570, datetime.datetime(2026, 11, 11, 14, 25, 4, 871070, tzinfo=zoneinfo.ZoneInfo(key='Asia/Hong_Kong')), 2775604, 26372)]
-  exact2h NEAREST (84201590, datetime.datetime(2026, 11, 11, 14, 26, 36, 47961, tzinfo=zoneinfo.ZoneInfo(key='Asia/Hong_Kong')), 2775974, 27317) dt=1630 dprog=27722 17.01 e/t = 56.5% wall_s=7199
-  1h INTERP tick=84202403.74 ts=2026-11-11 15:26:35 HKT p=2789971.4 stor=28352.2 dt=816.26 dprog=13724.6 16.81 e/t = 55.9% wall_s=3600 shard_s/t=4.410
-=== short windows (from tip, last N ticks of samples) ===
-W46N8 last20t (n=3 span=20) 27.00 e/t = 103.8% stor 15460->15660 ticks 84203200->84203220 ts 2026-11-11 16:25:05 HKT->2026-11-11 16:26:35 HKT
-W46N8 last30t (n=4 span=30) 23.67 e/t = 91.0% stor 16160->15660 ticks 84203190->84203220 ts 2026-11-11 16:24:21 HKT->2026-11-11 16:26:35 HKT
-W46N8 last70t (n=8 span=70) 28.00 e/t = 107.7% stor 15760->15660 ticks 84203150->84203220 ts 2026-11-11 16:21:26 HKT->2026-11-11 16:26:35 HKT
-W46N8 last100t (n=11 span=100) 28.00 e/t = 107.7% stor 16710->15660 ticks 84203120->84203220 ts 2026-11-11 16:19:15 HKT->2026-11-11 16:26:35 HKT
-W46N8 last140t (n=15 span=140) 27.86 e/t = 107.1% stor 17300->15660 ticks 84203080->84203220 ts 2026-11-11 16:16:20 HKT->2026-11-11 16:26:35 HKT
-W46N8 last200t (n=21 span=200) 26.64 e/t = 102.5% stor 16700->15660 ticks 84203020->84203220 ts 2026-11-11 16:11:57 HKT->2026-11-11 16:26:35 HKT
-W46N8 last240t (n=25 span=240) 27.33 e/t = 105.1% stor 16300->15660 ticks 84202980->84203220 ts 2026-11-11 16:08:58 HKT->2026-11-11 16:26:35 HKT
-W46N8 last300t (n=30 span=290) 26.33 e/t = 101.3% stor 16760->15660 ticks 84202930->84203220 ts 2026-11-11 16:05:17 HKT->2026-11-11 16:26:35 HKT
-W47N8 last20t (n=3 span=20) 20.00 e/t = 66.5% stor 26892->27388 ticks 84203200->84203220 ts 2026-11-11 16:25:05 HKT->2026-11-11 16:26:35 HKT
-W47N8 last30t (n=4 span=30) 20.00 e/t = 66.5% stor 27192->27388 ticks 84203190->84203220 ts 2026-11-11 16:24:21 HKT->2026-11-11 16:26:35 HKT
-W47N8 last70t (n=8 span=70) 20.00 e/t = 66.5% stor 27192->27388 ticks 84203150->84203220 ts 2026-11-11 16:21:26 HKT->2026-11-11 16:26:35 HKT
-W47N8 last100t (n=11 span=100) 20.00 e/t = 66.5% stor 26643->27388 ticks 84203120->84203220 ts 2026-11-11 16:19:15 HKT->2026-11-11 16:26:35 HKT
-W47N8 last140t (n=15 span=140) 20.30 e/t = 67.5% stor 25276->27388 ticks 84203080->84203220 ts 2026-11-11 16:16:20 HKT->2026-11-11 16:26:35 HKT
-W47N8 last200t (n=21 span=200) 20.21 e/t = 67.2% stor 25276->27388 ticks 84203020->84203220 ts 2026-11-11 16:11:57 HKT->2026-11-11 16:26:35 HKT
-W47N8 last240t (n=25 span=240) 19.80 e/t = 65.8% stor 25429->27388 ticks 84202980->84203220 ts 2026-11-11 16:08:58 HKT->2026-11-11 16:26:35 HKT
-W47N8 last300t (n=30 span=290) 18.11 e/t = 60.2% stor 25229->27388 ticks 84202930->84203220 ts 2026-11-11 16:05:17 HKT->2026-11-11 16:26:35 HKT
-=== storage extremes since last patrol ===
-W46N8 minmax (15220, 17500, 84202450, 2026-11-11 15:30:01 HKT, 15220, 84203100, 2026-11-11 16:17:45 HKT, 17500)
-  n=50 under15k=0/50=0.0% over25k=0 over40k=0
-  crosses [('over16k', 84202620, '2026-11-11 15:42:33 HKT', 16390, 15590), ('under16k', 84202660, '2026-11-11 15:45:28 HKT', 15560, 16690), ('over16k', 84202930, '2026-11-11 16:05:17 HKT', 16760, 15660), ('under16k', 84203140, '2026-11-11 16:20:42 HKT', 15660, 16810), ('over16k', 84203180, '2026-11-11 16:23:37 HKT', 16060, 15960), ('under16k', 84203200, '2026-11-11 16:25:05 HKT', 15460, 16160)]
-  first (84202450, datetime.datetime(2026, 11, 11, 15, 30, 1, 628323, tzinfo=zoneinfo.ZoneInfo(key='Asia/Hong_Kong')), 15220, 4800, 2, 2, 196, 795, 'd09e9c4') last (84203220, datetime.datetime(2026, 11, 11, 16, 26, 35, 541404, tzinfo=zoneinfo.ZoneInfo(key='Asia/Hong_Kong')), 15660, 4570, 2, 2, 1250, 632, 'd09e9c4')
-  nUp/w8up changes [(84202450, 15220, 2, 2, 196, 795, 'd09e9c4'), (84202930, 16760, 3, 2, 196, 702, None), (84203000, 16500, 2, 2, 726, 731, 'd09e9c4'), (84203090, 17400, 3, 2, 1346, 677, 'd09e9c4'), (84203170, 15960, 2, 2, 138, 657, 'd09e9c4')]
-  path (tick,ts,stor,nUp,w8)
-    84202450 2026-11-11 15:30:01 HKT stor=15220 nUp=2 w8=2 ea=4800 ctl=196
-    84202460 2026-11-11 15:30:46 HKT stor=15320 nUp=2 w8=2 ea=5200 ctl=0
-    84202470 2026-11-11 15:31:31 HKT stor=15420 nUp=2 w8=2 ea=5200 ctl=98
-    84202480 2026-11-11 15:32:15 HKT stor=15220 nUp=2 w8=2 ea=5200 ctl=98
-    84202490 2026-11-11 15:33:00 HKT stor=15320 nUp=2 w8=2 ea=5400 ctl=0
-    84202500 2026-11-11 15:33:44 HKT stor=15420 nUp=2 w8=2 ea=5500 ctl=1374
-    84202510 2026-11-11 15:34:30 HKT stor=15400 nUp=2 w8=2 ea=5500 ctl=1080
-    84202520 2026-11-11 15:35:14 HKT stor=15500 nUp=2 w8=2 ea=5500 ctl=1080
-    84202530 2026-11-11 15:35:58 HKT stor=15600 nUp=2 w8=2 ea=5500 ctl=908
-    84202540 2026-11-11 15:36:41 HKT stor=15590 nUp=2 w8=2 ea=5500 ctl=656
-    84202620 2026-11-11 15:42:33 HKT stor=16390 nUp=2 w8=2 ea=5500 ctl=778
-    84202630 2026-11-11 15:43:18 HKT stor=16490 nUp=2 w8=2 ea=5500 ctl=484
-    84202640 2026-11-11 15:44:01 HKT stor=16590 nUp=2 w8=2 ea=5500 ctl=484
-    84202650 2026-11-11 15:44:45 HKT stor=16690 nUp=2 w8=2 ea=5500 ctl=312
-    84202660 2026-11-11 15:45:28 HKT stor=15560 nUp=2 w8=2 ea=4700 ctl=460
-    84202670 2026-11-11 15:46:12 HKT stor=15660 nUp=2 w8=2 ea=4800 ctl=208
-    84202680 2026-11-11 15:46:58 HKT stor=15760 nUp=2 w8=2 ea=4990 ctl=208
-    84202690 2026-11-11 15:47:41 HKT stor=15460 nUp=2 w8=2 ea=5100 ctl=408
-    84202700 2026-11-11 15:48:26 HKT stor=15560 nUp=2 w8=2 ea=5500 ctl=1300
-    84202710 2026-11-11 15:49:11 HKT stor=15660 nUp=2 w8=2 ea=5500 ctl=1006
-    84202930 2026-11-11 16:05:17 HKT stor=16760 nUp=3 w8=2 ea=4090 ctl=196
-    84202940 2026-11-11 16:06:00 HKT stor=16700 nUp=3 w8=2 ea=4440 ctl=0
-    84202950 2026-11-11 16:06:43 HKT stor=16800 nUp=3 w8=2 ea=4640 ctl=350
-    84202960 2026-11-11 16:08:09 HKT stor=16900 nUp=3 w8=2 ea=4920 ctl=1444
-    84202970 2026-11-11 16:08:13 HKT stor=17000 nUp=3 w8=2 ea=4920 ctl=1356
-    84202980 2026-11-11 16:08:58 HKT stor=16300 nUp=3 w8=2 ea=4920 ctl=1104
-    84202990 2026-11-11 16:09:42 HKT stor=16400 nUp=3 w8=2 ea=5300 ctl=852
-    84203000 2026-11-11 16:10:26 HKT stor=16500 nUp=2 w8=2 ea=5500 ctl=726
-    84203010 2026-11-11 16:11:11 HKT stor=16600 nUp=2 w8=2 ea=5500 ctl=554
-    84203020 2026-11-11 16:11:57 HKT stor=16700 nUp=2 w8=2 ea=5500 ctl=660
-    84203030 2026-11-11 16:12:41 HKT stor=16800 nUp=2 w8=2 ea=5500 ctl=366
-    84203040 2026-11-11 16:13:25 HKT stor=16900 nUp=2 w8=2 ea=5500 ctl=240
-    84203050 2026-11-11 16:14:09 HKT stor=17000 nUp=2 w8=2 ea=5500 ctl=240
-    84203060 2026-11-11 16:14:52 HKT stor=17100 nUp=2 w8=2 ea=5500 ctl=0
-    84203070 2026-11-11 16:15:35 HKT stor=17200 nUp=2 w8=2 ea=5500 ctl=1100
-    84203080 2026-11-11 16:16:20 HKT stor=17300 nUp=2 w8=2 ea=5500 ctl=974
-    84203090 2026-11-11 16:17:03 HKT stor=17400 nUp=3 w8=2 ea=3950 ctl=1346
-    84203100 2026-11-11 16:17:45 HKT stor=17500 nUp=3 w8=2 ea=3950 ctl=1082
-    84203110 2026-11-11 16:18:31 HKT stor=16800 nUp=3 w8=2 ea=4310 ctl=788
-    84203120 2026-11-11 16:19:15 HKT stor=16710 nUp=3 w8=2 ea=4810 ctl=704
-    84203130 2026-11-11 16:19:59 HKT stor=16810 nUp=3 w8=2 ea=5050 ctl=616
-    84203140 2026-11-11 16:20:42 HKT stor=15660 nUp=3 w8=2 ea=4250 ctl=364
-    84203150 2026-11-11 16:21:26 HKT stor=15760 nUp=3 w8=2 ea=4800 ctl=406
-    84203160 2026-11-11 16:22:10 HKT stor=15860 nUp=3 w8=2 ea=5500 ctl=280
-    84203170 2026-11-11 16:22:54 HKT stor=15960 nUp=2 w8=2 ea=5500 ctl=138
-    84203180 2026-11-11 16:23:37 HKT stor=16060 nUp=2 w8=2 ea=5500 ctl=266
-    84203190 2026-11-11 16:24:21 HKT stor=16160 nUp=2 w8=2 ea=5500 ctl=0
-    84203200 2026-11-11 16:25:05 HKT stor=15460 nUp=2 w8=2 ea=4700 ctl=0
-    84203210 2026-11-11 16:25:50 HKT stor=15560 nUp=2 w8=2 ea=4800 ctl=1550
-    84203220 2026-11-11 16:26:35 HKT stor=15660 nUp=2 w8=2 ea=4570 ctl=1250
-W47N8 minmax (22789, 27589, 84202680, 2026-11-11 15:46:58 HKT, 22789, 84202450, 2026-11-11 15:30:01 HKT, 27589)
-  n=50 under15k=0/50=0.0% over25k=37 over40k=0
-  crosses []
-  first (84202450, datetime.datetime(2026, 11, 11, 15, 30, 1, 628368, tzinfo=zoneinfo.ZoneInfo(key='Asia/Hong_Kong')), 27589, 5600, 2, 2, 1960, None, 'd09e9c4') last (84203220, datetime.datetime(2026, 11, 11, 16, 26, 35, 541454, tzinfo=zoneinfo.ZoneInfo(key='Asia/Hong_Kong')), 27388, 5400, 2, 2, 2000, None, 'd09e9c4')
-  nUp/w8up changes [(84202450, 27589, 2, 2, 1960, None, 'd09e9c4'), (84202930, 25229, 3, 2, 2000, None, None), (84203000, 24529, 2, 2, 2000, None, 'd09e9c4'), (84203090, 25276, 3, 2, 2000, None, 'd09e9c4'), (84203170, 27192, 2, 2, 2000, None, 'd09e9c4')]
-  path (tick,ts,stor,nUp,w8)
-    84202450 2026-11-11 15:30:01 HKT stor=27589 nUp=2 w8=2 ea=5600 ctl=1960
-    84202460 2026-11-11 15:30:46 HKT stor=27089 nUp=2 w8=2 ea=5600 ctl=1960
-    84202470 2026-11-11 15:31:31 HKT stor=27089 nUp=2 w8=2 ea=5600 ctl=1960
-    84202480 2026-11-11 15:32:15 HKT stor=27089 nUp=2 w8=2 ea=5600 ctl=2000
-    84202490 2026-11-11 15:33:00 HKT stor=27089 nUp=2 w8=2 ea=5600 ctl=1960
-    84202500 2026-11-11 15:33:44 HKT stor=27089 nUp=2 w8=2 ea=5600 ctl=2000
-    84202510 2026-11-11 15:34:30 HKT stor=26989 nUp=2 w8=2 ea=5050 ctl=1960
-    84202520 2026-11-11 15:35:14 HKT stor=26639 nUp=2 w8=2 ea=5300 ctl=2000
-    84202530 2026-11-11 15:35:58 HKT stor=26639 nUp=2 w8=2 ea=5300 ctl=1960
-    84202540 2026-11-11 15:36:41 HKT stor=26639 nUp=2 w8=2 ea=4350 ctl=1960
-    84202620 2026-11-11 15:42:33 HKT stor=24888 nUp=2 w8=2 ea=4125 ctl=1492
-    84202630 2026-11-11 15:43:18 HKT stor=24888 nUp=2 w8=2 ea=4650 ctl=1372
-    84202640 2026-11-11 15:44:01 HKT stor=24947 nUp=2 w8=2 ea=3900 ctl=1741
-    84202650 2026-11-11 15:44:45 HKT stor=23547 nUp=2 w8=2 ea=4900 ctl=1621
-    84202660 2026-11-11 15:45:28 HKT stor=23839 nUp=2 w8=2 ea=4950 ctl=1541
-    84202670 2026-11-11 15:46:12 HKT stor=22889 nUp=2 w8=2 ea=5600 ctl=1421
-    84202680 2026-11-11 15:46:58 HKT stor=22789 nUp=2 w8=2 ea=4350 ctl=1341
-    84202690 2026-11-11 15:47:41 HKT stor=23339 nUp=2 w8=2 ea=5200 ctl=1221
-    84202700 2026-11-11 15:48:26 HKT stor=22839 nUp=2 w8=2 ea=5600 ctl=1141
-    84202710 2026-11-11 15:49:11 HKT stor=22839 nUp=2 w8=2 ea=5600 ctl=1768
-    84202930 2026-11-11 16:05:17 HKT stor=25229 nUp=3 w8=2 ea=5600 ctl=2000
-    84202940 2026-11-11 16:06:00 HKT stor=25229 nUp=3 w8=2 ea=5600 ctl=1400
-    84202950 2026-11-11 16:06:43 HKT stor=25229 nUp=3 w8=2 ea=5600 ctl=1400
-    84202960 2026-11-11 16:08:09 HKT stor=24929 nUp=3 w8=2 ea=5600 ctl=1400
-    84202970 2026-11-11 16:08:13 HKT stor=25429 nUp=3 w8=2 ea=5600 ctl=1400
-    84202980 2026-11-11 16:08:58 HKT stor=25429 nUp=3 w8=2 ea=5600 ctl=2000
-    84202990 2026-11-11 16:09:42 HKT stor=25029 nUp=3 w8=2 ea=5000 ctl=2000
-    84203000 2026-11-11 16:10:26 HKT stor=24529 nUp=2 w8=2 ea=5400 ctl=2000
-    84203010 2026-11-11 16:11:11 HKT stor=24529 nUp=2 w8=2 ea=5400 ctl=2000
-    84203020 2026-11-11 16:11:57 HKT stor=25276 nUp=2 w8=2 ea=5400 ctl=2000
-    84203030 2026-11-11 16:12:41 HKT stor=25276 nUp=2 w8=2 ea=5400 ctl=2000
-    84203040 2026-11-11 16:13:25 HKT stor=25276 nUp=2 w8=2 ea=5400 ctl=2000
-    84203050 2026-11-11 16:14:09 HKT stor=25276 nUp=2 w8=2 ea=5400 ctl=2000
-    84203060 2026-11-11 16:14:52 HKT stor=25276 nUp=2 w8=2 ea=5400 ctl=2000
-    84203070 2026-11-11 16:15:35 HKT stor=25276 nUp=2 w8=2 ea=5600 ctl=2000
-    84203080 2026-11-11 16:16:20 HKT stor=25276 nUp=2 w8=2 ea=5600 ctl=2000
-    84203090 2026-11-11 16:17:03 HKT stor=25276 nUp=3 w8=2 ea=5600 ctl=2000
-    84203100 2026-11-11 16:17:45 HKT stor=25276 nUp=3 w8=2 ea=5600 ctl=2000
-    84203110 2026-11-11 16:18:31 HKT stor=25276 nUp=3 w8=2 ea=5600 ctl=2000
-    84203120 2026-11-11 16:19:15 HKT stor=26643 nUp=3 w8=2 ea=5600 ctl=2000
-    84203130 2026-11-11 16:19:59 HKT stor=26643 nUp=3 w8=2 ea=5600 ctl=2000
-    84203140 2026-11-11 16:20:42 HKT stor=27392 nUp=3 w8=2 ea=5600 ctl=2000
-    84203150 2026-11-11 16:21:26 HKT stor=27192 nUp=3 w8=2 ea=5600 ctl=2000
-    84203160 2026-11-11 16:22:10 HKT stor=27192 nUp=3 w8=2 ea=5600 ctl=2000
-    84203170 2026-11-11 16:22:54 HKT stor=27192 nUp=2 w8=2 ea=5600 ctl=2000
-    84203180 2026-11-11 16:23:37 HKT stor=27192 nUp=2 w8=2 ea=5600 ctl=2000
-    84203190 2026-11-11 16:24:21 HKT stor=27192 nUp=2 w8=2 ea=5200 ctl=2000
-    84203200 2026-11-11 16:25:05 HKT stor=26892 nUp=2 w8=2 ea=5400 ctl=2000
-    84203210 2026-11-11 16:25:50 HKT stor=26892 nUp=2 w8=2 ea=5400 ctl=2000
-    84203220 2026-11-11 16:26:35 HKT stor=27388 nUp=2 w8=2 ea=5400 ctl=2000
-=== 20k/300t gate check (home storage >=20000 streak) ===
-home max stor last 3h 20640
-best >=20k tick-span in 3h 91 ((84202210, datetime.datetime(2026, 11, 11, 15, 12, 10, 53090, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 20050), (84202300, datetime.datetime(2026, 11, 11, 15, 18, 50, 623621, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 20540), 91)
-=== room_stats gaps since last patrol (box-sleep candidates) ===
-W46N8 gaps>=30t: [(84202540, 84202620, 80, 352.561868, '2026-11-11 15:36:41 HKT', '2026-11-11 15:42:33 HKT'), (84202710, 84202930, 220, 965.589232, '2026-11-11 15:49:11 HKT', '2026-11-11 16:05:17 HKT')]
-W47N8 gaps>=30t: [(84202540, 84202620, 80, 352.561877, '2026-11-11 15:36:41 HKT', '2026-11-11 15:42:33 HKT'), (84202710, 84202930, 220, 965.589322, '2026-11-11 15:49:11 HKT', '2026-11-11 16:05:17 HKT')]
-=== history fill of those gaps + remaining holes last 2.5h ===
-W46N8 ticks present 84201220..84203220 distinct=1965 span_query=84201220..84203220 holes>=5t: [(84203101, 84203136, 36)] n_holes=1 n_big=1 missing_ticks=36
-W47N8 ticks present 84201220..84203100 distinct=1700 span_query=84201220..84203220 holes>=5t: [(84201401, 84201500, 100), (84201720, 84201800, 81), (84203101, 84203220, 120)] n_holes=3 n_big=3 missing_ticks=301
-W45N8 ticks present 84201220..84203109 distinct=1890 span_query=84201220..84203220 holes>=5t: [(84203110, 84203220, 111)] n_holes=1 n_big=1 missing_ticks=111
-W45N7 ticks present 84201220..84203136 distinct=1808 span_query=84201220..84203220 holes>=5t: [(84202701, 84202800, 100), (84203101, 84203109, 9), (84203137, 84203220, 84)] n_holes=3 n_big=3 missing_ticks=193
-W47N7 ticks present 84201220..84203100 distinct=1681 span_query=84201220..84203220 holes>=5t: [(84202001, 84202200, 200), (84203101, 84203220, 120)] n_holes=2 n_big=2 missing_ticks=320
-=== gap fill detail (all 5 rooms) ===
-parsed gaps (exclusive interior): [(84202541, 84202619, 79, '2026-11-11 15:36:41 HKT', '2026-11-11 15:42:33 HKT', 352.561868), (84202711, 84202929, 219, '2026-11-11 15:49:11 HKT', '2026-11-11 16:05:17 HKT', 965.589232)]
- GAP 84202541..84202619 (79t, 353s) 2026-11-11 15:36:41 HKT -> 2026-11-11 15:42:33 HKT
-   W46N8 filled 79/79
-   W47N8 filled 79/79
-   W45N8 filled 79/79
-   W45N7 filled 79/79
-   W47N7 filled 79/79
- GAP 84202711..84202929 (219t, 966s) 2026-11-11 15:49:11 HKT -> 2026-11-11 16:05:17 HKT
-   W46N8 filled 219/219
-   W47N8 filled 219/219
-   W45N8 filled 219/219
-   W45N7 filled 129/219
-   W47N7 filled 219/219
-=== CPU last 2h / 1h (room_stats W46N8, skip null) ===
-2h (111, 18.37756754041792, 27.39, 21.43000030517578, 9935, 10000, Decimal('9996.2522522522522523'))
-1h (54, 18.459814848723234, 22.28, 20.82650032043457, 9997, 10000, Decimal('9999.9444444444444444'))
-=== incidents / events since last patrol ===
-events cols ['ts', 'tick', 'kind', 'room', 'severity', 'episode', 'msg', 'data']
-event (datetime.datetime(2026, 11, 11, 16, 18, 25, 936707, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84203109, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'rhauler84201778'], ['6010ee96cbca26e9512da6f0', 'rhauler84202293'], ['6010ee96cbca26e9512da6f0', 'rhauler84202893'], ['6010ee96cbca26e9512da6f0', 'rminer84201820']], 'container': [12], 'reservation': [{'user': '6010ee96cbca26e9512da6f0', 'endTime': 84205399}]})
-event (datetime.datetime(2026, 11, 11, 16, 18, 11, 691664, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84203106, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'rhauler84202293'], ['6010ee96cbca26e9512da6f0', 'rhauler84202893'], ['6010ee96cbca26e9512da6f0', 'rminer84201820']], 'container': [12], 'reservation': [{'user': '6010ee96cbca26e9512da6f0', 'endTime': 84205399}]})
-event (datetime.datetime(2026, 11, 11, 16, 18, 7, 205120, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84203105, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'rhauler84202293'], ['6010ee96cbca26e9512da6f0', 'rhauler84202893'], ['6010ee96cbca26e9512da6f0', 'rminer84201820']], 'container': [788], 'reservation': [{'user': '6010ee96cbca26e9512da6f0', 'endTime': 84205399}]})
-event (datetime.datetime(2026, 11, 11, 16, 18, 2, 947054, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84203104, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'rhauler84202293'], ['6010ee96cbca26e9512da6f0', 'rhauler84202893'], ['6010ee96cbca26e9512da6f0', 'rminer84201820']], 'container': [776], 'reservation': [{'user': '6010ee96cbca26e9512da6f0', 'endTime': 84205399}]})
-event (datetime.datetime(2026, 11, 11, 16, 17, 58, 281111, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84203103, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'rhauler84202293'], ['6010ee96cbca26e9512da6f0', 'rhauler84202893'], ['6010ee96cbca26e9512da6f0', 'rminer84201820']], 'container': [764], 'reservation': [{'user': '6010ee96cbca26e9512da6f0', 'endTime': 84205399}]})
-event (datetime.datetime(2026, 11, 11, 16, 17, 53, 851093, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84203102, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'rhauler84202293'], ['6010ee96cbca26e9512da6f0', 'rhauler84202893'], ['6010ee96cbca26e9512da6f0', 'rminer84201820']], 'container': [752], 'reservation': [{'user': '6010ee96cbca26e9512da6f0', 'endTime': 84205399}]})
-event (datetime.datetime(2026, 11, 11, 16, 17, 49, 349519, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84203101, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'rhauler84202293'], ['6010ee96cbca26e9512da6f0', 'rhauler84202893'], ['6010ee96cbca26e9512da6f0', 'rminer84201820']], 'container': [740], 'reservation': [{'user': '6010ee96cbca26e9512da6f0', 'endTime': 84205399}]})
-event (datetime.datetime(2026, 11, 11, 16, 17, 45, 39318, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84203100, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'rhauler84202293'], ['6010ee96cbca26e9512da6f0', 'rhauler84202893'], ['6010ee96cbca26e9512da6f0', 'rminer84201820']], 'container': [728], 'reservation': [{'user': '6010ee96cbca26e9512da6f0', 'endTime': 84205399}]})
-event (datetime.datetime(2026, 11, 11, 16, 17, 40, 802080, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84203099, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'rhauler84202293'], ['6010ee96cbca26e9512da6f0', 'rhauler84202893'], ['6010ee96cbca26e9512da6f0', 'rminer84201820']], 'container': [716], 'reservation': [{'user': '6010ee96cbca26e9512da6f0', 'endTime': 84205399}]})
-event (datetime.datetime(2026, 11, 11, 16, 17, 36, 564372, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84203098, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'rhauler84202293'], ['6010ee96cbca26e9512da6f0', 'rhauler84202893'], ['6010ee96cbca26e9512da6f0', 'rminer84201820']], 'container': [704], 'reservation': [{'user': '6010ee96cbca26e9512da6f0', 'endTime': 84205399}]})
-event (datetime.datetime(2026, 11, 11, 16, 17, 32, 485980, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84203097, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'rhauler84202293'], ['6010ee96cbca26e9512da6f0', 'rhauler84202893'], ['6010ee96cbca26e9512da6f0', 'rminer84201820']], 'container': [692], 'reservation': [{'user': '6010ee96cbca26e9512da6f0', 'endTime': 84205399}]})
-event (datetime.datetime(2026, 11, 11, 16, 17, 28, 283398, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84203096, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'rhauler84202293'], ['6010ee96cbca26e9512da6f0', 'rhauler84202893'], ['6010ee96cbca26e9512da6f0', 'rminer84201820']], 'container': [680], 'reservation': [{'user': '6010ee96cbca26e9512da6f0', 'endTime': 84205399}]})
-event (datetime.datetime(2026, 11, 11, 16, 17, 11, 413915, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84203092, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'rhauler84202293'], ['6010ee96cbca26e9512da6f0', 'rhauler84202413'], ['6010ee96cbca26e9512da6f0', 'rhauler84202893'], ['6010ee96cbca26e9512da6f0', 'rminer84201820']], 'container': [680], 'reservation': [{'user': '6010ee96cbca26e9512da6f0', 'endTime': 84205399}]})
-event (datetime.datetime(2026, 11, 11, 16, 16, 37, 426980, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84203084, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'rhauler84202413'], ['6010ee96cbca26e9512da6f0', 'rhauler84202893'], ['6010ee96cbca26e9512da6f0', 'rminer84201820']], 'container': [680], 'reservation': [{'user': '6010ee96cbca26e9512da6f0', 'endTime': 84205399}]})
-event (datetime.datetime(2026, 11, 11, 16, 16, 33, 265610, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84203083, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'rhauler84202413'], ['6010ee96cbca26e9512da6f0', 'rhauler84202893'], ['6010ee96cbca26e9512da6f0', 'rminer84201820']], 'container': [668], 'reservation': [{'user': '6010ee96cbca26e9512da6f0', 'endTime': 84205399}]})
-event (datetime.datetime(2026, 11, 11, 16, 16, 28, 983130, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84203082, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'rhauler84202413'], ['6010ee96cbca26e9512da6f0', 'rhauler84202893'], ['6010ee96cbca26e9512da6f0', 'rminer84201820']], 'container': [656], 'reservation': [{'user': '6010ee96cbca26e9512da6f0', 'endTime': 84205399}]})
-event (datetime.datetime(2026, 11, 11, 16, 16, 27, 208879, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), None, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'rhauler84202413'], ['6010ee96cbca26e9512da6f0', 'rhauler84202893'], ['6010ee96cbca26e9512da6f0', 'rminer84201820']], 'container': [644], 'reservation': [{'user': '6010ee96cbca26e9512da6f0', 'endTime': 84205399}]})
-event (datetime.datetime(2026, 11, 11, 15, 44, 9, 452085, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84202642, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'reserver84202401'], ['6010ee96cbca26e9512da6f0', 'rhauler84201298'], ['6010ee96cbca26e9512da6f0', 'rhauler84201538'], ['6010ee96cbca26e9512da6f0', 'rhauler84202293'], ['6010ee96cbca26e9512da6f0', 'rminer84201820']], 'container': [12], 'reservation': [{'endTime': 84204659}]})
-event (datetime.datetime(2026, 11, 11, 15, 44, 5, 36087, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84202641, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'reserver84202401'], ['6010ee96cbca26e9512da6f0', 'rhauler84201298'], ['6010ee96cbca26e9512da6f0', 'rhauler84201538'], ['6010ee96cbca26e9512da6f0', 'rhauler84202293'], ['6010ee96cbca26e9512da6f0', 'rminer84201820']], 'container': [12], 'reservation': [{'endTime': 84204657}]})
-event (datetime.datetime(2026, 11, 11, 15, 44, 0, 486810, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84202640, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'reserver84202401'], ['6010ee96cbca26e9512da6f0', 'rhauler84201298'], ['6010ee96cbca26e9512da6f0', 'rhauler84201538'], ['6010ee96cbca26e9512da6f0', 'rhauler84202293'], ['6010ee96cbca26e9512da6f0', 'rminer84201820']], 'container': [12], 'reservation': [{'endTime': 84204655}]})
-event (datetime.datetime(2026, 11, 11, 15, 43, 56, 157259, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84202639, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'reserver84202401'], ['6010ee96cbca26e9512da6f0', 'rhauler84201298'], ['6010ee96cbca26e9512da6f0', 'rhauler84201538'], ['6010ee96cbca26e9512da6f0', 'rhauler84202105'], ['6010ee96cbca26e9512da6f0', 'rhauler84202293'], ['6010ee96cbca26e9512da6f0', 'rminer84201820']], 'container': [12], 'reservation': [{'endTime': 84204653}]})
-event (datetime.datetime(2026, 11, 11, 15, 43, 51, 867369, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84202638, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'reserver84202401'], ['6010ee96cbca26e9512da6f0', 'rhauler84201298'], ['6010ee96cbca26e9512da6f0', 'rhauler84201538'], ['6010ee96cbca26e9512da6f0', 'rhauler84202105'], ['6010ee96cbca26e9512da6f0', 'rhauler84202293'], ['6010ee96cbca26e9512da6f0', 'rminer84201820']], 'container': [12], 'reservation': [{'endTime': 84204651}]})
-event (datetime.datetime(2026, 11, 11, 15, 43, 47, 460771, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84202637, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'reserver84202401'], ['6010ee96cbca26e9512da6f0', 'rhauler84201298'], ['6010ee96cbca26e9512da6f0', 'rhauler84201538'], ['6010ee96cbca26e9512da6f0', 'rhauler84202105'], ['6010ee96cbca26e9512da6f0', 'rhauler84202293'], ['6010ee96cbca26e9512da6f0', 'rminer84201820']], 'container': [12], 'reservation': [{'endTime': 84204649}]})
-event (datetime.datetime(2026, 11, 11, 15, 43, 42, 897908, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84202636, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'reserver84202401'], ['6010ee96cbca26e9512da6f0', 'rhauler84201298'], ['6010ee96cbca26e9512da6f0', 'rhauler84201538'], ['6010ee96cbca26e9512da6f0', 'rhauler84202105'], ['6010ee96cbca26e9512da6f0', 'rhauler84202293'], ['6010ee96cbca26e9512da6f0', 'rminer84201820']], 'container': [12], 'reservation': [{'endTime': 84204647}]})
-event (datetime.datetime(2026, 11, 11, 15, 43, 38, 416224, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84202635, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'reserver84202401'], ['6010ee96cbca26e9512da6f0', 'rhauler84201298'], ['6010ee96cbca26e9512da6f0', 'rhauler84201538'], ['6010ee96cbca26e9512da6f0', 'rhauler84202105'], ['6010ee96cbca26e9512da6f0', 'rhauler84202293'], ['6010ee96cbca26e9512da6f0', 'rminer84201820']], 'container': [12], 'reservation': [{'endTime': 84204645}]})
-event (datetime.datetime(2026, 11, 11, 15, 43, 34, 128924, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84202634, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'reserver84202401'], ['6010ee96cbca26e9512da6f0', 'rhauler84201298'], ['6010ee96cbca26e9512da6f0', 'rhauler84201538'], ['6010ee96cbca26e9512da6f0', 'rhauler84202105'], ['6010ee96cbca26e9512da6f0', 'rhauler84202293'], ['6010ee96cbca26e9512da6f0', 'rminer84201820']], 'container': [12], 'reservation': [{'endTime': 84204643}]})
-event (datetime.datetime(2026, 11, 11, 15, 43, 29, 840307, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84202633, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'reserver84202401'], ['6010ee96cbca26e9512da6f0', 'rhauler84201298'], ['6010ee96cbca26e9512da6f0', 'rhauler84201538'], ['6010ee96cbca26e9512da6f0', 'rhauler84202105'], ['6010ee96cbca26e9512da6f0', 'rhauler84202293'], ['6010ee96cbca26e9512da6f0', 'rminer84201820']], 'container': [12], 'reservation': [{'endTime': 84204641}]})
-event (datetime.datetime(2026, 11, 11, 15, 43, 25, 639166, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84202632, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'reserver84202401'], ['6010ee96cbca26e9512da6f0', 'rhauler84201298'], ['6010ee96cbca26e9512da6f0', 'rhauler84201538'], ['6010ee96cbca26e9512da6f0', 'rhauler84202105'], ['6010ee96cbca26e9512da6f0', 'rhauler84202293'], ['6010ee96cbca26e9512da6f0', 'rminer84201820']], 'container': [12], 'reservation': [{'endTime': 84204639}]})
-event (datetime.datetime(2026, 11, 11, 15, 43, 21, 31603, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84202631, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'reserver84202401'], ['6010ee96cbca26e9512da6f0', 'rhauler84201298'], ['6010ee96cbca26e9512da6f0', 'rhauler84201538'], ['6010ee96cbca26e9512da6f0', 'rhauler84202105'], ['6010ee96cbca26e9512da6f0', 'rhauler84202293'], ['6010ee96cbca26e9512da6f0', 'rminer84201820']], 'container': [12], 'reservation': [{'endTime': 84204637}]})
-event (datetime.datetime(2026, 11, 11, 15, 43, 16, 706288, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84202630, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'reserver84202401'], ['6010ee96cbca26e9512da6f0', 'rhauler84201298'], ['6010ee96cbca26e9512da6f0', 'rhauler84201538'], ['6010ee96cbca26e9512da6f0', 'rhauler84202105'], ['6010ee96cbca26e9512da6f0', 'rhauler84202293'], ['6010ee96cbca26e9512da6f0', 'rminer84201820']], 'container': [12], 'reservation': [{'endTime': 84204635}]})
-=== critical role presence (creep_ticks, last ~2h, holes >=50t) ===
-  miner room=W46N8 ticks=84202326..84203226 present=901 holes>=50t=[] n_holes=1 rooms={'W46N8': (84202326, 84203226, 865)}
-  queen room=W46N8 ticks=84202326..84203226 present=901 holes>=50t=[] n_holes=1 rooms={'W46N8': (84202326, 84203226, 865)}
-  upgrader room=W46N8 ticks=84202326..84203226 present=901 holes>=50t=[] n_holes=1 rooms={'W46N8': (84202326, 84203226, 865)}
-  wminer room=W47N8 ticks=84202326..84203100 present=775 holes>=50t=[] n_holes=0 rooms={'W47N8': (84202326, 84203100, 775)}
-  wfiller room=W47N8 ticks=84202326..84203100 present=775 holes>=50t=[] n_holes=0 rooms={'W47N8': (84202326, 84203100, 775)}
-  w8miner room=W47N8: NO SAMPLES in 84202326..84203226
-  w8filler room=W47N8: NO SAMPLES in 84202326..84203226
-  wupgrader room=W47N8 ticks=84202326..84203100 present=775 holes>=50t=[] n_holes=0 rooms={'W47N8': (84202326, 84203100, 775)}
-  w8upgrader room=W47N8: NO SAMPLES in 84202326..84203226
-  rminer room=None ticks=84202326..84203226 present=901 holes>=50t=[(84203137, 84203190, 54)] n_holes=1 rooms={'W45N7': (84202326, 84203136, 702), 'W45N8': (84202326, 84203109, 784), 'W46N8': (84203191, 84203226, 36)}
-  reserver room=None ticks=84202326..84203012 present=687 holes>=50t=[] n_holes=0 rooms={'W45N8': (84202326, 84203012, 605), 'W45N7': (84202363, 84202895, 433), 'W46N8': (84202402, 84202444, 43)}
-  wrminer room=None ticks=84202326..84203100 present=775 holes>=50t=[] n_holes=0 rooms={'W47N7': (84202326, 84203100, 775), 'W47N8': (84202559, 84203100, 542)}
-  w8rminer room=None: NO SAMPLES in 84202326..84203226
-  reserve7 room=None: NO SAMPLES in 84202326..84203226
-  reserve room=None ticks=84202326..84203100 present=775 holes>=50t=[(84202656, 84202982, 327)] n_holes=1 rooms={'W47N7': (84202326, 84202655, 330), 'W47N8': (84202983, 84203100, 118)}
-=== upgrader traces this hour ===
- upgrader creeps: [('upgrader84201449', 84202400, 84202999, 600, 30, 30, 30, 30), ('upgrader84201620', 84202400, 84203169, 734, 31, 31, 30, 30), ('upgrader84202918', 84202920, 84203226, 271, 29, 30, 30, 35), ('upgrader84203089', 84203091, 84203226, 100, 30, 35, 28, 30)]
-   upgrader84201449 first=(84202400, 'W46N8', 30, 30, 8, 'loaded') last=(84202999, 'W46N8', 30, 30, 8, 'loaded') n=600 long_sits>=20t (last_tick,run,room,x,y,store) sample=[(84202999, 600, 'W46N8', 30, 30, 8)]
-   upgrader84201620 first=(84202400, 'W46N8', 31, 30, 36, 'loaded') last=(84203169, 'W46N8', 31, 30, 22, 'loaded') n=734 long_sits>=20t (last_tick,run,room,x,y,store) sample=[(84203169, 734, 'W46N8', 31, 30, 22)]
-   upgrader84202918 first=(84202920, 'W46N8', 30, 34, 0, 'spawning') last=(84203226, 'W46N8', 29, 30, 36, 'loaded') n=271 long_sits>=20t (last_tick,run,room,x,y,store) sample=[(84202968, 49, 'W46N8', 30, 34, 0), (84203226, 201, 'W46N8', 29, 30, 36)]
-   upgrader84203089 first=(84203091, 'W46N8', 35, 28, 0, 'spawning') last=(84203226, 'W46N8', 30, 30, 22, 'loaded') n=100 long_sits>=20t (last_tick,run,room,x,y,store) sample=[(84203226, 69, 'W46N8', 30, 30, 22)]
- w8upgrader creeps: []
- wupgrader creeps: [('w8upgrader84200878', 84202400, 84202416, 17, 8, 10, 16, 20), ('w8upgrader84201358', 84202400, 84202896, 497, 7, 14, 15, 27), ('w8upgrader84202317', 84202400, 84203100, 701, 8, 25, 9, 25), ('w8upgrader84202797', 84202799, 84203100, 302, 8, 34, 8, 30)]
-   w8upgrader84200878 first=(84202400, 'W47N8', 8, 20, 0, 'empty') last=(84202416, 'W47N8', 10, 16, 0, 'empty') n=17 long_sits>=20t (last_tick,run,room,x,y,store) sample=[]
-   w8upgrader84201358 first=(84202400, 'W47N8', 14, 27, 20, 'loaded') last=(84202896, 'W47N8', 11, 15, 0, 'empty') n=497 long_sits>=20t (last_tick,run,room,x,y,store) sample=[(84202841, 442, 'W47N8', 14, 27, 0)]
-   w8upgrader84202317 first=(84202400, 'W47N8', 25, 15, 0, 'empty') last=(84203100, 'W47N8', 12, 25, 40, 'loaded') n=701 long_sits>=20t (last_tick,run,room,x,y,store) sample=[(84203100, 583, 'W47N8', 12, 25, 40)]
-   w8upgrader84202797 first=(84202799, 'W47N8', 34, 30, 0, 'spawning') last=(84203100, 'W47N8', 14, 26, 20, 'loaded') n=302 long_sits>=20t (last_tick,run,room,x,y,store) sample=[(84202835, 37, 'W47N8', 34, 30, 0), (84203100, 113, 'W47N8', 14, 26, 20)]
-=== miner / rminer on-stand this hour ===
- miner: [('miner84201254', 'W46N8', 84202450, 84202780, 331, 31, 12), ('miner84201850', 'W46N8', 84202450, 84203227, 742, 38, 32), ('miner84202673', 'W46N8', 84202674, 84203227, 518, 31, 12)]
- rminer: [('rminer84201820', 'W45N8', 84202450, 84203109, 660, 13, 11), ('rminer84201915', 'W45N7', 84202450, 84203136, 578, 21, 15), ('rminer84203190', 'W46N8', 84203191, 84203227, 37, 35, 28), ('rminer84203215', 'W46N8', 84203216, 84203227, 12, 30, 34)]
- wminer: [('w8miner84201834', 'W47N8', 84202450, 84203100, 651, 26, 11), ('w8miner84201913', 'W47N8', 84202450, 84203100, 651, 11, 43)]
- w8miner: []
- wrminer: [('w8rminer84201246', 'W47N7', 84202450, 84202775, 326, 18, 17), ('w8rminer84201301', 'W47N7', 84202450, 84202830, 381, 31, 34), ('w8rminer84202557', 'W47N8', 84202559, 84203100, 542, 27, 18), ('w8rminer84202609', 'W47N8', 84202698, 84202713, 16, 13, 34), ('w8rminer84202609', 'W47N7', 84202714, 84203100, 387, 31, 34)]
- w8rminer: []
-=== PR34 W45N7 pocket (21-23,13-16) and avoid (22,15); (10,33) W45N8 ===
- pocket visits ticks=256 max_simultaneous=2 at n_ticks=10 first/last max=[84202663, 84202664, 84202665]..[84203095, 84203110, 84203111]
- cap-of-2 breaches (start,end,max_n,sample): []
- max loaded pocket sit by creep: [('rhauler84202105', 102), ('rhauler84201778', 69), ('rhauler84202893', 44), ('rhauler84202653', 21), ('rhauler84202413', 2), ('rhauler84201538', 1)]
-(22,15) visits (0, 0, None, None)
-(10,33) visits n= 15 distinct ticks 15
- (10,33) runs (start,end,n,creep,role) [(84202468, 84202468, 1, 'reserver84202401', 'reserver'), (84202481, 84202481, 1, 'rhauler84201538', 'rhauler'), (84202558, 84202558, 1, 'rhauler84201778', 'rhauler'), (84202614, 84202614, 1, 'rhauler84202105', 'rhauler'), (84202624, 84202624, 1, 'rhauler84201538', 'rhauler'), (84202692, 84202692, 1, 'rhauler84202413', 'rhauler'), (84202738, 84202738, 1, 'rhauler84202653', 'rhauler'), (84202758, 84202758, 1, 'rhauler84201778', 'rhauler'), (84202859, 84202859, 1, 'rhauler84202105', 'rhauler'), (84202896, 84202896, 1, 'rhauler84202413', 'rhauler'), (84202948, 84202948, 1, 'rhauler84202653', 'rhauler'), (84202978, 84202978, 1, 'rhauler84202893', 'rhauler'), (84202988, 84202988, 1, 'rhauler84201778', 'rhauler'), (84203000, 84203000, 1, 'rhauler84202105', 'rhauler'), (84203055, 84203055, 1, 'rhauler84202413', 'rhauler')]
-=== defenders / guards this hour ===
-Traceback (most recent call last):
-  File "/tmp/patrol_1622/analyze.py", line 528, in <module>
-    if c.rowcount == -1:
-       ^^^^^^^^^^
-AttributeError: 'Connection' object has no attribute 'rowcount'
+TIP tick=84204070 ts=2026-11-11 17:29:07 HKT / 18:29:07 JST
+  freshness room_stats: tick=84204070 ts=2026-11-11 17:29:07.830894+08:00 lag=0:00:01.240702
+  freshness creep_ticks: tick=84204070 ts=2026-11-11 17:29:06.017521+08:00 lag=0:00:03.061089
+  freshness creep_cpu: tick=84204060 ts=2026-11-11 17:28:47.457347+08:00 lag=0:00:21.959323
+  freshness path_arrivals: tick=84204034 ts=2026-11-11 17:27:46.774635+08:00 lag=0:01:22.757852
+
+NOW W46N8 tick=84204070 ts=2026-11-11 17:29:07 HKT / 18:29:07 JST p=5565108 stor=16526 rcl7=50.89%
+  exact2h INTERP tick=84202437.95 ts=2026-11-11 15:29:07 HKT / 16:29:07 JST p=5526172.7 stor=15263.2 dt=1632.05 dprog=38935.3 23.86 e/t = 91.8% wall_s=7200 shard=4.412
+  1h INTERP tick=84203253.89 ts=2026-11-11 16:29:07 HKT / 17:29:07 JST p=5548169.0 stor=15758.9 dt=816.11 dprog=16939.0 20.76 e/t = 79.8% wall_s=3600 shard=4.411
+  last20t n=3 span=20 22.20 e/t = 85.4% stor 16326->16526 ticks 84204050->84204070 2026-11-11 17:27:38 HKT / 18:27:38 JST->2026-11-11 17:29:07 HKT / 18:29:07 JST
+  last30t n=4 span=30 23.47 e/t = 90.3% stor 16226->16526 ticks 84204040->84204070 2026-11-11 17:26:54 HKT / 18:26:54 JST->2026-11-11 17:29:07 HKT / 18:29:07 JST
+  last70t n=6 span=50 21.52 e/t = 82.8% stor 16026->16526 ticks 84204020->84204070 2026-11-11 17:25:26 HKT / 18:25:26 JST->2026-11-11 17:29:07 HKT / 18:29:07 JST
+  last100t n=9 span=100 20.88 e/t = 80.3% stor 15526->16526 ticks 84203970->84204070 2026-11-11 17:21:44 HKT / 18:21:44 JST->2026-11-11 17:29:07 HKT / 18:29:07 JST
+  last300t n=22 span=300 25.49 e/t = 98.0% stor 17326->16526 ticks 84203770->84204070 2026-11-11 17:06:55 HKT / 18:06:55 JST->2026-11-11 17:29:07 HKT / 18:29:07 JST
+  stor since last tip n=77 min=14170@84203350 2026-11-11 16:36:11 HKT / 17:36:11 JST max=18694@84203730 2026-11-11 17:03:57 HKT / 18:03:57 JST under15k=13/77 tip=16526
+  nUp counts (samples): {1: 28, 2: 49}
+  nUp runs:
+    84203220..84203359 nUp=2 stor0=15660 ts0=2026-11-11 16:26:35 HKT / 17:26:35 JST span=140
+    84203360..84203639 nUp=1 stor0=14270 ts0=2026-11-11 16:36:55 HKT / 17:36:55 JST span=280
+    84203640..84204070 nUp=2 stor0=17580 ts0=2026-11-11 16:57:25 HKT / 17:57:25 JST span=431
+
+NOW W47N8 tick=84204070 ts=2026-11-11 17:29:07 HKT / 18:29:07 JST p=2820755 stor=25029 rcl7=25.80%
+  exact2h INTERP tick=84202437.95 ts=2026-11-11 15:29:07 HKT / 16:29:07 JST p=2790313.5 stor=28039.0 dt=1632.05 dprog=30441.5 18.65 e/t = 62.0% wall_s=7200 shard=4.412
+  1h INTERP tick=84203253.89 ts=2026-11-11 16:29:07 HKT / 17:29:07 JST p=2804373.9 stor=28378.8 dt=816.11 dprog=16381.1 20.07 e/t = 66.7% wall_s=3600 shard=4.411
+  last20t n=3 span=20 20.00 e/t = 66.5% stor 25029->25029 ticks 84204050->84204070 2026-11-11 17:27:38 HKT / 18:27:38 JST->2026-11-11 17:29:07 HKT / 18:29:07 JST
+  last30t n=4 span=30 20.00 e/t = 66.5% stor 24529->25029 ticks 84204040->84204070 2026-11-11 17:26:54 HKT / 18:26:54 JST->2026-11-11 17:29:07 HKT / 18:29:07 JST
+  last70t n=6 span=50 20.00 e/t = 66.5% stor 26529->25029 ticks 84204020->84204070 2026-11-11 17:25:26 HKT / 18:25:26 JST->2026-11-11 17:29:07 HKT / 18:29:07 JST
+  last100t n=9 span=100 18.00 e/t = 59.8% stor 28379->25029 ticks 84203970->84204070 2026-11-11 17:21:44 HKT / 18:21:44 JST->2026-11-11 17:29:07 HKT / 18:29:07 JST
+  last300t n=22 span=300 13.67 e/t = 45.4% stor 29366->25029 ticks 84203770->84204070 2026-11-11 17:06:55 HKT / 18:06:55 JST->2026-11-11 17:29:07 HKT / 18:29:07 JST
+  stor since last tip n=77 min=24420@84203560 2026-11-11 16:51:31 HKT / 17:51:31 JST max=30429@84203340 2026-11-11 16:35:28 HKT / 17:35:28 JST under15k=0/77 tip=25029
+  nUp counts (samples): {2: 67, 3: 10}
+  nUp runs:
+    84203220..84203759 nUp=2 stor0=27388 ts0=2026-11-11 16:26:35 HKT / 17:26:35 JST span=540
+    84203760..84203859 nUp=3 stor0=29466 ts0=2026-11-11 17:06:11 HKT / 18:06:11 JST span=100
+    84203860..84204070 nUp=2 stor0=28763 ts0=2026-11-11 17:14:23 HKT / 18:14:23 JST span=211
+
+======= CPU =======
+  1h n=73 avg=17.56 max=23.38 p50=17.57 bucket min=9999 max=10000
+  2h n=127 avg=17.91 max=23.38 p50=17.86 bucket min=9997 max=10000
+  3h n=184 avg=17.97 max=27.39 p50=17.84 bucket min=9937 max=10000
+
+======= 20k/300t gate W46N8 last 3h =======
+  best >=20k run span_ticks= 90 from (84202210, datetime.datetime(2026, 11, 11, 15, 12, 10, 53090, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 20050) to (84202300, datetime.datetime(2026, 11, 11, 15, 18, 50, 623621, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 20540) maxstor 20640
+
+======= critical role presence 84203220..tip =======
+  miner: present 781/841 long_gaps(>=20t)=[(84204011, 84204070, 60)]
+  queen: present 781/841 long_gaps(>=20t)=[(84204011, 84204070, 60)]
+  upgrader: present 781/841 long_gaps(>=20t)=[(84204011, 84204070, 60)]
+  rminer: present 781/841 long_gaps(>=20t)=[(84204011, 84204070, 60)]
+  reserver_home: present 704/841 long_gaps(>=20t)=[(84203220, 84203296, 77), (84204011, 84204070, 60)]
+  wminer: present 741/841 long_gaps(>=20t)=[(84203801, 84203900, 100)]
+  wfiller: present 741/841 long_gaps(>=20t)=[(84203801, 84203900, 100)]
+  wupgrader: present 741/841 long_gaps(>=20t)=[(84203801, 84203900, 100)]
