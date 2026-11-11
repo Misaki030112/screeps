@@ -4,7 +4,7 @@ module.exports = {
   SPAWN: [15, 18],
   // sources -> miner stand tile (his old containers at 26,11 and 11,43 are reused)
   SOURCES: [{ src: [27, 11], stand: [26, 11], link: [26, 12] }, { src: [11, 44], stand: [11, 43] }],
-  CTL_LINK: [13, 25], // RCL5 (17:20): dead-end tile beside upgrader stands 12,25 / 12,26 / 14,26 (nobody walks in, see UPG_STAND note)
+  CTL_LINK: [13, 25], // RCL5 (17:20): dead-end tile beside upgrader stands 12,25 / 14,26 (nobody walks in, see UPG_STAND note)
   // north seal (Misaki 16:24): 1-hit constructedWalls vs BustJetter's non-combat creeps. Never repaired. Closes y=3 fully
   // (terrain-checked: north edge reaches only y<=2 with these 12 tiles).
   SEAL: [24, 25, 26, 27, 28, 29, 30, 31, 8, 9, 10, 11].map(x => [x, 3]),
@@ -31,8 +31,10 @@ module.exports = {
   // 15:xx (w8upgrader84200878): 12,26 was a stand AND the west-wrap trunk road into the ctl pocket.
   // Haulers on 12,26 made pickTile fail; the 1C upgrader then fell through to getEnergy and walked the
   // south hub exit (14,28 / 13,29 / 12,28) while the ctl cont was 2000/2000, so loaded haulers going to
-  // the hub turned around onto the 1-wide west wrap (8,18-22). 15,26 is in range 3, off both trunks.
-  UPG_STAND: [[12, 25], [15, 26], [14, 26], [14, 27]], CTL_HAUL: [[13, 27], [12, 27]],
+  // the hub turned around onto the 1-wide west wrap (8,18-22).
+  // Only three walkable tiles are in range 1 of the battery and off the trunks/CTL_HAUL:
+  // 12,25 / 14,26 / 14,27 (15,26 is range 2 — a 1C upgrader parked there cannot withdraw).
+  UPG_STAND: [[12, 25], [14, 26], [14, 27]], CTL_HAUL: [[13, 27], [12, 27]],
   UPG_EXTRA: [[15, 26], [15, 27], [15, 28], [16, 28], [14, 28]], // in range 3, off the hauler corridors (11,26-12,28 west, 13,28 south)
   // K mineral @37,45 (wall tile). Only walkable harvest stands in range 1: 37,44 / 38,44 (plain). Container+mminer on 37,44
   // (also in roads.MINERAL). Strategy 23:4x lean KO: home already has 3 labs — colony labs deferred (RCL6_LABS).
