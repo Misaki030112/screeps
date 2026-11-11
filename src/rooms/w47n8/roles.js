@@ -1,6 +1,7 @@
 // W47N8 roles (w8miner / w8hauler / w8upgrader / w8builder). Simple, room-local; no safe mode anywhere.
 const C = require('./config');
 const CMV = require('../../utils/combatmove');
+const CREP = require('./contrep');
 // 11-11 patrol (w8builder84200485): vanilla moveTo searched with creeps as walls; with creeps on the 1-wide x=38 / 31,2x trunks the
 // search to container 37,44 went INCOMPLETE (3 steps to the south-edge dead end 33,48 instead of the real 84) and the builder shuttled
 // 31,48 <-> 17,33 / 8,23 for ~300 t carrying 66 energy. In W47N8 the search ignores creeps; one creep-aware search only when stuck
@@ -657,16 +658,23 @@ const R = {
     // 11:38: also break sticky when a container sits under the 50% band (do not finish a mid road while battery dies)
     // 14:4x: also break sticky fortify when a kept road is under critical 25% (do not finish seal→1M while roadCrit drains)
     let rep = c.memory.rj && Game.getObjectById(c.memory.rj);
-    const contUrgent = contNeed(0.5);
+    // 15:xx hysteresis (contrep.js): a container picked <50% stays the target until >60%; only a <10% job elsewhere pre-empts it
+    const hold = CREP.held(c.memory, rep);
+    if (hold && Game.time >= (c.memory.rjt || 0)) {
+      const crash = contNeed(CREP.CRASH) || roadNeed(CREP.CRASH);
+      if (crash && crash.id !== rep.id) { rep = crash; c.memory.rj = crash.id; CREP.mark(c.memory, rep); }
+      c.memory.rjt = Game.time + 15;
+    }
+    const contUrgent = hold ? null : contNeed(CREP.IN);
     const mvp = require('./index').energyBank(c.room); // 15:5x+08:4x: road/container upkeep paused while banking/leanBank (only <10% urgent)
     const roadCritNeed = mvp ? null : roadNeed(0.25);
-    if (!rep || Game.time >= (c.memory.rjt || 0)
+    if (!hold && (!rep || Game.time >= (c.memory.rjt || 0)
       || (contUrgent && rep.structureType !== STRUCTURE_CONTAINER)
       || (roadCritNeed && (rep.structureType === STRUCTURE_WALL || rep.structureType === STRUCTURE_RAMPART))
-      || rep.hits >= (rep.structureType === STRUCTURE_WALL || rep.structureType === STRUCTURE_RAMPART ? TH.wallTarget(TH.planTarget(c.room.controller.level, C.WALL_TARGET[c.room.controller.level] || 0)) : rep.hitsMax * 0.95)) {
+      || rep.hits >= (rep.structureType === STRUCTURE_WALL || rep.structureType === STRUCTURE_RAMPART ? TH.wallTarget(TH.planTarget(c.room.controller.level, C.WALL_TARGET[c.room.controller.level] || 0)) : rep.hitsMax * 0.95))) {
       // urgent any <10% → containers <50% → roads critical 25% → seal wallJob → roads maint 60% (mvp: skip mid-band roads; containers+wallJob still run)
-      rep = contNeed(0.1) || roadNeed(0.1) || contUrgent || roadCritNeed || wallJob(c.room, c) || (mvp ? null : roadNeed(0.6));
-      c.memory.rj = rep ? rep.id : undefined; c.memory.rjt = Game.time + 15;
+      rep = contNeed(CREP.CRASH) || roadNeed(CREP.CRASH) || contUrgent || roadCritNeed || wallJob(c.room, c) || (mvp ? null : roadNeed(0.6));
+      c.memory.rj = rep ? rep.id : undefined; c.memory.rjt = Game.time + 15; CREP.mark(c.memory, rep);
     }
     if (rep) {
       if (c.pos.inRangeTo(rep, 3)) { c.repair(rep); return; }
