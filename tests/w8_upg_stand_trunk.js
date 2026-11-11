@@ -16,10 +16,11 @@ const cases = [
     const on = C.UPG_STAND.map(([x, y]) => x + ',' + y).filter(k => ROADS.has(k) || TRUNK.includes(k));
     assert.deepStrictEqual(on, [], JSON.stringify(on));
   }],
-  ['four stands remain, all in range 3 of the controller', () => {
-    assert.strictEqual(C.UPG_STAND.length, 4);
+  ['three stands, each in range 1 of the ctl container or link (withdraw)', () => {
+    assert.strictEqual(C.UPG_STAND.length, 3);
+    const bat = [C.CTL_CONT, C.CTL_LINK];
     for (const [x, y] of C.UPG_STAND) {
-      assert.ok(Math.max(Math.abs(x - C.CTL[0]), Math.abs(y - C.CTL[1])) <= 3, x + ',' + y);
+      assert.ok(bat.some(([bx, by]) => Math.max(Math.abs(x - bx), Math.abs(y - by)) <= 1), x + ',' + y);
     }
   }],
   ['roles.js: pickTile miss + stay/battery returns (does not fall through to getEnergy)', () => {
