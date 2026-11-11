@@ -1,5 +1,5 @@
 // Home upgrader double-start (patrol 2026-11-10 12:24, W46N8 RCL7).
-// Storage crossing the 15k recover line (reserve+1000 = 16000) clears upBank and sets tUp=2.
+// Storage crossing the recover line (reserve+2550 = 17550 since 11-11; was reserve+1000 = 16000) clears upBank and sets tUp=2.
 // spawnCreep does not put the creep in Game.creeps until the next tick, so two idle spawns both
 // saw nUp 1 and each started a 1550 — live nUp 3. tUp=2 must stay nUp 2.
 // The 3rd-upgrader sticky gate (20k + ctlEma>=1200 for 300t) is separate and must not reopen at 16k.
@@ -108,15 +108,15 @@ function pair(o) {
 
 const cases = [
   ['allowExtra cross, upBank clears, tUp=2, one alive, intent hidden: one start (not nUp 3)', () => {
-    const r = pair({ time: 841000, storage: 16000, upBank: 1, upgraders: 1 });
+    const r = pair({ time: 841000, storage: 17550, upBank: 1, upgraders: 1 });
     assert.strictEqual(r.T.upgrader, 2, 'tUp');
-    assert.strictEqual(r.mem.upBank, undefined, 'upBank cleared at reserve+1000');
+    assert.strictEqual(r.mem.upBank, undefined, 'upBank cleared at reserve+2550');
     assert.strictEqual(r.ups.length, 1, 'starts ' + JSON.stringify(r.spawned));
     assert.strictEqual(1 + r.ups.length, 2, 'live nUp');
     assert.strictEqual(r.ups[0].cost, 1550);
   }],
   ['same crossing but the runtime inserts the creep before spawn 2: still one start', () => {
-    const r = pair({ time: 841010, storage: 16000, upBank: 1, upgraders: 1, visible: true });
+    const r = pair({ time: 841010, storage: 17550, upBank: 1, upgraders: 1, visible: true });
     assert.strictEqual(r.T.upgrader, 2);
     assert.strictEqual(r.ups.length, 1, JSON.stringify(r.spawned));
   }],
@@ -130,13 +130,17 @@ const cases = [
     assert.strictEqual(r.ups.length, 2, JSON.stringify(r.spawned));
   }],
   ['old 16k + ema 700 gate no longer opens a 3rd: tUp=2, one start', () => {
-    const r = pair({ time: 841040, storage: 16000, upBank: 1, upgraders: 1, ema: 700 });
-    assert.strictEqual(r.T.upgrader, 2, '16k must not open the third');
+    const r = pair({ time: 841040, storage: 17550, upBank: 1, upgraders: 1, ema: 700 });
+    assert.strictEqual(r.T.upgrader, 2, '17.55k + ema 700 must not open the third');
     assert.strictEqual(r.ups.length, 1, JSON.stringify(r.spawned));
     assert.strictEqual(1 + r.ups.length, 2);
   }],
-  ['just under allowExtra with upBank: tUp stays 1, no second upgrader', () => {
-    const r = pair({ time: 841050, storage: 15999, upBank: 1, upgraders: 1 });
+  ['11-11: upBank at 16k (old line) stays 1 — the 1550 body would dip storage back under 14.5k and recycle the newborn', () => {
+    const r = pair({ time: 841045, storage: 16000, upBank: 1, upgraders: 1 });
+    assert.strictEqual(r.T.upgrader, 1); assert.strictEqual(r.ups.length, 0); assert.strictEqual(r.mem.upBank, 1);
+  }],
+  ['just under the recover line with upBank: tUp stays 1, no second upgrader', () => {
+    const r = pair({ time: 841050, storage: 17549, upBank: 1, upgraders: 1 });
     assert.strictEqual(r.T.upgrader, 1);
     assert.strictEqual(r.mem.upBank, 1);
     assert.strictEqual(r.ups.length, 0, JSON.stringify(r.spawned));

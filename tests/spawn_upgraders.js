@@ -64,7 +64,9 @@ const cases = [
     assert.strictEqual(S.defLowUpgraders(2, 14400, 15000, true, false, mem), 1); // enters upBank, keep 1
     assert.strictEqual(mem.upBank, 1);
     assert.strictEqual(S.defLowUpgraders(2, 15500, 15000, true, false, mem), 1); // still banking
-    assert.strictEqual(S.defLowUpgraders(2, 16000, 15000, true, false, mem), 2); // recovered
+    assert.strictEqual(S.defLowUpgraders(2, 16000, 15000, true, false, mem), 1); // 11-11: 16k would dip under the band after paying a 1550 body
+    assert.strictEqual(S.defLowUpgraders(2, 17549, 15000, true, false, mem), 1);
+    assert.strictEqual(S.defLowUpgraders(2, 17550, 15000, true, false, mem), 2); // recovered (reserve + body + 1000)
     assert.strictEqual(mem.upBank, undefined);
     // mid-band with sticky upBank (simulates defLow just cleared at 15.5k)
     const mid = { upBank: 1 };
