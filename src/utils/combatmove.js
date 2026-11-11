@@ -1,4 +1,4 @@
-// In-room move for the W47N8 combat creeps (w8guard / w8defender / w8healer) that keeps each role's own cost matrix
+// In-room move for W47N8 creeps (combat roles with their own cost matrix; since 11-11 also the roles.js `go` helper)
 // (no exit tiles, no seal rows). Patrol 2026-11-11: vanilla moveTo searches with creeps as obstacles. A hauler in the
 // 1-wide 27,17 / 28,19 corridor made that search INCOMPLETE, and moveTo then walks to the tile nearest BY RANGE to the goal:
 // the walled NE pocket 35,10 (range 6 from the guard hold 29,5, real path 56). w8guard84199224 oscillated 35,10 <-> 46,21 for

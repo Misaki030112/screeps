@@ -1,7 +1,12 @@
 // W47N8 roles (w8miner / w8hauler / w8upgrader / w8builder). Simple, room-local; no safe mode anywhere.
 const C = require('./config');
 const CMV = require('../../utils/combatmove');
-const go = (c, x, y, r = 1) => c.moveTo(new RoomPosition(x, y, C.ROOM), { range: r, reusePath: 10, maxRooms: 1 });
+// 11-11 patrol (w8builder84200485): vanilla moveTo searched with creeps as walls; with creeps on the 1-wide x=38 / 31,2x trunks the
+// search to container 37,44 went INCOMPLETE (3 steps to the south-edge dead end 33,48 instead of the real 84) and the builder shuttled
+// 31,48 <-> 17,33 / 8,23 for ~300 t carrying 66 energy. In W47N8 the search ignores creeps; one creep-aware search only when stuck
+// (utils/combatmove, same rule as the w8 combat roles since #35).
+const go = (c, x, y, r = 1) => (c.room.name === C.ROOM ? CMV.to(c, x, y, r, undefined, 10)
+  : c.moveTo(new RoomPosition(x, y, C.ROOM), { range: r, reusePath: 10, maxRooms: 1 }));
 const E = 'energy';
 const FM = require('./fillmeter');
 const F = require('./fill');
