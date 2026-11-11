@@ -42,6 +42,15 @@ function home(c) {
   else c.moveTo(new RoomPosition(C.SPAWN[0], C.SPAWN[1], C.ROOM), { reusePath: 20 });
   return false;
 }
+// 11-11 20:2x patrol: flee used raw moveTo(spawn, reusePath:20). w8rhauler84205404 reached the N exit during a
+// W47N7 Invader and bounced W47N8 18,49 <-> W47N7 18,0 for 164 t (84205878-84206043): ending a tick on the
+// exit tile is sent back, and the stale moveTo path never stepped inward. rmove already steps off / across
+// that exit; use it. Same class as 31e43f8 (via-room hold on an exit), different call site.
+function fleeHome(c) {
+  if (c.room.name === C.ROOM && !onBorder(c) && c.pos.inRangeTo(C.SPAWN[0], C.SPAWN[1], 5)) return;
+  if (c.room.name === C.ROOM || c.room.name === C.REMOTE.room) rmove(c, C.ROOM, C.SPAWN[0], C.SPAWN[1], 4);
+  else c.moveTo(new RoomPosition(C.SPAWN[0], C.SPAWN[1], C.ROOM), { range: 4, reusePath: 20 });
+}
 function getEnergy(c) {
   const drop = c.pos.findClosestByRange(FIND_DROPPED_RESOURCES, { filter: r => r.resourceType === E && r.amount >= 50 });
   const cont = c.pos.findClosestByRange(FIND_STRUCTURES, { filter: s => s.structureType === STRUCTURE_CONTAINER && s.store[E] >= 100
@@ -534,7 +543,7 @@ const R = {
   w8rminer(c) {
     // 14:23: armed hostiles in W47N7 / W47N8 north -> hold inside the W47N8 base (loaded haulers still unload there), resume when clear
     if (TH.flee() && (c.memory.role === 'w8rminer' || !c.store[E] || c.room.name !== C.ROOM)) {
-      if (c.room.name !== C.ROOM || !c.pos.inRangeTo(C.SPAWN[0], C.SPAWN[1], 5)) c.moveTo(new RoomPosition(C.SPAWN[0], C.SPAWN[1], C.ROOM), { range: 4, reusePath: 20 });
+      fleeHome(c);
       return;
     }
     const S = RM.sources[c.memory.si | 0], [x, y] = S.stand;
@@ -559,7 +568,7 @@ const R = {
   w8rhauler(c) {
     // 14:23: armed hostiles in W47N7 / W47N8 north -> hold inside the W47N8 base (loaded haulers still unload there), resume when clear
     if (TH.flee() && (c.memory.role === 'w8rminer' || !c.store[E] || c.room.name !== C.ROOM)) {
-      if (c.room.name !== C.ROOM || !c.pos.inRangeTo(C.SPAWN[0], C.SPAWN[1], 5)) c.moveTo(new RoomPosition(C.SPAWN[0], C.SPAWN[1], C.ROOM), { range: 4, reusePath: 20 });
+      fleeHome(c);
       return;
     }
     toggle(c);
@@ -726,6 +735,7 @@ Object.defineProperty(module.exports, '_haulPick', { value: haulPick, enumerable
 Object.defineProperty(module.exports, '_wallJob', { value: wallJob, enumerable: false }); // tests only
 Object.defineProperty(module.exports, '_rmove', { value: rmove, enumerable: false }); // tests only
 Object.defineProperty(module.exports, '_home', { value: home, enumerable: false }); // tests only
+Object.defineProperty(module.exports, '_fleeHome', { value: fleeHome, enumerable: false }); // tests only
 Object.defineProperty(module.exports, '_mineralRun', { value: mineralRun, enumerable: false }); // tests only
 Object.defineProperty(module.exports, '_lootPick', { value: lootPick, enumerable: false });
 Object.defineProperty(module.exports, '_lootDump', { value: lootDump, enumerable: false });
