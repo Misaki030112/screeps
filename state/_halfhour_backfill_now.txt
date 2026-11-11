@@ -1,28 +1,29 @@
-game.time=84199246 published_bases=84198500..84199100 rooms=W46N8,W47N8,W45N8,W45N7,W47N7 dry=False
-tick_s=4.405
-reconstructed ticks=84198501..84199200 (700) creep_rows first_pass=26118 missing_chunks first_pass=0 after_retry=0
-already_in_db first_pass=23014 would_insert first_pass=3104
-per_room W46N8:700t/486new W47N8:700t/1664new W45N8:700t/444new W45N7:700t/215new W47N7:700t/295new
-inserted=3104
-inserted_first_pass=3104 inserted_retry=0
-ts_realigned=0
-ts_realigned_retry=0
+game.time=84199616 published_bases=84198900..84199500 rooms=W46N8,W47N8,W45N8,W45N7,W47N7 dry=False
+tick_s=4.515
+reconstructed ticks=84198901..84199600 (700) creep_rows first_pass=26878 missing_chunks first_pass=1 after_retry=0
+already_in_db first_pass=12979 would_insert first_pass=13899
+per_room W46N8:700t/3050new W47N8:700t/6140new W45N8:700t/2064new W45N7:700t/1560new W47N7:600t/1085new+100t/436new
+inserted=14335
+inserted_first_pass=13899 inserted_retry=436
+ts_realigned=10910
+ts_realigned_retry=236
 db_after
-  W45N7 ticks=84198501..84199200 rows=2531 distinct=700
-  W45N8 ticks=84198501..84199200 rows=3159 distinct=700
-  W46N8 ticks=84198501..84199200 rows=6885 distinct=700
-  W47N7 ticks=84198501..84199200 rows=2843 distinct=700
-  W47N8 ticks=84198501..84199200 rows=11184 distinct=700
-inserted_total=3104
-sleep_gap 84198881..84198989 filled 109/109 all 5 rooms (new box-sleep 11:07:23-11:14:05 / 398s)
+  W45N7 ticks=84198901..84199600 rows=2171 distinct=700
+  W45N8 ticks=84198901..84199600 rows=3116 distinct=700
+  W46N8 ticks=84198901..84199600 rows=7083 distinct=700
+  W47N7 ticks=84198901..84199600 rows=2563 distinct=700
+  W47N8 ticks=84198901..84199600 rows=11767 distinct=700
+inserted_total=14335
+sleep_gap 84199331..84199609 filled 270/270 all 5 rooms through published 84199600 (new box-sleep 11:40:37-11:59:52 / 1154s / 279t); unpublished tail 84199601..84199609; W47N8 live from 84199604 so full-gap 276/279
+prev_sleep 84198881..84198989 still filled 109/109 all 5 rooms
 prev_sleep 84198521..84198799 still filled 279/279 all 5 rooms
 prev_sleep 84197221..84197529 still filled 309/309 all 5 rooms
 prev_sleep 84196891..84197129 still 239/239 W47N8/W45N8/W45N7; W46N8 139/239 (official 404 @84196900); W47N7 139/239 (official 404 @84197000)
 prev_sleep 84196751..84196799 still 49/49 all 5 rooms
 prev_sleep 84196171..84196409 still 239/239 all 5 rooms
-prev_unpublished 84198801..84198851 now 51/51 all 5 rooms (through 84198880 also 80/80)
-listener_restart_hole 84199081..84199109 filled 29/29 all 5 rooms (restart 11:22:58, no box_pauses)
-current_unpublished 84199201..84199271 (W46N8 live 84199201..84199271 current slot; W47N8/W45N8/W45N7/W47N7 none)
-official_404 this window: none; known outside: W45N7@84198300 (84198301..84198400; 0 live); W45N8@84198000 (26 live 84198070..84198095 as of prior run); W46N8@84196900 (0 live); W47N7@84197000 (0 live); W45N8@84196500 still 28 live 84196531..84196558 as of prior runs
-listener pid 1214305 since 11:23:08 after restart 11:22:58 (prior restart 11:14:08 after sleep 11:07:23-11:14:05; run_listener.sh 4035476 since Nov 9); room_stats resume 11:14:50@84198990 after new sleep; single_slot rotate current W46N8
-finished_at 2026-11-11 11:35 Asia/Hong_Kong
+prev_unpublished 84199201..84199271 now 71/71 all 5 rooms (through 84199330 also 130/130)
+listener_restart_hole 84199081..84199109 still 29/29 all 5 rooms (restart 11:22:58, no box_pauses)
+current_unpublished 84199601..84199653 (W47N8 live 84199604..84199647+ current slot; W46N8/W45N8/W45N7/W47N7 none)
+official_404 this window: W47N7@84199500 first-pass only (retry OK); known outside: W45N7@84198300 (84198301..84198400; 0 live); W45N8@84198000 (26 live 84198070..84198095 as of prior run); W46N8@84196900 (0 live); W47N7@84197000 (0 live); W45N8@84196500 still 28 live 84196531..84196558 as of prior runs
+listener pid 1224108 since 12:00:04 after restart 11:59:55 following sleep 11:40:37-11:59:52 (prior restart 11:22:58); room_stats resume 12:00:37@84199610 after new sleep; single_slot rotate current W47N8
+finished_at 2026-11-11 12:04 Asia/Hong_Kong
