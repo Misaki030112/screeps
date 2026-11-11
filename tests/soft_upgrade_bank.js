@@ -6,6 +6,7 @@ Object.assign(global, {
   WORK: 'work', CARRY: 'carry', MOVE: 'move', RESOURCE_ENERGY: 'energy',
   STRUCTURE_LINK: 'link', STRUCTURE_CONTAINER: 'container', STRUCTURE_SPAWN: 'spawn',
   STRUCTURE_EXTENSION: 'extension', STRUCTURE_TOWER: 'tower', FIND_MINERALS: 116,
+  LOOK_RESOURCES: 'resources',
   Game: { time: 100, creeps: {}, spawns: {}, rooms: {} },
   _: { filter: (a, f) => (Array.isArray(a) ? a : Object.values(a || {})).filter(f), countBy: (a, f) => a.reduce((m, x) => { const k = f(x); m[k] = (m[k] || 0) + 1; return m; }, {}), sum: () => 0 },
   Memory: { ops: {}, defense: { reserveE: 15000 } },
@@ -21,7 +22,7 @@ stub('utils/trace.js', { why: () => {} });
 stub('managers/threat.js', { reserve: () => 0, holding: () => false, wantDefender: () => null, armed: () => false, energyHold: () => false, noteSpawn: () => {} });
 stub('managers/roads.js', { phase: () => 'done', repairTarget: () => null });
 stub('roles/hauler.js', { pickups: () => [] });
-stub('roles/raid9.js', { pauseCivilians: () => false, wantSpawn: () => null });
+stub('roles/raid9.js', { pauseCivilians: () => false, wantSpawn: () => null, applyPause: (T) => T });
 stub('roles/probe.js', { wantSpawn: () => false });
 stub('roles/reserve7.js', { wantSpawn: () => null });
 stub('roles/conquest.js', { guardWant: () => null, wantSpawn: () => null, noteSpawned: () => {} });
@@ -80,5 +81,28 @@ const U = require(src('roles/upgrader.js'));
 U.run(upB);
 assert.deepStrictEqual(recycled, ['upgrader2'], '2nd upgrader recycled when want=1');
 // Kept creep (index 0) is covered by the indexOf < want guard; no need to drive the full upgrade path here.
+
+// Patrol 2026-11-11 09:26: pre-spawn overlap. want=1, incumbent retiring (TTL under body*3+30),
+// replacement already live. Name-order used to keep the older/dying name and recycle the newborn.
+recycled.length = 0;
+const oldUp = {
+  name: 'upgrader84195230', memory: { role: 'upgrader', home: 'W46N8', spot: [29, 30] },
+  store: { energy: 50 }, body: Array(17), ticksToLive: 30,
+  pos: { x: 29, y: 30, roomName: 'W46N8', isNearTo: () => true, inRangeTo: () => true },
+  room, getActiveBodyparts: () => 14, upgradeController: () => { oldUp.upgraded = 1; },
+};
+const newUp = {
+  name: 'upgrader84196699', memory: { role: 'upgrader', home: 'W46N8', spot: [30, 30] },
+  store: { energy: 0 }, body: Array(17), ticksToLive: 1500,
+  pos: { x: 35, y: 29, roomName: 'W46N8', isNearTo: () => true, inRangeTo: () => true },
+  room, getActiveBodyparts: () => 14, upgradeController: () => {},
+};
+room.lookForAtArea = () => [];
+Game.creeps = { [oldUp.name]: oldUp, [newUp.name]: newUp };
+U.run(newUp);
+assert.deepStrictEqual(recycled, [], 'replacement is not recycled while incumbent is retiring');
+U.run(oldUp);
+assert.deepStrictEqual(recycled, [], 'retiring incumbent keeps working until TTL, is not recycled');
+assert.strictEqual(oldUp.upgraded, 1, 'retiring incumbent still upgrades if it has carry');
 
 console.log('soft_upgrade_bank ok');

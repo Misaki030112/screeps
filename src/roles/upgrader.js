@@ -23,9 +23,15 @@ module.exports = { run(c) {
   }
   // Surplus recycle (patrol 2026-11-01 soft-upgrade): when roleTargets.upgrader drops under defLow banking, extras keep
   // drawing the sole A-link feed. Name-order keep the first N; spend carry then recycle.
+  // Patrol 2026-11-11 09:26: spawn.retiring() already drops a dying upgrader from the census so a
+  // replacement pre-spawns, but this list still counted the dying one (name-order keeps the older
+  // name). The newborn (upgrader84196699) was recycled on its first live tick next to the spawn,
+  // then another replacement was queued — 50t spawn wasted and a ~20t zero-upgrader hole after the
+  // incumbent died. Exclude retiring creeps with the same TTL rule as spawn.js (body*3+30).
   { const want = ((room.memory || {}).roleTargets || {}).upgrader;
     if (want !== undefined) {
-      const ups = _.filter(Game.creeps, x => x.memory.role === 'upgrader' && (x.memory.home || x.room.name) === room.name && !x.spawning)
+      const retiring = (x) => !x.spawning && x.ticksToLive <= ((x.body && x.body.length) || 0) * 3 + 30;
+      const ups = _.filter(Game.creeps, x => x.memory.role === 'upgrader' && (x.memory.home || x.room.name) === room.name && !x.spawning && !retiring(x))
         .sort((a, b) => a.name.localeCompare(b.name));
       if (ups.indexOf(c) >= want) {
         if (c.store[RESOURCE_ENERGY] > 0 && ctl && c.pos.inRangeTo(ctl, 3)) { c.upgradeController(ctl); return; }
