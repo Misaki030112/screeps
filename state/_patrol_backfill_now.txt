@@ -1,23 +1,49 @@
-game.time first_pass=84198302 retry=84198317 published_bases=84197600..84198200 rooms=W46N8,W47N8,W45N8,W45N7,W47N7 dry=False
-tick_s=4.420
-reconstructed ticks=84197601..84198300 (700)
-creep_rows first_pass=27094 missing_chunks first_pass=4 after_retry=1
-already_in_db first_pass=18794 would_insert first_pass=8300
-inserted=10980
-inserted_first_pass=8300 inserted_retry=2680
-ts_realigned=0
-ts_realigned_retry=0
-per_room first_pass W46N8:700t/2098new W47N8:600t/3414new W45N8:500t/524new W45N7:700t/1441new W47N7:600t/823new
-per_room retry    W46N8:700t/0new W47N8:700t/1631new W45N8:600t/516new W45N7:700t/0new W47N7:700t/533new
-db_after retry
-  W45N7 ticks=84197601..84198300 rows=3360 distinct=700
-  W45N8 ticks=84197601..84198300 rows=2775 distinct=626
-  W46N8 ticks=84197601..84198300 rows=7852 distinct=700
-  W47N7 ticks=84197601..84198300 rows=2408 distinct=700
-  W47N8 ticks=84197601..84198300 rows=14191 distinct=700
-official_404 this window after retry: W45N8@84198000 (mid-window; later 84198100 published). 26 live ticks 84198070..84198095 (listener was on W47N8). Newest-base first-pass 404s W47N8/W45N8/W47N7@84198200 filled on retry (~15s later).
-known outside: W46N8@84196900 (0 live); W47N7@84197000 (0 live); W45N8@84196500 still 28 live 84196531..84196558; W45N8@84195800 7 live; W47N7@84195800 0 live.
-no new box-sleep this hour (room_stats continuous 10t from 84197530@09:27:21 through tip).
-prev sleeps remain filled as of 10:05 half-hour: 84197221..84197529 309/309 all 5; 84196891..84197129 239/239 W47N8/W45N8/W45N7, W46N8/W47N7 139/239 (the two 404s); 84196751..84196799 49/49 all 5.
-trailing unpublished after 84198300 (expected; live slot later filled W46N8).
-finished_at 2026-11-11 10:26 Asia/Hong_Kong (retry)
+game.time=84200712 published_bases=84200000..84200600 rooms=W46N8,W47N8,W45N8,W45N7,W47N7 dry=False
+  ok  W46N8@84200000 ticks=100 ts=1794371829351
+  ok  W47N8@84200000 ticks=100 ts=1794371868764
+  ok  W45N8@84200000 ticks=100 ts=1794371864408
+  404 W45N7@84200000
+  ok  W47N7@84200000 ticks=100 ts=1794371906651
+  ok  W46N8@84200100 ticks=100 ts=1794372262695
+  ok  W47N8@84200100 ticks=100 ts=1794372301130
+  ok  W45N8@84200100 ticks=100 ts=1794372298068
+  ok  W45N7@84200100 ticks=100 ts=1794372264552
+  ok  W47N7@84200100 ticks=100 ts=1794372337270
+  ok  W46N8@84200200 ticks=100 ts=1794372700546
+  ok  W47N8@84200200 ticks=100 ts=1794372738250
+  ok  W45N8@84200200 ticks=100 ts=1794372735166
+  ok  W45N7@84200200 ticks=100 ts=1794372702521
+  ok  W47N7@84200200 ticks=100 ts=1794372767543
+  ok  W46N8@84200300 ticks=100 ts=1794373140532
+  ok  W47N8@84200300 ticks=100 ts=1794373176560
+  ok  W45N8@84200300 ticks=100 ts=1794373173443
+  ok  W45N7@84200300 ticks=100 ts=1794373141814
+  ok  W47N7@84200300 ticks=100 ts=1794373209201
+  ok  W46N8@84200400 ticks=100 ts=1794373578229
+  ok  W47N8@84200400 ticks=100 ts=1794373618789
+  ok  W45N8@84200400 ticks=100 ts=1794373614518
+  ok  W45N7@84200400 ticks=100 ts=1794373578554
+  ok  W47N7@84200400 ticks=100 ts=1794373650596
+  ok  W46N8@84200500 ticks=100 ts=1794374025474
+  ok  W47N8@84200500 ticks=100 ts=1794374065465
+  ok  W45N8@84200500 ticks=100 ts=1794374062960
+  ok  W45N7@84200500 ticks=100 ts=1794374028220
+  ok  W47N7@84200500 ticks=100 ts=1794374097477
+  ok  W46N8@84200600 ticks=100 ts=1794374470843
+  ok  W47N8@84200600 ticks=100 ts=1794374509754
+  ok  W45N8@84200600 ticks=100 ts=1794374506479
+  ok  W45N7@84200600 ticks=100 ts=1794374472133
+  404 W47N7@84200600
+tick_s=4.333
+reconstructed ticks=84200001..84200700 (700) creep_rows=29192 missing_chunks=2
+already_in_db=21501 would_insert=7691
+per_room W46N8:700t/1950new W47N8:700t/3379new W45N8:700t/1157new W45N7:600t/770new W47N7:600t/435new
+inserted=7691
+ts_realigned=1295
+db_after
+  W45N7 ticks=84200101..84200700 rows=1864 distinct=600
+  W45N8 ticks=84200001..84200700 rows=3275 distinct=700
+  W46N8 ticks=84200001..84200700 rows=6775 distinct=700
+  W47N7 ticks=84200001..84200600 rows=1816 distinct=600
+  W47N8 ticks=84200001..84200700 rows=14139 distinct=700
+EXIT 0
