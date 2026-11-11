@@ -1,20 +1,21 @@
-game.time=84206556 published_bases=84205800..84206400 rooms=W46N8,W47N8,W45N8,W45N7,W47N7 dry=False
-tick_s=4.928
-reconstructed ticks=84205801..84206500 (700) creep_rows first_pass=28578 missing_chunks first_pass=2 after_retry=2 (no recoveries; W46N8@84205900 and W45N7@84205900 official 404 after retry2 for 84205901..84206000; W45N7 11 live 84205907..84205917; W47N7@84204600 persistent official 404 for 84204601..84204700 / 0 live remains outside this 40min window after retry)
-already_in_db first_pass=24857 would_insert first_pass=3721
-per_room first_pass W46N8:600t/1037new W47N8:700t/1385new W45N8:700t/397new W45N7:600t/304new W47N7:700t/598new
-inserted=3721
-inserted_first_pass=3721 inserted_retry=0
-ts_realigned=24149
+game.time=84206963 published_bases=84206200..84206800 rooms=W46N8,W47N8,W45N8,W45N7,W47N7 dry=False
+tick_s=4.392
+reconstructed ticks=84206201..84206900 (700) creep_rows first_pass=28020 missing_chunks first_pass=0 after_retry=0 (no in-window 404s; no recoveries needed. Known persistents outside this 40min window retried, still 404: W46N8@84205900 for 84205901..84206000 / 0 live; W45N7@84205900 for 84205901..84206000 / 11 live 84205907..84205917; W47N7@84204600 for 84204601..84204700 / 0 live)
+already_in_db first_pass=13309 would_insert first_pass=14711
+per_room first_pass W46N8:700t/2962new W47N8:700t/6959new W45N8:700t/1778new W45N7:700t/1255new W47N7:700t/1757new
+inserted=14711
+inserted_first_pass=14711 inserted_retry=0
+ts_realigned=12396
 ts_realigned_retry=0
 db_after
-  W45N7 ticks=84205801..84206500 rows=2607 distinct=611
-  W45N8 ticks=84205801..84206500 rows=3680 distinct=700
-  W46N8 ticks=84205801..84206500 rows=6121 distinct=600
-  W47N7 ticks=84205801..84206500 rows=2385 distinct=681
-  W47N8 ticks=84205801..84206500 rows=13004 distinct=700
-inserted_total=3721
-dark 84206261..84206339 NEW filled 79/79 all 5 rooms (40/40 in 84206261..84206300 + 39/39 in 84206301..84206339; history chunks present). room_stats last 84206260 at 20:10:36, resume 84206340 at 20:16:33; box_pauses.jsonl 20:11:19-20:16:06 / 278s; listener.out restart 20:16:09 / listener.py pid 1420969 started 20:16:18.
+  W45N7 ticks=84206201..84206900 rows=2342 distinct=700
+  W45N8 ticks=84206201..84206900 rows=3236 distinct=700
+  W46N8 ticks=84206201..84206900 rows=7360 distinct=700
+  W47N7 ticks=84206201..84206900 rows=3075 distinct=700
+  W47N8 ticks=84206201..84206900 rows=12918 distinct=700
+inserted_total=14711
+dark 84206661..84206949 NEW filled 240/289 in W46N8/W45N8/W45N7/W47N7 and 248/289 in W47N8 (published side 84206661..84206900 filled 240/240 all 5 rooms; unpublished tail 84206901..84206949 is 0/49 in the four unsubscribed rooms and 8/49 in W47N8 live 84206942..84206949). room_stats last 84206660 at 20:40:33, resume 84206950 at 21:01:30; box_pauses.jsonl 20:40:51-21:00:33 / 1181s; listener.out restart 21:00:36 / listener.py pid 1436761 started 21:00:45.
+dark 84206261..84206339 still filled 79/79 all 5 rooms (40/40 in 84206261..84206300 + 39/39 in 84206301..84206339; history chunks present). room_stats last 84206260 at 20:10:36, resume 84206340 at 20:16:33; box_pauses.jsonl 20:11:19-20:16:06 / 278s; listener.out restart 20:16:09 / listener.py started 20:16:18.
 dark 84205911..84206089 still filled 179/179 W47N8/W45N8, 175/179 W47N7 (4 empty-presence ticks 84205914,84205916,84205922,84205924; history chunks present), 96/179 W45N7 (7 live 84205911..84205917 plus 89/89 in 84206001..84206089; official 404 W45N7@84205900), 89/179 W46N8 (0/90 in 84205911..84206000 official 404 W46N8@84205900 plus 89/89 in 84206001..84206089). room_stats last 84205910 at 19:44:39, resume 84206090 at 19:57:52; box_pauses.jsonl not appended; listener.out restart 19:48:58 / listener.py started 19:57:47.
 dark 84205421..84205589 still filled 169/169 all 5 rooms. room_stats last 84205420 at 19:08:34, resume 84205590 at 19:21:15; box_pauses.jsonl 19:08:39-19:20:19 / 692s; listener restart 19:20:22 / listener.py 19:20:32.
 dark 84204231..84204499 still filled 269/269 all 5 rooms. room_stats last 84204230 at 17:41:12, resume 84204500 at 18:00:50; box_pauses.jsonl 17:41:16-18:00:28 / 1143s; listener restart 18:00:31.
@@ -28,13 +29,13 @@ prev_sleep 84201141..84201219 still filled 79/79 all 5 rooms
 prev_sleep 84200801..84200909 still filled 109/109 all 5 rooms
 prev_sleep 84200591..84200719 still filled 129/129 all 5 rooms
 prev_sleep 84200071..84200159 still filled 89/89 W46N8/W47N8/W45N8/W47N7; W45N7 59/89 (official 404 W45N7@84200000 overlapping 84200071..84200100 / 30t, 0 live)
-prev_unpublished 84206101..84206500 now 400/400 all 5 rooms
-new_since_last_halfhour 84206101..84206500 400/400 all 5 rooms
-new_since_hourly_patrol 84206401..84206500 100/100 all 5 rooms
+prev_unpublished 84206501..84206900 now 400/400 all 5 rooms
+new_since_last_halfhour 84206501..84206900 400/400 all 5 rooms
+new_since_hourly_patrol 84206401..84206900 500/500 all 5 rooms
 listener_restart_hole 84199081..84199109 still 29/29 all 5 rooms (restart 11:22:58, no box_pauses)
-current_unpublished 84206501.. (W46N8 live 84206501..84206616 / 116t and growing as current slot; W47N8/W45N8/W45N7/W47N7 none)
-official_404 this window after retry: W46N8@84205900 (84205901..84206000; 0 live; retry2 still 404; W47N8/W45N8/W47N7 published that base OK) and W45N7@84205900 (84205901..84206000; 11 live 84205907..84205917; retry2 still 404). First-pass 2/35, no delayed chunks recovered this run. known outside: W47N7@84204600 (84204601..84204700; 0 live; still 404 after retry; other 4 rooms published OK; same hole as ~18:22 patrol / ~18:39 / ~19:04 / ~19:37 / ~20:04 backfills). W47N8@84203800 (84203801..84203900; 0 live; still 404 after retry); W45N7@84203200 (84203201..84203300; 0 live; still 404 after retry); W45N7@84202700 (84202701..84202800; 0 live; still 404 after retry); W47N8@84201700 (84201701..84201800; 19 live 84201701..84201719; still 404 after retry); W47N7@84202000 (84202001..84202100; 0 live; still 404 after retry); W47N7@84202100 (84202101..84202200; 0 live; still 404 after retry); W47N8@84201400 (84201401..84201500; 0 live; still 404 after retry); W45N7@84200000 (84200001..84200100; 0 live); W45N7@84198300 (84198301..84198400; 0 live); W45N8@84198000 (26 live 84198070..84198095 as of prior run); W46N8@84196900 (0 live); W47N7@84197000 (0 live); W45N8@84196500 still 28 live 84196531..84196558 as of prior runs.
-W45N7 this window missing 89 ticks is official 404 W45N7@84205900 (plus 11 live 84205907..84205917). Invader-flee empty stretches from earlier this evening (84204650 1t, 84204652..84204827 176t, 84204848..84204897 50t) sit before this window.
-W47N7 this window distinct=681/700: missing 19 ticks 84205874..84205878 (5), 84205880, 84205882, 84205884, 84205890, 84205892, 84205898, 84205900..84205901 (2), 84205906, 84205908, 84205914, 84205916, 84205922, 84205924 — empty of owned creeps (history chunks W47N7@84205800 and W47N7@84205900 were fetched).
-listener pid 1420969 since 20:16:18 after run_listener.sh wrote restart at 20:16:09 (run_listener.sh pid 4035476 looping since Nov 9). room_stats gap 20:10:36-20:16:33 / 79t; box_pauses.jsonl 20:11:19-20:16:06 / 278s (pid changed from 1414267 started 19:57:47). Last half-hour backfill ~20:04 HKT covered 84205401..84206100; hourly patrol ~20:27 HKT covered 84205701..84206400. single_slot rotate at finish i=0 room=W46N8 left=69.9s at 2026-11-11 20:36:49
-finished_at 2026-11-11 20:36 Asia/Hong_Kong
+current_unpublished 84206901.. relative to this run's window ending 84206900 (first-pass latest published base 84206800 at game.time=84206963). At finish live stats.t=84206980 so latest published base is still 84206800 (base 84206900 publishes once game.time crosses 84207000). W47N8 live 84206942..84206982 / 41t and growing as current slot; W46N8/W45N8/W45N7/W47N7 none in the tail
+official_404 this window after retry: none (first-pass 0/35). Known persistents outside this window, retried, still 404: W46N8@84205900 (84205901..84206000; 0 live; retry2 still 404; W47N8/W45N8/W47N7 published that base OK) and W45N7@84205900 (84205901..84206000; 11 live 84205907..84205917; retry2 still 404). W47N7@84204600 (84204601..84204700; 0 live; still 404 after retry; other 4 rooms published OK). W47N8@84203800 (84203801..84203900; 0 live; still 404 after retry); W45N7@84203200 (84203201..84203300; 0 live; still 404 after retry); W45N7@84202700 (84202701..84202800; 0 live; still 404 after retry); W47N8@84201700 (84201701..84201800; 19 live 84201701..84201719; still 404 after retry); W47N7@84202000 (84202001..84202100; 0 live; still 404 after retry); W47N7@84202100 (84202101..84202200; 0 live; still 404 after retry); W47N8@84201400 (84201401..84201500; 0 live; still 404 after retry).
+W45N7 this window distinct=700/700; the official 404 W45N7@84205900 (plus 11 live 84205907..84205917) sits before this window.
+W47N7 this window distinct=700/700 (no empty-presence holes in 84206201..84206900).
+listener pid 1436761 since 21:00:45 after run_listener.sh wrote restart at 21:00:36 (run_listener.sh pid 4035476 looping since Nov 9). room_stats gap 20:40:33-21:01:30 / 289t; box_pauses.jsonl 20:40:51-21:00:33 / 1181s (pid changed from 1420969 started 20:16:18). Last half-hour backfill ~20:36 HKT covered 84205801..84206500; hourly patrol ~20:27 HKT covered 84205701..84206400. single_slot rotate at finish i=1 room=W47N8 left=242.1s at 2026-11-11 21:03:52
+finished_at 2026-11-11 21:06 Asia/Hong_Kong
