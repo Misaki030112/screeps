@@ -1,31 +1,29 @@
-game.time=84200521 published_bases=84199800..84200400 rooms=W46N8,W47N8,W45N8,W45N7,W47N7 dry=False
-tick_s=4.374
-reconstructed ticks=84199801..84200500 (700) creep_rows first_pass=28049 missing_chunks first_pass=1 after_retry=1 (W45N7@84200000 persistent official 404 for 84200001..84200100; 0 live)
-already_in_db first_pass=9919 would_insert first_pass=18130
-per_room W46N8:700t/3375new W47N8:700t/7754new W45N8:700t/2353new W45N7:600t/1746new W47N7:700t/2902new
-inserted=18130
-inserted_first_pass=18130 inserted_retry=0
+game.time=84201230 published_bases=84200500..84201100 rooms=W46N8,W47N8,W45N8,W45N7,W47N7 dry=False
+tick_s=4.454
+reconstructed ticks=84200501..84201200 (700) creep_rows first_pass=27527 missing_chunks first_pass=0 after_retry=0 (no retry; all 35/35 official history chunks OK)
+already_in_db first_pass=19079 would_insert first_pass=8448
+per_room W46N8:700t/2706new W47N8:700t/2712new W45N8:700t/1054new W45N7:700t/783new W47N7:700t/1193new
+inserted=8448
+inserted_first_pass=8448 inserted_retry=0
 ts_realigned=0
 ts_realigned_retry=0
 db_after
-  W45N7 ticks=84199801..84200500 rows=1885 distinct=600
-  W45N8 ticks=84199801..84200500 rows=2911 distinct=700
-  W46N8 ticks=84199801..84200500 rows=6579 distinct=700
-  W47N7 ticks=84199801..84200500 rows=2387 distinct=700
-  W47N8 ticks=84199801..84200500 rows=13536 distinct=700
-inserted_total=18130
-sleep_gap 84200071..84200159 filled 89/89 W46N8/W47N8/W45N8/W47N7; W45N7 59/89 (new box-sleep 12:35:07-12:40:18 / 307s / 89t; W45N7 shortfall is official 404 W45N7@84200000 overlapping 84200071..84200100 / 30t, 0 live)
+  W45N7 ticks=84200501..84201200 rows=2370 distinct=700
+  W45N8 ticks=84200501..84201200 rows=3526 distinct=700
+  W46N8 ticks=84200501..84201200 rows=7166 distinct=700
+  W47N7 ticks=84200501..84201200 rows=1958 distinct=700
+  W47N8 ticks=84200501..84201200 rows=13096 distinct=700
+inserted_total=8448
+sleep_gap 84201141..84201219 published 60/60 all 5 rooms through 84201200; overall W45N7 63/79 others 60/79 (new box-sleep 13:53:11-13:58:24 / 308s / 79t; room_stats last 84201140@13:53:02, resume 84201220@13:58:54). Shortfall is unpublished 84201201..84201219; W45N7 has live 84201217..84201219 after listener reconnect (brief W45N7 slot before rotating to W46N8).
+sleep_gap 84200801..84200909 now filled 109/109 all 5 rooms (prev box-sleep 13:28:37-13:35:32 / 408s / 109t; 13:39 run had published 100/100 through 84200900; this run filled the then-unpublished tail 84200901..84200909).
+prev_sleep 84200591..84200719 still filled 129/129 all 5 rooms
+prev_sleep 84200071..84200159 still filled 89/89 W46N8/W47N8/W45N8/W47N7; W45N7 59/89 (official 404 W45N7@84200000 overlapping 84200071..84200100 / 30t, 0 live)
 prev_sleep 84199701..84199849 still filled 149/149 all 5 rooms
 prev_sleep 84199331..84199609 still filled 279/279 all 5 rooms
 prev_sleep 84198881..84198989 still filled 109/109 all 5 rooms
-prev_sleep 84198521..84198799 still filled 279/279 all 5 rooms
-prev_sleep 84197221..84197529 still filled 309/309 all 5 rooms
-prev_sleep 84196891..84197129 still 239/239 W47N8/W45N8/W45N7; W46N8 139/239 (official 404 @84196900); W47N7 139/239 (official 404 @84197000)
-prev_sleep 84196751..84196799 still 49/49 all 5 rooms
-prev_sleep 84196171..84196409 still 239/239 all 5 rooms
-prev_unpublished 84199901..84200500 now 600/600 W46N8/W47N8/W45N8/W47N7; W45N7 500/600 (same 404 @84200000)
+prev_unpublished 84200901..84201200 now 300/300 all 5 rooms
 listener_restart_hole 84199081..84199109 still 29/29 all 5 rooms (restart 11:22:58, no box_pauses)
-current_unpublished 84200501..84200560 (W47N8 live 84200501..84200551 current/recent slot, 48 distinct / 51 span from published end — ~3 tick hole around listener self-restart 13:06:00; W46N8/W45N8/W45N7/W47N7 none)
-official_404 this window: W45N7@84200000 (84200001..84200100; 0 live) after retry. known outside: W45N7@84198300 (84198301..84198400; 0 live); W45N8@84198000 (26 live 84198070..84198095 as of prior run); W46N8@84196900 (0 live); W47N7@84197000 (0 live); W45N8@84196500 still 28 live 84196531..84196558 as of prior runs
-listener pid 1256534 since 13:06:10 after self-restart 13:06:00 (no box_pauses; room_stats continued 84200500@13:05:48 -> 84200510@13:06:33); prior restart 12:40:21 followed sleep 12:35:07-12:40:18; room_stats last before new sleep 84200070@12:34:22, resume 84200160@12:40:59; single_slot rotate at finish i=2 room=W45N8
-finished_at 2026-11-11 13:11 Asia/Hong_Kong
+current_unpublished 84201201.. (W45N7 live 84201217..84201223 brief post-reconnect slot; W46N8 live 84201224.. current slot; W47N8/W45N8/W47N7 none)
+official_404 this window: none. known outside: W45N7@84200000 (84200001..84200100; 0 live); W45N7@84198300 (84198301..84198400; 0 live); W45N8@84198000 (26 live 84198070..84198095 as of prior run); W46N8@84196900 (0 live); W47N7@84197000 (0 live); W45N8@84196500 still 28 live 84196531..84196558 as of prior runs.
+listener pid 1275749 since 13:58:37 after restart 13:58:27 following sleep 13:53:11-13:58:24 (308s); prior restart 13:35:35 followed sleep 13:28:37-13:35:32 (408s); prior 13:21:21 followed sleep 13:12:36-13:21:18 (517s); prior 13:06:00 self-restart had no box_pauses. room_stats last before 13:53 sleep 84201140@13:53:02, resume 84201220@13:58:54; last before 13:28 sleep 84200800@13:27:50, resume 84200910@13:36:01; single_slot rotate at finish i=0 room=W46N8
+finished_at 2026-11-11 14:00 Asia/Hong_Kong
