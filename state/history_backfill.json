@@ -1,8 +1,8 @@
 {
   "ok": true,
   "routine": "Screeps 半小时轨迹补数",
-  "finished_at": "2026-11-12T22:10:56+08:00",
-  "finished_at_hkt": "2026-11-12 22:10 Asia/Hong_Kong",
+  "finished_at": "2026-11-12T23:03:00+08:00",
+  "finished_at_hkt": "2026-11-12 23:03 Asia/Hong_Kong",
   "shard": "shard3",
   "rooms": [
     "W46N8",
@@ -12,191 +12,234 @@
     "W47N7"
   ],
   "minutes": 40,
-  "game_time": 84227294,
-  "live_game_time_at_finish": 84227335,
-  "live_json_gameTime_at_finish": 84227298,
-  "published_bases": "84226500..84227100",
+  "game_time": 84227976,
+  "live_game_time_at_finish": 84228001,
+  "live_json_gameTime_at_finish": null,
+  "live_json_stats_t_at_finish": 84228000,
+  "published_bases": "84227200..84227800",
   "ticks": {
-    "from": 84226501,
-    "to": 84227200,
+    "from": 84227201,
+    "to": 84227900,
     "count": 700
   },
-  "tick_s": 4.621,
+  "tick_s": 4.627,
   "missing_chunks": 1,
   "missing_chunk_list": [
-    "W47N7@84226800"
+    "W45N7@84227300"
   ],
-  "missing_chunk_note": "First pass (game.time=84227294) published_bases 84226500..84227100, reconstructed 84226501..84227200 (700), missing_chunks=1. W47N7@84226800 is a mid-window official 404 (later bases W47N7@84226900..84227100 already ok on the first pass); 0 official / 0 live for ticks 84226801..84226900 (100 ticks). A probe GET at ~22:09 Asia/Hong_Kong was still 404, so no second insert pass was run. The previous run's four official 404s (W47N8@84226100, W45N7@84226200, W45N8@84226300, W45N8@84226400) are now outside this window starting 84226501.",
-  "creep_rows_reconstructed_first_pass": 20117,
-  "already_in_db_first_pass": 9890,
-  "inserted": 9515,
-  "inserted_first_pass": 10227,
-  "inserted_first_pass_landed": 9515,
+  "missing_chunk_note": "First pass (game.time=84227976) published_bases 84227200..84227800, reconstructed 84227201..84227900 (700), missing_chunks=1. W45N7@84227300 is a mid-window official 404 (ticks 84227301..84227400; later bases W45N7@84227400..84227800 already published). 0 official / 0 live for the whole 100-tick hole. Probe at ~23:02 Asia/Hong_Kong still 404. No retry insert. The 22:25 hourly patrol and the 22:35 half-hour run had already seen this same 404.",
+  "creep_rows_reconstructed_first_pass": 18698,
+  "already_in_db_first_pass": 10786,
+  "inserted": 7181,
+  "inserted_first_pass": 7912,
+  "inserted_first_pass_landed": 7181,
   "inserted_retry": 0,
-  "inserted_note": "Script-printed inserted=10227. Landed inserts are 9515, measured as creep_ticks growth in the official window 84226501..84227200 versus pre-counts taken at backfill start (W45N7 937->2348, W45N8 1801->3618, W46N8 4327->6955, W47N7 587->1427, W47N8 3228->6047; pre-total 10880 + 9515 = 20395 after). Confirmed per-room: W46N8 +2628 (printed 2628, all landed), W47N8 +2819 (printed 2819, all landed), W47N7 +840 (printed 840, all landed), W45N8 +1817 (1909 printed), W45N7 +1411 (2031 printed). Unlanded first-pass prints (712) are WHERE NOT EXISTS (creep, tick) no-ops when the same creep is also in an earlier room's new_rows at that tick (rooms are packed W46N8, W47N8, W45N8, W45N7, W47N7). Probe of W47N7@84226800 stayed 404; no retry insert run.",
-  "ts_realigned": 180,
-  "ts_realigned_first_pass": 180,
+  "inserted_note": "Script-printed inserted=7912. Landed inserts are 7181, measured as creep_ticks growth in the official window 84227201..84227900 versus pre-counts taken at backfill start (W45N7 764->1317, W45N8 2424->3607, W46N8 4402->6639, W47N7 800->905, W47N8 2828->5931; pre-total 11218 + 7181 = 18399 after). W46N8 pre 4402 for tick>=84227201 included live overflow rows at 84227601..84227686 (still inside this window). W47N8 live overflow 84227956+ was above 84227900 so not in the window pre-count (window pre max 84227600, 2828 rows). Confirmed per-room: W46N8 +2237 (printed 2237, all landed), W47N8 +3103 (printed 3103, all landed), W47N7 +105 (printed 105, all landed), W45N8 +1183 (1512 printed), W45N7 +553 (955 printed). Unlanded first-pass prints (731) are WHERE NOT EXISTS (creep, tick) no-ops when the same creep is also in an earlier room's new_rows at that tick (rooms are packed W46N8, W47N8, W45N8, W45N7, W47N7). Probe of W45N7@84227300 stayed 404; no retry insert.",
+  "ts_realigned": 11188,
+  "ts_realigned_first_pass": 11188,
   "ssl_first_attempt": false,
-  "hourly_patrol_prefilled": "The 21:36 half-hour backfill already wrote official history through 84226800 (ticks 84226101..84226800, landed inserted=2328, missing_chunks=4 W47N8@84226100, W45N7@84226200, W45N8@84226300, W45N8@84226400). Before this run the DB already had that official coverage plus live tails (W45N7 through 84226857, W45N8 through 84226831, W46N8 through 84227292 live after the 22:05 reconnect, W47N7 through 84226800, W47N8 through 84226805). This run's first-pass window 84226501..84227200 overlapped that range (already_in_db=9890 would_insert=10227) and filled newly published 84226800..84227100 except W47N7@84226800. The new box pause 21:42:26-22:05:53 Asia/Hong_Kong (1397s) left a room_stats hole 84226971..84227289 (319 ticks; last sample 84226970@21:42:21, first after resume 84227290). Official history covers 84226971..84227200 in all five rooms (230/230). The unpublished tail 84227201..84227289 (89 ticks, chunk 84227200 still in progress at first pass) has 6 live ticks on W46N8 (84227284..84227289) and 0 on the other four rooms. Earlier holes (21:21 no-STATS 84226661..84226709; 20:46-21:06 stall 84226241..84226509) remain as previously recorded; the latter's W45N8@84226300/@84226400 404s are now outside this window.",
+  "hourly_patrol_prefilled": "The 22:25 Asia/Hong_Kong hourly patrol already wrote official history through 84227400 (ticks 84226801..84227500, missing_chunks=2: W47N7@84226800 and W45N7@84227300). The 22:35 half-hour run then wrote 84226901..84227600 except W45N7@84227300. This run's first-pass window 84227201..84227900 overlapped that range (already_in_db=10786 would_insert=7912) and filled newly published 84227600, 84227700 and 84227800 except W45N7@84227300, which stayed official 404. After the 22:40:31 no-STATS reconnect, STATS/room_stats were silent until 22:59:26, leaving a room_stats hole 84227681..84227959 (279 ticks; last 10-tick sample 84227680@22:36:40, first after resume 84227960@22:59:26). Official history covers 84227681..84227900 in W46N8, W47N8, W45N8 and W45N7 (220/220 distinct each). W47N7 official chunks 84227700 and 84227800 fetched ok but have no our creeps after 84227698 (only 18 distinct in 84227681..84227698). Unpublished tail 84227901..84227959 has no official history yet; live W47N8 resumed at 84227956. The previous box-pause hole 84227401..84227519 remains fully covered.",
   "per_room": {
     "W45N7": {
-      "distinct_first_pass": 700,
-      "distinct_final": 700,
-      "new_first_pass": 2031,
-      "new_first_pass_landed": 1411,
-      "rows_after": 2348,
-      "ticks": 700,
-      "note": "No official 404 for W45N7 in this window starting 84226501 (W45N7@84226200 is now outside). First-pass distinct=700/700 (2031 printed, 1411 landed)."
+      "distinct_first_pass": 600,
+      "distinct_final": 600,
+      "new_first_pass": 955,
+      "new_first_pass_landed": 553,
+      "rows_after": 1317,
+      "ticks": 600,
+      "note": "Official 404 at W45N7@84227300 (ticks 84227301..84227400; later bases 84227400..84227800 already published). 0 official / 0 live for the whole 100-tick hole. First-pass distinct=600/700 (955 printed, 553 landed). Probe at ~23:02 still 404. Also seen by the 22:25 patrol and the 22:35 half-hour run."
     },
     "W45N8": {
       "distinct_first_pass": 700,
       "distinct_final": 700,
-      "new_first_pass": 1909,
-      "new_first_pass_landed": 1817,
-      "rows_after": 3618,
+      "new_first_pass": 1512,
+      "new_first_pass_landed": 1183,
+      "rows_after": 3607,
       "ticks": 700,
-      "note": "No official 404 for W45N8 in this window starting 84226501 (W45N8@84226300 and W45N8@84226400 are now outside). First-pass distinct=700/700 (1909 printed, 1817 landed) including newly published 84226800..84227100."
+      "note": "No official 404 for W45N8 in this window starting 84227201 (W45N8@84226300 and W45N8@84226400 remain outside). First-pass distinct=700/700 (1512 printed, 1183 landed) including newly published 84227600..84227800."
     },
     "W46N8": {
       "distinct_first_pass": 700,
       "distinct_final": 700,
-      "new_first_pass": 2628,
-      "new_first_pass_landed": 2628,
-      "rows_after": 6955,
+      "new_first_pass": 2237,
+      "new_first_pass_landed": 2237,
+      "rows_after": 6639,
       "ticks": 700,
-      "note": "No official 404 in this window. First-pass distinct=700/700 (2628 new, all landed) including published 84226800..84227100. After the 22:05:56 self-reconnect the listener slot started on W46N8 (live from 84227284), then rotated to W47N8 before finish."
+      "note": "No official 404 in this window. First-pass distinct=700/700 (2237 new, all landed) including published 84227600..84227800. Live overflow already covered 84227601..84227686 (listener was on W46N8 until the 22:40 rotate/reconnect)."
     },
     "W47N7": {
-      "distinct_first_pass": 600,
-      "distinct_final": 600,
-      "new_first_pass": 840,
-      "new_first_pass_landed": 840,
-      "rows_after": 1427,
-      "ticks": 600,
-      "note": "Official 404 at W47N7@84226800 (ticks 84226801..84226900; later bases 84226900..84227100 already published). 0 official / 0 live for the whole 100-tick hole. First-pass distinct=600/700 (840 printed and landed). Probe at ~22:09 still 404. W47N7@84225500 and W47N7@84225700 remain outside this window."
+      "distinct_first_pass": 498,
+      "distinct_final": 498,
+      "new_first_pass": 105,
+      "new_first_pass_landed": 105,
+      "rows_after": 905,
+      "ticks": 498,
+      "note": "No official 404 for W47N7 inside this window starting 84227201 (W47N7@84226800 is now just outside, ticks 84226801..84226900). Official chunks 84227700 and 84227800 fetched ok (100 ticks each), but there are no our creeps in W47N7 for 84227699..84227900 (0 rows; max tick 84227698). Script per_room printed 700t because empty ticks still enter by_room; distinct in DB is 498/700 (400 pre through 84227600 plus 98 new ticks, 105 printed and landed). Likely w8rminers expired around 84227698 and were not replaced yet."
     },
     "W47N8": {
       "distinct_first_pass": 700,
       "distinct_final": 700,
-      "new_first_pass": 2819,
-      "new_first_pass_landed": 2819,
-      "rows_after": 6047,
+      "new_first_pass": 3103,
+      "new_first_pass_landed": 3103,
+      "rows_after": 5931,
       "ticks": 700,
-      "note": "No official 404 for W47N8 in this window starting 84226501 (W47N8@84226100 is now outside). First-pass distinct=700/700 (2819 printed and landed) including newly published 84226800..84227100. At finish the listener slot is on W47N8 (peacetime 5:5:1:1 rotation from W46N8)."
+      "note": "No official 404 for W47N8 in this window starting 84227201 (W47N8@84226100 remains outside). First-pass distinct=700/700 (3103 printed and landed) including published 84227600..84227800. Live creep_ticks had a gap after 84227600 until 84227956 (listener silent after the 22:40 reconnect until 22:59); official history filled 84227601..84227900. Live overflow 84227956.. at finish is above this window."
     }
   },
   "db_after_first_pass": {
-    "W45N7": "84226501..84227200 rows=2348 distinct=700",
-    "W45N8": "84226501..84227200 rows=3618 distinct=700",
-    "W46N8": "84226501..84227200 rows=6955 distinct=700",
-    "W47N7": "84226501..84227200 rows=1427 distinct=600",
-    "W47N8": "84226501..84227200 rows=6047 distinct=700"
+    "W45N7": "84227201..84227900 rows=1317 distinct=600",
+    "W45N8": "84227201..84227900 rows=3607 distinct=700",
+    "W46N8": "84227201..84227900 rows=6639 distinct=700",
+    "W47N7": "84227201..84227698 rows=905 distinct=498",
+    "W47N8": "84227201..84227900 rows=5931 distinct=700"
   },
   "db_after": {
-    "W45N7": "84226501..84227200 rows=2348 distinct=700",
-    "W45N8": "84226501..84227200 rows=3618 distinct=700",
-    "W46N8": "84226501..84227200 rows=6955 distinct=700",
-    "W47N7": "84226501..84227200 rows=1427 distinct=600",
-    "W47N8": "84226501..84227200 rows=6047 distinct=700"
+    "W45N7": "84227201..84227900 rows=1317 distinct=600",
+    "W45N8": "84227201..84227900 rows=3607 distinct=700",
+    "W46N8": "84227201..84227900 rows=6639 distinct=700",
+    "W47N7": "84227201..84227698 rows=905 distinct=498",
+    "W47N8": "84227201..84227900 rows=5931 distinct=700"
   },
-  "w45n7_note": "No official 404 for W45N7 inside this 40min window starting 84226501. Previous mid-window 404 W45N7@84226200 (and earlier W45N7@84225600, W45N7@84225300) remain outside. First-pass reconstructed distinct=700/700 (2031 printed, 1411 landed).",
+  "w45n7_note": "Official 404 at W45N7@84227300 inside this 40min window starting 84227201 (ticks 84227301..84227400; 0 official / 0 live). Later bases 84227400..84227800 published on the first pass. Probe at ~23:02 Asia/Hong_Kong still 404. No retry insert. Previous mid-window 404 W45N7@84226200 (and earlier W45N7@84225600, W45N7@84225300) remain outside. First-pass reconstructed distinct=600/700 (955 printed, 553 landed).",
   "w45n8_holes": {
     "W45N8@84222700": "Known official 404 remains outside this window (ticks 84222701..84222800; 0 official / 0 live). Not re-GET this run.",
     "W45N8@84220700": "Known official 404 remains further outside this window (ticks 84220701..84220800; 0 official / 0 live).",
     "W45N8@84216000": "Known official 404 remains further outside this window (ticks 84216001..84216100; 0 official / 0 live).",
-    "W45N8@84225100": "Known official 404 remains outside this window starting 84226501 (ticks 84225101..84225200; 0 official / 0 live). Not re-GET this run.",
-    "W45N8@84226300": "Known mid-window official 404 from the 21:36 run, now outside this window starting 84226501 (ticks 84226301..84226400; 0 official / 0 live). Not re-GET this run.",
-    "W45N8@84226400": "Known mid-window official 404 from the 21:36 run, now outside this window starting 84226501 (ticks 84226401..84226500; 0 official / 0 live). Not re-GET this run.",
-    "this_window": "No official 404 for W45N8 inside the 40min window starting 84226501, including published 84226800..84227100 on the first pass. First-pass distinct=700/700 (1909 printed, 1817 landed)."
+    "W45N8@84225100": "Known official 404 remains outside this window starting 84227201 (ticks 84225101..84225200; 0 official / 0 live). Not re-GET this run.",
+    "W45N8@84226300": "Known mid-window official 404 from the 21:36 run, now outside this window starting 84227201 (ticks 84226301..84226400; 0 official / 0 live). Not re-GET this run.",
+    "W45N8@84226400": "Known mid-window official 404 from the 21:36 run, now outside this window starting 84227201 (ticks 84226401..84226500; 0 official / 0 live). Not re-GET this run.",
+    "this_window": "No official 404 for W45N8 inside the 40min window starting 84227201, including published 84227600..84227800 on the first pass. First-pass distinct=700/700 (1512 printed, 1183 landed)."
   },
   "w46n8_holes": {
     "W46N8@84218200": "Known official 404 remains outside this window (ticks 84218201..84218300; 0 official / 0 live).",
     "W46N8@84217500": "Known official 404 remains further outside this window (ticks 84217501..84217600). Not re-GET this run.",
-    "this_window": "No official 404 for W46N8 inside the 40min window starting 84226501, including published 84226800..84227100 on the first pass. First-pass distinct=700/700 (2628 new, all landed)."
+    "this_window": "No official 404 for W46N8 inside the 40min window starting 84227201, including published 84227600..84227800 on the first pass. First-pass distinct=700/700 (2237 new, all landed)."
   },
   "w47n8_holes": {
     "W47N8@84213800": "Known official 404 remains outside this window (ticks 84213801..84213900; 0 official / 0 live).",
-    "W47N8@84224700": "Known official 404 remains outside this window starting 84226501 (ticks 84224701..84224800). Not re-GET this run.",
-    "W47N8@84226100": "Known mid-window official 404 from the 21:36 run, now outside this window starting 84226501 (ticks 84226101..84226200; 72 live ticks 84226101..84226172 / official hole 84226173..84226200). Not re-GET this run.",
-    "this_window": "No official 404 for W47N8 inside the 40min window starting 84226501. First-pass distinct=700/700 (2819 printed and landed) including published 84226800..84227100."
+    "W47N8@84224700": "Known official 404 remains outside this window starting 84227201 (ticks 84224701..84224800). Not re-GET this run.",
+    "W47N8@84226100": "Known mid-window official 404 from the 21:36 run, now outside this window starting 84227201 (ticks 84226101..84226200; 72 live ticks 84226101..84226172 / official hole 84226173..84226200). Not re-GET this run.",
+    "this_window": "No official 404 for W47N8 inside the 40min window starting 84227201. First-pass distinct=700/700 (3103 printed and landed) including published 84227600..84227800. Live gap 84227601..84227955 after the 22:40 reconnect was filled by official history through 84227900; live resumed at 84227956. Unpublished 84227901..84227955 still has 0 official / 0 live."
   },
   "w47n7_holes": {
-    "W47N7@84217700": "Official 404 remains (ticks 84217701..84217800; 0 live / 0 distinct). Before this window starting 84226501.",
-    "W47N7@84220200": "Official 404 remains (ticks 84220201..84220300; 0 live / 0 distinct). Before this window starting 84226501.",
-    "W47N7@84225500": "Still official 404, now outside this window starting 84226501 (ticks 84225501..84225600; 0 official / 0 live). Not re-GET this run.",
+    "W47N7@84217700": "Official 404 remains (ticks 84217701..84217800; 0 live / 0 distinct). Before this window starting 84227201.",
+    "W47N7@84220200": "Official 404 remains (ticks 84220201..84220300; 0 live / 0 distinct). Before this window starting 84227201.",
+    "W47N7@84225500": "Still official 404, now outside this window starting 84227201 (ticks 84225501..84225600; 0 official / 0 live). Not re-GET this run.",
     "W47N7@84225700": "Official 404 remains outside this window (ticks 84225701..84225800; 0 official / 0 live). Not re-GET this run.",
-    "W47N7@84226800": "Confirmed mid-window official 404 (ticks 84226801..84226900; 0 official / 0 live). Later bases 84226900..84227100 published on this first pass. Probe at ~22:09 Asia/Hong_Kong still 404. No retry insert.",
-    "this_window": "Official 404 at W47N7@84226800. First-pass distinct=600/700 (840 printed and landed) for published 84226500..84226700 and 84226900..84227100. The 100-tick gap 84226801..84226900 is a missing chunk, not empty-of-creeps."
+    "W47N7@84226800": "Known mid-window official 404 from the 22:10 run, now outside this window starting 84227201 (ticks 84226801..84226900; 0 official / 0 live). Last confirmed 404 during the 22:25 patrol. Not re-GET this run.",
+    "this_window": "No official 404 for W47N7 inside the 40min window starting 84227201. Official chunks 84227200..84227800 all fetched except none were missing; distinct in DB is 498/700 because there are no our creeps in 84227699..84227900 (0 rows, max 84227698). 105 printed and landed (ticks 84227601..84227698). The 100-tick gap 84226801..84226900 at W47N7@84226800 is now just outside this window."
   },
   "listener": {
     "ok": true,
     "single_slot": true,
     "yield": false,
     "room": "W47N8",
-    "reconnected_at": "2026-11-12 22:06:05",
-    "pid": 1902731,
+    "reconnected_at": "2026-11-12 22:58:57",
+    "pid": 1914054,
     "loop_pid": 4035476,
-    "yield_cleared_before_this_run": "metrics/listener_yield_rooms was already absent at the start of this run. Peacetime 5:5:1:1 was already rotating (seen on W46N8 after reconnect, then W47N8 before finish). Did not create or restore the yield flag, and did not change the rotation. Did not start a second listener, and did not restart war_cmd or pulse.",
-    "box_frozen_restart_at": "2026-11-12 22:05:56",
+    "yield_cleared_before_this_run": "metrics/listener_yield_rooms was already absent at the start of this run. Peacetime 5:5:1:1 was rotating; after the 22:40:31 no-STATS reconnect the slot was W47N8, and the current listener.py (pid 1914054, started 22:58:57) is still on W47N8 at finish. Did not create or restore the yield flag, and did not change the rotation. Did not start a second listener, and did not restart war_cmd or pulse.",
+    "box_frozen_restart_at": "2026-11-12 22:24:04",
+    "nostats_restart_at": "2026-11-12 22:40:32",
+    "listener_py_started_at": "2026-11-12 22:58:57",
+    "prior_box_frozen_restart_at": "2026-11-12 22:05:56",
     "prior_nostats_restart_at": "2026-11-12 21:21:52",
     "prior_stall_restart_at": "2026-11-12 21:06:14",
     "prior_ws_restart_at": "2026-11-12 20:33:01",
-    "prior_box_frozen_restart_at": "2026-11-12 20:18:24",
-    "prior_prior_box_frozen_restart_at": "2026-11-12 19:57:42",
+    "prior_prior_box_frozen_restart_at": "2026-11-12 20:18:24",
+    "prior_prior_prior_box_frozen_restart_at": "2026-11-12 19:57:42",
     "prior_prior_nostats_restart_at": "2026-11-12 19:24:37",
     "prior_prior_ws_restart_at": "2026-11-12 19:05:12",
-    "live_game_time": 84227335,
-    "live_stats_t": 84227330,
-    "live_updated": "2026-11-12 22:10:05",
+    "live_game_time": null,
+    "live_stats_t": 84228000,
+    "live_updated": "2026-11-12 23:02:57",
     "live_tail": {
-      "note": "Yield already off; peacetime live creep_ticks resumed after the 22:05:56 box-thaw self-reconnect (run_listener.sh relaunched listener.py at 22:06:05, pid 1902731). Slot started on W46N8 (live from 84227284) then rotated to W47N8 (creep_ticks max 84227335 at finish). Segment 90 was pulled by the listener itself (creep_cpu max 84227320, path_arrivals max 84227309, room_stats max 84227330 at the finish snapshot). live.json mtime kept updating and stats_t advanced, but the gameTime field in live.json stayed 84227298 with objects=0 after the W47N8 rotation; ticks and room_stats continued to be written, so this was not treated as a listener failure. No subscribe-limit this run."
+      "note": "Yield already off. After last STATS 84227680@22:36:40 the listener logged no STATS for 231s and reconnecting at 22:40:31; run_listener.sh relaunched listener.py at 22:40:32. STATS/console did not resume until 22:59:26 (room slot log at 22:59:00). The current listener.py process (pid 1914054) has ps start 22:58:57; there is no new 'restart' line in listener.out after 22:40:32 and no box_frozen line in errors.log for 22:40-22:59, so this is not recorded as a box_pause. Slot is on W47N8 (live creep_ticks resumed at 84227956; max 84228001 at finish). Segment 90 was pulled by the listener itself after the 22:59 resume (creep_cpu / path_arrivals / room_stats were already near the live tip at health check). Did not kill or relaunch the listener this run. No subscribe-limit this run."
     },
     "max_ticks": {
-      "creep_cpu": 84227320,
-      "path_arrivals": 84227309,
-      "room_stats": 84227330,
-      "creep_ticks": 84227335
+      "creep_cpu": 84227990,
+      "path_arrivals": 84227986,
+      "room_stats": 84228000,
+      "creep_ticks": 84228001
     },
-    "subscribe_limit": "No new subscribe-limit errors this run. Listener errors after 21:36: the previous process (pid 1892581, started 21:22:01 after the 21:21 no-STATS self-restart) died in the 21:42:26-22:05:53 box freeze. run_listener.sh (pid 4035476, looping since Nov 10) relaunched listener.py by itself at 22:05:56 / 22:06:05 (pid 1902731). Did not kill/relaunch or start a second slot."
+    "subscribe_limit": "No new subscribe-limit errors this run. Single peacetime slot throughout. run_listener.sh (pid 4035476, looping since Nov 10) is still the only loop. Did not kill/relaunch or start a second slot."
   },
   "last_box_pause": {
-    "from": "2026-11-12 21:42:26",
-    "to": "2026-11-12 22:05:53",
-    "sec": 1397,
-    "note": "New this run (recorded in metrics/box_pauses.jsonl). room_stats hole 84226971..84227289 (319 ticks; last 10-tick sample 84226970@21:42:21, first after resume 84227290). Official history covers 84226971..84227200 in all five rooms (230/230). Unpublished tail 84227201..84227289 has 6 live ticks on W46N8 (84227284..84227289) after the 22:05:56 reconnect, 0 on the other four rooms; next 30-min window should pick up chunk 84227200 once published."
+    "from": "2026-11-12 22:15:51",
+    "to": "2026-11-12 22:24:01",
+    "sec": 489,
+    "note": "Already recorded in the 22:35 run (and in metrics/box_pauses.jsonl). room_stats hole 84227401..84227519 (119 ticks) remains fully covered by official history in all five rooms via published chunks 84227400 and 84227500. No new box_pause was logged this run."
   },
   "last_nostats_pause": {
+    "from": "2026-11-12 22:36:40",
+    "to": "2026-11-12 22:40:31",
+    "sec": 231,
+    "note": "New this run: listener logged no STATS for 231s at 22:40:31 (last 10-tick room_stats sample 84227680@22:36:40) and run_listener.sh restarted listener.py at 22:40:32. STATS did not actually resume until 22:59:26 (tick 84227960), leaving a longer room_stats hole 84227681..84227959 (279 ticks; see stats_silence_after_2240_reconnect). Official history covers 84227681..84227900 except W47N7 has no our creeps after 84227698."
+  },
+  "stats_silence_after_2240_reconnect": {
+    "from": "2026-11-12 22:40:32",
+    "to": "2026-11-12 22:59:26",
+    "sec": 1134,
+    "note": "After the 22:40:32 no-STATS restart, no STATS/console/room_stats arrived until 22:59:26. Not logged as box_pause (errors.log has no wall/monotonic jump for this span; box_pauses.jsonl was not appended). Current listener.py pid 1914054 has ps start 22:58:57, with no extra restart line in listener.out. room_stats hole 84227681..84227959 (279 ticks). Official history covers 84227681..84227900 in W46N8/W47N8/W45N8/W45N7 (220/220); W47N7 only 84227681..84227698 (18 ticks). Unpublished tail 84227901..84227959: live W47N8 from 84227956, room_stats from 84227960. creep_cpu after the 22:59 segment pull still only had 55 distinct ticks inside 84227681..84227959."
+  },
+  "prior_nostats_2118": {
     "from": "2026-11-12 21:18:26",
     "to": "2026-11-12 21:21:52",
     "sec": 206,
-    "note": "Already recorded in the 21:36 run. room_stats hole 84226661..84226709 (49 ticks) was fully covered by official history in all five rooms."
+    "note": "Already recorded in the 21:36 run as last_nostats_pause. room_stats hole 84226661..84226709 (49 ticks) was fully covered by official history in all five rooms."
+  },
+  "prior_box_pause_2215": {
+    "from": "2026-11-12 22:15:51",
+    "to": "2026-11-12 22:24:01",
+    "sec": 489,
+    "note": "Same event as last_box_pause. Official history still covers the entire 84227401..84227519 hole in all five rooms."
+  },
+  "prior_box_pause_2142": {
+    "from": "2026-11-12 21:42:26",
+    "to": "2026-11-12 22:05:53",
+    "sec": 1397,
+    "note": "Already recorded in the 22:10 run as last_box_pause. room_stats hole 84226971..84227289 (319 ticks). Official history covers the entire hole in all five rooms, including 84227201..84227289 (chunk 84227200 published since the 22:10 run; also written by the 22:25 patrol and this window)."
   },
   "prior_box_pause_2046": {
-    "from": "2026-11-12 20:46:00",
-    "to": "2026-11-12 21:06:14",
-    "sec": 1214,
-    "note": "Already recorded in the 21:13/21:36 runs. room_stats hole 84226241..84226509 (269 ticks) still visible. Official history covered this except W45N8@84226300 and W45N8@84226400, which remain official 404s outside this window, plus the mid-window 404s W47N8@84226100 / W45N7@84226200 (partial live fill) also now outside."
+    "from": "2026-11-12 20:46:24",
+    "to": "2026-11-12 21:06:11",
+    "sec": 1187,
+    "note": "Already recorded in an earlier run."
   },
-  "brief_ws_drop_2033": "Prior ws error Connection to remote host was lost at 20:33:01, already recorded. Not repeated this run after the 22:05 box-thaw self-restart.",
+  "brief_ws_drop_2033": "Prior ws drop ~20:33, already recorded.",
   "prior_box_pause_2011": {
     "from": "2026-11-12 20:11:21",
     "to": "2026-11-12 20:18:24",
     "sec": 423,
-    "note": "Already recorded in the 20:38 run. room_stats hole 84225791..84225899 (109 ticks) still visible. Official history covered this except W47N7@84225700, which remains official 404 outside this window."
+    "note": "Already recorded in an earlier run."
   },
   "prior_box_pause_1944": {
     "from": "2026-11-12 19:44:54",
     "to": "2026-11-12 19:57:42",
     "sec": 768,
-    "note": "Already recorded in the 20:04 run. room_stats hole 84225431..84225619 (189) still visible. Official history covered this except W47N7@84225500, which remains official 404 outside this window."
+    "note": "Already recorded in an earlier run."
   },
-  "brief_nostats_1924": "Prior no-STATS reconnect at 19:24:37, already recorded. Not repeated this run.",
-  "brief_ws_drop_1905": "Prior ws error at 19:05:12, already recorded. Not repeated this run.",
-  "prior_box_pause_1741": "See previous history_backfill.json; older than this run's 40min window.",
-  "prior_box_pause_1716": "See previous history_backfill.json; older than this run's 40min window.",
-  "prior_box_pause_1645": "See previous history_backfill.json; older than this run's 40min window.",
-  "prior_box_pause_1545": "See previous history_backfill.json; older than this run's 40min window.",
+  "brief_nostats_1924": "Prior no-STATS at 19:24, already recorded.",
+  "brief_ws_drop_1905": "Prior ws drop ~19:05, already recorded.",
+  "prior_box_pause_1741": {
+    "from": "2026-11-12 17:41:41",
+    "to": "2026-11-12 18:00:58",
+    "sec": 1148,
+    "note": "Already recorded in an earlier run."
+  },
+  "prior_box_pause_1716": {
+    "from": "2026-11-12 17:16:13",
+    "to": "2026-11-12 17:24:03",
+    "sec": 463,
+    "note": "Already recorded in an earlier run."
+  },
+  "prior_box_pause_1645": {
+    "from": "2026-11-12 16:45:20",
+    "to": "2026-11-12 17:01:43",
+    "sec": 983,
+    "note": "Already recorded in an earlier run."
+  },
+  "prior_box_pause_1545": "Prior box pause ~15:45, already recorded.",
   "brief_ws_drop_1435": "Prior ws drop ~14:35, already recorded.",
   "prior_nostats_1445": "Prior no-STATS at 14:45, already recorded.",
-  "w45n8_84222700_confirm_get": "Not re-GET this run (outside the 40min window starting 84226501)."
+  "w45n8_84222700_confirm_get": "Not re-GET this run (outside the 40min window starting 84227201)."
 }
