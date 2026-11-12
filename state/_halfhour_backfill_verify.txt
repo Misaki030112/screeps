@@ -1,64 +1,26 @@
-1984256 Fri Nov 13 03:03:00 2026       04:45 .venv/bin/python tools/listener.py
-4035476 Tue Nov 10 05:30:54 2026  2-21:36:51 /bin/bash tools/run_listener.sh
-verify 2026-11-13 03:07:46 Asia/Hong_Kong
-live.updated 2026-11-13 03:07:43 roomSlot W47N8 gameTime None stats.t 84231140
-rot {'i': 1, 'room': 'W47N8', 'left': 320.0, 'at': '2026-11-13 03:07:44'}
-yield False
-listener pids:
---- max tables ---
-  creep_ticks: min=83609908 max=84231141 count=6341914
-  room_stats: min=83594467 max=84231140 count=50222
-  creep_cpu: min=83609905 max=84231130 count=2370187
-  path_arrivals: min=83609919 max=84231126 count=62062
---- first-pass official window 84230301..84231000 ---
-  W45N7 ticks=84230301..84231000 rows=2233 distinct=627
-  W45N8 ticks=84230301..84231000 rows=3344 distinct=700
-  W46N8 ticks=84230301..84231000 rows=6556 distinct=616
-  W47N7 ticks=84230301..84231000 rows=3416 distinct=700
-  W47N8 ticks=84230301..84231000 rows=13537 distinct=700
-  unique (creep,tick)=29086
---- overlap with previous official (through 84230500 chunk) 84230301..84230600 ---
-  W45N7 ticks=84230301..84230600 rows=977 distinct=300
-  W45N8 ticks=84230301..84230600 rows=1641 distinct=300
-  W46N8 ticks=84230301..84230600 rows=3105 distinct=300
-  W47N7 ticks=84230301..84230600 rows=1171 distinct=300
-  W47N8 ticks=84230301..84230600 rows=5872 distinct=300
-  unique (creep,tick)=12766
---- extended incl new 84231000 chunk 84230401..84231100 ---
-  W45N7 ticks=84230401..84231100 rows=2344 distinct=627
-  W45N8 ticks=84230401..84231100 rows=3293 distinct=700
-  W46N8 ticks=84230401..84231100 rows=6231 distinct=616
-  W47N7 ticks=84230401..84231100 rows=3781 distinct=700
-  W47N8 ticks=84230401..84231100 rows=12083 distinct=622
-  unique (creep,tick)=27732
---- per official chunk (tick = base+1 .. base+100) rows/distinct ---
-  84230300 (84230301..84230400) W45N7:266r/100t W45N8:496r/100t W46N8:1225r/100t W47N7:409r/100t W47N8:1847r/100t
-  84230400 (84230401..84230500) W45N7:242r/100t W45N8:680r/100t W46N8:933r/100t W47N7:410r/100t W47N8:1918r/100t
-  84230500 (84230501..84230600) W45N7:469r/100t W45N8:465r/100t W46N8:947r/100t W47N7:352r/100t W47N8:2107r/100t
-  84230600 (84230601..84230700) W45N7:62r/27t W45N8:484r/100t W46N8:161r/16t W47N7:504r/100t W47N8:1936r/100t
-  84230700 (84230701..84230800) W45N7:341r/100t W45N8:444r/100t W46N8:1117r/100t W47N7:649r/100t W47N8:1824r/100t
-  84230800 (84230801..84230900) W45N7:394r/100t W45N8:374r/100t W46N8:1150r/100t W47N7:616r/100t W47N8:1760r/100t
-  84230900 (84230901..84231000) W45N7:459r/100t W45N8:401r/100t W46N8:1023r/100t W47N7:476r/100t W47N8:2145r/100t
-  84231000 (84231001..84231100) W45N7:377r/100t W45N8:445r/100t W46N8:900r/100t W47N7:774r/100t W47N8:393r/22t
---- hole 84230601..84230700 tick coverage ---
-  W46N8 have=16 missing=84 have_spans=[(84230685, 84230700)] miss_spans=[(84230601, 84230684)]
-  W45N7 have=27 missing=73 have_spans=[(84230658, 84230684)] miss_spans=[(84230601, 84230657), (84230685, 84230700)]
-  W47N8 have=100 missing=0 have_spans=[(84230601, 84230700)] miss_spans=[]
-  W45N8 have=100 missing=0 have_spans=[(84230601, 84230700)] miss_spans=[]
-  W47N7 have=100 missing=0 have_spans=[(84230601, 84230700)] miss_spans=[]
---- live tails (min/max/rows/distinct from 84230301, no upper cap) ---
-  W45N7 ticks=84230301..84231100 rows=2610 distinct=727
-  W45N8 ticks=84230301..84231100 rows=3789 distinct=800
-  W46N8 ticks=84230301..84231100 rows=7456 distinct=716
-  W47N7 ticks=84230301..84231100 rows=4190 distinct=800
-  W47N8 ticks=84230301..84231142 rows=14692 distinct=764
---- room_stats gaps after 84230600 ---
-  unique 23 first 84230600 last 84231140
-  gaps>10 [(84230750, 84231080, 330, '2026-11-13 03:03:13.978937+08:00')]
---- previous official window 84229901..84230600 still ---
-  W45N7 ticks=84229901..84230600 rows=2011 distinct=700
-  W45N8 ticks=84229901..84230600 rows=3649 distinct=700
-  W46N8 ticks=84229901..84230600 rows=6629 distinct=700
-  W47N7 ticks=84229901..84230600 rows=2330 distinct=700
-  W47N8 ticks=84229901..84230600 rows=12481 distinct=700
-ok verify
+first-pass window 84231101..84231800 rows=28066 unique_creep_tick=28066
+per_room
+  W45N7 84231101..84231800 rows=2168 distinct=700
+  W45N8 84231101..84231800 rows=3007 distinct=700
+  W46N8 84231101..84231800 rows=6842 distinct=700
+  W47N7 84231101..84231797 rows=1835 distinct=600
+  W47N8 84231101..84231800 rows=14214 distinct=700
+overlap 84231101..84231400
+  W45N7 84231101..84231400 rows=945 distinct=300
+  W45N8 84231101..84231400 rows=1149 distinct=300
+  W46N8 84231101..84231400 rows=3067 distinct=300
+  W47N7 84231101..84231400 rows=972 distinct=300
+  W47N8 84231101..84231400 rows=6390 distinct=300
+chunks
+  84231100 {'W45N7': '409r/100t', 'W45N8': '301r/100t', 'W46N8': '815r/100t', 'W47N7': '324r/100t', 'W47N8': '2197r/100t'}
+  84231200 {'W45N7': '260r/100t', 'W45N8': '327r/100t', 'W46N8': '1249r/100t', 'W47N7': '296r/100t', 'W47N8': '2146r/100t'}
+  84231300 {'W45N7': '276r/100t', 'W45N8': '521r/100t', 'W46N8': '1003r/100t', 'W47N7': '352r/100t', 'W47N8': '2047r/100t'}
+  84231400 {'W45N7': '327r/100t', 'W45N8': '462r/100t', 'W46N8': '891r/100t', 'W47N7': '367r/100t', 'W47N8': '1797r/100t'}
+  84231500 {'W45N7': '312r/100t', 'W45N8': '429r/100t', 'W46N8': '959r/100t', 'W47N7': '365r/100t', 'W47N8': '1794r/100t'}
+  84231600 {'W45N7': '304r/100t', 'W45N8': '468r/100t', 'W46N8': '976r/100t', 'W47N7': '91r/60t', 'W47N8': '2154r/100t'}
+  84231700 {'W45N7': '280r/100t', 'W45N8': '499r/100t', 'W46N8': '949r/100t', 'W47N7': '40r/40t', 'W47N8': '2079r/100t'}
+W47N7 100 empty-of-our-creeps ticks (not a 404): 84231660..84231698 (39), 84231700..84231718 (19), evens 84231720..84231796 (39), 84231798..84231800 (3)
+W47N8@84231000 still official 404 (now outside window); live-only 393r/22t ticks 84231079..84231100; official/live hole 84231001..84231078
+live tail: W46N8 84231830..84231849 after resume then rotation; W47N8 84231850..84231872 (slot on W47N8); W45N8/W45N7/W47N7 no tail past 84231800
+post-pause official/live hole still unpublished: 84231801..84231829 (in-progress 84231800)
+inserted_landed=14563 ts_realigned=88 missing=none (in-window)
