@@ -235,7 +235,9 @@ function sense(r) {
   const o = { vis: !!room, inv: [], players: 0, hereP: 0, work: 0, reserved: reservedByUs(r), core: false, hurtNoInv: false, bucket: Game.cpu.bucket, armed: armed(r),
     cap: capE || availE || 0,
     // Pile not full: the max body may still be unpaid. step() will not readyTimeout on this.
-    short: !!(capE && availE < capE) };
+    // nearFull (cap-100, same as spawn.nearFull) is payable (planDefender sizes the kite to
+    // avail) so it must not block readyTimeout — home 31,34 can leave ea parked at 5500/5600.
+    short: !!(capE && availE < capE - 100) };
   // guardOnly (W47N7): hostiles in the colony room are that room's own defence. Counting them here would
   // WAIT-player the remote forever while BustJetter sits on the W47N8 seal.
   const scan = (C.guardOnly || C.dynamic) ? [r] : [r, C.home].concat(C.via || []);

@@ -413,10 +413,17 @@ function planDefender(room) {
   const judged = require('../utils/squad').judge(th.last, th.mission);
   if (have >= 1 && judged < 2 && !extrasOk(room)) return null;
   const cap = room.energyCapacityAvailable || 1300;
+  const avail = room.energyAvailable || 0;
   // Always the max body for this room's energyCapacityAvailable. A short energyAvailable used to
   // shrink body #1 (ea ~4680 → a partial kite, or a 1300 core buster). The spawn waits, queen and
   // haulers fill extensions, and the body starts the tick the pile can pay for it.
-  const ord = defenderOrder(g, cap);
+  // Exception: nearFull (cap-100). Home extension 31,34 is boxed in after RCL7 stamp growth
+  // (roles/queen.js, tests/queen_stamp_b_reach.js) so queens never fill it and ea parks at
+  // 5500/5600. Waiting for exact cap deadlocks body #1, keeps threat.holding (upgraders freeze)
+  // and used to skip readyTimeout (sense.short was avail<cap). Size the kite to the payable
+  // near-full pile (5500 → 18 RA / 6 H / 24 M = 5400). A 4680 pile still waits for 5600.
+  const budget = nearFull(avail, cap) ? Math.max(avail, 1300) : cap;
+  const ord = defenderOrder(g, budget);
   const cost = _.sum(ord.body, p => BODYPART_COST[p]);
   // Any body we are actually going to spawn holds the rest of the queue until it can be paid.
   // Extras that the 15k / softCap floors refuse never get here (returned null above).
@@ -546,6 +553,7 @@ function run1(spawn, onWait) {
       if (rv === OK) threat.noteSpawn(planD.remote, name); return rv; }
     if (planD.hold) { // body #1: queen may refill; nothing else spends the pile
       if (!(alive.queen || 0) && !(alive.filler || 0)) return go('queen', B.queen(Math.max(300, avail)));
+      if (typeof onWait === 'function') onWait('defender', planD.cost, avail);
       return ERR_BUSY;
     }
   }

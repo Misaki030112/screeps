@@ -96,6 +96,17 @@ assert.strictEqual(S.extrasOk(Object.assign({}, soft, { storage: { store: { ener
     assert.strictEqual(planSoft.cost, 5600, 'body #1 is the max recipe, not ea 4680');
     assert.strictEqual(planSoft.body.length, 50);
     assert.strictEqual(planSoft.hold, true);
+    // nearFull (5500/5600): home ext 31,34 is unfillable; size to the payable pile, do not deadlock.
+    const near = Object.assign({}, softRoom, { energyAvailable: 5500 });
+    const planNear = S.planDefender(near);
+    assert.ok(planNear, 'plan #1 when the pile is nearFull');
+    assert.strictEqual(planNear.cost, 5400, 'nearFull 5500/5600 sizes the kite to 18RA+6H+24M, not 5600');
+    assert.strictEqual(planNear.body.filter(p => p === RANGED_ATTACK).length, 18);
+    assert.strictEqual(planNear.body.filter(p => p === HEAL).length, 6);
+    assert.strictEqual(planNear.body.filter(p => p === MOVE).length, 24);
+    assert.strictEqual(planNear.hold, true);
+    const planFull = S.planDefender(Object.assign({}, softRoom, { energyAvailable: 5600 }));
+    assert.strictEqual(planFull.cost, 5600, 'a truly full pile still gets the 19RA max kite');
     T.squadAlive = () => 1;
     T.squadSize = () => 2;
     const blocked = S.planDefender(softRoom);
