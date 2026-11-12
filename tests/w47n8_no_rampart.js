@@ -77,3 +77,112 @@ assert.strictEqual(W.rampHold(roomSoft), null, 'all at SOFT_RAMP: nothing');
 assert.strictEqual(Memory.ops.w8hold.towR, 48000, 'hold never raised by soft path');
 assert.ok(Memory.ops.w8soft && Memory.ops.w8soft.tgt === 100000, 'w8soft observability');
 console.log('w47n8 soft ramp staging ok');
+
+// 11-12: lab/factory covers are held at 300k (not KEY, so the old hold ignored them) and are not raised by w8key.
+Memory.ops = {}; Game.time = 50;
+global.LOOK_CONSTRUCTION_SITES = 'lc';
+global.STRUCTURE_LAB = 'lab'; global.STRUCTURE_FACTORY = 'factory';
+const labR = { id: 'labR', structureType: 'rampart', hits: 1, pos: { x: 29, y: 38 } };
+const facR = { id: 'facR', structureType: 'rampart', hits: 1, pos: { x: 35, y: 30 } };
+const bare = { id: 'bare', structureType: 'rampart', hits: 1, pos: { x: 36, y: 31 } };
+const keyRs = [
+  { id: 'spawnR', structureType: 'rampart', hits: 100000, pos: { x: 34, y: 30 } },
+  { id: 'towR', structureType: 'rampart', hits: 100000, pos: { x: 33, y: 35 } },
+  { id: 'storR', structureType: 'rampart', hits: 100000, pos: { x: 35, y: 32 } },
+];
+const indStructs = [
+  { structureType: 'spawn', pos: { x: 34, y: 30 } },
+  { structureType: 'tower', pos: { x: 33, y: 35 } },
+  { structureType: 'storage', pos: { x: 35, y: 32 } },
+  { structureType: 'lab', pos: { x: 29, y: 38 } },
+];
+const indSites = [{ structureType: 'factory', pos: { x: 35, y: 30 } }];
+const indRoom = {
+  storage: { store: { energy: 9000 } },
+  find: () => keyRs.concat([labR, facR, bare]),
+  lookForAt: (k, x, y) => {
+    if (k === LOOK_CONSTRUCTION_SITES) return indSites.filter(s => s.pos.x === x && s.pos.y === y);
+    return indStructs.filter(s => s.pos.x === x && s.pos.y === y);
+  },
+};
+assert.strictEqual(W.rampNeeded(indRoom, labR), true, 'lab cover is held');
+assert.strictEqual(W.rampNeeded(indRoom, facR), true, 'factory site cover is held before the building exists');
+assert.strictEqual(W.rampNeeded(indRoom, bare), false, 'empty rampart still decays');
+assert.strictEqual(W.rampHold(indRoom).id, labR.id, '1-hit lab cover is repaired (else 300/100t deletes it)');
+labR.hits = 100000; facR.hits = 100000;
+assert.strictEqual(W.rampHold(indRoom).id, labR.id, 'lowest industry cover continues past SOFT_RAMP');
+labR.hits = 300000; facR.hits = 250000;
+assert.strictEqual(W.rampHold(indRoom).id, facR.id, 'the cover still under 300k is next');
+facR.hits = 300000;
+assert.strictEqual(W.rampHold(indRoom), null, 'both covers stop at 300k');
+Memory.defense = { w8key: 1000000 };
+labR.hits = 300000; facR.hits = 400000;
+keyRs.forEach(r => { r.hits = 1000000; });
+assert.strictEqual(W.rampHold(indRoom), null, 'w8key=1M does not pull a lab/factory cover past 300k');
+facR.hits = 299000;
+assert.strictEqual(W.rampHold(indRoom).id, facR.id, 'decay below 300k is repaired again');
+Memory.ops.w8threat = Game.time;
+facR.hits = 1;
+assert.strictEqual(W.rampHold(indRoom).id, facR.id, 'local threat does not let a fresh cover decay away');
+delete Memory.ops.w8threat;
+delete Memory.defense;
+console.log('w47n8 lab/factory 300k hold ok');
+
+// Parent-placed rampart sites over a lab/factory survive layoutRun. Empty rampart sites still go.
+// placeKeyRamps does not invent a cover (lab/factory stay out of KEY).
+global.STRUCTURE_EXTENSION = 'extension';
+global.STRUCTURE_CONTAINER = 'container';
+global.STRUCTURE_ROAD = 'road';
+global.STRUCTURE_WALL = 'constructedWall';
+global.STRUCTURE_LINK = 'link';
+global.STRUCTURE_TERMINAL = 'terminal';
+global.STRUCTURE_EXTRACTOR = 'extractor';
+global.FIND_MY_CONSTRUCTION_SITES = 114;
+global.FIND_MY_SPAWNS = 112;
+global.FIND_STRUCTURES = 107;
+global.FIND_HOSTILE_CREEPS = 3;
+global.FIND_MINERALS = 116;
+global.OK = 0;
+global.ERR_RCL_NOT_ENOUGH = -14;
+Game.time = 80;
+Game.creeps = {};
+const rampSite = { structureType: 'rampart', pos: { x: 29, y: 38 }, remove() { this.gone = true; } };
+const facSite = { structureType: 'rampart', pos: { x: 35, y: 30 }, remove() { this.gone = true; } };
+const junkSite = { structureType: 'rampart', pos: { x: 10, y: 10 }, remove() { this.gone = true; } };
+const labSite = { structureType: 'lab', pos: { x: 29, y: 38 }, progress: 0, progressTotal: 50000 };
+const factorySite = { structureType: 'factory', pos: { x: 35, y: 30 }, progress: 0, progressTotal: 100000 };
+const liveSites = [rampSite, facSite, junkSite, labSite, factorySite];
+const made = [];
+const sp = { structureType: 'spawn', my: true, pos: { x: 34, y: 30, inRangeTo: () => false }, store: { energy: 300 } };
+const layRoom = {
+  name: 'W47N8',
+  controller: { level: 7, progress: 0, progressTotal: 1000, ticksToDowngrade: 100000 },
+  storage: { store: { energy: 30000 } },
+  energyAvailable: 5600, energyCapacityAvailable: 5600,
+  memory: {},
+  find: (t, o) => {
+    let a = [];
+    if (t === FIND_MY_CONSTRUCTION_SITES) a = liveSites;
+    else if (t === FIND_MY_SPAWNS || t === FIND_MY_STRUCTURES) a = [sp];
+    else if (t === FIND_STRUCTURES) a = [sp];
+    return o && o.filter ? a.filter(o.filter) : a;
+  },
+  lookForAt: (k, x, y) => {
+    if (k === LOOK_CONSTRUCTION_SITES) return liveSites.filter(s => s.pos.x === x && s.pos.y === y);
+    if (x === 34 && y === 30) return [sp];
+    return [];
+  },
+  createConstructionSite: (x, y, t) => { made.push(t + ' ' + x + ',' + y); return OK; },
+  getTerrain: () => ({ get: () => 0 }),
+};
+Memory.ops = { w8layout: 'approved' };
+W.layoutRun(layRoom);
+assert.ok(!rampSite.gone, 'rampart site over a lab site is kept');
+assert.ok(!facSite.gone, 'rampart site over a factory site is kept');
+assert.ok(junkSite.gone, 'empty rampart site is still removed');
+assert.ok(!labSite.gone && !factorySite.gone, 'lab and factory sites are not rampart-stripped');
+assert.ok(!made.some(s => s === 'rampart 29,38' || s === 'rampart 35,30'), 'no auto rampart over the lab or factory: ' + made.join(';'));
+const Cfg = require(path.join(d, 'config.js'));
+assert.strictEqual(Cfg.RCL7_INDUSTRY, false);
+assert.strictEqual(Cfg.RCL6_LABS, false);
+console.log('w47n8 lab/factory rampart sites kept ok');

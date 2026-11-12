@@ -6,6 +6,37 @@
 const plan = require('../utils/plan'), rc = require('../utils/roomcache'), cmd = require('../utils/cmd');
 const FIRE_FLOOR = 300; // keep for emergencies (docs/DEFENSE.md)
 const RAMPART_TARGET = [0, 0, 0, 20000, 50000, 100000, 300000, 1000000, 3000000], RAMPART_FLOOR = 5000;
+// New lab/factory covers stop at the RCL6 rampart target. The RCL7 room target is 1e6 and rampHW ratchets
+// toward it (~865k live), which would pull a fresh 1-hit cover up with the rest of the room. Covers already
+// well above 300k (the three built W46N8 labs, ~1M) stay on the room target. A repair tick cannot cross this gap.
+const IND_RAMP = 300000, IND_LEGACY = 500000;
+let indKeys = null;
+function industryKeys() {
+  if (indKeys) return indKeys;
+  indKeys = new Set();
+  const P = plan.get('W46N8'), rcl = P && P.raw && P.raw.rcl;
+  if (!rcl) return indKeys;
+  for (const lv of Object.values(rcl)) for (const t of ['lab', 'factory']) for (const [x, y] of (lv[t] || [])) indKeys.add(x * 50 + y);
+  return indKeys;
+}
+function indType(t) { return t === 'lab' || t === 'factory'; }
+// Cover of a lab/factory: the structure, its construction site, or a planned lab/factory tile (the rampart
+// finishes in one energy, long before the 50k building, and decays 300 hits / 100t if nothing claims it).
+function industryTile(room, x, y) {
+  if (x == null || y == null) return false;
+  if (industryKeys().has(x * 50 + y)) return true;
+  if (!room || !room.lookForAt) return false;
+  const hit = list => list && list.some(s => s && indType(s.structureType));
+  if (hit(room.lookForAt(LOOK_STRUCTURES, x, y))) return true;
+  if (typeof LOOK_CONSTRUCTION_SITES !== 'undefined' && hit(room.lookForAt(LOOK_CONSTRUCTION_SITES, x, y))) return true;
+  return false;
+}
+// Hits cap for one rampart. Non-covers and legacy covers (already on the 1M path) use the RCL target.
+function coverTarget(room, s, rclT) {
+  if (!s || !s.pos || !industryTile(room, s.pos.x, s.pos.y)) return rclT;
+  if ((s.hits || 0) >= IND_LEGACY) return rclT;
+  return Math.min(rclT, IND_RAMP);
+}
 // Growth throttle: a rampart already above the previous RCL's target is only "growing" -> repair it every 5th tick (<= 2 e/t per
 // tower). At RCL5, 2 towers x 10 e/t would pour ~10.6k energy (17 ramparts 50k->100k) into walls while tower/extension sites
 // and upgraders need it (docs/RCL5.md). Fresh/damaged ramparts below the previous target still get full speed.
@@ -23,7 +54,7 @@ function upkeep(P, roomName, s) {
   if (P.any[plan.key(s.pos.x, s.pos.y)]) return true;
   return s.structureType === STRUCTURE_ROAD && roomName === 'W46N8' && require('./roads').isHomeTile(s.pos.x, s.pos.y);
 }
-module.exports = { growthPaused, upkeep, run(room) {
+module.exports = { growthPaused, upkeep, coverTarget, IND_RAMP, IND_LEGACY, run(room) {
   const towers = rc.all(room, STRUCTURE_TOWER);
   if (!towers.length) return;
   if (room.memory.drain && Game.time % 100 === 0 && !room.find(FIND_HOSTILE_CREEPS).length) require('../utils/focus').track(room.memory.drain, [], Game.time);
@@ -54,22 +85,35 @@ module.exports = { growthPaused, upkeep, run(room) {
   if (Game.time % 10 === 0) {
     const P = plan.get(room.name), st = room.storage;
     const funded = !st || st.store[RESOURCE_ENERGY] >= require('./threat').reserve(room.name);
-    const target = funded ? RAMPART_TARGET[room.controller.level] : Math.min(RAMPART_FLOOR, RAMPART_TARGET[room.controller.level]);
+    const lvl = room.controller.level, rclT = RAMPART_TARGET[lvl] || 0;
+    // Per-rampart cap. Lab/factory covers use 300k unless already on the legacy 1M path (coverTarget).
+    // Unfunded storage still only holds the floor, and v4 gate ramparts stay builder work (walls.js).
+    const W = require('./walls');
+    const capFor = s => {
+      if (s.structureType !== STRUCTURE_RAMPART) return s.hitsMax;
+      let t = coverTarget(room, s, rclT);
+      if (!funded) t = Math.min(RAMPART_FLOOR, t);
+      if (W.planned(P, s.pos.x, s.pos.y, STRUCTURE_RAMPART)) t = Math.min(RAMPART_FLOOR, t);
+      return t;
+    };
     const hurt = require('../utils/focus').healPick(room.find(FIND_MY_CREEPS), true); // 18:00 (Misaki): peacetime -> heal any damaged creep to full
     mem.towerHeal = hurt ? hurt.id : undefined;
-    // v4 gate ramparts: towers only keep them alive (FLOOR); hits steps are builder work from the wall fund (managers/walls.js)
-    const W = require('./walls');
-    const cand = rc.all(room, STRUCTURE_RAMPART).filter(s => s.hits < (W.planned(P, s.pos.x, s.pos.y, STRUCTURE_RAMPART) ? Math.min(RAMPART_FLOOR, target) : target) && plan.rampartWanted(P, room, s.pos.x, s.pos.y))
+    const rampKeep = s => plan.rampartWanted(P, room, s.pos.x, s.pos.y) || industryTile(room, s.pos.x, s.pos.y);
+    const cand = rc.all(room, STRUCTURE_RAMPART).filter(s => s.hits < capFor(s) && rampKeep(s))
       .concat(rc.all(room, STRUCTURE_ROAD).concat(rc.all(room, STRUCTURE_CONTAINER)).filter(s => upkeep(P, room.name, s)));
     // Misaki 20:12: ramparts must never decay, independent of the storage reserve. Ratchet a high-water floor (>=150k, capped at
     // the RCL target) and let towers (energy > 600) top up any rampart below it; decay costs ~3 hits/t per rampart (tiny).
+    // 11-12: a new lab/factory cover is not part of that ratchet. rampHW is already ~865k; folding a 1-hit cover into it
+    // would repair the cover toward 1e6 once every other rampart is at the RCL target. Legacy covers (cap == rclT) stay in.
     const rs = rc.all(room, STRUCTURE_RAMPART);
     if (rs.length) {
-      const mn = Math.min(...rs.map(s => s.hits));
-      mem.rampHW = Math.min(RAMPART_TARGET[room.controller.level], Math.max(mem.rampHW || 0, 150000, mn));
-      mem.rampFloorRep = cand.length ? undefined : (rs.filter(s => s.hits < mem.rampHW).sort((a, b) => a.hits - b.hits)[0] || {}).id;
+      const grow = rs.filter(s => coverTarget(room, s, rclT) >= rclT);
+      const pool = grow.length ? grow : rs;
+      const mn = Math.min(...pool.map(s => s.hits));
+      mem.rampHW = Math.min(rclT, Math.max(mem.rampHW || 0, 150000, mn));
+      mem.rampFloorRep = cand.length ? undefined : (rs.filter(s => coverTarget(room, s, rclT) >= rclT && s.hits < mem.rampHW).sort((a, b) => a.hits - b.hits)[0] || {}).id;
     }
-    mem.towerRep = cand.length ? _.min(cand, s => s.hits / (s.structureType === STRUCTURE_RAMPART ? target : s.hitsMax)).id : undefined;
+    mem.towerRep = cand.length ? _.min(cand, s => s.hits / capFor(s)).id : undefined;
   }
   const heal = mem.towerHeal && Game.getObjectById(mem.towerHeal);
   const rep = mem.towerRep && Game.getObjectById(mem.towerRep);

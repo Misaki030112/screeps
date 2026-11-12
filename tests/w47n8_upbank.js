@@ -38,7 +38,7 @@ put(L.ORDER.tower[1][0], L.ORDER.tower[1][1], 'tower');
 put(L.ORDER.tower[2][0], L.ORDER.tower[2][1], 'tower');
 put(L.ORDER.terminal[0][0], L.ORDER.terminal[0][1], 'terminal');
 put(C.MINERAL_CONT[0], C.MINERAL_CONT[1], 'container', { energy: 0 });
-let hostiles = [];
+let hostiles = [], sites = [];
 const room = {
   name: 'W47N8',
   energyAvailable: 5600,
@@ -50,6 +50,7 @@ const room = {
   lookForAt: (k, x, y) => (k === LOOK_STRUCTURES ? (cells[x * 50 + y] || []) : []),
   find: (t) => {
     if (t === FIND_HOSTILE_CREEPS) return hostiles;
+    if (t === FIND_MY_CONSTRUCTION_SITES) return sites;
     return [];
   },
 };
@@ -245,5 +246,54 @@ function pair() {
   assert.ok(ordered.spawned.some(m => m.role === 'hauler'), 'commander spawn runs inside the idle window');
   assert.ok(Memory.ops.w8sg.passes >= 1, 'sibling spawn still plans while commander is armed');
   cmd.disarm();
+}
+
+// 11-12: open construction sites cap RCL7 upgraders at 1. The 40k latch and threatSoft return when the sites are gone.
+{
+  Game.time = 500000;
+  const site = { structureType: 'lab', pos: { x: 29, y: 38 }, progress: 0, progressTotal: 50000 };
+  sites = [site];
+  boot(45000, 2, { w8up: { on: 1, since: 1 }, w8day: { leanBank: 0, softE: 0 } });
+  W.dayObs(room);
+  assert.strictEqual(Memory.ops.w8day.upgCeil, 1, 'sites: ceil 1 even after the 40k latch');
+  assert.strictEqual(Memory.ops.w8day.upgKeep, 1, 'sites: keep 1');
+  assert.strictEqual(Memory.ops.w8day.upLatched, 1, 'latch itself stays');
+  assert.strictEqual((Memory.ops.w8recycle || []).length, 1, '2 upgraders trim to 1 while sites are up');
+  assert.strictEqual(W.upgTarget(room), 1);
+  const s = pair();
+  W.spawnRun(s.a);
+  assert.ok(!s.spawned.some(m => m.role === 'w8upgrader'), 'latched + sites does not spawn a 2nd or 3rd');
+
+  boot(45000, 0, { w8up: { on: 1, since: 1 }, w8day: { leanBank: 0, softE: 0 } });
+  const s0 = pair();
+  W.spawnRun(s0.a);
+  assert.strictEqual(s0.spawned.filter(m => m.role === 'w8upgrader').length, 1, 'sites still allow the one upgrader');
+
+  boot(26000, 2, { w8day: { leanBank: 0, softE: 0 } });
+  W.dayObs(room);
+  assert.strictEqual(Memory.ops.w8day.upLatched, 0);
+  assert.strictEqual(Memory.ops.w8day.upgCeil, 1, 'unsticky + sites is 1, not 2');
+  assert.strictEqual(W.upgTarget(room), 1);
+
+  sites = [];
+  boot(45000, 2, { w8up: { on: 1, since: 1 }, w8day: { leanBank: 0, softE: 0 } });
+  delete Memory.ops.w8recycle;
+  W.dayObs(room);
+  assert.strictEqual(Memory.ops.w8day.upgCeil, 3, 'sites gone: 40k latch keep is 3 again');
+  assert.strictEqual(Memory.ops.w8day.upLatched, 1);
+  assert.strictEqual((Memory.ops.w8recycle || []).length, 0, '2 upgraders under a keep of 3 are not trimmed');
+  const s3 = pair();
+  W.spawnRun(s3.a);
+  assert.strictEqual(s3.spawned.filter(m => m.role === 'w8upgrader').length, 1, 'sites gone: latched bank starts the 3rd');
+
+  boot(26000, 2, { w8day: { leanBank: 0, softE: 0 } });
+  W.dayObs(room);
+  assert.strictEqual(Memory.ops.w8day.upgCeil, 2, 'sites gone and unsticky: keep stays 2');
+  Memory.ops.w8threat = Game.time;
+  room.storage.store.energy = 50000;
+  Memory.ops.w8up = { on: 1, since: 1 };
+  W.dayObs(room);
+  assert.strictEqual(Memory.ops.w8day.upgCeil, 2, 'sites gone: threatSoft still caps at 2');
+  delete Memory.ops.w8threat;
 }
 console.log('w47n8 upbank ok');
