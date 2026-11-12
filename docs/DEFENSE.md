@@ -130,6 +130,10 @@ Full timeline: **`docs/DEFENSE_NOVICE.md`**.
 - [ ] Confirm safe-mode decision tree with Misaki (when she would activate)
 - [ ] 2026-10-25 deadline review (guards / minerals / W45N7 / step 2)
 
+## Owned-room spawn (2026-11-12)
+
+W46N8 and W47N8 spawn defenders when a hostile in the room has ATTACK, RANGED_ATTACK, HEAL, or WORK. A TOUGH/MOVE/CARRY tourist does not (the 16:12 W47N8 sample was one unidentified hostile tick and no body; it stays a non-event). The old `Memory.defense.guards` switch no longer suppresses that spawn. The body is the RCL7 max kite (19 RA + 25 MOVE + 6 HEAL at a 5600 cap) in W46N8, and the max melee gate guard in W47N8. Count follows the remote squad table (1, or 2 with a pair/healer, 3 for ≥6 RA or a boosted pair, 4 for a wave of 4). While the body is unpaid, other spawns wait and carriers fill extensions, then towers.
+
 ## Home defense (2026-10-16, BustJetter squad 2x RA + 6 HEAL in W47N8)
 - **Towers** (`utils/focus.js`, `managers/tower.js`): all towers fire one target. net = tower dmg at range (600 ≤5 → 150 ≥20; TOUGH/boost reduced) − max heal reachable from every hostile healer (self/adjacent 12/HEAL, range 2-3 4, boosts ×2-4). Healer first if net>0, else fastest kill; net≤0 → hold fire unless it is hurting us; edge-strip targets only if dead within 1 tick (anti-drain). Sticky on a target dying within 2 ticks. Holding fire: heal own creeps, repair only barriers <2000 hits with tower >500.
 - **Guards** (`roles/guard.js`, `managers/home.js`): while player combat creeps are in W46N8, 1 guard (2 if RA+ATTACK parts ≥12), body nRA+(n+1)M+HEAL sized from available energy. Never leave the room, fight only within 15 of a tower, shoot the towers' focus (healer first), kite melee, retreat <60% to the spawn, recycle 100t after clear. Spawn order under threat: emergency → remote defender → queen → guards → miners; upgraders/builders/remote held.

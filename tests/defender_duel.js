@@ -66,7 +66,8 @@ function scenario(name, invTypes, boosted, opt = {}) {
   const kiteMod = { exports: {} }; vm.runInNewContext(fs.readFileSync(path.join(ROOT, 'src/utils/kite.js'), 'utf8'), Object.assign({}, G, { module: kiteMod })); const kiteM = kiteMod.exports;
   const src = fs.readFileSync(path.join(ROOT, 'src/roles/remote.js'), 'utf8');
   const mod = { exports: {} };
-  vm.runInNewContext(src, Object.assign(G, { module: mod, require: p => p.includes('utils/cmd') ? { yieldCreep: () => false, armed: () => false } : p.includes('utils/kite') ? kiteM : p.includes('managers/threat') ? threatMock : p.includes('managers/remote') ? remoteMock : p.includes('utils/move') ? moveMock : p.includes('utils/focus') ? require(path.join(ROOT, 'src/utils/focus.js')) : p.includes('managers/home') ? { on: () => false } : {} }));
+  const milMock = { isMilitary: () => false, moveTo: (c, t, o) => c.moveTo(t, o), pullSwap: () => false, fresh: () => {}, step: () => 'no', block: () => false, flush: () => {} };
+  vm.runInNewContext(src, Object.assign(G, { module: mod, require: p => p.includes('utils/cmd') ? { yieldCreep: () => false, armed: () => false } : p.includes('utils/military') ? milMock : p.includes('utils/kite') ? kiteM : p.includes('managers/threat') ? threatMock : p.includes('managers/remote') ? remoteMock : p.includes('utils/move') ? moveMock : p.includes('utils/focus') ? require(path.join(ROOT, 'src/utils/focus.js')) : p.includes('managers/home') ? { on: () => false } : {} }));
   const role = mod.exports.defender.run;
   let t = 0, retreated = false, dmgTaken = 0, meleeHits = 0;
   for (; t < 400; t++) {

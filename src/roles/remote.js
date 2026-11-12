@@ -22,6 +22,10 @@ function stepIn(c) {
       if (ch) taken.add(ch - 192); } }
   return inward(c.pos.x, c.pos.y, (x, y) => T.get(x, y) === TERRAIN_MASK_WALL, (x, y) => taken.has(x * 50 + y));
 }
+function rawMove(c, target, opts) {
+  if (require('../utils/military').isMilitary(c)) return require('../utils/military').moveTo(c, target, opts);
+  return c.moveTo(target, opts);
+}
 function go(c, room, x, y, range, rr) {
   const rm = rr || c.memory.remote;
   if (c.room.name === room) {
@@ -30,9 +34,9 @@ function go(c, room, x, y, range, rr) {
     return move.to(c, x, y, range);
   }
   const R = remote.route(rm), i = R.indexOf(c.room.name), j = R.indexOf(room);
-  if (i < 0 || j < 0) { c.moveTo(new RoomPosition(x, y, room), { range, reusePath: 20, costCallback: move.foreignSites }); return false; } // off-route (should not happen)
+  if (i < 0 || j < 0) { rawMove(c, new RoomPosition(x, y, room), { range, reusePath: 20, costCallback: move.foreignSites }); return false; } // off-route (should not happen)
   const nxt = R[i + Math.sign(j - i)], ex = remote.exitTile(rm, c.room.name, nxt);
-  if (!ex) { c.moveTo(new RoomPosition(x, y, room), { range, reusePath: 20, costCallback: rn => (rn === 'W47N9' ? false : undefined) }); return false; } // dynamic reserved room: never path through W47N9
+  if (!ex) { rawMove(c, new RoomPosition(x, y, room), { range, reusePath: 20, costCallback: rn => (rn === 'W47N9' ? false : undefined) }); return false; } // dynamic reserved room: never path through W47N9
   if (c.pos.x === ex[0] && c.pos.y === ex[1]) { c.move(OFF(ex[0], ex[1])); return false; }
   move.to(c, ex[0], ex[1], 0); return false;
 }
@@ -321,7 +325,7 @@ function coreAct(o) {
 function coreBuster(c) {
   const rm = c.memory.remote;
   if (c.room.name === 'W47N9' || rm === 'W47N9') {
-    if (c.pos.y >= 48) c.move(BOTTOM); else c.moveTo(new RoomPosition(c.pos.x, 49, 'W47N9'), { range: 0, maxRooms: 1 });
+    if (c.pos.y >= 48) c.move(BOTTOM); else rawMove(c, new RoomPosition(c.pos.x, 49, 'W47N9'), { range: 0, maxRooms: 1 });
     return;
   }
   const C = (remote.cfgFor && remote.cfgFor(rm)) || remote.CFG[rm];
@@ -371,7 +375,12 @@ function kite(c, t, flee, approaching) {
   let d = require('../utils/kite').step(c, t, flee, ex, { approaching, last: c.memory.kd });
   if (d && C.avoid && c.room.name === c.memory.remote) { const D = [null, [0, -1], [1, -1], [1, 0], [1, 1], [0, 1], [-1, 1], [-1, 0], [-1, -1]][d];
     if (C.avoid.some(([x, y]) => x === c.pos.x + D[0] && y === c.pos.y + D[1])) d = 0; } // never step on the foreign site
-  c.memory.kd = d || undefined; if (d) c.move(d); }
+  c.memory.kd = d || undefined;
+  if (d) {
+    const D = [null, [0, -1], [1, -1], [1, 0], [1, 1], [0, 1], [-1, 1], [-1, 0], [-1, -1]][d];
+    if (D) require('../utils/military').pullSwap(c, c.pos.x + D[0], c.pos.y + D[1]);
+    c.move(d);
+  } }
 const meleeOf = h => h.body.some(p => p.type === ATTACK && p.hits > 0);
 const rangedOf = h => h.body.some(p => p.type === RANGED_ATTACK && p.hits > 0);
 const F = require('../utils/focus'), GP = require('../utils/guardpost');
@@ -401,7 +410,7 @@ roles.defender = function (c) {
   // Reads the FSM only (managers/threat.js); the FSM decides when to fight.
   // While engaged in the assigned room, every combat hostile is a target (not only Invader). Patrol shots stay Invader-only.
   // Never operates in W47N9 (defend-only; do not attack that room).
-  if (c.room.name === 'W47N9') { if (c.pos.y >= 48) c.move(BOTTOM); else c.moveTo(new RoomPosition(c.pos.x, 49, 'W47N9'), { range: 0, maxRooms: 1 }); return; }
+  if (c.room.name === 'W47N9') { if (c.pos.y >= 48) c.move(BOTTOM); else rawMove(c, new RoomPosition(c.pos.x, 49, 'W47N9'), { range: 0, maxRooms: 1 }); return; }
   if (c.memory.core) return coreBuster(c);
   const rm = c.memory.remote, C = (remote.cfgFor && remote.cfgFor(rm)) || remote.CFG[rm], th = threat.state(rm), K = threat.cfg(rm);
   if (!C || rm === 'W47N9') return;
@@ -488,7 +497,7 @@ roles.defender = function (c) {
   else { const n = inv.find(h => c.pos.inRangeTo(h, 3)); if (n) c.rangedAttack(n); } // goal out of range: shoot whatever is in range
   const mv = { range: 3, reusePath: 0, maxRooms: 1, plainCost: 2, swampCost: 10, costCallback: move.foreignSites };
   // pure ranged target (no ATTACK): kiting only gives it free shots — close to range 3 and trade (we out-heal/out-damage small ones)
-  if (rangedOf(t) && !meleeOf(t)) { c.memory.kr = r; c.memory.kw = 0; if (r > 3) { delete c.memory._m; c.moveTo(t, mv); } return; }
+  if (rangedOf(t) && !meleeOf(t)) { c.memory.kr = r; c.memory.kw = 0; if (r > 3) rawMove(c, t, mv); return; }
   // melee target: while it is actually stepping toward us, kite (hold >=4, fight at 3). moveTo into a chaser
   // walks onto swamp and gets caught (2026-10-15). If it is NOT closing (busy on a miner/structure), approach.
   // Counting range was wrong: the step we took to close looked like the enemy approaching, kw reset, kite held
@@ -497,7 +506,7 @@ roles.defender = function (c) {
   else c.memory.kw = 0;
   c.memory.kr = r;
   if (meleeOf(t) && r <= 8 && c.memory.kw <= 10) return kite(c, t, false, enemyCloser);
-  if (r > 3) { delete c.memory._m; c.moveTo(t, mv); }
+  if (r > 3) rawMove(c, t, mv);
 };
 // Vision fallback (no observer): 1 MOVE scout parks in the remote when nobody else gives vision (spawn.js decides when).
 roles.rscout = function (c) {

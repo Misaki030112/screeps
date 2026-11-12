@@ -15,7 +15,15 @@ module.exports = { run(c) {
     c.memory.n = n;
   }
   if (room.energyAvailable === room.energyCapacityAvailable && c.store.getFreeCapacity() === 0) return;
-  const tgt = c.memory.n.fill.map(id => Game.getObjectById(id)).find(s => s && s.store.getFreeCapacity(RESOURCE_ENERGY) > 0);
+  const open = c.memory.n.fill.map(id => Game.getObjectById(id)).filter(s => s && s.store && s.store.getFreeCapacity(RESOURCE_ENERGY) > 0);
+  let alert = false;
+  try { alert = require('./queen').defenseFill(room); } catch (e) { alert = false; }
+  if (alert && open.length > 1) {
+    const short = room.energyAvailable < room.energyCapacityAvailable;
+    const rank = require('../utils/squad').fillRank;
+    open.sort((a, b) => rank(true, short, a.structureType) - rank(true, short, b.structureType));
+  }
+  const tgt = open[0];
   if (tgt && c.store[RESOURCE_ENERGY] > 0) { c.transfer(tgt, RESOURCE_ENERGY); return; }
   if (c.store.getFreeCapacity() > 0) { const s = c.memory.n.src.map(id => Game.getObjectById(id)).find(s => s && s.store[RESOURCE_ENERGY] > 0); if (s) c.withdraw(s, RESOURCE_ENERGY); }
 } };

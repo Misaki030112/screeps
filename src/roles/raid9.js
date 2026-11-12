@@ -100,7 +100,7 @@ function recycleCivilian(c) {
   const sp = mine.filter(s => !home || s.pos.roomName === home)[0] || mine[0];
   if (!sp) return false;
   if (c.pos && c.pos.roomName === sp.pos.roomName && c.pos.isNearTo(sp)) sp.recycleCreep(c);
-  else c.moveTo(sp, { range: 1, reusePath: 12 });
+  else require('../utils/military').moveTo(c, sp, { range: 1 });
   return true;
 }
 function fieldCaps(P) {
@@ -650,7 +650,7 @@ function applyOrder(c, o) {
   if (o.hold) return true;
   const mv = o.moveTo ? (Array.isArray(o.moveTo) ? { x: o.moveTo[0], y: o.moveTo[1] } : o.moveTo) : null;
   if (mv) {
-    if (mv.room && mv.room !== c.room.name) c.moveTo(new RoomPosition(mv.x, mv.y, mv.room), { reusePath: 8, range: mv.range || 0 });
+    if (mv.room && mv.room !== c.room.name) require('../utils/military').moveTo(c, new RoomPosition(mv.x, mv.y, mv.room), { range: mv.range || 0 });
     else go(c, mv.x, mv.y, mv.range || 0);
     return true;
   }
@@ -741,7 +741,7 @@ function travel(c) {
     if (b && c.pos.x === 49) { delete c.memory._m; return c.move(LEFT); }
     return MV.to(c, slot[0], slot[1], 0, ND);
   }
-  return c.moveTo(new RoomPosition(slot[0], slot[1], STAGE), { reusePath: 10 });
+  return require('../utils/military').moveTo(c, new RoomPosition(slot[0], slot[1], STAGE), { range: 1 });
 }
 function garrison(c) {
   const g = gSlotOf(c.memory.k);
@@ -883,7 +883,7 @@ function recycleSelf(c) {
   if (!sp.length) return;
   const t = sp.length > 1 ? (c.pos.findClosestByRange(sp) || sp[0]) : sp[0];
   if (c.pos.roomName === t.pos.roomName && c.pos.isNearTo(t)) return t.recycleCreep(c);
-  return c.moveTo(t, { range: 1, reusePath: 10 });
+  return require('../utils/military').moveTo(c, t, { range: 1 });
 }
 function run(c) {
   const P = M();

@@ -143,7 +143,8 @@ function go(c, pos, range) {
   const room = pos.roomName || pos.room;
   const dest = room && !sameRoom(c, pos) ? roomPos(pos.x, pos.y, room) : (pos.pos || pos);
   if (sameRoom(c, pos) && dist(c.pos, dest) <= range) return false;
-  c.moveTo(dest, { range: range, reusePath: 8, maxRooms: room && !sameRoom(c, pos) ? 16 : 1 });
+  if (require('./military').isMilitary(c)) require('./military').moveTo(c, dest, { range: range, maxRooms: room && !sameRoom(c, pos) ? 16 : 1 });
+  else c.moveTo(dest, { range: range, reusePath: 8, maxRooms: room && !sameRoom(c, pos) ? 16 : 1 });
   return true;
 }
 function say(c, o) { if (o && o.say && c.say) c.say(String(o.say).slice(0, 10)); }

@@ -96,6 +96,17 @@ function want(room, cs) {
 // ignored, swap/shove our own blocker from stuck 2), like the W47N8 haulers.
 const MV = require('../../utils/move'), ND = { noDetour: true };
 const go = (c, x, y, r) => (c.room.name === C.ROOM ? MV.to(c, x, y, r, ND) : c.moveTo(new RoomPosition(x, y, C.ROOM), { range: r, reusePath: 15, maxRooms: 1 }));
+function threatFill(room) {
+  if (!room) return false;
+  const t8 = room.memory && room.memory.threat8;
+  if (t8 && Game.time - (t8.t || 0) < 10) return true;
+  try {
+    const th = require('../../managers/threat');
+    if (th.holding(room.name) || th.wantDefender(room.name)) return true;
+  } catch (e) { /* ok */ }
+  try { if (require('../../roles/queen').defenseFill(room)) return true; } catch (e) { /* ok */ }
+  return false;
+}
 // leave index of an extension when sweeping strip i in direction d (0 = from road[0], 1 = from road[end])
 const leave = (i, d, k) => { const a = ROUTES[i].ext[k]; return d ? -a[0] : a[1]; };
 const reach = (i, d, k) => { const a = ROUTES[i].ext[k]; return d ? -a[1] : a[0]; };
@@ -111,8 +122,13 @@ function run(c) {
     let best = null, bs = 1e9;
     for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) {
       const k = K(c.pos.x + dx, c.pos.y + dy), id = D.byKey[k], s = id && Game.getObjectById(id);
-      if (!s || !(s.structureType === STRUCTURE_TOWER ? free(s) >= 300 && !hubNeedy(room, D) : free(s) > 0)) continue;
-      let sc = s.structureType === STRUCTURE_SPAWN ? -1e6 : s.structureType === STRUCTURE_TOWER ? 1e6 : 0;
+      if (!s) continue;
+      const towerOk = s.structureType === STRUCTURE_TOWER && (threatFill(room) ? free(s) > 100 : free(s) >= 300 && !hubNeedy(room, D));
+      if (!(towerOk || (s.structureType !== STRUCTURE_TOWER && free(s) > 0))) continue;
+      const alert = threatFill(room);
+      const short = room.energyAvailable < room.energyCapacityAvailable;
+      let sc = s.structureType === STRUCTURE_SPAWN ? -1e6 : s.structureType === STRUCTURE_EXTENSION ? 0 : 1e6;
+      if (alert && s.structureType === STRUCTURE_TOWER && free(s) > 100) sc = short ? 50 : -5e5;
       if (m.fs !== undefined && m.fs >= 0 && ROUTES[m.fs].ext[k]) sc += leave(m.fs, m.fd | 0, k) * 10;
       if (sc < bs) { bs = sc; best = s; }
     }
@@ -158,9 +174,13 @@ function run(c) {
   ROUTES.forEach((R, i) => { if (taken.has(i)) return; const n = objs(D.strip[i]).filter(s => left(s) > 0); if (!n.length) return;
     const e = R.road[ent[i] ? R.road.length - 1 : 0]; jobs.push({ i, d: ent[i], cost: c.pos.getRangeTo(e[0], e[1]), e }); });
   for (const s of objs(D.point)) if (left(s) > 0) jobs.push({ p: s, cost: c.pos.getRangeTo(s) - 1 });
-  // tower last: only with the spawn energy full. 19:5x: core towers only (<= TOWER_R of POST): RCL5 tower 24,8 is ~23 road tiles away
-  // (~50 t round trip with the hub unattended); it is fed from source A's container 26,11 (roles.js northFeed)
-  if (!jobs.length) for (const s of objs(D.tower)) if (free(s) >= 300 && cheb([s.pos.x, s.pos.y], POST) <= TOWER_R) jobs.push({ p: s, cost: c.pos.getRangeTo(s) });
+  // Peacetime: towers last, and only the core ones, once extensions are full (north tower is fed from source A).
+  // Under a threat: every tower is a job. Extensions stay ahead while the spawn pile is short of cap
+  // (the max body has to be able to start); once it is full, towers sort ahead of a long extension walk.
+  if (threatFill(room)) {
+    const pen = room.energyAvailable < room.energyCapacityAvailable ? 12 : -4;
+    for (const s of objs(D.tower)) if (free(s) > 100) jobs.push({ p: s, cost: c.pos.getRangeTo(s) + pen });
+  } else if (!jobs.length) for (const s of objs(D.tower)) if (free(s) >= 300 && cheb([s.pos.x, s.pos.y], POST) <= TOWER_R) jobs.push({ p: s, cost: c.pos.getRangeTo(s) });
   const j = jobs.reduce((a, x) => (!a || x.cost < a.cost ? x : a), null); // (no lodash: 3.10 in game, 4 in tests)
   if (j) {
     // short on energy for the job and beside the source: the withdraw above already ran; just go

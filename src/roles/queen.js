@@ -168,13 +168,27 @@ function fillRoute(c) {
     }
     cur = null;
   }
-  // nearest needy stop (Chebyshev)
+  // nearest needy stop (Chebyshev). Under a fight, extensions until the spawn pile can pay the
+  // max body, and towers in the same pass (ahead of storage / controller).
   let best = -1, bd = 1e9;
   const war = require('../managers/home').active(c.room);
+  const alert = defenseFill(c.room);
+  const short = c.room.energyAvailable < c.room.energyCapacityAvailable;
+  const rank = require('../utils/squad').fillRank;
   st.forEach((s, i) => {
     if (!liveStop(s)) return;
     let d = c.pos.getRangeTo(s.x, s.y);
-    if (war && s.ids.some(id => { const o = Game.getObjectById(id); return o && o.structureType === STRUCTURE_TOWER && o.store.getFreeCapacity(RESOURCE_ENERGY) > 100; })) d -= 100;
+    if (alert) {
+      let bestR = 9;
+      for (const id of s.ids) {
+        const o = Game.getObjectById(id);
+        if (!o || !o.store) continue;
+        const free = o.store.getFreeCapacity(RESOURCE_ENERGY);
+        if (free <= (o.structureType === STRUCTURE_TOWER ? 100 : 0)) continue;
+        bestR = Math.min(bestR, rank(true, short, o.structureType));
+      }
+      d += bestR * 80 - 160;
+    } else if (war && s.ids.some(id => { const o = Game.getObjectById(id); return o && o.structureType === STRUCTURE_TOWER && o.store.getFreeCapacity(RESOURCE_ENERGY) > 100; })) d -= 100;
     if (d < bd) { bd = d; best = i; }
   });
   if (best < 0) { delete c.memory.stop; delete c.memory.sx; delete c.memory.sy; return gave > 0; }
@@ -309,7 +323,19 @@ function freeTrapped(c) {
   if (sp) { sp.recycleCreep(c); return true; }
   c.suicide(); return true;
 }
-module.exports = { fillRoute, storageFloor, buildZones, zoneDeficit, myStops, canEscape, run(c) {
+// True while this room should top towers as well as extensions: a remote defender is owed,
+// an owned-room combat threat is here, or W47N8's tower loop just saw a target.
+function defenseFill(room) {
+  if (!room) return false;
+  try {
+    const th = require('../managers/threat');
+    if (th.holding(room.name) || th.wantDefender(room.name)) return true;
+  } catch (e) { /* ok */ }
+  try { if (require('../managers/home').combatNow(room)) return true; } catch (e) { /* ok */ }
+  const t8 = room.memory && room.memory.threat8;
+  return !!(t8 && typeof Game !== 'undefined' && Game.time - (t8.t || 0) < 10);
+}
+module.exports = { fillRoute, defenseFill, storageFloor, buildZones, zoneDeficit, myStops, canEscape, run(c) {
   if (c.room && c.room.memory) c.room.memory.queenAlive = Game.time; // haulers still see her while she is ordered
   if (require('../utils/cmd').yieldCreep(c)) return;
   const room = c.room, P = plan.get(room.name);

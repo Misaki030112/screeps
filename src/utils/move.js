@@ -103,10 +103,17 @@ function stationary(o) {
 function foreignSites(rn, m) { const room = Game.rooms[rn]; if (room) for (const s of room.find(FIND_HOSTILE_CONSTRUCTION_SITES)) m.set(s.pos.x, s.pos.y, 255); return m; }
 module.exports = {
   foreignSites,
+  matrix,
   invalidate(roomName) { const e = VER[roomName]; if (e) e.n = -1; },
   // returns true when in range (arrived)
   // opts.noDetour (10-20, W47N8/W47N7 haulers on 1-wide roads): no creep-avoiding repath at stuck 2, swap with our blocker from stuck 2 instead
+  // Military creeps never read _m. They search again every call and swap a civilian off the next tile.
   to(c, x, y, range = 0, opts) {
+    if (c && c.memory && require('./military').isMilitary(c)) {
+      if (Math.max(Math.abs(c.pos.x - x), Math.abs(c.pos.y - y)) <= range) { delete c.memory._m; delete c.memory._move; return true; }
+      const st = require('./military').step(c, x, y, range);
+      return st === 'there';
+    }
     const nd = !!(opts && opts.noDetour);
     const k = `${x},${y},${range}`;
     let m = c.memory._m;

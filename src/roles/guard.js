@@ -7,7 +7,7 @@ module.exports = { run(c) {
   if (require('../utils/cmd').yieldCreep(c)) return; // Memory.cmd off => one check (docs/COMMANDER.md)
   const room = c.room, home = Game.rooms[c.memory.home];
   if (c.hits < c.hitsMax) c.heal(c);
-  if (room.name !== c.memory.home) { const sp = home && home.find(FIND_MY_SPAWNS)[0]; return c.moveTo(sp ? sp.pos : new RoomPosition(25, 25, c.memory.home), { range: 2 }); }
+  if (room.name !== c.memory.home) { const sp = home && home.find(FIND_MY_SPAWNS)[0]; return require('../utils/military').moveTo(c, sp ? sp.pos : new RoomPosition(25, 25, c.memory.home), { range: 2 }); }
   const hs = H.hostiles(room), towers = room.find(FIND_MY_STRUCTURES).filter(s => s.structureType === STRUCTURE_TOWER);
   const sp = room.find(FIND_MY_SPAWNS)[0];
   if (hs.length) c.memory.lastSeen = Game.time;
@@ -19,14 +19,18 @@ module.exports = { run(c) {
   if (!t || !c.pos.inRangeTo(t, 3)) { const p = F.pick(towers.map(x => ({ pos: x.pos, energy: x.store[RESOURCE_ENERGY] })), inR); t = p ? p.h : c.pos.findClosestByRange(inR); }
   if (t && c.pos.inRangeTo(t, 3)) { if (inR.length >= 3 && inR.some(h => c.pos.inRangeTo(h, 1))) c.rangedMassAttack(); else c.rangedAttack(t); }
   if (c.memory.hurt) return sp && move.to(c, sp.pos.x, sp.pos.y, 1);
-  if (!hs.length) {
-    if (Game.time - (c.memory.lastSeen || c.memory.born || 0) > 100 && sp) { if (c.pos.isNearTo(sp)) sp.recycleCreep(c); else move.to(c, sp.pos.x, sp.pos.y, 1); return; }
-    return sp && move.to(c, sp.pos.x, sp.pos.y, 3);
-  }
+  // Threat already gone at birth, or cleared: stay for the full TTL. Do not recycle early.
+  if (!hs.length) return sp && move.to(c, sp.pos.x, sp.pos.y, 3);
   const melee = hs.find(h => h.body.some(p => p.type === ATTACK && p.hits > 0) && c.pos.inRangeTo(h, 2));
-  if (melee) { const r = PathFinder.search(c.pos, { pos: melee.pos, range: 3 }, { flee: true, maxRooms: 1 }); if (r.path.length) return c.move(c.pos.getDirectionTo(r.path[0])); }
+  if (melee) {
+    const r = PathFinder.search(c.pos, { pos: melee.pos, range: 3 }, { flee: true, maxRooms: 1 });
+    if (r.path.length) {
+      require('../utils/military').pullSwap(c, r.path[0].x, r.path[0].y);
+      return c.move(c.pos.getDirectionTo(r.path[0]));
+    }
+  }
   // approach the chosen target only while staying in tower cover and off the exit strip
   const goal = (room.memory.focus && Game.getObjectById(room.memory.focus)) || c.pos.findClosestByRange(hs);
-  if (goal && !c.pos.inRangeTo(goal, 3) && covered(goal.pos) && goal.pos.x > 2 && goal.pos.x < 47 && goal.pos.y > 2 && goal.pos.y < 47) return c.moveTo(goal, { range: 3, maxRooms: 1, reusePath: 0 });
+  if (goal && !c.pos.inRangeTo(goal, 3) && covered(goal.pos) && goal.pos.x > 2 && goal.pos.x < 47 && goal.pos.y > 2 && goal.pos.y < 47) return require('../utils/military').moveTo(c, goal, { range: 3, maxRooms: 1 });
   if (!covered(c.pos) && sp) return move.to(c, sp.pos.x, sp.pos.y, 3);
 } };

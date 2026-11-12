@@ -84,7 +84,9 @@ function matrixFor(rn, m) {
 }
 function travel(c, rn, x, y, range = 1) {
   if (c.room.name === rn && c.pos.inRangeTo(x, y, range)) return true;
-  c.moveTo(new RoomPosition(x, y, rn), { range, reusePath: 5, maxRooms: 4, costCallback: matrixFor, visualizePathStyle: undefined });
+  const mil = require('../utils/military');
+  if (mil.isMilitary(c)) mil.moveTo(c, new RoomPosition(x, y, rn), { range, maxRooms: 4, costCallback: matrixFor });
+  else c.moveTo(new RoomPosition(x, y, rn), { range, reusePath: 5, maxRooms: 4, costCallback: matrixFor, visualizePathStyle: undefined });
   return false;
 }
 function setCmd(cmd, why) { const P = M(); if (P.cmd !== cmd) { log({ ev: 'cmd', from: P.cmd, to: cmd, why }); P.cmd = cmd; } }
