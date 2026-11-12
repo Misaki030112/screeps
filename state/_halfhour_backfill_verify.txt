@@ -1,17 +1,18 @@
-finished_at=2026-11-13 05:07:55 Asia/Hong_Kong
-first_pass: game.time=84232749 published_bases=84232000..84232600 ticks=84232001..84232700 (700) tick_s=4.427
-reconstructed=26957 already_in_db=9047 inserted=17910 ts_realigned=0 missing_chunks=1 (W45N8@84232300)
-retry: W45N8@84232300 still official 404 at live tip ~84232770; same-base 4 rooms 200 100/100; no extra insert
-unique (creep,tick) in 84232001..84232700 = 26484 = row count (no global conflicts)
-duplicate reconstruct rows counted twice in already_in_db: 26957-26484=473; unique already=8574; unique landed=17910=printed inserted
+finished_at=2026-11-13 06:06:14 Asia/Hong_Kong
+first_pass: game.time=84233508 published_bases=84232800..84233400 ticks=84232801..84233500 (700) tick_s=4.361
+reconstructed=22597 already_in_db=11080 inserted=11517 ts_realigned=1833 missing_chunks=5 (W45N7@84232800, W47N8@84233200, W47N8@84233400, W45N8@84233400, W47N7@84233400)
+retry: W45N7@84232800 still official 404 at live tip ~84233520; W47N8@84233200 still official 404 (same-base 4 rooms 200 100/100, reconfirmed at finish); W47N8@84233400 and W45N8@84233400 now 200 100/100; W47N7@84233400 200 during second backfill; inserted=2569 (W47N8 +1420, W45N8 +569, W47N7 landed 419 / printed 580); missing_chunks=2 after retry
+unique (creep,tick) in 84232801..84233500 = 26189 = row count (no global conflicts)
 db_after official window:
-  W46N8 84232001..84232700 rows=6322 distinct=700
-  W47N8 84232001..84232700 rows=11239 distinct=700
-  W45N8 84232001..84232700 rows=2792 distinct=600  (hole 84232301..84232400 official 404, 0 live)
-  W45N7 84232001..84232700 rows=2373 distinct=700
-  W47N7 84232001..84232700 rows=3758 distinct=700
-new official 84232200..84232600 complete 100/100 in four rooms; W45N8 missing only 84232300
-overlap 84232001..84232200 complete 200/200 all five rooms
-live tails: W46N8 84232734..84232739 (6t); W47N8 84232740..tip (slot); gap 84232701..84232733 unpublished in-progress 84232700 (404)
-listener: single slot pid=2009423 loop=4035476 restart 05:04:51 after box pause 04:37:18..05:04:48 (1650s); yield absent; rot i=1 W47N8; segment90 pulled; did not restart war_cmd/pulse
-room_stats gap 84232350 -> 84232740 (not filled by official history)
+  W46N8 84232801..84233500 rows=6236 distinct=700
+  W47N8 84232801..84233500 rows=10271 distinct=600  (hole 84233201..84233300 official 404, 0 live)
+  W45N8 84232801..84233500 rows=4622 distinct=700
+  W45N7 84232901..84233500 rows=1928 distinct=600  (hole 84232801..84232900 official 404, 0 live)
+  W47N7 84232801..84233500 rows=3132 distinct=700
+new official 84233100 and 84233300 complete 100/100 in all five rooms from first pass; 84233400 complete 100/100 after retry (W47N8/W45N8/W47N7 late-published); 84233200 complete in four rooms (W47N8 official 404)
+overlap 84232801..84233100: W46N8/W47N8/W45N8/W47N7 300/300; W45N7 200/300 (official 404 84232800)
+live tails: W47N8 84232801..84233561 rows=11315 distinct=661 (current slot); other rooms no live tail past official 84233500
+listener: single slot pid=2022689 loop=4035476 restart 06:00:37 after box pause 05:42:47..06:00:24 (1049s); yield absent; rot i=1 W47N8; segment90 pulled; did not restart war_cmd/pulse
+room_stats gap 84233240 -> 84233490 (not filled by official history)
+W45N8@84232300 remains official 404 outside this window (ticks 84232301..84232400), 0 live, not re-GET
+W47N8@84233200 is a new official 404 this window (ticks 84233201..84233300), 0 live
