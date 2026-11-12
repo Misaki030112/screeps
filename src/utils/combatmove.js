@@ -13,7 +13,10 @@ function militaryTo(c, x, y, range, costCallback) {
     return costCallback(rn, m) || m;
   }) : undefined;
   const st = mil.step(c, x, y, range, cb);
-  return st === 'there' ? OK : OK;
+  // 'moved' is a successful step this tick. 'wait' is fatigue. 'no' is a blocked or empty search.
+  if (st === 'there' || st === 'moved') return OK;
+  if (st === 'wait') return typeof ERR_TIRED !== 'undefined' ? ERR_TIRED : -11;
+  return typeof ERR_NO_PATH !== 'undefined' ? ERR_NO_PATH : -2;
 }
 function to(c, x, y, range, costCallback, reusePath) {
   // Combat roles recalculate every tick and swap civilians. Haulers/builders keep the stuck-3 cache below.

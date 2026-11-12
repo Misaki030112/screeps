@@ -94,4 +94,24 @@ assert.strictEqual(squad.judge([{ heal: true }]), 2);
 assert.strictEqual(squad.judge([{ ra: 8 }]), 3);
 assert.strictEqual(squad.judge([{}, {}, {}, {}]), 4);
 
+global.ERR_TIRED = -11;
+global.ERR_NO_PATH = -2;
+const CMV = require(path.join(__dirname, '..', 'src/utils/combatmove.js'));
+const gate = creep('w8guard', 10, 10, 'gmove');
+gate.moves = [];
+creeps.length = 0;
+creeps.push(gate);
+assert.strictEqual(CMV.to(gate, 14, 10, 0, null, 5), 0, 'a completed step returns OK');
+assert.strictEqual(gate.moves[gate.moves.length - 1], 3);
+gate.fatigue = 4;
+gate.moves = [];
+assert.strictEqual(CMV.to(gate, 14, 10, 0, null, 5), -11, 'fatigue returns ERR_TIRED, not OK');
+assert.strictEqual(gate.moves.length, 0);
+gate.fatigue = 0;
+const saved = PathFinder.search;
+PathFinder.search = () => ({ path: [], incomplete: true });
+assert.strictEqual(CMV.to(gate, 20, 10, 0, null, 5), -2, 'no path returns ERR_NO_PATH, not OK');
+PathFinder.search = saved;
+assert.strictEqual(CMV.to(gate, 10, 10, 1, null, 5), 0, 'already in range returns OK');
+
 console.log('military path ok');
