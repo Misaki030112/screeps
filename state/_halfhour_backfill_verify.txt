@@ -1,26 +1,17 @@
-first-pass window 84231101..84231800 rows=28066 unique_creep_tick=28066
-per_room
-  W45N7 84231101..84231800 rows=2168 distinct=700
-  W45N8 84231101..84231800 rows=3007 distinct=700
-  W46N8 84231101..84231800 rows=6842 distinct=700
-  W47N7 84231101..84231797 rows=1835 distinct=600
-  W47N8 84231101..84231800 rows=14214 distinct=700
-overlap 84231101..84231400
-  W45N7 84231101..84231400 rows=945 distinct=300
-  W45N8 84231101..84231400 rows=1149 distinct=300
-  W46N8 84231101..84231400 rows=3067 distinct=300
-  W47N7 84231101..84231400 rows=972 distinct=300
-  W47N8 84231101..84231400 rows=6390 distinct=300
-chunks
-  84231100 {'W45N7': '409r/100t', 'W45N8': '301r/100t', 'W46N8': '815r/100t', 'W47N7': '324r/100t', 'W47N8': '2197r/100t'}
-  84231200 {'W45N7': '260r/100t', 'W45N8': '327r/100t', 'W46N8': '1249r/100t', 'W47N7': '296r/100t', 'W47N8': '2146r/100t'}
-  84231300 {'W45N7': '276r/100t', 'W45N8': '521r/100t', 'W46N8': '1003r/100t', 'W47N7': '352r/100t', 'W47N8': '2047r/100t'}
-  84231400 {'W45N7': '327r/100t', 'W45N8': '462r/100t', 'W46N8': '891r/100t', 'W47N7': '367r/100t', 'W47N8': '1797r/100t'}
-  84231500 {'W45N7': '312r/100t', 'W45N8': '429r/100t', 'W46N8': '959r/100t', 'W47N7': '365r/100t', 'W47N8': '1794r/100t'}
-  84231600 {'W45N7': '304r/100t', 'W45N8': '468r/100t', 'W46N8': '976r/100t', 'W47N7': '91r/60t', 'W47N8': '2154r/100t'}
-  84231700 {'W45N7': '280r/100t', 'W45N8': '499r/100t', 'W46N8': '949r/100t', 'W47N7': '40r/40t', 'W47N8': '2079r/100t'}
-W47N7 100 empty-of-our-creeps ticks (not a 404): 84231660..84231698 (39), 84231700..84231718 (19), evens 84231720..84231796 (39), 84231798..84231800 (3)
-W47N8@84231000 still official 404 (now outside window); live-only 393r/22t ticks 84231079..84231100; official/live hole 84231001..84231078
-live tail: W46N8 84231830..84231849 after resume then rotation; W47N8 84231850..84231872 (slot on W47N8); W45N8/W45N7/W47N7 no tail past 84231800
-post-pause official/live hole still unpublished: 84231801..84231829 (in-progress 84231800)
-inserted_landed=14563 ts_realigned=88 missing=none (in-window)
+finished_at=2026-11-13 05:07:55 Asia/Hong_Kong
+first_pass: game.time=84232749 published_bases=84232000..84232600 ticks=84232001..84232700 (700) tick_s=4.427
+reconstructed=26957 already_in_db=9047 inserted=17910 ts_realigned=0 missing_chunks=1 (W45N8@84232300)
+retry: W45N8@84232300 still official 404 at live tip ~84232770; same-base 4 rooms 200 100/100; no extra insert
+unique (creep,tick) in 84232001..84232700 = 26484 = row count (no global conflicts)
+duplicate reconstruct rows counted twice in already_in_db: 26957-26484=473; unique already=8574; unique landed=17910=printed inserted
+db_after official window:
+  W46N8 84232001..84232700 rows=6322 distinct=700
+  W47N8 84232001..84232700 rows=11239 distinct=700
+  W45N8 84232001..84232700 rows=2792 distinct=600  (hole 84232301..84232400 official 404, 0 live)
+  W45N7 84232001..84232700 rows=2373 distinct=700
+  W47N7 84232001..84232700 rows=3758 distinct=700
+new official 84232200..84232600 complete 100/100 in four rooms; W45N8 missing only 84232300
+overlap 84232001..84232200 complete 200/200 all five rooms
+live tails: W46N8 84232734..84232739 (6t); W47N8 84232740..tip (slot); gap 84232701..84232733 unpublished in-progress 84232700 (404)
+listener: single slot pid=2009423 loop=4035476 restart 05:04:51 after box pause 04:37:18..05:04:48 (1650s); yield absent; rot i=1 W47N8; segment90 pulled; did not restart war_cmd/pulse
+room_stats gap 84232350 -> 84232740 (not filled by official history)

@@ -1,0 +1,13 @@
+confirm_at=2026-11-13 05:07:15 HKT (after first-pass 404; ~8s wait then GETs with 0.6s gap)
+live_tip_approx=84232749..84232770
+W45N8@84232300=HTTP 404 (retry still 404; same as first pass)
+same-base siblings all HTTP 200 100/100:
+  W46N8@84232300 ticks=100 ts=1794516074688
+  W47N8@84232300 ticks=100 ts=1794516124844
+  W45N7@84232300 ticks=100 ts=1794516076601
+  W47N7@84232300 ticks=100 ts=1794516159697
+in-progress unpublished:
+  W46N8@84232700=HTTP 404
+  W47N8@84232700=HTTP 404
+db W45N8 84232301..84232400: 0 rows / 0 distinct (no live coverage; peacetime slot was on W46N8 around the 04:37 pause, then box paused through ~84232735). Official+live hole is the full 100 ticks.
+Did not insert anything on retry (chunk still unpublished / official 404).
