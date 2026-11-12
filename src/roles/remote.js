@@ -7,20 +7,43 @@ const OFF = (x, y) => x === 49 ? RIGHT : x === 0 ? LEFT : y === 49 ? BOTTOM : TO
 // rhauler stepped 47->48,21 on its cached path; the outbound one won, the loaded one stayed on 49 and bounced to W45N8
 // (2-4 ticks/trip). Pick an inward tile (straight first, then diagonals) that is not wall, not occupied and not the next
 // cached step (_m) of a nearby creep of ours. pure: inward(x, y, wall(x,y), busy(x,y)) -> direction
-function inward(x, y, wall, busy) {
+function inward(x, y, wall, busy, score) {
   const [dx, dy] = x === 0 ? [1, 0] : x === 49 ? [-1, 0] : y === 0 ? [0, 1] : [0, -1];
   const C = dx ? [[dx, 0], [dx, -1], [dx, 1]] : [[0, dy], [-1, dy], [1, dy]];
   const D = (a, b) => ({ '0,-1': TOP, '1,-1': TOP_RIGHT, '1,0': RIGHT, '1,1': BOTTOM_RIGHT, '0,1': BOTTOM, '-1,1': BOTTOM_LEFT, '-1,0': LEFT, '-1,-1': TOP_LEFT })[a + ',' + b];
   const ok = C.filter(([a, b]) => { const nx = x + a, ny = y + b; return nx > 0 && nx < 49 && ny > 0 && ny < 49 && !wall(nx, ny); });
-  const free = ok.find(([a, b]) => !busy(x + a, y + b));
-  const [a, b] = free || ok[0] || C[0]; return D(a, b);
+  const free = ok.filter(([a, b]) => !busy(x + a, y + b));
+  const pool = (free.length ? free : ok).slice();
+  if (typeof score === 'function' && pool.length > 1) pool.sort((p, q) => score(x + q[0], y + q[1]) - score(x + p[0], y + p[1]));
+  const pick = pool[0] || C[0];
+  return D(pick[0], pick[1]);
 }
-function stepIn(c) {
+// Pure: border tile (x, y) in the fight room, atk = [{x, y}]. Best re-entry coordinate along
+// this border (x when the border is horizontal) whose inward step is farthest from every ATTACK creep.
+function safeEntry(x, y, atk, wall) {
+  const rng = (px, py) => (atk || []).reduce((m, h) => Math.min(m, Math.max(Math.abs(px - h.x), Math.abs(py - h.y))), 99);
+  const horiz = y === 0 || y === 49;
+  const inwardOff = horiz ? (y === 0 ? 1 : -1) : (x === 0 ? 1 : -1);
+  let best = horiz ? x : y, br = -1;
+  for (let p = 2; p <= 47; p++) {
+    const px = horiz ? p : x, py = horiz ? y : p;
+    if (wall(px, py)) continue;
+    let top = -1;
+    for (const d of [-1, 0, 1]) {
+      const nx = horiz ? px + d : px + inwardOff, ny = horiz ? py + inwardOff : py + d;
+      if (nx <= 0 || ny <= 0 || nx >= 49 || ny >= 49 || wall(nx, ny)) continue;
+      top = Math.max(top, rng(nx, ny));
+    }
+    if (top > br) { br = top; best = p; }
+  }
+  return br >= 3 ? best : null;
+}
+function stepIn(c, score) {
   const T = c.room.getTerrain(), taken = new Set();
   for (const o of c.pos.findInRange(FIND_CREEPS, 3)) { if (o === c) continue; taken.add(o.pos.x * 50 + o.pos.y);
     const m = o.my && o.memory && o.memory._m; if (m && m.p) { const i = m.p.indexOf(String.fromCharCode(o.pos.x * 50 + o.pos.y + 192)), ch = i >= 0 ? m.p.charCodeAt(i + 1) : 0;
       if (ch) taken.add(ch - 192); } }
-  return inward(c.pos.x, c.pos.y, (x, y) => T.get(x, y) === TERRAIN_MASK_WALL, (x, y) => taken.has(x * 50 + y));
+  return inward(c.pos.x, c.pos.y, (x, y) => T.get(x, y) === TERRAIN_MASK_WALL, (x, y) => taken.has(x * 50 + y), score);
 }
 function rawMove(c, target, opts) {
   if (require('../utils/military').isMilitary(c)) return require('../utils/military').moveTo(c, target, opts);
@@ -444,11 +467,13 @@ roles.defender = function (c) {
   if (c.memory.recycle || c.memory.hurt) {
     delete c.memory.lk;
     const t = inv.find(h => c.pos.inRangeTo(h, 3)); if (t) c.rangedAttack(t);
-    // a melee Invader within 3 (e.g. camping the exit): get clear first; pathing home now walks into it (2026-10-15 death).
-    // Exception: one step from the exit tile -> stepping onto it leaves the room this tick.
+    // a melee Invader within 3: kite clear before any path home (2026-10-15). A clear exit
+    // one step away still just leaves. A camped exit (W47N7 18,0) does not: stepping onto
+    // it is a step onto the attacker.
     const R = remote.route(rm), ri = R.indexOf(c.room.name), ex = ri > 0 ? remote.exitTile(rm, c.room.name, R[ri - 1]) : null;
     const m = inRoom && !edge && inv.find(h => meleeOf(h) && c.pos.inRangeTo(h, 3));
-    if (m && ex && !c.pos.inRangeTo(ex[0], ex[1], 1)) return kite(c, m, true);
+    const exitBlocked = ex && inv.some(h => meleeOf(h) && h.pos.x === ex[0] && h.pos.y === ex[1]);
+    if (m && (exitBlocked || !ex || !c.pos.inRangeTo(ex[0], ex[1], 1))) return kite(c, m, true);
     if (c.room.name !== C.home || c.pos.x >= 48) { const sp = Game.spawns[C.spawn || 'Spawn1'];
       return go(c, C.home, sp ? sp.pos.x : (C.spawn ? (C.park || [35, 28])[0] : 35), sp ? sp.pos.y : (C.spawn ? (C.park || [35, 28])[1] : 28), 1); }
     if (c.memory.hurt && !c.memory.recycle) { const [px, py] = C.park || [33, 26]; return move.to(c, px, py, 1); } // tower heals it
@@ -460,6 +485,8 @@ roles.defender = function (c) {
   const lead = names[0] && Game.creeps[names[0]];
   if (fighting && !c.memory.recycle && lead && lead !== c && !lead.spawning && (c.room.name !== lead.room.name || !c.pos.inRangeTo(lead, 2))) {
     const near = inv.find(h => c.pos.inRangeTo(h, 3)); if (near) c.rangedAttack(near);
+    const m = inv.find(h => meleeOf(h) && c.pos.inRangeTo(h, 2));
+    if (m) return kite(c, m, false, false);
     if (c.room.name === lead.room.name) return move.to(c, lead.pos.x, lead.pos.y, 2);
     return go(c, lead.room.name, lead.pos.x, lead.pos.y, 2);
   }
@@ -470,8 +497,37 @@ roles.defender = function (c) {
   // 5000) while 5 Invaders sat at 18,2–19,4. The old "fight from the exit if an Invader is
   // within 4" branch skipped stepIn in exactly the exit-camp case, so the creep never
   // entered. Shoot if in range, then step in / cross (go() already steps off the border).
+  // Re-enter off the camped exit tile. memory.ax is a border coordinate in the fight room
+  // whose inward step is at range >= 3 from every ATTACK creep (W47N7 north, 2026-11-12).
+  if (!here && c.memory.ax != null) {
+    const R = remote.route(rm), i = R.indexOf(c.room.name);
+    if (i >= 0 && R[i + 1] === rm) {
+      const ex = remote.exitTile(rm, c.room.name, rm);
+      if (ex) {
+        const horiz = ex[1] === 0 || ex[1] === 49;
+        const tx = horiz ? c.memory.ax : ex[0], ty = horiz ? ex[1] : c.memory.ax;
+        if (c.pos.x === tx && c.pos.y === ty) { delete c.memory._m; c.move(OFF(tx, ty)); return; }
+        return move.to(c, tx, ty, 0);
+      }
+    }
+  }
   if (!here || edge) {
     const near = inv.find(h => c.pos.inRangeTo(h, 3)); if (near) c.rangedAttack(near);
+    if (here && edge) {
+      const atk = inv.filter(meleeOf);
+      if (atk.length) {
+        const rngAt = (x, y) => atk.reduce((m, h) => Math.min(m, Math.max(Math.abs(x - h.pos.x), Math.abs(y - h.pos.y))), 99);
+        const dirIn = stepIn(c, rngAt);
+        const DXY = { 1: [0, -1], 2: [1, -1], 3: [1, 0], 4: [1, 1], 5: [0, 1], 6: [-1, 1], 7: [-1, 0], 8: [-1, -1] };
+        const step = DXY[dirIn] || [0, 1];
+        const nx = c.pos.x + step[0], ny = c.pos.y + step[1];
+        if (rngAt(nx, ny) >= 2) { delete c.memory._m; delete c.memory.ax; c.move(dirIn); return; }
+        const ax = safeEntry(c.pos.x, c.pos.y, atk.map(h => ({ x: h.pos.x, y: h.pos.y })), (x, y) => c.room.getTerrain().get(x, y) === TERRAIN_MASK_WALL);
+        const hereCoord = (c.pos.y === 0 || c.pos.y === 49) ? c.pos.x : c.pos.y;
+        if (ax != null && ax !== hereCoord) { c.memory.ax = ax; delete c.memory._m; c.move(OFF(c.pos.x, c.pos.y)); return; }
+        delete c.memory._m; c.move(dirIn); return;
+      }
+    }
     return go(c, rm, C.cont[0], C.cont[1], 2);
   }
   const P = t0, t = P ? P.h : null;
@@ -479,7 +535,17 @@ roles.defender = function (c) {
   // patrol the room's guard post (utils/guardpost: never on a road/container/exit lane or next to a source/controller).
   // 2026-10-31: rdef83982033 held its W47N7 kill spot 18,1 (next to exit 18,0 on the rhauler lane) for good, because guard
   // remotes never patrol/recycle; Misaki: 别挡路，驻守 27,19，四处巡逻. Engage above is unchanged and runs first every tick.
+  const meleeClose = inv.filter(meleeOf).sort((a, b) => c.pos.getRangeTo(a) - c.pos.getRangeTo(b))[0];
+  // Hostiles still in the room: do not walk the guard post through the pack (rdef84223931,
+  // (17,1) → post (27,19) after the gate dropped the fight). Kite or shoot.
   if (!t) {
+    if (meleeClose) return kite(c, meleeClose, c.pos.getRangeTo(meleeClose) < 3, false);
+    if (inv.length) {
+      const g = inv.slice().sort((a, b) => c.pos.getRangeTo(a) - c.pos.getRangeTo(b))[0];
+      const mv0 = { range: 3, reusePath: 0, maxRooms: 1, plainCost: 2, swampCost: 10, costCallback: move.foreignSites };
+      if (c.pos.getRangeTo(g) > 3) rawMove(c, g, mv0);
+      return;
+    }
     if (fighting && c.memory.lk) return GP.hold(c, c.memory.lk[0], c.memory.lk[1], move);
     delete c.memory.lk; delete c.memory.tg; delete c.memory.ep; delete c.memory.kw; delete c.memory.kr;
     return GP.patrol(c, C, move);
@@ -496,6 +562,9 @@ roles.defender = function (c) {
   else if (r <= 3) c.rangedAttack(t);
   else { const n = inv.find(h => c.pos.inRangeTo(h, 3)); if (n) c.rangedAttack(n); } // goal out of range: shoot whatever is in range
   const mv = { range: 3, reusePath: 0, maxRooms: 1, plainCost: 2, swampCost: 10, costCallback: move.foreignSites };
+  // An ATTACK creep within 3 owns the move. Shooting a ranged or heal focus used to stand
+  // in melee (and then path the guard post) while the smallMelee sat on the exit.
+  if (meleeClose && c.pos.getRangeTo(meleeClose) <= 3) return kite(c, meleeClose, false, false);
   // pure ranged target (no ATTACK): kiting only gives it free shots — close to range 3 and trade (we out-heal/out-damage small ones)
   if (rangedOf(t) && !meleeOf(t)) { c.memory.kr = r; c.memory.kw = 0; if (r > 3) rawMove(c, t, mv); return; }
   // melee target: while it is actually stepping toward us, kite (hold >=4, fight at 3). moveTo into a chaser
@@ -515,4 +584,4 @@ roles.rscout = function (c) {
   if (remote.paused(c.memory.remote)) return flee(c);
   go(c, c.memory.remote, x, y, 1);
 };
-module.exports = { viaHold, viaGate, repairNow, inward, stageOut, STAGE, waiterOrder, pocketAct, POCKET, onAvoid, waitStand, stepOffAvoid, viaTake, VIA_KEEP, coreAct, reserverAct, rminer: { run: roles.rminer }, rhauler: { run: roles.rhauler }, reserver: { run: roles.reserver }, defender: { run: roles.defender }, rscout: { run: roles.rscout } };
+module.exports = { viaHold, viaGate, repairNow, inward, safeEntry, stageOut, STAGE, waiterOrder, pocketAct, POCKET, onAvoid, waitStand, stepOffAvoid, viaTake, VIA_KEEP, coreAct, reserverAct, rminer: { run: roles.rminer }, rhauler: { run: roles.rhauler }, reserver: { run: roles.reserver }, defender: { run: roles.defender }, rscout: { run: roles.rscout } };

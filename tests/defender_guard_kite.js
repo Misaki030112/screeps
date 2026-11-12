@@ -78,7 +78,7 @@ assert.ok(moved.length >= 0, 'ran without throw');
 // Range used to count as "approaching" whenever WE stepped closer, so kw reset, kite held at range 4-6,
 // and rangedAttack never fired. Real terrain pocket 33,29 vs 28,24.
 const T7 = fs.readFileSync(path.join(ROOT, 'data/terrain_W47N7.txt'), 'utf8');
-const wall7 = (x, y) => x < 1 || y < 1 || x > 48 || y > 48 || T7[y * 50 + x] === '1' || T7[y * 50 + x] === '3';
+const wall7 = (x, y) => x < 0 || y < 0 || x > 49 || y > 49 || T7[y * 50 + x] === '1' || T7[y * 50 + x] === '3';
 const D9 = [[0, 0], [0, -1], [1, -1], [1, 0], [1, 1], [0, 1], [-1, 1], [-1, 0], [-1, -1]];
 room.getTerrain = () => ({ get: (x, y) => wall7(x, y) ? 1 : (T7[y * 50 + x] === '2' ? 2 : 0) });
 function bfs(x, y, gx, gy, range) {
@@ -119,4 +119,60 @@ creep.moveTo = (t) => { const q = t.pos || t; const s = bfs(creep.pos.x, creep.p
 for (let t = 0; t < 30; t++) { Game.time = 200 + t; roles.defender.run(creep); }
 const endR = Math.max(Math.abs(creep.pos.x - 28), Math.abs(creep.pos.y - 24));
 assert.ok(shots > 0 && endR <= 3, 'stationary melee on W47N7 must be closed and shot, shots=' + shots + ' range=' + endR + ' at ' + creep.pos.x + ',' + creep.pos.y);
+
+// W47N7 2026-11-12: rdef entered next to the ATTACK Invader on the north exit and stood there.
+// A ranged defender must not sit in melee, and must not step from the exit onto a melee tile.
+global.FIND_CREEPS = 101;
+function bind(p) {
+  p.getRangeTo = function (t) { const q = t.pos || t; return Math.max(Math.abs(this.x - q.x), Math.abs(this.y - q.y)); };
+  p.inRangeTo = function (a, b, r) {
+    if (typeof a === 'object' && a.pos) return Math.max(Math.abs(this.x - a.pos.x), Math.abs(this.y - a.pos.y)) <= (r === undefined ? b : r);
+    if (typeof a === 'object') return Math.max(Math.abs(this.x - a.x), Math.abs(this.y - a.y)) <= b;
+    return Math.max(Math.abs(this.x - a), Math.abs(this.y - b)) <= r;
+  };
+  p.isNearTo = function (o) { const q = o.pos || o; return Math.max(Math.abs(this.x - q.x), Math.abs(this.y - q.y)) <= 1; };
+  p.findInRange = () => [];
+}
+bind(creep.pos); bind(inv.pos);
+const posts = [];
+const moveMod = require(path.join(ROOT, 'src/utils/move.js'));
+const origTo = moveMod.to;
+moveMod.to = (c, x, y) => { posts.push([x, y]); };
+inv.pos.x = 18; inv.pos.y = 0;
+inv.body = [
+  { type: 'tough', hits: 100 }, { type: 'move', hits: 100 }, { type: 'move', hits: 100 },
+  { type: 'ranged_attack', hits: 100 }, { type: 'work', hits: 100 }, { type: 'attack', hits: 100 },
+];
+creep.pos.x = 17; creep.pos.y = 1;
+creep.memory = { role: 'defender', remote: 'W47N7', home: 'W47N8' };
+creep.hits = 4400; creep.hitsMax = 4400;
+let stood = 0, prev = '';
+for (let t = 0; t < 12; t++) {
+  Game.time = 300 + t;
+  const before = creep.pos.x + ',' + creep.pos.y;
+  const r = Math.max(Math.abs(creep.pos.x - 18), Math.abs(creep.pos.y - 0));
+  roles.defender.run(creep);
+  if (r <= 1 && creep.pos.x + ',' + creep.pos.y === before) stood++;
+  prev = creep.pos.x + ',' + creep.pos.y;
+}
+const away = Math.max(Math.abs(creep.pos.x - 18), Math.abs(creep.pos.y - 0));
+assert.strictEqual(stood, 0, 'did not sit a tick in melee of the ATTACK creep, ended ' + prev + ' range ' + away);
+assert.ok(away >= 3, 'opened to range 3, range ' + away + ' at ' + prev);
+assert.ok(!posts.some(p => p[0] === 27 && p[1] === 19), 'did not path to guard post 27,19 while the melee was up');
+// Exit tile, melee on every inward step: do not step into range 1. Leave and mark a safer crossing.
+posts.length = 0;
+const dirs = [];
+creep.move = d => { dirs.push(d); };
+creep.pos.x = 18; creep.pos.y = 0;
+inv.pos.x = 18; inv.pos.y = 1;
+creep.memory = { role: 'defender', remote: 'W47N7', home: 'W47N8' };
+Game.time = 400;
+roles.defender.run(creep);
+assert.ok(dirs.length === 1, 'entry tick moved, dirs ' + dirs);
+const landed = [[0, -1], [1, -1], [1, 0], [1, 1], [0, 1], [-1, 1], [-1, 0], [-1, -1]][dirs[0] - 1];
+const lx = 18 + landed[0], ly = 0 + landed[1];
+const lr = Math.max(Math.abs(lx - 18), Math.abs(ly - 1));
+assert.ok(ly < 1 || lr >= 2, 'did not step into melee on entry, dir ' + dirs[0] + ' -> ' + lx + ',' + ly);
+assert.ok(creep.memory.ax != null && creep.memory.ax !== 18, 'marked a crossing off the camped exit');
+moveMod.to = origTo;
 console.log('defender_guard_kite ok');

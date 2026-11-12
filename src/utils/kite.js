@@ -9,6 +9,9 @@
 // engage: among steps with enough room prefer range 3 to the target (shoot, never melee).
 // flee: among steps with enough room the one closest (path ticks) to our exit, so a chaser behind us is outrun toward home;
 //   if none has enough room, maximize room.
+// A tile next to the exit is a haven only while the melee is NOT already hitting it (r > 1). W47N7 2026-11-12:
+// the ATTACK Invader stood on the exit tile (18,0) and the defender at (17,1) scored ROOM_MAX for staying,
+// so it ate melee for 28 ticks. While already in melee, a farther plain step outranks that haven.
 const D9 = [[0, 0], [0, -1], [1, -1], [1, 0], [1, 1], [0, 1], [-1, 1], [-1, 0], [-1, -1]];
 const ROOM_OK = 25, ROOM_MAX = 60, MAX_T = 14; // "enough room" tiles; cap; search horizon in ticks
 // bucket Dijkstra over tick costs: L[k] = tick we can leave k (entering costs its dwell), A[k] = tick start we arrive (d0 tile: 0)
@@ -35,18 +38,31 @@ function step(c, t, flee, exit, opt = {}) {
   const { A } = dijkstra(T, t.pos.x, t.pos.y, Math.ceil((t.fatigue || 0) / (2 * mv)), () => true);
   const adj = k => { const x = (k / 50) | 0, y = k % 50; let m = 32767; for (const [dx, dy] of D9) { const v = A[(x + dx) * 50 + y + dy]; if (v < m) m = v; } return m; };
   const H = flee && exit ? dijkstra(T, exit[0], exit[1], 0, () => true, 400).L : null;
+  // The exit tile itself is the melee (W47N7 18,0). "Step out next tick" is a step onto the attacker.
+  const exitCamp = !!(exit && t.pos.x === exit[0] && t.pos.y === exit[1]);
+  const onHaven = !exitCamp && !!(exit && Math.max(Math.abs(c.pos.x - exit[0]), Math.abs(c.pos.y - exit[1])) <= 1);
   let best = 0, bs = -1e9;
   for (let k = 0; k <= 8; k++) {
     const x = c.pos.x + D9[k][0], y = c.pos.y + D9[k][1];
-    if (x < 1 || x > 48 || y < 1 || y > 48 || T.get(x, y) & TERRAIN_MASK_WALL) continue;
+    if (x < 0 || x > 49 || y < 0 || y > 49) continue;
+    const border = x < 1 || x > 48 || y < 1 || y > 48;
+    // The exit tile itself is the one step that leaves the room. Other border tiles bounce
+    // without being a way out, and a clear exit pocket still fights from the inside tile.
+    if (border && !(exit && (flee || (exitCamp && r0 <= 1)) && x === exit[0] && y === exit[1])) continue;
+    if (T.get(x, y) & TERRAIN_MASK_WALL) continue;
     const dwell = k && T.get(x, y) & TERRAIN_MASK_SWAMP ? 5 : 1;
     const a = adj(x * 50 + y), r = Math.max(Math.abs(x - t.pos.x), Math.abs(y - t.pos.y));
-    const room = exit && dwell === 1 && Math.max(Math.abs(x - exit[0]), Math.abs(y - exit[1])) <= 1 ? ROOM_MAX // haven: can leave next tick
+    const nearExit = !exitCamp && exit && dwell === 1 && Math.max(Math.abs(x - exit[0]), Math.abs(y - exit[1])) <= 1;
+    const room = nearExit ? ROOM_MAX // haven: one step leaves, and the melee is not on that step
       : dwell >= a ? 0 : Math.min(dijkstra(T, x, y, dwell, (nk, d) => d < adj(nk)).n, ROOM_MAX);
-    const sc = !room ? (a - dwell) * 10 + r // caught either way: delay it (a swamp lock is the worst)
+    let sc = !room ? (a - dwell) * 10 + r // caught either way: delay it (a swamp lock is the worst)
       : 1000 + (flee ? (room >= ROOM_OK ? 1000 - (H ? H[x * 50 + y] : 0) : 0) + room * 2 + r
       : Math.min(room, ROOM_OK) * 10 - Math.abs(r - 3) * 3 + (r <= 3 ? 5 : 0))
       + (opt.last && k ? (k === opt.last ? 2 : k === OPPD[opt.last] ? -4 : 0) : 0);
+    // In melee and not already on a real exit haven: take a farther plain step. Do not stand.
+    // Swamp gets no bonus (west-exit pocket). A real haven is left alone.
+    if (!onHaven && r0 <= 1 && r <= 1) sc -= 200;
+    if (!onHaven && !border && r0 <= 1 && dwell === 1 && r > r0) sc += 800;
     if (sc > bs) { bs = sc; best = k; }
   }
   return best;

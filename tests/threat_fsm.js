@@ -281,10 +281,14 @@ it('armed(): flag + RCL4 stable 1500t + full + CLAIM2 reserver', () => {
   // RCL5 build: lastFull stale but energyAvailable covers defender cost -> still armed
   home.controller.level = 5; home.energyCapacityAvailable = 1800; home.energyAvailable = 1400;
   home.memory = {}; Game.time = 5000; assert.strictEqual(T.armed('W45N8'), true);
-  home.energyAvailable = 400; assert.strictEqual(T.armed('W45N8'), false); // cannot afford and lastFull missing
-  home.storage = { store: { [RESOURCE_ENERGY]: 1600 } }; assert.strictEqual(T.armed('W45N8'), true); // dual-remote: storage covers defender
-  home.storage.store[RESOURCE_ENERGY] = 500; assert.strictEqual(T.armed('W45N8'), false); // storage too low
+  home.energyAvailable = 400; assert.strictEqual(T.armed('W45N8'), true); // short pile does not disarm a held room
+  assert.strictEqual(Memory.remote.W45N8.needE, true, 'fillers still see the shortage');
+  home.storage = { store: { [RESOURCE_ENERGY]: 1600 } }; assert.strictEqual(T.armed('W45N8'), true); // storage covers the 1300 reserve
+  assert.strictEqual(Memory.remote.W45N8.needE, false);
+  home.storage.store[RESOURCE_ENERGY] = 500; assert.strictEqual(T.armed('W45N8'), true); // under reserve, lastFull missing: still armed
+  assert.strictEqual(Memory.remote.W45N8.needE, true);
   home.storage = null; home.memory.lastFull = 4900; assert.strictEqual(T.armed('W45N8'), true); // recently near-full still counts
+  assert.strictEqual(Memory.remote.W45N8.needE, false);
   delete Memory.defense; assert.strictEqual(T.armed('W45N8'), true); // default ON (Misaki 10:39: keep remote anti-Invader)
   Memory.defense = { remoteDefender: false }; assert.strictEqual(T.armed('W45N8'), false); // explicit off still works
 });
@@ -356,6 +360,45 @@ it('sense() uses home energyCapacityAvailable for the escalated fight', () => {
   assert.strictEqual(held.reserved, true);
   assert.strictEqual(held.cap, 1800);
   assert.strictEqual(T.step({ st: 'SAFE', since: 1 }, held, T.cfg('W45N7'), Game.time).s.why, 'guard');
+});
+it('reserved combat wave stays THREAT when energyAvailable is short and lastFull is stale', () => {
+  const part = (type, boost) => ({ type, hits: 100, boost });
+  const creep = (body, x, y) => ({ owner: { username: 'Invader' }, body, ticksToLive: 1003, hits: 1000, hitsMax: 1000, pos: { x, y },
+    getActiveBodyparts: t => body.filter(p => p.type === t && p.hits).length });
+  const foes = [
+    creep([part('tough'), part('tough'), part('move'), part('move'), part('move'), part('move'), part('move'), part('ranged_attack'), part('work'), part('attack')], 18, 0),
+    creep([part('tough'), part('tough'), part('move'), part('move'), part('move'), part('move'), part('move'), part('ranged_attack'), part('ranged_attack'), part('ranged_attack')], 28, 5),
+    creep([part('tough', 'GO'), part('tough', 'GO'), part('move'), part('move'), part('move'), part('move'), part('move'), part('ranged_attack', 'KO'), part('ranged_attack', 'KO'), part('ranged_attack', 'KO')], 24, 4),
+    creep([part('move'), part('move'), part('move'), part('move'), part('move'), part('heal', 'LO'), part('heal', 'LO'), part('heal', 'LO'), part('heal', 'LO'), part('heal', 'LO')], 23, 4),
+  ];
+  const home = { name: 'W47N8', controller: { level: 7 }, energyCapacityAvailable: 5600, energyAvailable: 220,
+    memory: { lastFull: 1, rcl4Since: 1 }, storage: { store: { energy: 0 } }, find: () => [] };
+  const remote = { name: 'W47N7', controller: {}, find: t => t === FIND_HOSTILE_CREEPS ? foes : [] };
+  global.Memory = { username: 'Misaki', remote: { W47N7: { res: { username: 'Misaki', ticksToEnd: 2000 }, seen: 84224377 } },
+    defense: { remoteDefender: true }, ops: { r7: { by: 'Misaki', endTime: 84226000 } }, creeps: {} };
+  global.Game = { time: 84224377, cpu: { bucket: 10000 }, rooms: { W47N8: home, W47N7: remote }, creeps: {} };
+  assert.strictEqual(T.armed('W47N7'), true, 'short ea and stale lastFull do not disarm');
+  assert.strictEqual(Memory.remote.W47N7.needE, true);
+  const o = T.sense('W47N7');
+  assert.strictEqual(o.armed, true);
+  assert.strictEqual(o.short, true);
+  assert.strictEqual(o.inv.length, 4);
+  const opened = T.step({ st: 'SAFE', since: 1 }, o, T.cfg('W47N7'), Game.time);
+  assert.strictEqual(opened.s.st, 'THREAT');
+  assert.strictEqual(opened.s.mission, 'guard');
+  assert.notStrictEqual(opened.s.why, 'gate');
+  Memory.remote.W47N7.th = opened.s;
+  assert.strictEqual(T.wantDefender('W47N8'), 'W47N7');
+  assert.strictEqual(T.squadSize(opened.s), 4, 'healer + boosted ranged + four creeps');
+  const mid = T.step({ st: 'DEFEND', since: Game.time - 80, why: 'dispatched', mission: 'guard', def: 'rdef' },
+    Object.assign({}, o, { def: 'out' }), T.cfg('W47N7'), Game.time);
+  assert.strictEqual(mid.s.st, 'DEFEND', 'a live fight is not aborted to WAIT(gate)');
+  const late = T.step({ st: 'THREAT', since: Game.time - 500, why: 'guard', mission: 'guard' },
+    Object.assign({}, o, { def: 'none' }), T.cfg('W47N7'), Game.time);
+  assert.strictEqual(late.s.st, 'THREAT', 'gathering the max body does not readyTimeout');
+  const back = T.step({ st: 'WAIT', since: 1, why: 'gate', mission: 'guard', until: Game.time + 1000, last: o.inv },
+    Object.assign({}, o, { def: 'none' }), T.cfg('W47N7'), Game.time);
+  assert.strictEqual(back.s.st, 'THREAT', 'an energy WAIT(gate) re-arms while the wave is up');
 });
 for (const [n, f] of cases) { try { f(); pass++; console.log('ok   ' + n); } catch (e) { console.log('FAIL ' + n + '\n     ' + e.message); } }
 console.log(`${pass}/${cases.length} passed`); if (pass !== cases.length) process.exit(1);

@@ -116,4 +116,49 @@ assert.strictEqual(S.extrasOk(Object.assign({}, soft, { storage: { store: { ener
   }
 }
 
+// A judged combat wave (healer + boosted ranged, four creeps) still spawns kite extras
+// under the 15k home floor and the W47 softCap 25k floor. A solo's peacetime extra does not.
+// The body is the 19 RA + 25 MOVE + 6 HEAL recipe, not a melee ATTACK body.
+{
+  const orig = {
+    wantDefender: T.wantDefender, armed: T.armed, state: T.state,
+    squadAlive: T.squadAlive, squadSize: T.squadSize, energyHold: T.energyHold,
+    coreMission: T.coreMission,
+  };
+  const wave = { st: 'THREAT', mission: 'guard', last: [
+    { attack: 1, ra: 1 }, { ra: 3 }, { ra: 3, boosted: true }, { heal: true, boosted: true },
+  ]};
+  T.wantDefender = () => 'W47N7';
+  T.armed = () => true;
+  T.energyHold = () => false;
+  T.coreMission = () => false;
+  T.state = () => wave;
+  T.squadAlive = () => 1;
+  T.squadSize = () => 4;
+  try {
+    Memory.ops.w8day = { softCap2: 1 };
+    const broke = { name: 'W47N8', controller: { level: 7 }, energyCapacityAvailable: 5600, energyAvailable: 220, storage: { store: { energy: 0 } } };
+    const plan = S.planDefender(broke);
+    assert.ok(plan, 'extras spawn while W47 storage is 0 and softCap is on');
+    assert.strictEqual(plan.cost, 5600);
+    assert.strictEqual(plan.hold, true);
+    assert.strictEqual(n(plan.body, ATTACK), 0, 'ranged+heal wave is a kite body, not melee');
+    assert.strictEqual(n(plan.body, RANGED_ATTACK), 19);
+    assert.strictEqual(n(plan.body, HEAL), 6);
+    assert.strictEqual(n(plan.body, MOVE), 25);
+    const home = { name: 'W46N8', controller: { level: 7 }, energyCapacityAvailable: 5600, energyAvailable: 2750, storage: { store: { energy: 12854 } } };
+    const planH = S.planDefender(home);
+    assert.ok(planH, 'extras spawn under the 15k home floor');
+    assert.strictEqual(planH.cost, 5600);
+    assert.strictEqual(n(planH.body, ATTACK), 0);
+    T.state = () => ({ st: 'DEFEND', mission: 'solo', last: [{ ttl: 1400 }], extra: 1 });
+    T.squadAlive = () => 1;
+    T.squadSize = () => 2;
+    assert.strictEqual(S.planDefender(home), null, 'a solo peacetime extra still respects the 15k floor');
+  } finally {
+    Object.assign(T, orig);
+    Memory.ops.w8day = { softCap2: 0 };
+  }
+}
+
 console.log('defender squad ok');

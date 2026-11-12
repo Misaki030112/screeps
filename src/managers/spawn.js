@@ -407,7 +407,11 @@ function planDefender(room) {
   const have = threat.squadAlive(th);
   const want = threat.squadSize(th);
   if (have >= want) return null;
-  if (have >= 1 && !extrasOk(room)) return null;
+  // Bodies 2–4 of a judged combat wave (healer, boosted pair, >=6 RA, or 4+ creeps)
+  // are not civilian spending. The 15k floor and the W47 softCap 25k floor stay in
+  // place for builders, extra upgraders, and a peacetime extra on a solo (judge < 2).
+  const judged = require('../utils/squad').judge(th.last, th.mission);
+  if (have >= 1 && judged < 2 && !extrasOk(room)) return null;
   const cap = room.energyCapacityAvailable || 1300;
   // Always the max body for this room's energyCapacityAvailable. A short energyAvailable used to
   // shrink body #1 (ea ~4680 → a partial kite, or a 1300 core buster). The spawn waits, queen and
