@@ -257,9 +257,9 @@ function spawnRun(spawn) {
   const mv8 = Memory.ops && Memory.ops.w8move;
   if (!want && mv8 && mv8.phase === 'prep' && room.storage && bankE(room) >= MOVE_E - 3000
     && !raidPause && !cs.some(c => c.memory.role === 'w8builder' && (c.spawning || c.ticksToLive >= 700))) want = 'w8builder';
-  if (!want && wallsLow && nUp() < (raidPause ? require('../../roles/raid9').upgraderKeep(room) : (room.controller.ticksToDowngrade < 10000 || stock8() > 3000 ? 2 : 1))) want = 'w8upgrader';
+  if (!want && wallsLow && nUp() < upCapN(room, raidPause ? require('../../roles/raid9').upgraderKeep(room) : (room.controller.ticksToDowngrade < 10000 || stock8() > 3000 ? 2 : 1))) want = 'w8upgrader';
   else if (!want && !raidPause && wallsLow && n('w8builder') < 3) want = 'w8builder';
-  else if (!want && !wallsLow && nUp() < (raidPause ? require('../../roles/raid9').upgraderKeep(room) : upgTarget(room))) want = 'w8upgrader'; // 15:5x move bank // 11-04 leanBank bands // 11-10: peacetime 2 until 40k/500 sticky, then 3; threatSoft stays ≤2
+  else if (!want && !wallsLow && nUp() < upCapN(room, raidPause ? require('../../roles/raid9').upgraderKeep(room) : upgTarget(room))) want = 'w8upgrader'; // 15:5x move bank // 11-04 leanBank bands // 11-10: peacetime 2 until 40k/500 sticky, then 3; threatSoft stays ≤2. 11-12: sites cap at 1 (upgTarget)
   // 14:55 model-driven (tools/model_w8.py -> Memory.ops.w8model): remote fleet sized by CARRY need = sum 10 x (rt x 1.1 + 4) / 50 over
   // both W47N7 sources (~52 at 14:55) instead of loose-pile thresholds (live 88 CARRY: rhaulers 82% moving/12% blocked, +1.8 e/t upkeep).
   // Floor (ahead of builders): 60% of need; full need + a backlog term (+16 CARRY per 2000 loose above 3000) in step 7.
@@ -387,8 +387,19 @@ const PRIO = ['spawn', 'tower', 'extension', 'container', 'storage', 'link', 'te
 // 10-31 (Misaki): KEY structures (tower/spawn/storage/terminal) may keep/get a rampart site — tower 24,8 was naked while 33,35 had ~100k.
 // Empty planned slots still get no rampart (old 17:15 rule). Soft staging (SOFT_RAMP) raises KEY covers to ~100k.
 const KEY = ['spawn', 'storage', 'tower', 'terminal'];
+// 11-12: lab/factory covers are not KEY (placeKeyRamps must not auto-place them) but a parent-placed
+// rampart site on that tile has to survive, and the built cover has to be held at 300k (see rampHold).
+const IND_RAMP = 300000;
+function indAt(room, x, y) {
+  if (!room || !room.lookForAt || x == null) return false;
+  const hit = list => list && list.some(s => s && (s.structureType === 'lab' || s.structureType === 'factory'));
+  if (hit(room.lookForAt(LOOK_STRUCTURES, x, y))) return true;
+  if (typeof LOOK_CONSTRUCTION_SITES !== 'undefined' && hit(room.lookForAt(LOOK_CONSTRUCTION_SITES, x, y))) return true;
+  return false;
+}
 const keepRamp = (room, x, y) => isGate(x, y) || (x === L.ORDER.spawn[0][0] && y === L.ORDER.spawn[0][1])
-  || room.lookForAt(LOOK_STRUCTURES, x, y).some(s => KEY.includes(s.structureType));
+  || room.lookForAt(LOOK_STRUCTURES, x, y).some(s => KEY.includes(s.structureType))
+  || indAt(room, x, y);
 function placeKeyRamps(room) {
   for (const s of room.find(FIND_MY_STRUCTURES, { filter: s => KEY.includes(s.structureType) })) {
     const { x, y } = s.pos;
@@ -514,18 +525,27 @@ function upBankTick(storE) {
   s.since = 0;
   return false;
 }
+// 11-12: while any construction site is up, RCL7 keep is 1 (home spawn.js already cuts to 1 on nSites).
+// Sites gone → the previous keep (2 until the 40k/500 latch, then 3; threatSoft stays ≤2; leanBank bands unchanged).
+// Does not lift softCap or the latch. Below RCL7 the old target is left alone.
+function upCapN(room, keep) {
+  if (!room || !room.controller || room.controller.level < 7) return keep;
+  if (!room.find || typeof FIND_MY_CONSTRUCTION_SITES === 'undefined') return keep;
+  return room.find(FIND_MY_CONSTRUCTION_SITES).length ? Math.min(keep, 1) : keep;
+}
 // Peacetime w8upgrader target. leanBank / day-of miss stay as they were. threatSoft caps at 2
-// even after the sticky bank. Never 4–6.
+// even after the sticky bank. Never 4–6. Open sites cap the result at 1 (upCapN).
 function upgTarget(room) {
   const se = room.storage && room.storage.store ? (room.storage.store[RESOURCE_ENERGY] || 0) : 0;
-  if (energyBank(room)) {
-    if (se < LEAN_ARM) return room.controller.ticksToDowngrade < 20000 ? 1 : 0;
-    return 2;
+  let t;
+  if (energyBank(room)) t = se < LEAN_ARM ? (room.controller.ticksToDowngrade < 20000 ? 1 : 0) : 2;
+  else {
+    const m = dayofMiss(room);
+    if (m.missSpawn || m.missTower) t = 1;
+    else if (threatSoft()) t = 2;
+    else t = upBankTick(se) ? 3 : 2;
   }
-  const m = dayofMiss(room);
-  if (m.missSpawn || m.missTower) return 1;
-  if (threatSoft()) return 2;
-  return upBankTick(se) ? 3 : 2;
+  return upCapN(room, t);
 }
 // 11:4x 2026-11-02 (Misaki): reversible ≤2 w8upgrader soft-cap while threat soft is on.
 // threatSoft = TH.localOn() — Memory.ops.w8threat within TH.WINDOW (1500). Same predicate as
@@ -649,6 +669,7 @@ function leanBankRecycle(room) {
   if (banking) keep = leanUpKeep(storE);
   else if (room.controller && room.controller.level >= 7) keep = (threatSoft() || !upBankTick(storE)) ? 2 : 3;
   else { o.w8recycle = nonUp(o.w8recycle); return; }
+  keep = upCapN(room, keep); // 11-12: open sites trim to 1; the 40k latch is restored once they finish
   const ups = [];
   for (const n in Game.creeps) {
     const c = Game.creeps[n];
@@ -833,7 +854,7 @@ function dayObs(room) {
     }
   }
     const upLatched = rcl >= 7 && upBankTick(storE);
-    const upKeepN = lb ? leanUpKeep(storE) : (rcl >= 7 ? ((threatSoft() || !upLatched) ? 2 : 3) : 0);
+    const upKeepN = upCapN(room, lb ? leanUpKeep(storE) : (rcl >= 7 ? ((threatSoft() || !upLatched) ? 2 : 3) : 0));
     o.w8day = { t: Game.time, rcl, need, siteRem: siteRemV, builders, upgraders, storE, bill,
     missSpawn: missSpawn ? 1 : 0, missTower: missTower ? 1 : 0, missExt, why, phase,
     bankLeft, bankEta, leanBank: lb ? 1 : 0, bankArm: LEAN_ARM, bankSoft: LEAN_SOFT, softArm: LEAN_SOFT_ARM, bankWhy, softLeft,
@@ -857,6 +878,7 @@ function dayObs(room) {
     // 23:4x 11-03: hubPrime=1 when hub link holds ≥HUB_SEND(200) — patrol sees pre-warm during softCap bank
     hubPrime: (hubReady && hubLinkE >= 200) ? 1 : 0,
     // 11-10: effective ceiling is the keep (2, or 3 after the sticky bank). The old hub-live ceil of 6 is retired.
+    // 11-12: upKeepN is already 1 while any construction site is open (upCapN).
     upgCeil: rcl >= 7 ? upKeepN : (siteRemV >= 3000 ? 2 : 3),
     feedBound: (!hubLinkLive(room) && !softCap2(storE) && !warMode && upgraders >= (siteRemV >= 3000 ? 2 : 3)) ? 1 : 0,
     contMinPct, contLow, roadCrit }; // 11:38: repair debt (containers <50% / roads <25%)
@@ -993,6 +1015,7 @@ function rampNeeded(room, r) {
   if (!r.pos) return true;
   const { x, y } = r.pos;
   if (isGate(x, y) || (x === L.ORDER.spawn[0][0] && y === L.ORDER.spawn[0][1])) return true;
+  if (indAt(room, x, y)) return true; // lab/factory cover: held at IND_RAMP, not left to decay
   return !room.lookForAt || room.lookForAt(LOOK_STRUCTURES, x, y).some(s => KEY.includes(s.structureType));
 }
 function rampHold(room) {
@@ -1030,12 +1053,18 @@ function rampHold(room) {
   soft.sealPark = TH.sealParked() ? 1 : 0;
   const localThreat = TH.localOn();
   soft.why = softT <= 0 ? 'off' : localThreat ? 'threat' : (storE < softMin ? 'stor' : 'ok');
+  // Lab/factory covers share the soft pass only up to IND_RAMP. w8key (and the RCL7 1M seal) must not
+  // pull them further; a fresh 1-hit cover also has to be claimed here or the 300/100t decay deletes it.
+  const softGoal = r => (r.pos && indAt(room, r.pos.x, r.pos.y)) ? Math.min(softT, IND_RAMP) : softT;
   if (softT > 0 && storE >= softMin && !localThreat) {
-    const low = rs.filter(r => r.hits < softT && r.pos && !isGate(r.pos.x, r.pos.y))
+    const low = rs.filter(r => r.hits < softGoal(r) && r.pos && !isGate(r.pos.x, r.pos.y))
       .sort((a, b) => a.hits - b.hits)[0];
     if (low) return low;
   }
-  return rs.find(r => r.hits < live[r.id] - HOLD_SLACK) || null;
+  const decayed = rs.find(r => r.hits < live[r.id] - HOLD_SLACK);
+  if (decayed) return decayed;
+  // Above SOFT_RAMP (or while threat skips the soft pass): finish the 300k floor, then stop.
+  return rs.filter(r => r.pos && indAt(room, r.pos.x, r.pos.y) && r.hits < IND_RAMP).sort((a, b) => a.hits - b.hits)[0] || null;
 }
 // 17:20 RCL5 links (parent-approved plan): source A link 26,12 -> ctl link 13,25 (3% loss) replaces ~25-tile hauling of source A.
 function linkAt(p) { const r = Game.rooms[C.ROOM]; return p && r && r.lookForAt(LOOK_STRUCTURES, p[0], p[1]).find(s => s.structureType === STRUCTURE_LINK); }
