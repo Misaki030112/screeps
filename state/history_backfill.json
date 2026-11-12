@@ -1,8 +1,8 @@
 {
   "ok": true,
   "routine": "Screeps 半小时轨迹补数",
-  "finished_at": "2026-11-12T09:08:45+08:00",
-  "finished_at_hkt": "2026-11-12 09:08 Asia/Hong_Kong",
+  "finished_at": "2026-11-12T10:10:08+08:00",
+  "finished_at_hkt": "2026-11-12 10:10 Asia/Hong_Kong",
   "shard": "shard3",
   "rooms": [
     "W46N8",
@@ -12,12 +12,12 @@
     "W47N7"
   ],
   "minutes": 40,
-  "game_time": 84216813,
-  "live_game_time_at_finish": 84216840,
-  "live_gameTime_stale": "live.json gameTime was null at finish; stats.t=84216840 and room_stats max=84216840 at 2026-11-12 09:08:01 Asia/Hong_Kong were fresh.",
-  "published_bases": "84216100..84216700",
-  "retry2_game_time": 84216838,
-  "retry2_published_bases": "84216100..84216700",
+  "game_time": 84217629,
+  "live_game_time_at_finish": 84217680,
+  "live_gameTime_stale": "live.json gameTime was None at finish; stats.t=84217680 and room_stats max=84217670 at 2026-11-12 10:08:53 Asia/Hong_Kong were fresh.",
+  "published_bases": "84216900..84217500",
+  "retry2_game_time": 84217664,
+  "retry2_published_bases": "84217400..84217500",
   "retry3_game_time": null,
   "retry3_rooms": null,
   "retry3_published_bases": null,
@@ -25,111 +25,179 @@
   "retry4_rooms": null,
   "retry4_published_bases": null,
   "ticks": {
-    "from": 84216101,
-    "to": 84216800,
+    "from": 84216901,
+    "to": 84217600,
     "count": 700
   },
   "retry_extended_ticks": null,
   "full_extended_ticks": {
-    "from": 84216101,
-    "to": 84216800,
+    "from": 84216901,
+    "to": 84217600,
     "count": 700
   },
-  "tick_s": 4.299,
-  "tick_s_retry": 4.299,
+  "tick_s": 4.47,
+  "tick_s_retry": 4.407,
   "tick_s_retry3": null,
-  "missing_chunks": 0,
-  "missing_chunk_list": [],
-  "missing_chunk_note": "First pass missing_chunks=1 (W47N7@84216700 official 404; published_bases=84216100..84216700, ticks 84216101..84216800). Other 4 rooms fetched 7/7 bases including newly published 84216300/84216400/84216500/84216600/84216700. Retry ~45s later fetched W47N7@84216700 ok (ticks=100); missing_chunks=0 after retry. No retry3/4.",
-  "creep_rows_reconstructed_first_pass": 27450,
-  "already_in_db_first_pass": 9552,
-  "inserted": 18253,
-  "inserted_first_pass": 17898,
-  "inserted_retry": 355,
+  "missing_chunks": 1,
+  "missing_chunk_list": [
+    "W46N8@84217500"
+  ],
+  "missing_chunk_note": "First pass missing_chunks=1 (404 W46N8@84217500); other 4 rooms fetched 7/7 bases 84216900..84217500 including newly published 84217200/84217300/84217400/84217500. Retry --minutes 8 (game.time=84217664, bases 84217400..84217500) still 404 W46N8@84217500, would_insert=0. No retry3/4. Residual official 404 for next overlap.",
+  "creep_rows_reconstructed_first_pass": 26634,
+  "already_in_db_first_pass": 15270,
+  "inserted": 11364,
+  "inserted_first_pass": 11364,
+  "inserted_retry": 0,
   "inserted_retry3": 0,
   "inserted_retry4": 0,
-  "ts_realigned": 9673,
-  "ts_realigned_first_pass": 9222,
-  "ts_realigned_retry": 451,
+  "ts_realigned": 0,
+  "ts_realigned_first_pass": 0,
+  "ts_realigned_retry": 0,
   "ts_realigned_retry3": 0,
-  "ssl_first_attempt": "No SSL error this run; first invocation succeeded (exit 0). Retry also exit 0.",
-  "hourly_patrol_prefilled": "Last half-hour backfill ~08:30 HKT covered official history ticks 84215601..84216300 (inserted=3915 first_pass=3284 retry=631 already_in_db_first=21609 ts_realigned=32, missing_chunks=2 first pass, 1 after retry; W47N7@84216200 filled on retry; W45N8@84216000 official 404). This run first pass window 84216101..84216800 overlapped that range (already_in_db=9552 would_insert=17898). Official chunks 84216300/84216400/84216500/84216600/84216700, unpublished last run, are now published and filled the previous residual 84216301.. through 84216800 (all 5 rooms 700/700 after retry).",
+  "ssl_first_attempt": "No SSL error this run; first invocation succeeded (exit 0). One targeted retry for W46N8@84217500 404, still 404, nothing to insert.",
+  "hourly_patrol_prefilled": "Last half-hour backfill ~09:38 HKT covered official history ticks 84216501..84217200 (inserted=10100 first_pass=10100 already_in_db_first=17552 ts_realigned=3411, missing_chunks=0). This run first pass window 84216901..84217600 overlapped that range (already_in_db=15270 would_insert=11364). Official chunks 84217200/84217300/84217400/84217500, unpublished last run (except 84217200 in progress), are now published except W46N8@84217500 and filled the previous residual 84217201.. through 84217600 in 4 rooms (W46N8 through 84217500).",
   "per_room": {
     "W45N7": {
       "distinct": 700,
-      "new_first_pass": 2049,
+      "new_first_pass": 1404,
       "new_retry": 0,
-      "rows_after": 1723,
+      "rows_after": 2132,
       "ticks": 700
     },
     "W45N8": {
       "distinct": 700,
-      "new_first_pass": 3504,
+      "new_first_pass": 1868,
       "new_retry": 0,
-      "rows_after": 4478,
+      "rows_after": 3130,
       "ticks": 700
     },
     "W46N8": {
-      "distinct": 700,
-      "new_first_pass": 3662,
+      "distinct": 605,
+      "new_first_pass": 1865,
       "new_retry": 0,
-      "rows_after": 7021,
-      "ticks": 700
+      "rows_after": 6339,
+      "ticks": 600
     },
     "W47N7": {
       "distinct": 700,
-      "new_first_pass": 1965,
-      "new_retry": 355,
-      "rows_after": 2950,
+      "new_first_pass": 1840,
+      "new_retry": 0,
+      "rows_after": 3183,
       "ticks": 700
     },
     "W47N8": {
       "distinct": 700,
-      "new_first_pass": 6718,
+      "new_first_pass": 4387,
       "new_retry": 0,
-      "rows_after": 10808,
+      "rows_after": 11606,
       "ticks": 700
     }
   },
   "db_after": {
-    "W45N7": "84216101..84216800 rows=1723 distinct=700",
-    "W45N8": "84216101..84216800 rows=4478 distinct=700",
-    "W46N8": "84216101..84216800 rows=7021 distinct=700",
-    "W47N7": "84216101..84216800 rows=2950 distinct=700",
-    "W47N8": "84216101..84216800 rows=10808 distinct=700"
+    "W45N7": "84216901..84217600 rows=2132 distinct=700",
+    "W45N8": "84216901..84217600 rows=3130 distinct=700",
+    "W46N8": "84216901..84217529 rows=6339 distinct=605",
+    "W47N7": "84216901..84217600 rows=3183 distinct=700",
+    "W47N8": "84216901..84217600 rows=11606 distinct=700"
   },
   "db_after_extended": {
-    "W45N7": "84216101..84216800 rows=1723 distinct=700",
-    "W45N8": "84216101..84216800 rows=4478 distinct=700",
-    "W46N8": "84216101..84216800 rows=7021 distinct=700",
-    "W47N7": "84216101..84216800 rows=2950 distinct=700",
-    "W47N8": "84216101..84216800 rows=10808 distinct=700"
+    "W45N7": "84216901..84217600 rows=2132 distinct=700",
+    "W45N8": "84216901..84217600 rows=3130 distinct=700",
+    "W46N8": "84216901..84217529 rows=6339 distinct=605",
+    "W47N7": "84216901..84217600 rows=3183 distinct=700",
+    "W47N8": "84216901..84217600 rows=11606 distinct=700"
   },
-  "w45n7_note": "W45N7 history chunks 84216100 through 84216600 were fetched ok first pass (1965 new, distinct=600/700 because 84216700 was still unpublished). Retry fetched W45N7@84216700 already present from first pass and inserted 0; W47N7@84216700 was the only missing chunk and filled on retry. Final W45N7 distinct=700/700. No empty-presence and no official 404 remaining for W45N7 inside this 40min window starting 84216101. Earlier empty-presence and official 404s sit before this window.",
+  "w45n7_note": "W45N7 history chunks 84216900 through 84217500 were fetched ok first pass (1840 new, distinct=700/700). No official 404 for W45N7 inside this 40min window starting 84216901.",
   "w45n8_holes": {
-    "W45N8@84216000": "Official 404 after previous 08:30 run's retry + targeted GET (ticks 84216001..84216100; 0 live; immediately before this window starting 84216101; still 0 distinct this run). Not retried this run because the base is outside published_bases 84216100..84216700.",
-    "this_window": "No official 404 for W45N8 inside this 40min window starting 84216101. First-pass distinct=700/700 (3504 new)."
+    "W45N8@84216000": "Official 404 remains (ticks 84216001..84216100; 0 distinct this run). Before this window starting 84216901. Not retried because the base is outside published_bases 84216900..84217500.",
+    "this_window": "No official 404 for W45N8 inside this 40min window starting 84216901. First-pass distinct=700/700 (1868 new)."
+  },
+  "w46n8_holes": {
+    "W46N8@84217500": "Official 404 after first pass and one retry (ticks 84217501..84217600). db has distinct=605/700 in 84216901..84217600: complete through 84217500, plus 5 sparse live ticks 84217514/84217516/84217522/84217527/84217529 after the 09:56 reconnect (subscribe limit / room rotation). 95 ticks still missing. Next overlap should retry this base.",
+    "this_window": "W46N8 first-pass 600 published ticks 84216901..84217500 plus 5 live ticks; distinct=605. Official 404 only on the latest published base 84217500."
   },
   "w47n8_holes": {
-    "this_window": "No official 404 for W47N8 inside this 40min window starting 84216101. First-pass distinct=700/700 (6718 new). Known official 404 W47N8@84213800 for 84213801..84213900 / 0 live sits before this window (from previous runs) and was not retried."
+    "W47N8@84213800": "Known official 404 remains outside this window (ticks 84213801..84213900; 0 distinct this run).",
+    "this_window": "No official 404 for W47N8 inside this 40min window starting 84216901. First-pass distinct=700/700 (4387 new)."
   },
   "w47n7_holes": {
-    "W47N7@84207100": "PERSISTENT official 404 after previous runs' retry2 (ticks 84207101..84207200; 0 live; outside this 40min window; other 4 rooms published that base). Not retried this run.",
-    "W47N7@84208100": "PERSISTENT official 404 after previous runs' retry2 (ticks 84208101..84208200; 0 live; outside this 40min window starting 84216101; other 4 rooms published that base and have 100/100). Not retried this run because the base is outside published_bases 84216100..84216700.",
-    "W47N7@84216700": "First-pass official 404; published and filled on retry (~45s later, 355 new, ticks 84216701..84216800). Final distinct=700/700.",
-    "this_window": "No official 404 remaining for W47N7 after retry. First-pass distinct=600/700 (1965 new) through 84216700; retry filled 84216701..84216800. Empty-presence 137 missing ticks in 84212518..84212658 after w8rminer84212233 died sits before this window starting 84216101."
+    "this_window": "No official 404 for W47N7 inside this 40min window starting 84216901. First-pass distinct=700/700 (1840 new)."
   },
   "listener": {
     "ok": true,
     "single_slot": true,
     "yield": false,
-    "room": "W47N8",
-    "reconnected_at": "2026-11-12 09:04:03",
-    "live_game_time": 84216840,
-    "live_updated": "2026-11-12 09:08:01",
-    "note": "services.sh this run: ok postgres, views_apache, grafana, listener, dashboard. Did not kill/relaunch or start a second listener, and did not restart war_cmd or pulse. Peacetime 5:5:1:1 unchanged, yield absent. run_listener.sh pid 4035476 still looping since Nov 9. Previous listener.py 1627167 (from 08:14:18) exited after box frozen ~1280s since 08:42:21, reconnecting at 09:03:50 (errors.log + listener.out restart 09:03:53). New listener.py pid 1642919 started 09:04:03 (usual ~10s sleep after the restart line; no extra stall). box_pauses.jsonl has a new row 08:42:21-09:03:50 (1280s). On reconnect the listener pulled segment 90 itself (creep_cpu and path_arrivals advancing; at finish creep_cpu max 84216830 / path_arrivals max 84216813; room_stats resumed 84216800 at 09:04:24). At finish roomSlot=W47N8 rot i=1 left=65.1 at 2026-11-12 09:08:00. live.json gameTime=null stats.t=84216840 updated 2026-11-12 09:08:01."
+    "room": "W45N8",
+    "reconnected_at": "2026-11-12 10:04:42",
+    "live_game_time": 84217680,
+    "live_updated": "2026-11-12 10:10:06",
+    "note": "services.sh this run: ok postgres, views_apache, grafana, listener, dashboard. Did not kill/relaunch or start a second listener, and did not restart war_cmd or pulse. Peacetime 5:5:1:1 unchanged, yield absent. run_listener.sh pid 4035476 still looping since Nov 9. Previous listener.py 1653668 (from 09:33:50) exited after ping/pong timeout 09:42:30 (errors.log + listener.out restart 09:42:33); post-09:42 listener then exited after ping/pong timeout 09:56:55 (restart 09:56:58); next listener hit subscribe limit reached once on W46N8 at 09:57:11 and once on W47N8 at 09:58:29 (stale prior socket), then exited after ping/pong timeout 10:04:29 (restart 10:04:32). New listener.py pid 1667062 started 10:04:42 (usual ~10s sleep after the restart line). No new box_pauses.jsonl row after 09:29:56-09:33:37. On reconnect the listener pulled segment 90 itself (creep_cpu max 84217660, path_arrivals advancing; room_stats resumed 84217620 at 10:05:07, later 84217670 at 10:08:53). At finish roomSlot=W45N8 rot i=2 left=80.0 at 2026-11-12 10:10:06. live.json gameTime=None stats.t=84217680 updated 2026-11-12 10:10:06."
   },
   "last_box_pause": {
+    "from": "2026-11-12 10:04:29",
+    "to": "2026-11-12 10:04:47",
+    "sec": 18,
+    "box_pauses_jsonl": null,
+    "kind": "listener_ping_pong_timeout",
+    "room_stats_last_before": "2026-11-12 10:03:00 tick 84217590",
+    "room_stats_resume": "2026-11-12 10:05:07 tick 84217620",
+    "ticks": "84217593..84217615",
+    "span": 23,
+    "stale_reconnect": "Last W47N8 live tick 84217592 at 10:03:00. errors.log 10:04:29 ws error ping/pong timed out; listener.out restart 10:04:32; no box_pauses.jsonl row. listener.py pid 1667062 started 10:04:42; first W47N8 live after resume 84217616 at 10:04:47; first room_stats after resume 84217620 at 10:05:07. Official history filled 84217593..84217600 (8/8) in 4 rooms (W46N8 404 on that chunk). Residual 84217601..84217615 is after published history (chunk 84217600 still in progress). W47N8 live already has 84217616.."
+  },
+  "prior_box_pause_0956": {
+    "from": "2026-11-12 09:56:55",
+    "to": "2026-11-12 09:57:15",
+    "sec": 20,
+    "box_pauses_jsonl": null,
+    "kind": "listener_ping_pong_timeout",
+    "room_stats_last_before": "2026-11-12 09:55:31 tick 84217490",
+    "room_stats_resume": "2026-11-12 09:57:43 tick 84217520",
+    "ticks": "84217499..84217513",
+    "span": 15,
+    "stale_reconnect": "errors.log 09:56:55 ws error ping/pong timed out; listener.out restart 09:56:58; no box_pauses.jsonl row. Last live W46N8 tick 84217498 at 09:56:04 (slot was W46N8 since 09:47:44). First live after resume 84217514 at 09:57:15, then sparse 84217516/22/27/29; errors.log subscribe limit reached W46N8 09:57:11 and W47N8 09:58:29 (x1 each, stale prior socket). Slot W46N8 78s at 09:57:09, then W47N8 600s at 09:58:28. Official history filled 15/15 in 4 rooms; W46N8 only 2/15 (84217499..84217500) because official 404 W46N8@84217500 after retry."
+  },
+  "prior_box_pause_0942": {
+    "from": "2026-11-12 09:42:30",
+    "to": "2026-11-12 09:42:47",
+    "sec": 17,
+    "box_pauses_jsonl": null,
+    "kind": "listener_ping_pong_timeout",
+    "room_stats_last_before": "2026-11-12 09:40:43 tick 84217290",
+    "room_stats_resume": "2026-11-12 09:42:57 tick 84217320",
+    "ticks": "84217298..84217317",
+    "span": 20,
+    "stale_reconnect": "errors.log 09:42:30 ws error ping/pong timed out; listener.out restart 09:42:33; no box_pauses.jsonl row. Last live W47N8 tick 84217297 at 09:41:13 (STATS had already stopped after 84217290@09:40:43). Room slot W47N8 60s at 09:42:44; first W47N8 live after resume 84217318 at 09:42:47; first room_stats after resume 84217320 at 09:42:57. Official history filled 20/20 in all 5 rooms for 84217298..84217317."
+  },
+  "prior_box_pause_0929": {
+    "from": "2026-11-12 09:29:56",
+    "to": "2026-11-12 09:33:37",
+    "sec": 221,
+    "box_pauses_jsonl": {
+      "from": "2026-11-12 09:29:56",
+      "to": "2026-11-12 09:33:37",
+      "sec": 221
+    },
+    "kind": "box_hibernate",
+    "room_stats_last_before": "2026-11-12 09:29:40 tick 84217140",
+    "room_stats_resume": "2026-11-12 09:34:03 tick 84217200",
+    "ticks": "84217141..84217197",
+    "span": 57,
+    "stale_reconnect": "From last status (~09:38 HKT backfill). Still filled 57/57 in all 5 rooms (this window includes this range)."
+  },
+  "prior_box_pause_0917": {
+    "from": "2026-11-12 09:17:05",
+    "to": "2026-11-12 09:17:39",
+    "sec": 34,
+    "box_pauses_jsonl": null,
+    "kind": "listener_ping_pong_timeout",
+    "room_stats_last_before": "2026-11-12 09:11:02 tick 84216890",
+    "room_stats_resume": "2026-11-12 09:17:39 tick 84216980",
+    "ticks": "84216901..84216979",
+    "span": 79,
+    "stale_reconnect": "From last status. Still filled 79/79 in all 5 rooms (this window includes this range starting 84216901)."
+  },
+  "prior_box_pause_0842": {
     "from": "2026-11-12 08:42:21",
     "to": "2026-11-12 09:03:50",
     "sec": 1280,
@@ -143,7 +211,7 @@
     "room_stats_resume": "2026-11-12 09:04:24 tick 84216800",
     "ticks": "84216501..84216796",
     "span": 296,
-    "stale_reconnect": "Last W47N8 live-looking tick 84216500 at 08:42:16 (W46N8 live trail had already rotated off at 84216435@08:37:28). box_pauses.jsonl 08:42:21-09:03:50 (1280s); errors.log 09:03:50 box frozen ~1280s since 08:42:21, reconnecting; listener.out restart 09:03:53; listener.py pid 1642919 started 09:04:03; first W47N8 live after resume 84216797 at 09:04:09; first room_stats after resume 84216800 at 09:04:24. Official history filled 296/296 in all 5 rooms for 84216501..84216796 (W47N7 last 96t of the dark window arrived on retry when 84216700 published). Residual 84216801.. is after published history (chunk 84216800 still in progress). W47N8 live already has 84216797.."
+    "stale_reconnect": "From last status. Still filled 296/296 in all 5 rooms (just before / overlapping the start of this window; verified this run via 84216501..84216796)."
   },
   "prior_box_pause_0814": {
     "from": "2026-11-12 08:14:15",
@@ -155,7 +223,7 @@
     "room_stats_resume": "2026-11-12 08:15:04 tick 84216130",
     "ticks": "84216101..84216129",
     "span": 29,
-    "stale_reconnect": "From last status (~08:30 HKT backfill). Still filled 29/29 in all 5 rooms (verified this run; window includes this range starting 84216101)."
+    "stale_reconnect": "From last status. Still filled 29/29 in all 5 rooms (before this window starting 84216901; verified this run)."
   },
   "prior_box_pause_0737": {
     "from": "2026-11-12 07:37:23",
@@ -171,7 +239,7 @@
     "room_stats_resume": "2026-11-12 08:04:41 tick 84215990",
     "ticks": "84215617..84215985",
     "span": 369,
-    "stale_reconnect": "From last status. Still filled 369/369 in all 5 rooms (just before this window starting 84216101; previous residual 84215901..84215985 still 85/85 all 5 rooms)."
+    "stale_reconnect": "From last status. Still filled 369/369 in all 5 rooms (outside this window starting 84216901; previous residual 84215901..84215985 still 85/85 all 5 rooms)."
   },
   "prior_box_pause_0709": {
     "from": "2026-11-12 07:09:46",
@@ -183,7 +251,7 @@
     "room_stats_resume": "2026-11-12 07:24:24 tick 84215440",
     "ticks": "84215241..84215439",
     "span": 199,
-    "stale_reconnect": "From last status. Still filled 199/199 in all 5 rooms (outside this window starting 84216101; verified this run)."
+    "stale_reconnect": "From last status. Still filled 199/199 in all 5 rooms (outside this window starting 84216901; verified this run)."
   },
   "prior_box_pause_0645": {
     "from": "2026-11-12 06:45:04",
@@ -199,12 +267,12 @@
     "room_stats_resume": "2026-11-12 07:03:10 tick 84215150",
     "ticks": "84214901..84215149",
     "span": 249,
-    "stale_reconnect": "From last status. Still filled 249/249 in all 5 rooms (outside this window starting 84216101; verified this run)."
+    "stale_reconnect": "From last status. Still filled 249/249 in all 5 rooms (outside this window starting 84216901; verified this run)."
   },
   "sleep_gap": {
-    "ticks": "84216501..84216796",
-    "span": 296,
-    "filled_by_history": "NEW dark window 84216501..84216796 (296t; last W47N8 live 84216500@08:42:16, W46N8 live already rotated off at 84216435@08:37:28, resume live W47N8 84216797@09:04:09, wall 1280s / box_pauses.jsonl 08:42:21-09:03:50 / errors.log 09:03:50 box frozen ~1280s / listener.out restart 09:03:53 / listener.py 1642919 since 09:04:03 / room_stats 84216490@08:41:32 to 84216800@09:04:24). Official history filled 296/296 in all 5 rooms for 84216501..84216796 (W47N7 last 96t arrived on retry when 84216700 published). Residual 84216801.. is after published history ticks 84216800 (chunk 84216800 still in progress); W47N8 live already has 84216797.. . Prev dark 84216101..84216129 still 29/29 in all 5 rooms. Prev dark 84215617..84215985 still 369/369 in all 5 rooms; previous residual 84215901..84215985 still 85/85 all 5 rooms. Prev dark 84215241..84215439 still 199/199 in all 5 rooms; prev dark 84214901..84215149 still 249/249 in all 5 rooms. Previous unpublished tail 84216301.. now filled through 84216800 in all 5 rooms. Unpublished tail 84216801.. is after this run's published history ticks 84216800. Official 404 W45N8@84216000 (100t) remains immediately before this window."
+    "ticks": "84217298..84217317",
+    "span": 20,
+    "filled_by_history": "NEW dark window 84217298..84217317 (20t; last W47N8 live 84217297@09:41:13, resume live W47N8 84217318@09:42:47, listener ping/pong timeout 09:42:30 / listener.out restart 09:42:33 / room slot W47N8 60s at 09:42:44 / room_stats 84217290@09:40:43 to 84217320@09:42:57). Official history filled 20/20 in all 5 rooms for 84217298..84217317. NEW dark 84217499..84217513 (15t, listener ping/pong timeout 09:56:55, restart 09:56:58 / last live W46N8 84217498@09:56:04 / first live after resume 84217514@09:57:15 sparse because subscribe limit reached / room_stats 84217490@09:55:31 to 84217520@09:57:43): official history filled 15/15 in W47N8/W45N8/W45N7/W47N7, W46N8 only 2/15 (84217499..84217500, end of published chunk 84217400) because official 404 W46N8@84217500 after retry. NEW dark 84217593..84217615 (23t, listener ping/pong timeout 10:04:29, restart 10:04:32 / listener.py 1667062 since 10:04:42 / last live W47N8 84217592@10:03:00 / resume 84217616@10:04:47 / room_stats 84217590@10:03:00 to 84217620@10:05:07): official history filled 84217593..84217600 (8t) in 4 rooms; residual 84217601..84217615 after published history (chunk 84217600 still in progress); W47N8 live already has 84217616... Prev dark 84217141..84217197 still 57/57 in all 5 rooms; prev dark 84216901..84216979 still 79/79 in all 5 rooms; prev dark 84216501..84216796 still 296/296 in all 5 rooms; prev dark 84216101..84216129 still 29/29 in all 5 rooms; prev dark 84215617..84215985 still 369/369 in all 5 rooms; previous residual 84215901..84215985 still 85/85 all 5 rooms; prev dark 84215241..84215439 still 199/199 in all 5 rooms; prev dark 84214901..84215149 still 249/249 in all 5 rooms. Previous unpublished tail 84217201.. now filled through 84217600 in 4 rooms (W46N8 through 84217500 plus 5 sparse live ticks in 84217514..84217529). Official 404 W46N8@84217500 (100t) remains after retry; official 404 W45N8@84216000 (100t) remains before this window; known W47N8@84213800 remains outside."
   },
-  "summary": "ok: 40min official history backfill shard3 5 rooms, ticks 84216101..84216800 (700), missing_chunks=1 first pass (W47N7@84216700), 0 after retry; inserted=18253 (first_pass=17898 retry=355 already_in_db=9552), reconstructed first_pass=27450, ts_realigned=9673 (9222+451); all 5 rooms distinct=700/700. No SSL crash. NEW dark 84216501..84216796 (box hibernate 08:42:21-09:03:50, 1280s / room_stats 84216490@08:41:32 to 84216800@09:04:24, 296t) filled 296/296 in all 5 rooms. Prev dark 84216101..84216129 still 29/29 all 5 rooms; prev dark 84215617..84215985 still 369/369 all 5 rooms; prev dark 84215241..84215439 still 199/199 all 5 rooms; prev dark 84214901..84215149 still 249/249 all 5 rooms. Previous residual 84216301.. now filled through 84216800 all 5 rooms. Residual 84216801.. after published history (chunk 84216800 still in progress). Official 404 W45N8@84216000 remains immediately before this window; known W47N8@84213800 remains outside."
+  "summary": "ok: 40min official history backfill shard3 5 rooms, ticks 84216901..84217600 (700), missing_chunks=1 first pass (W46N8@84217500), still 404 after 1 retry, no retry3/4; inserted=11364 (first_pass=11364 retry=0 already_in_db_first=15270), reconstructed first_pass=26634, ts_realigned=0; 4 rooms distinct=700/700, W46N8 distinct=605/700 (through 84217500 plus 5 sparse live ticks). No SSL crash. NEW dark 84217298..84217317 (listener ping/pong timeout 09:42:30 / room_stats 84217290@09:40:43 to 84217320@09:42:57, 20t) filled 20/20 in all 5 rooms. NEW dark 84217499..84217513 (listener ping/pong timeout 09:56:55 / room_stats 84217490@09:55:31 to 84217520@09:57:43, 15t) filled 15/15 in 4 rooms, W46N8 only 2/15 (84217499..84217500) because official 404 W46N8@84217500 after retry. NEW dark 84217593..84217615 (listener ping/pong timeout 10:04:29 / room_stats 84217590@10:03:00 to 84217620@10:05:07, 23t): official history filled 84217593..84217600 (8t) in 4 rooms; residual 84217601..84217615 after published history (chunk 84217600 still in progress), W47N8 live already has 84217616... Prev dark 84217141..84217197 still 57/57 all 5 rooms; prev dark 84216901..84216979 still 79/79 all 5 rooms; prev dark 84216501..84216796 still 296/296 all 5 rooms; prev dark 84216101..84216129 still 29/29 all 5 rooms; prev dark 84215617..84215985 still 369/369 all 5 rooms; prev dark 84215241..84215439 still 199/199 all 5 rooms; prev dark 84214901..84215149 still 249/249 all 5 rooms. Previous residual 84217201.. now filled through 84217600 in 4 rooms (W46N8 through 84217500). Official 404 W46N8@84217500 (100t 84217501..84217600, 5 live ticks present, 95 missing) remains for next overlap. Official 404 W45N8@84216000 (100t) remains before this window; known W47N8@84213800 remains outside."
 }
