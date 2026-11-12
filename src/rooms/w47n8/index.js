@@ -255,6 +255,16 @@ function spawnRun(spawn) {
   // 10-20 04:4x: W47N7 reservation from Spawn2 once cap >= 1800 (roles/reserve7.js: ~60 t walk vs ~200 from home; home is the fallback)
   let body7 = null;
   if (!want) { const w7 = require('../../roles/reserve7').wantSpawn(C.ROOM); if (w7) { want = 'reserve7'; body7 = w7.body; mem = w7.mem; } }
+  // Remote carry math is shared by the crash bootstrap here and the normal floor after upgraders.
+  const wm = (Memory.ops && Memory.ops.w8model) || {}, rNeed = wm.rcarry || 55;
+  const rCarry = (ttl) => cs.filter(c => c.memory.role === 'w8rhauler' && (c.spawning || c.ticksToLive > ttl)).reduce((a, c) => a + c.body.filter(p => p.type === CARRY).length, 0);
+  const rhaulShort = ours7 && lo7 > 1000 && n('w8rminer') && rCarry(150) < rNeed * (lo7 > 3000 ? 1 : 0.6);
+  // 11-13 01:1x (live ~84229650): stor ~0–500, avail ~458/5600, W47N7 conts 2000/2000, zero w8rhauler,
+  // spawn waited on w8mminer 12W3M=1350. 'starving' is only "no local hauler or no miner", so two w8haulers
+  // kept the body on cap and the rhauler floor (below upgraders) never ran. While stor is under the lean
+  // emergency line, stranded remote energy is income and comes before the mineral miner and other sinks.
+  // At/above LEAN_ARM the 17:4x order stands: one mminer still precedes surplus upgraders.
+  if (!want && storPark < LEAN_ARM && rhaulShort) want = 'w8rhauler';
   // 17:4x strategy 2026-11-01: elevate w8mminer after economy floors, BEFORE soft/surplus upgraders.
   // Overmind ownedRoom.mineral=520 < upgrading.upgrade=600 — mineral start must not wait behind soft-cap ≤2.
   // Still behind miners/haulers/filler/rminer/reserve7/defense. Dormant while gate false or minCont missing.
@@ -286,7 +296,7 @@ function spawnRun(spawn) {
   // 14:55 model-driven (tools/model_w8.py -> Memory.ops.w8model): remote fleet sized by CARRY need = sum 10 x (rt x 1.1 + 4) / 50 over
   // both W47N7 sources (~52 at 14:55) instead of loose-pile thresholds (live 88 CARRY: rhaulers 82% moving/12% blocked, +1.8 e/t upkeep).
   // Floor (ahead of builders): 60% of need; full need + a backlog term (+16 CARRY per 2000 loose above 3000) in step 7.
-  const wm = (Memory.ops && Memory.ops.w8model) || {}, rNeed = wm.rcarry || 55;
+  // wm / rNeed / rCarry live above the mineral miner (crash bootstrap shares them).
   // 15:55 model: local CARRY need = lcarry (~20, source->ctl) + ~10 for extension refills (spawn upkeep ~10 e/t over ~45t hub trips) = ~30
   // = 3 x 10C5M. The loose-pile surplus rule had grown it to 5-6 haulers (50-60 CARRY): the piles were sink-bound (ctl cont 2000 full,
   // 1-2 upgraders under the wall rule), so extra haulers only cost upkeep. Max 4 (one spare for stock/storage moves).
@@ -300,8 +310,7 @@ function spawnRun(spawn) {
   // Dynamic: links → 3 steady / 4 while loose>2000 (overflow valve). Floor stays 2.
   const looseNow = looseE(room);
   const HMAX = wm.links ? (looseNow > 2000 ? 4 : 3) : Math.max(3, Math.min(4, Math.ceil(((wm.lcarry || 20) + 10) / 10) + 1));
-  const rCarry = (ttl) => cs.filter(c => c.memory.role === 'w8rhauler' && (c.spawning || c.ticksToLive > ttl)).reduce((a, c) => a + c.body.filter(p => p.type === CARRY).length, 0);
-  if (!want && ours7 && lo7 > 1000 && n('w8rminer') && rCarry(150) < rNeed * (lo7 > 3000 ? 1 : 0.6)) want = 'w8rhauler';
+  if (!want && rhaulShort) want = 'w8rhauler';
   // 12:00: local loose ~2.9k (source conts 1090/2000) with hub 0 while spawn waited on a 1000-cost 4th builder (have 3). Surplus
   // haulers sit behind builders in the queue (same trap as the rhauler floor): floor up to 5 haulers ahead of the 4th builder
   // while piles > 2500 so energy reaches hub/builders before more WORK.
@@ -382,7 +391,10 @@ function spawnRun(spawn) {
   const starving = !n('w8hauler') || !n('w8miner');
   // Combat bodies are never shrunk to energyAvailable. Collection fills the pile; the body waits.
   const combatSpawn = want === 'w8guard' || want === 'w8defender' || want === 'w8healer';
-  const e = combatSpawn ? cap : (starving ? Math.max(200, avail) : cap);
+  let e = combatSpawn ? cap : (starving ? Math.max(200, avail) : cap);
+  // A cap rhauler is 15C1W8M=1250. The crash above is not 'starving' (local miners and haulers
+  // are alive), so e stayed at cap and 458 energy could never start the haul. Pay a road body instead.
+  if (want === 'w8rhauler' && storPark < LEAN_ARM) e = rhaulBudget(cap, avail, storPark, n('w8rhauler'));
   const body = body7 || bodyFor(want, e), cost = _.sum(body, p => BODYPART_COST[p]);
   if (avail < cost) { markWait(want, cost, avail); return; }
   const born = want + Game.time;
@@ -523,6 +535,17 @@ const LEAN_STOR = 20000;
 // (remote DEFEND / soft drain) does not thrash ready↔bank20. Soft-cap ≤2 upgraders while stor < 25k (Overmind
 // storageBuffer scales WORK off surplus; we keep a tighter cushion but stop dumping it into ctl).
 const LEAN_ARM = 15000;
+// Crash rhauler budget. Cap body at RCL7 is 15C1W8M = 1250, which an empty bank cannot pay.
+// bodyFor below 450 is the 1:1 shape (2C2M at 200). Pass at least 450 so the first hauler is the
+// road body k>=2 (3C1W2M = 350) — the largest shape avail ~458 can start. Once any rhauler is
+// alive, wait for k>=4 (7C1W4M = 650) instead of filling the carry quota with more 3C creeps.
+// A tick that can already pay the cap body still gets that body.
+function rhaulBudget(cap, avail, storE, haveRh) {
+  if ((storE || 0) >= LEAN_ARM) return cap;
+  const full = _.sum(bodyFor('w8rhauler', cap), p => BODYPART_COST[p]);
+  if (avail >= full) return cap;
+  return Math.max(haveRh ? 650 : 450, Math.min(avail || 0, cap));
+}
 const LEAN_SOFT = 25000;
 // 08:4x 2026-11-03 strategy: softCap energy hysteresis. Clear at LEAN_SOFT; re-arm only below
 // LEAN_SOFT_ARM. Live 23.4↔25.5k thrash recycled nUp 3→2 every boundary cross (seal soft-gate
