@@ -1,181 +1,315 @@
-=== creep_ticks coverage LAST..TIP+50 ===
-W46N8 minmax/count/distinct (84217000, 84217927, 8836, 833)
-  holes>=5 in LAST..TIP+20 [(84217500, 84217514, 14), (84217516, 84217522, 6), (84217522, 84217527, 5), (84217529, 84217601, 72)] n= 4
-W47N8 minmax/count/distinct (84217000, 84217963, 13564, 837)
-  holes>=5 in LAST..TIP+20 [(84217800, 84217928, 128)] n= 1
-W45N8 minmax/count/distinct (84217000, 84217800, 3864, 801)
-  holes>=5 in LAST..TIP+20 [] n= 0
-W45N7 minmax/count/distinct (84217000, 84217900, 2750, 901)
-  holes>=5 in LAST..TIP+20 [] n= 0
-W47N7 minmax/count/distinct (84217000, 84217700, 3207, 701)
-  holes>=5 in LAST..TIP+20 [] n= 0
+=== prev dark 84221361..84221669 confirm still full ===
+W46N8 distinct 309 /309 min 84221361 max 84221669
+W47N8 distinct 309 /309 min 84221361 max 84221669
+W45N8 distinct 309 /309 min 84221361 max 84221669
+W45N7 distinct 309 /309 min 84221361 max 84221669
+W47N7 distinct 309 /309 min 84221361 max 84221669
+=== NEW dark 84222071..84222209 (listener no-STATS 605s restart 15:44:56) ===
+W46N8 distinct 139 /139 min 84222071 max 84222209
+W47N8 distinct 139 /139 min 84222071 max 84222209
+W45N8 distinct 139 /139 min 84222071 max 84222209
+W45N7 distinct 139 /139 min 84222071 max 84222209
+W47N7 distinct 139 /139 min 84222071 max 84222209
+=== this-window official backfill 84222001..84222700 distinct ===
+W46N8 700 /700
+W47N8 700 /700
+W45N8 700 /700
+W45N7 700 /700
+W47N7 700 /700
+--- trailing after official 84222700 ---
+W46N8 (None, None, 0)
+W47N8 (84222701, 84222786, 86)
+W45N8 (None, None, 0)
+W45N7 (None, None, 0)
+W47N7 (None, None, 0)
 
-=== known official 404 holes ===
-W46N8@84217500 known (45, 5, 84217514, 84217529)
-W47N7@84217700 NEW (0, 0, None, None)
-W45N8@84216000 old (0, 0, None, None)
-W47N8@84213800 old (0, 0, None, None)
+=== official 404 / hole check (known bases) ===
+W45N8@84220700 0/100
+W47N7@84220200 0/100
+W46N8@84218200 0/100
+W47N7@84217700 0/100
+W46N8@84217500 5/100
+W45N8@84216000 0/100
+W47N8@84213800 0/100
 
-=== dark / reconnect fills this hour ===
-20t ping/pong 09:42:30 W46N8 20 / 20
-20t ping/pong 09:42:30 W47N8 20 / 20
-20t ping/pong 09:42:30 W45N8 20 / 20
-20t ping/pong 09:42:30 W45N7 20 / 20
-20t ping/pong 09:42:30 W47N7 20 / 20
-15t ping/pong 09:56:55 W46N8 2 / 15
-15t ping/pong 09:56:55 W47N8 15 / 15
-15t ping/pong 09:56:55 W45N8 15 / 15
-15t ping/pong 09:56:55 W45N7 15 / 15
-15t ping/pong 09:56:55 W47N7 15 / 15
-23t ping/pong 10:04:29 W46N8 15 / 23
-23t ping/pong 10:04:29 W47N8 23 / 23
-23t ping/pong 10:04:29 W45N8 23 / 23
-23t ping/pong 10:04:29 W45N7 23 / 23
-23t ping/pong 10:04:29 W47N7 23 / 23
-70t box freeze 10:16-10:21 W46N8 71 / 71
-70t box freeze 10:16-10:21 W47N8 31 / 71
-70t box freeze 10:16-10:21 W45N8 31 / 71
-70t box freeze 10:16-10:21 W45N7 71 / 71
-70t box freeze 10:16-10:21 W47N7 0 / 71
-60t box freeze 09:29-09:33 W46N8 61 / 61
-60t box freeze 09:29-09:33 W47N8 61 / 61
-60t box freeze 09:29-09:33 W45N8 61 / 61
-60t box freeze 09:29-09:33 W45N7 61 / 61
-60t box freeze 09:29-09:33 W47N7 61 / 61
+=== trailing after official 84222700 (duplicate ok) ===
+W46N8 (None, None, 0)
+W47N8 (84222701, 84222786, 86)
+W45N8 (None, None, 0)
+W45N7 (None, None, 0)
+W47N7 (None, None, 0)
 
-=== prev darks still filled ===
-296t 08:42 freeze ALL 5 filled 296
-29t 08:14 ALL 5 filled 29
-369t 07:37 freeze ALL 5 filled 369
+=== older window 84221101..84221800 confirm ===
+W46N8 700 /700
+W47N8 700 /700
+W45N8 700 /700
+W45N7 700 /700
+W47N7 700 /700
 
-=== HOME upgraders since LAST-300 ===
-upgrader84215696: n=547 first=(84216700, 30, 30, 22, 'loaded') last=(84217246, 30, 30, 22, 'loaded') stands=547 top=[((30, 30), 547)]
-upgrader84216867: n=267 first=(84216869, 35, 28, 0, 'spawning') last=(84217135, 34, 29, 0, 'empty') stands=196 top=[((31, 30), 196), ((35, 28), 49), ((33, 30), 8), ((32, 29), 8), ((34, 30), 4), ((35, 29), 1)]
-upgrader84217165: n=666 first=(84217167, 35, 28, 0, 'spawning') last=(84217927, 31, 30, 22, 'loaded') stands=604 top=[((31, 30), 604), ((35, 28), 49), ((34, 30), 4), ((33, 30), 4), ((32, 29), 4), ((35, 29), 1)]
-upgrader84217637: n=289 first=(84217639, 35, 28, 0, 'spawning') last=(84217927, 30, 30, 36, 'loaded') stands=227 top=[((30, 30), 223), ((35, 28), 49), ((34, 30), 4), ((33, 30), 4), ((32, 29), 4), ((31, 29), 4)]
+=== N-exit bounce W47N8 18,49 <-> W47N7 18,0 since LAST ===
+TOTAL flips=0 visits 18,49=22 18,0=8 18,1=15 18,48=36
 
-=== nUp by tick changes home LAST-50..TIP ===
-  tick 84216950 nUp=2 upgrader84215696,upgrader84216867
-  tick 84217136 nUp=1 upgrader84215696
-  tick 84217167 nUp=2 upgrader84215696,upgrader84217165
-  tick 84217247 nUp=1 upgrader84217165
-  tick 84217639 nUp=2 upgrader84217165,upgrader84217637
-  last tick 84217920 nUp=2 upgrader84217165,upgrader84217637 samples=876
+=== tile traffic since LAST (top 12 per owned/remote) ===
+W46N8 [(38, 32, 1123, 2), (31, 12, 811, 1), (31, 30, 811, 1), (33, 29, 765, 2), (30, 30, 747, 2), (34, 27, 497, 1), (33, 33, 436, 1), (35, 28, 359, 10), (38, 26, 261, 15), (37, 32, 221, 16), (43, 20, 214, 13), (30, 34, 171, 3)]
+W47N8 [(26, 11, 896, 2), (11, 43, 896, 2), (34, 32, 774, 18), (14, 26, 661, 1), (32, 30, 618, 18), (12, 25, 613, 1), (21, 10, 561, 24), (33, 31, 504, 18), (34, 30, 439, 9), (20, 33, 425, 7), (33, 30, 325, 7), (31, 25, 232, 25)]
+W45N8 [(13, 11, 822, 2), (7, 37, 305, 2), (23, 47, 232, 9), (12, 10, 143, 2), (25, 39, 85, 9), (22, 48, 53, 9), (17, 41, 32, 10), (16, 40, 32, 10), (18, 41, 32, 10), (19, 40, 32, 10), (20, 39, 32, 10), (1, 22, 31, 9)]
+W45N7 [(21, 15, 811, 1), (20, 14, 438, 7), (21, 14, 438, 7), (6, 39, 348, 1), (21, 13, 53, 8), (21, 7, 43, 8), (21, 8, 39, 8), (21, 12, 37, 8), (21, 1, 37, 9), (21, 6, 37, 8), (21, 11, 37, 8), (21, 4, 36, 8)]
+W47N7 [(18, 17, 765, 2), (31, 34, 761, 1), (25, 8, 97, 8), (18, 16, 87, 1), (19, 16, 46, 8), (20, 5, 28, 8), (24, 12, 27, 8), (24, 14, 26, 8), (25, 9, 26, 8), (25, 11, 26, 8), (25, 10, 26, 8), (25, 13, 26, 8)]
 
-=== empty-and-walk traces (store 0 leaving 30/31,30) ===
-  upgrader84216867 off-stand n=71 first_off=(84216869, 35, 28, 0, 'spawning') last=(84217135, 34, 29, 0, 'empty') last5=[(84217131, 33, 30, 0, 'empty'), (84217132, 33, 30, 0, 'empty'), (84217133, 33, 30, 0, 'empty'), (84217134, 33, 30, 0, 'empty'), (84217135, 34, 29, 0, 'empty')]
-  upgrader84217165 off-stand n=62 first_off=(84217167, 35, 28, 0, 'spawning') last=(84217228, 32, 29, 0, 'empty') last5=[(84217224, 33, 30, 0, 'empty'), (84217225, 32, 29, 0, 'empty'), (84217226, 32, 29, 0, 'empty'), (84217227, 32, 29, 0, 'empty'), (84217228, 32, 29, 0, 'empty')]
-  upgrader84217637 off-stand n=62 first_off=(84217639, 35, 28, 0, 'spawning') last=(84217700, 32, 29, 0, 'empty') last5=[(84217696, 33, 30, 0, 'empty'), (84217697, 32, 29, 0, 'empty'), (84217698, 32, 29, 0, 'empty'), (84217699, 32, 29, 0, 'empty'), (84217700, 32, 29, 0, 'empty')]
+=== PR34 cap tiles (22,15)(10,33) and #37 (37,32) W46N8 ===
+PR34a 22,15 (0, 0)
+PR34b 10,33 (0, 0)
+#37 37,32 (221, 16)
+minerB 38,32 (1123, 2)
+hub 34,32 (0, 0)
+hubC 33,33 (436, 1)
 
-=== W47 upgraders since LAST-300 ===
-w8upgrader84215165: n=4 first=(84216700, 12, 25, 13, 'loaded') last=(84216703, 12, 25, 20, 'loaded') top=[((12, 25), 4)]
-w8upgrader84215749: n=588 first=(84216700, 14, 26, 20, 'loaded') last=(84217287, 14, 26, 20, 'loaded') top=[((14, 26), 588)]
-w8upgrader84216684: n=1138 first=(84216700, 34, 30, 0, 'spawning') last=(84217964, 12, 25, 40, 'loaded') top=[((12, 25), 942), ((20, 9), 37), ((34, 30), 23), ((33, 29), 5), ((23, 12), 5), ((22, 11), 5)]
-w8upgrader84217188: n=648 first=(84217190, 34, 30, 0, 'spawning') last=(84217964, 14, 27, 10, 'loaded') top=[((14, 27), 463), ((34, 30), 37), ((33, 29), 5), ((23, 12), 5), ((22, 11), 5), ((21, 10), 5)]
+=== critical role presence (creep_ticks, gaps >20t) since LAST ===
+creep_ticks columns: ['ts', 'tick', 'room', 'creep', 'role', 'x', 'y', 'hits', 'store', 'state', 'commit']
+window 84221890 84222787 span 897
+miner present 811 ticks 84221890..84222700 gaps>20t=[(84222700, 84222787, 87)] ngap=1 last=(84222700, 'W46N8', 'miner84221926')
+rminer present 811 ticks 84221890..84222700 gaps>20t=[(84222700, 84222787, 87)] ngap=1 last=(84222700, 'W45N7', 'rminer84221301')
+reserver present 762 ticks 84221890..84222700 gaps>20t=[(84222186, 84222236, 50), (84222700, 84222787, 87)] ngap=2 last=(84222700, 'W45N7', 'reserver84222234')
+queen present 811 ticks 84221890..84222700 gaps>20t=[(84222700, 84222787, 87)] ngap=1 last=(84222700, 'W46N8', 'queen84221417')
+w8filler present 898 ticks 84221890..84222787 gaps>20t=[] ngap=0 last=(84222787, 'W47N8', 'w8filler84222304')
+w8miner present 898 ticks 84221890..84222787 gaps>20t=[] ngap=0 last=(84222787, 'W47N8', 'w8miner84221795')
+w8rminer present 851 ticks 84221890..84222787 gaps>20t=[(84222700, 84222748, 48)] ngap=1 last=(84222787, 'W47N8', 'w8rminer84222747')
+reserve7 ABSENT entire window last_seen None
+reserve present 478 ticks 84221890..84222700 gaps>20t=[(84221900, 84222234, 334), (84222700, 84222787, 87)] ngap=2 last=(84222700, 'W47N8', 'reserve784222232')
 
-=== W47 nUp changes ===
-  tick 84216950 nUp=2 w8upgrader84215749,w8upgrader84216684
-  tick 84217190 nUp=3 w8upgrader84215749,w8upgrader84216684,w8upgrader84217188
-  tick 84217288 nUp=2 w8upgrader84216684,w8upgrader84217188
-  last (84217800, 2, 'w8upgrader84216684,w8upgrader84217188')
+=== filler ABA / positions (w8filler since LAST) ===
 
-=== W47 N-exit bounce 18,49 <-> 18,0 ===
-bounce 18,49<->18,0 = 0; into 18,1=0; leave 18,48=20; n_rows=66
-  tile counts Counter({('W47N8', 18, 48): 40, ('W47N8', 18, 49): 26})
+=== home/W47 upgrader traces (last pos, first pos) ===
+upgrader upgrader84221572 84221890..84222700 n=811 first [(84221890, 'W46N8', 31, 30, 8)] last [(84222700, 'W46N8', 31, 30, 8)]
+upgrader upgrader84221801 84221890..84222645 n=756 first [(84221890, 'W46N8', 30, 30, 22)] last [(84222645, 'W46N8', 34, 29, 0)]
 
-=== 31e43f8 W45 border flicker 21,49 / 21,0 ===
-border samples=148 aba_flips=1 loaded_flips=1
-  loaded flip rhauler84215899 rhauler ticks 84217014 84217015 84217016 pos ('W45N7', 21, 0) ('W45N8', 21, 49) ('W45N7', 21, 0) store 356
+=== w8rminer positions / fails-ish (store or state) since LAST ===
 
-=== filler/queen aba ===
-home queen creeps 4 rows 584
-  queen84215534 n=27 step=17 aba=0 longest_aba=0 at~None tiles=[((35, 32), 5), ((36, 32), 5), ((34, 34), 5), ((34, 31), 4), ((33, 30), 3), ((35, 33), 2)]
-  queen84215606 n=19 step=16 aba=1 longest_aba=1 at~84217133 tiles=[((36, 32), 4), ((35, 32), 4), ((34, 31), 4), ((34, 30), 4), ((36, 30), 3)]
-  queen84217010 n=519 step=121 aba=1 longest_aba=1 at~84217441 tiles=[((33, 33), 371), ((34, 34), 31), ((34, 31), 25), ((36, 32), 24), ((35, 32), 23), ((35, 33), 21)]
-  queen84217075 n=19 step=16 aba=1 longest_aba=1 at~84217396 tiles=[((36, 32), 4), ((35, 32), 4), ((34, 31), 4), ((34, 30), 4), ((36, 30), 3)]
-w47 filler creeps 3 rows 876
-  w8filler84216468 n=583 step=159 aba=60 longest_aba=10 at~84217037 tiles=[((34, 32), 423), ((33, 31), 78), ((33, 33), 34), ((35, 31), 20), ((36, 30), 16), ((34, 31), 6)]
-  w8filler84216576 n=256 step=102 aba=60 longest_aba=10 at~84217037 tiles=[((34, 32), 152), ((33, 33), 46), ((33, 31), 38), ((34, 31), 9), ((34, 33), 7), ((35, 31), 2)]
-  w8filler84217927 n=37 step=0 aba=0 longest_aba=0 at~None tiles=[((34, 30), 37)]
-w47 filler ALL tiles creeps 3 rows 1716
-  w8filler84216468 n=839 step=400 aba=70 longest_aba=10 at~84217037 tiles=[((34, 32), 423), ((33, 31), 78), ((33, 33), 34), ((35, 31), 20), ((38, 30), 17), ((38, 31), 17)]
-  w8filler84216576 n=839 step=594 aba=68 longest_aba=10 at~84217037 tiles=[((34, 32), 152), ((33, 33), 46), ((33, 31), 39), ((32, 32), 17), ((17, 9), 17), ((21, 10), 13)]
-  w8filler84217927 n=38 step=0 aba=0 longest_aba=0 at~None tiles=[((34, 30), 38)]
+=== home miners seats ===
+miner ('miner84220503', 84221890, 84222400, 511, 0, 511)
+miner ('miner84221252', 84221890, 84222700, 811, 811, 0)
+miner ('miner84221926', 84221928, 84222700, 773, 0, 612)
+miner ('miner84222671', 84222672, 84222700, 29, 0, 0)
 
-=== #37 (37,32) ===
-visits 109
-  rhauler84216563 role=rhauler visits=6 span=84217001..84217833 longest_consec=1
-  queen84215606 role=queen visits=4 span=84217015..84217137 longest_consec=1
-  rhauler84215659 role=rhauler visits=3 span=84217024..84217129 longest_consec=1
-  rminer84216994 role=rminer visits=1 span=84217030..84217030 longest_consec=1
-  builder84216327 role=builder visits=13 span=84217074..84217914 longest_consec=1
-  rhauler84216139 role=rhauler visits=4 span=84217076..84217258 longest_consec=1
-  rhauler84215899 role=rhauler visits=6 span=84217078..84217275 longest_consec=4
-  hauler84216516 role=hauler visits=2 span=84217087..84217133 longest_consec=1
-  rhauler84217186 role=rhauler visits=5 span=84217254..84217899 longest_consec=1
-  reserver84217277 role=reserver visits=1 span=84217294..84217294 longest_consec=1
-  reserver84217332 role=reserver visits=1 span=84217349..84217349 longest_consec=1
-  queen84217075 role=queen visits=4 span=84217388..84217677 longest_consec=1
-  rminer84217418 role=rminer visits=1 span=84217453..84217453 longest_consec=1
-  rhauler84217426 role=rhauler visits=3 span=84217484..84217867 longest_consec=1
-  miner84217651 role=miner visits=44 span=84217692..84217736 longest_consec=31
-  rhauler84216450 role=rhauler visits=3 span=84217758..84217810 longest_consec=1
-  rhauler84216706 role=rhauler visits=3 span=84217760..84217922 longest_consec=1
-  queen84217010 role=queen visits=2 span=84217768..84217769 longest_consec=2
-  rhauler84217737 role=rhauler visits=1 span=84217790..84217790 longest_consec=1
-  rhauler84216946 role=rhauler visits=2 span=84217805..84217819 longest_consec=1
+=== storage path W46N8 since LAST (every sample) ===
+84221890 2026-11-12 15:21:29 stor 17103 nUp 2 ctl 1470
+84221900 2026-11-12 15:22:13 stor 17203 nUp 2 ctl 1298
+84221910 2026-11-12 15:22:58 stor 17303 nUp 2 ctl 1046
+84221920 2026-11-12 15:23:42 stor 16853 nUp 2 ctl 752
+84221930 2026-11-12 15:24:26 stor 16953 nUp 2 ctl 752
+84221940 2026-11-12 15:25:11 stor 16753 nUp 2 ctl 580
+84221950 2026-11-12 15:25:55 stor 16853 nUp 2 ctl 328
+84221960 2026-11-12 15:26:40 stor 16953 nUp 2 ctl 0
+84221970 2026-11-12 15:27:24 stor 17053 nUp 2 ctl 1172
+84221980 2026-11-12 15:28:07 stor 16603 nUp 2 ctl 1480
+84221990 2026-11-12 15:28:51 stor 16703 nUp 2 ctl 1228
+84222000 2026-11-12 15:29:34 stor 16803 nUp 2 ctl 892
+84222010 2026-11-12 15:30:20 stor 16903 nUp 2 ctl 892
+84222020 2026-11-12 15:31:06 stor 17003 nUp 2 ctl 762
+84222030 2026-11-12 15:31:50 stor 17103 nUp 2 ctl 468
+84222040 2026-11-12 15:32:37 stor 17153 nUp 2 ctl 174
+84222050 2026-11-12 15:33:21 stor 17253 nUp 2 ctl 174
+84222060 2026-11-12 15:34:05 stor 17353 nUp 2 ctl 2
+84222070 2026-11-12 15:34:50 stor 17333 nUp 2 ctl 196
+84222210 2026-11-12 15:45:14 stor 16995 nUp 2 ctl 1158
+84222220 2026-11-12 15:45:57 stor 17095 nUp 2 ctl 1066
+84222230 2026-11-12 15:46:41 stor 17195 nUp 2 ctl 1186
+84222240 2026-11-12 15:47:24 stor 16995 nUp 2 ctl 934
+84222250 2026-11-12 15:48:07 stor 17095 nUp 2 ctl 892
+84222260 2026-11-12 15:48:53 stor 16395 nUp 2 ctl 720
+84222270 2026-11-12 15:49:37 stor 16495 nUp 2 ctl 468
+84222280 2026-11-12 15:50:22 stor 16195 nUp 2 ctl 588
+84222290 2026-11-12 15:51:06 stor 16295 nUp 2 ctl 588
+84222300 2026-11-12 15:51:50 stor 15595 nUp 2 ctl 416
+84222310 2026-11-12 15:52:36 stor 15695 nUp 2 ctl 564
+84222320 2026-11-12 15:53:21 stor 15305 nUp 2 ctl 1428
+84222330 2026-11-12 15:54:05 stor 15405 nUp 2 ctl 1428
+84222340 2026-11-12 15:54:49 stor 15505 nUp 2 ctl 1298
+84222350 2026-11-12 15:55:34 stor 15605 nUp 2 ctl 1004
+84222360 2026-11-12 15:56:18 stor 14905 nUp 2 ctl 710
+84222370 2026-11-12 15:57:02 stor 15005 nUp 2 ctl 1006
+84222380 2026-11-12 15:57:46 stor 15105 nUp 2 ctl 910
+84222390 2026-11-12 15:58:30 stor 15205 nUp 2 ctl 658
+84222400 2026-11-12 15:59:15 stor 15305 nUp 2 ctl 364
+84222410 2026-11-12 15:59:59 stor 15405 nUp 2 ctl 364
+84222420 2026-11-12 16:00:44 stor 15505 nUp 2 ctl 578
+84222430 2026-11-12 16:01:29 stor 15605 nUp 2 ctl 326
+84222440 2026-11-12 16:02:15 stor 15705 nUp 2 ctl 32
+84222450 2026-11-12 16:02:57 stor 15805 nUp 2 ctl 0
+84222460 2026-11-12 16:03:41 stor 15905 nUp 2 ctl 0
+84222470 2026-11-12 16:04:25 stor 16005 nUp 2 ctl 1150
+84222480 2026-11-12 16:05:10 stor 16105 nUp 2 ctl 890
+84222490 2026-11-12 16:05:55 stor 16205 nUp 2 ctl 1284
+84222500 2026-11-12 16:06:38 stor 16305 nUp 2 ctl 1154
+84222510 2026-11-12 16:07:25 stor 16405 nUp 2 ctl 860
+84222520 2026-11-12 16:08:09 stor 16505 nUp 2 ctl 608
+84222530 2026-11-12 16:08:55 stor 16605 nUp 2 ctl 608
+84222540 2026-11-12 16:09:38 stor 16705 nUp 2 ctl 436
+84222550 2026-11-12 16:10:22 stor 16805 nUp 2 ctl 142
+84222560 2026-11-12 16:11:06 stor 16905 nUp 2 ctl 0
+84222570 2026-11-12 16:11:50 stor 16555 nUp 2 ctl 0
+84222580 2026-11-12 16:12:34 stor 15855 nUp 2 ctl 322
+84222590 2026-11-12 16:13:18 stor 15955 nUp 2 ctl 1270
+84222600 2026-11-12 16:14:01 stor 15255 nUp 2 ctl 1018
+84222610 2026-11-12 16:14:45 stor 14555 nUp 2 ctl 934
+84222620 2026-11-12 16:15:29 stor 14655 nUp 2 ctl 804
+84222630 2026-11-12 16:16:13 stor 13955 nUp 2 ctl 552
+84222640 2026-11-12 16:16:57 stor 14055 nUp 2 ctl 384
+84222650 2026-11-12 16:17:40 stor 13355 nUp 1 ctl 384
+84222660 2026-11-12 16:18:25 stor 14055 nUp 1 ctl 384
+84222670 2026-11-12 16:19:08 stor 14284 nUp 1 ctl 384
+84222680 2026-11-12 16:19:52 stor 14384 nUp 1 ctl 212
+84222690 2026-11-12 16:20:37 stor 14084 nUp 1 ctl 212
+84222700 2026-11-12 16:21:21 stor 13384 nUp 1 ctl 212
+84222710 2026-11-12 16:22:05 stor 13484 nUp 1 ctl 212
+84222720 2026-11-12 16:22:49 stor 13984 nUp 1 ctl 40
+84222730 2026-11-12 16:23:33 stor 13964 nUp 1 ctl 40
+84222740 2026-11-12 16:24:18 stor 14364 nUp 1 ctl 40
+84222750 2026-11-12 16:25:02 stor 14464 nUp 1 ctl 40
+84222760 2026-11-12 16:25:47 stor 14864 nUp 1 ctl 0
+84222770 2026-11-12 16:26:30 stor 15364 nUp 1 ctl 0
+84222780 2026-11-12 16:27:13 stor 15464 nUp 1 ctl 300
 
-=== PR34 cap-of-2 tiles (22,15) (10,33) ===
-  (22, 15) visits=0 creeps=0
-  (10, 33) visits=0 creeps=0
+=== W47 storage min/max already in exact2h; path highlights ===
+n 77 min 84222730 2026-11-12 16:23:33 5478 max 84222070 2026-11-12 15:34:50 25565 first 23623 last 5478
+  flag 84222070 2026-11-12 15:34:50 25565 w8up 2
+  flag 84222250 2026-11-12 15:48:07 25106 w8up 2
+  flag 84222300 2026-11-12 15:51:50 25288 w8up 2
+  flag 84222400 2026-11-12 15:59:15 25332 w8up 2
+  flag 84222440 2026-11-12 16:02:15 19832 w8up 2
+  flag 84222510 2026-11-12 16:07:25 18970 w8up 2
+  flag 84222520 2026-11-12 16:08:09 19470 w8up 2
+  flag 84222530 2026-11-12 16:08:55 19017 w8up 2
+  flag 84222540 2026-11-12 16:09:38 18417 w8up 2
+  flag 84222550 2026-11-12 16:10:22 17317 w8up 2
+  flag 84222560 2026-11-12 16:11:06 17017 w8up 2
+  flag 84222570 2026-11-12 16:11:50 16717 w8up 2
+  flag 84222580 2026-11-12 16:12:34 15617 w8up 2
+  flag 84222590 2026-11-12 16:13:18 16117 w8up 2
+  flag 84222600 2026-11-12 16:14:01 15817 w8up 2
+  flag 84222610 2026-11-12 16:14:45 15517 w8up 2
+  flag 84222620 2026-11-12 16:15:29 14667 w8up 2
+  flag 84222630 2026-11-12 16:16:13 15082 w8up 2
+  flag 84222640 2026-11-12 16:16:57 14430 w8up 1
+  flag 84222650 2026-11-12 16:17:40 13230 w8up 1
+  flag 84222660 2026-11-12 16:18:25 13279 w8up 1
+  flag 84222670 2026-11-12 16:19:08 12828 w8up 1
+  flag 84222680 2026-11-12 16:19:52 11628 w8up 1
+  flag 84222690 2026-11-12 16:20:37 10628 w8up 1
+  flag 84222700 2026-11-12 16:21:21 9428 w8up 1
+  flag 84222710 2026-11-12 16:22:05 7478 w8up 1
+  flag 84222720 2026-11-12 16:22:49 6278 w8up 1
+  flag 84222730 2026-11-12 16:23:33 5478 w8up 1
+  flag 84222740 2026-11-12 16:24:18 5478 w8up 1
+  flag 84222750 2026-11-12 16:25:02 5478 w8up 1
+  flag 84222760 2026-11-12 16:25:47 5878 w8up 1
+  flag 84222770 2026-11-12 16:26:30 5478 w8up 1
+  flag 84222780 2026-11-12 16:27:13 5478 w8up 1
 
-=== home hauler waiting / path ===
- hauler span ('hauler84216516', 84216800, 84217927, 1033, 1033)
-  hauler84216516 n=883 first=(84216950, 'W46N8', 33, 29, 0, 'empty') last=(84217927, 'W46N8', 34, 31, 0, 'empty') top=[(('W46N8', 33, 29), 811), (('W46N8', 34, 31), 5), (('W46N8', 36, 32), 5), (('W46N8', 33, 30), 5), (('W46N8', 35, 32), 4)] states=Counter({'empty': 862, 'loaded': 21})
+=== hostiles creep_ticks (any hostile name?) skip; room_stats hostiles already 0 ===
+=== sites in room_stats if any ===
 
-=== critical role coverage ===
-  miner@W46N8 min2 have=826 missing=0 long>=20=[] n_runs=0
-  queen@W46N8 min1 have=826 missing=0 long>=20=[] n_runs=0
-  rminer@W45N8 min1 have=801 missing=0 long>=20=[] n_runs=0
-  rminer@W45N7 min1 have=901 missing=126 long>=20=[(84217649, 84217704, 56), (84217731, 84217800, 70)] n_runs=2
-  wminer@W47N8 min2 have=801 missing=0 long>=20=[] n_runs=0
-  wfiller@W47N8 min1 have=801 missing=0 long>=20=[] n_runs=0
-  wrminer@W47N7 min1 have=701 missing=0 long>=20=[] n_runs=0
+=== room_stats sites + storage around deploy f7328c4 (84222471) ===
+W46N8 n 49
+  84222300 2026-11-12 15:51:50 stor 15595 ea 4720 sites 0 nUp 2 w8up 2 b 1 w8b 1 p 5956224
+  84222310 2026-11-12 15:52:36 stor 15695 ea 5120 sites 0 nUp 2 w8up 2 b 1 w8b None p 5956504
+  84222320 2026-11-12 15:53:21 stor 15305 ea 5120 sites 0 nUp 2 w8up 2 b 1 w8b None p 5956784
+  84222330 2026-11-12 15:54:05 stor 15405 ea 5220 sites 0 nUp 2 w8up 2 b None w8b None p 5957064
+  84222340 2026-11-12 15:54:49 stor 15505 ea 5500 sites 0 nUp 2 w8up 2 b None w8b None p 5957344
+  84222350 2026-11-12 15:55:34 stor 15605 ea 5500 sites 0 nUp 2 w8up 2 b None w8b None p 5957624
+  84222360 2026-11-12 15:56:18 stor 14905 ea 5000 sites 0 nUp 2 w8up 2 b None w8b None p 5957904
+  84222370 2026-11-12 15:57:02 stor 15005 ea 5000 sites 0 nUp 2 w8up 2 b None w8b None p 5958184
+  84222380 2026-11-12 15:57:46 stor 15105 ea 5500 sites 0 nUp 2 w8up 2 b None w8b None p 5958444
+  84222390 2026-11-12 15:58:30 stor 15205 ea 5500 sites 0 nUp 2 w8up 2 b None w8b None p 5958724
+  84222400 2026-11-12 15:59:15 stor 15305 ea 5350 sites 0 nUp 2 w8up 2 b None w8b None p 5959004
+  84222410 2026-11-12 15:59:59 stor 15405 ea 5350 sites 0 nUp 2 w8up 2 b None w8b None p 5959284
+  84222420 2026-11-12 16:00:44 stor 15505 ea 5350 sites 0 nUp 2 w8up 2 b None w8b None p 5959564
+  84222430 2026-11-12 16:01:29 stor 15605 ea 5500 sites 0 nUp 2 w8up 2 b None w8b None p 5959844
+  84222440 2026-11-12 16:02:15 stor 15705 ea 5500 sites 0 nUp 2 w8up 2 b None w8b None p 5960124
+  84222450 2026-11-12 16:02:57 stor 15805 ea 5500 sites 0 nUp 2 w8up 2 b None w8b None p 5960404
+  84222460 2026-11-12 16:03:41 stor 15905 ea 5500 sites 0 nUp 2 w8up 2 b None w8b None p 5960588
+  84222470 2026-11-12 16:04:25 stor 16005 ea 5500 sites 0 nUp 2 w8up 2 b None w8b None p 5960602
+  84222480 2026-11-12 16:05:10 stor 16105 ea 5500 sites 0 nUp 2 w8up 2 b None w8b None p 5960868
+  84222490 2026-11-12 16:05:55 stor 16205 ea 5500 sites 4 nUp 2 w8up 2 b None w8b 1 p 5961148
+  84222500 2026-11-12 16:06:38 stor 16305 ea 5500 sites 4 nUp 2 w8up 2 b None w8b 1 p 5961428
+  84222510 2026-11-12 16:07:25 stor 16405 ea 5500 sites 4 nUp 2 w8up 2 b None w8b 1 p 5961708
+  84222520 2026-11-12 16:08:09 stor 16505 ea 5500 sites 4 nUp 2 w8up 2 b None w8b 2 p 5961988
+  84222530 2026-11-12 16:08:55 stor 16605 ea 5500 sites 4 nUp 2 w8up 2 b None w8b 2 p 5962268
+  84222540 2026-11-12 16:09:38 stor 16705 ea 5500 sites 4 nUp 2 w8up 2 b None w8b 3 p 5962548
+  84222550 2026-11-12 16:10:22 stor 16805 ea 4700 sites 4 nUp 2 w8up 2 b None w8b 3 p 5962828
+  84222560 2026-11-12 16:11:06 stor 16905 ea 5100 sites 4 nUp 2 w8up 2 b None w8b 3 p 5963014
+  84222570 2026-11-12 16:11:50 stor 16555 ea 3050 sites 4 nUp 2 w8up 2 b 1 w8b 3 p 5963162
+  84222580 2026-11-12 16:12:34 stor 15855 ea 3100 sites 4 nUp 2 w8up 2 b 1 w8b 4 p 5963428
+  84222590 2026-11-12 16:13:18 stor 15955 ea 4300 sites 4 nUp 2 w8up 2 b 1 w8b 4 p 5963688
+  84222600 2026-11-12 16:14:01 stor 15255 ea 3800 sites 4 nUp 2 w8up 2 b 1 w8b 4 p 5963968
+  84222610 2026-11-12 16:14:45 stor 14555 ea 4000 sites 4 nUp 2 w8up 2 b 1 w8b 4 p 5964248
+  84222620 2026-11-12 16:15:29 stor 14655 ea 4300 sites 4 nUp 2 w8up 2 b 1 w8b 4 p 5964528
+  84222630 2026-11-12 16:16:13 stor 13955 ea 3900 sites 4 nUp 2 w8up 2 b 1 w8b 4 p 5964808
+  84222640 2026-11-12 16:16:57 stor 14055 ea 3400 sites 4 nUp 2 w8up 1 b 1 w8b 4 p 5964970
+  84222650 2026-11-12 16:17:40 stor 13355 ea 4100 sites 4 nUp 1 w8up 1 b 1 w8b 4 p 5965110
+  84222660 2026-11-12 16:18:25 stor 14055 ea 4500 sites 4 nUp 1 w8up 1 b 1 w8b 4 p 5965250
+  84222670 2026-11-12 16:19:08 stor 14284 ea 5100 sites 4 nUp 1 w8up 1 b 1 w8b 4 p 5965390
+  84222680 2026-11-12 16:19:52 stor 14384 ea 4600 sites 4 nUp 1 w8up 1 b 1 w8b 4 p 5965530
+  84222690 2026-11-12 16:20:37 stor 14084 ea 4700 sites 4 nUp 1 w8up 1 b 1 w8b 4 p 5965670
+  84222700 2026-11-12 16:21:21 stor 13384 ea 5100 sites 4 nUp 1 w8up 1 b 1 w8b 4 p 5965810
+  84222710 2026-11-12 16:22:05 stor 13484 ea 5500 sites 4 nUp 1 w8up 1 b 1 w8b 4 p 5965950
+  84222720 2026-11-12 16:22:49 stor 13984 ea 5500 sites 4 nUp 1 w8up 1 b None w8b 4 p 5966090
+  84222730 2026-11-12 16:23:33 stor 13964 ea 5500 sites 4 nUp 1 w8up 1 b None w8b 4 p 5966230
+  84222740 2026-11-12 16:24:18 stor 14364 ea 5500 sites 4 nUp 1 w8up 1 b None w8b 4 p 5966370
+  84222750 2026-11-12 16:25:02 stor 14464 ea 5500 sites 4 nUp 1 w8up 1 b None w8b 4 p 5966510
+  84222760 2026-11-12 16:25:47 stor 14864 ea 5500 sites 4 nUp 1 w8up 1 b None w8b 4 p 5966554
+  84222770 2026-11-12 16:26:30 stor 15364 ea 5500 sites 4 nUp 1 w8up 1 b None w8b 4 p 5966680
+  84222780 2026-11-12 16:27:13 stor 15464 ea 5500 sites 4 nUp 1 w8up 1 b None w8b 4 p 5966820
+W47N8 n 49
+  84222300 2026-11-12 15:51:50 stor 25288 ea 5600 sites 0 nUp 2 w8up 2 b 1 w8b 1 p 3137204
+  84222310 2026-11-12 15:52:36 stor 24688 ea 4500 sites 0 nUp 2 w8up 2 b 1 w8b None p 3137404
+  84222320 2026-11-12 15:53:21 stor 24688 ea 5200 sites 0 nUp 2 w8up 2 b 1 w8b None p 3137604
+  84222330 2026-11-12 15:54:05 stor 24088 ea 5600 sites 0 nUp 2 w8up 2 b None w8b None p 3137804
+  84222340 2026-11-12 15:54:49 stor 24088 ea 5600 sites 0 nUp 2 w8up 2 b None w8b None p 3138004
+  84222350 2026-11-12 15:55:34 stor 24088 ea 5600 sites 0 nUp 2 w8up 2 b None w8b None p 3138204
+  84222360 2026-11-12 15:56:18 stor 24588 ea 4900 sites 0 nUp 2 w8up 2 b None w8b None p 3138404
+  84222370 2026-11-12 15:57:02 stor 24488 ea 5300 sites 0 nUp 2 w8up 2 b None w8b None p 3138604
+  84222380 2026-11-12 15:57:46 stor 24088 ea 5300 sites 0 nUp 2 w8up 2 b None w8b None p 3138804
+  84222390 2026-11-12 15:58:30 stor 24832 ea 4050 sites 0 nUp 2 w8up 2 b None w8b None p 3139004
+  84222400 2026-11-12 15:59:15 stor 25332 ea 4050 sites 0 nUp 2 w8up 2 b None w8b None p 3139204
+  84222410 2026-11-12 15:59:59 stor 23432 ea 4750 sites 0 nUp 2 w8up 2 b None w8b None p 3139404
+  84222420 2026-11-12 16:00:44 stor 21632 ea 4450 sites 0 nUp 2 w8up 2 b None w8b None p 3139604
+  84222430 2026-11-12 16:01:29 stor 21932 ea 4950 sites 0 nUp 2 w8up 2 b None w8b None p 3139804
+  84222440 2026-11-12 16:02:15 stor 19832 ea 5150 sites 0 nUp 2 w8up 2 b None w8b None p 3140004
+  84222450 2026-11-12 16:02:57 stor 20790 ea 5200 sites 0 nUp 2 w8up 2 b None w8b None p 3140204
+  84222460 2026-11-12 16:03:41 stor 20790 ea 5200 sites 0 nUp 2 w8up 2 b None w8b None p 3140404
+  84222470 2026-11-12 16:04:25 stor 21437 ea 5000 sites 0 nUp 2 w8up 2 b None w8b None p 3140604
+  84222480 2026-11-12 16:05:10 stor 20937 ea 5100 sites 0 nUp 2 w8up 2 b None w8b None p 3140804
+  84222490 2026-11-12 16:05:55 stor 20237 ea 4600 sites 7 nUp 2 w8up 2 b None w8b 1 p 3141004
+  84222500 2026-11-12 16:06:38 stor 20237 ea 5100 sites 7 nUp 2 w8up 2 b None w8b 1 p 3141204
+  84222510 2026-11-12 16:07:25 stor 18970 ea 5200 sites 7 nUp 2 w8up 2 b None w8b 1 p 3141304
+  84222520 2026-11-12 16:08:09 stor 19470 ea 5200 sites 7 nUp 2 w8up 2 b None w8b 2 p 3141404
+  84222530 2026-11-12 16:08:55 stor 19017 ea 4600 sites 7 nUp 2 w8up 2 b None w8b 2 p 3141504
+  84222540 2026-11-12 16:09:38 stor 18417 ea 4800 sites 7 nUp 2 w8up 2 b None w8b 3 p 3141604
+  84222550 2026-11-12 16:10:22 stor 17317 ea 5500 sites 7 nUp 2 w8up 2 b None w8b 3 p 3141704
+  84222560 2026-11-12 16:11:06 stor 17017 ea 5500 sites 7 nUp 2 w8up 2 b None w8b 3 p 3141804
+  84222570 2026-11-12 16:11:50 stor 16717 ea 5500 sites 7 nUp 2 w8up 2 b 1 w8b 3 p 3141904
+  84222580 2026-11-12 16:12:34 stor 15617 ea 4800 sites 7 nUp 2 w8up 2 b 1 w8b 4 p 3142004
+  84222590 2026-11-12 16:13:18 stor 16117 ea 5300 sites 7 nUp 2 w8up 2 b 1 w8b 4 p 3142104
+  84222600 2026-11-12 16:14:01 stor 15817 ea 5300 sites 7 nUp 2 w8up 2 b 1 w8b 4 p 3142204
+  84222610 2026-11-12 16:14:45 stor 15517 ea 5300 sites 7 nUp 2 w8up 2 b 1 w8b 4 p 3142304
+  84222620 2026-11-12 16:15:29 stor 14667 ea 4800 sites 7 nUp 2 w8up 2 b 1 w8b 4 p 3142404
+  84222630 2026-11-12 16:16:13 stor 15082 ea 5300 sites 7 nUp 2 w8up 2 b 1 w8b 4 p 3142504
+  84222640 2026-11-12 16:16:57 stor 14430 ea 5300 sites 7 nUp 2 w8up 1 b 1 w8b 4 p 3142604
+  84222650 2026-11-12 16:17:40 stor 13230 ea 5300 sites 7 nUp 1 w8up 1 b 1 w8b 4 p 3142704
+  84222660 2026-11-12 16:18:25 stor 13279 ea 5600 sites 7 nUp 1 w8up 1 b 1 w8b 4 p 3142804
+  84222670 2026-11-12 16:19:08 stor 12828 ea 5600 sites 7 nUp 1 w8up 1 b 1 w8b 4 p 3142904
+  84222680 2026-11-12 16:19:52 stor 11628 ea 5600 sites 7 nUp 1 w8up 1 b 1 w8b 4 p 3143004
+  84222690 2026-11-12 16:20:37 stor 10628 ea 4950 sites 7 nUp 1 w8up 1 b 1 w8b 4 p 3143104
+  84222700 2026-11-12 16:21:21 stor 9428 ea 5300 sites 7 nUp 1 w8up 1 b 1 w8b 4 p 3143204
+  84222710 2026-11-12 16:22:05 stor 7478 ea 4750 sites 7 nUp 1 w8up 1 b 1 w8b 4 p 3143304
+  84222720 2026-11-12 16:22:49 stor 6278 ea 5600 sites 7 nUp 1 w8up 1 b None w8b 4 p 3143404
+  84222730 2026-11-12 16:23:33 stor 5478 ea 5600 sites 7 nUp 1 w8up 1 b None w8b 4 p 3143504
+  84222740 2026-11-12 16:24:18 stor 5478 ea 5600 sites 7 nUp 1 w8up 1 b None w8b 4 p 3143604
+  84222750 2026-11-12 16:25:02 stor 5478 ea 4900 sites 7 nUp 1 w8up 1 b None w8b 4 p 3143704
+  84222760 2026-11-12 16:25:47 stor 5878 ea 5300 sites 7 nUp 1 w8up 1 b None w8b 4 p 3143804
+  84222770 2026-11-12 16:26:30 stor 5478 ea 5300 sites 7 nUp 1 w8up 1 b None w8b 4 p 3143904
+  84222780 2026-11-12 16:27:13 stor 5478 ea 5300 sites 7 nUp 1 w8up 1 b None w8b 4 p 3144004
 
-=== reserver / reserve7 spans ===
-reserver creeps 4
-  ('reserver84216193', 84216200, 84216804, 566) first=(84216200, 'W46N8', 35, 28, 'spawning') last=(84216804, 'W45N8', 7, 37, 'empty') rooms=[('W45N8', 537, 84216245, 84216804), ('W46N8', 29, 84216200, 84216228)]
-  ('reserver84216368', 84216369, 84216979, 611) first=(84216369, 'W46N8', 30, 34, 'spawning') last=(84216979, 'W45N7', 6, 39, 'empty') rooms=[('W45N7', 521, 84216459, 84216979), ('W45N8', 39, 84216420, 84216458), ('W46N8', 51, 84216369, 84216419)]
-  ('reserver84217277', 84217279, 84217800, 522) first=(84217279, 'W46N8', 35, 28, 'spawning') last=(84217800, 'W45N8', 7, 37, 'empty') rooms=[('W45N8', 488, 84217313, 84217800), ('W46N8', 34, 84217279, 84217312)]
-  ('reserver84217332', 84217334, 84217900, 567) first=(84217334, 'W46N8', 35, 28, 'spawning') last=(84217900, 'W45N7', 6, 39, 'empty') rooms=[('W45N7', 482, 84217419, 84217900), ('W45N8', 45, 84217374, 84217418), ('W46N8', 40, 84217334, 84217373)]
-reserve creeps 2
-  ('reserve784216448', 84216449, 84217600, 1152) first=(84216449, 'W47N8', 34, 30, 'spawning') last=(84217600, 'W47N7', 39, 27, 'empty') rooms=[('W47N7', 1069, 84216532, 84217600), ('W47N8', 83, 84216449, 84216531)]
-  ('reserve784217416', 84217418, 84217700, 283) first=(84217418, 'W47N8', 33, 30, 'spawning') last=(84217700, 'W47N7', 39, 27, 'empty') rooms=[('W47N7', 198, 84217503, 84217700), ('W47N8', 85, 84217418, 84217502)]
-
-=== all rminers this window ===
-  ('rminer84215613', 84216600, 84217142, 543) rooms=[('W45N8', 543, 84216600, 84217142)] last=(84217142, 'W45N8', 13, 11, 50, 'loaded')
-  ('rminer84216119', 84216600, 84217648, 1049) rooms=[('W45N7', 848, 84216801, 84217648), ('W45N8', 201, 84216600, 84216800)] last=(84217648, 'W45N7', 21, 14, 50, 'loaded')
-  ('rminer84216994', 84216995, 84217800, 806) rooms=[('W45N8', 752, 84217049, 84217800), ('W46N8', 54, 84216995, 84217048)] last=(84217800, 'W45N8', 13, 11, 50, 'loaded')
-  ('rminer84217418', 84217419, 84217900, 482) rooms=[('W45N7', 126, 84217705, 84217900), ('W45N8', 294, 84217481, 84217800), ('W46N8', 62, 84217419, 84217480)] last=(84217900, 'W45N7', 21, 15, 8, 'loaded')
-
-=== home miners this window ===
-  ('miner84215556', 84216600, 84217082, 483) top=[(31, 12, 483)] last=[(84217082, 'W46N8', 31, 12, 30, 'loaded'), (84217081, 'W46N8', 31, 12, 20, 'loaded'), (84217080, 'W46N8', 31, 12, 10, 'loaded')]
-  ('miner84216221', 84216600, 84217747, 1053) top=[(38, 32, 1053)] last=[(84217747, 'W46N8', 38, 32, 10, 'loaded'), (84217746, 'W46N8', 38, 32, 50, 'loaded'), (84217745, 'W46N8', 38, 32, 40, 'loaded')]
-  ('miner84216983', 84216985, 84217927, 848) top=[(31, 12, 750), (30, 34, 25), (25, 25, 9)] last=[(84217927, 'W46N8', 31, 12, 40, 'loaded'), (84217926, 'W46N8', 31, 12, 30, 'loaded'), (84217925, 'W46N8', 31, 12, 20, 'loaded')]
-  ('miner84217651', 84217653, 84217927, 275) top=[(38, 32, 179), (37, 32, 44), (30, 34, 25)] last=[(84217927, 'W46N8', 38, 32, 30, 'loaded'), (84217926, 'W46N8', 38, 32, 20, 'loaded'), (84217925, 'W46N8', 38, 32, 10, 'loaded')]
-
-=== w8guard / defenders ===
-w8guard84216581 role=wguard n=1239 first=(84216600, 'w8guard84216581', 'W47N8', 33, 30, 'spawning') last=(84217965, 'w8guard84216581', 'W47N8', 29, 5, 'empty') top=[(('W47N8', 29, 5), 1107), (('W47N8', 33, 30), 104), (('W47N8', 33, 29), 1), (('W47N8', 32, 29), 1), (('W47N8', 31, 28), 1)]
-
-=== incidents recent ===
-cols ['ts', 'tick', 'remote', 'inc', 'ev', 'from_state', 'state', 'why', 'inv', 'inv_ttl', 'def', 'dur', 'data']
-(datetime.datetime(2026, 11, 12, 5, 5, 10, 306960, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84213541, 'W45N7', 84213313, 'cleared', 'DEFEND', 'SAFE', 'killed', 0, 0, 'out', 228, {'ev': 'cleared', 'def': 'out', 'dur': 228, 'inc': 84213313, 'inv': 0, 'why': 'killed', 'from': 'DEFEND', 'tick': 84213541, 'state': 'SAFE', 'invTtl': 0, 'remote': 'W45N7', 'delivered': 2399732})
-(datetime.datetime(2026, 11, 12, 5, 3, 56, 115517, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84213524, 'W45N7', 84213313, 'arrive', None, 'DEFEND', None, 1, 1288, 'out', None, {'ev': 'arrive', 'def': 'out', 'inc': 84213313, 'inv': 1, 'tick': 84213524, 'state': 'DEFEND', 'invTtl': 1288, 'remote': 'W45N7', 'travel': 84, 'delivered': 2398532})
-(datetime.datetime(2026, 11, 12, 4, 1, 1, 462733, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84212675, 'W47N7', 84212446, 'cleared', 'DEFEND', 'SAFE', 'killed', 0, 0, 'out', 229, {'ev': 'cleared', 'def': 'out', 'dur': 229, 'inc': 84212446, 'inv': 0, 'why': 'killed', 'from': 'DEFEND', 'tick': 84212675, 'state': 'SAFE', 'invTtl': 0, 'remote': 'W47N7', 'delivered': 0})
-
-=== room_stats hostiles since LAST-800 ===
-
-=== builder presence ===
-('builder84216327', 'builder', 84216600, 84217924, 1230)
-('w8builder84215103', 'wbuilder', 84216600, 84216656, 57)
+=== box_pauses this hour (file) skipped in SQL ===
 DONE
