@@ -33,7 +33,17 @@ Last full refresh: **2026-11-09 17:1x** (autonomous push — docs/canvas scorebo
 - One-line verdict: `waiting on ticks` | `small safe ship` | `phase exit` — capability to stock a kiter ≠ order to fight.
 
 
-## Current state (2026-11-12 ~08:1x Asia/Hong_Kong · 12h review)
+## Current state (2026-11-12 ~20:1x Asia/Hong_Kong · 12h review)
+
+| Room | Notes |
+|------|-------|
+| W46N8 (home) | **RCL7** 54.96% (6.010M/10.935M); +193k/12h ≈ 19.79 e/t → RCL8 ≈ **12.8 days**; stor avg 15.8k max 18617 min 12190, **24.9% under 15k** (was 12.8%); live tip 14.0–14.7k why=floor_bank nUp=1 upExtra=0; 4 lab/factory sites still up (factory 22.6k/100k, 3 labs 0); labs OFF (actOk=0 homeStor); LIVE **afde7dd** (@84224625 / 18:43 HKT) |
+| W47N8 | **RCL7** 28.81% (3.151M); +115k/12h ≈ 11.84 e/t (was 18.04) → RCL8 ≈ **33.9 days** at this pace; stor avg 13.7k max 26276 min 0 (46.3% <15k, 43.7% ≥20k, 6.8% ≥25k, 0% ≥40k); progress flat 3150854 since 17:24; live stor 0 keep=1 (f7328c4, 11 sites, siteRem 336100) phase=bank20 leanBank1 bankWhy=threat softCap2 ON threatSoft leftover; builders=0, emergency miners |
+
+**20:1x scorecard:** Phase0 home floor **worsened** (24.9% of 12h under 15k, was 12.8%; min 12.2k after defender + site spend; 20k gate never latched — zero ≥20k samples, max 18617). W47 **authorized site wave + Invader drain**: stor 0 since 18:01, upgrade parked, softCap2 re-armed, 40k latch **waiting**; labs OFF ✔. Mid-day `f7328c4` keep=1 while sites are up is held — do not revert. Phase1 blocked. Phase2 home still the lead (~12.8 d, pace down 21.63→19.79); W47 ~33.9 d at this window (pre-site pace was ~18 e/t / ~22 d). Phase3+ deferred — shells may finish, reactions stay off (energy 0–15k ≪ 100k). Verdict: `waiting on ticks` (finish authorized sites, recover the W47 bank, keep the 20k gate; no new game code).
+
+### Previous (2026-11-12 ~08:1x Asia/Hong_Kong · 12h review)
+
 
 | Room | Notes |
 |------|-------|
