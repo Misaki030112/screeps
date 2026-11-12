@@ -109,7 +109,9 @@ function step(s, o, c, t) {
         go(S.THREAT, 'core');
       }
       else if (o.def === 'out') go(S.DEFEND, 'dispatched');
-      else if (o.def !== 'spawning' && t - s.since > c.readyTimeout) waitNpc('timeout');
+      // Still gathering the max body (extensions not full). Do not WAIT out a fight we have
+      // already accepted; the spawn holds and fillers keep topping the pile.
+      else if (o.def !== 'spawning' && !o.short && t - s.since > c.readyTimeout) waitNpc('timeout');
       break;
     case S.DEFEND:
       if (!o.armed && k !== 'none') waitNpc('gate');
@@ -201,7 +203,10 @@ function armed(r) { // code-level enable gate: flag AND RCL4 stable AND (CLAIM2 
   // for long stretches → lastFull goes stale; storage holds the 1300 — queen/haulers can refill ext in <50t)
   const stor = home.storage && home.storage.store[RESOURCE_ENERGY] || 0;
   const ready = Game.time - (hm.lastFull || 0) < 300 || home.energyAvailable >= c.reserve || stor >= c.reserve;
-  const stable = hm.rcl4Since && Game.time - hm.rcl4Since >= c.stableTicks && ready;
+  // RCL stable is the clock only. A short energyAvailable or a stale lastFull must not disarm a
+  // room we still hold (W47N7 2026-11-12: storage 0, ea 220, lastFull stale → WAIT(gate) while
+  // four Invaders were up and both spawns went idle). needE tells fillers to gather the max body.
+  const stable = !!(hm.rcl4Since && Game.time - hm.rcl4Since >= c.stableTicks);
   if (_.some(Game.creeps, x => x.memory.role === 'reserver' && x.memory.remote === r && x.getActiveBodyparts(CLAIM) >= 2)) m.claim2 = Game.time;
   // A live reservation outlasts the reserver creep. Holding the room is enough; CLAIM2-within-1500t still counts on its own.
   const held = (!!m.claim2 && Game.time - m.claim2 < 1500) || reservedByUs(r);
@@ -215,8 +220,8 @@ function armed(r) { // code-level enable gate: flag AND RCL4 stable AND (CLAIM2 
     if (rm && rm.find) coreHere = rm.find(FIND_HOSTILE_STRUCTURES).some(s => s && s.structureType === STRUCTURE_INVADER_CORE);
   }
   const keep = held || coreJob || coreHere;
-  // only the energy readiness is missing (flag on, RCL ok, room held): spawn.js may hold to collect the 1300 (energyHold)
-  m.needE = !ready && !!hm.rcl4Since && Game.time - hm.rcl4Since >= c.stableTicks && keep;
+  // Energy is not a spawn gate. Flag / RCL / reservation still are. needE is the fill signal.
+  m.needE = !ready && stable && keep;
   return !!(stable && keep);
 }
 function body(h, t) { return h.body.some(p => p.type === t && p.hits > 0); }
@@ -225,8 +230,12 @@ function sense(r) {
   const m = mem(r), room = Game.rooms[r], c = cfg(r), th = m.th || {};
   const homeRm = Game.rooms[C.home];
   // Same energy defenderOrder/planDefender pass into B.defender and B.coreBuster.
+  const capE = homeRm && homeRm.energyCapacityAvailable || 0;
+  const availE = homeRm && homeRm.energyAvailable || 0;
   const o = { vis: !!room, inv: [], players: 0, hereP: 0, work: 0, reserved: reservedByUs(r), core: false, hurtNoInv: false, bucket: Game.cpu.bucket, armed: armed(r),
-    cap: (homeRm && (homeRm.energyCapacityAvailable || homeRm.energyAvailable)) || 0 };
+    cap: capE || availE || 0,
+    // Pile not full: the max body may still be unpaid. step() will not readyTimeout on this.
+    short: !!(capE && availE < capE) };
   // guardOnly (W47N7): hostiles in the colony room are that room's own defence. Counting them here would
   // WAIT-player the remote forever while BustJetter sits on the W47N8 seal.
   const scan = (C.guardOnly || C.dynamic) ? [r] : [r, C.home].concat(C.via || []);

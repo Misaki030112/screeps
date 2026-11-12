@@ -34,4 +34,17 @@ t = inv(1, 16); p = to([1, 13], t, false); ok('pocket engage: stays next to exit
 t = inv(1, 14); p = to([1, 13], t, false); ok('pocket caught: no swamp escape', !swamp(...p) && rng(p, { x: EXIT[0], y: EXIT[1] }) <= 1, p);
 // fatigued target (stuck in swamp): may hold range 3 without retreating further
 t = inv(1, 16, 40); p = to([1, 13], t, false); ok('fatigued target: hold 3', rng(p, t.pos) === 3, p);
+// W47N7 2026-11-12: melee camped the north exit (18,0). The defender at (17,1) used to
+// score that tile as a haven and stand in melee. It has to step to a farther plain tile.
+const T7 = fs.readFileSync(path.join(__dirname, '..', 'data/terrain_W47N7.txt'), 'utf8');
+const wall7 = (x, y) => x < 0 || y < 0 || x > 49 || y > 49 || T7[y * 50 + x] === '1' || T7[y * 50 + x] === '3';
+const room7 = { getTerrain: () => ({ get: (x, y) => wall7(x, y) ? 1 : (T7[y * 50 + x] === '2' ? 2 : 0) }) };
+const melee7 = { pos: { x: 18, y: 0 }, fatigue: 0, body: Array(5).fill({ type: 'move', hits: 100 }) };
+const exit7 = [18, 0];
+let k7 = K.step({ pos: { x: 17, y: 1 }, room: room7 }, melee7, false, exit7, {});
+let q7 = [17 + D9[k7][0], 1 + D9[k7][1]];
+ok('camped W47N7 exit: do not stand in melee', k7 !== 0 && rng(q7, melee7.pos) > 1, { k7, q7 });
+k7 = K.step({ pos: { x: 17, y: 1 }, room: room7 }, melee7, true, exit7, {});
+q7 = [17 + D9[k7][0], 1 + D9[k7][1]];
+ok('camped W47N7 exit: hurt flee does not stand', k7 !== 0, { k7, q7 });
 console.log(`kite tests passed (${n})`);
