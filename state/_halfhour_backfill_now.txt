@@ -1,13 +1,49 @@
-2026-11-12 11:06 Asia/Hong_Kong Screeps 半小时轨迹补数 OK (quiet)
-
-Official history shard3 5 rooms ticks 84217601..84218300 (700), inserted=9234 (first_pass=8947 retry=287 already_in_db_first=15436 ts_realigned=4523+0), missing_chunks=2 first pass (W47N7@84217700, W46N8@84218200), still 404 after 1 retry, no retry3/4. 3 rooms distinct=700/700; W46N8 distinct=600/700; W47N7 distinct=587/700 (100 official 404 + 13 empty even ticks 84218276..84218300). No SSL crash.
-
-game.time=84218389 published_bases=84217600..84218200 tick_s=4.516
-retry game.time=84218400 published_bases=84217700..84218300 tick_s=4.447 inserted=287 (W45N7@84218300)
-live at finish stats.t=84218430 room_stats=84218430 roomSlot=W46N8 updated 2026-11-12 11:05:18 (live.json gameTime 84218430 fresh)
-
-Listener: single slot, no yield. services.sh all ok. Did not start a second listener or restart war_cmd/pulse. Previous listener exited on box freeze 10:43:47-11:01:06 (1039s, box_pauses.jsonl appended); listener.out restart 11:01:09; new listener.py pid 1685500 started 11:01:18 after the usual 10s sleep, no subscribe-limit this time. Listener pulled segment 90 itself (creep_cpu through 84218410, path_arrivals through 84218409), room_stats resumed 84218380 at 11:01:37, later 84218430 at 11:05:18, rot i=0 W46N8.
-
-NEW dark 84218131..84218379 (249t, box hibernate 10:43:47-11:01:06 / room_stats 84218130@10:43:06 to 84218380@11:01:37) filled W45N7 249/249 (got official 84218300 on retry); W47N8 and W45N8 170/249 (84218131..84218300 official, 84218301..84218379 unpublished); W47N7 157/249 (hist 157/170, 13 empty even ticks 84218276..84218300, then 79 unpublished); W46N8 73/249 (70 official 84218131..84218200 + 3 sparse live 84218377/78/79) because official 404 W46N8@84218200 (84218201..84218300, 0 live). Prev dark 84217771..84217839 still 69/69 in W46N8/W47N8/W45N8/W45N7; W47N7 only 39/69 (84217801..84217839) because official 404 W47N7@84217700. Prev dark 84217298..84217317 still 20/20 all 5 rooms. Prev dark 84217499..84217513 still 15/15 in 4 rooms, W46N8 only 2/15 (84217499..84217500) because official 404 W46N8@84217500. Prev dark 84217593..84217615 still 23/23 in 4 rooms; W46N8 15/23 (84217601..84217615 only) because official 404 W46N8@84217500 still misses 84217593..84217600. Prev dark 84217141..84217197 still 57/57 all 5 rooms; prev dark 84216901..84216979 still 79/79 all 5 rooms; prev dark 84216501..84216796 still 296/296 all 5 rooms; prev dark 84216101..84216129 still 29/29 all 5 rooms; prev dark 84215617..84215985 still 369/369 all 5 rooms; prev dark 84215241..84215439 still 199/199 all 5 rooms; prev dark 84214901..84215149 still 249/249 all 5 rooms. Official 404 W46N8@84218200 (100t 84218201..84218300, 0 live) remains for next overlap. Official 404 W47N7@84217700 (100t 84217701..84217800, 0 live) remains for next overlap. Official 404 W46N8@84217500 (100t, 5 sparse live, 95 missing) remains before this window. Official 404 W45N8@84216000 (100t) remains before this window; known W47N8@84213800 remains outside. Unpublished 84218301..84218379 (79t) for 4 rooms remains for next overlap (W45N7 already 79/79).
-
-ok: 40min official history backfill shard3 5 rooms, ticks 84217601..84218300 (700), missing_chunks=2 first pass (W47N7@84217700, W46N8@84218200), still 404 after 1 retry, no retry3/4; inserted=9234 (first_pass=8947 retry=287 already_in_db_first=15436), reconstructed first_pass=24383, ts_realigned=4523 first_pass + 0 retry; 3 rooms distinct=700/700, W46N8 distinct=600/700, W47N7 distinct=587/700 (100 official 404 + 13 even ticks 84218276..84218300 with 0 creep rows). No SSL crash. Retry window shifted to 84217701..84218400 (game.time=84218400) and inserted 287 new W45N7 rows from just-published 84218300; other rooms 404 on 84218300 (bleeding edge, next overlap). NEW dark 84218131..84218379 (box hibernate 10:43:47-11:01:06, 1039s / listener.py 1685500 at 11:01:18 / room_stats 84218130@10:43:06 to 84218380@11:01:37, 249t) filled W45N7 249/249 (got 84218300 chunk on retry); W47N8 and W45N8 170/249 (84218131..84218300 official, 84218301..84218379 unpublished); W47N7 157/249 (hist 157/170, 13 empty even ticks 84218276..84218300, then 79 unpublished); W46N8 73/249 (70 official 84218131..84218200 + 3 sparse live 84218377/78/79) because official 404 W46N8@84218200 (84218201..84218300, 0 live). Prev dark 84217771..84217839 still 69/69 in 4 rooms, W47N7 only 39/69 because official 404 W47N7@84217700. Prev dark 84217298..84217317 still 20/20 all 5 rooms. Prev dark 84217499..84217513 still 15/15 in 4 rooms, W46N8 only 2/15 because official 404 W46N8@84217500. Prev dark 84217593..84217615 still 23/23 in 4 rooms; W46N8 15/23 (84217601..84217615 only) because official 404 W46N8@84217500 still misses 84217593..84217600. Prev dark 84217141..84217197 still 57/57 all 5 rooms; prev dark 84216901..84216979 still 79/79 all 5 rooms; prev dark 84216501..84216796 still 296/296 all 5 rooms; prev dark 84216101..84216129 still 29/29 all 5 rooms; prev dark 84215617..84215985 still 369/369 all 5 rooms; prev dark 84215241..84215439 still 199/199 all 5 rooms; prev dark 84214901..84215149 still 249/249 all 5 rooms. Official 404 W46N8@84218200 (100t 84218201..84218300, 0 live) remains for next overlap. Official 404 W47N7@84217700 (100t 84217701..84217800, 0 live) remains for next overlap. Official 404 W46N8@84217500 (100t 84217501..84217600, 5 sparse live ticks 84217514/84217516/84217522/84217527/84217529, 95 missing) remains before this window. Official 404 W45N8@84216000 (100t) remains before this window; known W47N8@84213800 remains outside. Unpublished 84218301..84218379 (79t) for 4 rooms remains for next overlap (W45N7 already 79/79).
+game.time=84219536 published_bases=84218800..84219400 rooms=W46N8,W47N8,W45N8,W45N7,W47N7 dry=False
+  ok  W46N8@84218800 ticks=100 ts=1794454842692
+  ok  W47N8@84218800 ticks=100 ts=1794454880219
+  ok  W45N8@84218800 ticks=100 ts=1794454878533
+  ok  W45N7@84218800 ticks=100 ts=1794454844431
+  ok  W47N7@84218800 ticks=100 ts=1794454913590
+  ok  W46N8@84218900 ticks=100 ts=1794455282219
+  ok  W47N8@84218900 ticks=100 ts=1794455316325
+  ok  W45N8@84218900 ticks=100 ts=1794455313716
+  ok  W45N7@84218900 ticks=100 ts=1794455285338
+  ok  W47N7@84218900 ticks=100 ts=1794455356552
+  ok  W46N8@84219000 ticks=100 ts=1794455727382
+  ok  W47N8@84219000 ticks=100 ts=1794455768096
+  ok  W45N8@84219000 ticks=100 ts=1794455764785
+  ok  W45N7@84219000 ticks=100 ts=1794455729028
+  ok  W47N7@84219000 ticks=100 ts=1794455814684
+  ok  W46N8@84219100 ticks=100 ts=1794456168228
+  ok  W47N8@84219100 ticks=100 ts=1794456218181
+  ok  W45N8@84219100 ticks=100 ts=1794456214728
+  ok  W45N7@84219100 ticks=100 ts=1794456170652
+  ok  W47N7@84219100 ticks=100 ts=1794456271965
+  ok  W46N8@84219200 ticks=100 ts=1794456616515
+  ok  W47N8@84219200 ticks=100 ts=1794456667115
+  ok  W45N8@84219200 ticks=100 ts=1794456663058
+  ok  W45N7@84219200 ticks=100 ts=1794456619260
+  ok  W47N7@84219200 ticks=100 ts=1794456714629
+  ok  W46N8@84219300 ticks=100 ts=1794457071657
+  ok  W47N8@84219300 ticks=100 ts=1794457115897
+  ok  W45N8@84219300 ticks=100 ts=1794457113623
+  ok  W45N7@84219300 ticks=100 ts=1794457074083
+  ok  W47N7@84219300 ticks=100 ts=1794457159992
+  ok  W46N8@84219400 ticks=100 ts=1794457513828
+  ok  W47N8@84219400 ticks=100 ts=1794457558648
+  ok  W45N8@84219400 ticks=100 ts=1794457554983
+  ok  W45N7@84219400 ticks=100 ts=1794457516107
+  ok  W47N7@84219400 ticks=100 ts=1794457604593
+tick_s=4.395
+reconstructed ticks=84218801..84219500 (700) creep_rows=26082 missing_chunks=0
+already_in_db=22761 would_insert=3321
+per_room W46N8:700t/1184new W47N8:700t/816new W45N8:700t/368new W45N7:700t/497new W47N7:700t/456new
+inserted=3321
+ts_realigned=198
+db_after
+  W45N7 ticks=84218801..84219500 rows=1893 distinct=700
+  W45N8 ticks=84218801..84219500 rows=2744 distinct=700
+  W46N8 ticks=84218801..84219500 rows=7578 distinct=700
+  W47N7 ticks=84218801..84219500 rows=3067 distinct=700
+  W47N8 ticks=84218801..84219500 rows=10132 distinct=700
+EXIT:0
