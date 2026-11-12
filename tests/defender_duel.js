@@ -17,7 +17,8 @@ const BODY = {
 class Pos { constructor(x, y, r = 'W45N8') { this.x = x; this.y = y; this.roomName = r; }
   getRangeTo(a) { return rng(this, a.pos || a); } inRangeTo(a, b, r) { return r === undefined ? rng(this, a.pos || a) <= b : rng(this, { x: a, y: b }) <= r; }
   getDirectionTo(a) { const p = a.pos || a, dx = Math.sign(p.x - this.x), dy = Math.sign(p.y - this.y); return DIRS.findIndex(d => d[0] === dx && d[1] === dy) || 1; }
-  findClosestByRange(arr) { return arr.slice().sort((a, b) => rng(this, a.pos) - rng(this, b.pos))[0] || null; } }
+  findClosestByRange(arr) { return arr.slice().sort((a, b) => rng(this, a.pos) - rng(this, b.pos))[0] || null; }
+  findInRange() { return []; } }
 function mk(type, x, y, owner, boosted) {
   const body = BODY[type].map(t => ({ type: t, hits: 100, boost: boosted }));
   return { name: type + x + y, type, pos: new Pos(x, y), owner: { username: owner }, body, hits: body.length * 100, hitsMax: body.length * 100, fatigue: 0, ticksToLive: 1500, memory: {}, intents: {} };
@@ -51,8 +52,8 @@ function scenario(name, invTypes, boosted, opt = {}) {
   d.room = room;
   Object.assign(d, { heal(t) { this.intents.heal = t; return 0; }, rangedAttack(t) { this.intents.ra = t; return 0; },
     move(k) { this.intents.move = k; return 0; }, moveTo(t, o) { stepTo(this, t.pos.x, t.pos.y, occ, o.range || 1); return 0; } });
-  const G = { Game: { time: 0, spawns: {}, creeps: {} }, FIND_HOSTILE_CREEPS: 103, FIND_MY_SPAWNS: 112, ATTACK: 'attack', MOVE: 'move', RANGED_ATTACK: 'ranged_attack', HEAL: 'heal',
-    TERRAIN_MASK_WALL: 1, TERRAIN_MASK_SWAMP: 2, ERR_NOT_IN_RANGE: -9, RIGHT: 3, LEFT: 7, TOP: 1, BOTTOM: 5, RESOURCE_ENERGY: 'energy' };
+  const G = { Game: { time: 0, spawns: {}, creeps: {} }, FIND_HOSTILE_CREEPS: 103, FIND_MY_SPAWNS: 112, FIND_CREEPS: 3, ATTACK: 'attack', MOVE: 'move', RANGED_ATTACK: 'ranged_attack', HEAL: 'heal',
+    TERRAIN_MASK_WALL: 1, TERRAIN_MASK_SWAMP: 2, ERR_NOT_IN_RANGE: -9, RIGHT: 3, LEFT: 7, TOP: 1, BOTTOM: 5, TOP_RIGHT: 2, BOTTOM_RIGHT: 4, BOTTOM_LEFT: 6, TOP_LEFT: 8, RESOURCE_ENERGY: 'energy' };
   const remoteMock = { CFG: { W45N8: { home: 'W46N8', src: [14, 12], cont: [13, 11], exitHome: [49, 14], exitRemote: [0, 14], park: [46, 21] } }, mem: () => mem, paused: () => true,
     route: () => ['W46N8', 'W45N8'], exitTile: (r, from) => from === 'W46N8' ? [49, 14] : [0, 14] };
   // real FSM drives the defender: observation from the sim each tick (tests/threat_fsm.js covers step() in isolation)

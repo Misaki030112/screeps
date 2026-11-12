@@ -456,8 +456,15 @@ roles.defender = function (c) {
   }
   const t0 = here && inv.length ? F.pickDef(c.pos, threatInfo(c).ra, inv, c.memory.tg) : null;
   if (t0 && !F.canWin(threatInfo(c), t0.h, inv)) threat.request2(rm);
-  // on an exit tile with an Invader within 4 (exit campers): fight from here instead of blindly stepping toward the container
-  if (!here || (edge && !inv.some(h => c.pos.inRangeTo(h, 4)))) return go(c, rm, C.cont[0], C.cont[1], 2);
+  // Never end the tick on an exit tile: the engine sends you back to the other room.
+  // 2026-11-12 patrol: rdef84218203 bounced W47N8 18,49 <-> W47N7 18,0 for 172 t (hits still
+  // 5000) while 5 Invaders sat at 18,2–19,4. The old "fight from the exit if an Invader is
+  // within 4" branch skipped stepIn in exactly the exit-camp case, so the creep never
+  // entered. Shoot if in range, then step in / cross (go() already steps off the border).
+  if (!here || edge) {
+    const near = inv.find(h => c.pos.inRangeTo(h, 3)); if (near) c.rangedAttack(near);
+    return go(c, rm, C.cont[0], C.cont[1], 2);
+  }
   const P = t0, t = P ? P.h : null;
   // no target: after a kill (FSM still DEFEND for clearTicks) hold near the kill spot (tombstone stays covered), otherwise
   // patrol the room's guard post (utils/guardpost: never on a road/container/exit lane or next to a source/controller).
