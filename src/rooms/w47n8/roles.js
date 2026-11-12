@@ -213,9 +213,17 @@ function fillTarget(c, tower, rng = 99) {
   const lim = Math.min(rng, c.memory.sk ? 5 : 99), fa = F.alive(c.room); // 17:5x alive, not active: a starved filler is fed via storage (haulers filling the hub themselves kept storage at 0 and the filler empty)
   // Wartime: haulers may assist hub duty while spawn energy is short (filler alone cannot keep up with fat raid bodies).
   let warHub = false; try { warHub = require('../../roles/raid9').pauseCivilians() && c.room.energyAvailable < c.room.energyCapacityAvailable; } catch (e) { warHub = false; }
+  let alert = false;
+  try { alert = require('../../roles/queen').defenseFill(c.room); } catch (e) { alert = false; }
+  const towerFree = alert ? 100 : 200;
   const cand = c.room.find(FIND_MY_STRUCTURES, { filter: s => s.store && s.store.getFreeCapacity(E) > 0 && c.pos.inRangeTo(s, lim) && (s.structureType === STRUCTURE_SPAWN
-    || (s.structureType === STRUCTURE_EXTENSION && !taken.has(s.id)) || (tower && s.structureType === STRUCTURE_TOWER && s.store.getFreeCapacity(E) > 200))
+    || (s.structureType === STRUCTURE_EXTENSION && !taken.has(s.id)) || (tower && s.structureType === STRUCTURE_TOWER && s.store.getFreeCapacity(E) > towerFree))
     && !(fa && !warHub && F.isDuty(c.room, s)) }); // 17:4x: hub extensions/spawns are the w8filler's while it works (haulers: Spawn2 cluster + tower); warHub opens hub
+  // Threat: extensions until the spawn pile is full (the max body), towers as soon as it is.
+  if (alert && c.room.energyAvailable < c.room.energyCapacityAvailable) {
+    const ext = cand.filter(s => s.structureType === STRUCTURE_SPAWN || s.structureType === STRUCTURE_EXTENSION);
+    if (ext.length) cand.splice(0, cand.length, ...ext);
+  }
   // 14:57 (Misaki): hub extensions/spawns/tower first, Spawn2 + its 5 temp extensions last (spawning drains them last too)
   const hub = cand.filter(s => !lastE(s)), t = c.pos.findClosestByRange(hub.length ? hub : cand);
   c.memory.ft = t ? t.id : undefined; return t;
@@ -499,7 +507,7 @@ const R = {
     if (c.body.some(b => b.type === HEAL && b.hits > 0)) { // 17:59: HEAL parts heal every tick (heal() + rangedAttack same tick; rangedHeal only when not shooting)
       const fr = room.find(FIND_MY_CREEPS, { filter: x => x.hits < x.hitsMax || x.id === c.id }), a = D.healAct(c, fr, hs, !!(p.mass || p.shoot));
       if (a) { const t = Game.getObjectById(a.id); if (t) a.act === 'heal' ? c.heal(t) : c.rangedHeal(t); } }
-    if (p.move === 'flee') { const away = PathFinder.search(c.pos, { pos: new RoomPosition(p.from.x, p.from.y, C.ROOM), range: 4 }, { flee: true, maxRooms: 1, roomCallback: rn => cb(rn, new PathFinder.CostMatrix()) }).path[0]; if (away) c.move(c.pos.getDirectionTo(away)); return; }
+    if (p.move === 'flee') { const away = PathFinder.search(c.pos, { pos: new RoomPosition(p.from.x, p.from.y, C.ROOM), range: 4 }, { flee: true, maxRooms: 1, roomCallback: rn => cb(rn, new PathFinder.CostMatrix()) }).path[0]; if (away) { require('../../utils/military').pullSwap(c, away.x, away.y); c.move(c.pos.getDirectionTo(away)); } return; }
     if (p.move === 'retreat') { const rr = p.toHealer ? 1 : 2; return c.pos.inRangeTo(p.goal.x, p.goal.y, rr) || mv(p.goal, rr); }
     if (p.move === 'approach') return mv(p.goal, 3);
     if (p.move === 'post') return mv(p.goal, 0);
@@ -536,7 +544,7 @@ const R = {
     const p = D.healPlan({ id: c.id, pos: c.pos, hits: c.hits, hitsMax: c.hitsMax, hurt: mem.hurt }, defs.concat(dmgd), hs, { towers, idx: Math.max(0, idx), open });
     mem.hurt = p.hurt;
     if (p.heal) { const t = Game.getObjectById(p.heal.id); if (t) p.heal.act === 'heal' ? c.heal(t) : c.rangedHeal(t); }
-    if (p.move === 'flee') { const away = PathFinder.search(c.pos, { pos: new RoomPosition(p.from.x, p.from.y, C.ROOM), range: 4 }, { flee: true, maxRooms: 1, roomCallback: rn => cb(rn, new PathFinder.CostMatrix()) }).path[0]; if (away) c.move(c.pos.getDirectionTo(away)); return; }
+    if (p.move === 'flee') { const away = PathFinder.search(c.pos, { pos: new RoomPosition(p.from.x, p.from.y, C.ROOM), range: 4 }, { flee: true, maxRooms: 1, roomCallback: rn => cb(rn, new PathFinder.CostMatrix()) }).path[0]; if (away) { require('../../utils/military').pullSwap(c, away.x, away.y); c.move(c.pos.getDirectionTo(away)); } return; }
     if (p.move === 'retreat') return c.pos.inRangeTo(p.goal.x, p.goal.y, 2) || mv(p.goal, 2);
     if (p.move === 'post') return mv(p.goal, 0);
   },
@@ -623,9 +631,11 @@ const R = {
     // never detour for extensions: top up one adjacent extension/spawn in passing (transfer + move same tick) and walk on to ctl/hub
     // cont -> storage. Full fill duty only when spawn energy < 300 or no local w8hauler (extensions are the w8haulers' job).
     let warLow = false; try { warLow = require('../../roles/raid9').pauseCivilians(); } catch (e) { warLow = false; }
-    const low = warLow ? room.energyAvailable < room.energyCapacityAvailable : (room.energyAvailable < 300 || !room.find(FIND_MY_CREEPS, { filter: x => x.memory.role === 'w8hauler' }).length);
-    if (!low) delete c.memory.ft;
-    const t = (low && fillTarget(c, false)) || sink(room, c) || room.storage;
+    let alert = false; try { alert = require('../../roles/queen').defenseFill(room); } catch (e) { alert = false; }
+    const low = (warLow || alert) ? room.energyAvailable < room.energyCapacityAvailable : (room.energyAvailable < 300 || !room.find(FIND_MY_CREEPS, { filter: x => x.memory.role === 'w8hauler' }).length);
+    const towerRun = alert && !(room.energyAvailable < room.energyCapacityAvailable);
+    if (!low && !towerRun) delete c.memory.ft;
+    const t = ((low || towerRun) && fillTarget(c, towerRun)) || sink(room, c) || room.storage;
     if (t && !low && !c.pos.isNearTo(t)) {
       const adj = c.pos.findInRange(FIND_MY_STRUCTURES, 1, { filter: s => (s.structureType === STRUCTURE_EXTENSION || s.structureType === STRUCTURE_SPAWN) && s.store.getFreeCapacity(E) > 0 })[0];
       if (adj) fillXfer(c, adj);

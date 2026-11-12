@@ -1,5 +1,9 @@
 # W47N8 defence doctrine (2026-10-19 17:3x, Misaki t249u)
 Defensive only. Never leaves W47N8, never crosses the seal (y<=3), never safe mode (advice only), no new ramparts.
+
+## 2026-11-12 — max body, first tick, towers
+
+A hostile in W47N8 with ATTACK, RANGED_ATTACK, HEAL, or WORK spawns defenders on that tick (a TOUGH/MOVE scout does not; W47N9 is still not a target). The count is the remote squad table, and the sim roster can ask for more. Bodies are sized to `energyCapacityAvailable`: gate guard 2 TOUGH + 25 ATTACK + 14 MOVE (2720 at 5600), ranged defender 25 RA + 25 MOVE (5000), healer 18 HEAL + 18 MOVE (5400). The spawn is not shrunk to `energyAvailable`. While the pile is short, filler/haulers fill it and other roles wait. Towers are filled in that same pass, after extensions until the pile is full and first once it is. W47N7 and any other reserved remote still get the shared remote defender from this spawn. Combat creeps repath every tick and a civilian on the next tile swaps.
 Code: `src/rooms/w47n8/defense.js` (pure, `tests/w47n8_defense.js`), wired in `index.js` towerRun/spawnRun and `roles.js` w8defender.
 Model: `tools/combat_sim.py` (same tick model as `defense.sim`). Revert switch: `Memory.ops.w8defOld = 1` (old spawn trigger).
 

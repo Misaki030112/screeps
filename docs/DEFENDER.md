@@ -14,14 +14,14 @@ Gate (code, `src/managers/threat.js armed()`, unit-tested): flag AND RCL≥4 wit
 | Boosts | **50%** chance for small raids: TOUGH GO (takes 70%), ATTACK UH ×2, RA KO ×2, HEAL LO ×2, WORK ZH. Boosted melee = 60 + 20 /t adjacent. |
 | Life | 1500 ticks; they never leave the room (pathing maxRooms 1); in an **unowned** room they do not suicide, they hunt our creeps then hit structures. |
 | Today | One smallMelee 13:40–14:40 (≈ tick 83613200+); our container (13,11) was **destroyed** during the pause (needs 5 000 energy to rebuild). |
-| Invader cores | Level-0 cores (100k hits, no creeps) in a reserved or configured remote (W45N8, W45N7, W47N7, …) are a fight. Melee buster **10 ATTACK + 10 MOVE = 1300**, 300 dmg/t, `ceil(100000/300) = 334` ticks once adjacent. The ranged kite body is not used. Players are never a target. W47N9 is never a target. After the core dies the reserver reclaims. |
+| Invader cores | Level-0 cores (100k hits, no creeps) in a reserved or configured remote (W45N8, W45N7, W47N7, …) are a fight. Melee buster is ATTACK+MOVE pairs sized to `energyCapacityAvailable`: at the RCL7 5600 cap that is **25 ATTACK + 25 MOVE = 3250**, 750 dmg/t. The 1300 10+10 body is only what that formula produces when the cap itself is 1300. The ranged kite body is not used. Players are never a target. W47N9 is never a target. After the core dies the reserver reclaims. |
 
 ## 2. Cost model (RCL4, ≈3.9 s/tick, ≈22 150 ticks/day)
-**Body (RCL7, sized to energy capacity).** 1 MOVE per other part so the kite stays full speed off-road.
-1300 still fits the old body: 5 RANGED_ATTACK + 6 MOVE + 1 HEAL. At a 5600 RCL7 cap the same formula is **19 RA + 25 MOVE + 6 HEAL** (190 dmg/t, 72 heal/t, 50 parts).
-Core buster stays ATTACK+MOVE pairs: 1300 → 10+10 (300 dmg/t); 5600 → **25+25 = 3250 energy, 750 dmg/t**.
+**Body (RCL7, always `energyCapacityAvailable`).** 1 MOVE per other part so the kite stays full speed off-road.
+1300 still fits the old body: 5 RANGED_ATTACK + 6 MOVE + 1 HEAL. At a 5600 RCL7 cap the same formula is **19 RA + 25 MOVE + 6 HEAL** (190 dmg/t, 72 heal/t, 50 parts, 5600 energy). Every defender, including body #1, is planned at that cap. A short `energyAvailable` does not shrink it. Home guards (`guard` in W46N8) use this same recipe.
+Core buster stays ATTACK+MOVE pairs sized to the cap: 5600 → **25+25 = 3250 energy, 750 dmg/t**. W47N8's gate guard is the melee recipe at the same cap: **2 TOUGH + 25 ATTACK + 14 MOVE = 2720** (full road speed). W47N8's ranged defender is **25 RA + 25 MOVE = 5000**.
 
-**Squad.** Default 1. A pair or a healer → 2. A ranged-heavy or boosted body → 3. Four creeps, or a core that still has creep support → 4. When the wave thins, extras recycle and the leader stays. Followers keep within 2 tiles of the leader. Extras do not spawn if home storage is under 15k, or if W47N8 is in softCap and storage is under 25k. The storage reserve itself stays 1300. Peacetime does not spawn them.
+**Squad.** Default 1, including a solo boosted small melee and a single 3-RA small ranged (the 5600 kite out-heals both). A pair or any healer → 2. Three creeps, a body with ≥6 RA, or a boosted pair → 3. Four creeps, or a core that still has creep support → 4. Owned rooms (W46N8, W47N8) use the same table. When the wave thins, extras recycle and the leader stays. Followers keep within 2 tiles of the leader. Extras do not spawn if home storage is under 15k, or if W47N8 is in softCap and storage is under 25k. Body #1 ignores both floors. The storage reserve itself stays 1300. Peacetime does not spawn them.
 
 An unreserved escalated Invader wave (second creep, healer, or 3×RA) uses this same guard squad when home `energyCapacityAvailable` is at least 5600 (the RCL7 max body). Below that cap it still waits out TTL. Players stay a wait-out. The 15k / softCap floors still apply to bodies 2–4.
 
@@ -146,10 +146,9 @@ exit is valid, matching open-source checkExit. Raid-proof: W46N8, W47N7 (while n
 - Conclusion: the 10-21 12:34 W47N8 raid was a one-off. W46N8, W47N7 and W47N8 are raid-proof while their neighbours stay owned/reserved (W47N9 BustJetter, W48N8 Evans_702, W47N6 yousukeman3, W45N8 reserved by us). **Re-open trigger:** any neighbour of W47N8 losing its owner (W47N9 or W48N8 unclaimed) makes that exit valid again.
 - Remotes still raid on schedule: W45N8 reset at t~83795700 with the 10:16 Invader (consistent); W45N7 88.4k at 11:30, next raid due ~0-4k t (~11:30-16:30 UTC+8), on-demand defender covers it.
 
-## 6b. Body #1 energy budget (2026-11-07 20:2x 12h review)
+## 6b. Body #1 energy budget (superseded 2026-11-12)
 
-`planDefender` sizes **defender #1** to `min(cap, max(energyAvailable, 1300))`, not always full `energyCapacityAvailable`.
-RCL7 cap 5600 left peacetime soft economies holding the spawn forever (ea stuck ~4.5–5k, `lastFull` stale under floor_bank) while a solo Invader sat in W45N7. Original design was "collect the 1300". Extras (bodies 2–4) still size to full cap and respect the 15k / softCap 25k floors. Live: `defender84127622` (40 parts) spawned immediately after deploy @84127622.
+`planDefender` sizes **every** defender, including body #1 and a core buster, to `energyCapacityAvailable`. It does not shrink to `energyAvailable`. The 2026-11-07 rule (`min(cap, max(energyAvailable, 1300))`) got a body out while the pile sat near 4.5–5k, and it also left core busters at 10+10 when the pile was near 1300. The standing order is the max body. While that body is owed, non-defense spawns are held and queen/haulers/filler fill extensions to cap (and towers, in the same pass). The spawn runs on the tick the threat is seen, including when the threat is in a remote and the home room itself has no hostile. Extras (bodies 2–4) still respect the 15k / softCap 25k floors. Body #1 does not. Defenders, core busters, home guards, and W47 combat creeps repath every tick (no `_m` / `_move` cache). A civilian on the next tile swaps out of the way the same tick.
 
 Overnight proof (2026-11-08 ~02:21–03:26 Asia/Hong_Kong): W45N7 InvaderCore@[3,37] since 84132510; `defender84132511` spawned the next tick (ea-budget path) and the core was CLEARED by ~03:26. Standing remote defence — not a new strategic topic. See `docs/RCL7.md` 08:1x.
 

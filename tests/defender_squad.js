@@ -52,7 +52,11 @@ const core = { st: 'THREAT', mission: 'core', last: [] };
 const corePlus = { st: 'DEFEND', mission: 'core', last: [{ ttl: 500 }] };
 assert.strictEqual(T.squadSize(solo), 1);
 assert.strictEqual(T.squadSize(pair), 2);
-assert.strictEqual(T.squadSize({ st: 'DEFEND', last: [{ ranged3: true }] }), 3);
+// One smallRanged (3 RA) or one boosted small melee is still 1: the 5600 kite out-heals them.
+assert.strictEqual(T.squadSize({ st: 'DEFEND', last: [{ ranged3: true }] }), 1);
+assert.strictEqual(T.squadSize({ st: 'DEFEND', last: [{ boosted: true, ra: 1 }] }), 1);
+assert.strictEqual(T.squadSize({ st: 'DEFEND', last: [{ ra: 6 }] }), 3, 'ranged-heavy (>=6 RA) is 3');
+assert.strictEqual(T.squadSize({ st: 'DEFEND', last: [{ boosted: true }, { ttl: 800 }] }), 3, 'boosted pair is 3');
 assert.strictEqual(T.squadSize(wave), 4);
 assert.strictEqual(T.squadSize(core), 1);
 assert.strictEqual(T.squadSize(corePlus), 4);
@@ -69,12 +73,14 @@ assert.strictEqual(S.extrasOk(soft), false);
 Memory.ops.w8day.softCap2 = 0;
 assert.strictEqual(S.extrasOk(Object.assign({}, soft, { storage: { store: { energy: 16000 } } })), true);
 
-// 12h 2026-11-07: body #1 sizes to current ea (≥1300), not full RCL7 cap — peacetime soft
-// economies rarely hit lastFull, so waiting for cost=5600 held the spawn forever on solo Invaders.
+// Body #1 is the max recipe for energyCapacityAvailable even when energyAvailable is short.
+// The spawn holds and the queen fills; the body is not shrunk to leave sooner.
+// The 15k floor does not block body #1. Extras still need it, and they hold the queue too.
 {
   const orig = {
     wantDefender: T.wantDefender, armed: T.armed, state: T.state,
     squadAlive: T.squadAlive, squadSize: T.squadSize, energyHold: T.energyHold,
+    coreMission: T.coreMission,
   };
   T.wantDefender = () => 'W45N8';
   T.armed = () => true;
@@ -82,22 +88,29 @@ assert.strictEqual(S.extrasOk(Object.assign({}, soft, { storage: { store: { ener
   T.squadAlive = () => 0;
   T.squadSize = () => 1;
   T.energyHold = () => false;
+  T.coreMission = () => false;
   try {
-    const softRoom = { name: 'W46N8', controller: { level: 7 }, energyCapacityAvailable: 5600, energyAvailable: 4680, storage: { store: { energy: 19000 } } };
+    const softRoom = { name: 'W46N8', controller: { level: 7 }, energyCapacityAvailable: 5600, energyAvailable: 4680, storage: { store: { energy: 12000 } } };
     const planSoft = S.planDefender(softRoom);
-    assert.ok(planSoft, 'plan #1 under soft ea');
-    assert.ok(planSoft.cost <= 4680, 'body #1 cost ' + planSoft.cost + ' must fit ea 4680 (not wait for 5600)');
-    assert.ok(planSoft.cost >= 1300, 'body #1 still fight-capable');
+    assert.ok(planSoft, 'plan #1 under the 15k floor and a short pile');
+    assert.strictEqual(planSoft.cost, 5600, 'body #1 is the max recipe, not ea 4680');
+    assert.strictEqual(planSoft.body.length, 50);
     assert.strictEqual(planSoft.hold, true);
-    const planFull = S.planDefender(Object.assign({}, softRoom, { energyAvailable: 5600 }));
-    assert.strictEqual(planFull.cost, 5600, 'full ea still builds max body');
-    // extras (have≥1) keep full-cap sizing
     T.squadAlive = () => 1;
     T.squadSize = () => 2;
+    const blocked = S.planDefender(softRoom);
+    assert.strictEqual(blocked, null, 'extra body still respects the 15k floor');
     const planExtra = S.planDefender(Object.assign({}, softRoom, { energyAvailable: 4680, storage: { store: { energy: 20000 } } }));
     assert.ok(planExtra, 'extra body plans under fat stor');
     assert.strictEqual(planExtra.cost, 5600, 'extra body still sized to full cap');
-    assert.strictEqual(planExtra.hold, false);
+    assert.strictEqual(planExtra.hold, true, 'an owed extra holds non-defense spawns until it can be paid');
+    T.coreMission = () => true;
+    T.squadAlive = () => 0;
+    T.squadSize = () => 1;
+    const bust = S.planDefender(Object.assign({}, softRoom, { energyAvailable: 1300, storage: { store: { energy: 4000 } } }));
+    assert.strictEqual(bust.core, 1);
+    assert.strictEqual(bust.cost, 3250, 'core buster is 25 ATTACK + 25 MOVE, not the 1300 10+10');
+    assert.strictEqual(bust.hold, true);
   } finally {
     Object.assign(T, orig);
   }

@@ -239,7 +239,8 @@ function sense(r) {
       o.hereP = players.length;
       o.work = hs.filter(h => h.body.some(p => p.type === 'work' && p.hits > 0) && !h.body.some(p => COMBAT.includes(p.type) && p.hits > 0)).length;
       o.inv = hs.filter(h => h.owner.username === 'Invader' && h.body.some(p => COMBAT.includes(p.type) && p.hits > 0)).map(h => ({ x: h.pos.x, y: h.pos.y, ttl: h.ticksToLive || 1500,
-        heal: body(h, HEAL), ranged3: h.getActiveBodyparts(RANGED_ATTACK) >= 3, hits: h.hits, hitsMax: h.hitsMax, boosted: h.body.some(p => p.boost) }));
+        heal: body(h, HEAL), ranged3: h.getActiveBodyparts(RANGED_ATTACK) >= 3,
+        ra: h.getActiveBodyparts(RANGED_ATTACK), hits: h.hits, hitsMax: h.hitsMax, boosted: h.body.some(p => p.boost) }));
       const cores = rm.find(FIND_HOSTILE_STRUCTURES).filter(s => s.structureType === STRUCTURE_INVADER_CORE);
       o.core = cores.length > 0;
       if (o.core && cores[0].pos) o.corePos = [cores[0].pos.x, cores[0].pos.y];
@@ -319,17 +320,12 @@ function remotesOf(home) {
 }
 function coreMission(r) { const t = state(r); return t.mission === 'core' && (t.st === S.THREAT || t.st === S.DEFEND); }
 const SQUAD_MAX = 4;
-// 1 by default. 2 at a pair/healer, 3 if a body is ranged-heavy or boosted, 4 at a wave or a core that still has creeps.
+// See utils/squad.js. A solo boosted small Invader or a single 3-RA body stays at 1: the RCL7
+// kite (190 dmg / 72 heal) already wins those. 3 is a real ranged-heavy body (>=6 RA) or a boosted pair.
 function squadSize(th) {
   if (!th || (th.st !== S.THREAT && th.st !== S.DEFEND)) return 0;
-  const last = th.last || [];
-  const n = last.length;
-  const heal = last.some(i => i.heal);
-  const hard = last.some(i => i.ranged3 || i.boosted);
-  let w = 1;
-  if (n >= 2 || heal) w = 2;
-  if (n >= 3 || hard) w = 3;
-  if (n >= 4 || (th.mission === 'core' && n >= 1)) w = 4;
+  let w = require('../utils/squad').judge(th.last, th.mission);
+  if (w < 1) w = 1; // open THREAT/DEFEND with nothing catalogued yet still sends the leader
   if (th.need2) w = Math.max(w, 2);
   w += th.extra || 0;
   return Math.max(1, Math.min(SQUAD_MAX, w));

@@ -7,9 +7,9 @@ const FL = require('./fill');
 function mine() { return _.filter(Game.creeps, c => c.memory.home === C.ROOM); }
 function bodyFor(role, e) {
   // 17:34 (Misaki joint defence): RA+MOVE only, no HEAL (towers heal on our ground; HP rule 60%/90% in defense.defPlan)
-  if (role === 'w8defender') return require('./defense').raBody(e, 12);
-  if (role === 'w8guard') return require('./defense').meleeBody(e); // 10-20 15:25 melee gate guard
-  if (role === 'w8healer') return require('./defense').healBody(e, 12); // 18:04 local healer (joint roster >= 4)
+  if (role === 'w8defender') return require('./defense').raBody(e, 25); // RCL7 5600 → 25 RA + 25 MOVE
+  if (role === 'w8guard') return require('./defense').meleeBody(e); // 10-20 15:25 melee gate guard, sized to cap
+  if (role === 'w8healer') return require('./defense').healBody(e, 25); // 18:04 local healer, full cap (18H18M at 5600)
   if (role === 'w8filler') return FL.body(e, Game.rooms[C.ROOM]); // 17:4x 2C:1M, carry ~75% of the hub spawn energy (fill.js)
   if (role === 'w8rminer') { // 20:22: old formula priced 4W1C3M=600 at cap 550, so it never spawned; now the biggest that fits, trimming MOVE first
     // 10-19 21:4x (strategy review, port of home rmBody): 6W. Reserved-room containers decay 5000/100t = 50 hits/t; repair shares the
@@ -71,6 +71,11 @@ function spawnForce(room) {
     try { if (room.find(FIND_HOSTILE_CREEPS).length) return true; } catch (e) { /* test stubs */ }
   }
   try { const cmd = require('../../utils/cmd'); if (cmd.armed && cmd.armed()) return true; } catch (e) { /* ok */ }
+  // A reserved-room threat (W47N7) is not a hostile in W47N8. Do not idle-skip the tick it arrives.
+  try {
+    const t = require('../../managers/threat');
+    if (t.wantDefender(room.name) || t.holding(room.name) || t.energyHold(room.name)) return true;
+  } catch (e) { /* ok */ }
   return false;
 }
 function spawnGate(spawn) {
@@ -135,13 +140,31 @@ function spawnRun(spawn) {
   // waited ~70 t behind them. Refill speed is defence reaction speed (Misaki 10-19), so a due filler goes first unless armed hostiles
   // are inside the base (same idea as home 'queen first' before joint defence).
   const inBase = !!(th && th.inBase && Game.time - th.t < 5);
-  if (!inBase && FL.want(room, cs)) want = 'w8filler';
-  // 10-20 17:0x (Misaki: guard out fast on any threat): armed group at the W47N9 south rows (north_watch w8n9a, fresh) or any armed
-  // hostile in W47N8 -> keep 1 w8guard (roster may ask more in-room). Not replaced once the threat is gone.
-  const armedIn = room.find(FIND_HOSTILE_CREEPS).some(h => require('./defense').armed(h)), n9t = (Memory.ops || {}).w8n9a || 0;
+  // Combat hostiles in this room (ATTACK / RA / HEAL / WORK). A TOUGH/MOVE scout does not count.
+  // HEAL is included: defense.armed() leaves healers out so towers ignore drain tanks, but an owned
+  // room still spawns. Count is the same squad table as remotes. The roster can ask for more, not fewer.
+  const Df = require('./defense');
+  const foes = room.find(FIND_HOSTILE_CREEPS).filter(h => Df.respond(h));
+  const specN = foes.length ? require('../../utils/squad').judge(foes.map(Df.toSpec)) : 0;
+  const n9t = (Memory.ops || {}).w8n9a || 0;
   const fmv = Memory.ops && Memory.ops.w8move && Memory.ops.w8move.force && ['prep', 'build'].includes(Memory.ops.w8move.phase);
-  if (!want && (armedIn || fmv || (n9t > 0 && Game.time - n9t < 60)) && !cs.some(c => c.memory.role === 'w8guard' && (c.spawning || c.ticksToLive > 3 * 50 + 30))) want = 'w8guard';
-  if (!want && dGo) { want = !dOld && lg < (ro.w8m | 0) ? 'w8guard' : 'w8defender'; }
+  const border = fmv || (n9t > 0 && Game.time - n9t < 60);
+  const owe = Math.max(specN, border ? 1 : 0, dGo ? Math.min(Df.MAXL, ro.w8 | 0) : 0);
+  // A second spawn this tick does not see the creep the first one just queued.
+  // The counter is per tick; leaving it set would double-count the creep once it exists.
+  if (room._defPendT !== Game.time) { room._defPend = 0; room._defPendT = Game.time; }
+  const pending = room._defPend || 0;
+  if (local + pending < owe) {
+    // The spec/border minimum is a gate guard. Further roster bodies follow w8m, then ranged.
+    const role = local + pending < Math.max(specN, border ? 1 : 0) ? 'w8guard'
+      : (!dOld && lg < (ro.w8m | 0) ? 'w8guard' : 'w8defender');
+    const body = bodyFor(role, cap);
+    const cost = _.sum(body, p => BODYPART_COST[p]);
+    if (avail >= cost) { want = role; room._defPend = pending + 1; }
+    else if (!cs.some(c => c.memory.role === 'w8filler' || c.memory.role === 'w8hauler')) want = 'w8filler';
+    else { markWait(role, cost, avail); return; }
+  }
+  if (!want && !inBase && FL.want(room, cs)) want = 'w8filler';
   // 18:04: roster >= 4 combat defenders -> one dedicated healer; local only when home can't send it (ro.hl 'w8')
   if (!want && !dOld && fresh && ro.hl === 'w8' && !_.some(Game.creeps, c => c.memory.role === 'w8healer')) want = 'w8healer';
   // Reserved remote of this colony (W47N7, plus any other room we currently reserve next door).
@@ -357,7 +380,9 @@ function spawnRun(spawn) {
   if (!want) { markIdle(); return; }
   // emergency: nothing alive that refills -> spawn with what we have
   const starving = !n('w8hauler') || !n('w8miner');
-  const e = starving ? Math.max(200, avail) : cap;
+  // Combat bodies are never shrunk to energyAvailable. Collection fills the pile; the body waits.
+  const combatSpawn = want === 'w8guard' || want === 'w8defender' || want === 'w8healer';
+  const e = combatSpawn ? cap : (starving ? Math.max(200, avail) : cap);
   const body = body7 || bodyFor(want, e), cost = _.sum(body, p => BODYPART_COST[p]);
   if (avail < cost) { markWait(want, cost, avail); return; }
   const born = want + Game.time;

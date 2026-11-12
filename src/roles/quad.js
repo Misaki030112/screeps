@@ -315,7 +315,7 @@ function run(c) {
   if (require('../utils/cmd').yieldCreep(c)) return;
   const P = M();
   if ((P.cmd||"hold")==="retreat") {
-    fight(c, [c], {}); return c.moveTo(new RoomPosition(RALLY.x,RALLY.y,RALLY.room),{reusePath:10,costCallback:matrixLite});
+    fight(c, [c], {}); return require('../utils/military').moveTo(c, new RoomPosition(RALLY.x,RALLY.y,RALLY.room),{costCallback:matrixLite});
   }
   if (P.simple !== false && (P.cmd||"hold")==="go") {
     // SIMPLE MODE: 2x2 cells at post. CLAIM in W47N8 -> every member chases/kills it (override post), then returns.
@@ -328,7 +328,7 @@ function run(c) {
         const t = _.min(claimers, h => rng(c.pos, h.pos));
         fight(c, mates, { focus: t.id });
         if (c.getActiveBodyparts(RANGED_ATTACK) && c.pos.inRangeTo(t, 3)) c.rangedAttack(t);
-        if (!c.pos.inRangeTo(t, 1)) return c.moveTo(t, { reusePath: 0, maxRooms: 1, costCallback: matrixLite });
+        if (!c.pos.inRangeTo(t, 1)) return require('../utils/military').moveTo(c, t, { range: 1, maxRooms: 1, costCallback: matrixLite });
         return;
       }
     }
@@ -342,11 +342,11 @@ function run(c) {
     // waypoint 30,23 for members not yet at the post (Misaki 14:42)
     if (!c.memory.viaWp) {
       if (c.pos.roomName===ROOM && (rng(c.pos,{x:30,y:23})<=2 || rng(c.pos,A)<=3)) c.memory.viaWp = 1;
-      else return c.moveTo(new RoomPosition(30,23,ROOM), {range:2, reusePath:5, maxRooms:4, costCallback:matrixLite});
+      else return require('../utils/military').moveTo(c, new RoomPosition(30,23,ROOM), {range:2, maxRooms:4, costCallback:matrixLite});
     }
     const cell = new RoomPosition(A.x+OFF[k][0], A.y+OFF[k][1], ROOM);
     if (c.pos.isEqualTo(cell)) return;
-    return c.moveTo(cell, {reusePath:5, maxRooms:4, costCallback:matrixLite});
+    return require('../utils/military').moveTo(c, cell, {range:1, maxRooms:4, costCallback:matrixLite});
   }
   const creeps = allQuads().filter(x => (x.memory.qid|0)===(c.memory.qid|0) || c.memory.qid===undefined);
   ensureIds(allQuads());
@@ -368,7 +368,7 @@ function run(c) {
     }
     const tx = tip ? tip.x : RALLY.x, ty = tip ? tip.y : RALLY.y, tr = tip ? tip.room : RALLY.room;
     fight(c, [c], {focus: undefined});
-    return c.moveTo(new RoomPosition(tx,ty,tr), {range:1, reusePath:5, maxRooms:4, costCallback:matrixLite});
+    return require('../utils/military').moveTo(c, new RoomPosition(tx,ty,tr), {range:1, maxRooms:4, costCallback:matrixLite});
   }
 
   const Q = decide(qid, team);
@@ -376,18 +376,18 @@ function run(c) {
   const k = c.memory.qi|0, sh = shapeOf(team.length);
   if (Q.mode==="assemble") {
     const [dx,dy]=sh[k]||[0,0];
-    return c.moveTo(new RoomPosition(RALLY.x+dx, RALLY.y+dy, RALLY.room), {reusePath:10});
+    return require('../utils/military').moveTo(c, new RoomPosition(RALLY.x+dx, RALLY.y+dy, RALLY.room), {range:0});
   }
   if (Q.mode==="advance"||Q.mode==="combat") return Q.moves[c.name] ? c.move(Q.moves[c.name]) : undefined;
   if (Q.mode==="regroup" && Q.anchor) {
     const cell = (Q.rot && Q.rot[c.name]!==undefined) ? Q.rot[c.name] : k;
     const [dx,dy]=sh[cell]||sh[k]||[0,0];
-    return c.moveTo(new RoomPosition(Q.anchor.x+dx,Q.anchor.y+dy,Q.anchor.room),{reusePath:0});
+    return require('../utils/military').moveTo(c, new RoomPosition(Q.anchor.x+dx,Q.anchor.y+dy,Q.anchor.room),{range:0});
   }
   if (Q.mode==="squeeze" && Q.goal) {
     const ahead = team.filter(m=>(m.memory.qi|0)<k).pop();
-    if (!ahead) return c.moveTo(new RoomPosition(Q.goal.x,Q.goal.y,Q.goal.room),{range:Q.goal.range,reusePath:5,costCallback:matrixLite});
-    if (!c.pos.isNearTo(ahead)) return c.moveTo(ahead,{reusePath:0,costCallback:matrixLite});
+    if (!ahead) return require('../utils/military').moveTo(c, new RoomPosition(Q.goal.x,Q.goal.y,Q.goal.room),{range:Q.goal.range,costCallback:matrixLite});
+    if (!c.pos.isNearTo(ahead)) return require('../utils/military').moveTo(c, ahead,{range:1,costCallback:matrixLite});
   }
   if (Q.mode==="holdFire"||Q.mode==="there"||Q.mode==="fatigue") return;
 }

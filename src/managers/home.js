@@ -18,9 +18,23 @@ function hostiles(room) {
 const players = room => hostiles(room).filter(h => h.owner.username !== 'Invader');
 const alert = room => on('earlyWalls') && ((room.memory && room.memory.defAlert) || 0) > now();
 const active = room => players(room).length > 0;
-const parts = (hs, t) => hs.reduce((s, h) => s + h.body.filter(p => p.type === t && p.hits > 0).length, 0);
-// Guards: 0 for scouts/healer-only; 1 for small squads; 2 when ranged+melee parts >= 12. Towers do most of the killing.
-function wantGuards(room) { if (!on('guards')) return 0; const hs = players(room); const dmg = parts(hs, 'ranged_attack') + parts(hs, 'attack'); return !dmg ? 0 : dmg >= 12 ? 2 : 1; }
+// Owned-room response. A creep with no ATTACK / RANGED_ATTACK / HEAL / WORK is a tourist and spawns nothing
+// (2026-11-12 16:12 W47N8 was one unidentified hostile sample, no body, no damage — not a fight).
+// HEAL and WORK count: a healer or a dismantler in our room is a combat threat. The old `guards` flag
+// no longer suppresses this; Misaki's standing order is a spawn in every threatened owned room.
+// Count is utils/squad.judge (same table as remote defenders), including NPC Invaders.
+function specOf(h) {
+  const n = t => h.body.filter(p => p.type === t && p.hits > 0).length;
+  const ra = n('ranged_attack'), atk = n('attack'), heal = n('heal'), work = n('work');
+  if (!ra && !atk && !heal && !work) return null;
+  return { heal: heal > 0, ra, boosted: h.body.some(p => p.boost), attack: atk, work };
+}
+function wantGuards(room) {
+  const specs = hostiles(room).map(specOf).filter(Boolean);
+  if (!specs.length) return 0;
+  return require('../utils/squad').judge(specs);
+}
+const combatNow = room => wantGuards(room) > 0;
 // creeps that are damaging us (target of tower fire even when net<=0)
 function hurting(room) {
   const s = new Set(), mine = room.find(FIND_MY_CREEPS).concat(room.find(FIND_MY_STRUCTURES));
@@ -39,4 +53,4 @@ function flee(c, r = 5) {
   if (res.path.length) { c.move(c.pos.getDirectionTo(res.path[0])); return true; }
   return false;
 }
-module.exports = { FLAGS, on, hostiles, players, alert, active, wantGuards, hurting, flee };
+module.exports = { FLAGS, on, hostiles, players, alert, active, wantGuards, combatNow, hurting, flee };

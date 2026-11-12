@@ -172,14 +172,16 @@ module.exports = { pickups, handoff, ctlLow, mineralRun, labRun, hubPickup, home
   // Keep ~10% spawn headroom so ctl container still gets fed while builders drain extensions
   // With a live queen haulers stay off the queen stops (contention at 34,25/34,27) and feed filler container A instead;
   // they only walk the fill route themselves when there is no queen or the room is nearly empty (fallback).
-  const hold = require('../managers/threat').holding(room.name); // collecting 1300 for a defender: fill extensions first
+  const hold = require('../managers/threat').holding(room.name); // collecting the max defender: fill extensions to cap
   // Wartime: treat any missing spawn energy as lowE so haulers drain storage→extensions continuously.
   let war = false; try { war = require('./raid9').pauseCivilians(); } catch (e) { war = false; }
-  const lowE = room.energyAvailable < room.energyCapacityAvailable * (hold || war ? 1 : queens ? 0.3 : 0.9);
+  const alert = typeof queen.defenseFill === 'function' && queen.defenseFill(room);
+  const towersLow = alert && rc.all(room, STRUCTURE_TOWER).some(t => t.store[RESOURCE_ENERGY] < 900);
+  const lowE = room.energyAvailable < room.energyCapacityAvailable * (hold || war || alert ? 1 : queens ? 0.3 : 0.9);
   // One decision per load (patrol 10-17 15:40): spawn waves swing energyAvailable across the 30% line, so a loaded hauler
   // flipped ctl -> fill route -> ctl mid-trip (140t for a ~28t leg, ctl container hit 0). With a queen alive a hauler already
   // heading to a drop-off finishes it; once on the fill route (memory.fl) it stays there until empty or nothing needs energy.
-  if (c.memory.fl || (lowE && !(queens && c.memory.dst))) {
+  if (c.memory.fl || towersLow || (lowE && !(queens && c.memory.dst && !alert))) {
     if (queen.fillRoute(c)) { c.memory.fl = 1; return; }
     delete c.memory.fl;
   }
@@ -193,8 +195,8 @@ module.exports = { pickups, handoff, ctlLow, mineralRun, labRun, hubPickup, home
     const opts = [];
     const fc = rc.at(room, fx, fy, STRUCTURE_CONTAINER);
     if (queens && fc && fc.store[RESOURCE_ENERGY] < 400 && fc.store.getFreeCapacity(RESOURCE_ENERGY) >= 100) opts.push(fc); // queen's fixed refill
-    const tw = rc.all(room, STRUCTURE_TOWER).filter(t => t.store[RESOURCE_ENERGY] < 600);
-    if (!queens) opts.push(...tw);
+    const tw = rc.all(room, STRUCTURE_TOWER).filter(t => t.store[RESOURCE_ENERGY] < (alert ? 900 : 600));
+    if (!queens || alert) opts.push(...tw);
     const Wl = require('../managers/walls'), noUp = Wl.noUpgrade(room) && room.storage; // build hold: feed storage, not the controller
     // Storage under the defence reserve (walls.defLow, Memory.defense.reserveE 15k) is refilled before the controller (patrol
     // 10-20 03:05: every load went to the always-empty ctl container while spawn refills drew storage, 15.0k -> 10.4k in ~1750t

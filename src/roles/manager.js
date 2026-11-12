@@ -2,6 +2,16 @@
 // Hub link -> storage; storage -> tower / hub extensions / spawn3 / hub link (for filler links); terminal later.
 const plan = require('../utils/plan'), move = require('../utils/move'), rc = require('../utils/roomcache');
 const N8 = [[-1, -1], [0, -1], [1, -1], [-1, 0], [1, 0], [-1, 1], [0, 1], [1, 1]];
+function pickFill(c, room) {
+  const list = c.memory.n.fill.map(id => Game.getObjectById(id)).filter(s => s && s.store && s.store.getFreeCapacity(RESOURCE_ENERGY) > 0);
+  let alert = false;
+  try { alert = require('./queen').defenseFill(room); } catch (e) { alert = false; }
+  if (!alert || list.length < 2) return list[0];
+  const short = room.energyAvailable < room.energyCapacityAvailable;
+  const rank = require('../utils/squad').fillRank;
+  list.sort((a, b) => rank(true, short, a.structureType) - rank(true, short, b.structureType));
+  return list[0];
+}
 module.exports = { run(c) {
   if (require('../utils/cmd').yieldCreep(c)) return;
   const room = c.room, P = plan.get(room.name), [x, y] = P.pos.manager;
@@ -15,7 +25,7 @@ module.exports = { run(c) {
   const st = room.storage; if (!st) return;
   const link = c.memory.n.link && Game.getObjectById(c.memory.n.link);
   if (c.store[RESOURCE_ENERGY] > 0) {
-    const t = c.memory.n.fill.map(id => Game.getObjectById(id)).find(s => s && s.store.getFreeCapacity(RESOURCE_ENERGY) > 0);
+    const t = pickFill(c, room);
     if (t) { c.transfer(t, RESOURCE_ENERGY); return; }
     if (link && room.memory.linkWant && link.store.getFreeCapacity(RESOURCE_ENERGY) > 0) { c.transfer(link, RESOURCE_ENERGY); return; }
     c.transfer(st, RESOURCE_ENERGY); return;

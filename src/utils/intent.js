@@ -163,7 +163,8 @@ function near(c, obj) {
 function step(c, obj, range) {
   if (!c.moveTo) return;
   const dest = obj.pos || obj;
-  c.moveTo(dest, { range: range == null ? 1 : range, reusePath: 8, maxRooms: 1 });
+  if (require('./military').isMilitary(c)) require('./military').moveTo(c, dest, { range: range == null ? 1 : range, maxRooms: 1 });
+  else c.moveTo(dest, { range: range == null ? 1 : range, reusePath: 8, maxRooms: 1 });
 }
 function closest(c, list) {
   if (!list || !list.length) return null;
@@ -192,7 +193,10 @@ function runDuty(c, o) {
         ? new RoomPosition(pos.x, pos.y, room) : pos;
       const here = !room || !c.room || room === c.room.name;
       const r = o.range == null ? (duty === 'flee' ? 3 : 0) : o.range;
-      if (!(here && c.pos && c.pos.getRangeTo && c.pos.getRangeTo(dest) <= r)) c.moveTo(dest, { range: r, reusePath: 8, maxRooms: here ? 1 : 16 });
+      if (!(here && c.pos && c.pos.getRangeTo && c.pos.getRangeTo(dest) <= r)) {
+        if (require('./military').isMilitary(c)) require('./military').moveTo(c, dest, { range: r, maxRooms: here ? 1 : 16 });
+        else c.moveTo(dest, { range: r, reusePath: 8, maxRooms: here ? 1 : 16 });
+      }
       return true;
     }
     if (duty === 'flee' || duty === 'kite') {

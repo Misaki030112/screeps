@@ -41,6 +41,7 @@ const B = {
   // Remote ranged defender. 1 MOVE per other part (full speed off-road).
   // 1300 = 5 RA + 6 MOVE + 1 HEAL. Heals grow to 6, then RA fills the budget, 50 parts max.
   // RCL7 cap 5600 = 19 RA + 25 MOVE + 6 HEAL (190 dmg / 72 heal).
+  // Home guards use this same recipe (guard below). Always pass energyCapacityAvailable, never energyAvailable.
   defender: e => {
     if (e < 1300) return [].concat(rep(3, RANGED_ATTACK), rep(4, MOVE));
     let r = 5, h = 1;
@@ -73,7 +74,8 @@ const B = {
   // upkeep instead of a 3rd 12W (+0.87, starves once storage hits the floor); 2 MOVE also walks in faster (14/4 vs 12/2 t/tile).
   upgrader: (e, rcl) => { if (rcl >= 6 && rcl < 8 && e >= 1550) return [].concat(rep(14, WORK), [CARRY, MOVE, MOVE]);
     const w = Math.max(1, Math.min(rcl >= 8 ? 15 : 12, Math.floor((e - 100) / 100))); return [].concat(rep(w, WORK), [CARRY, MOVE]); },
-  guard: e => { const n = Math.max(1, Math.min(6, Math.floor((e - 300) / 200))); return [].concat(rep(n, RANGED_ATTACK), rep(n + 1, MOVE), [HEAL]); },
+  // Same max kite as the remote defender. The old 6 RA cap left most of a 5600 pile unspent.
+  guard: e => B.defender(e),
   // builder cap 8W8C8M (1600e) at RCL6: 400 carry, fewer refill walks (was 5W5C5M)
   builder: e => { const n = Math.max(1, Math.min(11, Math.floor(e / 200))); return [].concat(rep(n, WORK), rep(n, CARRY), rep(n, MOVE)); },
   filler: e => [CARRY, CARRY, CARRY, MOVE],
@@ -406,16 +408,15 @@ function planDefender(room) {
   const want = threat.squadSize(th);
   if (have >= want) return null;
   if (have >= 1 && !extrasOk(room)) return null;
-  const cap = room.energyCapacityAvailable || room.energyAvailable || 1300;
-  const avail = room.energyAvailable || 0;
-  // Body #1: size to what we can afford now (≥1300), not full RCL7 cap.
-  // 12h 2026-11-07: solo W45N7 THREAT held spawn 125+t for cost=5600 while ea~4680 (lastFull stale
-  // ~43k ticks under peacetime floor_bank). Original hold was "collect the 1300" — RCL7 cap scaling
-  // turned that into a never-fill wait. Extras (have≥1) still use full cap + extrasOk floors.
-  const eBudget = have < 1 ? Math.min(cap, Math.max(avail, 1300)) : cap;
-  const ord = defenderOrder(g, eBudget);
+  const cap = room.energyCapacityAvailable || 1300;
+  // Always the max body for this room's energyCapacityAvailable. A short energyAvailable used to
+  // shrink body #1 (ea ~4680 → a partial kite, or a 1300 core buster). The spawn waits, queen and
+  // haulers fill extensions, and the body starts the tick the pile can pay for it.
+  const ord = defenderOrder(g, cap);
   const cost = _.sum(ord.body, p => BODYPART_COST[p]);
-  return { remote: g, body: ord.body, core: ord.core, cost, hold: have < 1 };
+  // Any body we are actually going to spawn holds the rest of the queue until it can be paid.
+  // Extras that the 15k / softCap floors refuse never get here (returned null above).
+  return { remote: g, body: ord.body, core: ord.core, cost, hold: true };
 }
 
 // Refresh roleTargets even when every spawn is busy (patrol 2026-11-01 soft-upgrade): upgrader surplus-recycle and
@@ -473,7 +474,10 @@ module.exports = { defLowUpgraders, upExtraTick, extraUpReady, UP_EXTRA_ARM, UP_
   const hostile = typeof FIND_HOSTILE_CREEPS !== 'undefined' && spawn.room.find(FIND_HOSTILE_CREEPS).length;
   const cmdOn = !!(cmd.armed && cmd.armed());
   const canPay = sw.waitCost > 0 && (spawn.room.energyAvailable || 0) >= sw.waitCost;
-  if (sw.ne && Game.time < sw.ne && !hostile && !cmdOn && !canPay) {
+  // A remote threat is not a hostile in this room. The idle skip used to wait up to IDLE_EVERY-1
+  // ticks before the defender was even considered. A threat runs the spawn the same tick.
+  const defenseNow = defenseDue(spawn.room);
+  if (sw.ne && Game.time < sw.ne && !hostile && !cmdOn && !canPay && !defenseNow) {
     if (sw.waitCost) sw.wait++; else sw.idle++;
     sw.skip = (sw.skip || 0) + 1; return;
   }
@@ -487,6 +491,15 @@ module.exports = { defLowUpgraders, upExtraTick, extraUpReady, UP_EXTRA_ARM, UP_
   }
 } };
 const IDLE_EVERY = 4;
+function defenseDue(room) {
+  if (!room) return false;
+  try {
+    const threat = require('./threat');
+    if (threat.wantDefender(room.name) || threat.energyHold(room.name) || threat.holding(room.name)) return true;
+  } catch (e) { /* tests stub a partial threat module */ }
+  try { if (require('./home').wantGuards(room) > 0) return true; } catch (e) { /* ok */ }
+  return false;
+}
 function run1(spawn, onWait) {
   const room = spawn.room, cap = room.energyCapacityAvailable, avail = room.energyAvailable, rcl = room.controller.level;
   if (nearFull(avail, cap)) room.memory.lastFull = Game.time; // cap-100: RCL5 build rarely hits exact cap
@@ -509,10 +522,19 @@ function run1(spawn, onWait) {
   // 1) emergency: nothing can refill the spawn
   if (!(alive.hauler || 0) && !(alive.queen || 0) && !(alive.harvester || 0) && !(alive.filler || 0))
     return go(count.miner ? 'hauler' : 'harvester', count.miner ? B.hauler(Math.max(200, avail)) : B.harvester(Math.max(200, avail)));
-  // 1b) defender: top of the queue. While collecting the 1300, hold EVERYTHING except queen (refill) —
-  // miners used to keep spawning and stretched the wait to ~31t (invader_W45N8_499, 2026-10-16).
-  // Holding ends the tick noteSpawn sets th.def (wantDefender/holding go false → upgraders resume).
-  const threat = require('./threat'), planD = planDefender(room);
+  // 1b) Owned-room guards, then the remote defender. Both use the max body and, while that body
+  // is still owed, hold every non-collector spawn. Queen/filler may spawn so extensions fill.
+  // Do not shrink the body to leave on a partial pile.
+  const threat = require('./threat'), H = require('./home');
+  const needG = H.wantGuards ? H.wantGuards(room) : 0;
+  if (needG > 0 && (alive.guard || 0) < needG) {
+    if (!(alive.queen || 0) && !(alive.filler || 0)) return go('queen', B.queen(Math.max(300, avail)));
+    const b = B.defender(cap);
+    const cost = _.sum(b, p => BODYPART_COST[p]);
+    if (avail < cost) { onWait('guard', cost, avail); return ERR_BUSY; }
+    return go('guard', b, { born: Game.time });
+  }
+  const planD = planDefender(room);
   if (planD && planD.remote) {
     if (avail >= planD.cost) { const name = 'defender' + Game.time, mem = { role: 'defender', home: room.name, remote: planD.remote, born: Game.time, squad: 1, v2: 1 };
       if (planD.core) mem.core = 1;
@@ -523,14 +545,9 @@ function run1(spawn, onWait) {
       return ERR_BUSY;
     }
   }
-  // 1c) home guards while player combat creeps are in the room (managers/home); queen first so towers stay fed
-  const H = require('./home'), homeThreat = H.on('guards') && H.active(room); // guards + spawn hold behind Memory.defense.guards
-  if (homeThreat) {
-    if (!(alive.queen || 0) && !(alive.filler || 0)) return go('queen', B.queen(Math.max(300, avail)));
-    if ((alive.guard || 0) < H.wantGuards(room)) { const b = B.guard(Math.max(500, Math.min(cap, avail))); // spawn now with what we have: towers carry the fight, speed matters
-      return go('guard', b, { born: Game.time }); }
-  }
-  const hold = !!(planD && planD.hold) || homeThreat || threat.energyHold(room.name); // first defender or energy gate holds the queue
+  // While a defender body is still owed, or extensions are being gathered so the gate can arm,
+  // nothing else spends the pile. Once the owed bodies are spawning, the economy continues.
+  const hold = !!(planD && planD.hold) || threat.energyHold(room.name);
   // 2) miners (pre-spawned for travel time)
   // miner83614486 (10-13) arrived 115 ticks early and idled next to its predecessor: unmeasured travel defaulted to 100 (real ~30)
   const lead = c => Math.min(c.memory.travel || 40, 80) + c.body.length * 3;

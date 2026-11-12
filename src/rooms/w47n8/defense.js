@@ -39,6 +39,12 @@ function segSplit(elig, n, idx) {
 }
 const cls = c => (live(c, 'heal') ? 0 : live(c, 'ranged_attack') ? 1 : live(c, 'attack') ? 2 : 3); // Misaki 17:40: healers always first, then ranged, melee
 const armed = c => live(c, 'attack') + live(c, 'ranged_attack') + live(c, 'work') > 0;
+// Spawn response in an owned room. HEAL counts (a healer is a combat threat). TOUGH/MOVE/CARRY alone does not.
+// armed() stays attack/ranged/work so towers still ignore unarmed drain tanks north of the seal.
+const respond = c => armed(c) || live(c, 'heal') > 0;
+function toSpec(c) {
+  return { heal: live(c, 'heal') > 0, ra: live(c, 'ranged_attack'), boosted: !!(c.body && c.body.some(p => p.boost)), attack: live(c, 'attack'), work: live(c, 'work') };
+}
 const inBase = c => c.pos.y > SEAL_Y;
 // towers: [{pos, energy}], hostiles: [{id,pos,hits,body}], o: {prev, hurting:Set, banned:Set}
 function towerPick(towers, hostiles, o = {}) {
@@ -217,11 +223,11 @@ const MAXH = 4, MAXL = 4, HEAL_AT = 4; // Misaki 17:56: home max 4, W47N8 local 
 function plan(o) {
   const fighters = o.force.filter(c => live(c, 'attack') + live(c, 'ranged_attack') > 0);
   if (!fighters.length) return { home: 0, w8: 0, w8m: 0, win: true, why: 'unarmed', advise: '' };
-  const hb = raBody(o.homeCap || 0), wb = raBody(o.w8Cap || 0, 12), mb = meleeBody(o.w8Cap || 0), base = o.homeOk ? 1 : 0;
+  const hb = raBody(o.homeCap || 0), wb = raBody(o.w8Cap || 0, 25), mb = meleeBody(o.w8Cap || 0), base = o.homeOk ? 1 : 0;
   const wins = defs => { const r = defs.length ? sim(o.force, o.towerR, defs, 0, o) : sim(o.force, o.towerR, wb, 0, o); return r.result === 'win' && !r.lost; };
   // 18:04 (Misaki): a roster of >= 4 combat defenders always includes one dedicated healer (home at max cap if home is safe, else local),
   // counted in the sim
-  const hh = o.homeOk ? healBody(o.homeCap || 0) : healBody(o.w8Cap || 0, 12), hl = o.homeOk ? 'home' : 'w8';
+  const hh = o.homeOk ? healBody(o.homeCap || 0) : healBody(o.w8Cap || 0, 25), hl = o.homeOk ? 'home' : 'w8';
   for (let h = base; h <= (o.homeOk ? MAXH : 0); h++)
     for (let n = 0; n <= MAXL; n++) for (let m = 0; m <= (o.noMelee ? 0 : n); m++) { // 15:25: m of the n local are melee guards (fewest creeps first, ranged preferred)
       const four = h + n >= HEAL_AT, defs = Array(h).fill(hb).concat(Array(n - m).fill(wb), Array(m).fill(mb)).concat(four ? [hh] : []);
@@ -243,4 +249,4 @@ function repairStand(wall, hs, open = () => true) {
 }
 // body summary {attack:n,...} (tools/north_watch.py) -> body list in the worst-case order (tough, move, work parts last)
 function fromCounts(b) { const out = []; for (const t of ['tough', 'move', 'attack', 'ranged_attack', 'heal', 'work', 'claim', 'carry']) for (let i = 0; i < (b[t] | 0); i++) out.push({ type: t, hits: 100 }); return { body: out, hits: out.length * 100 }; }
-module.exports = { catchable, meleeBody, guardPlan, GATE, GHOLD, SAFE_HY, hSafe, HEAL_AT, healBody, healPlan, HIDLE, MAXH, MAXL, healAct, segSplit, atkPow, towerPick, sim, assess, defPlan, postTile, POSTS, IDLE, plan, raBody, repairPick, repairStand, COVER, RECYCLE, fromCounts, cls, armed, inBase, FLOOR, SEAL_Y };
+module.exports = { catchable, meleeBody, guardPlan, GATE, GHOLD, SAFE_HY, hSafe, HEAL_AT, healBody, healPlan, HIDLE, MAXH, MAXL, healAct, segSplit, atkPow, towerPick, sim, assess, defPlan, postTile, POSTS, IDLE, plan, raBody, repairPick, repairStand, COVER, RECYCLE, fromCounts, cls, armed, respond, toSpec, inBase, FLOOR, SEAL_Y };
