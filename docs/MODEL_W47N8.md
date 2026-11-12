@@ -8,6 +8,10 @@ hauler upkeep (CARRY need = 10 × (round trip × 1.10 + 4) / 50, load split 75% 
 0.03/t each, builder-lite 1000/1500. Upgrade = net / (1 + upgrader upkeep 1150/1500/10). RCL5: 1800 cap, best of source-A link→ctl or hub→ctl link (3% loss).
 reserve7 (2 CLAIM) is spawned and paid by home.
 
+## 2026-11-12 08:1x — keep=2 held; softCap2 cleared into 22–25k hysteresis (plan holds)
+
+12h window: W47 upgrade **18.04** e/t vs ideal **30.08** (`tools/model_w8.py --hours 12`; keep=2 / 20 WORK; 26.14→27.76%, +175k ≈18.04 e/t, was 16.99). **16.6% of samples ≥25k** (was 46.2% — last window's 32k peak is gone), **72.5% ≥20k**, max stor **26607** @08:04 (longest ≥25k **530 t**, 07:30–08:09); **0% ≥40k** — 40k/500t latch still waiting. That 530 t stretch **cleared softCap2**; live stor 23238 is the designed post-clear [22k, 25k) hysteresis (softLeft 1762, above ARM, softCap2=0 softE=0 softBand=1 phase=ready leanBank=0 upgKeep=2). sealPark still on (seal strict ≥25k). Two Invader bills (W47N7 + W45N7) were leave-alive and did not crash the bank. src_A "0.62 e/t" remains the known link-path accounting artefact. Not a reason to move the 40k latch or unpark ceil/seal mid-band. **contMinPct50 contLow0 roadCrit0**. See `docs/RCL7.md` 08:1x.
+
 ## 2026-11-11 20:2x — keep=2 delivered a 25–32k band, then leanBank rebuild (plan holds)
 
 12h window: W47 upgrade **16.99** e/t vs ideal **30.08** (`tools/model_w8.py --hours 12`; keep=2; 24.62→26.14%, +166k ≈16.99 e/t, was 16.65). **46.2% of samples ≥25k** (was 18.4%), max stor **32259** @14:58–15:01 (longest ≥25k **980 t**); **0% ≥40k** — 40k/500t latch still waiting. Evening W45N7 + W47N7 Invader bills (two ×5200e defenders) plus mutual w8guard/w8defender bled storage to min **9478**; live 13.9k phase=bank20 leanBank1 upgKeep=1 (stor <15k) threatSoft leftover WINDOW 1500 from the W47N7 seen-tick — not a new bottleneck class and not a reason to move the 40k latch. **contMinPct56 contLow0 roadCrit0**. See `docs/RCL7.md` 20:2x.

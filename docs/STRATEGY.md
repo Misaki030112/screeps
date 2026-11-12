@@ -33,7 +33,18 @@ Last full refresh: **2026-11-09 17:1x** (autonomous push — docs/canvas scorebo
 - One-line verdict: `waiting on ticks` | `small safe ship` | `phase exit` — capability to stock a kiter ≠ order to fight.
 
 
-## Current state (2026-11-11 ~20:2x Asia/Hong_Kong · 12h review)
+## Current state (2026-11-12 ~08:1x Asia/Hong_Kong · 12h review)
+
+| Room | Notes |
+|------|-------|
+| W46N8 (home) | **RCL7** 53.20% (5.817M/10.935M); +211k/12h ≈ 21.63 e/t → RCL8 ≈ **12.1 days**; stor avg 16.5k max 19.7k min 13626, **12.8% under 15k** (was 25%); live tip 17.7k why=ok nUp=2 upExtra=0; labs OFF (actOk=1); LIVE **e98671f** (@84206586 / 20:34 HKT) |
+| W47N8 | **RCL7** 27.76% (3.035M); +175k/12h ≈ 18.04 e/t (was 16.99) → RCL8 ≈ **22.3 days**; stor avg 21.7k max 26607 min 12487 (16.6% ≥25k, 72.5% ≥20k, 0% ≥40k); keep=2 / 40k sticky not armed (closest 26.6k); softCap2 **cleared** after 530 t ≥25k (peak 26607 @08:04), live post-clear hysteresis stor 23.2k (above 22k ARM, softLeft 1.8k) softBand1 phase=ready leanBank0 |
+
+**08:1x scorecard:** Phase0 home floor **improved** (12.8% of 12h under 15k, was 25%; min 13.6k vs last window's 8.6k; 20k gate never latched — zero ≥20k samples); W47 **softCap2 cleared** into the designed [22k, 25k) hysteresis (530 t at 25–26.6k, then 23.2k) — not yet a sticky ≥25k hold, 40k latch **waiting**; labs OFF ✔. Phase1 blocked. Phase2 home lead (~12.1 d), W47 ~22.3 d (pace up). Phase3+ deferred. Verdict: `waiting on ticks` (20k gate + keep=2 / 40k latch held; softCap clear is progress, not a phase exit; no new game code).
+
+### Previous (2026-11-11 ~20:2x Asia/Hong_Kong · 12h review)
+
+
 
 | Room | Notes |
 |------|-------|
