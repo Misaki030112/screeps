@@ -1,5 +1,6 @@
-retry W47N8@84233200 at 2026-11-13 06:03:26 and again at 06:04:35 Asia/Hong_Kong
-live tip stats.t ~84233520 then ~84233530
-GET still HTTP 404 both times (gzip-aware). Same-base W46N8/W45N8/W45N7/W47N7@84233200 were HTTP 200 ticks=100 (reconfirmed at finish).
-DB rows in 84233201..84233300 for W47N8: 0 / distinct 0. New official hole this window.
-Second --minutes 40 backfill also 404, inserted 0 for this chunk.
+2026-11-13 06:36 Asia/Hong_Kong confirm GET W47N8@84233200
+First pass (game.time=84233959): HTTP 404
+Retry GET at live tip gameTime=84233973 / stats.t=84233970: still HTTP 404 ticks=0
+Same-base W46N8/W45N8/W45N7/W47N7@84233200: HTTP 200 ticks=100 (reconfirmed)
+DB W47N8 84233201..84233300: 0 rows / 0 distinct (0 live)
+Persistent official hole; already reported in the 06:06 half-hour run and the 06:30 patrol.

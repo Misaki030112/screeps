@@ -1,18 +1,13 @@
-finished_at=2026-11-13 06:06:14 Asia/Hong_Kong
-first_pass: game.time=84233508 published_bases=84232800..84233400 ticks=84232801..84233500 (700) tick_s=4.361
-reconstructed=22597 already_in_db=11080 inserted=11517 ts_realigned=1833 missing_chunks=5 (W45N7@84232800, W47N8@84233200, W47N8@84233400, W45N8@84233400, W47N7@84233400)
-retry: W45N7@84232800 still official 404 at live tip ~84233520; W47N8@84233200 still official 404 (same-base 4 rooms 200 100/100, reconfirmed at finish); W47N8@84233400 and W45N8@84233400 now 200 100/100; W47N7@84233400 200 during second backfill; inserted=2569 (W47N8 +1420, W45N8 +569, W47N7 landed 419 / printed 580); missing_chunks=2 after retry
-unique (creep,tick) in 84232801..84233500 = 26189 = row count (no global conflicts)
-db_after official window:
-  W46N8 84232801..84233500 rows=6236 distinct=700
-  W47N8 84232801..84233500 rows=10271 distinct=600  (hole 84233201..84233300 official 404, 0 live)
-  W45N8 84232801..84233500 rows=4622 distinct=700
-  W45N7 84232901..84233500 rows=1928 distinct=600  (hole 84232801..84232900 official 404, 0 live)
-  W47N7 84232801..84233500 rows=3132 distinct=700
-new official 84233100 and 84233300 complete 100/100 in all five rooms from first pass; 84233400 complete 100/100 after retry (W47N8/W45N8/W47N7 late-published); 84233200 complete in four rooms (W47N8 official 404)
-overlap 84232801..84233100: W46N8/W47N8/W45N8/W47N7 300/300; W45N7 200/300 (official 404 84232800)
-live tails: W47N8 84232801..84233561 rows=11315 distinct=661 (current slot); other rooms no live tail past official 84233500
-listener: single slot pid=2022689 loop=4035476 restart 06:00:37 after box pause 05:42:47..06:00:24 (1049s); yield absent; rot i=1 W47N8; segment90 pulled; did not restart war_cmd/pulse
-room_stats gap 84233240 -> 84233490 (not filled by official history)
-W45N8@84232300 remains official 404 outside this window (ticks 84232301..84232400), 0 live, not re-GET
-W47N8@84233200 is a new official 404 this window (ticks 84233201..84233300), 0 live
+time 2026-11-13 07:34 Asia/Hong_Kong
+ok true missing_chunks=0 first_pass only (no retry)
+game.time=84234735 published_bases=84234000..84234600 ticks=84234001..84234700 (700) tick_s=4.396
+inserted=3410 already_in_db=26488 reconstructed=29898 ts_realigned=0
+unique_after=28864 rows_after=28864 dup=0
+per_room distinct: W46N8=700 W47N8=700 W45N8=700 W45N7=486 W47N7=700
+W45N7 486/700 is empty-of-our-creeps (THREAT since 84234459): official 84234400 86 our-creep ticks; official 84234500 and 84234600 HTTP 200 100/100, 0 our creeps
+W46N8 official 84234600 filled live pause hole 84234601..84234614 (live resumed 84234615)
+chunk_84234600: W45N8 282/100, W46N8 1293/100, W47N7 204/100, W47N8 2517/100, W45N7 0 (official 200)
+live tail: W46N8 84234701..84234727 (27), W47N8 84234728..84234755 (28)
+listener ok single-slot pid 2042184 started 07:23:51 after pause 07:17:25..07:23:39 (366s); loop 4035476; yield absent; rot W47N8 i=1 left 480s at 07:34:14; no subscribe-limit after this resume
+room_stats gaps remain (not filled by official history): 84234050->84234360 (310, 06:43 pause), 84234520->84234620 (100, 07:17 pause)
+max: creep_ticks 84234755 room_stats 84234750 creep_cpu 84234750 path_arrivals 84234749

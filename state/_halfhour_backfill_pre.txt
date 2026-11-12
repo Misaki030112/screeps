@@ -1,18 +1,48 @@
-started_at=2026-11-13 06:02:17 HKT
-listener_pid=2022689 loop_pid=4035476 started=2026-11-13 06:00:37
-yield=absent single_slot=yes roomSlot=W47N8
-live_updated 2026-11-13 06:01:59 gameTime None (slot is W47N8, not home W46N8; expected) stats.t 84233500
-rot={"i": 1, "room": "W47N8", "left": 582.7, "at": "2026-11-13 06:00:43"} (left counts down; slot restored mid-hold after resume)
-box_pause=2026-11-13 05:42:47..06:00:24 (1049s)
-listener_restart=2026-11-13 06:00:37 (run_listener.sh relaunch after box wake; new listener.py pid 2022689; previous pid 2013206 was from 05:25:11 after the 05:12:14..05:24:58 pause)
-room_stats_gap=84233240 -> 84233490 (last before the 05:42 pause, first after 06:00 resume; earlier gaps 84232820 -> 84233010 and 84232350 -> 84232740 already recorded)
-prior_box_pause=2026-11-13 05:12:14..05:24:58 (755s) already recorded
-prior_prior_box_pause=2026-11-13 04:37:18..05:04:48 (1650s) already recorded
-max_ticks_pre creep_ticks=84233504 room_stats=84233500 creep_cpu=84233480 path_arrivals=84233479
-segment90=listener already pulled after resume (creep_cpu/path_arrivals 84233480/84233479 near live tip 84233500); did not restart listener/war_cmd/pulse
-grafana=200 database=ok
-db=ok
-prev_halfhour=05:37 HKT ticks 84232401..84233100 unique landed inserted=3679 missing_chunks=1: W45N7@84232800 (published 84232400..84233000 at game.time=84233119; in-progress 84233100 still 404 at live tip ~84233144..84233159; retry W45N7@84232800 still official 404; late-published W47N7@84233000 retry 200 +547)
-hourly_patrol_prefill=05:24 patrol already filled through published 84232900 (still official 404: W45N8@84232300 and W45N7@84232800). This run should add newly published 84233100..84233300 and overlap the already-filled range, and retry W45N7@84232800 if it falls in the 40min window. W45N8@84232300 should now be just outside or at the edge.
-known_holes_pre W45N7 84232801..84232900 rows=0; W45N8 84232301..84232400 rows=0 (likely just outside this 40min window)
-live_tail_pre W46N8 84233101..84233240 (136 distinct, slot was on W46N8 until 05:42:42 then pause); W47N8 84233486..84233504 (19 distinct, slot on W47N8 after 06:00 resume). Official 84233100/84233200/84233300 not yet in DB except that W46N8 live tail into 84233200.
+time 2026-11-13 07:32:39
+gameTime 84234727 stats.t 84234730 roomSlot W47N8 updated 2026-11-13 07:32:39
+rot {'i': 1, 'room': 'W47N8', 'left': 575.0, 'at': '2026-11-13 07:32:39'}
+listener.py pid 2042184 started 07:23:51; loop 4035476; yield absent; last pause 07:17:25..07:23:39 366s; no subscribe-limit after this resume (prior x1 at 07:04:26, 07:12:01, 07:14:19, 07:16:00 were before this pause)
+anchor gameTime/cmax 84234727 expected published_bases 84234100..84234600 window ticks 84234101..84234700
+======= creep_ticks coverage tick>=84234100 =======
+  (W45N7, 84234101, 84234500, 1249, 386)
+  (W45N8, 84234101, 84234600, 2233, 500)
+  (W46N8, 84234101, 84234727, 6506, 613)
+  (W47N7, 84234101, 84234600, 1589, 500)
+  (W47N8, 84234101, 84234732, 10740, 505)
+======= chunk counts tick>=84234101 =======
+  (84234100, W45N7, 401, 100, 84234101, 84234200)
+  (84234100, W45N8, 358, 100, 84234101, 84234200)
+  (84234100, W46N8, 993, 100, 84234101, 84234200)
+  (84234100, W47N7, 348, 100, 84234101, 84234200)
+  (84234100, W47N8, 1504, 100, 84234101, 84234200)
+  (84234200, W45N7, 405, 100, 84234201, 84234300)
+  (84234200, W45N8, 358, 100, 84234201, 84234300)
+  (84234200, W46N8, 994, 100, 84234201, 84234300)
+  (84234200, W47N7, 300, 100, 84234201, 84234300)
+  (84234200, W47N8, 1927, 100, 84234201, 84234300)
+  (84234300, W45N7, 289, 100, 84234301, 84234400)
+  (84234300, W45N8, 440, 100, 84234301, 84234400)
+  (84234300, W46N8, 869, 100, 84234301, 84234400)
+  (84234300, W47N7, 309, 100, 84234301, 84234400)
+  (84234300, W47N8, 2269, 100, 84234301, 84234400)
+  (84234400, W45N7, 154, 86, 84234401, 84234500)
+  (84234400, W45N8, 714, 100, 84234401, 84234500)
+  (84234400, W46N8, 887, 100, 84234401, 84234500)
+  (84234400, W47N7, 432, 100, 84234401, 84234500)
+  (84234400, W47N8, 2369, 100, 84234401, 84234500)
+  (84234500, W45N8, 363, 100, 84234501, 84234600)
+  (84234500, W46N8, 1303, 100, 84234501, 84234600)
+  (84234500, W47N7, 200, 100, 84234501, 84234600)
+  (84234500, W47N8, 2591, 100, 84234501, 84234600)
+  (84234600, W46N8, 1109, 86, 84234615, 84234700)
+  (84234700, W46N8, 351, 27, 84234701, 84234727)
+  (84234700, W47N8, 80, 5, 84234728, 84234732)
+======= max tables =======
+path_arrivals 84234720
+room_stats 84234730
+creep_cpu 84234720
+creep_ticks 84234733
+======= room_stats gaps after 84234000 =======
+  gap 84234050->84234360 (310)
+  gap 84234520->84234620 (100)
+room_stats tip 84234730 n 35
