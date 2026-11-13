@@ -1,16 +1,9 @@
-time 2026-11-13 13:03:53
-gameTime 84239236 stats.t 84239240 roomSlot W47N8 updated 2026-11-13 13:03:50
-rot {'i': 1, 'room': 'W47N8', 'left': 560.0, 'at': '2026-11-13 13:03:48'}
-objects 0
-unique_creep_tick_after 29035
-per_room W45N7:600t/2405rows W45N8:627t/2964rows W46N8:700t/6683rows W47N7:700t/3712rows W47N8:700t/13271rows
-chunk_84238500 all five rooms 100/100 already in DB (12:19 patrol)
-chunk_84238600 all five rooms 100/100 already in DB (12:32 half-hour)
-chunk_84238700..84238800 all five rooms 100/100 this run first pass
-chunk_84238900 W45N7 official 404 (confirm GET still 404); other four 100/100
-chunk_84239000 W45N8 official 404 (confirm GET still 404); other four 100/100 (W45N8 live 27/100 84239046..84239072 remain)
-chunk_84239100 W47N7 first-pass 404 then retry HTTP 200 100/100 inserted=476; all five rooms 100/100
-max path_arrivals=84239222 room_stats=84239240 creep_cpu=84239230 creep_ticks=84239246
-live_tails W46N8 84239201..84239236 distinct=36; W47N8 84239237..84239246 distinct=10
-missing_chunks after retry=2 (W45N7@84238900, W45N8@84239000), both confirm GET 404
-note After 13:03:48 W46N8→W47N8 rotation, live.json briefly showed objects=0 and gameTime frozen at last W46N8 tick; creep_ticks on W47N8 kept advancing (not a listener failure). No new box pause. Status written to state/history_backfill.json.
+2026-11-13 14:02 Asia/Hong_Kong: 30-min trajectory backfill OK (quiet).
+Official history shard3 5 rooms ticks 84239301..84240000 (700, published 84239300..84239900 at game.time=84240010), unique after=29218, inserted=17293 (first pass 16728 + W47N7@84239900 retry 565), already_in_db=10846, ts_realigned=0 (tick_s=4.389).
+First pass missing_chunks=1; W47N7@84239900 late-published and filled on retry (HTTP 200 100/100). No official 404s remain in-window; all five rooms 700/700 distinct, 0 gaps.
+Previous in-window official 404s are now outside this window (not re-GET): W45N7@84238900, W45N8@84239000, W45N8@84239200.
+New box pause 13:40:23..13:58:14 (1067s). Listener self-healed (run_listener.sh restart 13:58:17, listener.py pid 2184882 started 13:58:26). Did not restart listener/war_cmd/pulse. No subscribe-limit after reconnect. Peacetime single slot 5:5:1:1, now W46N8 rot i=0 left ~420s. Segment 90 flowing.
+Official history filled the live hole ~84239743..84239991 plus unwatched rooms after 13:30. room_stats hole 84239740->84240000 (span 260) remains (cannot be recovered from official history).
+Live tail after official: W46N8 84240001..84240041 distinct=41.
+services.sh: ok postgres, views_apache, grafana, listener, dashboard; pg_backup no-op (newest dump still 2026-11-13 12:28, under 6h).
+Wrote state/history_backfill.json (prev saved as history_backfill.prev.json), state/_halfhour_backfill_now.txt, state/_halfhour_backfill_pre.txt, state/_halfhour_backfill_retry_w47n7.txt.
