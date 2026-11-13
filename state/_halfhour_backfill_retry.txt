@@ -1,20 +1,46 @@
-confirm GET start 2026-11-14 04:02:15 Asia/Hong_Kong game.time=84251470 tick_s=4.446
-  404 W45N7@84250800 ticks=None at 2026-11-14 04:02:16
-  404 W45N8@84250900 ticks=None at 2026-11-14 04:02:17
-  ok  W45N7@84250700 ticks=100 at 2026-11-14 04:02:18
-  ok  W45N7@84250900 ticks=100 at 2026-11-14 04:02:19
-  ok  W45N8@84250800 ticks=100 at 2026-11-14 04:02:20
-  ok  W45N8@84251000 ticks=100 at 2026-11-14 04:02:21
-  404 W46N8@84251400 ticks=None at 2026-11-14 04:02:22
-  404 W47N8@84251400 ticks=None at 2026-11-14 04:02:23
-  404 W45N8@84251400 ticks=None at 2026-11-14 04:02:24
-  404 W45N7@84251400 ticks=None at 2026-11-14 04:02:25
-  404 W47N7@84251400 ticks=None at 2026-11-14 04:02:26
-recovered=[] still_404=['W45N7@84250800', 'W45N8@84250900'] inserted_retry=0 ts_realigned_retry=0
+confirm GET start 2026-11-14 05:07:32 Asia/Hong_Kong game.time=84252357 tick_s=4.479
+  pre  W45N7@84251700 distinct=8 rows=32 range=84251793..84251800
+  404 W45N7@84251700 ticks=None at 2026-11-14 05:07:34
+  still_404 W45N7@84251700 at 05:07:33
+  post W45N7@84251700 distinct=8/100 rows=32 range=84251793..84251800
+  pre  W45N7@84251800 distinct=19 rows=78 range=84251801..84251819
+  404 W45N7@84251800 ticks=None at 2026-11-14 05:07:35
+  still_404 W45N7@84251800 at 05:07:34
+  post W45N7@84251800 distinct=19/100 rows=78 range=84251801..84251819
+  pre  W46N8@84252000 distinct=0 rows=0 range=None..None
+  404 W46N8@84252000 ticks=None at 2026-11-14 05:07:37
+  still_404 W46N8@84252000 at 05:07:36
+  post W46N8@84252000 distinct=0/100 rows=0 range=None..None
+  ok  W45N7@84251600 ticks=100 at 2026-11-14 05:07:37
+  ok  W46N8@84251700 ticks=100 at 2026-11-14 05:07:38
+  ok  W47N8@84251700 ticks=100 at 2026-11-14 05:07:39
+  ok  W45N8@84251700 ticks=100 at 2026-11-14 05:07:40
+  ok  W47N7@84251700 ticks=100 at 2026-11-14 05:07:41
+  ok  W46N8@84251800 ticks=100 at 2026-11-14 05:07:42
+  ok  W47N8@84251800 ticks=100 at 2026-11-14 05:07:43
+  ok  W45N8@84251800 ticks=100 at 2026-11-14 05:07:44
+  ok  W47N7@84251800 ticks=100 at 2026-11-14 05:07:45
+  ok  W45N7@84251900 ticks=100 at 2026-11-14 05:07:46
+  ok  W46N8@84251900 ticks=100 at 2026-11-14 05:07:47
+  ok  W47N8@84252000 ticks=100 at 2026-11-14 05:07:48
+  ok  W45N8@84252000 ticks=100 at 2026-11-14 05:07:49
+  ok  W45N7@84252000 ticks=100 at 2026-11-14 05:07:50
+  ok  W47N7@84252000 ticks=100 at 2026-11-14 05:07:51
+  ok  W46N8@84252100 ticks=100 at 2026-11-14 05:07:52
+  404 W46N8@84252300 ticks=None at 2026-11-14 05:07:53
+  404 W47N8@84252300 ticks=None at 2026-11-14 05:07:54
+  404 W45N8@84252300 ticks=None at 2026-11-14 05:07:55
+  404 W45N7@84252300 ticks=None at 2026-11-14 05:07:56
+  404 W47N7@84252300 ticks=None at 2026-11-14 05:07:57
+recovered=[] still_404=['W45N7@84251700', 'W45N7@84251800', 'W46N8@84252000'] inserted_retry=0 ts_realigned_retry=0
 db_after_retry
-  W45N7 ticks=84250701..84251400 rows=985 distinct=389
-  W45N8 ticks=84250701..84251400 rows=3233 distinct=600
-  W46N8 ticks=84250701..84251400 rows=8487 distinct=700
-  W47N7 ticks=84250701..84251400 rows=3410 distinct=700
-  W47N8 ticks=84250701..84251400 rows=10093 distinct=700
-unique rows=26208 distinct_ticks=700 distinct_room_ticks=3089
+  W46N8 ticks=84251601..84252300 rows=5314 distinct=600
+    gaps (1): 84252001..84252100 (100t)
+  W47N8 ticks=84251601..84252300 rows=11483 distinct=700
+  W45N8 ticks=84251601..84252300 rows=4633 distinct=700
+  W45N7 ticks=84251601..84252300 rows=1885 distinct=527
+    gaps (2): 84251701..84251792 (92t); 84251820..84251900 (81t)
+  W47N7 ticks=84251601..84252300 rows=2787 distinct=700
+unique rows=26102 distinct_ticks=700 distinct_room_ticks=3227
+gets_written 24 /workspace/screeps/state/_halfhour_backfill_retry_gets.json
+finished
