@@ -1,8 +1,13 @@
-2026-11-14 00:27:29
-2349705 Sat Nov 14 00:20:06 2026 .venv/bin/python tools/listener.py
-4035476 Tue Nov 10 14:43:42 2026 /bin/bash tools/run_listener.sh
-rot={"i": 1, "room": "W47N8", "left": 410.0, "at": "2026-11-14 00:27:29"}
+2026-11-14 01:02:30
+    PID                  STARTED CMD
+2357721 Sat Nov 14 01:01:44 2026 .venv/bin/python tools/listener.py
+4035476 Tue Nov 10 15:06:38 2026 /bin/bash tools/run_listener.sh
+rot={"i": 2, "room": "W45N8", "left": 80.0, "at": "2026-11-14 01:02:26"}
 box_pause last:
+{"from": "2026-11-13 15:40:28", "to": "2026-11-13 15:59:25", "sec": 1132}
+{"from": "2026-11-13 16:08:01", "to": "2026-11-13 16:10:56", "sec": 169}
+{"from": "2026-11-13 17:34:43", "to": "2026-11-13 18:00:22", "sec": 1538}
+{"from": "2026-11-13 18:08:59", "to": "2026-11-13 18:20:46", "sec": 702}
 {"from": "2026-11-13 18:42:53", "to": "2026-11-13 19:04:25", "sec": 1287}
 {"from": "2026-11-13 19:12:17", "to": "2026-11-13 19:19:55", "sec": 457}
 {"from": "2026-11-13 19:27:58", "to": "2026-11-13 19:31:15", "sec": 190}
@@ -13,9 +18,10 @@ box_pause last:
 {"from": "2026-11-13 22:12:40", "to": "2026-11-13 22:22:23", "sec": 577}
 {"from": "2026-11-13 22:44:15", "to": "2026-11-13 23:01:43", "sec": 1039}
 {"from": "2026-11-13 23:10:34", "to": "2026-11-13 23:26:17", "sec": 943}
+{"from": "2026-11-14 00:38:35", "to": "2026-11-14 01:01:32", "sec": 1376}
 yield_file=absent
 run_listener.sh=4035476 listener_count=1
-db tips: creep_ticks 84248548 room_stats 84248540 creep_cpu 84248540 path_arrivals 84248532
-live.json updated 2026-11-14 00:27:30 gameTime 84248507 roomSlot W47N8 objects 0 cpu {'cpu': 17, 'memory': 24277} stats.t 84248550
+db tips: creep_ticks 84249026 room_stats 84249020 creep_cpu 84249010 path_arrivals 84248989
+live.json updated 2026-11-14 01:02:27 gameTime None roomSlot W45N8 objects 0 cpu {'cpu': 16, 'memory': 25091} stats.t 84249020
 grafana=200 dashboard=200
-NEW since last half-hour (00:06): last logged box pause still 23:10:34-23:26:17 (943s). listener.out last line 00:15:40 restart; run_listener.sh 4035476 stayed up; listener.py pid 2349705 started 00:20:06 (gap ~4.5 min after 00:15:40 restart — likely a box freeze during the loop sleep that is not yet in box_pauses.jsonl, because the process was down). No new subscribe-limit after this start. Segment 90 / STATS flowing (creep_cpu and path_arrivals tips near live stats.t; current slot W47N8 ingesting creep_ticks). live.json gameTime=84248507 stuck behind stats.t=84248550 with objects=0 (known post-reconnect quirk) while stats.t and cpu flowing. yield file absent, single peacetime slot (rot i=1 W47N8). did not touch war_cmd/pulse/listener. Last half-hour filled official 84247501..84248200 inserted=13930 missing_chunks=0. The 00:19 hourly patrol already filled official 84247701..84248400 inserted=6937, then W45N8 retry inserted=722; W45N8@84248300 official 404 on both patrol passes (adjacent 84248200 and 84248400 were 200).
+NEW since last half-hour (00:29): last logged box pause 00:38:35-01:01:32 (1376s). listener.out last line 01:01:35 restart; run_listener.sh 4035476 stayed up; listener.py pid 2357721 started 01:01:44 (~9s after that restart — self-healed after the freeze). No subscribe-limit after this start. Segment 90 / STATS flowing (creep_cpu and path_arrivals tips near live stats.t; current slot W45N8 rot i=2). live.json gameTime=null objects=0 (known post-reconnect quirk) while stats.t and cpu flowing. yield file absent, single peacetime slot. did not touch war_cmd/pulse/listener. Last half-hour filled official 84247801..84248500 inserted=3015 missing_chunks=1 (W45N8@84248300 official 404, confirm still 404). The 00:19 hourly patrol had filled official 84247701..84248400.
