@@ -35,6 +35,7 @@ execSync('node ' + path.join(__dirname, '..', 'tests', 'w47n8_defense.js'), { st
 execSync('node ' + path.join(__dirname, '..', 'tests', 'w47n8_tower.js'), { stdio: 'pipe' });
 execSync('node ' + path.join(__dirname, '..', 'tests', 'w47n8_tower_first.js'), { stdio: 'pipe' });
 execSync('node ' + path.join(__dirname, '..', 'tests', 'w47n8_rcl7_gate.js'), { stdio: 'pipe' });
+execSync('node ' + path.join(__dirname, '..', 'tests', 'w47n8_hub_link.js'), { stdio: 'pipe' });
 execSync('node ' + path.join(__dirname, '..', 'tests', 'w47n8_dayobs.js'), { stdio: 'pipe' });
 execSync('node ' + path.join(__dirname, '..', 'tests', 'w47n8_repair_prio.js'), { stdio: 'pipe' });
 execSync('node ' + path.join(__dirname, '..', 'tests', 'upgfeed.js'), { stdio: 'pipe' });

@@ -31,6 +31,8 @@ def lostn():
     return sum(1 for f in free if f not in D)
 CORE = (CX, CY)
 # core: stand + 4 orthogonal roads + storage/terminal/link/factory on diagonals; powerSpawn/towers/spawns/nuker/observer in a ring later
+# 2026-11-13 (Misaki): do not regen src/rooms/w47n8/layout.js over the hand edit. The live hub link is 32,33,
+# not the diagonal below (core + (-1, +1) = 33,34). 33,34 is the container–tower road.
 used[CORE] = 'road'
 for a, b in ((0, 1), (0, -1), (1, 0), (-1, 0)):
     if opn((CX+a, CY+b)): used[(CX+a, CY+b)] = 'road'

@@ -140,7 +140,7 @@ assert.strictEqual(run(postAbort, 0, 3200, {
   assert.strictEqual(Cfg.HUB_LINK, true);
   const ctlCont = { structureType: 'container', store: { energy: 1500 }, pos: { x: Cfg.CTL_CONT[0], y: Cfg.CTL_CONT[1] } };
   const ctlLink = { structureType: 'link', store: { energy: 400 }, pos: { x: Cfg.CTL_LINK[0], y: Cfg.CTL_LINK[1] } };
-  const hubLink = { structureType: 'link', store: { energy: 200 }, pos: { x: 33, y: 34 } };
+  const hubLink = { structureType: 'link', store: { energy: 200 }, pos: { x: 32, y: 33 } };
   const cells = {};
   for (const s of [ctlCont, ctlLink, hubLink]) {
     const k = s.pos.x * 50 + s.pos.y;

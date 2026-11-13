@@ -69,7 +69,8 @@ console.log('w47n8 flow ok');
   Game.rooms.W47N8 = { lookForAt: (k, x, y) => {
     if (x === 26 && y === 12) return [la];
     if (x === 13 && y === 25) return [lk];
-    if (x === 33 && y === 34) return [lh];
+    if (x === 32 && y === 33) return [lh];
+    if (x === 33 && y === 34) return []; // retired tile is not the hub link
     return [];
   }};
   W.linkRun();
@@ -83,5 +84,17 @@ console.log('w47n8 flow ok');
   lk.store.energy = 100; lk.store.getFreeCapacity = () => 700; lh.store.energy = 50; sentH = 0;
   W.linkRun();
   assert.strictEqual(sentH, 0, 'hub <200 → no send');
+  // Retired 33,34 still holding energy must not send, even if 32,33 is empty.
+  const old = { structureType: 'link', cooldown: 0, store: { energy: 800, getFreeCapacity: () => 0 }, transferEnergy: () => { sentH++; return 0; } };
+  lh.store.energy = 0; lh.cooldown = 0; lk.store.energy = 0; lk.store.getFreeCapacity = () => 800; la.cooldown = 3; sentH = 0;
+  Game.rooms.W47N8 = { lookForAt: (k, x, y) => {
+    if (x === 26 && y === 12) return [la];
+    if (x === 13 && y === 25) return [lk];
+    if (x === 32 && y === 33) return [lh];
+    if (x === 33 && y === 34) return [old];
+    return [];
+  }};
+  W.linkRun();
+  assert.strictEqual(sentH, 0, 'retired 33,34 does not send, and empty 32,33 does not either');
   console.log('w47n8 hub→ctl link ok');
 }

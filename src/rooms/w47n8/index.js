@@ -633,11 +633,12 @@ function ctlBattery(room) {
 }
 // 11-03 05:4x strategy: upgCeil/recycle must wait for hub link STRUCTURE, not just config.HUB_LINK.
 // Flipping the flag places a 5k site; raising ceil on the flag alone recreates 14:4x waiting_feed before
-// ferry+linkRun can feed ctl. Screeps link cooldown = getRangeTo (hub 33,34→ctl 13,25 = 20) → ~40 e/t
-// gross / ~38.8 net after 3% — enough for WORK40+ once live. Matches w8day.hubReady.
+// ferry+linkRun can feed ctl. Screeps link cooldown = getRangeTo (hub 32,33→ctl 13,25 = 19) → ~42 e/t
+// gross / ~41 net after 3% — enough for WORK40+ once live. Matches w8day.hubReady.
+// A link still standing at retired 33,34 is not this structure.
 function hubLinkLive(room) {
   if (!C.HUB_LINK || !room) return false;
-  const [hx, hy] = (L.ORDER.link && L.ORDER.link[0]) || [33, 34];
+  const [hx, hy] = L.hubLinkPos();
   return !!room.lookForAt(LOOK_STRUCTURES, hx, hy).find(s => s.structureType === STRUCTURE_LINK);
 }
 // 08:4x 2026-10-31 strategy: after RCL7 day-crit (spawn2+tower3), throttle upgrade so storage can reach 20k for lean KO.
@@ -884,7 +885,7 @@ function dayObs(room) {
   TH.updateSealPark(storE, upgraders, sites.length);
   // 23:4x: hub link readiness (dormant until HUB_LINK + structure). Patrol sees energy + gate without flipping.
   // 05:4x: hubReady mirrors hubLinkLive — same predicate as upgCeil/recycle (structure, not flag alone).
-  const [hlx, hly] = (L.ORDER.link && L.ORDER.link[0]) || [33, 34];
+  const [hlx, hly] = L.hubLinkPos();
   const hubLink = room.lookForAt(LOOK_STRUCTURES, hlx, hly).find(s => s.structureType === STRUCTURE_LINK);
   const hubLinkE = hubLink && hubLink.store ? (hubLink.store[RESOURCE_ENERGY] || 0) : -1;
   const hubReady = hubLinkLive(room) ? 1 : 0;
@@ -1003,6 +1004,24 @@ function maintainRoads(room, tiles, dayCrit) {
     if (room.createConstructionSite(x, y, STRUCTURE_ROAD) === OK) n++;
   }
 }
+// 2026-11-13 (Misaki): hub link is hubLinkPos() (32,33) only. 33,34 is the plain road between hub
+// container 33,33 and tower 33,35. Drop a leftover link site there so builders cannot finish a second
+// hub link. The built link is left for ops to destroy (rebuild is 5k). Until that structure is gone,
+// do not site 32,33 — RCL7 has a spare link slot, and placing it early would leave two hub links.
+// Rampart and road may share 32,33; any other structure blocks the site.
+function dropRetiredHubLinkSite(room) {
+  const p = L.RETIRED_HUB_LINK;
+  if (!p || !room.find) return;
+  for (const s of room.find(FIND_MY_CONSTRUCTION_SITES, { filter: s => s.structureType === STRUCTURE_LINK && s.pos && s.pos.x === p[0] && s.pos.y === p[1] }))
+    if (typeof s.remove === 'function') s.remove();
+}
+function hubLinkSiteOk(room, x, y) {
+  const p = L.RETIRED_HUB_LINK;
+  if (p && room.lookForAt(LOOK_STRUCTURES, p[0], p[1]).some(s => s.structureType === STRUCTURE_LINK)) return false;
+  if (p && room.lookForAt(LOOK_CONSTRUCTION_SITES, p[0], p[1]).some(s => s.structureType === STRUCTURE_LINK)) return false;
+  return !room.lookForAt(LOOK_STRUCTURES, x, y).some(s =>
+    s.structureType !== STRUCTURE_RAMPART && s.structureType !== STRUCTURE_ROAD && s.structureType !== STRUCTURE_LINK);
+}
 function layoutRun(room) {
   mineralSend(room); // every tick; dormant while RCL6_MINERALS false
   if (Game.time % 20) return;
@@ -1029,6 +1048,7 @@ function layoutRun(room) {
   if (dayCrit) {
     for (const s of room.find(FIND_MY_CONSTRUCTION_SITES, { filter: s => s.structureType === STRUCTURE_EXTENSION })) s.remove();
   }
+  dropRetiredHubLinkSite(room); // 33,34 link site is obsolete; do not let it hold a struct-site slot
   // Road sites are outside this budget. Counting them here let a decay re-site fill the 6 slots and
   // block the next spawn/tower/extension pass (10-31 tower re-queue). Labs still count: 6 of them used
   // to return before any road was placed (11-13 t84238893, 36 missing tiles).
@@ -1071,6 +1091,7 @@ function layoutRun(room) {
       if (t !== 'road' && structSites >= 6 && !(dayCrit && (t === 'spawn' || t === 'tower'))) { pave(); return; }
       if (t === 'road' && (structSites + roadSites) > 2) { pave(); return; } // trickle only while the queue is quiet; maintainRoads covers the rest
       if (t === 'road' && roadExit(x, y)) continue; // 18,49 and any other exit: createConstructionSite → ERR_INVALID_TARGET
+      if (t === 'link' && L.ORDER.link && L.ORDER.link.some(([lx, ly]) => lx === x && ly === y) && !hubLinkSiteOk(room, x, y)) continue;
       if (room.lookForAt(LOOK_STRUCTURES, x, y).some(s => s.structureType === t)) continue;
       if (room.lookForAt(LOOK_CONSTRUCTION_SITES, x, y).length) continue;
       const r = room.createConstructionSite(x, y, t);
@@ -1155,7 +1176,8 @@ function linkRun() {
   // 23:4x strategy: also hub→ctl when hub link exists (dormant until HUB_LINK built). Home managers/links.js pattern:
   // queen fills hub; hub pushes when ctl < CTL_LOW. Overmind UpgradeSite requests battery when <50%/link <200.
   const a = linkAt(C.SOURCES[0].link), k = linkAt(C.CTL_LINK);
-  const [hx, hy] = (L.ORDER.link && L.ORDER.link[0]) || [33, 34];
+  // Hub sender is 32,33 only. A link left at retired 33,34 does not send (and the filler does not fill it).
+  const [hx, hy] = L.hubLinkPos();
   const h = linkAt([hx, hy]);
   const CTL_LOW = 400, HUB_SEND = 200; // home uses SEND=400; allow 200 so intermittent battery recovers sooner
   const cmd = require('../../utils/cmd'), cmdOn = cmd.armed();

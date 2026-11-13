@@ -192,13 +192,13 @@ assert.ok((Memory.ops.w8recycle || []).length >= 2, 'soft re-arm recycles to ≤
   Memory.ops.w8day = { leanBank: 0, softE: 0 };
   const hubBuilt = done.concat([[35, 33, 'terminal'], [37, 44, 'container'],
     [Ccfg.CTL_CONT[0], Ccfg.CTL_CONT[1], 'container'], [Ccfg.CTL_LINK[0], Ccfg.CTL_LINK[1], 'link'],
-    [33, 34, 'link']]);
+    [32, 33, 'link']]);
   const rTrim = mk(7, hubBuilt, softUps, 0);
   rTrim.storage.store.energy = 25000;
   rTrim.terminal = { store: {} };
   const ctlC = rTrim.lookForAt(LOOK_STRUCTURES, Ccfg.CTL_CONT[0], Ccfg.CTL_CONT[1])[0];
   const ctlL = rTrim.lookForAt(LOOK_STRUCTURES, Ccfg.CTL_LINK[0], Ccfg.CTL_LINK[1])[0];
-  const hubL = rTrim.lookForAt(LOOK_STRUCTURES, 33, 34).find(s => s.structureType === 'link');
+  const hubL = rTrim.lookForAt(LOOK_STRUCTURES, 32, 33).find(s => s.structureType === 'link');
   ctlC.store = { energy: 1500 }; ctlL.store = { energy: 400 }; hubL.store = { energy: 200 };
   W.dayObs(rTrim); // clear softE — seal hysteresis only; upgraders stay at 2
   assert.strictEqual(Memory.ops.w8day.softE, 0);
@@ -437,7 +437,7 @@ assert.strictEqual(Memory.ops.w8day.feedBound, 1, '17:3x: nUp≥3 + soft clear +
   Memory.ops.w8day = { leanBank: 0 };
   const hubBuilt = done.concat([[35, 33, 'terminal'], [37, 44, 'container'],
     [Ccfg.CTL_CONT[0], Ccfg.CTL_CONT[1], 'container'], [Ccfg.CTL_LINK[0], Ccfg.CTL_LINK[1], 'link'],
-    [33, 34, 'link']]);
+    [32, 33, 'link']]);
   const rHub = mk(7, hubBuilt, threatUps, 0);
   rHub.storage.store.energy = 30000;
   rHub.terminal = { store: {} };
@@ -446,8 +446,9 @@ assert.strictEqual(Memory.ops.w8day.feedBound, 1, '17:3x: nUp≥3 + soft clear +
   const ctlL2 = rHub.lookForAt(LOOK_STRUCTURES, Ccfg.CTL_LINK[0], Ccfg.CTL_LINK[1])[0];
   ctlL2.store = { energy: 400 };
   assert.ok(W.hubLinkLive(rHub), 'hub structure + flag → hubLinkLive');
-  const hubL = rHub.lookForAt(LOOK_STRUCTURES, 33, 34).find(s => s.structureType === 'link');
-  assert.ok(hubL, 'mk placed hub link 33,34');
+  const hubL = rHub.lookForAt(LOOK_STRUCTURES, 32, 33).find(s => s.structureType === 'link');
+  assert.ok(hubL, 'mk placed hub link 32,33');
+  assert.strictEqual(W.hubLinkLive({ lookForAt: (k, x, y) => (x === 33 && y === 34 ? [{ structureType: 'link', store: { energy: 800 } }] : []) }), false, 'retired 33,34 is not hubLinkLive');
   hubL.store = { energy: 200 }; // mock store so hubLinkE is numeric
   W.dayObs(rHub);
   assert.strictEqual(Memory.ops.w8day.hubReady, 1, 'structure + flag → hubReady 1');
