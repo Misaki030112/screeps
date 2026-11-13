@@ -270,9 +270,16 @@ say('sink rebuild/soft-band ok');
   build(50); DUTY_RESET(); fillAll();
   // towers with free≥300 become jobs once hub is full — fill them so ferry idle path is reachable
   for (const s of Object.values(OBJ)) if (s.structureType === 'tower') s.store.energy = s.store.getCapacity();
-  // place hub link 33,34 + ctl link 13,25 if missing; ensure ctl cont 13,26
-  let hubL = Object.values(OBJ).find(s => s.structureType === 'link' && s.pos.x === 33 && s.pos.y === 34);
-  if (!hubL) hubL = mkS('link', 33, 34, 0);
+  // place hub link 32,33 + ctl link 13,25 if missing; ensure ctl cont 13,26.
+  // A leftover link at retired 33,34 must not be filled (range 2 from POST is 32,33, not a closer tile).
+  const [hx, hy] = L.hubLinkPos();
+  assert.deepStrictEqual([hx, hy], [32, 33], 'planned hub link');
+  assert.strictEqual(Math.max(Math.abs(hx - F.POST[0]), Math.abs(hy - F.POST[1])), 2, 'hub link stays range 2 from POST 34,32');
+  assert.strictEqual(Math.max(Math.abs(hx - 35), Math.abs(hy - 32)), 3, 'hub link stays range 3 from storage 35,32');
+  let hubL = Object.values(OBJ).find(s => s.structureType === 'link' && s.pos.x === hx && s.pos.y === hy);
+  if (!hubL) hubL = mkS('link', hx, hy, 0);
+  let retired = Object.values(OBJ).find(s => s.structureType === 'link' && s.pos.x === 33 && s.pos.y === 34);
+  if (!retired) retired = mkS('link', 33, 34, 0);
   let ctlL = Object.values(OBJ).find(s => s.structureType === 'link' && s.pos.x === 13 && s.pos.y === 25);
   if (!ctlL) ctlL = mkS('link', 13, 25, 0);
   const ctlC = Object.values(OBJ).find(s => s.structureType === 'container' && s.pos.x === 13 && s.pos.y === 26);
@@ -304,6 +311,7 @@ say('sink rebuild/soft-band ok');
     if (hubL.store.energy >= 200) { thrashPrimed = true; break; }
   }
   assert.ok(thrashPrimed, 'thrash band 19.5k primes hub to ≥200: hubE=' + hubL.store.energy);
+  assert.strictEqual(retired.store.energy, 0, 'retired 33,34 link is not filled');
 
   // (2) soft bank 23k: prime-only — empty hub → withdraw+walk+transfer until hubE≥200; fat bat ignored for further fill
   room.storage.store.energy = 23000;

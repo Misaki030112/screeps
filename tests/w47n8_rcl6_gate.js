@@ -1,7 +1,7 @@
 // 2026-10-20 03:4x strategy review (+23:4x lean KO split; 2026-11-03 HUB_LINK nod): at RCL6 W47N8 must not place
 // terminal / extractor / labs / mineral container 37,44 / extractor trunk while RCL6_MINERALS / RCL6_LABS are off.
-// Hub link 33,34 stays off only while HUB_LINK is off (live default is now true). Extensions + the 2 RCL5 links still go up.
-// Lean-on (minOk, !labsOk, HUB_LINK) places terminal+extractor+minCont+hub link 33,34, not labs.
+// Hub link 32,33 stays off only while HUB_LINK is off (live default is now true). Extensions + the 2 RCL5 links still go up.
+// Lean-on (minOk, !labsOk, HUB_LINK) places terminal+extractor+minCont+hub link 32,33, not labs. 33,34 is not a link.
 const assert = require('assert'), path = require('path');
 const d = path.join(__dirname, '..', 'src', 'rooms', 'w47n8');
 const K = { LOOK_STRUCTURES: 'structure', LOOK_CONSTRUCTION_SITES: 'constructionSite', FIND_MY_SPAWNS: 112, FIND_MY_CONSTRUCTION_SITES: 114,
@@ -38,7 +38,7 @@ assert.deepStrictEqual(C.MINERAL_CONT, [37, 44]);
   for (let i = 0; i < 6; i++) { const r = mkRoom(6, base.concat(placed.map(s => [s.pos.x, s.pos.y, s.structureType]))); W.layoutRun(r); placed.push(...r.sites); }
   const types = placed.map(s => s.structureType);
   for (const t of ['terminal', 'extractor', 'lab']) assert.ok(!types.includes(t), 'RCL6: no ' + t + ' site while RCL6_MINERALS is off, got ' + types);
-  assert.ok(!placed.some(s => s.structureType === 'link'), 'RCL6: no hub link 33,34 while HUB_LINK is off');
+  assert.ok(!placed.some(s => s.structureType === 'link'), 'RCL6: no hub link 32,33 while HUB_LINK is off');
   assert.ok(!placed.some(s => s.structureType === 'road' && R.MINERAL.some(([a, b]) => a === s.pos.x && b === s.pos.y)), 'RCL6: no extractor trunk road');
   assert.ok(!placed.some(s => s.structureType === 'container' && s.pos.x === 37 && s.pos.y === 44), 'RCL6: no mineral cont 37,44 while gate off');
   assert.strictEqual(types.filter(t => t === 'extension').length, 10, 'RCL6: the 10 new extensions still go up, got ' + types);
@@ -50,7 +50,8 @@ assert.deepStrictEqual(C.MINERAL_CONT, [37, 44]);
   assert.ok(lt.includes('terminal'), 'lean: terminal'); assert.ok(lt.includes('extractor'), 'lean: extractor');
   assert.ok(lean.some(s => s.structureType === 'container' && s.pos.x === 37 && s.pos.y === 44), 'lean: mineral cont 37,44');
   assert.ok(lean.some(s => s.structureType === 'road' && R.MINERAL.some(([a, b]) => a === s.pos.x && b === s.pos.y)), 'lean: mineral trunk');
-  assert.ok(lean.some(s => s.structureType === 'link' && s.pos.x === 33 && s.pos.y === 34), 'HUB_LINK: hub link site 33,34');
+  assert.ok(lean.some(s => s.structureType === 'link' && s.pos.x === 32 && s.pos.y === 33), 'HUB_LINK: hub link site 32,33');
+  assert.ok(!lean.some(s => s.structureType === 'link' && s.pos.x === 33 && s.pos.y === 34), '33,34 is not a link site');
   assert.ok(!lt.includes('lab'), 'lean: no colony labs while RCL6_LABS off'); }
 // RCL5 unchanged: both planned links are placed (ctl 13,25 + source A 26,12)
 { const b5 = base.filter(b => b[2] !== 'link'); const r = mkRoom(5, b5); W.layoutRun(r);

@@ -200,7 +200,8 @@ function run(c) {
   // 23:4x strategy: idle hub-link ferry (dormant until HUB_LINK built). Mirror home queen.standby —
   // when hub duty is full, top the hub link so linkRun can push hub→ctl whenever ctl battery dips
   // (Overmind UpgradeSite requests when link <200 / battery <50%).
-  // Hub link 33,34 is range-2 from POST 34,32 — one step to 33,33/34,33 then transfer.
+  // Hub link 32,33 is range 2 from POST 34,32 (storage 35,32 is range 3; withdraw stays at POST).
+  // One step onto hub container 33,33, then transfer. 33,34 is a road again, not the link.
   // 23:4x 11-03 strategy: PRE-WARM during softCap bank. Old gate stor≥LEAN_SOFT(25k) left hubLinkE=0
   // through the whole climb; clear then raised upgCeil6 before ferry+cooldown(20) warmed hub→ctl →
   // post-clear waiting_feed. Prime-only (hubE<HUB_SEND=200) without bat-driven drain that fights soft-band.
@@ -211,7 +212,7 @@ function run(c) {
   // softCap nUp≤2) — does not fight soft-band. Overmind linksRequestBelow=200 is storageBuffer-
   // agnostic; home queen.standby uses defender floor (~LEAN_ARM). SoftCap hysteresis stays 22k.
   {
-    const [hx, hy] = (L.ORDER.link && L.ORDER.link[0]) || [33, 34];
+    const [hx, hy] = L.hubLinkPos();
     const hubL = room.lookForAt(LOOK_STRUCTURES, hx, hy).find(s => s.structureType === STRUCTURE_LINK);
     const storE = room.storage && room.storage.store ? (room.storage.store[E] || 0) : 0;
     const LEAN_ARM = 15000, LEAN_SOFT = 25000, HUB_SEND = 200; // prime arm = leanBank emergency floor
