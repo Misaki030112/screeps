@@ -1,12 +1,8 @@
-2026-11-13 23:06 Asia/Hong_Kong verify
-window 84246701..84247400 unique=24061 rows=24061 distinct_ticks=700 tick_s=4.461
-W45N7 ticks=84246701..84247400 rows=1775 distinct=600
-W45N8 ticks=84246701..84247400 rows=3238 distinct=700
-W46N8 ticks=84246701..84247400 rows=6528 distinct=700
-W47N7 ticks=84246801..84247400 rows=2046 distinct=600
-W47N8 ticks=84246701..84247400 rows=10474 distinct=700
-in-window official 404s (0 live ticks, adjacent 100/100 in db):
-  W47N7@84246700 ticks 84246701..84246800 prev=100 nxt=100 confirm GET 23:04:38 and retry2 still 404
-  W45N7@84246800 ticks 84246801..84246900 prev=100 nxt=100 confirm GET 23:04:38 and retry2 still 404
-recovered this run: all five @84247300 (4 on confirm GET 23:04:38, W47N7 on retry2) post 100/100 inserted_retry=3458
-outside-window official 404s still 404 at 23:04:38: W45N7@84246300 W47N7@84246300 W46N8@84246500 W47N8@84243700 W47N8@84243100 W45N8@84242900 (all adj 100/100, hole 0 rows)
+2026-11-14 00:06 Asia/Hong_Kong
+ok=true missing_chunks=0 inserted=13930 already_in_db=13954 ts_realigned=6609 tick_s=4.310 (retry tick_s=4.369 ts_realigned=0)
+window ticks=84247501..84248200 count=700 unique_rows=27136 distinct_ticks=700
+per_room: W45N7 rows=1650 distinct=700 new=1324; W45N8 rows=3737 distinct=700 new=2176; W46N8 rows=6616 distinct=700 new=3999; W47N7 rows=2881 distinct=662 new=1785 (38 ticks have no our creeps); W47N8 rows=12252 distinct=700 new=4646
+game.time=84248217 published_bases=84247500..84248100; first pass 34/35 official chunks HTTP 200 100/100, W47N7@84248100 official 404 then 200 on confirm GET 00:04:45 and retry (20/20 100/100, inserted=649)
+listener pid 2345890 since 00:01:30; run_listener.sh 4035476; single slot rot i=0 W46N8; live.json gameTime=84248250 objects=265 stats.t=84248250 cpu flowing
+grafana 200 dashboard 200 postgres accepting
+known official 404s still 0 rows, all outside this window (no confirm GET this run)
