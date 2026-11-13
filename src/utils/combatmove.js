@@ -8,10 +8,10 @@
 const STUCK = 3;
 function militaryTo(c, x, y, range, costCallback) {
   const mil = require('./military');
-  const cb = costCallback ? (rn => {
-    const m = new PathFinder.CostMatrix();
-    return costCallback(rn, m) || m;
-  }) : undefined;
+  // Role callbacks only paint exits and seal rows. Seed that paint on a clone of
+  // move.matrix so buildings stay impassable. An empty matrix made the 33,28 guard
+  // search step onto extension 32,27; the engine dropped the move and it never left.
+  const cb = costCallback ? (rn => mil.costMatrix(rn, costCallback)) : undefined;
   const st = mil.step(c, x, y, range, cb);
   // 'moved' is a successful step this tick. 'wait' is fatigue. 'no' is a blocked or empty search.
   if (st === 'there' || st === 'moved') return OK;
