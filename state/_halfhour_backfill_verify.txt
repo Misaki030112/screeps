@@ -1,11 +1,11 @@
-2026-11-13 15:03 Asia/Hong_Kong half-hour backfill OK
-game.time=84240854 published_bases=84240100..84240700 ticks=84240101..84240800 (700)
-tick_s=4.497 missing_chunks=0 (35/35 HTTP 200 100/100)
-creep_rows=26070 already_in_db=12361 inserted=13709 ts_realigned=9883
-unique after=26568; all five rooms 700/700 distinct
-per_room new: W46N8 4014, W47N8 5052, W45N8 1655, W45N7 1238, W47N7 1750
-14:33 half-hour had already filled 84239701..84240400; this run's new official data is 84240401..84240800 (covers the 14:37:43-15:01:10 box-pause hole ~84240521..84240836, official through 84240800)
-live tail after official: W46N8 84240846..84240879; unpublished+reconnect hole 84240801..84240845 (all rooms; next overlap should fill when chunk 84240800 publishes)
-listener pid 2198295 since 15:01:23, rot i=0 W46N8 left~403s; no restart this run, no subscribe-limit
-live.json healthy (gameTime 84240879 objects=262); segment 90 flowing (creep_cpu/path_arrivals/room_stats tip 84240870)
-room_stats new gap 84240520->84240850 (330) from the 14:37-15:01 pause remains (not recoverable); prior 84240080->84240280 (200) remains
+2026-11-13 16:01 Asia/Hong_Kong half-hour backfill OK
+game.time=84241649 published_bases=84240900..84241500 ticks=84240901..84241600 (700)
+tick_s=4.393 missing_chunks=0 (35/35 official chunks HTTP 200 100/100)
+creep_rows=27355 already_in_db=12741 inserted=14614 ts_realigned=0
+unique after=25704; W46N8/W47N8/W45N8/W45N7 700/700, W47N7 619/700 (no creeps 84240940..84241020)
+per_room new: W46N8 2822, W47N8 4524, W45N8 2923, W45N7 1461, W47N7 2884
+15:35 half-hour had already filled 84240501..84241200 except W45N8@84240800 (now just outside this window); this run's new official data is 84241201..84241600 (400/400 all five rooms), covering the 15:40:28-15:59:25 box-pause live hole
+live tail after official: W46N8 84241640..84241670 (current, growing); W47N8/W45N8/W45N7/W47N7 none after 84241600 (84241601..84241639 unpublished current chunk, missed during reconnect)
+listener pid 2213850 since 15:59:38, rot i=0 W46N8 left~69.3s; no restart this run (self-healed after box pause), no subscribe-limit
+live.json healthy (gameTime 84241670 objects=259); segment 90 flowing (creep_cpu tip 84241660, path_arrivals tip 84241657, room_stats tip 84241670)
+new box pause 15:40:28-15:59:25 (1132s); room_stats gaps 84240960->84241030 (70), 84241060->84241140 (80) remain, new 84241370->84241640 (270) from this pause (not recoverable)
