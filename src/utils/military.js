@@ -65,9 +65,34 @@ function flush() {
     issue(c, d);
   }
 }
+// Clone of utils/move.matrix (roads 1, unwalkable structures 255, containers and our ramparts
+// open) plus the role callback's exit/seal blocks. The callback receives the clone, so those
+// extra 255s do not stick in the civilian matrix cache. No callback: the clone alone.
+// An empty matrix is only the fallback when the room matrix cannot be built.
+function costMatrix(rn, costCallback) {
+  let m;
+  try {
+    const b = require('./move').matrix(rn, false);
+    if (b && typeof b.clone === 'function') m = b.clone();
+  } catch (e) { m = undefined; }
+  if (!m && typeof PathFinder !== 'undefined' && typeof PathFinder.CostMatrix === 'function') m = new PathFinder.CostMatrix();
+  if (!costCallback || !m) return m;
+  return costCallback(rn, m) || m;
+}
+// move.matrix cost 255: unwalkable structure, hostile site, or a dead-end road/container.
+// Exits in that matrix are 50, so a role that blocks them does so on the clone, not here.
+function impassable(c, x, y) {
+  if (!c || !c.room || x == null || y == null) return false;
+  try {
+    const m = require('./move').matrix(c.room.name, false);
+    return !!(m && m.get(x, y) >= 255);
+  } catch (e) { return false; }
+}
 // Fresh in-room step. Returns 'there' | 'moved' | 'wait' | 'no'.
-// Does not store the path. An incomplete search is not followed (moveTo's nearest-tile fallback
-// walked guards into the walled pocket).
+// Does not store the path. An incomplete search is not replaced by the tile nearest the goal
+// (that walked guards into the walled pocket). A first step is issued only when the tile is
+// walkable: w8guard84238816's structure-blind search was complete and still named extension
+// 32,27, the engine rejected the move, and the creep stayed on 33,28.
 function step(c, x, y, range, roomCallback) {
   fresh(c);
   const r = range || 0;
@@ -75,16 +100,20 @@ function step(c, x, y, range, roomCallback) {
   if (Math.max(Math.abs(c.pos.x - x), Math.abs(c.pos.y - y)) <= r) return 'there';
   if (c.fatigue > 0) return 'wait';
   if (typeof PathFinder === 'undefined' || !PathFinder.search || typeof RoomPosition === 'undefined') return 'no';
+  let searchMatrix;
   const res = PathFinder.search(c.pos, { pos: new RoomPosition(x, y, c.room.name), range: r }, {
     plainCost: 2, swampCost: 10, maxRooms: 1, maxOps: 2000,
-    roomCallback: roomCallback || (rn => {
-      try { return require('./move').matrix(rn, false); } catch (e) { return undefined; }
-    }),
+    roomCallback: rn => {
+      const m = roomCallback ? roomCallback(rn) : costMatrix(rn);
+      if (c.room && rn === c.room.name) searchMatrix = m;
+      return m;
+    },
   });
   let n = res && res.path && res.path.length ? res.path[0] : null;
   // One tile out of range and the search gave nothing: step straight. This is geometry, not a cache.
-  // An incomplete search that still returned a first step is followed; we do not jump to the
-  // tile nearest the goal by range (that walked guards into the walled pocket).
+  // An incomplete search that still returned a first step is kept; we do not jump to the tile
+  // nearest the goal by range (that walked guards into the walled pocket). The checks below
+  // drop that step when the tile is blocked or an unwalkable structure.
   if (!n) {
     const dist = Math.max(Math.abs(c.pos.x - x), Math.abs(c.pos.y - y));
     if (dist - r !== 1 || !c.pos.getDirectionTo) return 'no';
@@ -98,6 +127,10 @@ function step(c, x, y, range, roomCallback) {
     if (wall) return 'no';
     n = { x: nx, y: ny };
   }
+  // The search matrix (exit/seal blocks included) and the structure matrix both have to
+  // agree the tile is open. A structure-blind or incomplete path can still name a building.
+  if (searchMatrix && searchMatrix.get && searchMatrix.get(n.x, n.y) >= 255) return 'no';
+  if (impassable(c, n.x, n.y)) return 'no';
   pullSwap(c, n.x, n.y);
   const dir = c.pos.getDirectionTo(n.x, n.y);
   if (dir) c.move(dir);
@@ -119,12 +152,9 @@ function moveTo(c, target, opts) {
   const here = c && c.room && c.room.name;
   if (p && here && (!p.room || p.room === here) && typeof PathFinder !== 'undefined') {
     const cb = o.costCallback;
-    const st = step(c, p.x, p.y, o.range == null ? 1 : o.range, cb ? (rn => {
-      const m = typeof PathFinder.CostMatrix === 'function' ? new PathFinder.CostMatrix() : undefined;
-      return cb(rn, m) || m;
-    }) : undefined);
+    const st = step(c, p.x, p.y, o.range == null ? 1 : o.range, cb ? (rn => costMatrix(rn, cb)) : undefined);
     if (st !== 'no') return typeof OK !== 'undefined' ? OK : 0;
   }
   return c.moveTo ? c.moveTo(target, o) : undefined;
 }
-module.exports = { ROLES, isMilitary, fresh, demandSwap, pullSwap, block, flush, step, moveTo, _demand: DEMAND };
+module.exports = { ROLES, isMilitary, fresh, demandSwap, pullSwap, block, flush, step, moveTo, costMatrix, _demand: DEMAND };

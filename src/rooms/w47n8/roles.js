@@ -507,7 +507,7 @@ const R = {
     if (c.body.some(b => b.type === HEAL && b.hits > 0)) { // 17:59: HEAL parts heal every tick (heal() + rangedAttack same tick; rangedHeal only when not shooting)
       const fr = room.find(FIND_MY_CREEPS, { filter: x => x.hits < x.hitsMax || x.id === c.id }), a = D.healAct(c, fr, hs, !!(p.mass || p.shoot));
       if (a) { const t = Game.getObjectById(a.id); if (t) a.act === 'heal' ? c.heal(t) : c.rangedHeal(t); } }
-    if (p.move === 'flee') { const away = PathFinder.search(c.pos, { pos: new RoomPosition(p.from.x, p.from.y, C.ROOM), range: 4 }, { flee: true, maxRooms: 1, roomCallback: rn => cb(rn, new PathFinder.CostMatrix()) }).path[0]; if (away) { require('../../utils/military').pullSwap(c, away.x, away.y); c.move(c.pos.getDirectionTo(away)); } return; }
+    if (p.move === 'flee') { const away = PathFinder.search(c.pos, { pos: new RoomPosition(p.from.x, p.from.y, C.ROOM), range: 4 }, { flee: true, maxRooms: 1, roomCallback: rn => cb(rn, require('../../utils/military').costMatrix(rn)) }).path[0]; if (away) { require('../../utils/military').pullSwap(c, away.x, away.y); c.move(c.pos.getDirectionTo(away)); } return; }
     if (p.move === 'retreat') { const rr = p.toHealer ? 1 : 2; return c.pos.inRangeTo(p.goal.x, p.goal.y, rr) || mv(p.goal, rr); }
     if (p.move === 'approach') return mv(p.goal, 3);
     if (p.move === 'post') return mv(p.goal, 0);
@@ -544,7 +544,7 @@ const R = {
     const p = D.healPlan({ id: c.id, pos: c.pos, hits: c.hits, hitsMax: c.hitsMax, hurt: mem.hurt }, defs.concat(dmgd), hs, { towers, idx: Math.max(0, idx), open });
     mem.hurt = p.hurt;
     if (p.heal) { const t = Game.getObjectById(p.heal.id); if (t) p.heal.act === 'heal' ? c.heal(t) : c.rangedHeal(t); }
-    if (p.move === 'flee') { const away = PathFinder.search(c.pos, { pos: new RoomPosition(p.from.x, p.from.y, C.ROOM), range: 4 }, { flee: true, maxRooms: 1, roomCallback: rn => cb(rn, new PathFinder.CostMatrix()) }).path[0]; if (away) { require('../../utils/military').pullSwap(c, away.x, away.y); c.move(c.pos.getDirectionTo(away)); } return; }
+    if (p.move === 'flee') { const away = PathFinder.search(c.pos, { pos: new RoomPosition(p.from.x, p.from.y, C.ROOM), range: 4 }, { flee: true, maxRooms: 1, roomCallback: rn => cb(rn, require('../../utils/military').costMatrix(rn)) }).path[0]; if (away) { require('../../utils/military').pullSwap(c, away.x, away.y); c.move(c.pos.getDirectionTo(away)); } return; }
     if (p.move === 'retreat') return c.pos.inRangeTo(p.goal.x, p.goal.y, 2) || mv(p.goal, 2);
     if (p.move === 'post') return mv(p.goal, 0);
   },
