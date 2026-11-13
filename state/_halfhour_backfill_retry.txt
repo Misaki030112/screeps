@@ -1,30 +1,74 @@
-2026-11-13 22:04:58 Asia/Hong_Kong confirm GET start game.time=84246611 tick_s=4.392
+confirm GET start 2026-11-13 23:04:38 Asia/Hong_Kong game.time=84247422 tick_s=4.461
+  pre  W47N7@84246700 distinct=0 range=None..None
+retry W47N7@84246700 still 404
+  post W47N7@84246700 distinct=0/100 range=None..None
+  pre  W45N7@84246800 distinct=0 range=None..None
+retry W45N7@84246800 still 404
+  post W45N7@84246800 distinct=0/100 range=None..None
+  pre  W46N8@84247300 distinct=0 range=None..None
+retry ok  W46N8@84247300 ticks=100 ts=1794582225759
+  inserted=787 ts_realigned=0 reconstructed_rows=100 ticks=84247301..84247400
+  post W46N8@84247300 distinct=100/100 range=84247301..84247400
+  pre  W47N8@84247300 distinct=0 range=None..None
+retry ok  W47N8@84247300 ticks=100 ts=1794582279861
+  inserted=1361 ts_realigned=0 reconstructed_rows=100 ticks=84247301..84247400
+  post W47N8@84247300 distinct=100/100 range=84247301..84247400
+  pre  W45N8@84247300 distinct=14 range=84247387..84247400
+retry ok  W45N8@84247300 ticks=100 ts=1794582274466
+  inserted=497 ts_realigned=0 reconstructed_rows=100 ticks=84247301..84247400
+  post W45N8@84247300 distinct=100/100 range=84247301..84247400
+  pre  W45N7@84247300 distinct=0 range=None..None
+retry ok  W45N7@84247300 ticks=100 ts=1794582228824
+  inserted=433 ts_realigned=0 reconstructed_rows=100 ticks=84247301..84247400
+  post W45N7@84247300 distinct=100/100 range=84247301..84247400
+  pre  W47N7@84247300 distinct=0 range=None..None
+retry W47N7@84247300 still 404
+  post W47N7@84247300 distinct=0/100 range=None..None
   pre  W45N7@84246300 distinct=0 range=None..None
 retry W45N7@84246300 still 404
   post W45N7@84246300 distinct=0/100 range=None..None
   pre  W47N7@84246300 distinct=0 range=None..None
 retry W47N7@84246300 still 404
   post W47N7@84246300 distinct=0/100 range=None..None
-waiting 30s before retry2 pending=[('W45N7', 84246300), ('W47N7', 84246300)]
-retry2 start game.time=84246618 pending=[('W45N7', 84246300), ('W47N7', 84246300)]
-  pre  W45N7@84246300 distinct=0 range=None..None
-retry2 W45N7@84246300 still 404
-  post W45N7@84246300 distinct=0/100 range=None..None
-  pre  W47N7@84246300 distinct=0 range=None..None
-retry2 W47N7@84246300 still 404
-  post W47N7@84246300 distinct=0/100 range=None..None
+  pre  W46N8@84246500 distinct=0 range=None..None
+retry W46N8@84246500 still 404
+  post W46N8@84246500 distinct=0/100 range=None..None
+  pre  W47N8@84243700 distinct=0 range=None..None
+retry W47N8@84243700 still 404
+  post W47N8@84243700 distinct=0/100 range=None..None
+  pre  W47N8@84243100 distinct=0 range=None..None
+retry W47N8@84243100 still 404
+  post W47N8@84243100 distinct=0/100 range=None..None
+  pre  W45N8@84242900 distinct=0 range=None..None
+retry W45N8@84242900 still 404
+  post W45N8@84242900 distinct=0/100 range=None..None
+waiting 30s before retry2 pending=[('W47N7', 84246700), ('W45N7', 84246800), ('W47N7', 84247300)]
+retry2 start game.time=84247435 pending=[('W47N7', 84246700), ('W45N7', 84246800), ('W47N7', 84247300)]
+  pre  W47N7@84246700 distinct=0 range=None..None
+retry2 W47N7@84246700 still 404
+  post W47N7@84246700 distinct=0/100 range=None..None
+  pre  W45N7@84246800 distinct=0 range=None..None
+retry2 W45N7@84246800 still 404
+  post W45N7@84246800 distinct=0/100 range=None..None
+  pre  W47N7@84247300 distinct=0 range=None..None
+retry2 ok  W47N7@84247300 ticks=100 ts=1794582311881
+  inserted=380 ts_realigned=0 reconstructed_rows=100 ticks=84247301..84247400
+  post W47N7@84247300 distinct=100/100 range=84247301..84247400
 confirm known lingering official 404s outside window:
+  404 W45N7@84246300
+  404 W47N7@84246300
+  404 W46N8@84246500
   404 W47N8@84243700
   404 W47N8@84243100
   404 W45N8@84242900
-recovered=[]
-still_404=[('W45N7', 84246300, 0, None, None), ('W47N7', 84246300, 0, None, None)]
-inserted_retry=0 already_retry=0 ts_realigned_retry=0
+recovered=[('W46N8', 84247300, 100, 84247301, 84247400), ('W47N8', 84247300, 100, 84247301, 84247400), ('W45N8', 84247300, 100, 84247301, 84247400), ('W45N7', 84247300, 100, 84247301, 84247400), ('W47N7', 84247300, 100, 84247301, 84247400)]
+still_404=[('W45N7', 84246300, 0, None, None), ('W47N7', 84246300, 0, None, None), ('W46N8', 84246500, 0, None, None), ('W47N8', 84243700, 0, None, None), ('W47N8', 84243100, 0, None, None), ('W45N8', 84242900, 0, None, None), ('W47N7', 84246700, 0, None, None), ('W45N7', 84246800, 0, None, None)]
+inserted_retry=3458 already_retry=0 ts_realigned_retry=0
 db_after_final
-  W45N7 ticks=84245801..84246500 rows=1711 distinct=600
-  W45N8 ticks=84245801..84246500 rows=4287 distinct=700
-  W46N8 ticks=84245801..84246500 rows=6664 distinct=700
-  W47N7 ticks=84245801..84246500 rows=2527 distinct=600
-  W47N8 ticks=84245801..84246500 rows=9934 distinct=700
-window unique=25123 rows=25123 distinct_ticks=700
+  W45N7 ticks=84246701..84247400 rows=1775 distinct=600
+  W45N8 ticks=84246701..84247400 rows=3238 distinct=700
+  W46N8 ticks=84246701..84247400 rows=6528 distinct=700
+  W47N7 ticks=84246801..84247400 rows=2046 distinct=600
+  W47N8 ticks=84246701..84247400 rows=10474 distinct=700
+window unique=24061 rows=24061 distinct_ticks=700
 finished

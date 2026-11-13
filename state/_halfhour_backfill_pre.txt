@@ -1,9 +1,7 @@
-2026-11-13 22:03:19 
-2317000 Fri Nov 13 22:02:11 2026 .venv/bin/python tools/listener.py
-rot={'i': 1, 'room': 'W47N8', 'left': 126.8, 'at': '2026-11-13 22:03:18'}
+2026-11-13 23:03:01
+2330849 Fri Nov 13 23:01:56 2026 .venv/bin/python tools/listener.py
+rot={"i": 2, "room": "W45N8", "left": 7.3, "at": "2026-11-13 23:02:58"}
 box_pause last:
-{"from": "2026-11-13 17:34:43", "to": "2026-11-13 18:00:22", "sec": 1538}
-{"from": "2026-11-13 18:08:59", "to": "2026-11-13 18:20:46", "sec": 702}
 {"from": "2026-11-13 18:42:53", "to": "2026-11-13 19:04:25", "sec": 1287}
 {"from": "2026-11-13 19:12:17", "to": "2026-11-13 19:19:55", "sec": 457}
 {"from": "2026-11-13 19:27:58", "to": "2026-11-13 19:31:15", "sec": 190}
@@ -11,6 +9,10 @@ box_pause last:
 {"from": "2026-11-13 20:43:38", "to": "2026-11-13 20:57:30", "sec": 827}
 {"from": "2026-11-13 21:06:33", "to": "2026-11-13 21:25:57", "sec": 1159}
 {"from": "2026-11-13 21:40:46", "to": "2026-11-13 22:01:58", "sec": 1271}
-yield_file=absent run_listener.sh=4035476 listener_count=1 no second listener
-db tips: creep_ticks 84246277 room_stats 84246580 creep_cpu 84246580 path_arrivals 84246577
-NEW box pause since last half-hour (21:33): 21:40:46-22:01:58 (1271s). run_listener.sh self-restart 22:02:01 after that freeze (errors.log: box frozen ~1271s). New listener.py pid 2317000 since 22:02:11; rot i=1 W47N8 left~126.8s at 2026-11-13 22:03:18; live.json updated=2026-11-13 22:03:18 gameTime=None roomSlot=W47N8 objects=0 cpu={'cpu': 15, 'memory': 24545} stats_t=84246580 cpu=16.57. Segment 90 already flowing (creep_cpu/path_arrivals tips near live room_stats). room_stats tip caught up after reconnect (STATS flowing). Last half-hour already backfilled official history 84245401..84246100 at 21:33 (inserted=3587 missing_chunks=0). One subscribe-limit at 22:02:16 on W47N8 (x1) after the 22:02 restart; no further subscribe-limit lines by 22:03:19; last pre-freeze subscribe-limit cluster was 16:11-16:20. creep_ticks tip still 84246277 (behind live ~84246580) consistent with W47N8 slot not yet receiving objects. no restart this run (did not touch war_cmd/pulse/listener). Single peacetime slot, yield file absent. Console/stats/segment 90 recovered; room objects/gameTime still empty pending slot.
+{"from": "2026-11-13 22:12:40", "to": "2026-11-13 22:22:23", "sec": 577}
+{"from": "2026-11-13 22:44:15", "to": "2026-11-13 23:01:43", "sec": 1039}
+yield_file=absent
+run_listener.sh=4035476 listener_count=1
+db tips: creep_ticks 84247400 room_stats 84247390 creep_cpu 84247390 path_arrivals 84247390 
+live.json updated 2026-11-13 23:03:00 gameTime None roomSlot W45N8 objects 0 cpu {'cpu': 19, 'memory': 24241} stats.t 84247400
+NEW box pause since last half-hour (22:35): 22:44:15-23:01:43 (1039s) in box_pauses.jsonl; run_listener.sh restarts 22:43:59 and 23:01:46; listener.py pid 2330849 since 23:01:56. Segment 90 / STATS flowing (creep_ticks/creep_cpu/path_arrivals/room_stats tips ~8424739x). live.json gameTime=null objects=0 (known post-reconnect quirk) while stats.t and ingest flowing. No subscribe-limit lines in console.log this check. yield file absent, single peacetime slot (rot i=2 W45N8). did not touch war_cmd/pulse/listener. Last half-hour filled official 84246201..84246900 inserted=2858 missing_chunks=5 (W45N7@84246300, W47N7@84246300, W46N8@84246500, W47N7@84246700, W45N7@84246800 still official 404 at 22:33:55/retry2). 22:22 patrol had filled 84246101..84246800.

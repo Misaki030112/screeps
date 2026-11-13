@@ -1,0 +1,66 @@
+=== invader traces W47N7 ===
+n 0
+
+=== all distinct creeps W47N7 84247500-84247700 ===
+('w8rminer84246279', 'wrminer', 84247500, 84247700, '28,28', '31,34', '31,34', '28,28', 201, 1000, 1000)
+('w8rhauler84246074', 'wrhauler', 84247500, 84247557, '18,0', '31,33', '24,12', '18,0', 58, 2400, 2400)
+('w8rhauler84246260', 'wrhauler', 84247500, 84247700, '18,0', '31,33', '19,2', '24,21', 81, 2400, 2400)
+('w8rminer84246636', 'wrminer', 84247500, 84247700, '18,14', '24,17', '18,17', '24,14', 201, 1000, 1000)
+('w8rhauler84247091', 'wrhauler', 84247503, 84247571, '18,0', '28,28', '18,1', '18,0', 69, 2400, 2400)
+('w8rhauler84246309', 'wrhauler', 84247509, 84247614, '18,1', '31,33', '18,1', '24,12', 106, 2400, 2400)
+('reserve784247520', 'reserve', 84247563, 84247700, '21,1', '39,29', '27,1', '39,27', 138, 400, 400)
+('w8rhauler84247545', 'wrhauler', 84247696, 84247700, '24,8', '25,12', '24,12', '25,8', 5, 2400, 2400)
+('w8rminer84247585', 'wrminer', 84247696, 84247700, '24,10', '25,14', '24,14', '25,10', 5, 1000, 1000)
+
+=== wrminer evac timing ===
+w8rminer84246279 ticks 201 first (84247500, 'w8rminer84246279', 'W47N7', 31, 34, 'loaded') last (84247700, 'w8rminer84246279', 'W47N7', 28, 28, 'loaded')
+  rooms {'W47N7'}
+w8rminer84246636 ticks 201 first (84247500, 'w8rminer84246636', 'W47N7', 18, 17, 'loaded') last (84247700, 'w8rminer84246636', 'W47N7', 24, 14, 'loaded')
+  rooms {'W47N7'}
+w8rminer84247585 ticks 84 first (84247587, 'w8rminer84247585', 'W47N8', 34, 30, 'spawning') last (84247700, 'w8rminer84247585', 'W47N7', 25, 10, 'empty')
+  rooms {'W47N8', 'W47N7'}
+  first leave (84247587, 'w8rminer84247585', 'W47N8', 34, 30, 'spawning')
+
+=== leftover W45N7@84246800 coverage ===
+W45N7@84246800 distinct 1
+W47N7@84246700 distinct 1
+W46N8@84246500 distinct 1
+W45N7@84246300 distinct 1
+W47N7@84246300 distinct 1
+W45N7@84246800 distinct 1
+
+=== later room_stats after 84247740 ===
+('W46N8', 84247750, datetime.datetime(2026, 11, 13, 23, 28, 46, 204757, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 6305588, 16674, 18.28, 10000, 0, 2)
+('W47N8', 84247750, datetime.datetime(2026, 11, 13, 23, 28, 46, 204770, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 3150854, 1278, 18.28, 10000, 0, 5)
+('W46N8', 84247760, datetime.datetime(2026, 11, 13, 23, 29, 29, 313402, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 6305728, 16774, 18.14, 10000, 0, 2)
+('W47N8', 84247760, datetime.datetime(2026, 11, 13, 23, 29, 29, 313453, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 3150854, 1178, 18.14, 10000, 0, 5)
+('W46N8', 84247770, datetime.datetime(2026, 11, 13, 23, 30, 13, 184610, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 6305868, 16874, 17.18, 10000, 0, 2)
+('W47N8', 84247770, datetime.datetime(2026, 11, 13, 23, 30, 13, 184668, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 3150854, 86, 17.18, 10000, 0, 5)
+('W46N8', 84247780, datetime.datetime(2026, 11, 13, 23, 30, 57, 278509, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 6306008, 16974, 15.68, 10000, 0, 2)
+('W47N8', 84247780, datetime.datetime(2026, 11, 13, 23, 30, 57, 278588, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 3150854, 86, 15.68, 10000, 0, 5)
+('W46N8', 84247790, datetime.datetime(2026, 11, 13, 23, 31, 42, 231320, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 6306148, 16824, 14.06, 10000, 0, 2)
+('W47N8', 84247790, datetime.datetime(2026, 11, 13, 23, 31, 42, 231399, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 3150854, 246, 14.06, 10000, 0, 5)
+
+=== N-exit / S-exit bounces last hour 84246880-84247740 ===
+N-exit W47N8 rows 0
+  total adjacent y-changes 0
+S-edge W47N7 rows 0
+  total adjacent y-changes 0
+
+=== #37 visits W47N8 / PR34 (22,15)(10,33) ===
+W47N8 37,0 0
+W47N8 37,1 0
+W47N8 18,48 43
+W47N8 18,49 62
+W47N8 22,15 0
+W47N8 10,33 0
+W46N8 18,48 0
+W46N8 18,49 0
+W46N8 22,15 0
+W46N8 10,33 0
+
+=== manual ledger 84246923 -> 84247769 ===
+a 84246923 b 84247769
+dt 846
+ledger keys ['t0', 'r']
+b sample {"t0": 83976835, "r": {"W46N8": {"sp:harvester": 1000, "sp:miner": 263900, "tw": 340790, "sp:defender": 124200, "up": 4538266, "rc@W45N8": 136854, "sp:rhauler": 1129800, "lk": 84720, "tr": 577240, "rr": 24339, "sp:queen": 601650, "sp:reserver": 742300, "sp:hauler": 82800, "sp:rminer": 321600, "rc@W45N7": 136782, "sp:upgrader": 2735750, "sp:builder": 116150, "rr@W45N8": 13557, "rc": 66389, "sp:mminer": 2700, "sp:w8defender": 70000, "sp:raid9": 87110, "th": 240, "rf:rhauler": 7937, "rf:upgrader": 156049, "rf:queen": 22312, "rf:hauler": 636, "rf:builder": 29937, "b": 183224, "sp:reserve7": 5200}, "W47N8": {"tw": 113860, "sp:w8filler": 660750, "up": 3259227, "lk": 75385, "sp:w8miner": 290250, "sp:w8hauler": 434650, "sp:w8rminer": 332000, "sp:reserve7": 395200, "sp:w8upgrader": 455400, "rc@W47N7": 273298, "sp:w8rhauler": 1069050, "rr@W47N7": 21014, "rc": 118940, "sp:w8builder": 313200, "b": 580969, "sp:defender": 112750, "rr": 71181, "rw": 35485, "th": 20100, "sp:w8mminer": 76950, "sp:raid9": 107700, "sp:w8guard": 32640, "rf:w8upgrader": 5810, "rf:w8miner": 2442}, "W47N7": {"rc": 302, "rr": 86}}}

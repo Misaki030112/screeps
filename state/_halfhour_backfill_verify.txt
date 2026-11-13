@@ -1,9 +1,12 @@
-2026-11-13 22:06 Asia/Hong_Kong
-window 84245801..84246500 unique creep-tick rows=25123 (rows=25123) distinct ticks=700
-per_room:
-  W45N7 ticks=84245801..84246500 rows=1711 distinct=600
-  W45N8 ticks=84245801..84246500 rows=4287 distinct=700
-  W46N8 ticks=84245801..84246500 rows=6664 distinct=700
-  W47N7 ticks=84245801..84246500 rows=2527 distinct=600
-  W47N8 ticks=84245801..84246500 rows=9934 distinct=700
-33/35 official chunks HTTP 200 100/100; missing_chunks=2 after confirm GET 22:04:58 + retry2 (W45N7@84246300 and W47N7@84246300 still official 404; adjacent 84246200/84246400 both 200 100/100).
+2026-11-13 23:06 Asia/Hong_Kong verify
+window 84246701..84247400 unique=24061 rows=24061 distinct_ticks=700 tick_s=4.461
+W45N7 ticks=84246701..84247400 rows=1775 distinct=600
+W45N8 ticks=84246701..84247400 rows=3238 distinct=700
+W46N8 ticks=84246701..84247400 rows=6528 distinct=700
+W47N7 ticks=84246801..84247400 rows=2046 distinct=600
+W47N8 ticks=84246701..84247400 rows=10474 distinct=700
+in-window official 404s (0 live ticks, adjacent 100/100 in db):
+  W47N7@84246700 ticks 84246701..84246800 prev=100 nxt=100 confirm GET 23:04:38 and retry2 still 404
+  W45N7@84246800 ticks 84246801..84246900 prev=100 nxt=100 confirm GET 23:04:38 and retry2 still 404
+recovered this run: all five @84247300 (4 on confirm GET 23:04:38, W47N7 on retry2) post 100/100 inserted_retry=3458
+outside-window official 404s still 404 at 23:04:38: W45N7@84246300 W47N7@84246300 W46N8@84246500 W47N8@84243700 W47N8@84243100 W45N8@84242900 (all adj 100/100, hole 0 rows)
