@@ -1,0 +1,39 @@
+confirm GET start 2026-11-14 03:29:20 Asia/Hong_Kong game.time=84251020 tick_s=4.425
+  pre  W45N7@84250800 distinct=0 rows=0 range=None..None
+  still_404 W45N7@84250800 at 03:29:21
+  post W45N7@84250800 distinct=0/100 rows=0 range=None..None
+  pre  W47N8@84250900 distinct=100 rows=1416 range=84250901..84251000
+  recovered W47N8@84250900 ticks=100 ts=1794598147395 at 03:29:22
+  inserted=3 ts_realigned=0 recon=100 ticks=84250901..84251000
+  post W47N8@84250900 distinct=100/100 rows=1419 range=84250901..84251000
+  pre  W45N8@84250900 distinct=0 rows=0 range=None..None
+  still_404 W45N8@84250900 at 03:29:27
+  post W45N8@84250900 distinct=0/100 rows=0 range=None..None
+  pre  W47N7@84250900 distinct=0 rows=0 range=None..None
+  still_404 W47N7@84250900 at 03:29:29
+  post W47N7@84250900 distinct=0/100 rows=0 range=None..None
+  pre  W47N8@84249600 distinct=0 rows=0 range=None..None
+  still_404 W47N8@84249600 at 03:29:30
+  post W47N8@84249600 distinct=0/100 rows=0 range=None..None
+  pre  W45N8@84248300 distinct=0 rows=0 range=None..None
+  still_404 W45N8@84248300 at 03:29:31
+  post W45N8@84248300 distinct=0/100 rows=0 range=None..None
+  adj  W45N7@84250700 status=200 ticks=100 at 03:29:32
+  adj  W45N7@84250900 status=200 ticks=100 at 03:29:33
+  adj  W47N8@84250800 status=200 ticks=100 at 03:29:34
+  adj  W45N8@84250800 status=200 ticks=100 at 03:29:35
+  adj  W47N7@84250800 status=200 ticks=100 at 03:29:36
+  unpub W46N8@84251000 status=404 ticks=0 at 03:29:37
+  unpub W47N8@84251000 status=404 ticks=0 at 03:29:38
+  unpub W45N8@84251000 status=404 ticks=0 at 03:29:39
+  unpub W45N7@84251000 status=404 ticks=0 at 03:29:40
+  unpub W47N7@84251000 status=404 ticks=0 at 03:29:41
+recovered=['W47N8@84250900'] still_404=['W45N7@84250800', 'W45N8@84250900', 'W47N7@84250900', 'W47N8@84249600', 'W45N8@84248300'] inserted_retry=3 ts_realigned_retry=0
+db_after_retry
+  W46N8 ticks=84250301..84251000 rows=6294 distinct=700
+  W47N8 ticks=84250301..84251000 rows=10426 distinct=700
+  W45N8 ticks=84250301..84250900 rows=3484 distinct=600
+  W45N7 ticks=84250301..84251000 rows=1593 distinct=600
+  W47N7 ticks=84250301..84250900 rows=2584 distinct=600
+gets_written 16 /workspace/screeps/state/_patrol_2026-11-14_0325/backfill_retry_gets.json
+finished

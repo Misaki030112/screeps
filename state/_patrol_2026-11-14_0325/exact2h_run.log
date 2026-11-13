@@ -1,0 +1,121 @@
+=== freshness ===
+room_stats (84251010, datetime.datetime(2026, 11, 14, 3, 28, 37, 903399, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), datetime.timedelta(seconds=42, microseconds=107095))
+creep_ticks (84251019, datetime.datetime(2026, 11, 14, 3, 29, 15, 914412, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), datetime.timedelta(seconds=4, microseconds=138542))
+creep_cpu (84251000, datetime.datetime(2026, 11, 14, 3, 28, 31, 280242, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), datetime.timedelta(seconds=49, microseconds=87636))
+--- creep_ticks per room last 40min window-ish ---
+creep_ticks ('W45N7', 84251000, datetime.timedelta(seconds=86, microseconds=385621), 1593)
+creep_ticks ('W45N8', 84250900, datetime.timedelta(seconds=528, microseconds=848621), 3484)
+creep_ticks ('W46N8', 84251000, datetime.timedelta(seconds=86, microseconds=385621), 6294)
+creep_ticks ('W47N7', 84250900, datetime.timedelta(seconds=528, microseconds=848621), 2584)
+creep_ticks ('W47N8', 84251019, datetime.timedelta(seconds=4, microseconds=668942), 10690)
+=== latest room_stats ===
+W46N8 84251010 2026-11-14 03:28:37.903354+08:00 rcl 7 p 6350431 stor 14676 ea 3580 5600 cpu 16.62 bkt 10000 cmt 4ff78b4 ctl 400 ema 813 host 0 sites 1
+  creeps {'miner': 2, 'queen': 3, 'hauler': 1, 'rminer': 3, 'builder': 1, 'rhauler': 7, 'w8miner': 2, 'reserver': 2, 'upgrader': 1, 'w8filler': 2, 'w8hauler': 4, 'w8rminer': 2, 'w8builder': 4, 'w8rhauler': 4}
+W47N8 84251010 2026-11-14 03:28:37.903399+08:00 rcl 7 p 3150854 stor 6428 ea 5600 5600 cpu 16.62 bkt 10000 cmt 4ff78b4 ctl 1446 ema None host 0 sites 5
+  creeps {'miner': 2, 'queen': 3, 'hauler': 1, 'rminer': 3, 'builder': 1, 'rhauler': 7, 'w8miner': 2, 'reserver': 2, 'upgrader': 1, 'w8filler': 2, 'w8hauler': 4, 'w8rminer': 2, 'w8builder': 4, 'w8rhauler': 4}
+TIP 84251010 2026-11-14 03:28:37.903354+08:00
+=== exact rates (interp) ===
+NOW W46N8 RCL7 58.07% p=6350431 stor=14676 ea=3580/5600 cpu=16.62 bucket=10000 commit=4ff78b4 ts=2026-11-14 03:28:37.903354+08:00 ctl=400 ema=813
+  W46N8 exact2h INTERP tick=84249377.58 ts=2026-11-14 01:28:37.903354+08:00 p=6327704.1 stor=16623.3 -> 84251010 p=6350431 dt=1632.42 dprog=22726.9 13.92/26.0=53.5% wall_s=7200 shard_s/t=4.411
+    brackets a=(84249370, datetime.datetime(2026, 11, 14, 1, 28, 4, 983949, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 6327598, 17154) b=(84249380, datetime.datetime(2026, 11, 14, 1, 28, 48, 408869, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 6327738, 16454) frac=0.7580763533933971
+  W46N8 1h INTERP tick=84250193.30 ts=2026-11-14 02:28:37.903354+08:00 p=6338997.2 stor=17019.0 -> 84251010 p=6350431 dt=816.70 dprog=11433.8 14.00/26.0=53.8% wall_s=3600 shard_s/t=4.408
+    brackets a=(84250190, datetime.datetime(2026, 11, 14, 2, 28, 23, 361904, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 6338951, 16986) b=(84250200, datetime.datetime(2026, 11, 14, 2, 29, 7, 383695, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 6339091, 17086) frac=0.33032390708501613
+NOW W47N8 RCL7 28.81% p=3150854 stor=6428 ea=5600/5600 cpu=16.62 bucket=10000 commit=4ff78b4 ts=2026-11-14 03:28:37.903399+08:00 ctl=1446 ema=None
+  W47N8 exact2h INTERP tick=84249377.58 ts=2026-11-14 01:28:37.903399+08:00 p=3150854.0 stor=3053.0 -> 84251010 p=3150854 dt=1632.42 dprog=0.0 0.00/30.08=0.0% wall_s=7200 shard_s/t=4.411
+    brackets a=(84249370, datetime.datetime(2026, 11, 14, 1, 28, 4, 983998, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 3150854, 3053) b=(84249380, datetime.datetime(2026, 11, 14, 1, 28, 48, 408933, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 3150854, 3053) frac=0.7580759994229123
+  W47N8 1h INTERP tick=84250193.30 ts=2026-11-14 02:28:37.903399+08:00 p=3150854.0 stor=8758.4 -> 84251010 p=3150854 dt=816.70 dprog=0.0 0.00/30.08=0.0% wall_s=3600 shard_s/t=4.408
+    brackets a=(84250190, datetime.datetime(2026, 11, 14, 2, 28, 23, 361956, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 3150854, 8512) b=(84250200, datetime.datetime(2026, 11, 14, 2, 29, 7, 383745, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 3150854, 9258) frac=0.33032376308014194
+=== short windows ===
+W46N8 last20t (n=3 span=20) 14.00 e/t 53.8% stor 15326->14676 ticks 84250990->84251010 ts 2026-11-14 03:27:10.396856+08:00->2026-11-14 03:28:37.903354+08:00
+W46N8 last30t (n=4 span=30) 14.00 e/t 53.8% stor 15226->14676 ticks 84250980->84251010 ts 2026-11-14 03:26:25.878180+08:00->2026-11-14 03:28:37.903354+08:00
+W46N8 last70t (n=8 span=70) 14.00 e/t 53.8% stor 14726->14676 ticks 84250940->84251010 ts 2026-11-14 03:23:30.468644+08:00->2026-11-14 03:28:37.903354+08:00
+W46N8 last100t (n=11 span=100) 14.00 e/t 53.8% stor 13226->14676 ticks 84250910->84251010 ts 2026-11-14 03:21:19.892489+08:00->2026-11-14 03:28:37.903354+08:00
+W46N8 last140t (n=15 span=140) 14.00 e/t 53.8% stor 12936->14676 ticks 84250870->84251010 ts 2026-11-14 03:18:21.310286+08:00->2026-11-14 03:28:37.903354+08:00
+W46N8 last200t (n=21 span=200) 14.00 e/t 53.8% stor 13896->14676 ticks 84250810->84251010 ts 2026-11-14 03:13:55.598505+08:00->2026-11-14 03:28:37.903354+08:00
+W46N8 last300t (n=31 span=300) 14.00 e/t 53.8% stor 14260->14676 ticks 84250710->84251010 ts 2026-11-14 03:06:35.223239+08:00->2026-11-14 03:28:37.903354+08:00
+W47N8 last20t (n=3 span=20) 0.00 e/t 0.0% stor 6228->6428 ticks 84250990->84251010 ts 2026-11-14 03:27:10.396909+08:00->2026-11-14 03:28:37.903399+08:00
+W47N8 last30t (n=4 span=30) 0.00 e/t 0.0% stor 6228->6428 ticks 84250980->84251010 ts 2026-11-14 03:26:25.878227+08:00->2026-11-14 03:28:37.903399+08:00
+W47N8 last70t (n=8 span=70) 0.00 e/t 0.0% stor 6228->6428 ticks 84250940->84251010 ts 2026-11-14 03:23:30.468698+08:00->2026-11-14 03:28:37.903399+08:00
+W47N8 last100t (n=11 span=100) 0.00 e/t 0.0% stor 4483->6428 ticks 84250910->84251010 ts 2026-11-14 03:21:19.892560+08:00->2026-11-14 03:28:37.903399+08:00
+W47N8 last140t (n=15 span=140) 0.00 e/t 0.0% stor 5683->6428 ticks 84250870->84251010 ts 2026-11-14 03:18:21.310337+08:00->2026-11-14 03:28:37.903399+08:00
+W47N8 last200t (n=21 span=200) 0.00 e/t 0.0% stor 3625->6428 ticks 84250810->84251010 ts 2026-11-14 03:13:55.598559+08:00->2026-11-14 03:28:37.903399+08:00
+W47N8 last300t (n=31 span=300) 0.00 e/t 0.0% stor 3396->6428 ticks 84250710->84251010 ts 2026-11-14 03:06:35.223297+08:00->2026-11-14 03:28:37.903399+08:00
+=== storage extremes since last patrol (and last 3h) ===
+W46N8 since_last n=83 min=(84250860, datetime.datetime(2026, 11, 14, 3, 17, 37, 102301, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 12836) max=(84250200, datetime.datetime(2026, 11, 14, 2, 29, 7, 383695, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 17086) under15k=48/83=57.8% over20k=0 over25k=0
+  crosses [('under16k', 84250290, '2026-11-14 02:35:44.910456+08:00', 15986, 16136), ('over16k', 84250300, '2026-11-14 02:36:28.915720+08:00', 16086, 15986), ('under16k', 84250310, '2026-11-14 02:37:12.324547+08:00', 15376, 16086), ('under15k', 84250340, '2026-11-14 02:39:25.139877+08:00', 14986, 15336), ('over15k', 84250360, '2026-11-14 02:40:52.692190+08:00', 15036, 14936), ('under15k', 84250420, '2026-11-14 02:45:20.137527+08:00', 14986, 15436), ('over15k', 84250430, '2026-11-14 02:46:03.876792+08:00', 15086, 14986), ('under15k', 84250450, '2026-11-14 02:47:31.413317+08:00', 14986, 15186), ('over15k', 84250460, '2026-11-14 02:48:16.632465+08:00', 15086, 14986), ('under15k', 84250470, '2026-11-14 02:49:00.458642+08:00', 13586, 15086), ('over15k', 84250630, '2026-11-14 03:00:43.105549+08:00', 15290, 14350), ('under15k', 84250660, '2026-11-14 03:02:54.035694+08:00', 14900, 15490), ('over15k', 84250760, '2026-11-14 03:10:17.715689+08:00', 15710, 14620), ('under15k', 84250780, '2026-11-14 03:11:44.692573+08:00', 14310, 15010), ('over15k', 84250950, '2026-11-14 03:24:14.285149+08:00', 15226, 14726), ('under15k', 84251010, '2026-11-14 03:28:37.903354+08:00', 14676, 15426)]
+  nUp/w8up changes [(84250180, '2026-11-14 02:27:39.189364+08:00', 16886, 1, 0)]
+W46N8 3h n=137 min=(84250860, datetime.datetime(2026, 11, 14, 3, 17, 37, 102301, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 12836) max=(84249370, datetime.datetime(2026, 11, 14, 1, 28, 4, 983949, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 17154) under15k=53/137=38.7% over20k=0 over25k=0
+  crosses [('over16k', 84249100, '2026-11-14 01:07:57.888974+08:00', 16146, 15972), ('under16k', 84249140, '2026-11-14 01:10:57.934503+08:00', 15996, 16446), ('over16k', 84249300, '2026-11-14 01:22:53.691509+08:00', 16714, 15996), ('under16k', 84249400, '2026-11-14 01:30:16.662409+08:00', 15854, 16554), ('under15k', 84249480, '2026-11-14 01:36:46.700968+08:00', 14744, 15254), ('over15k', 84249860, '2026-11-14 02:03:59.673928+08:00', 15076, 14976), ('over16k', 84250160, '2026-11-14 02:26:11.268835+08:00', 16986, 15686), ('under16k', 84250290, '2026-11-14 02:35:44.910456+08:00', 15986, 16136), ('over16k', 84250300, '2026-11-14 02:36:28.915720+08:00', 16086, 15986), ('under16k', 84250310, '2026-11-14 02:37:12.324547+08:00', 15376, 16086), ('under15k', 84250340, '2026-11-14 02:39:25.139877+08:00', 14986, 15336), ('over15k', 84250360, '2026-11-14 02:40:52.692190+08:00', 15036, 14936), ('under15k', 84250420, '2026-11-14 02:45:20.137527+08:00', 14986, 15436), ('over15k', 84250430, '2026-11-14 02:46:03.876792+08:00', 15086, 14986), ('under15k', 84250450, '2026-11-14 02:47:31.413317+08:00', 14986, 15186), ('over15k', 84250460, '2026-11-14 02:48:16.632465+08:00', 15086, 14986), ('under15k', 84250470, '2026-11-14 02:49:00.458642+08:00', 13586, 15086), ('over15k', 84250630, '2026-11-14 03:00:43.105549+08:00', 15290, 14350), ('under15k', 84250660, '2026-11-14 03:02:54.035694+08:00', 14900, 15490), ('over15k', 84250760, '2026-11-14 03:10:17.715689+08:00', 15710, 14620), ('under15k', 84250780, '2026-11-14 03:11:44.692573+08:00', 14310, 15010), ('over15k', 84250950, '2026-11-14 03:24:14.285149+08:00', 15226, 14726), ('under15k', 84251010, '2026-11-14 03:28:37.903354+08:00', 14676, 15426)]
+  nUp/w8up changes [(84248560, '2026-11-14 00:28:10.110277+08:00', 15376, 1, 0)]
+W47N8 since_last n=83 min=(84250710, datetime.datetime(2026, 11, 14, 3, 6, 35, 223297, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 3396) max=(84250350, datetime.datetime(2026, 11, 14, 2, 40, 9, 310301, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 9301) under15k=83/83=100.0% over20k=0 over25k=0
+  crosses []
+  nUp/w8up changes [(84250180, '2026-11-14 02:27:39.189428+08:00', 8512, 1, 0)]
+W47N8 3h n=137 min=(84249370, datetime.datetime(2026, 11, 14, 1, 28, 4, 983998, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 3053) max=(84249920, datetime.datetime(2026, 11, 14, 2, 8, 25, 840200, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 10705) under15k=137/137=100.0% over20k=0 over25k=0
+  crosses []
+  nUp/w8up changes [(84248560, '2026-11-14 00:28:10.110314+08:00', 6124, 1, 0)]
+=== room_stats gaps W46N8 since last patrol (>=30t) ===
+gaps []
+=== CPU ===
+1h (13.76, 21.39, 17.242962962962963, 20.16, 9999, 81, 84250200, 84251010) max_at [(84250600, datetime.datetime(2026, 11, 14, 2, 58, 32, 143050, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 21.39, 14060), (84250700, datetime.datetime(2026, 11, 14, 3, 5, 50, 153671, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 20.82, 14500), (84250300, datetime.datetime(2026, 11, 14, 2, 36, 28, 915720, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 20.7, 16086)]
+2h (13.76, 21.39, 17.156880733944952, 19.86, 9993, 109, 84249380, 84251010) max_at [(84250600, datetime.datetime(2026, 11, 14, 2, 58, 32, 143050, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 21.39, 14060), (84250700, datetime.datetime(2026, 11, 14, 3, 5, 50, 153671, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 20.82, 14500), (84250300, datetime.datetime(2026, 11, 14, 2, 36, 28, 915720, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 20.7, 16086)]
+since_last (13.76, 21.39, 17.199518072289155, 19.94, 9999, 83, 84250180, 84251010) max_at [(84250600, datetime.datetime(2026, 11, 14, 2, 58, 32, 143050, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 21.39, 14060), (84250700, datetime.datetime(2026, 11, 14, 3, 5, 50, 153671, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 20.82, 14500), (84250300, datetime.datetime(2026, 11, 14, 2, 36, 28, 915720, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 20.7, 16086)]
+=== hostiles since last ===
+count 0
+=== 20k/300t home spans last 3h ===
+samples>=20000: check span in ticks not samples; best consecutive samples tick-span=0
+3h max stor=17154 best>=20k tick-span=0
+=== official coverage 84250301..84251000 ===
+W46N8 distinct 700 missing 0 spans [] 
+W47N8 distinct 700 missing 0 spans [] 
+W45N8 distinct 600 missing 100 spans [(84250901, 84251000, 100)] 
+W45N7 distinct 600 missing 100 spans [(84250801, 84250900, 100)] 
+W47N7 distinct 600 missing 100 spans [(84250901, 84251000, 100)] 
+=== later live room_stats after TIP (if any) ===
+W46N8 later_n 0
+W47N8 later_n 0
+=== nUp timeseries since last (every sample) W46N8 ===
+  nUp=1 from 84250180 2026-11-14 02:27:39.189364+08:00 stor=16886
+  last nUp=1 tick=84251010 2026-11-14 03:28:37.903354+08:00 stor=14676
+=== W47 progress / storage / sites / creeps since last ===
+unique progress values [3150854] nunique 1 first 3150854 last 3150854
+stor min (84250710, datetime.datetime(2026, 11, 14, 3, 6, 35, 223297, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 3396) max (84250350, datetime.datetime(2026, 11, 14, 2, 40, 9, 310301, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 9301) last (84251010, datetime.datetime(2026, 11, 14, 3, 28, 37, 903399, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 6428)
+  w8defender: last=0 first_nonzero=None last_nonzero=None zero_runs=[(84250180, 84251010, 830, '2026-11-14 02:27:39.189428+08:00', '2026-11-14 03:28:37.903399+08:00')]
+  w8builder: last=4 first_nonzero=(84250180, datetime.datetime(2026, 11, 14, 2, 27, 39, 189428, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 4) last_nonzero=(84251010, datetime.datetime(2026, 11, 14, 3, 28, 37, 903399, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 4) zero_runs=[]
+  w8rhauler: last=4 first_nonzero=(84250180, datetime.datetime(2026, 11, 14, 2, 27, 39, 189428, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 4) last_nonzero=(84251010, datetime.datetime(2026, 11, 14, 3, 28, 37, 903399, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 4) zero_runs=[]
+  w8upgrader: last=0 first_nonzero=None last_nonzero=None zero_runs=[(84250180, 84251010, 830, '2026-11-14 02:27:39.189428+08:00', '2026-11-14 03:28:37.903399+08:00')]
+  w8miner: last=2 first_nonzero=(84250180, datetime.datetime(2026, 11, 14, 2, 27, 39, 189428, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 2) last_nonzero=(84251010, datetime.datetime(2026, 11, 14, 3, 28, 37, 903399, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 2) zero_runs=[]
+  w8filler: last=2 first_nonzero=(84250180, datetime.datetime(2026, 11, 14, 2, 27, 39, 189428, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 2) last_nonzero=(84251010, datetime.datetime(2026, 11, 14, 3, 28, 37, 903399, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 2) zero_runs=[]
+  w8rminer: last=2 first_nonzero=(84250180, datetime.datetime(2026, 11, 14, 2, 27, 39, 189428, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 2) last_nonzero=(84251010, datetime.datetime(2026, 11, 14, 3, 28, 37, 903399, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 2) zero_runs=[]
+  reserve7: last=0 first_nonzero=(84250180, datetime.datetime(2026, 11, 14, 2, 27, 39, 189428, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 1) last_nonzero=(84250580, datetime.datetime(2026, 11, 14, 2, 57, 5, 247783, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 1) zero_runs=[(84250590, 84251010, 420, '2026-11-14 02:57:47.760707+08:00', '2026-11-14 03:28:37.903399+08:00')]
+  upgrader: last=1 first_nonzero=(84250180, datetime.datetime(2026, 11, 14, 2, 27, 39, 189428, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 1) last_nonzero=(84251010, datetime.datetime(2026, 11, 14, 3, 28, 37, 903399, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 1) zero_runs=[]
+=== home critical roles since last ===
+  miner: last=2 zero_runs=[]
+  queen: last=3 zero_runs=[]
+  hauler: last=1 zero_runs=[]
+  rminer: last=3 zero_runs=[]
+  rhauler: last=7 zero_runs=[]
+  reserver: last=2 zero_runs=[(84250390, 84250450, 60, '2026-11-14 02:43:05.594002+08:00', '2026-11-14 02:47:31.413317+08:00')]
+  upgrader: last=1 zero_runs=[]
+  builder: last=1 zero_runs=[]
+=== leftover official holes (known 404s + hour window) ===
+  W45N8@84242900 W45N8 distinct=0/100
+  W47N8@84243100 W47N8 distinct=0/100
+  W47N8@84243700 W47N8 distinct=0/100
+  W45N7@84246300 W45N7 distinct=0/100
+  W45N7@84246300 W47N7 distinct=0/100
+  W47N7@84246300 W45N7 distinct=0/100
+  W47N7@84246300 W47N7 distinct=0/100
+  W46N8@84246500 W46N8 distinct=0/100
+  W47N7@84246700 W47N7 distinct=0/100
+  W45N7@84246800 W45N7 distinct=0/100
+  W45N8@84248300 W45N8 distinct=0/100
+  W47N8@84249600 W47N8 distinct=0/100
+=== hour-window creep_ticks coverage LAST_TIP+1..TIP ===
+W46N8 hour distinct 820 want 830 missing_spans [(84251001, 84251010, 10)] 
+W47N8 hour distinct 830 want 830 missing_spans [] 
+W45N8 hour distinct 720 want 830 missing_spans [(84250901, 84251010, 110)] 
+W45N7 hour distinct 720 want 830 missing_spans [(84250801, 84250900, 100), (84251001, 84251010, 10)] 
+W47N7 hour distinct 720 want 830 missing_spans [(84250901, 84251010, 110)] 
+=== incidents since last ===
+incidents query err AttributeError 'Connection' object has no attribute 'description'
+DONE TIP 84251010

@@ -1,8 +1,8 @@
-2026-11-14 02:32 Asia/Hong_Kong
-ok=true missing_chunks=1 inserted=3407 (first=3407 retry=0) already_in_db=21854 ts_realigned=0 tick_s=4.379
-window ticks=84249501..84250200 count=700 unique_rows=24859 distinct_ticks=700 distinct_room_ticks=3400
-per_room: W45N7 rows=2028 distinct=700 new=427; W45N8 rows=4252 distinct=700 new=486; W46N8 rows=6452 distinct=700 new=498; W47N7 rows=2896 distinct=700 new=511; W47N8 rows=9231 distinct=600 new=1485
-game.time=84250222 published_bases=84249500..84250100; first pass 34/35 official chunks HTTP 200 100/100, W47N8@84249600 official 404 (middle hole; adjacent W47N8@84249500 and W47N8@84249700 already 200 100/100 this pass; W47N8@84249700 later base was already published). Confirm GET 02:31:44 game.time=84250235 still 404, retry inserted=0, post distinct=0 rows=0 ticks=84249601..84249700. Adjacent confirm GET W47N8@84249500 02:31:45 HTTP 200 100/100 and W47N8@84249700 02:31:46 HTTP 200 100/100. Current in-progress official chunk 84250200 not yet published (confirm all five rooms HTTP 404 at 02:31:47-02:31:51).
-listener pid 2372827 since 02:25:52; run_listener.sh 4035476; single slot rot i=1 W47N8; live.json gameTime=84250229 objects=0 right after rotate to W47N8 while stats.t=84250240 and cpu flowing
+2026-11-14 03:09 Asia/Hong_Kong
+ok=true missing_chunks=0 inserted=13251 (first=13251 retry=0) already_in_db=12818 ts_realigned=0 tick_s=4.452
+window ticks=84250001..84250700 count=700 unique_rows=25552 distinct_ticks=700 distinct_room_ticks=3500
+per_room: W45N7 rows=1858 distinct=700 new=1589; W45N8 rows=3829 distinct=700 new=2838; W46N8 rows=6204 distinct=700 new=3047; W47N7 rows=3258 distinct=700 new=2378; W47N8 rows=10403 distinct=700 new=3399
+game.time=84250722 published_bases=84250000..84250600; first pass 35/35 official chunks HTTP 200 100/100, missing_chunks=0. Confirm GET 03:08:36-03:08:40 game.time=84250737 current in-progress official chunk 84250700 all five rooms HTTP 404 (not yet published). No retry.
+listener pid 2380163 since 02:39:18; run_listener.sh 4035476; single slot rot i=3 W45N7; live.json gameTime=84250565 objects=0 after rotate to W45N7 while stats.t=84250740 and cpu flowing
 grafana 200 dashboard 200 postgres accepting
-known official 404s still 0 rows, all outside this window except W47N8@84249600 in-window (confirm GET this run only for that hole, its two adjacent bases, and unpublished 84250200)
+known official 404s still 0 rows, all outside this window (including W47N8@84249600 now outside); confirm GET this run only for unpublished 84250700
