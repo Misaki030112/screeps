@@ -1,28 +1,63 @@
-confirm GET start 2026-11-14 06:06:53 Asia/Hong_Kong game.time=84253162 tick_s=4.365
-  pre  W46N8@84252400 distinct=0 rows=0 range=None..None
-  404 W46N8@84252400 ticks=None at 2026-11-14 06:06:55
-  still_404 W46N8@84252400 at 06:06:54
-  post W46N8@84252400 distinct=0/100 rows=0 range=None..None
-  ok  W46N8@84252300 ticks=100 at 2026-11-14 06:06:55
-  ok  W46N8@84252500 ticks=100 at 2026-11-14 06:06:56
-  ok  W47N8@84252400 ticks=100 at 2026-11-14 06:06:57
-  ok  W45N8@84252400 ticks=100 at 2026-11-14 06:06:58
-  ok  W45N7@84252400 ticks=100 at 2026-11-14 06:06:59
-  ok  W47N7@84252400 ticks=100 at 2026-11-14 06:07:00
-  404 W46N8@84253100 ticks=None at 2026-11-14 06:07:01
-  404 W47N8@84253100 ticks=None at 2026-11-14 06:07:02
-  404 W45N8@84253100 ticks=None at 2026-11-14 06:07:03
-  404 W45N7@84253100 ticks=None at 2026-11-14 06:07:04
-  404 W47N7@84253100 ticks=None at 2026-11-14 06:07:05
-recovered=[] still_404=['W46N8@84252400'] inserted_retry=0 ts_realigned_retry=0
+confirm GET start 2026-11-14 07:00:47 Asia/Hong_Kong game.time=84253890 tick_s=4.408
+  pre  W46N8@84253100 distinct=0 rows=0 range=None..None
+  404 W46N8@84253100 ticks=None at 2026-11-14 07:00:48
+  still_404 W46N8@84253100 at 07:00:47
+  post W46N8@84253100 distinct=0/100 rows=0 range=None..None
+  pre  W47N7@84253600 distinct=0 rows=0 range=None..None
+  404 W47N7@84253600 ticks=None at 2026-11-14 07:00:50
+  still_404 W47N7@84253600 at 07:00:49
+  post W47N7@84253600 distinct=0/100 rows=0 range=None..None
+  ok  W46N8@84253200 ticks=100 at 2026-11-14 07:00:50
+  ok  W47N8@84253100 ticks=100 at 2026-11-14 07:00:51
+  ok  W45N8@84253100 ticks=100 at 2026-11-14 07:00:52
+  ok  W45N7@84253100 ticks=100 at 2026-11-14 07:00:53
+  ok  W47N7@84253100 ticks=100 at 2026-11-14 07:00:54
+  ok  W47N7@84253500 ticks=100 at 2026-11-14 07:00:55
+  ok  W47N7@84253700 ticks=100 at 2026-11-14 07:00:56
+  ok  W46N8@84253600 ticks=100 at 2026-11-14 07:00:57
+  ok  W47N8@84253600 ticks=100 at 2026-11-14 07:00:58
+  ok  W45N8@84253600 ticks=100 at 2026-11-14 07:00:59
+  ok  W45N7@84253600 ticks=100 at 2026-11-14 07:01:00
+  404 W46N8@84253800 ticks=None at 2026-11-14 07:01:01
+  404 W47N8@84253800 ticks=None at 2026-11-14 07:01:02
+  404 W45N8@84253800 ticks=None at 2026-11-14 07:01:03
+  404 W45N7@84253800 ticks=None at 2026-11-14 07:01:04
+  404 W47N7@84253800 ticks=None at 2026-11-14 07:01:05
+recovered=[] still_404=['W46N8@84253100', 'W47N7@84253600'] inserted_retry=0 ts_realigned_retry=0
 db_after_retry
-  W46N8 ticks=84252501..84253100 rows=5788 distinct=600
-    gaps (1): 84252401..84252500 (100t)
-  W47N8 ticks=84252401..84253100 rows=9770 distinct=700
-  W45N8 ticks=84252401..84253100 rows=3826 distinct=700
-  W45N7 ticks=84252401..84253100 rows=2531 distinct=700
-  W47N7 ticks=84252401..84253100 rows=3061 distinct=700
-unique rows=24976 distinct_ticks=700 distinct_room_ticks=3400
-gets_written 12 /workspace/screeps/state/_halfhour_backfill_retry_gets.json
+  W46N8 ticks=84253201..84253800 rows=6107 distinct=600
+    gaps (1): 84253101..84253200 (100t)
+  W47N8 ticks=84253101..84253800 rows=11427 distinct=700
+  W45N8 ticks=84253101..84253800 rows=4120 distinct=678
+    gaps (1): 84253423..84253444 (22t)
+  W45N7 ticks=84253101..84253800 rows=1950 distinct=700
+  W47N7 ticks=84253101..84253800 rows=2773 distinct=600
+    gaps (1): 84253601..84253700 (100t)
+unique rows=26377 distinct_ticks=700 distinct_room_ticks=3278
+gets_written 18 /workspace/screeps/state/_halfhour_backfill_retry_gets.json
+finished
+EXIT:0
+
+retry2 GET start 2026-11-14 07:03:10 Asia/Hong_Kong game.time=84253922 tick_s=4.408
+  pre  W46N8@84253100 distinct=0 rows=0 range=None..None
+  404 W46N8@84253100 ticks=None at 2026-11-14 07:03:11
+  still_404 W46N8@84253100 at 07:03:10
+  post W46N8@84253100 distinct=0/100 rows=0 range=None..None
+  pre  W47N7@84253600 distinct=0 rows=0 range=None..None
+  404 W47N7@84253600 ticks=None at 2026-11-14 07:03:12
+  still_404 W47N7@84253600 at 07:03:12
+  post W47N7@84253600 distinct=0/100 rows=0 range=None..None
+recovered=[] still_404=['W46N8@84253100', 'W47N7@84253600'] inserted_retry2=0 ts_realigned_retry2=0
+db_after_retry2
+  W46N8 ticks=84253201..84253800 rows=6107 distinct=600
+    gaps (1): 84253101..84253200 (100t)
+  W47N8 ticks=84253101..84253800 rows=11427 distinct=700
+  W45N8 ticks=84253101..84253800 rows=4120 distinct=678
+    gaps (1): 84253423..84253444 (22t)
+  W45N7 ticks=84253101..84253800 rows=1950 distinct=700
+  W47N7 ticks=84253101..84253800 rows=2773 distinct=600
+    gaps (1): 84253601..84253700 (100t)
+unique rows=26377 distinct_ticks=700 distinct_room_ticks=3278
+gets_appended 2 total 20
 finished
 EXIT:0

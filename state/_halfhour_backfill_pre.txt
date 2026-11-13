@@ -1,10 +1,9 @@
-2026-11-14 06:05:47
+2026-11-14 06:59:34
     PID                  STARTED CMD
-2437684 Sat Nov 14 06:03:47 2026 .venv/bin/python tools/listener.py
-4035476 Tue Nov 10 17:28:00 2026 /bin/bash tools/run_listener.sh
-rot={"i": 1, "room": "W47N8", "left": 445.4, "at": "2026-11-14 06:05:54"}
+2451295 Sat Nov 14 06:58:00 2026 .venv/bin/python tools/listener.py
+4035476 Tue Nov 10 17:56:44 2026 /bin/bash tools/run_listener.sh
+rot={"i": 1, "room": "W47N8", "left": 432.0, "at": "2026-11-14 06:59:32"}
 box_pause last:
-{"from": "2026-11-13 17:34:43", "to": "2026-11-13 18:00:22", "sec": 1538}
 {"from": "2026-11-13 18:08:59", "to": "2026-11-13 18:20:46", "sec": 702}
 {"from": "2026-11-13 18:42:53", "to": "2026-11-13 19:04:25", "sec": 1287}
 {"from": "2026-11-13 19:12:17", "to": "2026-11-13 19:19:55", "sec": 457}
@@ -24,9 +23,11 @@ box_pause last:
 {"from": "2026-11-14 04:05:44", "to": "2026-11-14 04:18:14", "sec": 746}
 {"from": "2026-11-14 04:36:09", "to": "2026-11-14 05:05:07", "sec": 1728}
 {"from": "2026-11-14 05:38:12", "to": "2026-11-14 06:03:35", "sec": 1523}
+{"from": "2026-11-14 06:10:48", "to": "2026-11-14 06:19:50", "sec": 533}
+{"from": "2026-11-14 06:37:48", "to": "2026-11-14 06:57:47", "sec": 1190}
 yield_file=absent
 run_listener.sh=4035476 listener_count=1
-db tips: creep_ticks 84253147 room_stats 84253140 creep_cpu 84253130 path_arrivals 84253128
-live.json updated 2026-11-14 06:05:52 gameTime None roomSlot W47N8 objects 0 cpu {'cpu': 15, 'memory': 24580} stats.t 84253140
+db tips: creep_ticks 84253873 room_stats 84253870 creep_cpu 84253860 path_arrivals 84253858
+live.json updated 2026-11-14 06:59:33 gameTime None roomSlot W47N8 objects 0 cpu {'cpu': 14, 'memory': 24606} stats.t 84253870
 grafana=200 dashboard=200
-NEW since last half-hour (05:33): new box pause 05:38:12-06:03:35 (1523s). listener.py self-restarted 06:03:38 (pid 2437684 since 06:03:47) after errors.log 06:03:35 "box frozen ~1523s since 2026-11-14 05:38:12"; run_listener.sh 4035476 stayed up. No new subscribe-limit after this start (last recorded 23:31:04). Segment 90 / STATS flowing after the 06:03 self-heal (creep_cpu / path_arrivals / room_stats tips near live stats.t; current slot W47N8 weight-5, live.json gameTime/objects empty is expected because live.json only fills those on home W46N8; W47N8 creep_ticks ingest advancing after thaw 84253122..). live.json stats.t and cpu advancing. yield file absent, single peacetime slot. did not touch war_cmd/pulse/listener. Last half-hour (05:33) filled official 84251901..84252600 inserted=3315 missing_chunks=2 (W46N8@84252000, W46N8@84252400 still official 404 on confirm GET 05:32:50-05:33:09 at game.time=84252699; adjacent published chunks 200 100/100). This 40m run should pick up newly published bases after 84252500, re-check any in-window 404s (W46N8@84252000/@84252400 now likely just outside the 40m window), and cover the freeze gap after 05:38-06:03. errors.log 03:30:08 ingest dropped 1 incidents row remains the last ingest error (not repeated after restarts).
+NEW since last half-hour (06:36): new box pause 06:37:48-06:57:47 (1190s). errors.log 06:36:28 "ws error Connection to remote host was lost." then 06:57:47 "box frozen ~1190s since 2026-11-14 06:37:48"; listener.py self-restarted 06:58:00 (pid 2451295) after the freeze; run_listener.sh 4035476 stayed up. No new subscribe-limit after this start (last recorded 23:31:04). After reconnect: STATS/segment 90 flowing (room_stats tip near stats.t, creep_cpu and path_arrivals tips near live). creep_ticks live ingest on current slot W47N8 (weight-5, rot i=1). live.json gameTime/objects still empty shortly after restart (stats.t and cpu advancing; DB room ingest confirms the slot is live). yield file absent, single peacetime slot. did not touch war_cmd/pulse/listener. Last half-hour (06:36) filled official 84252801..84253500 inserted=6761 missing_chunks=1 after confirm+retry2 (W46N8@84253100 still official 404 on confirm GET 06:33:47 at game.time=84253525; W47N8@84253400 and W45N8@84253400 recovered on confirm, W47N7@84253400 recovered on retry2). This 40m run should pick up newly published bases after 84253400, re-check in-window 404 W46N8@84253100, and cover the freeze gap after 06:37-06:57. errors.log 03:30:08 ingest dropped 1 incidents row remains the last ingest error (not repeated after restarts).

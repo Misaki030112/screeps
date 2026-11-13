@@ -1,0 +1,72 @@
+=== W47N7 core / rdef84253072 ===
+rdef samples 180
+ first (84253360, 'W47N7', 39, 24, 5000, 0, datetime.datetime(2026, 11, 14, 6, 21, 38, 857600, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')))
+ last (84253539, 'W47N8', 33, 31, 5000, 0, datetime.datetime(2026, 11, 14, 6, 35, 2, 12089, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')))
+ near core 39,23 n= 89 first (84253360, 'W47N7', 39, 24, 5000, 0, datetime.datetime(2026, 11, 14, 6, 21, 38, 857600, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai'))) last (84253448, 'W47N7', 39, 24, 5000, 0, datetime.datetime(2026, 11, 14, 6, 28, 6, 193671, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')))
+ rooms {'W47N7', 'W47N8'} hits first/last 5000 5000
+=== defenders in window ===
+[('rdef84253072', 84253160, 84253539, 380)]
+ first leave-ish (84253449, 'W47N7', 40, 25)
+ first back W47N8 (84253503, 'W47N8', 18, 48)
+ last rdef (84253539, 'W47N8', 33, 31)
+
+=== reserve7 last seen ===
+[('reserve784253086', 84253090, 84254000, 811, 'W47N7', 39, 27), ('reserve784253437', 84253439, 84254048, 510, 'W47N7', 39, 25)]
+  reserve784253086 last3 [(84254000, 'W47N7', 39, 27, 400, datetime.datetime(2026, 11, 14, 7, 9, 7, 442321, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai'))), (84253999, 'W47N7', 39, 27, 400, datetime.datetime(2026, 11, 14, 7, 9, 3, 25241, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai'))), (84253998, 'W47N7', 39, 27, 400, datetime.datetime(2026, 11, 14, 7, 8, 58, 608161, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')))]
+  reserve784253437 last3 [(84254048, 'W47N7', 39, 25, 400, datetime.datetime(2026, 11, 14, 7, 12, 44, 30118, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai'))), (84254047, 'W47N7', 39, 25, 400, datetime.datetime(2026, 11, 14, 7, 12, 39, 613118, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai'))), (84254046, 'W47N7', 39, 25, 400, datetime.datetime(2026, 11, 14, 7, 12, 35, 196118, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')))]
+
+=== reserver traces ===
+  ('reserver84252567', 84252960, 84253400, 441, 'W45N8', 'W45N8')
+  ('reserver84252787', 84252960, 84253398, 439, 'W45N7', 'W45N7')
+  ('reserver84253651', 84253653, 84254100, 336, 'W46N8', 'W45N8')
+  ('reserver84253968', 84253970, 84254100, 131, 'W46N8', 'W45N7')
+
+=== W45N7 occupancy around 84253900 ===
+ hole window rows (0, 0, 0)
+ occupied ticks in 84253850-84020 n= 78
+ first occupied 84253850 ['rhauler84253231@21,7', 'rhauler84253471@21,6', 'rminer84253491@21,15']
+ last occupied 84254020 ['rhauler84253231@21,14', 'rhauler84253471@21,9', 'rminer84253491@21,15']
+ gap 84253901 84253993 len 93
+W45N7 creeps this hour [('reserver84252787', 84253360, 84253398, 39), ('rhauler84252991', 84253360, 84254000, 207), ('rhauler84253231', 84253360, 84254071, 318), ('rminer84252272', 84253360, 84253801, 442), ('rhauler84252424', 84253410, 84253479, 70), ('rhauler84252751', 84253465, 84254100, 182), ('rhauler84252184', 84253493, 84253545, 53), ('rhauler84253471', 84253587, 84254100, 228), ('rminer84253491', 84253801, 84254022, 126), ('reserver84253968', 84254057, 84254100, 44), ('rhauler84253711', 84254096, 84254100, 5)]
+
+=== W47N8 source A miner (26,11) ===
+w8miners in W47 [('w8miner84251968', 84253360, 84253491, 132, 0, 11, 43), ('w8miner84253252', 84253360, 84254100, 741, 741, 26, 11), ('w8miner84253347', 84253360, 84254100, 741, 0, 11, 43)]
+seated 26,11 samples 741 first (84253360, 'w8miner84253252', 26, 11) last (84254100, 'w8miner84253252', 26, 11)
+ who Counter({'w8miner84253252': 741})
+ seated gaps [] ngaps 0
+
+=== miner84253422 ===
+samples 754 first (84253424, 'W46N8', 35, 28) last (84254189, 'W46N8', 38, 32)
+ top pos [(('W46N8', 38, 32), 651), (('W46N8', 37, 32), 73), (('W46N8', 35, 28), 25), (('W46N8', 35, 29), 1), (('W46N8', 34, 30), 1), (('W46N8', 34, 31), 1), (('W46N8', 35, 32), 1), (('W46N8', 36, 32), 1)]
+ first notable (84253527, 'W46N8', 38, 32)
+
+=== home upgrader handoff ===
+[('upgrader84252643', 84253201, 84254189, 977, 31, 30), ('upgrader84254112', 84254113, 84254189, 77, 30, 30)]
+
+=== later storage after TIP ===
+later home [(84254160, datetime.datetime(2026, 11, 14, 7, 20, 56, 56465, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 14296, 6390866, '2'), (84254170, datetime.datetime(2026, 11, 14, 7, 21, 40, 902429, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 14396, 6391006, '2'), (84254180, datetime.datetime(2026, 11, 14, 7, 22, 24, 517533, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 15196, 6391146, '2')]
+later W47 [(84254160, datetime.datetime(2026, 11, 14, 7, 20, 56, 56516, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 23954, 3191734), (84254170, datetime.datetime(2026, 11, 14, 7, 21, 40, 902478, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 23554, 3191934), (84254180, datetime.datetime(2026, 11, 14, 7, 22, 24, 517616, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 23554, 3192134)]
+
+=== incidents ===
+cols ['ts', 'tick', 'remote', 'inc', 'ev', 'from_state', 'state', 'why', 'inv', 'inv_ttl', 'def', 'dur', 'data']
+n 1
+  (datetime.datetime(2026, 11, 14, 6, 28, 5, 419941, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84253448, 'W47N7', 84253071, 'cleared', 'DEFEND', 'SAFE', 'killed', 0, 0, 'out', 377, {'ev': 'cleared', 'def': 'out', 'dur': 377, 'inc': 84253071, 'inv': 0, 'why': 'killed', 'from': 'DEFEND', 'tick': 84253448, 'state': 'SAFE', 'invTtl': 0, 'remote': 'W47N7', 'delivered': 0})
+
+=== W47N7 miners on station ===
+[('w8rminer84252011', 84253360, 84253540, 181, 18, 17), ('w8rminer84252833', 84253360, 84254100, 641, 31, 34), ('w8rminer84253350', 84253424, 84254100, 460, 18, 17)]
+
+=== CPU bucket min details ===
+under 10000 [(84253450, datetime.datetime(2026, 11, 14, 6, 28, 14, 363102, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 17.46, 9996), (84253400, datetime.datetime(2026, 11, 14, 6, 24, 33, 723628, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 17.51, 9997)]
+=== where were W45N7 creeps during 84253901-84253993 ===
+rhauler84253231 [('W45N8', 84253901, 84253981, 45, 45), ('W46N8', 84253908, 84253943, 36, 36)]
+  samples [(84253901, 'W45N8', 4, 27), (84253920, 'W46N8', 39, 21), (84253950, 'W45N8', 7, 28)]
+rhauler84253471 [('W45N8', 84253901, 84253993, 62, 62), ('W46N8', 84253940, 84253970, 31, 31)]
+  samples [(84253901, 'W45N8', 25, 39), (84253920, 'W45N8', 15, 39), (84253950, 'W46N8', 41, 22), (84253993, 'W45N8', 17, 40)]
+rminer84253491 [('W45N8', 84253901, 84253993, 93, 93)]
+  samples [(84253901, 'W45N8', 15, 39), (84253920, 'W45N8', 15, 39), (84253950, 'W45N8', 15, 39), (84253993, 'W45N8', 15, 39)]
+rhauler84252991 [('W45N8', 84253902, 84253942, 41, 41), ('W46N8', 84253901, 84253901, 1, 1)]
+  samples [(84253901, 'W46N8', 49, 21), (84253920, 'W45N8', 14, 38)]
+rhauler84252751 [('W45N8', 84253901, 84253993, 63, 63)]
+  samples [(84253901, 'W45N8', 15, 39), (84253920, 'W45N8', 22, 48), (84253993, 'W45N8', 7, 30)]
+distinct ticks with those 3 names anywhere (93,)
+=== listener pid / yield / war ===
