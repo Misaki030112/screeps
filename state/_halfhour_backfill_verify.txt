@@ -1,10 +1,16 @@
-time 2026-11-13 12:05:20
-gameTime 84238451 stats.t 84238450 roomSlot W46N8 updated 2026-11-13 12:05:19
-rot {'i': 0, 'room': 'W46N8', 'left': 89.0, 'at': '2026-11-13 12:05:16'}
-objects 259
-unique_creep_tick_after 29526
-per_room W46N8:700t/7763rows W47N8:700t/12915rows W45N8:700t/3397rows W45N7:700t/2412rows W47N7:700t/3039rows
-W47N7@84238300 retry: first pass official 404; confirm GET at game.time=84238442 HTTP 200 ticks=100; retry --rooms W47N7 inserted printed=635, db_after distinct=700 rows=3039
-max path_arrivals=84238428 room_stats=84238450 creep_cpu=84238430 creep_ticks=84238451
-live_tails W46N8 84238401..84238451 distinct=51
-missing_chunks after retry=0
+time 2026-11-13 13:03:53
+gameTime 84239236 stats.t 84239240 roomSlot W47N8 updated 2026-11-13 13:03:50
+rot {'i': 1, 'room': 'W47N8', 'left': 560.0, 'at': '2026-11-13 13:03:48'}
+objects 0
+unique_creep_tick_after 29035
+per_room W45N7:600t/2405rows W45N8:627t/2964rows W46N8:700t/6683rows W47N7:700t/3712rows W47N8:700t/13271rows
+chunk_84238500 all five rooms 100/100 already in DB (12:19 patrol)
+chunk_84238600 all five rooms 100/100 already in DB (12:32 half-hour)
+chunk_84238700..84238800 all five rooms 100/100 this run first pass
+chunk_84238900 W45N7 official 404 (confirm GET still 404); other four 100/100
+chunk_84239000 W45N8 official 404 (confirm GET still 404); other four 100/100 (W45N8 live 27/100 84239046..84239072 remain)
+chunk_84239100 W47N7 first-pass 404 then retry HTTP 200 100/100 inserted=476; all five rooms 100/100
+max path_arrivals=84239222 room_stats=84239240 creep_cpu=84239230 creep_ticks=84239246
+live_tails W46N8 84239201..84239236 distinct=36; W47N8 84239237..84239246 distinct=10
+missing_chunks after retry=2 (W45N7@84238900, W45N8@84239000), both confirm GET 404
+note After 13:03:48 W46N8→W47N8 rotation, live.json briefly showed objects=0 and gameTime frozen at last W46N8 tick; creep_ticks on W47N8 kept advancing (not a listener failure). No new box pause. Status written to state/history_backfill.json.
