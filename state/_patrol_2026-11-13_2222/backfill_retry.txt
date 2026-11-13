@@ -1,0 +1,33 @@
+confirm GET start 2026-11-13 22:24:48 Asia/Hong_Kong game.time=84246880 tick_s=4.369
+  pre  W45N7@84246300 distinct=0 range=None..None
+retry W45N7@84246300 still 404
+  post W45N7@84246300 distinct=0/100 range=None..None
+  pre  W47N7@84246300 distinct=0 range=None..None
+retry W47N7@84246300 still 404
+  post W47N7@84246300 distinct=0/100 range=None..None
+  pre  W46N8@84246500 distinct=0 range=None..None
+retry W46N8@84246500 still 404
+  post W46N8@84246500 distinct=0/100 range=None..None
+  pre  W47N7@84246700 distinct=0 range=None..None
+retry W47N7@84246700 still 404
+  post W47N7@84246700 distinct=0/100 range=None..None
+  pre  W47N8@84243700 distinct=0 range=None..None
+retry W47N8@84243700 still 404
+  post W47N8@84243700 distinct=0/100 range=None..None
+  pre  W47N8@84243100 distinct=0 range=None..None
+retry W47N8@84243100 still 404
+  post W47N8@84243100 distinct=0/100 range=None..None
+  pre  W45N8@84242900 distinct=0 range=None..None
+retry W45N8@84242900 still 404
+  post W45N8@84242900 distinct=0/100 range=None..None
+recovered=[]
+still_404=[('W45N7', 84246300, 0, None, None), ('W47N7', 84246300, 0, None, None), ('W46N8', 84246500, 0, None, None), ('W47N7', 84246700, 0, None, None), ('W47N8', 84243700, 0, None, None), ('W47N8', 84243100, 0, None, None), ('W45N8', 84242900, 0, None, None)]
+pending=[('W45N7', 84246300), ('W47N7', 84246300), ('W46N8', 84246500), ('W47N7', 84246700)]
+inserted_retry=0 ts_realigned_retry=0
+db_after_retry
+  W46N8 ticks=84246101..84246800 rows=5800 distinct=600
+  W47N8 ticks=84246101..84246800 rows=10315 distinct=700
+  W45N8 ticks=84246101..84246800 rows=4385 distinct=700
+  W45N7 ticks=84246101..84246800 rows=1552 distinct=600
+  W47N7 ticks=84246101..84246700 rows=2040 distinct=500
+finished
