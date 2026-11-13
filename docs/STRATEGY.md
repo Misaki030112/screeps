@@ -33,7 +33,17 @@ Last full refresh: **2026-11-09 17:1x** (autonomous push — docs/canvas scorebo
 - One-line verdict: `waiting on ticks` | `small safe ship` | `phase exit` — capability to stock a kiter ≠ order to fight.
 
 
-## Current state (2026-11-13 ~08:2x Asia/Hong_Kong · 12h review)
+## Current state (2026-11-13 ~20:1x Asia/Hong_Kong · 12h review)
+
+| Room | Notes |
+|------|-------|
+| W46N8 (home) | **RCL7** 57.35% (6.271M/10.935M); +132k/12h ≈ 13.49 e/t → RCL8 ≈ **17.6 days** at this pace; stor avg 14.4k max 18333 min 7518, **56.6% under 15k** (was 50.7%); live tip 13082 why=floor_bank nUp=1 upExtra=0; 2 lab sites still up (33,22 9.3k/50k, 34,20 4.3k/50k; factory done, labsN=4); labs OFF (actOk=0 homeStor); LIVE **4ff78b4** (@84239560 / 13:26 HKT) |
+| W47N8 | **RCL7** 28.81% (3.151M); +0/12h ≈ 0.00 e/t (was 0.00); progress flat 3150854 since 17:24; stor avg 3.3k max 8800 min 0 (100% <15k, 0% ≥20/25/40k); live stor 5920 keep=1 (f7328c4, siteRem 123709 was 259481; lab 29,38 completed, live labs 3, factory done) phase=minBuild leanBank1 bankWhy=minBuild softCap2 ON threatSoft=0; builders=4 |
+
+**20:1x scorecard:** Phase0 home floor **still thin** (56.6% of 12h under 15k, was 50.7%; min 7.5k at the open is the morning-dip tail, then mid-teens hugging the floor; 20k gate never latched — zero ≥20k samples, max 18333). W47 **authorized site wave more than halfway done**: 0 upgrade all 12h, stor 0–8.8k, softCap2 still on, 40k latch **waiting**; labs OFF ✔. `f7328c4` keep=1 while sites are up is held — do not revert (W47 rem 259k→124k, ~8–9 h at ~17 e/t; home two labs rem ~86k). Phase1 blocked. Phase2 home still the lead (~17.6 d at this depressed pace, should tighten once home lab spend ends and nUp=2 can stick; most hours were a steady 14 e/t). W47 frozen this window (pre-site pace was ~18 e/t / ~22 d). Phase3+ deferred — shells may finish, reactions stay off (energy 6–13k ≪ 100k). Verdict: `waiting on ticks` (finish authorized sites, recover both banks, keep the 20k gate; no new game code).
+
+### Previous (2026-11-13 ~08:2x Asia/Hong_Kong · 12h review)
+
 
 | Room | Notes |
 |------|-------|

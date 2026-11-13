@@ -3,6 +3,10 @@
 Live refresh **17:4x UTC+8 2026-11-01** tick ~84003240。**不自动交易、不开 safe mode。**
 Misaki **已点头翻 `RCL6_MINERALS`**（b758f38）；labs/industry/market/W47N9 仍 OFF。W47 **terminal+minCont+trunk DONE**；w8mminer ON；homeTermK≥4k → `labReady.propose=1` 等她设 `ops.labs={W46N8:'KO'}`。§5.20 leanBank re-arm 已让 W47 回到 ~18–20k hold；§5.21 = thin-K + `ops.labs=KO` 激活顺序（仍等她点头）。**02:4x §5.22** = soft-cap 下 link-era HMAX 2→3（溢出搬运阀；不翻 labs）。**08:4x §5.23** 停车带到 25k；**11:4x §5.24** threat soft（`TH.localOn`）在 stor≥25k 时仍把 w8upgrader 压在 ≤2（可逆；不翻 labs）。
 
+## 2026-11-13 20:1x — still defer labs / boost (shells more than halfway done; reactions stay off)
+
+12h review: labs stay OFF (mode=null, actOk=0 actGaps=homeStor). Authorized lab/factory **structure sites** progressed well (home factory done, labsN=4, two labs still up at 9.3k/4.3k of 50k, rem ~86k; W47 siteRem 259481→123709, lab 29,38 completed, live labs 3, factory done, three labs + minCont remain) — finish those shells, do not enable reactions, do not add rampart covers this wave. Energy cushion is still thin (home ~13.1k floor_bank / W47 stor 5.9k) ≪ Overmind energyBuffer 100k. termO 126976 termK 151080 still fat but energy is not. `labReady` propose=1 — **no re-ask**. Gates RCL6_LABS / RCL7_INDUSTRY / market stay OFF until the 40k path holds and the energy cushion is fat. Detail: `docs/RCL7.md` 20:1x.
+
 ## 2026-11-13 08:2x — still defer labs / boost (shells may finish; reactions stay off)
 
 12h review: labs stay OFF (mode=null, actOk=0 actGaps=homeStor). Authorized lab/factory **structure sites** are still up (home factory 97.3k/100k nearly done + 3 labs at 0–750; W47 siteRem 259481, factory 66.8k/100k, lead lab 27,39 at 21k/50k) — finish those shells, do not enable reactions, do not add rampart covers this wave. Energy cushion is thinner than last evening (home ~7.7k floor_bank / W47 stor 3.5k) ≪ Overmind energyBuffer 100k. termO 126976 termK 147220 still fat but energy is not. `labReady` propose=1 — **no re-ask**. Gates RCL6_LABS / RCL7_INDUSTRY / market stay OFF until the 40k path holds and the energy cushion is fat. Detail: `docs/RCL7.md` 08:2x.
