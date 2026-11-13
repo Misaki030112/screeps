@@ -1,11 +1,11 @@
-2026-11-13 18:04 Asia/Hong_Kong half-hour backfill OK
-game.time=84243298 published_bases=84242500..84243100 ticks=84242501..84243200 (700)
-tick_s=4.335 missing_chunks=2 (33/35 official chunks HTTP 200 100/100; W45N8@84242900 and W47N8@84243100 official 404, retried twice still 404)
-creep_rows=26521 already_in_db=12708 inserted=13813 ts_realigned=3582
-unique after=25421; W46N8/W47N7 700/700; W45N7 640/700 (history present, no owned-creep rows 84242630..84242689 / 60t, same empty already noted at 17:29); W45N8 600/700 (official 404 W45N8@84242900, ticks 84242901..84243000 empty); W47N8 600/700 (official 404 W47N8@84243100, ticks 84243101..84243200 empty)
-per_room new: W46N8 4751, W47N8 3662, W45N8 1617, W45N7 1525, W47N7 2258
-17:29 half-hour had already filled 84242101..84242800 (W45N7 626/700 because of 74 empty owned-creep ticks, 14 of them now outside this window); this run's new official data is 84242801..84243200 (W46N8/W45N7/W47N7 400/400; W45N8 300/400; W47N8 300/400)
-live tail after official: W46N8 84243289..84243338+ (current slot after 18:00:25 reconnect, growing); 84243201..84243288 unpublished current chunk during the 17:34-18:00 pause, not live and not official yet; W47N8/W45N8/W45N7/W47N7 none after 84243200
-listener pid 2259280 since 18:00:35, rot i=0 W46N8; run_listener.sh self-restart 18:00:25 after box pause 17:34:43-18:00:22 (1538s); no subscribe-limit since 16:22 (none after this 18:00 restart); no restart by this run
-live.json gameTime flowing with objects on W46N8; stats.t flowing; segment 90 flowing
-new room_stats gap 84242930->84243290 (span 360) overlaps the 17:34:43-18:00:22 box pause, not recoverable; 84241930->84241960 remains outside this official window's new range
+2026-11-13 19:08 Asia/Hong_Kong half-hour backfill OK
+game.time=84244164 published_bases=84243400..84244000 ticks=84243401..84244100 (700)
+tick_s=4.418 missing_chunks=1 (34/35 official chunks HTTP 200 100/100; W47N8@84243700 official 404, retried twice still 404)
+creep_rows=25627 already_in_db=12654 inserted=12973 ts_realigned=0
+unique after=26344; W46N8/W45N8/W45N7/W47N7 700/700; W47N8 600/700 (official 404 W47N8@84243700, ticks 84243701..84243800 empty)
+per_room new: W46N8 2822, W47N8 5473, W45N8 1498, W45N7 1383, W47N7 1797
+18:39 half-hour had filled 84243001..84243700; 18:26 hourly patrol had filled 84242801..84243500 (W45N8@84242900 and W47N8@84243100 still official 404). This run's new official data is 84243701..84244100 (W47N8@84243700 official 404, so W47N8 new is 84243801..84244100). W45N8@84242900 and W47N8@84243100 remain outside/empty (confirm GET 19:07:25 and 19:08:00 still 404; 84242901..84243000 and 84243101..84243200 still 0 ticks).
+live tail after official: W46N8 84244158..84244195+ (current slot after 19:04:28 reconnect, growing); 84244101..84244157 unpublished current chunk, empty on W46N8 (box frozen 18:42:53-19:04:25; listener resumed ~84244158). W47N8/W45N8/W45N7/W47N7 none after 84244100.
+listener pid 2275193 since 19:04:37, rot i=0 W46N8; run_listener.sh self-restart 19:04:28 after box pause 18:42:53-19:04:25 (1287s). no subscribe-limit since 16:22 (none after 18:00, 18:20, 18:35, or 19:04 restarts); no restart by this run
+live.json gameTime 84244196 flowing with objects on W46N8; stats.t 84244190 flowing; segment 90 flowing (creep_cpu/path_arrivals 84244180)
+room_stats gaps: 84243400->84243570 (span 170) overlaps 18:08:59-18:20:46 box pause, already noted; 84243730->84243770 (span 40) overlaps the 18:35:21 ping/pong reconnect, already noted; new 84243860->84244160 (span 300) overlaps 18:42:53-19:04:25 box pause. Official history cannot recover room_stats.
