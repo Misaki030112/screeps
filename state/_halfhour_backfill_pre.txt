@@ -1,29 +1,4 @@
-time 2026-11-13 13:59:54
-gameTime 84240004 stats.t 84240000 roomSlot W46N8 updated 2026-11-13 13:59:26 objects populated cpu {'cpu': 14, 'memory': 25109}
-rot {'i': 0, 'room': 'W46N8', 'left': 585.0, 'at': '2026-11-13 13:59:25'}
-listener.py 2184882 Fri Nov 13 13:58:26 2026 .venv/bin/python tools/listener.py
-loop 4035476; yield absent; NEW box pause 13:40:23..13:58:14 1067s then run_listener.sh restart 13:58:17, listener.py started 13:58:26 (pid 2184882). Self-healed; did not restart listener, war_cmd, or pulse. No subscribe-limit in errors.log after this reconnect (last subscribe-limit was W46N8 at 10:13:58). Peacetime 5:5:1:1 currently W46N8 rot i=0 left ~585s (just rotated off W45N7). Live tables advancing after reconnect (creep_ticks tip 84240004 on W46N8, room_stats 84240000, creep_cpu 84239990, path_arrivals 84239988). Segment 90 already flowing. services.sh: ok postgres, views_apache, grafana, listener, dashboard (start-if-down, no restarts). pg_backup no-op (newest dump still 2026-11-13 12:28, under 6h).
-======= max tables =======
-path_arrivals 84239988
-room_stats 84240000
-creep_cpu 84239990
-creep_ticks 84240004
-======= creep_ticks coverage tick>=84239500 (pre-backfill) =======
-W45N7 84239500..84240000 rows=103 distinct=26
-W45N8 84239500..84239726 rows=90 distinct=28
-W46N8 84239500..84240004 rows=676 distinct=68
-W47N7 84239500..84239500 rows=4 distinct=1
-W47N8 84239500..84239699 rows=2415 distinct=137
-======= live tails vs pause hole (pre-backfill) =======
-Official 84239400 already complete for all five rooms (from 13:30 half-hour / 13:23 patrol).
-Live after that, from 5:5:1:1 rotation until the 13:40 pause:
-  W46N8 84239501..84239563 (left over from 13:30 run)
-  W47N8 84239564..84239699
-  W45N8 84239700..84239726
-  W45N7 84239727..84239742
-  W47N7 none after 84239500
-room_stats last pre-pause tick 84239740, then gap to 84240000 (span 260). Official history cannot recover room_stats.
-After reconnect, live resumed ~84239992 (W45N7 84239992..84240000, then W46N8 84240001..tip).
-Main creep_ticks hole to fill from official history: ~84239743..84239991 (pause) plus unwatched rooms in 84239501..84239742.
-======= prior official 404s (now likely outside this 40-min window) =======
-W45N7@84238900, W45N8@84239000, W45N8@84239200 (confirmed across 13:05, 13:23, 13:30 runs)
+2026-11-13 15:02:02 CST
+listener.py pid=2198295 started=15:01:23 rot={"i": 0, "room": "W46N8", "left": 513.5, "at": "2026-11-13 15:02:00"}
+live.json gameTime=84240853 room W46N8 objs 262 upd 2026-11-13 15:01:59
+box_pause last: 2026-11-13 14:37:43 -> 15:01:10 (1402s)

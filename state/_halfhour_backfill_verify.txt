@@ -1,9 +1,11 @@
-2026-11-13 14:02 Asia/Hong_Kong: 30-min trajectory backfill OK (quiet).
-Official history shard3 5 rooms ticks 84239301..84240000 (700, published 84239300..84239900 at game.time=84240010), unique after=29218, inserted=17293 (first pass 16728 + W47N7@84239900 retry 565), already_in_db=10846, ts_realigned=0 (tick_s=4.389).
-First pass missing_chunks=1; W47N7@84239900 late-published and filled on retry (HTTP 200 100/100). No official 404s remain in-window; all five rooms 700/700 distinct, 0 gaps.
-Previous in-window official 404s are now outside this window (not re-GET): W45N7@84238900, W45N8@84239000, W45N8@84239200.
-New box pause 13:40:23..13:58:14 (1067s). Listener self-healed (run_listener.sh restart 13:58:17, listener.py pid 2184882 started 13:58:26). Did not restart listener/war_cmd/pulse. No subscribe-limit after reconnect. Peacetime single slot 5:5:1:1, now W46N8 rot i=0 left ~420s. Segment 90 flowing.
-Official history filled the live hole ~84239743..84239991 plus unwatched rooms after 13:30. room_stats hole 84239740->84240000 (span 260) remains (cannot be recovered from official history).
-Live tail after official: W46N8 84240001..84240041 distinct=41.
-services.sh: ok postgres, views_apache, grafana, listener, dashboard; pg_backup no-op (newest dump still 2026-11-13 12:28, under 6h).
-Wrote state/history_backfill.json (prev saved as history_backfill.prev.json), state/_halfhour_backfill_now.txt, state/_halfhour_backfill_pre.txt, state/_halfhour_backfill_retry_w47n7.txt.
+2026-11-13 15:03 Asia/Hong_Kong half-hour backfill OK
+game.time=84240854 published_bases=84240100..84240700 ticks=84240101..84240800 (700)
+tick_s=4.497 missing_chunks=0 (35/35 HTTP 200 100/100)
+creep_rows=26070 already_in_db=12361 inserted=13709 ts_realigned=9883
+unique after=26568; all five rooms 700/700 distinct
+per_room new: W46N8 4014, W47N8 5052, W45N8 1655, W45N7 1238, W47N7 1750
+14:33 half-hour had already filled 84239701..84240400; this run's new official data is 84240401..84240800 (covers the 14:37:43-15:01:10 box-pause hole ~84240521..84240836, official through 84240800)
+live tail after official: W46N8 84240846..84240879; unpublished+reconnect hole 84240801..84240845 (all rooms; next overlap should fill when chunk 84240800 publishes)
+listener pid 2198295 since 15:01:23, rot i=0 W46N8 left~403s; no restart this run, no subscribe-limit
+live.json healthy (gameTime 84240879 objects=262); segment 90 flowing (creep_cpu/path_arrivals/room_stats tip 84240870)
+room_stats new gap 84240520->84240850 (330) from the 14:37-15:01 pause remains (not recoverable); prior 84240080->84240280 (200) remains
