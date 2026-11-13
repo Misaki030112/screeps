@@ -39,6 +39,7 @@ execSync('node ' + path.join(__dirname, '..', 'tests', 'w47n8_dayobs.js'), { std
 execSync('node ' + path.join(__dirname, '..', 'tests', 'w47n8_repair_prio.js'), { stdio: 'pipe' });
 execSync('node ' + path.join(__dirname, '..', 'tests', 'upgfeed.js'), { stdio: 'pipe' });
 execSync('node ' + path.join(__dirname, '..', 'tests', 'w47n8_roads_connected.js'), { stdio: 'pipe' });
+execSync('node ' + path.join(__dirname, '..', 'tests', 'w47n8_road_maintain.js'), { stdio: 'pipe' });
 execSync('node ' + path.join(__dirname, '..', 'tests', 'queen_standby.js'), { stdio: 'pipe' });
 execSync('node ' + path.join(__dirname, '..', 'tests', 'queen_stamp_b_reach.js'), { stdio: 'pipe' });
 execSync('node ' + path.join(__dirname, '..', 'tests', 'hauler_fill_sticky.js'), { stdio: 'pipe' });

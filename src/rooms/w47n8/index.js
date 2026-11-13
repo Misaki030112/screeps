@@ -979,6 +979,30 @@ function dayObs(room) {
     gaps: gaps.join(','), why: gaps.length ? gaps[0] : 'ready',
     flipReady, flipGaps: flipGaps.join(','), homeStor, minBuild: minBuild ? 1 : 0 };
 }
+// Home roads.maintain uses the same batch (managers/roads.js BATCH) on a 100t cadence.
+const ROAD_BATCH = 15;
+function roadExit(x, y) { return x === 0 || y === 0 || x === 49 || y === 49; }
+// Kept network (roads.js ROADS + mineral trunk when the mineral gate is on + w8link). Exit tiles
+// cannot take a site (live 18,49 → ERR_INVALID_TARGET). A container or rampart may share the tile;
+// an existing construction site is left in place (do not remove it to pave).
+function maintainRoads(room, tiles, dayCrit) {
+  if (dayCrit || !tiles || !tiles.length || Game.time % 100) return;
+  // Tower site still owns the queue (RCL5 tower-first). Day-crit spawn/tower is the dayCrit guard above.
+  if (room.find(FIND_MY_CONSTRUCTION_SITES, { filter: s => s.structureType === STRUCTURE_TOWER }).length) return;
+  let n = room.find(FIND_MY_CONSTRUCTION_SITES, { filter: s => s.structureType === STRUCTURE_ROAD }).length;
+  if (n >= ROAD_BATCH) return;
+  const seen = new Set();
+  for (const [x, y] of tiles) {
+    if (n >= ROAD_BATCH) return;
+    const k = x * 50 + y; if (seen.has(k)) continue; seen.add(k);
+    if (roadExit(x, y)) continue;
+    const st = room.lookForAt(LOOK_STRUCTURES, x, y);
+    if (st.some(s => s.structureType === STRUCTURE_ROAD)) continue;
+    if (room.lookForAt(LOOK_CONSTRUCTION_SITES, x, y).length) continue;
+    if (st.some(s => s.structureType !== STRUCTURE_CONTAINER && s.structureType !== STRUCTURE_RAMPART)) continue;
+    if (room.createConstructionSite(x, y, STRUCTURE_ROAD) === OK) n++;
+  }
+}
 function layoutRun(room) {
   mineralSend(room); // every tick; dormant while RCL6_MINERALS false
   if (Game.time % 20) return;
@@ -1005,8 +1029,11 @@ function layoutRun(room) {
   if (dayCrit) {
     for (const s of room.find(FIND_MY_CONSTRUCTION_SITES, { filter: s => s.structureType === STRUCTURE_EXTENSION })) s.remove();
   }
-  let sites = room.find(FIND_MY_CONSTRUCTION_SITES, { filter: s => s.structureType !== STRUCTURE_RAMPART }).length;
-  if (sites >= 6 && !dayCrit) return;
+  // Road sites are outside this budget. Counting them here let a decay re-site fill the 6 slots and
+  // block the next spawn/tower/extension pass (10-31 tower re-queue). Labs still count: 6 of them used
+  // to return before any road was placed (11-13 t84238893, 36 missing tiles).
+  let structSites = room.find(FIND_MY_CONSTRUCTION_SITES, { filter: s => s.structureType !== STRUCTURE_RAMPART && s.structureType !== STRUCTURE_ROAD }).length;
+  let roadSites = room.find(FIND_MY_CONSTRUCTION_SITES, { filter: s => s.structureType === STRUCTURE_ROAD }).length;
   // 03:05 west<->hub link road (missing from v3b plan): loaded 10C5M rhaulers sat 7-10 ticks on unroaded swamp 22,34 (fatigue 70)
   // between road 15,33 and strip road 24,35; queued ahead of the plan roads since every hub trip crosses it
   // 09:13 road audit: only the target network (roads.js: v3b spines + shared trunks + busy live roads) is placed
@@ -1021,6 +1048,10 @@ function layoutRun(room) {
   // MINERAL tiles live in roads.MINERAL, not ROADS (w47n8_roads_v4 keeps them separate). Concat when minOk so trunk actually places.
   const baseRoads = R8.ROADS.filter(([x, y]) => !R8.MINERAL.some(([a, b]) => a === x && b === y));
   const roads = (rcl >= 6 && minOk ? baseRoads.concat(R8.MINERAL) : baseRoads).concat(require('../../layouts/w8link').W47N8);
+  // 11-13: re-site decayed planned roads even when labs/factory/containers already hold the 6-site budget.
+  // Cadence matches home maintain (every 100t, which is also a layout tick). Not while day-crit spawn/tower is open.
+  const pave = () => { if (ok && rcl >= 3) maintainRoads(room, roads, dayCrit); };
+  if (structSites >= 6 && !dayCrit) { pave(); return; }
   const O = ok ? Object.assign({}, L.ORDER, { container: cont, link: [C.CTL_LINK, C.SOURCES[0].link].concat(C.HUB_LINK ? L.ORDER.link : []), road: roads },
     minOk ? {} : { terminal: [], extractor: [] },
     labsOk ? {} : { lab: [] },
@@ -1037,14 +1068,16 @@ function layoutRun(room) {
     if (t === 'road' && rcl < 3) continue;
     if (t === 'road' && dayCrit) continue; // day-of: keep site budget for spawn/tower only
     for (const [x, y] of (O[t] || [])) {
-      if (sites >= 6 && !(dayCrit && (t === 'spawn' || t === 'tower'))) return;
-      if (t === 'road' && sites > 2) return; // roads only when little else is queued
+      if (t !== 'road' && structSites >= 6 && !(dayCrit && (t === 'spawn' || t === 'tower'))) { pave(); return; }
+      if (t === 'road' && (structSites + roadSites) > 2) { pave(); return; } // trickle only while the queue is quiet; maintainRoads covers the rest
+      if (t === 'road' && roadExit(x, y)) continue; // 18,49 and any other exit: createConstructionSite → ERR_INVALID_TARGET
       if (room.lookForAt(LOOK_STRUCTURES, x, y).some(s => s.structureType === t)) continue;
       if (room.lookForAt(LOOK_CONSTRUCTION_SITES, x, y).length) continue;
       const r = room.createConstructionSite(x, y, t);
-      if (r === OK) { sites++; if (t === 'tower') towerSite = true; } else if (r === ERR_RCL_NOT_ENOUGH) break; // next type
+      if (r === OK) { if (t === 'road') roadSites++; else structSites++; if (t === 'tower') towerSite = true; } else if (r === ERR_RCL_NOT_ENOUGH) break; // next type
     }
   }
+  pave();
 }
 // Drain-aware tower (Misaki 14:09 / 17:3x doctrine, docs/DEFENSE_W47N8.md): BustJetter TOUGH/MOVE tanks + healers sit at W47N8 y0-2,
 // north of the seal walls, to burn tower energy. Target choice is ./defense towerPick: claimers anywhere, anything inside the seal
