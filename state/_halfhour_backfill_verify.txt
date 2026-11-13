@@ -1,11 +1,11 @@
-2026-11-13 16:01 Asia/Hong_Kong half-hour backfill OK
-game.time=84241649 published_bases=84240900..84241500 ticks=84240901..84241600 (700)
-tick_s=4.393 missing_chunks=0 (35/35 official chunks HTTP 200 100/100)
-creep_rows=27355 already_in_db=12741 inserted=14614 ts_realigned=0
-unique after=25704; W46N8/W47N8/W45N8/W45N7 700/700, W47N7 619/700 (no creeps 84240940..84241020)
-per_room new: W46N8 2822, W47N8 4524, W45N8 2923, W45N7 1461, W47N7 2884
-15:35 half-hour had already filled 84240501..84241200 except W45N8@84240800 (now just outside this window); this run's new official data is 84241201..84241600 (400/400 all five rooms), covering the 15:40:28-15:59:25 box-pause live hole
-live tail after official: W46N8 84241640..84241670 (current, growing); W47N8/W45N8/W45N7/W47N7 none after 84241600 (84241601..84241639 unpublished current chunk, missed during reconnect)
-listener pid 2213850 since 15:59:38, rot i=0 W46N8 left~69.3s; no restart this run (self-healed after box pause), no subscribe-limit
-live.json healthy (gameTime 84241670 objects=259); segment 90 flowing (creep_cpu tip 84241660, path_arrivals tip 84241657, room_stats tip 84241670)
-new box pause 15:40:28-15:59:25 (1132s); room_stats gaps 84240960->84241030 (70), 84241060->84241140 (80) remain, new 84241370->84241640 (270) from this pause (not recoverable)
+2026-11-13 17:29 Asia/Hong_Kong half-hour backfill OK
+game.time=84242855 published_bases=84242100..84242700 ticks=84242101..84242800 (700)
+tick_s=4.336 missing_chunks=0 (35/35 official chunks HTTP 200 100/100)
+creep_rows=26685 already_in_db=23756 inserted=2929 ts_realigned=7077
+unique after=26389; W46N8/W47N8/W45N8/W47N7 700/700; W45N7 626/700 (history present, no owned-creep rows 84242484..84242497 / 14t and 84242630..84242689 / 60t)
+per_room new: W46N8 1252, W47N8 300, W45N8 477, W45N7 406, W47N7 494
+17:02 half-hour had already filled 84241701..84242400 all five 700/700; this run's new official data is 84242401..84242800 (W46N8/W47N8/W45N8/W47N7 400/400; W45N7 326/400 because of the 74 empty owned-creep ticks above)
+live tail after official: W47N8 84242801..84242854 (slot left at ~17:28:52); W45N8 84242855+ (current, growing); W46N8/W45N7/W47N7 none after 84242800 (84242801+ unpublished current chunk, only filled while the slot is on that room)
+listener pid 2223928 since 16:22:42, rot i=2 W45N8; no restart this run, no subscribe-limit since 16:22
+live.json gameTime 84242719 objects=0 is expected (slot on W45N8; home map only); stats.t flowing; segment 90 flowing
+no new room_stats gaps in 84242101..84242800 (10-tick cadence only); 84241750->84241800 and 84241930->84241960 remain outside this window, not recoverable
