@@ -1,9 +1,9 @@
-room	t0	t1	rows	dest
-W45N7	84244301	84244907	1627	606
-W45N8	84244301	84245000	3372	700
-W46N8	84244301	84245000	7415	700
-W47N7	84244301	84245000	2962	700
-W47N8	84244301	84245000	10955	700
-unique_rows=26331 (creep,tick,room) over 84244301..84245000
-this_window missing_chunks=0 after retry; first pass 32/35 official chunks HTTP 200 100/100 (W47N8/W45N8/W47N7@84244900 404); confirm GET 1 at 20:08:58 those three were HTTP 200 100/100 and targeted insert added 2472 rows (W47N8 1551, W45N8 468, W47N7 453). W46N8/W47N8/W45N8/W47N7 700/700. W45N7 official 700/700 ticks reconstructed but distinct=606 because official history has no owned creeps at 84244906 and 84244908..84245000 (owned only 84244901-84244905 and 84244907).
-lingering outside window: W47N8 ticks 84243701..84243800 still 0 rows (official 404 retried 20:08:58 and 20:09:46 still 404; also 404 at 19:33/19:34 and during 19:24 patrol). Older official 404s W47N8@84243100 and W45N8@84242900 also still 404, no insert.
+2026-11-13 21:01 Asia/Hong_Kong
+window 84245001..84245700 unique creep-tick rows=25688 (rows=25688) distinct ticks=700
+per_room after retry:
+  W45N7 ticks=84245098..84245700 rows=1718 distinct=553 (official empty 84245001..84245097 n=97 and 84245118..84245167 n=50)
+  W45N8 ticks=84245001..84245700 rows=3778 distinct=700
+  W46N8 ticks=84245001..84245700 rows=6641 distinct=700
+  W47N7 ticks=84245001..84245700 rows=3078 distinct=700
+  W47N8 ticks=84245001..84245700 rows=10473 distinct=700
+W47N7@84245600 retry OK; lingering official 404s outside window still 404.
