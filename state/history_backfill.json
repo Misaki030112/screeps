@@ -1,8 +1,8 @@
 {
   "ok": true,
   "routine": "Screeps 半小时轨迹补数",
-  "finished_at": "2026-11-13T10:13:29.193114+08:00",
-  "finished_at_hkt": "2026-11-13 10:13 Asia/Hong_Kong",
+  "finished_at": "2026-11-13T11:07:22.718454+08:00",
+  "finished_at_hkt": "2026-11-13 11:07 Asia/Hong_Kong",
   "shard": "shard3",
   "rooms": [
     "W46N8",
@@ -12,427 +12,196 @@
     "W47N7"
   ],
   "minutes": 40,
-  "game_time": 84236854,
-  "game_time_retry": 84236886,
-  "live_game_time_at_finish": 84236920,
-  "live_json_gameTime_at_finish": null,
-  "live_json_stats_t_at_finish": 84236920,
-  "live_json_gameTime_note": "After the 10:06:14 reconnect, top-level live.json gameTime stayed None and objects stayed empty through W47N8 (subscribe-limit x1 at 10:06:20) and the following W45N8/W45N7 rotations (limit x1 each). stats.t, room_stats, creep_cpu and path_arrivals kept advancing with the live tip. Sparse creep_ticks still arrived on W45N8 (12 ticks 84236879..84236903) and W45N7 (starting 84236905) despite the limit messages. Same post-reconnect subscribe-limit-during-rotation pattern as 07:04, which later recovered. Not treated as a listener failure, and the listener was not killed or relaunched.",
-  "published_bases": "84236100..84236700",
-  "published_bases_first_pass": "84236100..84236700",
+  "game_time": 84237630,
+  "live_game_time_at_finish": 84237645,
+  "live_json_gameTime_at_finish": 84237645,
+  "live_json_stats_t_at_finish": 84237640,
+  "live_json_gameTime_note": "After the 11:04:28 reconnect, top-level live.json gameTime was briefly None and objects were empty (same post-reconnect lag as earlier today). By 11:06:20, during this run's verify, gameTime had caught up to 84237645 and objects had 261 entries on the new W46N8 slot. No subscribe-limit was logged after this reconnect (errors.log last event is the 11:04:15 box-freeze). stats.t, room_stats, creep_cpu, path_arrivals and creep_ticks kept advancing with the live tip (creep_ticks 84237645 / stats.t 84237640 at finish). Not treated as a listener failure, and the listener was not killed or relaunched.",
+  "published_bases": "84236900..84237500",
+  "published_bases_first_pass": "84236900..84237500",
   "ticks": {
-    "from": 84236101,
-    "to": 84236800,
+    "from": 84236901,
+    "to": 84237600,
     "count": 700
   },
   "ticks_first_pass": {
-    "from": 84236101,
-    "to": 84236800,
+    "from": 84236901,
+    "to": 84237600,
     "count": 700
   },
-  "tick_s": 4.355,
-  "missing_chunks": 3,
-  "missing_chunks_first_pass": 3,
+  "tick_s": 4.377,
+  "missing_chunks": 2,
+  "missing_chunks_first_pass": 2,
   "missing_chunk_list": [
-    "W45N8@84236500",
-    "W45N8@84236700",
-    "W47N7@84236700"
+    "W45N7@84236900",
+    "W45N7@84237000"
   ],
   "missing_chunk_list_first_pass": [
-    "W45N8@84236500",
-    "W45N8@84236700",
-    "W47N7@84236700"
+    "W45N7@84236900",
+    "W45N7@84237000"
   ],
-  "missing_chunk_note": "First pass (game.time=84236854) published_bases 84236100..84236700, reconstructed 84236101..84236800 (700), missing_chunks=3. Confirm GETs after the first pass were still HTTP 404 for all three. Full second pass at game.time=84236886 still 404 on the same three; already_in_db=27754 would_insert=0, ts_realigned=0. W45N8@84236500 is a mid-window official 404 (84236600 is HTTP 200 100/100 for that room); 84236501..84236600 are empty with no live coverage because they fall inside the 09:44:45..10:06:02 box pause. W45N8@84236700 and W47N7@84236700 are the newest published base (other three rooms were HTTP 200 100/100). In-progress official 84236800 was not yet published, as expected. Next half-hour window should still include 84236500 and 84236700.",
-  "creep_rows_reconstructed_first_pass": 27754,
-  "already_in_db_first_pass": 13681,
-  "inserted": 14073,
-  "inserted_first_pass": 14073,
-  "inserted_first_pass_landed": 14073,
-  "inserted_retry": 0,
-  "creep_rows_reconstructed_retry": 27754,
-  "already_in_db_retry": 27754,
-  "inserted_note": "The 09:40 Asia/Hong_Kong half-hour run wrote official history through published 84236300 (ticks 84235701..84236400), except W47N8@84236000 official 404 (now just outside this window). Official 84236400 was then unpublished; live had W46N8 84236418..84236444 and W47N8 84236445..84236526, with 84236401..84236417 empty from the 09:32-09:36 pause. This run started at game.time=84236854 with published_bases 84236100..84236700. First-pass printed inserted=14073 (already_in_db=13681 would_insert=14073, reconstructed=27754, missing_chunks=3). Reconstruct math 13681+14073=27754 exact. Per-room new this run: W46N8 3098, W47N8 6951, W45N8 1261, W45N7 1460, W47N7 1303 (3098+6951+1261+1460+1303=14073). unique (creep,tick) in the window 84236101..84236800 = 27701, equal to the row count (dup=0). unique 27701 vs reconstructed 27754 gap of 53 is duplicate (creep,tick) entries inside the reconstructed list, not a second hole: the retry pass reported already_in_db=27754 would_insert=0. ts_realigned first pass=1901 (tick_s=4.355), retry=0. Official 84236400 is now complete for all five rooms, including the 17-tick 09:32 pause hole (each room distinct=17 in 84236401..84236417). Official 84236500/84236600 filled the 09:44 pause gap except W45N8@84236500.",
-  "ts_realigned": 1901,
-  "ts_realigned_first_pass": 1901,
-  "ts_realigned_retry": 0,
+  "missing_chunk_note": "First pass (game.time=84237630) published_bases 84236900..84237500, reconstructed 84236901..84237600 (700), missing_chunks=2, tick_s=4.377, inserted=15289, already_in_db=12406, ts_realigned=0. The newest base 84237500 was already HTTP 200 100/100 for all five rooms, so no publish-lag retry was needed. Confirm GETs after the pass were still HTTP 404 for W45N7@84236900 and W45N7@84237000; neighbors W45N7@84236800 and W45N7@84237100 were HTTP 200. These two mid-window official holes stayed 404 across the 10:38 run (first pass, confirm, second pass, post-wait confirm, third pass) and this run (first pass + confirm GET). W45N7@84236900 has 21 sparse live ticks 84236905..84236930; 84237000 is empty (overlaps the 10:18-10:23 pause). Older mid-window 404s W45N8@84236500, W45N8@84236700, and W47N7@84236700 are now outside this window and were not re-GET.",
+  "creep_rows_reconstructed_first_pass": 27695,
+  "already_in_db_first_pass": 12406,
+  "inserted": 15289,
+  "inserted_first_pass": 15289,
+  "inserted_first_pass_landed": 15289,
+  "inserted_note": "The 10:38 Asia/Hong_Kong half-hour run wrote official history through published 84237100 (ticks 84236401..84237200) except the five mid-window official 404s. Official 84236900 (four rooms), 84237000 (four rooms), and 84237100 (all five) were already complete in the DB at the start of this run. Live tails after official 84237200 at start: W47N8 84237201..84237278, W45N8 84237279..84237306, W45N7 84237307..84237310, then the 10:42-11:04 box pause, then post-reconnect W45N7 84237621..tip. This run started at game.time=84237630 with published_bases 84236900..84237500 already all published except the two W45N7 holes. First pass inserted 15289 (already_in_db=12406 of 27695 reconstructed). No second pass. Final unique creep-tick rows in 84236901..84237600 = 28430 (includes the 21 live-only ticks / 84 rows in the W45N7@84236900 hole). Official coverage is complete 700/700 for W46N8, W47N8, W45N8, and W47N7, and 521/700 for W45N7 (21 live in the 84236900 hole).",
+  "ts_realigned": 0,
+  "ts_realigned_first_pass": 0,
   "ssl_first_attempt": false,
-  "hourly_patrol_prefilled": "The 09:19/09:26 patrol and 09:40 half-hour run already filled official 84236100..84236300 except W47N8@84236000 (now outside this window). This run filled official 84236400 for all five rooms, 84236500 for four rooms (W45N8 official 404), 84236600 for all five, and 84236700 for three rooms (W45N8 and W47N7 official 404).",
+  "hourly_patrol_prefilled": "The 10:38 half-hour run already filled official 84236900..84237100 except W45N7@84236900 and W45N7@84237000. This run filled the remaining published official history through 84237500 (new since last run: 84237200..84237500 for all five rooms) and left only the two mid-window official 404s listed in missing_chunk_list.",
   "per_room": {
     "W46N8": {
       "distinct_first_pass": 700,
       "distinct_final": 700,
-      "rows_after": 6321,
+      "rows_after": 6231,
       "ticks": 700,
-      "note": "No official 404 in 84236101..84236800. Official 84236100..84236700 all HTTP 200 100/100. Distinct=700/700. 3098 new rows this pass, filling official 84236400..84236700 including the 09:32 pause hole 84236401..84236417 and the 09:44-10:06 pause gap. Known older official 404 W46N8@84235200 (and @84230600/@84218200/@84217500) remain outside this window; not re-GET. No live tail after official 84236800 this run (slot still on remotes; W46N8 is next after W45N7)."
+      "note": "No official 404 in 84236901..84237600. Official 84236900..84237500 all HTTP 200 100/100. Distinct=700/700. New rows this run filled official 84237200..84237500 (no live coverage of this room after official 84237200 at start). Live tail after official 84237600 began when the peacetime rotation moved to W46N8 at 11:06:18 (84237641..84237645 at verify)."
     },
     "W47N8": {
       "distinct_first_pass": 700,
       "distinct_final": 700,
-      "rows_after": 15129,
+      "rows_after": 13399,
       "ticks": 700,
-      "note": "No official 404 in 84236101..84236800. Official 84236100..84236700 all HTTP 200 100/100. Distinct=700/700. 6951 new rows this pass (official 84236400..84236700), including 84236401..84236417 and the post-84236526 pause gap. Persistent official 404 W47N8@84236000 (and @84235600/@84233200/@84231000) are now outside this window; not re-GET. After the 10:06 reconnect the slot resumed on W47N8 but hit subscribe-limit at 10:06:20; no new live W47N8 rows after the pre-pause tip 84236526 (official history covers through 84236800)."
+      "note": "No official 404 in 84236901..84237600. Official 84236900..84237500 all HTTP 200 100/100. Distinct=700/700. At start, live already had 84237201..84237278 from the previous W47N8 slot; official 84237200 filled the rest of that chunk and 84237300..84237500 were new. Persistent official 404s W47N8@84236000/@84235600/@84233200/@84231000 remain outside this window; not re-GET. No live tail after official 84237600 (slot moved on before the pause and is now on W46N8)."
     },
     "W45N8": {
-      "distinct_first_pass": 500,
-      "distinct_final": 500,
-      "rows_after": 2615,
-      "ticks": 700,
-      "note": "Two official 404s in 84236101..84236800: W45N8@84236500 and W45N8@84236700, both still HTTP 404 on confirm GET and on the retry at game.time=84236886. Distinct=500/700 = 700-100-100. 1261 new this pass (official 84236400 and 84236600, plus any live-partial fill). 84236501..84236600 are completely empty (box was frozen). 84236701..84236800 are empty of official history; sparse live starts later at 84236879. Persistent official 404 W45N8@84232300 remains outside this window; not re-GET."
-    },
-    "W45N7": {
       "distinct_first_pass": 700,
       "distinct_final": 700,
-      "rows_after": 2094,
+      "rows_after": 3595,
       "ticks": 700,
-      "note": "No official 404 in 84236101..84236800. Official 84236100..84236700 all HTTP 200 100/100. Distinct=700/700. 1460 new this pass. Persistent official 404 W45N7@84232800 remains outside this window; not re-GET. After official 84236800, sparse live ticks started arriving during the 10:11:56 W45N7 slot despite subscribe-limit x1 at 10:11:58."
+      "note": "No official 404 in 84236901..84237600. Official 84236900..84237500 all HTTP 200 100/100. Distinct=700/700. Persistent official 404s W45N8@84236500 and W45N8@84236700 (and older @84232300) remain outside this window; not re-GET. At start, live already had 84237279..84237306; official filled the rest of 84237200 and all of 84237300..84237500. No live tail after official 84237600."
+    },
+    "W45N7": {
+      "distinct_first_pass": 521,
+      "distinct_final": 521,
+      "rows_after": 1885,
+      "ticks": 700,
+      "note": "Two official 404s in 84236901..84237600: W45N7@84236900 and W45N7@84237000, still HTTP 404 on first pass and on confirm GET after the pass. Neighbors 84236800 and 84237100 are HTTP 200. 84236900 has 21 sparse live ticks (84 rows) 84236905-07, 84236910-13, 84236915-16, 84236918-23, 84236925-30 from an earlier W45N7 slot; 79 ticks empty. 84237000 is completely empty (overlaps the 10:18-10:23 box pause; slot was not on W45N7). Official 84237100..84237500 all HTTP 200 100/100. Distinct=521/700. After the 11:04 reconnect the leftover W45N7 slot produced a live tail 84237621..84237640; rotation then moved to W46N8 at 11:06:18."
     },
     "W47N7": {
-      "distinct_first_pass": 496,
-      "distinct_final": 496,
-      "rows_after": 1542,
+      "distinct_first_pass": 700,
+      "distinct_final": 700,
+      "rows_after": 3320,
       "ticks": 700,
-      "note": "Official 404 W47N7@84236700 on first pass, confirm GET, and retry at game.time=84236886; 84236701..84236800 empty. Official 84236100..84236600 all HTTP 200 100/100. Distinct=496/700 = 700-100 (404) -104 (empty of ours in official 84236200/84236300, same ranges as the 09:40 run, not a data hole). 1303 new this pass. No live tail."
+      "note": "No official 404 in 84236901..84237600. Official 84236900..84237500 all HTTP 200 100/100. Distinct=700/700. Persistent official 404 W47N7@84236700 remains outside this window; not re-GET. No live coverage of this room after official 84237200 at start; official 84237200..84237500 were new. No live tail after official 84237600."
     }
   },
   "known_official_404s_outside_window": {
-    "W47N8@84236000": "Official 404 remains just outside this window starting 84236101 (ticks 84236001..84236100). Last confirmed HTTP 404 at game.time=84236434 and on a confirm GET during the 09:40 half-hour run, and earlier at the 09:19/09:26 patrol / retry2 at game.time=84236264. Live-only 84236001..84236045; 84236046..84236100 empty. Not re-GET this run.",
-    "W46N8@84235200": "Official 404 remains outside this window starting 84236101. Last confirmed HTTP 404 at game.time=84235904 and 84235941 during the 09:03 half-hour run. Live-only 84235201..84235267. Not re-GET this run.",
-    "W47N8@84235600": "Official 404 remains outside this window starting 84236101. Last confirmed HTTP 404 at game.time=84235904 and 84235941, and during the 09:19 patrol. Live coverage complete 100 ticks. Not re-GET this run.",
-    "W47N8@84233200": "Official 404 remains outside this window starting 84236101. Last confirmed HTTP 404 at live tip gameTime=84233973 during the 06:37 run. Not re-GET this run.",
-    "W45N7@84232800": "Official 404 remains outside this window starting 84236101. Last confirmed HTTP 404 during the 06:06 half-hour run. Not re-GET this run.",
-    "W45N8@84232300": "Official 404 remains outside this window starting 84236101. Last confirmed HTTP 404 during the 05:08 half-hour run and the 05:24 patrol. Not re-GET this run.",
-    "W47N8@84231000": "Official 404 remains outside this window starting 84236101. Last confirmed HTTP 404 at live tip ~84231861 during the ~04:01 run. Not re-GET this run.",
-    "W46N8@84230600": "Official 404 remains outside this window starting 84236101. Not re-GET this run.",
-    "this_window": "Three official 404s inside 84236101..84236800: W45N8@84236500, W45N8@84236700, W47N7@84236700 (all still HTTP 404 on confirm GET and on the retry at game.time=84236886). After this pass, W46N8/W47N8/W45N7 distinct=700/700. W45N8 distinct=500/700 because of those two 100-tick official 404s. W47N7 distinct=496/700 because of W47N7@84236700 (100) plus 104 official ticks with no our creeps."
+    "W45N8@84236500": "Official 404 remains outside this window starting 84236901 (ticks 84236501..84236600). Last confirmed HTTP 404 at game.time=84237235 during the 10:38 half-hour run (persistent mid-window; empty during the 09:44-10:06 pause). Not re-GET this run.",
+    "W45N8@84236700": "Official 404 remains outside this window starting 84236901 (ticks 84236701..84236800). Last confirmed HTTP 404 at game.time=84237235 during the 10:38 run (persistent mid-window). Not re-GET this run.",
+    "W47N7@84236700": "Official 404 remains outside this window starting 84236901 (ticks 84236701..84236800). Last confirmed HTTP 404 at game.time=84237235 during the 10:38 run (persistent mid-window). Not re-GET this run.",
+    "W47N8@84236000": "Official 404 remains outside this window starting 84236901. Last confirmed HTTP 404 at game.time=84236434 and on a confirm GET during the 09:40 half-hour run. Live-only 84236001..84236045; 84236046..84236100 empty. Not re-GET this run.",
+    "W46N8@84235200": "Official 404 remains outside this window starting 84236901. Last confirmed HTTP 404 at game.time=84235904 and 84235941 during the 09:03 half-hour run. Live-only 84235201..84235267. Not re-GET this run.",
+    "W47N8@84235600": "Official 404 remains outside this window starting 84236901. Last confirmed HTTP 404 at game.time=84235904 and 84235941, and during the 09:19 patrol. Live coverage complete 100 ticks. Not re-GET this run.",
+    "W47N8@84233200": "Official 404 remains outside this window starting 84236901. Last confirmed HTTP 404 at live tip gameTime=84233973 during the 06:37 run. Not re-GET this run.",
+    "W45N7@84232800": "Official 404 remains outside this window starting 84236901. Last confirmed HTTP 404 during the 06:06 half-hour run. Not re-GET this run.",
+    "W45N8@84232300": "Official 404 remains outside this window starting 84236901. Last confirmed HTTP 404 during the 05:08 half-hour run and the 05:24 patrol. Not re-GET this run.",
+    "W47N8@84231000": "Official 404 remains outside this window starting 84236901. Last confirmed HTTP 404 at live tip ~84231861 during the ~04:01 run. Not re-GET this run."
   },
-  "w45n8_84236500_confirm_get": "HTTP 404 confirmed this run on first pass (game.time=84236854), on a confirm GET after the pass, and on the full second pass at game.time=84236886. Mid-window 404: official 84236600 for W45N8 is HTTP 200 100/100. 84236501..84236600 are empty (09:44:45..10:06:02 box pause, no live). Treat as a new persistent official 404 inside this window.",
-  "w45n8_84236700_confirm_get": "HTTP 404 confirmed this run on first pass (game.time=84236854), on a confirm GET after the pass, and on the retry at game.time=84236886. Newest published base; W46N8/W47N8/W45N7 @84236700 were HTTP 200 100/100. 84236701..84236800 empty of official history. Sparse live on W45N8 begins later at 84236879. Next run should retry.",
-  "w47n7_84236700_confirm_get": "HTTP 404 confirmed this run on first pass (game.time=84236854), on a confirm GET after the pass, and on the retry at game.time=84236886. Newest published base; other rooms except W45N8 were HTTP 200. 84236701..84236800 empty. Next run should retry.",
-  "w47n8_84236000_confirm_get": "Not re-GET this run; the chunk is now just outside the window starting 84236101. Last confirmed HTTP 404 at game.time=84236434 and on a confirm GET during the 09:40 run.",
-  "w46n8_84235200_confirm_get": "Not re-GET this run; outside the window starting 84236101. Last confirmed HTTP 404 at game.time=84235904 and 84235941 during the 09:03 run.",
-  "w47n8_84235600_confirm_get": "Not re-GET this run; outside the window starting 84236101. Last confirmed HTTP 404 at game.time=84235904 and 84235941, and during the 09:19 patrol.",
-  "w47n8_84233200_confirm_get": "Not re-GET this run; outside the window starting 84236101. Last confirmed HTTP 404 at live tip gameTime=84233973 during the 06:37 run.",
-  "w45n7_84232800_confirm_get": "Not re-GET this run; outside the window starting 84236101. Last confirmed HTTP 404 during the 06:06 half-hour run.",
-  "w45n8_84232300_confirm_get": "Not re-GET this run; outside the window starting 84236101. Last confirmed HTTP 404 during the 05:08 half-hour run and the 05:24 patrol.",
-  "w47n8_84231000_confirm_get": "Not re-GET this run; outside the window starting 84236101. Last confirmed HTTP 404 at live tip ~84231861 during the ~04:01 run.",
-  "unique_creep_tick_after": 27701,
-  "rows_after": 27701,
-  "unique_creep_tick_first_pass_window": 27701,
-  "rows_first_pass_window": 27701,
+  "w45n7_84236900_confirm_get": "HTTP 404 confirmed this run on first pass (game.time=84237630) and on a confirm GET after the pass at about 11:06 Asia/Hong_Kong. Mid-window: official 84236800 and 84237100 for W45N7 are HTTP 200. 21 sparse live ticks 84236905..84236930 (84 rows) from an earlier W45N7 slot; 79 ticks empty. Persistent official 404, already recorded at 10:38.",
+  "w45n7_84237000_confirm_get": "HTTP 404 confirmed this run on first pass (game.time=84237630) and on a confirm GET after the pass. Mid-window: official 84237100 for W45N7 is HTTP 200. 84237001..84237100 empty (overlaps the 10:18:21..10:23:50 box pause; slot was not on W45N7). Persistent official 404, already recorded at 10:38.",
+  "w45n8_84236500_confirm_get": "Not re-GET this run; the chunk remains outside the window starting 84236901. Last confirmed HTTP 404 at game.time=84237235 during the 10:38 run.",
+  "w45n8_84236700_confirm_get": "Not re-GET this run; the chunk remains outside the window starting 84236901. Last confirmed HTTP 404 at game.time=84237235 during the 10:38 run.",
+  "w47n7_84236700_confirm_get": "Not re-GET this run; the chunk remains outside the window starting 84236901. Last confirmed HTTP 404 at game.time=84237235 during the 10:38 run.",
+  "w47n8_84236000_confirm_get": "Not re-GET this run; outside the window starting 84236901. Last confirmed HTTP 404 at game.time=84236434 and on a confirm GET during the 09:40 run.",
+  "w46n8_84235200_confirm_get": "Not re-GET this run; outside the window starting 84236901. Last confirmed HTTP 404 at game.time=84235904 and 84235941 during the 09:03 run.",
+  "w47n8_84235600_confirm_get": "Not re-GET this run; outside the window starting 84236901. Last confirmed HTTP 404 at game.time=84235904 and 84235941, and during the 09:19 patrol.",
+  "w47n8_84233200_confirm_get": "Not re-GET this run; outside the window starting 84236901. Last confirmed HTTP 404 at live tip gameTime=84233973 during the 06:37 run.",
+  "w45n7_84232800_confirm_get": "Not re-GET this run; outside the window starting 84236901. Last confirmed HTTP 404 during the 06:06 half-hour run.",
+  "w45n8_84232300_confirm_get": "Not re-GET this run; outside the window starting 84236901. Last confirmed HTTP 404 during the 05:08 half-hour run and the 05:24 patrol.",
+  "w47n8_84231000_confirm_get": "Not re-GET this run; outside the window starting 84236901. Last confirmed HTTP 404 at live tip ~84231861 during the ~04:01 run.",
+  "unique_creep_tick_after": 28430,
+  "rows_after": 28430,
   "w47n7_empty_of_ours": {
-    "official_chunks": "W47N7@84236200 and W47N7@84236300 both HTTP 200 100/100 (unchanged from the 09:40 run); W47N7@84236700 official 404 is a separate hole",
-    "official_listener_ticks_through_84236700": 600,
-    "with_our_creeps": 496,
-    "empty_of_ours": 104,
-    "db_ticks_through_84236700": 496,
-    "ranges": [
-      {
-        "from": 84236261,
-        "to": 84236347,
-        "count": 87,
-        "after": "reserve784235735",
-        "until": "w8rminer84236052"
-      },
-      {
-        "from": 84236349,
-        "to": 84236351,
-        "count": 3
-      },
-      {
-        "from": 84236353,
-        "to": 84236353,
-        "count": 1
-      },
-      {
-        "from": 84236355,
-        "to": 84236367,
-        "count": 13,
-        "until": "rdef84236149"
-      }
-    ]
+    "note": "W47N7 often has stretches with no our creeps, but W47N7@84236700 (now outside this window) is an official HTTP 404, not an empty-of-ours published chunk. Official 84236900..84237500 for this room are all present 100/100."
   },
-  "chunk_84236100": {
-    "W45N7": {
-      "rows": 269,
-      "distinct": 100,
-      "min": 84236101,
-      "max": 84236200
-    },
-    "W45N8": {
-      "rows": 346,
-      "distinct": 100,
-      "min": 84236101,
-      "max": 84236200
-    },
-    "W46N8": {
-      "rows": 960,
-      "distinct": 100,
-      "min": 84236101,
-      "max": 84236200
-    },
-    "W47N7": {
-      "rows": 327,
-      "distinct": 100,
-      "min": 84236101,
-      "max": 84236200
-    },
-    "W47N8": {
-      "rows": 2178,
-      "distinct": 100,
-      "min": 84236101,
-      "max": 84236200
-    }
+  "chunk_84236900": {
+    "note": "Four rooms HTTP 200 100/100; already complete before this run (from the 10:38 backfill). W45N7 official 404; 21 sparse live ticks 84236905..84236930 only."
   },
-  "chunk_84236200": {
-    "W45N7": {
-      "rows": 307,
-      "distinct": 100,
-      "min": 84236201,
-      "max": 84236300
-    },
-    "W45N8": {
-      "rows": 484,
-      "distinct": 100,
-      "min": 84236201,
-      "max": 84236300
-    },
-    "W46N8": {
-      "rows": 1020,
-      "distinct": 100,
-      "min": 84236201,
-      "max": 84236300
-    },
-    "W47N7": {
-      "rows": 75,
-      "distinct": 60,
-      "min": 84236201,
-      "max": 84236260,
-      "note": "Official HTTP 200 100/100; 60 ticks have our creeps (84236201..84236260), 40 ticks empty of ours"
-    },
-    "W47N8": {
-      "rows": 2401,
-      "distinct": 100,
-      "min": 84236201,
-      "max": 84236300
-    }
+  "chunk_84237000": {
+    "note": "Four rooms HTTP 200 100/100; already complete before this run. W45N7 official 404, 100 ticks empty (10:18-10:23 pause)."
   },
-  "chunk_84236300": {
-    "W45N7": {
-      "rows": 327,
-      "distinct": 100,
-      "min": 84236301,
-      "max": 84236400
-    },
-    "W45N8": {
-      "rows": 598,
-      "distinct": 100,
-      "min": 84236301,
-      "max": 84236400
-    },
-    "W46N8": {
-      "rows": 916,
-      "distinct": 100,
-      "min": 84236301,
-      "max": 84236400
-    },
-    "W47N7": {
-      "rows": 52,
-      "distinct": 36,
-      "min": 84236348,
-      "max": 84236400,
-      "note": "Official HTTP 200 100/100; 36 ticks have our creeps; 64 ticks empty of ours (see w47n7_empty_of_ours)"
-    },
-    "W47N8": {
-      "rows": 2258,
-      "distinct": 100,
-      "min": 84236301,
-      "max": 84236400
-    }
+  "chunk_84237100": {
+    "note": "All five rooms HTTP 200 100/100; already complete before this run (from the 10:38 backfill)."
   },
-  "chunk_84236400": {
-    "W45N7": {
-      "rows": 298,
-      "distinct": 100,
-      "min": 84236401,
-      "max": 84236500
-    },
-    "W45N8": {
-      "rows": 472,
-      "distinct": 100,
-      "min": 84236401,
-      "max": 84236500
-    },
-    "W46N8": {
-      "rows": 987,
-      "distinct": 100,
-      "min": 84236401,
-      "max": 84236500
-    },
-    "W47N7": {
-      "rows": 390,
-      "distinct": 100,
-      "min": 84236401,
-      "max": 84236500
-    },
-    "W47N8": {
-      "rows": 1893,
-      "distinct": 100,
-      "min": 84236401,
-      "max": 84236500
-    }
+  "chunk_84237200": {
+    "note": "All five rooms HTTP 200 100/100, filled this run. At start only partial live: W47N8 78 ticks 84237201..84237278, W45N8 22 ticks 84237279..84237300."
   },
-  "chunk_84236500": {
-    "W45N7": {
-      "rows": 312,
-      "distinct": 100,
-      "min": 84236501,
-      "max": 84236600
-    },
-    "W46N8": {
-      "rows": 725,
-      "distinct": 100,
-      "min": 84236501,
-      "max": 84236600
-    },
-    "W47N7": {
-      "rows": 327,
-      "distinct": 100,
-      "min": 84236501,
-      "max": 84236600
-    },
-    "W47N8": {
-      "rows": 1977,
-      "distinct": 100,
-      "min": 84236501,
-      "max": 84236600
-    },
-    "W45N8": {
-      "rows": 0,
-      "distinct": 0,
-      "min": null,
-      "max": null,
-      "official": "HTTP 404 on first pass (game.time=84236854), confirm GET, and retry (game.time=84236886); 100 ticks 84236501..84236600 empty, no live (09:44-10:06 box pause)"
-    }
+  "chunk_84237300": {
+    "note": "All five rooms HTTP 200 100/100, filled this run. At start only partial live: W45N8 6 ticks 84237301..84237306, W45N7 4 ticks 84237307..84237310, then the 10:42-11:04 pause."
   },
-  "chunk_84236600": {
-    "W45N7": {
-      "rows": 225,
-      "distinct": 100,
-      "min": 84236601,
-      "max": 84236700
-    },
-    "W45N8": {
-      "rows": 715,
-      "distinct": 100,
-      "min": 84236601,
-      "max": 84236700
-    },
-    "W46N8": {
-      "rows": 911,
-      "distinct": 100,
-      "min": 84236601,
-      "max": 84236700
-    },
-    "W47N7": {
-      "rows": 371,
-      "distinct": 100,
-      "min": 84236601,
-      "max": 84236700
-    },
-    "W47N8": {
-      "rows": 2233,
-      "distinct": 100,
-      "min": 84236601,
-      "max": 84236700
-    }
+  "chunk_84237400": {
+    "note": "All five rooms HTTP 200 100/100, filled this run. No live coverage at start (during the 10:42-11:04 pause)."
   },
-  "chunk_84236700": {
-    "W45N7": {
-      "rows": 356,
-      "distinct": 100,
-      "min": 84236701,
-      "max": 84236800
-    },
-    "W46N8": {
-      "rows": 802,
-      "distinct": 100,
-      "min": 84236701,
-      "max": 84236800
-    },
-    "W47N8": {
-      "rows": 2189,
-      "distinct": 100,
-      "min": 84236701,
-      "max": 84236800
-    },
-    "W45N8": {
-      "rows": 0,
-      "distinct": 0,
-      "min": null,
-      "max": null,
-      "official": "HTTP 404 on first pass, confirm GET, and retry at game.time=84236886; ticks 84236701..84236800 empty. Sparse live starts later at 84236879 (outside this official chunk)"
-    },
-    "W47N7": {
-      "rows": 0,
-      "distinct": 0,
-      "min": null,
-      "max": null,
-      "official": "HTTP 404 on first pass, confirm GET, and retry at game.time=84236886; 100 ticks 84236701..84236800 empty, no live"
-    }
+  "chunk_84237500": {
+    "note": "All five rooms HTTP 200 100/100 already on the first pass (no publish lag). Filled this run. No live coverage at start (pause still in progress until 11:04:15 / stats.t 84237620)."
   },
   "listener": {
     "ok": true,
     "single_slot": true,
     "yield": false,
     "yield_absent": true,
-    "room": "W45N7",
-    "reconnected_at": "2026-11-13 10:06:14",
-    "pid": 2102622,
+    "room": "W46N8",
+    "reconnected_at": "2026-11-13 11:04:28",
+    "pid": 2119624,
     "loop_pid": 4035476,
-    "yield_cleared_before_this_run": "metrics/listener_yield_rooms was already absent at the start of this run. Peacetime 5:5:1:1 is rotating: this listener.py (pid 2102622) started at 10:06:14 after run_listener.sh logged restart at 10:06:05, immediately after box_pauses 09:44:45..10:06:02 (1277s). It has been the only slot since. At start of this run roomSlot=W47N8 rot i=1 (left 219s at 10:06:17, leftover hold from before the pause). It rotated to W45N8 i=2 at 10:09:56 and to W45N7 i=3 at 10:11:56. Subscribe-limit x1 on W47N8 at 10:06:20, W45N8 at 10:09:56, and W45N7 at 10:11:58 (same post-reconnect rotation pattern as 07:04, which recovered). Sparse live creep_ticks still arrived on W45N8 and W45N7. Did not create or restore the yield flag, and did not change the rotation. Did not start a second listener, and did not restart war_cmd or pulse.",
-    "listener_py_started_at": "2026-11-13 10:06:14",
-    "prior_box_pause_restart_at": "2026-11-13 10:06:14",
-    "prior_prior_box_pause_restart_at": "2026-11-13 09:36:19",
-    "prior_prior_prior_box_pause_restart_at": "2026-11-13 09:19:33",
-    "live_game_time": 84236920,
-    "live_stats_t": 84236920,
-    "live_updated": "2026-11-13 10:13:28",
-    "live_json_gameTime": null,
+    "yield_cleared_before_this_run": "metrics/listener_yield_rooms was already absent at the start of this run. Peacetime 5:5:1:1 is rotating: this listener.py (pid 2119624) started at 11:04:28 after run_listener.sh logged restart at 11:04:18, immediately after box_pauses 10:42:03..11:04:15 (1332s). It has been the only slot since. At start of this run roomSlot=W45N7 rot i=3 (leftover slot after the 11:04 reconnect; 87.8s left at 11:04:30). That leftover W45N7 hold ended at 11:06:18, then peacetime rotation moved to W46N8 i=0 600s (console rot left=580 at 11:06:18). No subscribe-limit after this reconnect. Live W45N7 creep_ticks 84237621..84237640 during the leftover slot, then W46N8 84237641..84237645. Did not create or restore the yield flag, and did not change the rotation. Did not start a second listener, and did not restart war_cmd or pulse.",
+    "listener_py_started_at": "2026-11-13 11:04:28",
+    "prior_box_pause_restart_at": "2026-11-13 11:04:28",
+    "prior_prior_box_pause_restart_at": "2026-11-13 10:24:02",
+    "prior_prior_prior_box_pause_restart_at": "2026-11-13 10:06:14",
+    "live_game_time": 84237645,
+    "live_stats_t": 84237640,
+    "live_updated": "2026-11-13 11:06:20",
+    "live_json_gameTime": 84237645,
     "live_tail": {
-      "note": "Yield already off. Same listener.py (pid 2102622) since 10:06:14; no new box pause since the 09:44-10:06 pause ended. At start roomSlot=W47N8 rot i=1; rotated to W45N8 i=2 at 10:09:56 and W45N7 i=3 at 10:11:56 under peacetime 5:5:1:1. live.json stats.t / roomSlot / creep_cpu / path_arrivals / room_stats keep updating; top-level gameTime and objects stayed empty after the subscribe-limit messages. Segment 90 was pulled by the listener itself (creep_cpu and path_arrivals near live tip at finish). Did not kill or relaunch the listener this run. Official 84236400-84236600 now cover those ranges in all five rooms except W45N8@84236500; official 84236700 covers W46N8/W47N8/W45N7. Official holes remain W45N8@84236500, W45N8@84236700, W47N7@84236700. Sparse live W45N8 84236879..84236903 (12 ticks) and W45N7 from 84236905 arrived during those slots. W46N8 is next after this W45N7 hold."
+      "note": "Yield already off. Same listener.py (pid 2119624) since 11:04:28; new box pause 10:42:03..11:04:15 (1332s) ended just as this run started. After reconnect, leftover W45N7 ran until 11:06:18, then W46N8 i=0 under peacetime 5:5:1:1. live.json stats.t / roomSlot / creep_cpu / path_arrivals / room_stats / gameTime / objects are all updating at finish (gameTime recovered from the brief post-reconnect None). Segment 90 was pulled by the listener itself (creep_cpu 84237630 and path_arrivals 84237619 near live tip at finish). Did not kill or relaunch the listener this run. Official 84236900-84237500 now cover those ranges in all five rooms except the two mid-window official 404s listed in missing_chunk_list. Live W45N7 84237621..84237640 and W46N8 84237641..84237645 arrived during/after the current official end 84237600. Next rooms after this W46N8 hold are W47N8 then W45N8 then W45N7."
     },
     "max_ticks": {
-      "creep_ticks": 84236923,
-      "room_stats": 84236920,
-      "creep_cpu": 84236920,
-      "path_arrivals": 84236918
+      "creep_ticks": 84237645,
+      "room_stats": 84237640,
+      "creep_cpu": 84237630,
+      "path_arrivals": 84237619
     },
-    "subscribe_limit": "Subscribe-limit x1 after the 10:06:14 post-pause reconnect: W47N8 at 10:06:20, W45N8 at 10:09:56, W45N7 at 10:11:58. Same pattern as 07:04:26 W47N8, 07:12:01 W45N8, 07:14:19 W45N7, 07:16:00 W46N8, which recovered. Sparse room ticks still arrived on W45N8 and W45N7. Earlier today: ping/pong timeout at 08:04:11 then restart 08:04:14. Single peacetime slot throughout. run_listener.sh (pid 4035476, looping since Nov 10) is still the only loop. Did not kill/relaunch or start a second slot."
+    "subscribe_limit": "No subscribe-limit after the 11:04:18 / 11:04:28 post-pause reconnect. Last subscribe-limit messages were during an earlier listener (pid 2102622): W47N8 at 10:06:20, W45N8 at 10:09:56, W45N7 at 10:11:58, W46N8 at 10:13:58, then the 10:18-10:23 box pause. Single peacetime slot throughout. run_listener.sh (pid 4035476, looping since Nov 10) is still the only loop. Did not kill/relaunch or start a second slot."
   },
   "last_box_pause": {
+    "from": "2026-11-13 10:42:03",
+    "to": "2026-11-13 11:04:15",
+    "sec": 1332,
+    "note": "New since the 10:38 half-hour run. Official history now covers creep_ticks through 84237600 except W45N7@84236900 (21 sparse live ticks, 79 empty) and W45N7@84237000 (100 ticks empty, from the earlier 10:18-10:23 pause). The new pause sits mainly in official 84237300..84237500, which this run filled for all five rooms. room_stats hole 84237300->84237620 (320) remains (official history does not fill room_stats)."
+  },
+  "prior_box_pause_1018": {
+    "from": "2026-11-13 10:18:21",
+    "to": "2026-11-13 10:23:50",
+    "sec": 320,
+    "note": "Already recorded in the 10:38 run as last_box_pause. Official 84237000 is complete for four rooms; W45N7@84237000 official 404 leaves 84237001..84237100 empty. room_stats hole 84236980->84237070 (90) remains."
+  },
+  "prior_box_pause_0944": {
     "from": "2026-11-13 09:44:45",
     "to": "2026-11-13 10:06:02",
     "sec": 1277,
-    "note": "New since the 09:40 half-hour run. Official history now covers creep_ticks through 84236800 except W45N8@84236500 (100 ticks empty), W45N8@84236700 (100 ticks empty official; sparse live starts 84236879), W47N7@84236700 (100 ticks empty), and W47N7 ticks with no our creeps. This pause itself sits mainly in official 84236500-84236700 (live W47N8 had stopped at 84236526). room_stats hole 84236520->84236830 (310) remains (official history does not fill room_stats)."
+    "note": "Already recorded earlier. Official 84236500 is complete for four rooms; W45N8@84236500 official 404 (now outside this window) leaves 84236501..84236600 empty. room_stats hole 84236520->84236830 (310) remains."
   },
   "prior_box_pause_0932": {
     "from": "2026-11-13 09:32:13",
     "to": "2026-11-13 09:36:06",
     "sec": 226,
-    "note": "Already recorded in the 09:40 run as last_box_pause. Official 84236400 is now complete for all five rooms, including the previously empty 84236401..84236417 (each room distinct=17). room_stats hole 84236360->84236420 (60) remains."
+    "note": "Already recorded earlier. Official 84236400 is complete for all five rooms. room_stats hole 84236360->84236420 (60) remains."
   },
   "prior_box_pause_0909": {
     "from": "2026-11-13 09:09:02",
     "to": "2026-11-13 09:19:29",
     "sec": 618,
-    "note": "Already recorded earlier. Official 84236000 is complete for four rooms; W47N8@84236000 official 404 (now outside this window) leaves 84236046..84236100 empty. Official 84236100 is complete for all five rooms. room_stats hole 84236040->84236200 (160) remains."
+    "note": "Already recorded earlier. Official 84236000 is complete for four rooms; W47N8@84236000 official 404 (outside this window) leaves 84236046..84236100 empty. Official 84236100 is complete for all five rooms. room_stats hole 84236040->84236200 (160) remains."
   },
   "last_pingpong_timeout": {
     "at": "2026-11-13 08:04:11",
     "restart_logged": "2026-11-13 08:04:14",
     "listener_py_started": "2026-11-13 08:04:23",
-    "note": "No new ping/pong timeout since 08:04:11. The 09:19:33, 09:36:09, and 10:06:05 restarts were box-pause resumes, not ping/pong timeouts."
+    "note": "No new ping/pong timeout since 08:04:11. The 09:19:33, 09:36:09, 10:06:05, 10:23:53, and 11:04:18 restarts were box-pause resumes, not ping/pong timeouts."
   },
   "last_nostats_pause": {
     "from": "2026-11-13 07:17:25",
@@ -450,7 +219,7 @@
     "from": "2026-11-13 06:43:10",
     "to": "2026-11-13 07:04:03",
     "sec": 1253,
-    "note": "Already recorded in earlier runs. Official coverage through later chunks is in the DB. room_stats hole 84234050..84234360 remains."
+    "note": "Already recorded in earlier runs. Official coverage through later chunks is in the DB. room_stats hole 84234050->84234360 remains."
   },
   "prior_box_pause_0607": {
     "from": "2026-11-13 06:07:59",
@@ -459,78 +228,29 @@
     "note": "Already recorded in earlier runs. Official coverage through later chunks is in the DB."
   },
   "rot_at_finish": {
-    "i": 3,
-    "room": "W45N7",
-    "left": 30.0,
-    "at": "2026-11-13 10:13:26"
+    "i": 0,
+    "room": "W46N8",
+    "left": 580.0,
+    "at": "2026-11-13 11:06:18"
   },
   "live_tail_after_official": {
-    "W45N8": {
-      "min": 84236879,
-      "max": 84236903,
-      "rows": 81,
-      "distinct": 12,
-      "note": "sparse live after subscribe-limit; not a continuous trail",
-      "present_ranges": [
-        {
-          "from": 84236879,
-          "to": 84236879,
-          "count": 1
-        },
-        {
-          "from": 84236882,
-          "to": 84236884,
-          "count": 3
-        },
-        {
-          "from": 84236889,
-          "to": 84236889,
-          "count": 1
-        },
-        {
-          "from": 84236894,
-          "to": 84236896,
-          "count": 3
-        },
-        {
-          "from": 84236898,
-          "to": 84236898,
-          "count": 1
-        },
-        {
-          "from": 84236901,
-          "to": 84236903,
-          "count": 3
-        }
-      ]
-    },
     "W45N7": {
-      "min": 84236905,
-      "max": 84236923,
+      "min": 84237621,
+      "max": 84237640,
       "rows": 60,
-      "distinct": 15,
-      "note": "sparse live after subscribe-limit; not a continuous trail",
-      "ticks": [
-        84236905,
-        84236906,
-        84236907,
-        84236910,
-        84236911,
-        84236912,
-        84236913,
-        84236915,
-        84236916,
-        84236918,
-        84236919,
-        84236920,
-        84236921,
-        84236922,
-        84236923
-      ]
+      "distinct": 20,
+      "note": "leftover W45N7 slot after the 11:04:28 reconnect, until rotation moved to W46N8 at 11:06:18; in-progress official chunk 84237600 not yet published"
+    },
+    "W46N8": {
+      "min": 84237641,
+      "max": 84237645,
+      "rows": 50,
+      "distinct": 5,
+      "note": "continuous live after rotation to W46N8 i=0 at 11:06:18; in-progress official chunk 84237600 not yet published"
     }
   },
-  "unpublished_official_84236800_gap": {
-    "note": "In-progress official chunk 84236800 not yet published (ticks 84236801..). Sparse live W45N8 ticks 84236879..84236903 (12 ticks, not continuous) arrived during the 10:09:56-10:11:56 slot despite subscribe-limit; 84236801..84236878 have no W45N8 rows. Sparse W45N7 live started 84236905 during the current slot. Other rooms have no live tail after official 84236800."
+  "unpublished_official_84237600_gap": {
+    "note": "In-progress official chunk 84237600 not yet published (ticks 84237601..). Live W45N7 ticks 84237621..84237640 (20 ticks) arrived during the leftover W45N7 slot after reconnect (84237601..84237620 empty, still inside the box-pause hole until stats resumed at 84237620). Live W46N8 ticks 84237641..84237645 arrived after rotation. Other rooms have no live tail after official 84237600."
   },
   "room_stats_gaps_after_84234000": [
     "84234050->84234360 (310)",
@@ -539,6 +259,8 @@
     "84235050->84235170 (120)",
     "84236040->84236200 (160)",
     "84236360->84236420 (60)",
-    "84236520->84236830 (310)"
+    "84236520->84236830 (310)",
+    "84236980->84237070 (90)",
+    "84237300->84237620 (320)"
   ]
 }
