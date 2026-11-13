@@ -9,17 +9,13 @@ import history_backfill as hb
 import db, api
 
 ROOMS = ("W46N8", "W47N8", "W45N8", "W45N7", "W47N7")
-THIS_WINDOW = [("W45N7", 84251700), ("W45N7", 84251800), ("W46N8", 84252000)]
+THIS_WINDOW = [("W46N8", 84252400)]
 ADJ = [
-    ("W45N7", 84251600),
-    ("W46N8", 84251700), ("W47N8", 84251700), ("W45N8", 84251700), ("W47N7", 84251700),
-    ("W46N8", 84251800), ("W47N8", 84251800), ("W45N8", 84251800), ("W47N7", 84251800),
-    ("W45N7", 84251900),
-    ("W46N8", 84251900), ("W47N8", 84252000), ("W45N8", 84252000), ("W45N7", 84252000), ("W47N7", 84252000),
-    ("W46N8", 84252100),
+    ("W46N8", 84252300), ("W46N8", 84252500),
+    ("W47N8", 84252400), ("W45N8", 84252400), ("W45N7", 84252400), ("W47N7", 84252400),
 ]
-TICK_S = 4.479
-TMIN, TMAX = 84251601, 84252300
+TICK_S = 4.365
+TMIN, TMAX = 84252401, 84253100
 
 def db_range(c, room, base):
     t0, t1 = base + 1, base + 100
@@ -147,7 +143,7 @@ def main():
     latest_unpub = (gt // 100) * 100
     for room in ROOMS:
         t0 = datetime.now(ZoneInfo("Asia/Hong_Kong")).strftime("%Y-%m-%d %H:%M:%S")
-        j = hb.history_get(room, latest_unpub)
+        j = hb.history_get(room, base=latest_unpub) if False else hb.history_get(room, latest_unpub)
         time.sleep(hb.GAP_S)
         n = len((j or {}).get("ticks") or {})
         st = 200 if j else 404
