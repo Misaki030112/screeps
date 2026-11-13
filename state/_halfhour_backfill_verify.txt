@@ -1,8 +1,9 @@
-2026-11-14 03:09 Asia/Hong_Kong
-ok=true missing_chunks=0 inserted=13251 (first=13251 retry=0) already_in_db=12818 ts_realigned=0 tick_s=4.452
-window ticks=84250001..84250700 count=700 unique_rows=25552 distinct_ticks=700 distinct_room_ticks=3500
-per_room: W45N7 rows=1858 distinct=700 new=1589; W45N8 rows=3829 distinct=700 new=2838; W46N8 rows=6204 distinct=700 new=3047; W47N7 rows=3258 distinct=700 new=2378; W47N8 rows=10403 distinct=700 new=3399
-game.time=84250722 published_bases=84250000..84250600; first pass 35/35 official chunks HTTP 200 100/100, missing_chunks=0. Confirm GET 03:08:36-03:08:40 game.time=84250737 current in-progress official chunk 84250700 all five rooms HTTP 404 (not yet published). No retry.
-listener pid 2380163 since 02:39:18; run_listener.sh 4035476; single slot rot i=3 W45N7; live.json gameTime=84250565 objects=0 after rotate to W45N7 while stats.t=84250740 and cpu flowing
+2026-11-14 04:03 Asia/Hong_Kong
+ok=true missing_chunks=2 inserted=14683 (first=14683 retry=0) already_in_db=12112 ts_realigned=0 tick_s=4.446
+window ticks=84250701..84251400 count=700 unique_rows=26208 distinct_ticks=700 distinct_room_ticks=3089
+per_room: W45N7 rows=985 distinct=389 new=324; W45N8 rows=3233 distinct=600 new=2332; W46N8 rows=8487 distinct=700 new=4553; W47N7 rows=3410 distinct=700 new=2275; W47N8 rows=10093 distinct=700 new=5199
+game.time=84251443 published_bases=84250700..84251300; first pass 33/35 official chunks HTTP 200 100/100, missing W45N7@84250800 and W45N8@84250900. Confirm GET 04:02:16-04:02:26 game.time=84251470 those two still official 404 (adjacent published chunks 200 100/100); current in-progress official chunk 84251400 all five rooms HTTP 404 (not yet published). inserted_retry=0.
+W45N7 also has no-our-creep gaps 84251075 (1t) and 84251078..84251287 (210t) after remote_pause / invader core; official W45N7@84251000..84251300 were all HTTP 200 100/100, so these are empty-room ticks not missing history.
+listener pid 2409331 since 03:56:44; run_listener.sh 4035476; single slot rot i=1 W47N8; live.json gameTime=84251457 objects=0 just after rotate to W47N8 while stats.t=84251470 and cpu flowing
 grafana 200 dashboard 200 postgres accepting
-known official 404s still 0 rows, all outside this window (including W47N8@84249600 now outside); confirm GET this run only for unpublished 84250700
+new box pause 03:39:29-03:56:32 (1018s); listener self-restarted 03:56:35 and recovered. known official 404s still 0 rows: in-window W45N7@84250800 and W45N8@84250900; outside-window leftovers including W47N8@84249600 and W45N8@84248300 not re-fetched this run

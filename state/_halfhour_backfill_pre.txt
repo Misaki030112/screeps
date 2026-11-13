@@ -1,10 +1,9 @@
-2026-11-14 03:31:14
+2026-11-14 04:00:05
     PID                  STARTED CMD
-2380163 Sat Nov 14 02:39:18 2026 .venv/bin/python tools/listener.py
-4035476 Tue Nov 10 15:57:56 2026 /bin/bash tools/run_listener.sh
-rot={"i": 2, "room": "W45N8", "left": 50.0, "at": "2026-11-14 03:31:11"}
+2409331 Sat Nov 14 03:56:44 2026 .venv/bin/python tools/listener.py
+4035476 Tue Nov 10 16:14:54 2026 /bin/bash tools/run_listener.sh
+rot={"i": 0, "room": "W46N8", "left": 70.7, "at": "2026-11-14 04:00:03"}
 box_pause last:
-{"from": "2026-11-13 17:34:43", "to": "2026-11-13 18:00:22", "sec": 1538}
 {"from": "2026-11-13 18:08:59", "to": "2026-11-13 18:20:46", "sec": 702}
 {"from": "2026-11-13 18:42:53", "to": "2026-11-13 19:04:25", "sec": 1287}
 {"from": "2026-11-13 19:12:17", "to": "2026-11-13 19:19:55", "sec": 457}
@@ -20,9 +19,10 @@ box_pause last:
 {"from": "2026-11-14 01:11:06", "to": "2026-11-14 01:22:20", "sec": 670}
 {"from": "2026-11-14 01:36:56", "to": "2026-11-14 02:01:27", "sec": 1465}
 {"from": "2026-11-14 02:10:28", "to": "2026-11-14 02:25:39", "sec": 911}
+{"from": "2026-11-14 03:39:29", "to": "2026-11-14 03:56:32", "sec": 1018}
 yield_file=absent
 run_listener.sh=4035476 listener_count=1
-db tips: creep_ticks 84251045 room_stats 84251040 creep_cpu 84251030 path_arrivals 84251022
-live.json updated 2026-11-14 03:31:12 gameTime 84250892 roomSlot W45N8 objects 0 cpu {'cpu': 13, 'memory': 25474} stats.t 84251040
+db tips: creep_ticks 84251441 room_stats 84251440 creep_cpu 84251430 path_arrivals 84251430 
+live.json updated 2026-11-14 04:00:04 gameTime 84251441 roomSlot W46N8 objects 264 cpu {'cpu': 16, 'memory': 24201} stats.t 84251440
 grafana=200 dashboard=200
-NEW since last half-hour (03:09): last logged box pause still 02:10:28-02:25:39 (911s); no new box_pauses.jsonl row. listener.py pid 2380163 since 02:39:18 and run_listener.sh 4035476 stayed up; last listener.out restart still 02:39:08 after errors.log 02:39:05 "ws error ping/pong timed out" (not a VM wall-clock freeze this interval). No new subscribe-limit after this start (last recorded 23:31:04). Segment 90 / STATS flowing (creep_cpu tip and path_arrivals near live stats.t; current slot W45N8 rot i=2, 120s weight-1 slot). live.json gameTime advancing (84250892 at pre-check) with objects=0 during the W45N8 slot, while stats.t and creep_ticks continue — brief empty live.json objects during the weight-1 slot, not a reconnect failure. errors.log 03:30:08 ingest dropped 1 incidents row (invalid input syntax for type integer: "{}") — listener otherwise healthy, did not restart. yield file absent, single peacetime slot. did not touch war_cmd/pulse/listener. Hourly patrol ~03:25 already ran official history into _hourly_backfill_now.txt at 03:28: game.time=84251000 published_bases=84250300..84250900 inserted=6893 missing_chunks=4 (W45N7@84250800, W47N8@84250900, W45N8@84250900, W47N7@84250900). Last half-hour filled official 84250001..84250700 inserted=13251 missing_chunks=0. This 40m run should pick up newly published bases after 84250600 and re-check those four 404s plus any still-unpublished latest chunk.
+NEW since last half-hour (03:35): new box pause 03:39:29-03:56:32 (1018s). listener.py restarted at 03:56:35 (pid 2409331 since 03:56:44) after errors.log 03:56:32 "box frozen ~1018s ... reconnecting"; run_listener.sh 4035476 stayed up. No new subscribe-limit after this start (last recorded 23:31:04). Segment 90 / STATS flowing after thaw (creep_cpu / path_arrivals / room_stats / creep_ticks tips near live stats.t; current slot W46N8). live.json gameTime advancing with objects populated on the home weight-5 slot. yield file absent, single peacetime slot. did not touch war_cmd/pulse/listener. Last half-hour (03:35) filled official 84250301..84251000 inserted=515 missing_chunks=2 (W45N7@84250800, W45N8@84250900 still official 404 on confirm GET 03:32:26-03:32:27). The 03:25 hourly patrol had also prefilled overlapping bases. This 40m run should pick up newly published bases after 84250900, re-check those two in-window 404s, and cover the 03:39-03:56 freeze gap. errors.log 03:30:08 ingest dropped 1 incidents row remains the last ingest error (not repeated after restart).

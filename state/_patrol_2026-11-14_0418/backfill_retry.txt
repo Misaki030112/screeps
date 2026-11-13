@@ -1,0 +1,52 @@
+confirm GET start 2026-11-14 04:22:03 Asia/Hong_Kong game.time=84251739 tick_s=4.335
+  pre  W46N8@84251600 distinct=0 rows=0 range=None..None
+  recovered W46N8@84251600 ticks=100 ts=1794601185584 at 04:22:04
+  inserted=719 ts_realigned=0 recon=100 ticks=84251601..84251700
+  post W46N8@84251600 distinct=100/100 rows=719 range=84251601..84251700
+  pre  W47N8@84251600 distinct=9 rows=143 range=84251692..84251700
+  recovered W47N8@84251600 ticks=100 ts=1794601225959 at 04:22:10
+  inserted=1318 ts_realigned=0 recon=100 ticks=84251601..84251700
+  post W47N8@84251600 distinct=100/100 rows=1461 range=84251601..84251700
+  pre  W45N8@84251600 distinct=0 rows=0 range=None..None
+  recovered W45N8@84251600 ticks=100 ts=1794601221736 at 04:22:15
+  inserted=679 ts_realigned=0 recon=100 ticks=84251601..84251700
+  post W45N8@84251600 distinct=100/100 rows=679 range=84251601..84251700
+  pre  W45N7@84251600 distinct=0 rows=0 range=None..None
+  recovered W45N7@84251600 ticks=100 ts=1794601187552 at 04:22:18
+  inserted=402 ts_realigned=0 recon=100 ticks=84251601..84251700
+  post W45N7@84251600 distinct=100/100 rows=402 range=84251601..84251700
+  pre  W47N7@84251600 distinct=0 rows=0 range=None..None
+  recovered W47N7@84251600 ticks=100 ts=1794601254023 at 04:22:20
+  inserted=573 ts_realigned=0 recon=100 ticks=84251601..84251700
+  post W47N7@84251600 distinct=100/100 rows=572 range=84251601..84251700
+  pre  W45N7@84250800 distinct=0 rows=0 range=None..None
+  still_404 W45N7@84250800 at 04:22:23
+  post W45N7@84250800 distinct=0/100 rows=0 range=None..None
+  pre  W45N8@84250900 distinct=0 rows=0 range=None..None
+  still_404 W45N8@84250900 at 04:22:24
+  post W45N8@84250900 distinct=0/100 rows=0 range=None..None
+  pre  W47N8@84249600 distinct=0 rows=0 range=None..None
+  still_404 W47N8@84249600 at 04:22:25
+  post W47N8@84249600 distinct=0/100 rows=0 range=None..None
+  pre  W45N8@84248300 distinct=0 rows=0 range=None..None
+  still_404 W45N8@84248300 at 04:22:27
+  post W45N8@84248300 distinct=0/100 rows=0 range=None..None
+  adj  W46N8@84251500 status=200 ticks=100 at 04:22:28
+  adj  W47N8@84251500 status=200 ticks=100 at 04:22:29
+  adj  W45N8@84251500 status=200 ticks=100 at 04:22:30
+  adj  W45N7@84251500 status=200 ticks=100 at 04:22:31
+  adj  W47N7@84251500 status=200 ticks=100 at 04:22:32
+  unpub W46N8@84251700 status=404 ticks=0 at 04:22:33
+  unpub W47N8@84251700 status=404 ticks=0 at 04:22:34
+  unpub W45N8@84251700 status=404 ticks=0 at 04:22:35
+  unpub W45N7@84251700 status=404 ticks=0 at 04:22:36
+  unpub W47N7@84251700 status=404 ticks=0 at 04:22:37
+recovered=['W46N8@84251600', 'W47N8@84251600', 'W45N8@84251600', 'W45N7@84251600', 'W47N7@84251600'] still_404=['W45N7@84250800', 'W45N8@84250900', 'W47N8@84249600', 'W45N8@84248300'] inserted_retry=3691 ts_realigned_retry=0
+db_after_retry
+  W46N8 ticks=84251001..84251600 rows=8001 distinct=600
+  W47N8 ticks=84251001..84251600 rows=8644 distinct=600
+  W45N8 ticks=84251001..84251600 rows=3426 distinct=600
+  W45N7 ticks=84251001..84251600 rows=546 distinct=363
+  W47N7 ticks=84251001..84251600 rows=2957 distinct=600
+gets_written 19 /workspace/screeps/state/_patrol_2026-11-14_0418/backfill_retry_gets.json
+finished
