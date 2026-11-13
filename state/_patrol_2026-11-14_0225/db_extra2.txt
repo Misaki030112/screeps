@@ -1,0 +1,56 @@
+=== w8defender/w8guard ticks around hole and after ===
+w8defender84248017 n 601 first (84249400, 'W47N8', 28, 5, 5000, 0, 'empty') last (84250100, 'W47N8', 28, 5, 5000, 0, 'empty')
+  gap 84249600 -> 84249701 dt 101 prev ('W47N8', 28, 5, 5000, 0, 'empty') next ('W47N8', 28, 5, 5000, 0, 'empty')
+  after hole n 400 unique pos 1 unique ticks 400
+  first after (84249701, 'W47N8', 28, 5, 5000, 0, 'empty') last after (84250100, 'W47N8', 28, 5, 5000, 0, 'empty')
+  frozen identical xyhits? True
+w8guard84248016 n 601 first (84249400, 'W47N8', 29, 5, 4100, 0, 'empty') last (84250100, 'W47N8', 29, 5, 4100, 0, 'empty')
+  gap 84249600 -> 84249701 dt 101 prev ('W47N8', 29, 5, 4100, 0, 'empty') next ('W47N8', 29, 5, 4100, 0, 'empty')
+  after hole n 400 unique pos 1 unique ticks 400
+  first after (84249701, 'W47N8', 29, 5, 4100, 0, 'empty') last after (84250100, 'W47N8', 29, 5, 4100, 0, 'empty')
+  frozen identical xyhits? True
+=== reserve7 ticks detail ===
+reserve784248959 n 610 first (84248961, 'W47N8', 34, 30, 'spawning', 400) last (84249570, 'W47N7', 39, 27, 'empty', 400)
+  first5 [(84248961, 'W47N8', 34, 30, 'spawning', 400), (84248962, 'W47N8', 34, 30, 'spawning', 400), (84248963, 'W47N8', 34, 30, 'spawning', 400), (84248964, 'W47N8', 34, 30, 'spawning', 400), (84248965, 'W47N8', 34, 30, 'spawning', 400)]
+  last5 [(84249566, 'W47N7', 39, 27, 'empty', 400), (84249567, 'W47N7', 39, 27, 'empty', 400), (84249568, 'W47N7', 39, 27, 'empty', 400), (84249569, 'W47N7', 39, 27, 'empty', 400), (84249570, 'W47N7', 39, 27, 'empty', 400)]
+  rooms Counter({('W47N7', 39, 27): 20})
+reserve784249978 n 121 first (84249980, 'W47N8', 34, 30, 'spawning', 400) last (84250100, 'W47N7', 39, 27, 'empty', 400)
+  first5 [(84249980, 'W47N8', 34, 30, 'spawning', 400), (84249981, 'W47N8', 34, 30, 'spawning', 400), (84249982, 'W47N8', 34, 30, 'spawning', 400), (84249983, 'W47N8', 34, 30, 'spawning', 400), (84249984, 'W47N8', 34, 30, 'spawning', 400)]
+  last5 [(84250096, 'W47N7', 39, 27, 'empty', 400), (84250097, 'W47N7', 39, 27, 'empty', 400), (84250098, 'W47N7', 39, 27, 'empty', 400), (84250099, 'W47N7', 39, 27, 'empty', 400), (84250100, 'W47N7', 39, 27, 'empty', 400)]
+  rooms Counter({('W47N7', 39, 27): 20})
+=== any reserve7 between death and new spawn (all rooms) ===
+n 2
+creeps Counter({'reserve784248959': 1, 'reserve784249978': 1})
+first ('reserve784248959', 84249570, 'W47N7', 39, 27, 'empty') last ('reserve784249978', 84249980, 'W47N8', 34, 30, 'spawning')
+=== W47N8 creeps named reserve* in official after hole ===
+n 11 creeps Counter({'reserve784249978': 11})
+first (84249980, 'reserve784249978', 34, 30, 'spawning') last (84249990, 'reserve784249978', 34, 29, 'empty')
+=== W47 spawn energy around replacement (room_stats) ===
+84249480 2026-11-14 01:36:46.700986+08:00 e 5600 / 5600 stor 5340 reserve7 1 keys {'w8guard': 1, 'reserve7': 1, 'reserver': 1, 'w8builder': 4, 'w8defender': 1}
+84249490 2026-11-14 01:36:51.571531+08:00 e 5600 / 5600 stor 5340 reserve7 1 keys {'w8guard': 1, 'reserve7': 1, 'reserver': 1, 'w8builder': 4, 'w8defender': 1}
+84249830 2026-11-14 02:01:48.657782+08:00 e 5600 / 5600 stor 8190 reserve7 0 keys {'reserver': 2, 'w8builder': 4}
+84249840 2026-11-14 02:02:33.706215+08:00 e 5600 / 5600 stor 9263 reserve7 0 keys {'reserver': 2, 'w8builder': 4}
+84249850 2026-11-14 02:03:16.757257+08:00 e 5600 / 5600 stor 9763 reserve7 0 keys {'reserver': 2, 'w8builder': 4}
+84249860 2026-11-14 02:03:59.673981+08:00 e 5600 / 5600 stor 9343 reserve7 0 keys {'reserver': 2, 'w8builder': 4}
+84249870 2026-11-14 02:04:44.240323+08:00 e 5600 / 5600 stor 9343 reserve7 0 keys {'reserver': 2, 'w8builder': 4}
+84249880 2026-11-14 02:05:29.517752+08:00 e 5600 / 5600 stor 9043 reserve7 0 keys {'reserver': 2, 'w8builder': 4}
+84249890 2026-11-14 02:06:14.050854+08:00 e 5600 / 5600 stor 9043 reserve7 0 keys {'reserver': 2, 'w8builder': 4}
+84249900 2026-11-14 02:06:57.511403+08:00 e 5600 / 5600 stor 8733 reserve7 0 keys {'reserver': 2, 'w8builder': 4}
+84249910 2026-11-14 02:07:41.286817+08:00 e 5600 / 5600 stor 9955 reserve7 0 keys {'reserver': 2, 'w8builder': 4}
+84249920 2026-11-14 02:08:25.840200+08:00 e 5600 / 5600 stor 10705 reserve7 0 keys {'reserver': 2, 'w8builder': 4}
+84249930 2026-11-14 02:10:04.008034+08:00 e 5600 / 5600 stor 10705 reserve7 0 keys {'reserver': 2, 'w8builder': 4}
+84249940 2026-11-14 02:10:04.075455+08:00 e 5600 / 5600 stor 10705 reserve7 0 keys {'reserver': 2, 'w8builder': 4}
+=== home builder last positions (was near 33,22 last hour) ===
+n 788 last (84250163, 'W46N8', 36, 23, 'loaded')
+rooms Counter({'W46N8': 535, 'W45N8': 253})
+near r2 Counter({'W45N8': 253, 'near3322_r2': 2}) last10 [(84250098, 'W46N8', 36, 23, 'loaded'), (84250099, 'W46N8', 36, 23, 'loaded'), (84250100, 'W46N8', 36, 23, 'loaded'), (84250157, 'W46N8', 36, 23, 'loaded'), (84250158, 'W46N8', 36, 23, 'loaded'), (84250159, 'W46N8', 36, 23, 'loaded'), (84250160, 'W46N8', 36, 23, 'loaded'), (84250161, 'W46N8', 36, 23, 'loaded'), (84250162, 'W46N8', 36, 23, 'loaded'), (84250163, 'W46N8', 36, 23, 'loaded')]
+=== w8builder last positions (27,40 jumped a lot) ===
+('w8builder84247298', 81, 84249320, 84249400, 34, 33, 'W47N8')
+('w8builder84247327', 81, 84249320, 84249400, 32, 32, 'W47N8')
+('w8builder84248851', 681, 84249320, 84250100, 25, 35, 'W47N8')
+('w8builder84248915', 681, 84249320, 84250100, 33, 33, 'W47N8')
+('w8builder84248969', 681, 84249320, 84250100, 34, 33, 'W47N8')
+('w8builder84248999', 681, 84249320, 84250100, 33, 31, 'W47N8')
+w8builder within r3 of 27,40 493
+top tiles [(24, 37, 493), (23, 36, 241), (34, 33, 183), (33, 34, 126), (32, 32, 115), (33, 33, 96), (24, 35, 75), (23, 35, 73), (20, 33, 71), (21, 33, 70), (22, 34, 68), (19, 33, 66), (16, 33, 65), (18, 33, 65), (17, 33, 65)]
+DONE

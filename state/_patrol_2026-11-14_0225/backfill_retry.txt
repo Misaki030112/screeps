@@ -1,0 +1,23 @@
+confirm GET start 2026-11-14 02:27:23 Asia/Hong_Kong game.time=84250176 tick_s=4.429
+  pre  W47N8@84249600 distinct=0 rows=0 range=None..None
+  still_404 W47N8@84249600 at 02:27:24
+  post W47N8@84249600 distinct=0/100 rows=0 range=None..None
+  pre  W45N8@84248300 distinct=0 rows=0 range=None..None
+  still_404 W45N8@84248300 at 02:27:25
+  post W45N8@84248300 distinct=0/100 rows=0 range=None..None
+  adj  W47N8@84249500 status=200 ticks=100 at 02:27:26
+  adj  W47N8@84249700 status=200 ticks=100 at 02:27:27
+  unpub W46N8@84250100 status=404 ticks=0 at 02:27:28
+  unpub W47N8@84250100 status=404 ticks=0 at 02:27:29
+  unpub W45N8@84250100 status=404 ticks=0 at 02:27:30
+  unpub W45N7@84250100 status=404 ticks=0 at 02:27:31
+  unpub W47N7@84250100 status=404 ticks=0 at 02:27:32
+recovered=[] still_404=['W47N8@84249600', 'W45N8@84248300'] inserted_retry=0 ts_realigned_retry=0
+db_after_retry
+  W46N8 ticks=84249401..84250100 rows=6605 distinct=700
+  W47N8 ticks=84249401..84250100 rows=9265 distinct=600
+  W45N8 ticks=84249401..84250100 rows=4025 distinct=700
+  W45N7 ticks=84249401..84250100 rows=1934 distinct=700
+  W47N7 ticks=84249401..84250100 rows=3013 distinct=700
+gets_written 9 /workspace/screeps/state/_patrol_2026-11-14_0225/backfill_retry_gets.json
+finished
