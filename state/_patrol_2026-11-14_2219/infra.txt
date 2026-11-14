@@ -1,0 +1,14 @@
+services.sh: ok postgres/views/grafana/listener/dashboard
+grafana_check: 20/20
+grafana HTTP 200, dashboard 8787 HTTP 200
+war_cmd/pulse: NO_WAR_PROCS
+listener: pid 2736313 since 22:19:47, single-slot 5:5:1:1, rot i=0 W46N8 at 22:26:44 left~245s
+yield absent; Memory.cmd.on=1 at=84224348 stale c={} s={} v=1, commander not live, not reclaimed
+no subscribe-limit observed after 22:03 / 22:19 thaws
+box freezes: 21:42:12-22:03:16 ~1264s (event) room_stats 84265800->84266100 300t/1317s; 22:10:18-22:19:51 ~573s room_stats 84266190->84266320 130t/573s; restarts 22:03:19 / 22:19:37
+q.py live OK
+DB writers at/after tip: room_stats 84266370@22:23:28 then 84266420@22:27 lag ~seconds; creep_ticks lag ~5s on current slot; creep_cpu lag <1min
+history_backfill 40min game.time=84266333 published 84265600..84266200 ticks 84265601..84266300 (700) inserted=7434 already_in_db=22046 ts_realigned=0 tick_s=4.508 missing_chunks=2
+confirm GET 22:23:47 game.time=84266374 and retry2 GET 22:26:52 game.time=84266416 still 404
+after confirm: W46N8/W47N8/W47N7 700/700; W45N8 600/700 official hole 84265701-84265800; W45N7 611/700 official hole 84266101-84266184 + 84266196-84266200 (11 live ticks 84266185-84266195)
+unpublished 84266301+ expected
