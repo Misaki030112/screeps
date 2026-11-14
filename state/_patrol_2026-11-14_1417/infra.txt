@@ -1,0 +1,13 @@
+services.sh: ok postgres / views_apache / grafana / listener / dashboard (parent, ~14:18 HKT)
+grafana_check: 20/20
+dashboard:200 grafana:200
+yield: absent
+war_cmd/pulse: NO_WAR_PROCS
+listener: run_listener.sh 4035476 since Nov10; python pid 2577206 since 14:18:11 after box freeze 14:14:25-14:17:59 204s; prior restart 13:56:50 (freeze 13:44:25-13:56:47 734s); earlier this window 13:20:54 (last patrol thaw)
+after 13:56 / 14:18 thaws: no subscribe-limit (live.json fresh roomSlot rotating 5:5:1:1, q.py OK)
+HTTP 502 traces in metrics/listener.out are historical (2026-10-20, 10-30, 11-02 05:51-05:59), not this hour, not coinciding with these thaws
+rot at 14:18:38 i=0 W46N8 left~181s; later i=1 W47N8 left~280s at 14:26:59 (5:5:1:1)
+Memory.cmd.on=1 at=84224348 stale c={} s={} v=1 confirmed live, commander not live, not reclaimed
+DB after analysis: room_stats lag ~20s at exact2h start (max 84259860 @14:21:20), creep_ticks ~4s, creep_cpu ~26s; later room_stats max 84259920 lag ~9s, creep_ticks 84259922 lag ~1s, creep_cpu 84259910 lag ~36s
+history_backfill: missing_chunks=1 W45N7@84259200 official 404 (confirm GET 14:20:40 game.time=84259850 and retry2 GET 14:23:03 game.time=84259883 still 404; adjacent @84259100/@84259300 HTTP 200; confirm inserted 34 extra rows on already-complete @84259100, db 250/100 distinct); leftover W45N8@84258600 confirm GET 14:20:43 / retry2 14:23:07 still 404; leftover W45N7@84257900 confirm GET 14:20:45 / retry2 14:23:08 still 404; ticks 84259101..84259800 (700) W46N8/W47N8/W45N8/W47N7 700/700 W45N7 600/700; inserted=7042 already_in_db=20532 ts_realigned=1034 tick_s=4.491 game.time=84259830 published 84259100-84259700; unpublished 84259801+ expected (~60t hour-window hole; W46N8 partial live fill)
+room_stats freeze gaps this hour: 84259360-84259540 (13:44:21-13:57:39, 180t / 798s), 84259760-84259820 (14:13:55-14:18:24, 60t / 269s)

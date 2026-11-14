@@ -1,7 +1,3 @@
-2026-11-14 13:07:21 Asia/Hong_Kong
-retry2 GETs at 13:07:21 game.time=84258860
-confirm GET W45N8@84258600 status=404 ticks=0 at=13:05:16 game.time=84258832
-confirm GET W47N7@84258700 status=200 ticks=100 at=13:05:19 game.time=84258832
-retry2 GET W45N8@84258600 status=404 ticks=0 inserted=0 at=13:07:21 game.time=84258860
-retry2 GET W47N7@84258700 status=200 ticks=100 inserted=451 at=13:07:22 game.time=84258860
-adjacent W45N8@84258500 HTTP 200 100/100 and W45N8@84258700 HTTP 200 100/100 and W47N7@84258600 HTTP 200 100/100
+confirm 14:04:04-14:04:13 game.time=84259627: W45N7@84259100 200, W45N7@84259200 404, W45N7@84259300 200; W47N8@84259500 200, W45N8@84259500 200, W47N7@84259500 200; W45N8@84258500 200, W45N8@84258600 404, W45N8@84258700 200.
+confirm_insert 14:04:19-14:04:32 game.time=84259630: W47N8@84259500 inserted=430 nfix=0 recon=100 post 100/100 rows=1500; W45N8@84259500 inserted=560 nfix=0 recon=100 post 100/100 rows=376; W47N7@84259500 inserted=613 nfix=0 recon=100 post 100/100 rows=508; W45N7@84259200 404 post 0/100; W45N8@84258600 404 post 0/100. inserted_total=1603.
+retry2 14:07:12-14:07:20 game.time=84259669: W45N7@84259200 status=404 ticks=0 inserted=0 nfix=0 db distinct=0 rows=0 range=None..None; W45N8@84258600 status=404 ticks=0 inserted=0 nfix=0 db distinct=0 rows=0 range=None..None; already-recovered 84259500 chunks still 100/100 (retry2 would-insert 289, row counts unchanged).
