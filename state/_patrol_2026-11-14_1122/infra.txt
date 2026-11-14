@@ -1,0 +1,12 @@
+services.sh: ok postgres / views_apache / grafana / listener / dashboard
+grafana_check: 20/20
+dashboard:200 grafana:200
+yield: absent
+war_cmd/pulse: NO_WAR_PROCS
+listener: run_listener.sh 4035476 since Nov10; python pid 2526754 since 11:22:42 after box freeze 11:12:15-11:22:29 605s; prior restarts 10:50:20 (freeze 10:37:37-10:50:17 759s) and 11:04:54 (freeze 10:58:04-11:04:51 401s)
+after 11:22 thaw: no new subscribe-limit (unlike the 09:59 leftover-slot events); ssl handshake timeout 11:25:38 and ws ping/pong timed out 11:25:47, then live q.py OK
+rot at exact2h start i=0 W46N8; later i=1 W47N8 left~540s at 11:29:04 (5:5:1:1)
+Memory.cmd.on=1 at=84224348 stale c={} s={} v=1, commander not live, not reclaimed
+DB after thaw: room_stats lag ~39s at exact2h start then a few seconds, creep_ticks ~5s on the current slot, creep_cpu ~55s
+history_backfill: missing_chunks=0; ticks 84256701..84257400 (700) all five rooms 700/700 distinct; inserted=6514 already_in_db=19020 ts_realigned=0 tick_s=4.376; unpublished 84257401+ expected (~90t hour-window hole)
+room_stats freeze gaps this hour: 84256820-84257010 (10:36:53-10:50:47, 190t / 833s), 84257100-84257210 (10:57:19-11:05:31, 110t / 491s), 84257290-84257450 (11:11:32-11:23:19, 160t / 707s)
