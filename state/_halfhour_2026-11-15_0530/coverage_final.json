@@ -1,0 +1,81 @@
+{
+  "window": [
+    84271401,
+    84272100
+  ],
+  "count": 700,
+  "unique_rows": 25602,
+  "distinct_ticks": 700,
+  "distinct_room_ticks": 3359,
+  "rooms": {
+    "W46N8": {
+      "distinct": 700,
+      "rows": 7741,
+      "range": [
+        84271401,
+        84272100
+      ],
+      "missing_n": 0,
+      "missing_tick_ranges": []
+    },
+    "W47N8": {
+      "distinct": 700,
+      "rows": 10688,
+      "range": [
+        84271401,
+        84272100
+      ],
+      "missing_n": 0,
+      "missing_tick_ranges": []
+    },
+    "W45N8": {
+      "distinct": 700,
+      "rows": 2906,
+      "range": [
+        84271401,
+        84272100
+      ],
+      "missing_n": 0,
+      "missing_tick_ranges": []
+    },
+    "W45N7": {
+      "distinct": 559,
+      "rows": 1334,
+      "range": [
+        84271515,
+        84272100
+      ],
+      "missing_n": 141,
+      "missing_tick_ranges": [
+        [
+          84271401,
+          84271514
+        ],
+        [
+          84271770,
+          84271796
+        ]
+      ]
+    },
+    "W47N7": {
+      "distinct": 700,
+      "rows": 2933,
+      "range": [
+        84271401,
+        84272100
+      ],
+      "missing_n": 0,
+      "missing_tick_ranges": []
+    }
+  },
+  "w45n7_empty_note": [
+    "84271401..84271514 (114 ticks). Continuation of the already-documented W45N7 no-creep stretch 84271327..84271514 from the 05:00 half-hour (and 05:18 hourly). Official history 35/35 chunks present (W45N7 700 official ticks). After rminer84271008 left W45N7 at 84271326, W45N7 had no of-ours creep rows until defender84271299 entered at 84271515 (21,1) from W45N8 (listener/history already had the defender in W45N8 at 84271477..84271514). This is not an official-history hole and not a failed insert.",
+    "84271770..84271796 (27 ticks). Official W45N7 history would have kept defender84271299 standing at 17,30 (same cell as 84271769 and 84271797). Those (creep,tick) keys were already in creep_ticks as W46N8 from the live listener after the 05:02 reconnect (a continuous walk 49,21\u219235,29 during the W46N8 slot, timestamps ~05:05:23\u201305:07:20 Asia/Hong_Kong). The idempotent unique key (creep,tick) correctly skipped a second-room insert. At 84271797 the defender is again in W45N7 at 17,30, which is consistent with it having stayed put in W45N7; the W46N8 path is a stale live-slot track, not a real room change. Two rhaulers (rhauler84270416, rhauler84270656) also first appear in W45N7 at 84271797. Not an official-history hole."
+  ],
+  "missing_chunks": 0,
+  "inserted": 6817,
+  "already_in_db": 18932,
+  "ts_realigned": 17,
+  "tick_s": 4.533,
+  "game_time": 84272146
+}
