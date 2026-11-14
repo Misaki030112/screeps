@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Confirm + retry the in-window official-history 404s for this 40m half-hour backfill."""
+"""retry2: re-fetch the in-window official-history 404s after a short wait."""
 from __future__ import annotations
 import json, sys, time
 from datetime import datetime, timezone
@@ -10,17 +10,11 @@ import db, api
 
 ROOMS = ("W46N8", "W47N8", "W45N8", "W45N7", "W47N7")
 THIS_WINDOW = [
-    ("W46N8", 84253100),
     ("W47N7", 84253600),
+    ("W45N8", 84253800),
 ]
-ADJ = [
-    ("W46N8", 84253200),
-    ("W47N8", 84253100), ("W45N8", 84253100), ("W45N7", 84253100), ("W47N7", 84253100),
-    ("W47N7", 84253500), ("W47N7", 84253700),
-    ("W46N8", 84253600), ("W47N8", 84253600), ("W45N8", 84253600), ("W45N7", 84253600),
-]
-TICK_S = 4.408
-TMIN, TMAX = 84253101, 84253800
+TICK_S = 4.519
+TMIN, TMAX = 84253501, 84254200
 
 def db_range(c, room, base):
     t0, t1 = base + 1, base + 100
@@ -82,24 +76,6 @@ def retry_one(room, base, our, now_ts, gt, tick_s, cm):
             "nfix": nfix, "seeded": seeded, "tmin": tmin, "tmax": tmax, "ts": j.get("timestamp"),
             "status": 200, "at": t0}
 
-def gap_ranges(c, room, tmin, tmax):
-    rows = c.execute(
-        "SELECT DISTINCT tick FROM creep_ticks WHERE room=%s AND tick BETWEEN %s AND %s ORDER BY 1",
-        (room, tmin, tmax),
-    ).fetchall()
-    have = {r[0] for r in rows}
-    gaps = []
-    t = tmin
-    while t <= tmax:
-        if t not in have:
-            s = t
-            while t <= tmax and t not in have:
-                t += 1
-            gaps.append((s, t - 1, t - s))
-        else:
-            t += 1
-    return len(have), gaps
-
 def main():
     our = hb.uid()
     now_ts = datetime.now(timezone.utc)
@@ -109,7 +85,7 @@ def main():
     gets = []
     with db.connect() as c:
         cm = db.current_commit(c)
-    print(f"confirm GET start {hk} game.time={gt} tick_s={tick_s}")
+    print(f"retry2 GET start {hk} game.time={gt} tick_s={tick_s}")
     recovered, still_404 = [], []
     inserted_retry = ts_realigned_retry = 0
 
@@ -120,7 +96,6 @@ def main():
         res = retry_one(room, base, our, now_ts, gt, tick_s, cm)
         gets.append({"room": room, "base": base, "status": res["status"], "ticks": res.get("ticks", 0), "at": res.get("at")})
         if not res["ok"]:
-            print(f"  404 {room}@{base} ticks=None at {datetime.now(ZoneInfo('Asia/Hong_Kong')).strftime('%Y-%m-%d %H:%M:%S')}")
             print(f"  still_404 {room}@{base} at {res['at']}")
             with db.connect() as c:
                 d2, mn2, mx2, n2 = db_range(c, room, base)
@@ -136,45 +111,24 @@ def main():
         print(f"  post {room}@{base} distinct={d2}/100 rows={n2} range={mn2}..{mx2}")
         recovered.append(f"{room}@{base}")
 
-    for room, base in ADJ:
-        t0 = datetime.now(ZoneInfo("Asia/Hong_Kong")).strftime("%Y-%m-%d %H:%M:%S")
-        j = hb.history_get(room, base)
-        time.sleep(hb.GAP_S)
-        n = len((j or {}).get("ticks") or {})
-        st = 200 if j else 404
-        print(f"  ok  {room}@{base} ticks={n} at {t0}" if st == 200 else f"  404 {room}@{base} ticks=None at {t0}")
-        gets.append({"room": room, "base": base, "status": st, "ticks": n, "at": t0, "kind": "adj"})
-
-    latest_unpub = (gt // 100) * 100
-    for room in ROOMS:
-        t0 = datetime.now(ZoneInfo("Asia/Hong_Kong")).strftime("%Y-%m-%d %H:%M:%S")
-        j = hb.history_get(room, latest_unpub)
-        time.sleep(hb.GAP_S)
-        n = len((j or {}).get("ticks") or {})
-        st = 200 if j else 404
-        print(f"  404 {room}@{latest_unpub} ticks=None at {t0}" if st == 404 else f"  ok  {room}@{latest_unpub} ticks={n} at {t0}")
-        gets.append({"room": room, "base": latest_unpub, "status": st, "ticks": n, "at": t0, "kind": "unpub"})
-
-    print(f"recovered={recovered} still_404={still_404} inserted_retry={inserted_retry} ts_realigned_retry={ts_realigned_retry}")
+    print(f"recovered={recovered} still_404={still_404} inserted_retry2={inserted_retry} ts_realigned_retry2={ts_realigned_retry}")
     with db.connect() as c:
-        print("db_after_retry")
+        print("db_after_retry2")
         for room in ROOMS:
             row = c.execute(
                 "SELECT min(tick), max(tick), count(*), count(DISTINCT tick) FROM creep_ticks WHERE room=%s AND tick BETWEEN %s AND %s",
                 (room, TMIN, TMAX),
             ).fetchone()
             print(f"  {room} ticks={row[0]}..{row[1]} rows={row[2]} distinct={row[3]}")
-            have, gaps = gap_ranges(c, room, TMIN, TMAX)
-            if gaps:
-                print(f"    gaps ({len(gaps)}): " + "; ".join(f"{a}..{b} ({n}t)" for a,b,n in gaps))
         row = c.execute(
             "SELECT count(*), count(DISTINCT tick), count(DISTINCT (room, tick)) FROM creep_ticks WHERE tick BETWEEN %s AND %s AND room = ANY(%s)",
             (TMIN, TMAX, list(ROOMS)),
         ).fetchone()
         print(f"unique rows={row[0]} distinct_ticks={row[1]} distinct_room_ticks={row[2]}")
-    out = "/workspace/screeps/state/_halfhour_backfill_retry_gets.json"
+    out = "/workspace/screeps/state/_halfhour_backfill_retry2_gets.json"
     with open(out, "w") as f:
-        json.dump(gets, f, indent=2)
+        json.dump({"game_time": gt, "at": hk, "gets": gets, "recovered": recovered, "still_404": still_404,
+                   "inserted_retry2": inserted_retry, "ts_realigned_retry2": ts_realigned_retry}, f, indent=2)
     print("gets_written", len(gets), out)
     print("finished")
 

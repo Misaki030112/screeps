@@ -1,63 +1,37 @@
-confirm GET start 2026-11-14 07:00:47 Asia/Hong_Kong game.time=84253890 tick_s=4.408
-  pre  W46N8@84253100 distinct=0 rows=0 range=None..None
-  404 W46N8@84253100 ticks=None at 2026-11-14 07:00:48
-  still_404 W46N8@84253100 at 07:00:47
-  post W46N8@84253100 distinct=0/100 rows=0 range=None..None
-  pre  W47N7@84253600 distinct=0 rows=0 range=None..None
-  404 W47N7@84253600 ticks=None at 2026-11-14 07:00:50
-  still_404 W47N7@84253600 at 07:00:49
-  post W47N7@84253600 distinct=0/100 rows=0 range=None..None
-  ok  W46N8@84253200 ticks=100 at 2026-11-14 07:00:50
-  ok  W47N8@84253100 ticks=100 at 2026-11-14 07:00:51
-  ok  W45N8@84253100 ticks=100 at 2026-11-14 07:00:52
-  ok  W45N7@84253100 ticks=100 at 2026-11-14 07:00:53
-  ok  W47N7@84253100 ticks=100 at 2026-11-14 07:00:54
-  ok  W47N7@84253500 ticks=100 at 2026-11-14 07:00:55
-  ok  W47N7@84253700 ticks=100 at 2026-11-14 07:00:56
-  ok  W46N8@84253600 ticks=100 at 2026-11-14 07:00:57
-  ok  W47N8@84253600 ticks=100 at 2026-11-14 07:00:58
-  ok  W45N8@84253600 ticks=100 at 2026-11-14 07:00:59
-  ok  W45N7@84253600 ticks=100 at 2026-11-14 07:01:00
-  404 W46N8@84253800 ticks=None at 2026-11-14 07:01:01
-  404 W47N8@84253800 ticks=None at 2026-11-14 07:01:02
-  404 W45N8@84253800 ticks=None at 2026-11-14 07:01:03
-  404 W45N7@84253800 ticks=None at 2026-11-14 07:01:04
-  404 W47N7@84253800 ticks=None at 2026-11-14 07:01:05
-recovered=[] still_404=['W46N8@84253100', 'W47N7@84253600'] inserted_retry=0 ts_realigned_retry=0
-db_after_retry
-  W46N8 ticks=84253201..84253800 rows=6107 distinct=600
-    gaps (1): 84253101..84253200 (100t)
-  W47N8 ticks=84253101..84253800 rows=11427 distinct=700
-  W45N8 ticks=84253101..84253800 rows=4120 distinct=678
-    gaps (1): 84253423..84253444 (22t)
-  W45N7 ticks=84253101..84253800 rows=1950 distinct=700
-  W47N7 ticks=84253101..84253800 rows=2773 distinct=600
-    gaps (1): 84253601..84253700 (100t)
-unique rows=26377 distinct_ticks=700 distinct_room_ticks=3278
-gets_written 18 /workspace/screeps/state/_halfhour_backfill_retry_gets.json
-finished
-EXIT:0
+2026-11-14 07:30:35–07:30:54 Asia/Hong_Kong confirm GET game.time=84254291
+  404 W47N7@84253600 at 07:30:35
+  404 W45N8@84253800 at 07:30:36
+  ok  W47N7@84253500 ticks=100 at 07:30:37
+  ok  W47N7@84253700 ticks=100 at 07:30:38
+  ok  W46N8@84253600 ticks=100 at 07:30:39
+  ok  W47N8@84253600 ticks=100 at 07:30:40
+  ok  W45N8@84253600 ticks=100 at 07:30:42
+  ok  W45N7@84253600 ticks=100 at 07:30:42
+  ok  W45N8@84253700 ticks=100 at 07:30:43
+  ok  W45N8@84253900 ticks=100 at 07:30:44
+  ok  W46N8@84253800 ticks=100 at 07:30:46
+  ok  W47N8@84253800 ticks=100 at 07:30:47
+  ok  W45N7@84253800 ticks=100 at 07:30:48
+  ok  W47N7@84253800 ticks=100 at 07:30:49
+  404 W46N8@84254200 at 07:30:50 (in-progress, not yet published)
+  404 W47N8@84254200 at 07:30:51
+  404 W45N8@84254200 at 07:30:51
+  404 W45N7@84254200 at 07:30:53
+  404 W47N7@84254200 at 07:30:54
+still_404 after confirm: W47N7@84253600, W45N8@84253800; adjacent all HTTP 200 100/100; current official chunk 84254200 all five rooms HTTP 404.
 
-retry2 GET start 2026-11-14 07:03:10 Asia/Hong_Kong game.time=84253922 tick_s=4.408
-  pre  W46N8@84253100 distinct=0 rows=0 range=None..None
-  404 W46N8@84253100 ticks=None at 2026-11-14 07:03:11
-  still_404 W46N8@84253100 at 07:03:10
-  post W46N8@84253100 distinct=0/100 rows=0 range=None..None
+2026-11-14 07:33:16 Asia/Hong_Kong retry2 GET game.time=84254327 tick_s=4.519
   pre  W47N7@84253600 distinct=0 rows=0 range=None..None
-  404 W47N7@84253600 ticks=None at 2026-11-14 07:03:12
-  still_404 W47N7@84253600 at 07:03:12
+  still_404 W47N7@84253600 at 07:33:16
   post W47N7@84253600 distinct=0/100 rows=0 range=None..None
-recovered=[] still_404=['W46N8@84253100', 'W47N7@84253600'] inserted_retry2=0 ts_realigned_retry2=0
+  pre  W45N8@84253800 distinct=0 rows=0 range=None..None
+  still_404 W45N8@84253800 at 07:33:18
+  post W45N8@84253800 distinct=0/100 rows=0 range=None..None
+recovered=[] still_404=['W47N7@84253600', 'W45N8@84253800'] inserted_retry2=0 ts_realigned_retry2=0
 db_after_retry2
-  W46N8 ticks=84253201..84253800 rows=6107 distinct=600
-    gaps (1): 84253101..84253200 (100t)
-  W47N8 ticks=84253101..84253800 rows=11427 distinct=700
-  W45N8 ticks=84253101..84253800 rows=4120 distinct=678
-    gaps (1): 84253423..84253444 (22t)
-  W45N7 ticks=84253101..84253800 rows=1950 distinct=700
-  W47N7 ticks=84253101..84253800 rows=2773 distinct=600
-    gaps (1): 84253601..84253700 (100t)
-unique rows=26377 distinct_ticks=700 distinct_room_ticks=3278
-gets_appended 2 total 20
-finished
-EXIT:0
+  W46N8 ticks=84253501..84254200 rows=6735 distinct=700
+  W47N8 ticks=84253501..84254200 rows=10711 distinct=700
+  W45N8 ticks=84253501..84254200 rows=4071 distinct=600
+  W45N7 ticks=84253501..84254200 rows=1569 distinct=607
+  W47N7 ticks=84253501..84254200 rows=3213 distinct=600
+unique rows=26299 distinct_ticks=700 distinct_room_ticks=3207
