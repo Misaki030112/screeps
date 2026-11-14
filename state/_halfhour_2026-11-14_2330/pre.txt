@@ -1,0 +1,163 @@
+2026-11-14 23:36:40 HKT / HKT check
+==== processes (screeps/pg/grafana/listener) ====
+   7854 Thu Nov  5 17:24:41 2026 /usr/lib/postgresql/17/bin/postgres -D /workspace/screeps/var/pg17 -c config_file=/etc/postgresql/17/main/postgresql.conf
+   7855 Thu Nov  5 17:24:41 2026 postgres: 17/main: checkpointer 
+   7856 Thu Nov  5 17:24:41 2026 postgres: 17/main: background writer 
+   7858 Thu Nov  5 17:24:41 2026 postgres: 17/main: walwriter 
+   7859 Thu Nov  5 17:24:41 2026 postgres: 17/main: autovacuum launcher 
+   7860 Thu Nov  5 17:24:41 2026 postgres: 17/main: TimescaleDB Background Worker Launcher 
+   7861 Thu Nov  5 17:24:41 2026 postgres: 17/main: logical replication launcher 
+   8028 Thu Nov  5 17:24:50 2026 postgres: 17/main: TimescaleDB Background Worker Scheduler for database 16385 
+   8030 Thu Nov  5 17:24:50 2026 /usr/share/grafana/bin/grafana server --homepath /usr/share/grafana --config grafana/grafana.ini
+   8041 Thu Nov  5 17:24:50 2026 .venv/bin/python -m http.server 8787 --bind 127.0.0.1
+   8078 Thu Nov  5 17:24:50 2026 /usr/share/grafana/data/plugins-bundled/elasticsearch/gpx_grafana_elasticsearch_datasource_linux_amd64
+2753716 Sat Nov 14 23:25:36 2026 .venv/bin/python tools/listener.py
+2754211 Sat Nov 14 23:26:27 2026 postgres: 17/main: screeps screeps 127.0.0.1(59060) idle
+2756777 Sat Nov 14 23:30:15 2026 postgres: 17/main: screeps screeps 127.0.0.1(46672) idle
+4035476 Wed Nov 11 00:42:09 2026 /bin/bash tools/run_listener.sh
+
+==== pg_lsclusters ====
+Ver Cluster Port Status Owner    Data directory              Log file
+17  main    5432 online postgres /workspace/screeps/var/pg17 /var/log/postgresql/postgresql-17-main.log
+
+==== listener pids / locks ====
+2753716 .venv/bin/python tools/listener.py
+4035476 /bin/bash tools/run_listener.sh
+listener.py count=1
+yield_files=absent
+metrics/listener.pid mtime=2026-11-05 15:06:47 size=8 content='4035476'
+metrics/listener.lock mtime=2026-11-14 23:25:37 size=0 content=''
+metrics/listener.loop.lock mtime=2026-11-05 15:06:47 size=0 content=''
+==== rot / live.json ====
+live.json updated 2026-11-14 23:36:38 size 19901
+gameTime 84267264
+roomSlot W47N8
+objects n= 0 type dict
+cpu {'cpu': 14, 'memory': 24255}
+stats.t 84267360
+keys ['uid', 'stats', 'cpu', 'objects', 'gameTime', 'roomSlot', 'console_tail', 'errors_tail', 'updated']
+live.json_age_s 2.9
+updated field 2026-11-14 23:36:38
+listener_rot.json {"i": 1, "room": "W47N8", "left": 130.0, "at": "2026-11-14 23:36:40"}
+MISSING room_rot.json
+==== box_pause last 8 ====
+{"from": "2026-11-14 19:20:19", "to": "2026-11-14 19:25:47", "sec": 318}
+{"from": "2026-11-14 19:48:26", "to": "2026-11-14 20:05:21", "sec": 1008}
+{"from": "2026-11-14 20:35:57", "to": "2026-11-14 20:57:05", "sec": 1258}
+{"from": "2026-11-14 21:09:40", "to": "2026-11-14 21:23:27", "sec": 822}
+{"from": "2026-11-14 21:42:12", "to": "2026-11-14 22:03:16", "sec": 1264}
+{"from": "2026-11-14 22:10:46", "to": "2026-11-14 22:19:34", "sec": 524}
+{"from": "2026-11-14 22:37:50", "to": "2026-11-14 23:03:03", "sec": 1513}
+{"from": "2026-11-14 23:16:56", "to": "2026-11-14 23:25:24", "sec": 499}
+==== recent listener.out tail ====
+2026-11-14 20:05:25 restart
+2026-11-14 20:14:26 restart
+2026-11-14 20:57:08 restart
+2026-11-14 21:23:30 restart
+2026-11-14 22:03:19 restart
+2026-11-14 22:19:37 restart
+2026-11-14 23:03:06 restart
+2026-11-14 23:25:27 restart
+==== recent errors (post-wake) ====
+ModuleNotFoundError: No module named 'websocket'
+error ignored terminating <psycopg.Pipeline [BAD] at 0x7f5053df0d50>: the connection is lost
+error ignored terminating <psycopg.Pipeline [BAD] at 0x7f50541f7950>: the connection is lost
+error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f18d7b750>: relation "incidents" does not exist
+error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f18927a50>: relation "incidents" does not exist
+error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f18df1f50>: relation "incidents" does not exist
+error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f189484d0>: relation "incidents" does not exist
+error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f189490d0>: relation "incidents" does not exist
+error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f1897ef50>: relation "incidents" does not exist
+error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f190b93d0>: relation "incidents" does not exist
+error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f1893c2d0>: relation "incidents" does not exist
+error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f18df1f50>: relation "incidents" does not exist
+error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f18d80750>: relation "incidents" does not exist
+error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f18d81350>: relation "incidents" does not exist
+error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f18d82050>: relation "incidents" does not exist
+error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f18d828d0>: relation "incidents" does not exist
+error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f18d835d0>: relation "incidents" does not exist
+error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f18d835d0>: relation "incidents" does not exist
+error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f18d80a50>: relation "incidents" does not exist
+error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f18d83050>: relation "incidents" does not exist
+error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f189a8050>: relation "incidents" does not exist
+error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f1893d050>: relation "incidents" does not exist
+error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f1893df50>: relation "incidents" does not exist
+error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f18d97ed0>: relation "incidents" does not exist
+error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f189c1450>: relation "incidents" does not exist
+error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f18daef50>: relation "incidents" does not exist
+error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f18df2550>: relation "incidents" does not exist
+error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f1893df50>: relation "incidents" does not exist
+error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f18d95bd0>: relation "incidents" does not exist
+error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f18df3450>: relation "incidents" does not exist
+error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f18d96450>: relation "incidents" does not exist
+error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f189a80d0>: relation "incidents" does not exist
+error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f189a8ed0>: relation "incidents" does not exist
+error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f18d78150>: relation "incidents" does not exist
+error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f190b9050>: relation "incidents" does not exist
+error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f18d83650>: relation "incidents" does not exist
+error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f189a8ed0>: relation "incidents" does not exist
+error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f18df3050>: relation "incidents" does not exist
+error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f189cc850>: relation "incidents" does not exist
+error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f189b6cd0>: relation "incidents" does not exist
+error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f189b7dd0>: relation "incidents" does not exist
+error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f18951b50>: relation "incidents" does not exist
+error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f189cd8d0>: relation "incidents" does not exist
+error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f18def6d0>: relation "incidents" does not exist
+error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f189ab8d0>: relation "incidents" does not exist
+error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f189c2450>: relation "incidents" does not exist
+error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f18dae9d0>: relation "incidents" does not exist
+error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f18911050>: relation "incidents" does not exist
+error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f189cf350>: relation "incidents" does not exist
+error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f189cfdd0>: relation "incidents" does not exist
+error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f18d83150>: relation "incidents" does not exist
+error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f189cdf50>: relation "incidents" does not exist
+error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f189515d0>: relation "incidents" does not exist
+error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f189a8ed0>: relation "incidents" does not exist
+error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f189cfd50>: relation "incidents" does not exist
+error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f18931150>: relation "incidents" does not exist
+error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f190ba0d0>: relation "incidents" does not exist
+error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f18931b50>: relation "incidents" does not exist
+error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f18d95b50>: relation "incidents" does not exist
+error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f18df0950>: relation "incidents" does not exist
+error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f189515d0>: relation "incidents" does not exist
+error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f189b67d0>: relation "incidents" does not exist
+error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f1893e750>: relation "incidents" does not exist
+error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f189c3e50>: relation "incidents" does not exist
+error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f189312d0>: relation "incidents" does not exist
+error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f190ba4d0>: relation "incidents" does not exist
+error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f18defed0>: relation "incidents" does not exist
+error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f18d956d0>: relation "incidents" does not exist
+error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f18d96f50>: relation "incidents" does not exist
+error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f18d956d0>: relation "incidents" does not exist
+error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f1893e750>: relation "incidents" does not exist
+error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f189b6bd0>: relation "incidents" does not exist
+error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f189cdfd0>: relation "incidents" does not exist
+error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f189c3250>: relation "incidents" does not exist
+error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f18931150>: relation "incidents" does not exist
+error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f189b4250>: relation "incidents" does not exist
+error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f189a8ad0>: relation "incidents" does not exist
+error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f1910eb50>: relation "incidents" does not exist
+error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f18df09d0>: relation "incidents" does not exist
+error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f189b6bd0>: relation "incidents" does not exist
+error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f190ba4d0>: relation "incidents" does not exist
+error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f189c3cd0>: relation "incidents" does not exist
+error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f18930e50>: relation "incidents" does not exist
+error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f18df0850>: relation "incidents" does not exist
+TimeoutError: The read operation timed out
+TimeoutError: The read operation timed out
+urllib.error.HTTPError: HTTP Error 502: Bad Gateway
+urllib.error.HTTPError: HTTP Error 502: Bad Gateway
+urllib.error.HTTPError: HTTP Error 502: Bad Gateway
+TimeoutError: The read operation timed out
+urllib.error.HTTPError: HTTP Error 502: Bad Gateway
+urllib.error.HTTPError: HTTP Error 502: Bad Gateway
+urllib.error.HTTPError: HTTP Error 502: Bad Gateway
+urllib.error.HTTPError: HTTP Error 502: Bad Gateway
+urllib.error.HTTPError: HTTP Error 502: Bad Gateway
+urllib.error.HTTPError: HTTP Error 502: Bad Gateway
+urllib.error.HTTPError: HTTP Error 502: Bad Gateway
+urllib.error.HTTPError: HTTP Error 502: Bad Gateway
+urllib.error.HTTPError: HTTP Error 502: Bad Gateway
+==== grafana/dashboard http ====
+grafana 200
+dashboard 200

@@ -1,0 +1,1 @@
+2026-11-15 ~00:28 Asia/Hong_Kong 1h peacetime patrol. FORMAL ALERT (a) holds on W47 only. Deployed ffdf767 (core readyTimeout / WAIT re-arm). Home (a) first soft, (b) RESET at tip then later under after buster bill.

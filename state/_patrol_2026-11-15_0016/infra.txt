@@ -1,0 +1,8 @@
+services.sh: ok postgres, views_apache, grafana, listener, dashboard
+grafana_check: 20/20 OK
+listener: no yield file; single-slot 5:5:1:1; python pid 2772771 (restart 00:17:14 after box freeze 00:15:00-00:17:10); earlier restart 00:01:21 after freeze 23:49:33-00:01:18; run_listener.sh 4035476 stayed up; commander not live-commanding; rot later W46N8
+freshness at analysis: room_stats 84267930 age~36s; creep_ticks live; creep_cpu fresh (~56s)
+later room_stats to 84268050 commit ffdf767 stor 13079
+history_backfill 40m: ok first-pass inserted=4610 already_in_db=21367 ts_realigned=48 tick_s=4.467 missing=W45N8@84267400 and W47N7@84267800; confirm recovered W47N7@84267800 inserted=420; retry2 still official 404 on W45N8@84267400 (mid-window 23 live ticks + 77-tick hole)
+W45N7 many empty-room ticks (civilians fled / no our creeps), not official 404
+box freezes this hour: 23:49:33-00:01:18 ~704s, 00:15:00-00:17:10 ~130s, both self-healed; no subscribe-limit after thaws
