@@ -1,0 +1,12 @@
+services.sh: ok postgres / views_apache / grafana / listener / dashboard
+grafana_check: 20/20
+yield: absent
+war_cmd/pulse: NO_WAR_PROCS
+listener: run_listener.sh 4035476 since Nov10; python pid 2508569 since 10:18:48 after box freeze 10:12:40-10:18:36 349s; prior restart 09:59:59 after freeze 09:39:03-09:59:56 1249s
+after 09:59 thaw: subscribe limit reached W46N8@10:00:12 and W47N8@10:03:08 (x1) then W47N8@10:10:29 (x100); self-healed on 10:18 restart (leftover slot after hibernate, not commander)
+rot at 10:21 i=3 W45N7 left~100s; at 10:24-10:26 i=0 W46N8 left~385s (5:5:1:1)
+Memory.cmd.on=1 at=84224348 stale c={} s={} v=1, commander not live, not reclaimed
+dashboard 8787:200 grafana:200
+DB after thaw: room_stats / creep_ticks / creep_cpu fresh (few seconds on current slot)
+history_backfill: see history_backfill.txt; missing_chunks=1 W45N7@84256000 still official 404 (confirm GET 10:21:36 and retry2 GET 10:24:26 at game.time~84256650 still 404)
+room_stats freeze gaps this hour: 84256030-84256330 (09:38:53-10:00:41, 300t / 1307s) and 84256490-84256580 (10:12:29-10:19:14, 90t / 405s)

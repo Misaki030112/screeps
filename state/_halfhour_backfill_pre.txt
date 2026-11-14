@@ -1,10 +1,9 @@
-2026-11-14 09:28:07
+2026-11-14 10:01:12
     PID                  STARTED CMD
-2492451 Sat Nov 14 09:21:22 2026 .venv/bin/python tools/listener.py
-4035476 Tue Nov 10 19:04:34 2026 /bin/bash tools/run_listener.sh
-rot={"i": 2, "room": "W45N8", "left": 115.0, "at": "2026-11-14 09:28:06"}
+2502510 Sat Nov 14 10:00:08 2026 .venv/bin/python tools/listener.py
+4035476 Tue Nov 10 19:25:23 2026 /bin/bash tools/run_listener.sh
+rot={"i": 0, "room": "W46N8", "left": 113.9, "at": "2026-11-14 10:01:11"}
 box_pause last:
-{"from": "2026-11-13 20:43:38", "to": "2026-11-13 20:57:30", "sec": 827}
 {"from": "2026-11-13 21:06:33", "to": "2026-11-13 21:25:57", "sec": 1159}
 {"from": "2026-11-13 21:40:46", "to": "2026-11-13 22:01:58", "sec": 1271}
 {"from": "2026-11-13 22:12:40", "to": "2026-11-13 22:22:23", "sec": 577}
@@ -24,13 +23,14 @@ box_pause last:
 {"from": "2026-11-14 07:39:56", "to": "2026-11-14 08:02:23", "sec": 1337}
 {"from": "2026-11-14 08:35:13", "to": "2026-11-14 09:00:35", "sec": 1521}
 {"from": "2026-11-14 09:08:44", "to": "2026-11-14 09:21:09", "sec": 739}
+{"from": "2026-11-14 09:39:03", "to": "2026-11-14 09:59:56", "sec": 1249}
 yield_file=absent
 run_listener.sh=4035476 listener_count=1
-db tips: creep_ticks 84255886
-room_stats 84255880
-creep_cpu 84255870
-path_arrivals 84255854
-live.json updated 2026-11-14 09:28:04 gameTime None roomSlot W45N8 objects 0 cpu {'cpu': 14, 'memory': 24763} stats.t 84255880
+db tips: creep_ticks 84256337
+room_stats 84256330
+creep_cpu 84256330
+path_arrivals 84256326
+live.json updated 2026-11-14 10:01:12 gameTime 84256337 roomSlot W46N8 objects 262 cpu {'cpu': 15, 'memory': 24952} stats.t 84256330
 grafana=200
 dashboard=200
-NEW since last half-hour (09:04): one box pause 09:08:44-09:21:09 (739s). Listener self-healed: errors.log "box frozen ~739s since 2026-11-14 09:08:44 ... reconnecting" and listener.out restart 09:21:12; listener.py pid 2492451 started 09:21:22; run_listener.sh 4035476 stayed up. No new subscribe-limit after this start (last recorded 23:31:04). After reconnect: STATS/segment 90 flowing (room_stats tip matches stats.t, cpu advancing, creep_cpu and path_arrivals tips near live). creep_ticks live ingest on current slot W47N8 (weight-5, rot i=1): W47N8 distinct ticks continue past official-history end 84255700 up to the live tip; other rooms in the last 200 ticks still end at 84255700 (09:21 hourly patrol official backfill). live.json gameTime=None and objects=0 on the W47N8 slot even while W47N8 creep_ticks and stats.t advance (ingest healthy; did not restart listener). yield file absent, single peacetime slot, weights 5:5:1:1. did not touch war_cmd/pulse/listener. Last half-hour (09:04) filled official 84254801..84255500 inserted=19557 (already_in_db=9991) missing_chunks=1: W45N7@84255200 official 404 after confirm 09:03:03 and retry2 09:04:02. The 09:21 hourly patrol already prefilled official 84255001..84255700 (inserted=6904, already_in_db=22381, missing_chunks=1 still W45N7@84255200) at game.time=84255799 published_bases=84255000..84255600. This 40m run should pick up newly published bases after 84255600, retry W45N7@84255200 if still in window, and cover the live-listener gap during the 09:08-09:21 freeze (especially non-current-slot rooms). Concurrent 09:21 hourly patrol is still writing analysis files; history_backfill is not running. errors.log has no new ingest drops after 08:30:10.
+NEW since last half-hour (09:30): one box pause 09:39:03-09:59:56 (1249s). Listener self-healed: errors.log "box frozen ~1249s since 2026-11-14 09:39:03 ... reconnecting" and listener.out restart 09:59:59; listener.py pid 2502510 started 10:00:08; run_listener.sh 4035476 stayed up. One new subscribe-limit after this start: 10:00:12 err@room:shard3/W46N8 subscribe limit reached (x1); no further subscribe-limit by 10:00:56. After reconnect, STATS/segment 90 flowing (room_stats tip matches stats.t, cpu advancing, creep_cpu and path_arrivals tips near live). creep_ticks live ingest confirmed on current slot W46N8 (weight-5, rot i=0) past official-history end 84255700/84255800 up to the live tip; other rooms lag (W45N7 max 84255939, W45N8 84255912, W47N7 84255800, W47N8 84255885) after the freeze. yield file absent, single peacetime slot, weights 5:5:1:1. did not touch war_cmd/pulse/listener. Last half-hour (09:30) filled official 84255101..84255800 inserted=3683 (already_in_db=23164, ts_realigned=18163) missing_chunks=1: W45N7@84255200 official 404 after confirm 09:29:02 and retry2 09:30:17 at game.time=84255916. This 40m run should pick up newly published bases after 84255700, retry W45N7@84255200 only if still in window, and cover the live-listener gap during the 09:39-09:59 freeze (especially non-current-slot rooms). history_backfill is not running. errors.log also has a 09:32:23 incidents ingest drop (cannot adapt type 'dict'); no new ingest drops after the 09:59 thaw.
