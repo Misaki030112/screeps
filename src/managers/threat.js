@@ -111,7 +111,10 @@ function step(s, o, c, t) {
       else if (o.def === 'out') go(S.DEFEND, 'dispatched');
       // Still gathering the max body (extensions not full). Do not WAIT out a fight we have
       // already accepted; the spawn holds and fillers keep topping the pile.
-      else if (o.def !== 'spawning' && !o.short && t - s.since > c.readyTimeout) waitNpc('timeout');
+      // Cores are fights, not wait-outs (see header). readyTimeout is for solo kites whose spawn is stuck.
+      // W45N7 2026-11-14 23:30 and 00:05: leftover ranged kite was not a buster, def stayed none, readyTimeout
+      // twice WAIT-out a live core at 9,42 and the room went SAFE on the timer while the core still stood.
+      else if (k !== 'core' && s.mission !== 'core' && o.def !== 'spawning' && !o.short && t - s.since > c.readyTimeout) waitNpc('timeout');
       break;
     case S.DEFEND:
       if (!o.armed && k !== 'none') waitNpc('gate');
@@ -145,11 +148,16 @@ function step(s, o, c, t) {
       // or (unreserved Invaders) once o.cap reaches the RCL7 max body
       else if (k === 'guard' && !gateReason(o, c, k)) {
         delete s.until; s.inc = t; delete s.recycling; s.mission = 'guard'; go(S.THREAT, 'guard', { inv: o.inv }); }
+      // A timeout/defend_timeout WAIT with the core still there must re-arm, not sit until the
+      // timer and resume SAFE (same incidents: W45N7 inc 84267618 went SAFE why=timer at 84267949
+      // while the core at 9,42 was still up; civilians resumed into it).
+      else if (k === 'core' && !gateReason(o, c, k) && s.why !== 'player') {
+        delete s.until; s.inc = t; delete s.recycling; s.mission = 'core'; go(S.THREAT, 'core', { inv: o.inv }); }
       else if (s.why !== 'player' && o.vis && k === 'none') go(S.SAFE, 'clear_seen');
       else if (t >= s.until) go(S.SAFE, 'timer');
       break;
   }
-  if (s.st === S.SAFE) { delete s.inc; delete s.until; delete s.foes; delete s.foeSeen; delete s.mission; delete s.corePos; }
+  if (s.st === S.SAFE) { delete s.inc; delete s.until; delete s.foes; delete s.foeSeen; delete s.mission; delete s.corePos; delete s.def; delete s.def2; delete s.squad; delete s.arrived; delete s.need2; delete s.recycling; delete s.extra; }
   return { s, ev };
 }
 // resumeEarly (W45N8 review): in DEFEND with our defender in the room and the target <15% hp (or already dead, waiting

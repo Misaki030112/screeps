@@ -93,6 +93,20 @@ it('WAIT budget with live solo Invader re-arms to THREAT after budget exemption'
   const r = run([[100, { inv: solo(1300), spawnsDay: C.maxPerDay }]], stuck);
   assert.strictEqual(r.s.st, 'THREAT'); assert.strictEqual(r.s.mission, 'solo');
 });
+it('core THREAT does not readyTimeout (cores are fights, not wait-outs)', () => {
+  const r = run([[1, { core: true, corePos: [9, 42] }], [150, { core: true }], [1 + C.readyTimeout + 20, { core: true }]]);
+  assert.deepStrictEqual(r.states, ['THREAT', 'THREAT', 'THREAT']);
+  assert.strictEqual(r.s.mission, 'core');
+  assert.notStrictEqual(r.s.why, 'timeout');
+});
+it('WAIT timeout with a live core re-arms to THREAT instead of SAFE on the timer', () => {
+  const live = { st: 'WAIT', since: 1, why: 'timeout', mission: 'core', corePos: [9, 42], until: 200 };
+  const mid = run([[100, { core: true, corePos: [9, 42] }]], live);
+  assert.strictEqual(mid.s.st, 'THREAT'); assert.strictEqual(mid.s.mission, 'core');
+  const late = run([[250, { core: true, corePos: [9, 42] }]], live);
+  assert.strictEqual(late.s.st, 'THREAT'); assert.strictEqual(late.s.mission, 'core');
+  assert.notStrictEqual(late.evs.pop(), 'resume:timer');
+});
 it('core fight outlasts the creep defendTimeout and stops on coreDefendTimeout', () => {
   const r = run([[1, { core: true }], [10, { core: true, def: 'out' }], [600, { core: true, def: 'out' }], [10 + C.coreDefendTimeout + 1, { core: true, def: 'out' }]]);
   assert.strictEqual(r.states[2], 'DEFEND'); assert.strictEqual(r.s.st, 'WAIT'); assert.strictEqual(r.s.why, 'defend_timeout');
