@@ -1,0 +1,134 @@
+2026-11-14 20:57:35 HKT
+==== processes (screeps/pg/grafana/listener) ====
+   1565 Thu Nov  5 16:05:51 2026 pulseaudio --daemonize=no --exit-idle-time=-1 --disallow-exit --disallow-module-loading --realtime=no --high-priority=no --use-pid-file=no --log-target=stderr -n -F /tmp/xdg-runtime-box/pulse/box-audio.pa
+   1570 Thu Nov  5 16:05:51 2026 bash /usr/local/bin/box-bounded-log --run /tmp/pulseaudio:1.log -- /usr/local/bin/box-audio.sh /tmp/xdg-runtime-box
+   1571 Thu Nov  5 16:05:51 2026 flock -n /tmp/pulseaudio:1.log.lock /exec-daemon/node /usr/local/bin/box-bounded-log.mjs /tmp/pulseaudio:1.log 1565
+   1573 Thu Nov  5 16:05:51 2026 /exec-daemon/node /usr/local/bin/box-bounded-log.mjs /tmp/pulseaudio:1.log 1565
+   7854 Thu Nov  5 16:07:38 2026 /usr/lib/postgresql/17/bin/postgres -D /workspace/screeps/var/pg17 -c config_file=/etc/postgresql/17/main/postgresql.conf
+   7855 Thu Nov  5 16:07:38 2026 postgres: 17/main: checkpointer 
+   7856 Thu Nov  5 16:07:38 2026 postgres: 17/main: background writer 
+   7858 Thu Nov  5 16:07:38 2026 postgres: 17/main: walwriter 
+   7859 Thu Nov  5 16:07:38 2026 postgres: 17/main: autovacuum launcher 
+   7860 Thu Nov  5 16:07:38 2026 postgres: 17/main: TimescaleDB Background Worker Launcher 
+   7861 Thu Nov  5 16:07:38 2026 postgres: 17/main: logical replication launcher 
+   8028 Thu Nov  5 16:07:47 2026 postgres: 17/main: TimescaleDB Background Worker Scheduler for database 16385 
+   8030 Thu Nov  5 16:07:47 2026 /usr/share/grafana/bin/grafana server --homepath /usr/share/grafana --config grafana/grafana.ini
+   8041 Thu Nov  5 16:07:47 2026 .venv/bin/python -m http.server 8787 --bind 127.0.0.1
+   8078 Thu Nov  5 16:07:47 2026 /usr/share/grafana/data/plugins-bundled/elasticsearch/gpx_grafana_elasticsearch_datasource_linux_amd64
+2391678 Sat Nov 14 10:33:10 2026 pulseaudio --daemonize=no --exit-idle-time=-1 --disallow-exit --disallow-module-loading --realtime=no --high-priority=no --use-pid-file=no --log-target=stderr -n -F /tmp/xdg-runtime-box-6/pulse/box-audio.pa
+2391683 Sat Nov 14 10:33:10 2026 bash /usr/local/bin/box-bounded-log --run /tmp/pulseaudio:6.log -- /usr/local/bin/box-audio.sh /tmp/xdg-runtime-box-6
+2391684 Sat Nov 14 10:33:10 2026 flock -n /tmp/pulseaudio:6.log.lock /exec-daemon/node /usr/local/bin/box-bounded-log.mjs /tmp/pulseaudio:6.log 2391678
+2391686 Sat Nov 14 10:33:10 2026 /exec-daemon/node /usr/local/bin/box-bounded-log.mjs /tmp/pulseaudio:6.log 2391678
+2673073 Sat Nov 14 19:35:53 2026 pulseaudio --daemonize=no --exit-idle-time=-1 --disallow-exit --disallow-module-loading --realtime=no --high-priority=no --use-pid-file=no --log-target=stderr -n -F /tmp/xdg-runtime-box-4/pulse/box-audio.pa
+2673078 Sat Nov 14 19:35:53 2026 bash /usr/local/bin/box-bounded-log --run /tmp/pulseaudio:4.log -- /usr/local/bin/box-audio.sh /tmp/xdg-runtime-box-4
+2673079 Sat Nov 14 19:35:53 2026 flock -n /tmp/pulseaudio:4.log.lock /exec-daemon/node /usr/local/bin/box-bounded-log.mjs /tmp/pulseaudio:4.log 2673073
+2673081 Sat Nov 14 19:35:53 2026 /exec-daemon/node /usr/local/bin/box-bounded-log.mjs /tmp/pulseaudio:4.log 2673073
+2706334 Sat Nov 14 20:39:48 2026 postgres: 17/main: screeps screeps 127.0.0.1(42820) idle
+2716106 Sat Nov 14 20:57:18 2026 .venv/bin/python tools/listener.py
+2716126 Sat Nov 14 20:57:21 2026 postgres: 17/main: screeps screeps 127.0.0.1(41562) idle
+4035476 Tue Nov 10 23:25:06 2026 /bin/bash tools/run_listener.sh
+
+==== listener pids / locks ====
+2716106 .venv/bin/python tools/listener.py
+4035476 /bin/bash tools/run_listener.sh
+listener.py count=1
+yield_files=absent
+metrics/listener.pid mtime=2026-11-05 15:06:47 size=8 content='4035476'
+metrics/listener.lock mtime=2026-11-14 20:57:19 size=0 content=''
+metrics/listener.loop.lock mtime=2026-11-05 15:06:47 size=0 content=''
+==== rot / live.json ====
+live.json updated 2026-11-14 20:57:34 size 73776
+gameTime 84265213
+roomSlot W46N8
+objects n= 264
+cpu {'cpu': 15, 'memory': 26199}
+stats.t 84265210
+keys ['console_tail', 'cpu', 'errors_tail', 'gameTime', 'objects', 'roomSlot', 'stats', 'uid', 'updated']
+live.json_age_s 1.1
+listener_rot.json {"i": 0, "room": "W46N8", "left": 60.2, "at": "2026-11-14 20:57:35"}
+MISSING room_rot.json
+==== box_pause last 8 ====
+{"from": "2026-11-14 17:14:10", "to": "2026-11-14 17:21:15", "sec": 425}
+{"from": "2026-11-14 17:51:21", "to": "2026-11-14 18:01:53", "sec": 631}
+{"from": "2026-11-14 18:17:44", "to": "2026-11-14 18:24:16", "sec": 391}
+{"from": "2026-11-14 18:48:26", "to": "2026-11-14 19:02:46", "sec": 855}
+{"from": "2026-11-14 19:11:21", "to": "2026-11-14 19:14:05", "sec": 156}
+{"from": "2026-11-14 19:20:19", "to": "2026-11-14 19:25:47", "sec": 318}
+{"from": "2026-11-14 19:48:26", "to": "2026-11-14 20:05:21", "sec": 1008}
+{"from": "2026-11-14 20:35:57", "to": "2026-11-14 20:57:05", "sec": 1258}
+==== recent errors (listener / errors.log last relevant) ====
+433:error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f189ab8d0>: relation "incidents" does not exist
+436:error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f189c2450>: relation "incidents" does not exist
+439:error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f18dae9d0>: relation "incidents" does not exist
+442:error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f18911050>: relation "incidents" does not exist
+445:error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f189cf350>: relation "incidents" does not exist
+448:error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f189cfdd0>: relation "incidents" does not exist
+451:error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f18d83150>: relation "incidents" does not exist
+454:error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f189cdf50>: relation "incidents" does not exist
+457:error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f189515d0>: relation "incidents" does not exist
+460:error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f189a8ed0>: relation "incidents" does not exist
+463:error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f189cfd50>: relation "incidents" does not exist
+466:error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f18931150>: relation "incidents" does not exist
+469:error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f190ba0d0>: relation "incidents" does not exist
+472:error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f18931b50>: relation "incidents" does not exist
+475:error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f18d95b50>: relation "incidents" does not exist
+478:error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f18df0950>: relation "incidents" does not exist
+481:error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f189515d0>: relation "incidents" does not exist
+484:error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f189b67d0>: relation "incidents" does not exist
+487:error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f1893e750>: relation "incidents" does not exist
+490:error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f189c3e50>: relation "incidents" does not exist
+493:error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f189312d0>: relation "incidents" does not exist
+496:error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f190ba4d0>: relation "incidents" does not exist
+499:error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f18defed0>: relation "incidents" does not exist
+502:error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f18d956d0>: relation "incidents" does not exist
+505:error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f18d96f50>: relation "incidents" does not exist
+508:error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f18d956d0>: relation "incidents" does not exist
+511:error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f1893e750>: relation "incidents" does not exist
+514:error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f189b6bd0>: relation "incidents" does not exist
+517:error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f189cdfd0>: relation "incidents" does not exist
+520:error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f189c3250>: relation "incidents" does not exist
+523:error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f18931150>: relation "incidents" does not exist
+526:error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f189b4250>: relation "incidents" does not exist
+529:error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f189a8ad0>: relation "incidents" does not exist
+532:error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f1910eb50>: relation "incidents" does not exist
+535:error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f18df09d0>: relation "incidents" does not exist
+538:error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f189b6bd0>: relation "incidents" does not exist
+541:error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f190ba4d0>: relation "incidents" does not exist
+544:error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f189c3cd0>: relation "incidents" does not exist
+547:error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f18930e50>: relation "incidents" does not exist
+550:error ignored terminating <psycopg.Pipeline [INERROR, pipeline=ON] (host=127.0.0.1 database=screeps) at 0x7f8f18df0850>: relation "incidents" does not exist
+==== listener.out last 12 ====
+2026-11-14 16:59:57 restart
+2026-11-14 17:21:18 restart
+2026-11-14 18:01:56 restart
+2026-11-14 18:10:28 restart
+2026-11-14 18:24:19 restart
+2026-11-14 18:42:51 restart
+2026-11-14 19:02:49 restart
+2026-11-14 19:14:09 restart
+2026-11-14 19:25:50 restart
+2026-11-14 20:05:25 restart
+2026-11-14 20:14:26 restart
+2026-11-14 20:57:08 restart
+==== grafana / dashboard / postgres ====
+grafana 200
+dashboard 200
+tips={'creep_ticks': 84265213, 'room_stats': 84265210, 'creep_cpu': 84265200, 'path_arrivals': 84265180}
+extrema={"creep_ticks": {"min": 83609908, "max": 84265213, "rows": 7632960}, "room_stats": {"min": 83594467, "max": 84265210, "rows": 53940}, "creep_cpu": {"min": 83609905, "max": 84265200, "rows": 2597456}, "path_arrivals": {"min": 83609919, "max": 84265180, "rows": 67126}}
+==== pg_lsclusters ====
+Ver Cluster Port Status Owner    Data directory              Log file
+17  main    5432 online postgres /workspace/screeps/var/pg17 /var/log/postgresql/postgresql-17-main.log
+==== war_cmd/pulse (do not restart) ====
+none (ok; do not start)
+==== late notes (waited ~70s after 20:57:08 restart for reconnect + first segment-90 poll) ====
+at 2026-11-14 20:59:33 HKT
+listener_rot {"i": 1, "room": "W47N8", "left": 545.0, "at": "2026-11-14 20:59:30"}
+box_pauses last:
+{"from": "2026-11-14 18:17:44", "to": "2026-11-14 18:24:16", "sec": 391}
+{"from": "2026-11-14 18:48:26", "to": "2026-11-14 19:02:46", "sec": 855}
+{"from": "2026-11-14 19:11:21", "to": "2026-11-14 19:14:05", "sec": 156}
+{"from": "2026-11-14 19:20:19", "to": "2026-11-14 19:25:47", "sec": 318}
+{"from": "2026-11-14 19:48:26", "to": "2026-11-14 20:05:21", "sec": 1008}
+{"from": "2026-11-14 20:35:57", "to": "2026-11-14 20:57:05", "sec": 1258}
+new box freeze this half-hour: 20:35:57-20:57:05 (1258s). listener.out last restart 20:57:08 after that freeze; listener.py pid 2716106; run_listener.sh 4035476 stayed up. single slot, no yield, war_cmd/pulse not restarted.
+brief subscribe-limit x1: W46N8@20:57:50, W47N8@20:58:37 (after rot i=1). live.json still updating cpu/stats; room objects were 0 on W47N8 at 20:59:00 (will recheck after backfill). did not start a second listener.
