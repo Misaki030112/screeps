@@ -1,15 +1,15 @@
-2026-11-14 14:08:18 Asia/Hong_Kong
-window ticks 84258901..84259600 (700) published_bases 84258900..84259500 game.time=84259606 tick_s=4.396
-unique_creep_tick_rows=26784 unique_after_room_rows=26784 distinct_ticks=700 distinct_room_ticks=3400
+2026-11-14 15:05 Asia/Hong_Kong
+window ticks 84259601..84260300 (700) published_bases 84259600..84260200 game.time=84260365 tick_s=4.367
+unique_creep_tick_rows=27727 unique_after_room_rows=27727 distinct_ticks=700 distinct_room_ticks=3500
 per_room:
-  W45N7 ticks=84258901..84259600 rows=1877 distinct=600
-  W45N8 ticks=84258901..84259600 rows=3707 distinct=700
-  W46N8 ticks=84258901..84259600 rows=6685 distinct=700
-  W47N7 ticks=84258901..84259600 rows=2887 distinct=700
-  W47N8 ticks=84258901..84259600 rows=11628 distinct=700
-missing_chunks=1 in-window after retries: first pass 31/35 official chunks HTTP 200 100/100; the first-pass 404s were W45N7@84259200 (mid-window) and newest-base W47N8@84259500, W45N8@84259500, W47N7@84259500 (W46N8@84259500 and W45N7@84259500 already HTTP 200). Confirm GETs 14:04:04-14:04:13 at game.time=84259627: W45N7@84259200 official 404 (adjacent W45N7@84259100 and W45N7@84259300 HTTP 200 100/100); W47N8@84259500, W45N8@84259500, W47N7@84259500 all HTTP 200 100/100. confirm_insert GETs 14:04:19-14:04:32 at game.time=84259630 inserted script-reported 1603 (W47N8@84259500 430, W45N8@84259500 560, W47N7@84259500 613; ts_realigned=0; post distinct 100/100 for all three, rows 1500/376/508). Retry2 GET 14:07:12-14:07:20 at game.time=84259669: W45N7@84259200 still 404, script inserted=0 for that hole, db post distinct=0/100 rows=0 range=none (84259201..84259300 still 0 rows). The already-recovered 84259500 chunks stayed 100/100 (retry2 reported 289 would-insert on W45N8/W47N7 but db row counts unchanged — INSERT NOT EXISTS on (creep,tick)). W45N7 missing_ticks=100 (84259201..84259300 still 0 rows). The other four rooms are 700/700 distinct ticks. This is a mid-window official hole on the weight-1 remote W45N7 (newest published base at first pass was 84259500; other rooms already had W*@84259200 HTTP 200 100/100 except this one). Next 40m overlap should retry it. No live-listener fill of 84259201..84259300 in W45N7 (weight-1; 13:44:25-13:56:47 freeze, and after thaw the slot was on W47N8 then later W45N7 only near 14:07, after this hole).
-Aged-out official 404, confirm+retry2 this run still 0 rows in db: W45N8@84258600 (ticks 84258601..84258700 still 0; official 404 on the 13:07 half-hour, 13:22 hourly patrol, 13:38 half-hour confirm GET 13:34:57 / retry2 GET 13:37:22 at game.time=84259264, this run confirm GET 14:04:12 at game.time=84259627 and retry2 GET 14:07:20 at game.time=84259669; adjacent W45N8@84258500 and W45N8@84258700 both HTTP 200 100/100). Now outside this 40m window (published_bases 84258900..84259500). Also still 0 and not re-fetched: W45N7@84257900, W45N7@84256000, W45N7@84255200, W45N8@84253800, W47N7@84253600, W46N8@84253100.
-inserted=12277 already_in_db=13375 ts_realigned=0 reconstructed first-pass=24049 (first=10674 + retry=1603 + retry2=0)
-live at finish: updated=2026-11-14 14:07:38 gameTime=None (slot not home) roomSlot=W45N7 objects=0 stats.t=84259670
-rot i=3 W45N7 left 20.0s at 2026-11-14 14:07:40 weights 5:5:1:1
-tips: creep_ticks 84259675 room_stats 84259670 creep_cpu 84259670 path_arrivals 84259659
+  W45N7 ticks=84259601..84260300 rows=2298 distinct=700
+  W45N8 ticks=84259601..84260300 rows=3452 distinct=700
+  W46N8 ticks=84259601..84260300 rows=6853 distinct=700
+  W47N7 ticks=84259601..84260300 rows=3769 distinct=700
+  W47N8 ticks=84259601..84260300 rows=11355 distinct=700
+missing_chunks=0 in-window after first pass and after leftover-hole retries: first pass 35/35 official chunks HTTP 200 100/100 (no first-pass 404s). All five rooms 700/700 distinct ticks (distinct_room_ticks=3500).
+Aged-out official 404s, confirm+retry2 this run still 0 rows in db: W45N7@84259200 (ticks 84259201..84259300 still 0; official 404 on the 14:07 half-hour first pass / confirm GET 14:04:05 at game.time=84259627 / retry2 GET 14:07:12 at game.time=84259669, the 14:17 hourly patrol first pass / confirm GET 14:20:40 at game.time=84259850 / retry2 GET 14:23:03 at game.time=84259883, the 14:35 half-hour confirm GET 14:38:55 at game.time=84260097 and retry2 GET 14:43:30 at game.time=84260159, and this run confirm GET 14:59:37 at game.time=84260377 and retry2 GET 15:04:41 at game.time=84260446; adjacent W45N7@84259100 and W45N7@84259300 both HTTP 200 100/100). Also still 0: W45N8@84258600 (ticks 84258601..84258700; confirm GET 14:59:40 / retry2 GET 15:04:44 still 404; adjacent @84258500/@84258700 HTTP 200 100/100) and W45N7@84257900 (ticks 84257901..84258000; confirm GET 14:59:42 / retry2 GET 15:04:46 still 404). Confirm/retry2 also GET already-complete W45N7@84259100 (script-reported inserted=34 both passes, db stayed 250 rows / 100 distinct — INSERT NOT EXISTS on (creep,tick)) and W45N7@84259300 (inserted=0, 236 rows / 100 distinct). No in-window live-listener hole to fill.
+inserted=8868 already_in_db=17753 ts_realigned=5579 reconstructed first-pass=26621 (first=8868 + retry landed=0 + retry2 landed=0)
+live at finish: updated=2026-11-14 15:04:57 gameTime=84260451 roomSlot=W46N8 objects=261 stats.t=84260450
+rot i=0 W46N8 left 335.0s at 2026-11-14 15:04:56 weights 5:5:1:1
+tips: creep_ticks 84260451 room_stats 84260450 creep_cpu 84260440 path_arrivals 84260426

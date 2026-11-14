@@ -1,8 +1,10 @@
-2026-11-14 14:02:31
+2026-11-14 14:58:26
     PID                  STARTED CMD
-rot={'i': 1, 'room': 'W47N8', 'left': 88.4, 'at': '2026-11-14 14:02:31'}
+    PID                  STARTED CMD
+2586927 Sat Nov 14 14:36:39 2026 .venv/bin/python tools/listener.py
+4035476 Tue Nov 10 21:17:37 2026 /bin/bash tools/run_listener.sh
+rot={"i": 2, "room": "W45N8", "left": 10.0, "at": "2026-11-14 14:58:21"}
 box_pause last:
-{"from": "2026-11-13 20:43:38", "to": "2026-11-13 20:57:30", "sec": 827}
 {"from": "2026-11-13 21:06:33", "to": "2026-11-13 21:25:57", "sec": 1159}
 {"from": "2026-11-13 21:40:46", "to": "2026-11-13 22:01:58", "sec": 1271}
 {"from": "2026-11-13 22:12:40", "to": "2026-11-13 22:22:23", "sec": 577}
@@ -32,25 +34,37 @@ box_pause last:
 {"from": "2026-11-14 12:39:53", "to": "2026-11-14 13:02:26", "sec": 1346}
 {"from": "2026-11-14 13:15:05", "to": "2026-11-14 13:20:51", "sec": 346}
 {"from": "2026-11-14 13:44:25", "to": "2026-11-14 13:56:47", "sec": 734}
+{"from": "2026-11-14 14:14:25", "to": "2026-11-14 14:17:59", "sec": 204}
 yield_file=absent
 run_listener.sh=4035476
 listener_count=1
+listener.py=2586927 started 14:36:39
 db tips:
-creep_ticks 84259606
-room_stats 84259600
-creep_cpu 84259600
-path_arrivals 84259584
-per-room creep_ticks max (since last window start 84258501):
+creep_ticks 84260362
+room_stats 84260360
+creep_cpu 84260350
+path_arrivals 84260343
+per-room creep_ticks max (since 84259301):
  room  |   min    |   max    | count 
 -------+----------+----------+-------
- W45N7 | 84258501 | 84259200 |  1720
- W45N8 | 84258501 | 84259200 |  3359
- W46N8 | 84258501 | 84259321 |  8746
- W47N7 | 84258501 | 84259200 |  2336
- W47N8 | 84258501 | 84259606 | 13997
+ W45N7 | 84259301 | 84260052 |  2596
+ W45N8 | 84259301 | 84260362 |  3687
+ W46N8 | 84259301 | 84260200 |  7815
+ W47N7 | 84259301 | 84260000 |  3737
+ W47N8 | 84259301 | 84260336 | 13541
 (5 rows)
 
-live.json updated 2026-11-14 14:02:30 gameTime None roomSlot W47N8 objects 0 cpu {'cpu': 16, 'memory': 25644} stats.t 84259600
+known leftover holes:
+      hole      | rows | ticks 
+----------------+------+-------
+ W45N7@84259200 |    0 |     0
+ W45N8@84258600 |    0 |     0
+ W45N7@84257900 |    0 |     0
+(3 rows)
+
+live.json updated 2026-11-14 14:58:24 gameTime 84260200 roomSlot W45N8 objects 0 cpu {'cpu': 14, 'memory': 25021} stats.t 84260360
 grafana=200
 dashboard=200
-NEW since last half-hour (13:38): one box pause 13:44:25-13:56:47 (734s). Listener self-healed: errors.log "box frozen ~734s since 2026-11-14 13:44:25 ... reconnecting" at 13:56:46; listener.out restart 13:56:50; listener.py pid 2568474 started 13:56:59; run_listener.sh 4035476 stayed up. After the 13:56 thaw, live.json is fresh (updated ~14:02, roomSlot W47N8 weight-5 rot i=1; gameTime/objects empty is expected because live.json is the home map only and the slot is on W47N8, not W46N8; cpu ~19-24 / memory ~25443-25588, stats.t tracks the tip) and no new leftover-slot subscribe-limit errors after 13:02:26 (the pre-freeze leftover-slot events at 12:22:23 W46N8, 12:24:52/12:32:10 W47N8, 12:34:57 W45N8, and 12:36:49 W45N7 appear to have cleared when the stale connection died during the 12:39-13:02 freeze; none after the 13:15-13:20 or 13:44-13:56 thaws either). After reconnect, STATS/segment 90 flowing (room_stats tip tracks stats.t, creep_cpu and path_arrivals within ~20 ticks of the tip; creep_ticks tip on current-slot W47N8). Other rooms still near the last official fill 84259200 except W46N8 which the live listener carried a bit further before rotating. yield file absent, single peacetime slot, weights 5:5:1:1. did not touch war_cmd/pulse/listener. Last half-hour (13:38) filled official 84258501..84259200 inserted=6625 (first=6625 + retry=0 + retry2=0, already_in_db=20251, ts_realigned=0, tick_s=4.474) missing_chunks=1 (W45N8@84258600 official 404, confirm GET 13:34:57 at game.time=84259232 / retry2 GET 13:37:22 at game.time=84259264 still 404; adjacent W45N8@84258500 and W45N8@84258700 HTTP 200 100/100; W45N8 84258601..84258700 still 0 rows). That hole may age out of this 40m window (likely published_bases starting ~84258800); will confirm-GET it if so and insert if it has published. This 40m run should overlap the previous window, pick up any newly published bases after 84259100, cover live-listener gaps during the 13:44-13:56 freeze (especially non-current-slot rooms), and retry W45N8@84258600. history_backfill is not running. errors.log has no new ingest drops after 13:30:15 (invalid input syntax for type integer: "{}"; same class as 03:30 and 08:30, not creep_ticks) except the 13:56:46 freeze/reconnect line. grafana 200, dashboard 200, postgres accepting.
+history_backfill is not running
+W45N7@84259200 hole 84259201..84259300 still 0 rows. W45N8@84258600 and W45N7@84257900 also still 0.
+NEW since last half-hour (14:44): no new box_pause row after 14:14:25-14:17:59 (204s). errors.log has no new lines after the already-noted 14:36:27 "ws error ping/pong timed out"; listener.out last restart 14:36:30; listener.py pid 2586927 started 14:36:39 still up; run_listener.sh 4035476 stayed up. No new leftover-slot subscribe-limit errors (last were 12:22:23 W46N8, 12:24:52/12:32:10 W47N8, 12:34:57 W45N8, 12:36:49 W45N7). STATS/segment 90 flowing (room_stats tip tracks stats.t, creep_cpu and path_arrivals within ~20 ticks of the tip). live.json updated fresh, roomSlot W45N8 (weight-1, rot i=2), objects 0 (W45N8 snapshot not copied into live.json; creep_ticks tip is on current-slot W45N8 and tracks the live tip), gameTime field still 84260200 (last W46N8 slot tip when rotation left home; stats.t tracks room_stats). cpu ~14 / memory ~25000. yield file absent. war_cmd / pulse were not restarted. grafana 200, dashboard 200, postgres accepting. Single peacetime slot, weights 5:5:1:1. This run did not start a second listener or change 5:5:1:1 polling. errors.log has no new ingest drops after the recurring incidents-row drop at 13:30:15. Last half-hour (14:44) filled official 84259301..84260000 inserted=6093 already_in_db=22809 ts_realigned=0 tick_s=4.441 missing_chunks=0 (35/35 first-pass HTTP 200). Leftover official 404s still 0 rows: W45N7@84259200, W45N8@84258600, W45N7@84257900. This 40m run should overlap the previous window, pick up newly published bases after 84259900, cover any live-listener gaps on non-current-slot rooms (W47N7 still at official 84260000; W45N7 live-carried only to 84260052; W46N8 to 84260200), and confirm-GET the leftover official 404s even if outside the window. history_backfill is not running.
