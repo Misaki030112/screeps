@@ -1,0 +1,16 @@
+2026-11-15 04:33:38 CST
+services: postgres ok, views_apache ok, grafana ok, listener ok, dashboard ok (backup var/backups/screeps-20261115-0426.dump 75M)
+grafana /api/health {
+  "database": "ok",
+  "version": "13.0.0",
+  "commit": "e9de482b"
+}
+dashboard http://127.0.0.1:8787 -> 200
+listener: no yield file; peacetime single-slot 5:5:1:1; restart 04:26:29 after box freeze; rot i=0 W46N8 left~530s at 04:33:29
+commander: no listener_yield_rooms; war_cmd/pulse not running; Memory.cmd stale on=1 at=84224348 c={} (not live battle, not touched)
+q.py live queries ok (fresh ticks 84271284..84271339)
+DB writers: room_stats max 84271330 fresh (~40s); creep_ticks live on subscribed rooms; history backfill filled official window
+40m history backfill: game.time=84271262 published_bases 84270500..84271100 reconstructed 84270501..84271200 (700) tick_s=4.500 vs 04:00 half-hour 4.587 (700*0.087s≈60.9s above 45s) inserted=9870 already_in_db=16105 ts_realigned=644 missing_chunks=0 all 5 rooms 700/700. Leftover official 404s outside window unchanged: W46N8@84269200 and W47N7@84269700 still 0/100. Unpublished tail after 84271200 expected (~80t to analysis tip 84271280).
+box freezes this hour: 03:32:14-03:34:21 ~127s (room_stats gap 84270510→84270560 50t / 187s); 03:41:57-04:05:48 ~1427s (gap 84270650→84270980 330t / 1467s); 04:13:00-04:27:17 ~856s (gap 84271070→84271260 190t / 856s). Known platform limit, self-healed; listener restarts 03:34:25, 04:05:51, 04:26:29.
+LIVE ffdf767 held, no new deploy.
+W45N7 Invader core inc=84271298 at 9,42 100000/100000 lv=0 host=0; defender84271299 spawn_start 84271299 waited=1 THREAT full 50-part body.

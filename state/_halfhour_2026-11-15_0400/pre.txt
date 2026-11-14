@@ -1,0 +1,133 @@
+2026-11-15 04:06:13 HKT / HKT check
+==== processes (screeps/pg/grafana/listener) ====
+   7854 Thu Nov  5 19:34:25 2026 /usr/lib/postgresql/17/bin/postgres -D /workspace/screeps/var/pg17 -c config_file=/etc/postgresql/17/main/postgresql.conf
+   7855 Thu Nov  5 19:34:25 2026 postgres: 17/main: checkpointer 
+   7856 Thu Nov  5 19:34:25 2026 postgres: 17/main: background writer 
+   7858 Thu Nov  5 19:34:25 2026 postgres: 17/main: walwriter 
+   7859 Thu Nov  5 19:34:25 2026 postgres: 17/main: autovacuum launcher 
+   7860 Thu Nov  5 19:34:25 2026 postgres: 17/main: TimescaleDB Background Worker Launcher 
+   7861 Thu Nov  5 19:34:25 2026 postgres: 17/main: logical replication launcher 
+   8028 Thu Nov  5 19:34:34 2026 postgres: 17/main: TimescaleDB Background Worker Scheduler for database 16385 
+   8030 Thu Nov  5 19:34:34 2026 /usr/share/grafana/bin/grafana server --homepath /usr/share/grafana --config grafana/grafana.ini
+   8041 Thu Nov  5 19:34:34 2026 .venv/bin/python -m http.server 8787 --bind 127.0.0.1
+   8078 Thu Nov  5 19:34:34 2026 /usr/share/grafana/data/plugins-bundled/elasticsearch/gpx_grafana_elasticsearch_datasource_linux_amd64
+2833496 Sun Nov 15 04:06:01 2026 .venv/bin/python tools/listener.py
+2833516 Sun Nov 15 04:06:03 2026 postgres: 17/main: screeps screeps 127.0.0.1(41846) idle
+4035476 Wed Nov 11 02:51:53 2026 /bin/bash tools/run_listener.sh
+
+==== pg_lsclusters ====
+Ver Cluster Port Status Owner    Data directory              Log file
+17  main    5432 online postgres /workspace/screeps/var/pg17 /var/log/postgresql/postgresql-17-main.log
+
+==== listener pids / locks ====
+2833496 .venv/bin/python tools/listener.py
+4035476 /bin/bash tools/run_listener.sh
+listener.py count=1
+run_listener.sh count=1
+yield_files=absent
+metrics/listener.pid mtime=2026-11-05 15:06:47 size=8 content='4035476\n'
+metrics/listener.lock mtime=2026-11-15 04:06:01 size=0 content=''
+metrics/listener.loop.lock mtime=2026-11-05 15:06:47 size=0 content=''
+==== rot / live.json ====
+live.json updated 2026-11-15 04:06:09.177972533 +0800 size 214
+gameTime None
+roomSlot W47N8
+objects n= 0 type dict
+cpu {'cpu': 16, 'memory': 24715}
+stats.t None
+keys ['uid', 'stats', 'cpu', 'objects', 'gameTime', 'roomSlot', 'console_tail', 'errors_tail', 'updated']
+live.json_age_s 4.6
+updated field 2026-11-15 04:06:09
+listener_rot.json {"i": 1, "room": "W47N8", "left": 552.6, "at": "2026-11-15 04:06:12"}
+==== box_pause last 10 ====
+-rw-r--r-- 1 box box 14313 Nov 15 04:05 metrics/box_pauses.jsonl
+==== recent listener.out tail ====
+2026-11-14 11:22:33 restart
+2026-11-14 11:25:50 restart
+2026-11-14 12:04:45 restart
+2026-11-14 12:22:07 restart
+2026-11-14 13:02:29 restart
+2026-11-14 13:20:54 restart
+2026-11-14 13:56:50 restart
+2026-11-14 14:18:02 restart
+2026-11-14 14:36:30 restart
+2026-11-14 15:56:24 restart
+2026-11-14 16:04:24 restart
+2026-11-14 16:24:24 restart
+2026-11-14 16:59:57 restart
+2026-11-14 17:21:18 restart
+2026-11-14 18:01:56 restart
+2026-11-14 18:10:28 restart
+2026-11-14 18:24:19 restart
+2026-11-14 18:42:51 restart
+2026-11-14 19:02:49 restart
+2026-11-14 19:14:09 restart
+2026-11-14 19:25:50 restart
+2026-11-14 20:05:25 restart
+2026-11-14 20:14:26 restart
+2026-11-14 20:57:08 restart
+2026-11-14 21:23:30 restart
+2026-11-14 22:03:19 restart
+2026-11-14 22:19:37 restart
+2026-11-14 23:03:06 restart
+2026-11-14 23:25:27 restart
+2026-11-15 00:01:21 restart
+2026-11-15 00:17:14 restart
+2026-11-15 01:04:50 restart
+2026-11-15 01:26:09 restart
+2026-11-15 02:03:58 restart
+2026-11-15 02:19:38 restart
+2026-11-15 02:33:47 restart
+2026-11-15 03:00:14 restart
+2026-11-15 03:17:59 restart
+2026-11-15 03:34:25 restart
+2026-11-15 04:05:51 restart
+==== HTTP ====
+200
+200
+==== box_pause last 10 ====
+{"from": "2026-11-15 00:15:00", "to": "2026-11-15 00:17:10", "sec": 130}
+{"from": "2026-11-15 00:40:39", "to": "2026-11-15 01:04:47", "sec": 1448}
+{"from": "2026-11-15 01:12:05", "to": "2026-11-15 01:26:06", "sec": 840}
+{"from": "2026-11-15 01:43:59", "to": "2026-11-15 02:03:54", "sec": 1190}
+{"from": "2026-11-15 02:16:43", "to": "2026-11-15 02:19:35", "sec": 161}
+{"from": "2026-11-15 02:32:11", "to": "2026-11-15 02:33:44", "sec": 92}
+{"from": "2026-11-15 02:41:34", "to": "2026-11-15 03:00:11", "sec": 1113}
+{"from": "2026-11-15 03:08:49", "to": "2026-11-15 03:17:56", "sec": 547}
+{"from": "2026-11-15 03:32:14", "to": "2026-11-15 03:34:22", "sec": 127}
+{"from": "2026-11-15 03:41:57", "to": "2026-11-15 04:05:48", "sec": 1427}
+==== DB tips ====
+       t       |   min    |   max    |            max_ts             |  count  
+---------------+----------+----------+-------------------------------+---------
+ creep_ticks   | 83609908 | 84270981 | 2026-11-15 04:06:17.182551+08 | 7851025
+ room_stats    | 83594467 | 84270980 | 2026-11-15 04:06:14.144822+08 |   54514
+ creep_cpu     | 83609905 | 84270970 | 2026-11-15 04:06:02.739032+08 | 2634840
+ path_arrivals | 83609919 | 84270970 | 2026-11-15 04:06:02.739032+08 |   67767
+(4 rows)
+
+==== errors.log last freeze mentions ====
+2026-11-14 20:58:37 [listener] err@room:shard3/W47N8: subscribe limit reached (x1)
+2026-11-14 21:09:21 [listener] err@room:shard3/W45N8: subscribe limit reached (x1)
+2026-11-14 21:23:27 [listener] box frozen ~822s since 2026-11-14 21:09:40 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-14 21:23:49 [listener] err@room:shard3/W45N8: subscribe limit reached (x1)
+2026-11-14 21:24:35 [listener] err@room:shard3/W45N7: subscribe limit reached (x1)
+2026-11-14 21:26:42 [listener] err@room:shard3/W46N8: subscribe limit reached (x1)
+2026-11-14 21:36:33 [listener] err@room:shard3/W47N8: subscribe limit reached (x1)
+2026-11-14 22:03:16 [listener] box frozen ~1264s since 2026-11-14 21:42:12 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-14 22:19:34 [listener] box frozen ~524s since 2026-11-14 22:10:46 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-14 22:20:04 [listener] err@room:shard3/W45N7: subscribe limit reached (x1)
+2026-11-14 22:20:49 [listener] err@room:shard3/W46N8: subscribe limit reached (x1)
+2026-11-14 22:31:02 [listener] err@room:shard3/W47N8: subscribe limit reached (x1)
+2026-11-14 23:03:03 [listener] box frozen ~1513s since 2026-11-14 22:37:50 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-14 23:25:23 [listener] box frozen ~499s since 2026-11-14 23:16:56 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-15 00:01:18 [listener] box frozen ~704s since 2026-11-14 23:49:33 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-15 00:17:10 [listener] box frozen ~130s since 2026-11-15 00:15:00 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-15 01:04:47 [listener] box frozen ~1448s since 2026-11-15 00:40:39 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-15 01:26:06 [listener] box frozen ~840s since 2026-11-15 01:12:05 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-15 02:03:54 [listener] box frozen ~1190s since 2026-11-15 01:43:59 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-15 02:19:35 [listener] box frozen ~161s since 2026-11-15 02:16:43 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-15 02:33:44 [listener] box frozen ~92s since 2026-11-15 02:32:11 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-15 03:00:11 [listener] box frozen ~1113s since 2026-11-15 02:41:34 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-15 03:17:56 [listener] box frozen ~547s since 2026-11-15 03:08:49 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-15 03:34:22 [listener] box frozen ~127s since 2026-11-15 03:32:14 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-15 04:05:48 [listener] box frozen ~1427s since 2026-11-15 03:41:57 (VM hibernated; wall jumped, monotonic did not), reconnecting

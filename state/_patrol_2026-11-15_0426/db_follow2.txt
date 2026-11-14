@@ -1,0 +1,47 @@
+creep_ticks cols ['ts', 'tick', 'room', 'creep', 'role', 'x', 'y', 'hits', 'store', 'state', 'commit']
+=== roles present last hour ===
+  ('reserve', 'W47N7', 505, 84270696, 84271200, 505)
+  ('reserve', 'W47N8', 45, 84270651, 84270695, 45)
+  ('reserver', 'W45N7', 418, 84270361, 84270778, 418)
+  ('reserver', 'W45N8', 402, 84270799, 84271200, 402)
+  ('reserver', 'W46N8', 34, 84270765, 84270798, 34)
+=== creep id/name for reserve* and defender last 2h ===
+maybe creep
+Traceback (most recent call last):
+  File "<stdin>", line 25, in <module>
+  File "/workspace/screeps/.venv/lib/python3.13/site-packages/psycopg/connection.py", line 302, in execute
+    return cur.execute(query, params, prepare=prepare)
+           ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/screeps/.venv/lib/python3.13/site-packages/psycopg/cursor.py", line 113, in execute
+    self._conn.wait(
+    ~~~~~~~~~~~~~~~^
+        self._execute_gen(query, params, prepare=prepare, binary=binary)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/workspace/screeps/.venv/lib/python3.13/site-packages/psycopg/connection.py", line 495, in wait
+    return waiting.wait(
+           ~~~~~~~~~~~~^
+        gen, self.pgconn.socket, interval=interval, timeout=timeout
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "psycopg_binary/_psycopg/waiting.pyx", line 227, in psycopg_binary._psycopg.wait_c
+  File "/workspace/screeps/.venv/lib/python3.13/site-packages/psycopg/_cursor_base.py", line 205, in _execute_gen
+    pgq = self._convert_query(query, params)
+  File "/workspace/screeps/.venv/lib/python3.13/site-packages/psycopg/_cursor_base.py", line 465, in _convert_query
+    pgq.convert(query, params)
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "/workspace/screeps/.venv/lib/python3.13/site-packages/psycopg/_queries.py", line 92, in convert
+    self.dump(vars)
+    ~~~~~~~~~^^^^^^
+  File "/workspace/screeps/.venv/lib/python3.13/site-packages/psycopg/_queries.py", line 101, in dump
+    params = self.validate_and_reorder_params(self._parts, vars, self._order)
+  File "/workspace/screeps/.venv/lib/python3.13/site-packages/psycopg/_queries.py", line 138, in validate_and_reorder_params
+    if PostgresQuery.is_params_sequence(vars):
+       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "/workspace/screeps/.venv/lib/python3.13/site-packages/psycopg/_queries.py", line 124, in is_params_sequence
+    raise TypeError(
+    ...<2 lines>...
+    )
+TypeError: query parameters should be a sequence or a mapping, got str
