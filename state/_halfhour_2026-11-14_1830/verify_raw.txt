@@ -1,0 +1,38 @@
+2026-11-14 18:44:36 HKT final stats after first+confirm+retry2
+==== db tips ====
+  creep_ticks min=83609908 max=84263417 rows=7575900
+  room_stats min=83594467 max=84263410 rows=53748
+  creep_cpu min=83609905 max=84263410 rows=2585652
+  path_arrivals min=83609919 max=84263410 rows=66906
+==== window per room ====
+  W45N7 ticks=84262501..84263200 rows=1804 distinct=700
+  W45N8 ticks=84262501..84263200 rows=3333 distinct=700
+  W46N8 ticks=84262601..84263200 rows=8696 distinct=600
+  W47N7 ticks=84262501..84263200 rows=3133 distinct=700
+  W47N8 ticks=84262501..84263200 rows=10653 distinct=700
+==== unique after (window) ====
+  unique_creep_tick_rows=27619 distinct_room_ticks=3400
+==== W46N8 hole 84262501..84262600 ====
+  distinct=0 range=None..None rows=0
+==== leftover outside-window holes ====
+  W47N8@84261900 (84261901..84262000) distinct=0 range=None..None rows=0
+  W46N8@84260300 (84260301..84260400) distinct=10 range=84260391..84260400 rows=97
+  W45N7@84259200 (84259201..84259300) distinct=0 range=None..None rows=0
+  W45N8@84258600 (84258601..84258700) distinct=0 range=None..None rows=0
+  W45N7@84257900 (84257901..84258000) distinct=0 range=None..None rows=0
+==== live ticks after official tip 84263200 ====
+  W46N8 after 84263200: distinct=129 range=84263264..84263409 rows=1807
+  W47N8 after 84263200: distinct=17 range=84263201..84263418 rows=269
+  W45N8 after 84263200: distinct=27 range=84263209..84263235 rows=148
+  W45N7 after 84263200: distinct=28 range=84263236..84263263 rows=28
+  W47N7 after 84263200: distinct=0 range=None..None rows=0
+==== W45N7 empty ticks in window? ====
+  official reconstructed 700, distinct=700, empty_no_creep=0
+==== W46N8 missing ticks in window ====
+  distinct=600 missing=100
+  missing ranges: [(84262501, 84262600, 100)]
+==== live.json now ====
+  updated 2026-11-14 18:44:34
+  gameTime=84263409 roomSlot=W47N8 objects=0
+  cpu={'cpu': 15, 'memory': 25224} stats.t=84263410
+  rot={'i': 1, 'room': 'W47N8', 'left': 565.0, 'at': '2026-11-14 18:44:32'}

@@ -1,0 +1,37 @@
+2026-11-14 19:15:16 HKT final stats after first+confirm+retry2
+==== db tips ====
+  creep_ticks min=83609908 max=84263833 rows=7589681
+  room_stats min=83594467 max=84263830 rows=53784
+  creep_cpu min=83609905 max=84263820 rows=2588387
+  path_arrivals min=83609919 max=84263811 rows=66951
+==== window per room ====
+  W46N8 ticks=84262901..84263600 rows=9179 distinct=700
+  W47N8 ticks=84262901..84263600 rows=10391 distinct=700
+  W45N8 ticks=84262901..84263600 rows=3225 distinct=700
+  W45N7 ticks=84262901..84263265 rows=1004 distinct=365
+  W47N7 ticks=84262901..84263600 rows=3355 distinct=700
+==== unique after (window) ====
+  unique_creep_tick_rows=27154 distinct_room_ticks=3165
+==== leftover official 404s ====
+  W46N8@84262500 distinct=0 range=None..None rows=0
+  W47N8@84261900 distinct=0 range=None..None rows=0
+  W46N8@84260300 distinct=10 range=84260391..84260400 rows=97
+  W45N7@84259200 distinct=0 range=None..None rows=0
+  W45N8@84258600 distinct=0 range=None..None rows=0
+  W45N7@84257900 distinct=0 range=None..None rows=0
+==== live ticks after official tip 84263600 ====
+  W46N8 after 84263600: distinct=0 range=None..None rows=0
+  W47N8 after 84263600: distinct=74 range=84263669..84263742 rows=1032
+  W45N8 after 84263600: distinct=27 range=84263743..84263769 rows=145
+  W45N7 after 84263600: distinct=15 range=84263779..84263834 rows=60
+  W47N7 after 84263600: distinct=0 range=None..None rows=0
+==== W45N7 empty ticks in window ====
+  official reconstructed 700, distinct=365, empty_no_creep=335 ranges=[(84263266, 84263600, 335)]
+==== live.json now ====
+  updated 2026-11-14 19:15:13 mtime 2026-11-14 19:15:13 size 1022
+  gameTime=None roomSlot=W45N7 objects=0
+  cpu={'cpu': 16, 'memory': 23571} stats.t=84263830
+  rot={'i': 3, 'room': 'W45N7', 'left': 46.9, 'at': '2026-11-14 19:15:15'}
+==== http {'grafana': 200, 'dashboard': 200} ====
+==== second box_pause during run ====
+  19:11:21-19:14:05 (156s); errors.log 19:14:05 reconnecting; listener.out restart 19:14:09; listener.py 2684233 started 19:14:18; no subscribe-limit after thaw; official window already closed at 84263600.

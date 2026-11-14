@@ -1,8 +1,8 @@
 {
   "ok": true,
   "routine": "Screeps 半小时轨迹补数",
-  "finished_at": "2026-11-14T17:40:17.502513+08:00",
-  "finished_at_hkt": "2026-11-14 17:40 Asia/Hong_Kong",
+  "finished_at": "2026-11-14T18:12:05.360775+08:00",
+  "finished_at_hkt": "2026-11-14 18:11 Asia/Hong_Kong",
   "shard": "shard3",
   "rooms": [
     "W46N8",
@@ -12,79 +12,80 @@
     "W47N7"
   ],
   "minutes": 40,
-  "game_time": 84262439,
-  "live_json_gameTime_at_finish": 84262500,
-  "live_json_stats_t_at_finish": 84262520,
-  "live_json_gameTime_note": "NEW since last half-hour (17:00): new box_pause 17:14:10-17:21:15 (425s). errors.log 17:21:15 \"box frozen ~425s since 2026-11-14 17:14:10 ... reconnecting\"; listener.out restart 17:21:18; listener.py pid 2643653 started 17:21:27; run_listener.sh 4035476 stayed up. This thaw had no leftover-slot subscribe-limit errors after reconnect (errors.log after 17:14 only has the box-frozen line). At first-pass start ~17:31: live.json already updated 17:31:48 gameTime 84262435 roomSlot W46N8 objects 263 (home slot after restart); creep_ticks tip 84262435, room_stats 84262430, creep_cpu 84262430, path_arrivals 84262423 (listener had already reconnected and pulled recent CPU / path buffers). By finish, live.json updated 2026-11-14 17:38:47 gameTime 84262500 roomSlot W47N8 (rot i=1, left 470.0s at 2026-11-14 17:38:47) objects 0, cpu {'cpu': 15, 'memory': 25123}, stats.t 84262520. live.json gameTime stayed 84262500 with objects=0 while the slot was off home (live.json is the home/W46N8 map only, last home snapshot before the rotate to W47N8); that is expected until the slot returns to home, not a listener-process failure. DB tips at finish: creep_ticks 84262529, room_stats 84262520, creep_cpu 84262510, path_arrivals 84262506. live coverage after official tip 84262400 at finish: W46N8 {'min': 84262401, 'max': 84262500, 'distinct': 100, 'rows': 996} (post-thaw / pre-rotation home slot); W47N8 live from 84262501 (slot arrived) max 84262530 distinct=30 rows=493; W45N8/W45N7/W47N7 still official-only through 84262400 (not the current slot). W47N8 84261901..84262000 still 0 rows (official 404, aged mid-window hole from the 16:47:44-16:59:54 freeze; after that thaw the slot was on W46N8 first, so the hole was not live-filled, and this run's first pass / confirm / retry2 also official 404). The new 17:14:10-17:21:15 freeze sits inside newly published bases 84262000..84262300; all five rooms were HTTP 200 100/100 on those four chunks, so that freeze gap was filled by official history (W47N8 window missing only the older 84261901..84262000 hole). listener.py 2643653 .venv/bin/python tools/listener.py; 4035476 /bin/bash tools/run_listener.sh; count=1. Yield file absent. war_cmd / pulse were not restarted. grafana 200, dashboard 200, postgres accepting. Single peacetime slot, weights 5:5:1:1. This run did not start a second listener or change 5:5:1:1 polling.",
-  "published_bases": "84261700..84262300",
+  "game_time": 84262862,
+  "live_json_gameTime_at_finish": 84262964,
+  "live_json_stats_t_at_finish": 84262960,
+  "live_json_gameTime_note": "NEW since last half-hour (17:30): new box_pause 17:51:21-18:01:53 (631s). errors.log 18:01:53 \"box frozen ~631s since 2026-11-14 17:51:21 ... reconnecting\"; listener.out restart 18:01:56; listener.py pid 2659807 started 18:02:05; run_listener.sh 4035476 stayed up. After this thaw there was one leftover-slot subscribe-limit error: errors.log 18:02:21 \"err@room:shard3/W46N8: subscribe limit reached (x1)\". No x100 cascade and no further subscribe-limit lines after that; live.json was already updating on W46N8 with objects ~263-264 by 18:02:36, so the slot recovered quickly. At first-pass start ~18:03: live.json already updated 18:03:16 gameTime 84262858 roomSlot W46N8 objects 264 (home slot after restart); creep_ticks tip 84262858, room_stats 84262860, creep_cpu 84262850, path_arrivals 84262850 (listener had already reconnected and pulled recent CPU / path buffers). Later in the run, errors.log 18:10:25 \"ws error ping/pong timed out\"; listener.out restart 18:10:28; listener.py pid 2663504 started 18:10:37; run_listener.sh 4035476 stayed up. This second reconnect had no subscribe-limit errors. By finish, live.json updated 2026-11-14 18:11:02 gameTime 84262964 roomSlot W46N8 (rot i=0, left 87.0 at 2026-11-14 18:10:59) objects 267, cpu {'cpu': 16, 'memory': 25335}, stats.t 84262960. DB tips at finish: creep_ticks 84262963, room_stats 84262960, creep_cpu 84262950, path_arrivals 84262950. live coverage after official tip 84262800 at finish: W46N8 {'min': 84262846, 'max': 84262964, 'distinct': 54, 'rows': 593} (post-thaw home slot; 84262801..84262845 still 0 rows — freeze/unpublished in-progress chunk, box thawed at gameTime ~84262847; plus a 16-tick gap 84262943..84262958 around the 18:10:25 ws timeout restart, live resumed ~84262960). W47N8/W45N8/W45N7/W47N7 still official-only through 84262800 (not the current slot). W46N8 84262501..84262600 still 0 rows (official 404, new mid-window hole: slot was on W47N8 after the 17:30 rotation). The 17:51:21-18:01:53 freeze sits inside newly published bases 84262600..84262700 (and the still-unpublished 84262800 chunk); all five rooms were HTTP 200 100/100 on 84262600 and 84262700, so that freeze gap was filled by official history through 84262800, except the older in-window W46N8@84262500 hole. listener.py 2663504 .venv/bin/python tools/listener.py; 4035476 /bin/bash tools/run_listener.sh; count=1. Yield file absent. war_cmd / pulse were not restarted. grafana 200, dashboard 200, postgres accepting. Single peacetime slot, weights 5:5:1:1. This run did not start a second listener or change 5:5:1:1 polling.",
+  "published_bases": "84262100..84262700",
   "ticks": {
-    "min": 84261701,
-    "max": 84262400,
+    "min": 84262101,
+    "max": 84262800,
     "count": 700
   },
-  "tick_s": 4.401,
+  "tick_s": 4.549,
   "missing_chunks": 1,
   "missing_chunk_list": [
-    "W47N8@84261900"
+    "W46N8@84262500"
   ],
-  "missing_chunk_note": "First pass (game.time=84262439) published_bases 84261700..84262300, reconstructed 84261701..84262400 (700). 34/35 official chunks HTTP 200 with 100 ticks; W47N8@84261900 official 404 (other four rooms @84261900 were all HTTP 200 100/100; adjacent W47N8@84261800 and W47N8@84262000 also HTTP 200 100/100). Confirm GET 17:32:56 at game.time=84262450 and retry2 GET 17:38:20 at game.time=84262523 also official 404; 0 rows in db for ticks 84261901..84262000. This is the same leftover mid-window official hole from the 17:00 half-hour (then the latest published chunk, during the 16:47:44-16:59:54 freeze). It is no longer an unpublished latest chunk: game.time is now 500+ ticks past 84261900, and W47N8@84262000 is published. missing_chunks=1 in-window. W46N8/W45N8/W45N7/W47N7 700/700 official and distinct; W45N7 empty_no_creep=0 in this window. distinct_room_ticks=3400 (=3500-100), unique_creep_tick_rows=26510. W46N8@84260300, W45N7@84259200, W45N8@84258600, and W45N7@84257900 remain official 404s outside this 40m window (window starts at 84261701; see known_official_404s_outside_window).",
-  "creep_rows_reconstructed": 27649,
-  "already_in_db": 19023,
-  "inserted": 8626,
-  "inserted_first_pass": 8626,
+  "missing_chunk_note": "First pass (game.time=84262862) published_bases 84262100..84262700, reconstructed 84262101..84262800 (700). 34/35 official chunks HTTP 200 with 100 ticks; W46N8@84262500 official 404 (other four rooms @84262500 were all HTTP 200 100/100; adjacent W46N8@84262400 and W46N8@84262600 also HTTP 200 100/100). Confirm GET 18:04:46 at game.time=84262881 and retry2 GET 18:10:08 at game.time=84262951 also official 404; 0 rows in db for ticks 84262501..84262600. This is a new mid-window official hole on home (weight-5) from the period when the peacetime slot was on W47N8 (live W47N8 started 84262501 at the 17:30 half-hour finish). It is not an unpublished latest chunk: game.time is now 350+ ticks past 84262500, and W46N8@84262600 is published. missing_chunks=1 in-window. W47N8/W45N8/W45N7/W47N7 700/700 official and distinct; W45N7 empty_no_creep=0 in this window. distinct_room_ticks=3400 (=3500-100), unique_creep_tick_rows=28201. W47N8@84261900 aged out of this 40m window (window starts at 84262101; still official 404, 0 rows). W46N8@84260300, W45N7@84259200, W45N8@84258600, and W45N7@84257900 remain official 404s outside this 40m window (see known_official_404s_outside_window).",
+  "creep_rows_reconstructed": 27347,
+  "already_in_db": 14271,
+  "inserted": 13076,
+  "inserted_first_pass": 13076,
   "inserted_retry": 0,
   "inserted_retry2": 0,
-  "inserted_note": "The previous 17:00 Asia/Hong_Kong half-hour run had filled official 84261301..84262000 (inserted=13255 = first 13255 + retry 0 + retry2 0, already_in_db=11389, ts_realigned=169, tick_s=4.368, missing_chunks=1 / W47N8@84261900). This 40m first pass (game.time=84262439, tick_s=4.401, creep_rows=27649) overlapped already_in_db=19023 on published_bases 84261700..84261900 plus earlier official/live rows, and inserted=8626 new official rows, mainly the newly published 84262000..84262300 chunks (ticks 84262001..84262400) including W47N8@84262000 which filled the post-hole 84262001..84262081 gap that the 17:00 run still had empty (live had only started at 84262082): W46N8 2158 + W47N8 3882 + W45N8 796 + W45N7 501 + W47N7 1289. This covers the 17:14:10-17:21:15 box freeze (425s) in official history for all five rooms through 84262400, except the older W47N8@84261900 hole (84261901..84262000) which stayed official 404. ts_realigned=0 on the first pass because tick_s 4.401 vs the 17:00 half-hour's 4.368 stays within the 45s realign threshold across this window (700 * 0.033s ≈ 23s). Confirm GET 17:32:56-17:33:01 at game.time=84262450 and retry2 GET 17:38:20-17:38:25 at game.time=84262523 inserted nothing that landed (W47N8@84261900, W46N8@84260300, W45N7@84259200, W45N8@84258600, and W45N7@84257900 still official 404). Confirm nfix=0, retry2 nfix=0. Final unique creep-tick rows in 84261701..84262400 = 26510 (distinct_ticks=700, distinct_room_ticks=3400). printed inserted total 8626 = first 8626 + retry landed 0 + retry2 landed 0. db unique 26510 equals the sum of per-room row counts after the first pass (W46N8 6496 + W47N8 11385 + W45N8 3091 + W45N7 2185 + W47N7 3353) and is 1139 below the printed reconstructed creep_rows=27649 (already_in_db 19023 + inserted 8626); the printed reconstructed figure is the length of the first-pass row list, and the db unique/row counts are the ground truth in-window.",
-  "ts_realigned": 0,
+  "inserted_note": "The previous 17:30 Asia/Hong_Kong half-hour run had filled official 84261701..84262400 (inserted=8626 = first 8626 + retry 0 + retry2 0, already_in_db=19023, ts_realigned=0, tick_s=4.401, missing_chunks=1 / W47N8@84261900). This 40m first pass (game.time=84262862, tick_s=4.549, creep_rows=27347) overlapped already_in_db=14271 on published_bases 84262100..84262300 plus earlier official/live rows, and inserted=13076 new official rows, mainly the newly published 84262400..84262700 chunks (ticks 84262401..84262800): W46N8 4092 + W47N8 4185 + W45N8 2026 + W45N7 1122 + W47N7 1651. This covers the 17:51:21-18:01:53 box freeze (631s) in official history for all five rooms through 84262800, except the new W46N8@84262500 hole (84262501..84262600) which stayed official 404 (that hole is before the freeze, while the slot was on W47N8). ts_realigned=13482 on the first pass because tick_s 4.549 vs the 17:30 half-hour's 4.401 exceeds the 45s realign threshold across this window (700 * 0.148s ≈ 103.6s). Confirm GET 18:04:46-18:04:53 at game.time=84262881 and retry2 GET 18:10:08-18:10:15 at game.time=84262951 inserted nothing that landed (W46N8@84262500, W47N8@84261900, W46N8@84260300, W45N7@84259200, W45N8@84258600, and W45N7@84257900 still official 404). Confirm nfix=0, retry2 nfix=0. Final unique creep-tick rows in 84262101..84262800 = 28201 (distinct_ticks=700, distinct_room_ticks=3400). printed inserted total 13076 = first 13076 + retry landed 0 + retry2 landed 0. db unique 28201 equals the sum of per-room row counts after the first pass (W46N8 8571 + W47N8 12555 + W45N8 2371 + W45N7 1625 + W47N7 3079) and is 854 above the printed reconstructed creep_rows=27347 (already_in_db 14271 + inserted 13076); the printed reconstructed figure is the length of the first-pass official-row list (owned creeps), and the db unique/row counts are the ground truth in-window (they also include live-listener rows such as non-owned creeps).",
+  "ts_realigned": 13482,
   "ts_realigned_confirm": 0,
   "ts_realigned_retry2": 0,
-  "ts_realigned_note": "First pass (tick_s=4.401, live anchor game.time=84262439) reported ts_realigned=0. Overlap timestamps from the 17:00 half-hour (tick_s=4.368) were within the 45s realign threshold (700 * 0.033s ≈ 23s). Confirm nfix=0, retry2 nfix=0. Confirm/retry2 landed no new rows.",
+  "ts_realigned_note": "First pass (tick_s=4.549, live anchor game.time=84262862) reported ts_realigned=13482. Overlap timestamps from the 17:30 half-hour (tick_s=4.401) differed by 700 * 0.148s ≈ 103.6s, above the 45s realign threshold, so already-present rows in this window were realigned to the new tick_s. Confirm nfix=0, retry2 nfix=0. Confirm/retry2 landed no new rows.",
   "ssl_first_attempt": false,
-  "hourly_patrol_prefilled": "The previous 17:00 Asia/Hong_Kong half-hour had filled official 84261301..84262000 (inserted=13255, already_in_db=11389, ts_realigned=169, tick_s=4.368, missing_chunks=1; 34/35 first-pass HTTP 200; W47N8@84261900 official 404). The 16:24 / ~17:25 hourly patrols had already prefilled earlier overlap. This run picked up newly published bases 84262000..84262300 (ticks 84262001..84262400) and overlapped already_in_db=19023 on 84261700..84261900 plus live-listener rows. The new 17:14:10-17:21:15 freeze gap in official history was filled by this first pass for all five rooms. W47N8@84261900 remains official 404 (in-window leftover). W46N8@84260300, W45N7@84259200, W45N8@84258600, and W45N7@84257900 remain outside this 40m window and were re-fetched on confirm/retry2; all four still official 404 (W46N8@84260300 still only 10 live ticks 84260391..84260400 / 97 rows; the other three 0 rows in db).",
+  "hourly_patrol_prefilled": "The previous 17:30 Asia/Hong_Kong half-hour had filled official 84261701..84262400 (inserted=8626, already_in_db=19023, ts_realigned=0, tick_s=4.401, missing_chunks=1; 34/35 first-pass HTTP 200; W47N8@84261900 official 404). This run picked up newly published bases 84262400..84262700 (ticks 84262401..84262800) and overlapped already_in_db=14271 on 84262100..84262300 plus live-listener rows. The new 17:51:21-18:01:53 freeze gap in official history was filled by this first pass for all five rooms through 84262800. W46N8@84262500 is a new in-window official 404 (0 rows). W47N8@84261900 aged out of this 40m window and remains official 404 (0 rows). W46N8@84260300, W45N7@84259200, W45N8@84258600, and W45N7@84257900 remain outside this 40m window and were re-fetched on confirm/retry2; all four still official 404 (W46N8@84260300 still only 10 live ticks 84260391..84260400 / 97 rows; the other three 0 rows in db).",
   "per_room": {
     "W46N8": {
-      "distinct": 700,
-      "missing_ticks": 0,
-      "new": 2158,
-      "rows": 6496,
-      "ticks": 700
-    },
-    "W47N8": {
       "distinct": 600,
       "missing_ticks": 100,
-      "new": 3882,
-      "rows": 11385,
+      "new": 4092,
+      "rows": 8571,
       "ticks": 600,
-      "official_404": "W47N8@84261900",
-      "official_404_range": "84261901..84262000"
+      "official_404": "W46N8@84262500",
+      "official_404_range": "84262501..84262600"
+    },
+    "W47N8": {
+      "distinct": 700,
+      "missing_ticks": 0,
+      "new": 4185,
+      "rows": 12555,
+      "ticks": 700
     },
     "W45N8": {
       "distinct": 700,
       "missing_ticks": 0,
-      "new": 796,
-      "rows": 3091,
+      "new": 2026,
+      "rows": 2371,
       "ticks": 700
     },
     "W45N7": {
       "distinct": 700,
       "missing_ticks": 0,
-      "new": 501,
-      "rows": 2185,
+      "new": 1122,
+      "rows": 1625,
       "ticks": 700
     },
     "W47N7": {
       "distinct": 700,
       "missing_ticks": 0,
-      "new": 1289,
-      "rows": 3353,
+      "new": 1651,
+      "rows": 3079,
       "ticks": 700
     }
   },
   "known_official_404s_outside_window": [
-    "W46N8@84260300 (ticks 84260301..84260390 still 0 rows in db at finish; live listener filled 84260391..84260400 / 10t, 97 rows; aged out of the 40m window since the 16:05 half-hour, window starts 84261701; official 404 on the 15:17 hourly patrol first pass at game.time=84260636 / confirm GET 15:20:12 at game.time=84260654 / retry2 GET 15:24:04 at game.time=84260708, the 15:30 half-hour first pass at game.time=84260774 / confirm GET 15:30:02 at game.time=84260788 / retry2 GET 15:34:58 at game.time=84260854, the 16:00 half-hour confirm GET 15:59:21 at game.time=84261187 / retry2 GET 16:04:16 at game.time=84261252, the 16:24 hourly patrol confirm GET 16:30:49 at game.time=84261612, the 16:30 half-hour confirm GET 16:36:16 at game.time=84261685 / retry2 GET 16:41:20 at game.time=84261754, the 17:00 half-hour confirm GET 17:02:21 at game.time=84262041 / retry2 GET 17:07:15 at game.time=84262106, and this 17:30 half-hour confirm GET 17:32:57 at game.time=84262450 / retry2 GET 17:38:21 at game.time=84262523; adjacent W46N8@84260200 and W46N8@84260400, and W47N8/W45N8/W45N7/W47N7@84260300, all HTTP 200 100/100. Mid-window official hole on home (weight-5). After the 15:05 half-hour finish the peacetime slot was on W46N8 at gameTime 84260451, then rotated away; the hole's first 90 ticks were not live-covered, and only the last 10 ticks were filled when the slot returned to W46N8.)",
-    "W45N7@84259200 (ticks 84259201..84259300 still 0 rows in db at finish; aged out of the 40m window since the 14:35 half-hour; official 404 on the 14:07 half-hour first pass / confirm GET 14:04:05 at game.time=84259627 and retry2 GET 14:07:12 at game.time=84259669, the 14:17 hourly patrol first pass / confirm GET 14:20:40 at game.time=84259850 / retry2 GET 14:23:03 at game.time=84259883, the 14:35 half-hour confirm GET 14:38:55 at game.time=84260097 and retry2 GET 14:43:30 at game.time=84260159, the 15:00 half-hour confirm GET 14:59:37 at game.time=84260377 and retry2 GET 15:04:41 at game.time=84260446, the 15:17 hourly patrol confirm GET 15:20:16 at game.time=84260654 and retry2 GET 15:24:08 at game.time=84260708, the 15:30 half-hour confirm GET 15:30:07 at game.time=84260788 and retry2 GET 15:35:03 at game.time=84260854, the 16:00 half-hour confirm GET 15:59:26 at game.time=84261187 and retry2 GET 16:04:21 at game.time=84261252, the 16:24 hourly patrol confirm GET 16:30:53 at game.time=84261612, the 16:30 half-hour confirm GET 16:36:21 at game.time=84261685 and retry2 GET 16:41:24 at game.time=84261754, the 17:00 half-hour confirm GET 17:02:22 at game.time=84262041 / retry2 GET 17:07:16 at game.time=84262106, and this 17:30 half-hour confirm GET 17:32:58 at game.time=84262450 / retry2 GET 17:38:22 at game.time=84262523; adjacent W45N7@84259100 and W45N7@84259300, and W46N8/W47N8/W45N8/W47N7@84259200, all HTTP 200 100/100. Mid-window official hole on the weight-1 remote. No live-listener fill during the 13:44:25-13:56:47 freeze; after thaw the single peacetime slot was on W47N8, and W45N7 only held the slot near 14:07, after this hole.)",
-    "W45N8@84258600 (ticks 84258601..84258700 still 0 rows in db at finish; official 404 on the 13:07 half-hour, 13:22 hourly patrol, 13:38 half-hour confirm GET 13:34:57 / retry2 GET 13:37:22 at game.time=84259264, 14:07 half-hour confirm GET 14:04:12 / retry2 GET 14:07:20 at game.time=84259669, 14:17 hourly patrol confirm GET 14:20:43 / retry2 GET 14:23:07, 14:35 half-hour confirm GET 14:38:58 at game.time=84260097 and retry2 GET 14:43:34 at game.time=84260159, the 15:00 half-hour confirm GET 14:59:40 at game.time=84260377 and retry2 GET 15:04:44 at game.time=84260446, the 15:17 hourly patrol confirm GET 15:20:17 at game.time=84260654 and retry2 GET 15:24:09 at game.time=84260708, the 15:30 half-hour confirm GET 15:30:08 at game.time=84260788 and retry2 GET 15:35:04 at game.time=84260854, the 16:00 half-hour confirm GET 15:59:27 at game.time=84261187 and retry2 GET 16:04:22 at game.time=84261252, the 16:24 hourly patrol confirm GET 16:30:54 at game.time=84261612, the 16:30 half-hour confirm GET 16:36:22 at game.time=84261685 and retry2 GET 16:41:25 at game.time=84261754, the 17:00 half-hour confirm GET 17:02:24 at game.time=84262041 / retry2 GET 17:07:18 at game.time=84262106, and this 17:30 half-hour confirm GET 17:33:00 at game.time=84262450 / retry2 GET 17:38:24 at game.time=84262523; adjacent W45N8@84258500 and W45N8@84258700 both HTTP 200 100/100. Mid-window official hole on the weight-1 remote.)",
-    "W45N7@84257900 (ticks 84257901..84258000 still 0 rows in db at finish; official 404 on the 12:09 / 12:21 / 12:36 half-hour and patrol confirms, the 13:22 hourly patrol confirm GET 13:23:25, the 14:17 hourly patrol confirm GET 14:20:45 / retry2 GET 14:23:08, the 14:35 half-hour confirm GET 14:38:59 at game.time=84260097 and retry2 GET 14:43:35 at game.time=84260159, the 15:00 half-hour confirm GET 14:59:42 at game.time=84260377 and retry2 GET 15:04:46 at game.time=84260446, the 15:17 hourly patrol confirm GET 15:20:18 at game.time=84260654 and retry2 GET 15:24:11 at game.time=84260708, the 15:30 half-hour confirm GET 15:30:09 at game.time=84260788 and retry2 GET 15:35:06 at game.time=84260854, the 16:00 half-hour confirm GET 15:59:29 at game.time=84261187 and retry2 GET 16:04:23 at game.time=84261252, the 16:24 hourly patrol confirm GET 16:30:55 at game.time=84261612, the 16:30 half-hour confirm GET 16:36:23 at game.time=84261685 and retry2 GET 16:41:26 at game.time=84261754, the 17:00 half-hour confirm GET 17:02:25 at game.time=84262041 / retry2 GET 17:07:19 at game.time=84262106, and this 17:30 half-hour confirm GET 17:33:01 at game.time=84262450 / retry2 GET 17:38:25 at game.time=84262523; adjacent W45N7@84257800 and W45N7@84258000, and W46N8/W47N8/W45N8/W47N7@84257900, all HTTP 200 100/100. Mid-window official hole on the weight-1 remote.)",
+    "W46N8@84260300 (ticks 84260301..84260390 still 0 rows in db at finish; live listener filled 84260391..84260400 / 10t, 97 rows; aged out of the 40m window since the 16:05 half-hour, window starts 84262101; official 404 on the 15:17 hourly patrol first pass at game.time=84260636 / confirm GET 15:20:12 at game.time=84260654 / retry2 GET 15:24:04 at game.time=84260708, the 15:30 half-hour first pass at game.time=84260774 / confirm GET 15:30:02 at game.time=84260788 / retry2 GET 15:34:58 at game.time=84260854, the 16:00 half-hour confirm GET 15:59:21 at game.time=84261187 / retry2 GET 16:04:16 at game.time=84261252, the 16:24 hourly patrol confirm GET 16:30:49 at game.time=84261612, the 16:30 half-hour confirm GET 16:36:16 at game.time=84261685 / retry2 GET 16:41:20 at game.time=84261754, the 17:00 half-hour confirm GET 17:02:21 at game.time=84262041 / retry2 GET 17:07:15 at game.time=84262106, and this 17:30 half-hour confirm GET 17:32:57 at game.time=84262450 / retry2 GET 17:38:21 at game.time=84262523; adjacent W46N8@84260200 and W46N8@84260400, and W47N8/W45N8/W45N7/W47N7@84260300, all HTTP 200 100/100. Mid-window official hole on home (weight-5). After the 15:05 half-hour finish the peacetime slot was on W46N8 at gameTime 84260451, then rotated away; the hole's first 90 ticks were not live-covered, and only the last 10 ticks were filled when the slot returned to W46N8 and this 18:00 half-hour confirm GET 18:04:49 at game.time=84262881 / retry2 GET 18:10:11 at game.time=84262951.)",
+    "W45N7@84259200 (ticks 84259201..84259300 still 0 rows in db at finish; aged out of the 40m window since the 14:35 half-hour; official 404 on the 14:07 half-hour first pass / confirm GET 14:04:05 at game.time=84259627 and retry2 GET 14:07:12 at game.time=84259669, the 14:17 hourly patrol first pass / confirm GET 14:20:40 at game.time=84259850 / retry2 GET 14:23:03 at game.time=84259883, the 14:35 half-hour confirm GET 14:38:55 at game.time=84260097 and retry2 GET 14:43:30 at game.time=84260159, the 15:00 half-hour confirm GET 14:59:37 at game.time=84260377 and retry2 GET 15:04:41 at game.time=84260446, the 15:17 hourly patrol confirm GET 15:20:16 at game.time=84260654 and retry2 GET 15:24:08 at game.time=84260708, the 15:30 half-hour confirm GET 15:30:07 at game.time=84260788 and retry2 GET 15:35:03 at game.time=84260854, the 16:00 half-hour confirm GET 15:59:26 at game.time=84261187 and retry2 GET 16:04:21 at game.time=84261252, the 16:24 hourly patrol confirm GET 16:30:53 at game.time=84261612, the 16:30 half-hour confirm GET 16:36:21 at game.time=84261685 and retry2 GET 16:41:24 at game.time=84261754, the 17:00 half-hour confirm GET 17:02:22 at game.time=84262041 / retry2 GET 17:07:16 at game.time=84262106, and this 17:30 half-hour confirm GET 17:32:58 at game.time=84262450 / retry2 GET 17:38:22 at game.time=84262523; adjacent W45N7@84259100 and W45N7@84259300, and W46N8/W47N8/W45N8/W47N7@84259200, all HTTP 200 100/100. Mid-window official hole on the weight-1 remote. No live-listener fill during the 13:44:25-13:56:47 freeze; after thaw the single peacetime slot was on W47N8, and W45N7 only held the slot near 14:07, after this hole and this 18:00 half-hour confirm GET 18:04:50 at game.time=84262881 / retry2 GET 18:10:12 at game.time=84262951.)",
+    "W45N8@84258600 (ticks 84258601..84258700 still 0 rows in db at finish; official 404 on the 13:07 half-hour, 13:22 hourly patrol, 13:38 half-hour confirm GET 13:34:57 / retry2 GET 13:37:22 at game.time=84259264, 14:07 half-hour confirm GET 14:04:12 / retry2 GET 14:07:20 at game.time=84259669, 14:17 hourly patrol confirm GET 14:20:43 / retry2 GET 14:23:07, 14:35 half-hour confirm GET 14:38:58 at game.time=84260097 and retry2 GET 14:43:34 at game.time=84260159, the 15:00 half-hour confirm GET 14:59:40 at game.time=84260377 and retry2 GET 15:04:44 at game.time=84260446, the 15:17 hourly patrol confirm GET 15:20:17 at game.time=84260654 and retry2 GET 15:24:09 at game.time=84260708, the 15:30 half-hour confirm GET 15:30:08 at game.time=84260788 and retry2 GET 15:35:04 at game.time=84260854, the 16:00 half-hour confirm GET 15:59:27 at game.time=84261187 and retry2 GET 16:04:22 at game.time=84261252, the 16:24 hourly patrol confirm GET 16:30:54 at game.time=84261612, the 16:30 half-hour confirm GET 16:36:22 at game.time=84261685 and retry2 GET 16:41:25 at game.time=84261754, the 17:00 half-hour confirm GET 17:02:24 at game.time=84262041 / retry2 GET 17:07:18 at game.time=84262106, and this 17:30 half-hour confirm GET 17:33:00 at game.time=84262450 / retry2 GET 17:38:24 at game.time=84262523; adjacent W45N8@84258500 and W45N8@84258700 both HTTP 200 100/100. Mid-window official hole on the weight-1 remote and this 18:00 half-hour confirm GET 18:04:51 at game.time=84262881 / retry2 GET 18:10:14 at game.time=84262951.)",
+    "W45N7@84257900 (ticks 84257901..84258000 still 0 rows in db at finish; official 404 on the 12:09 / 12:21 / 12:36 half-hour and patrol confirms, the 13:22 hourly patrol confirm GET 13:23:25, the 14:17 hourly patrol confirm GET 14:20:45 / retry2 GET 14:23:08, the 14:35 half-hour confirm GET 14:38:59 at game.time=84260097 and retry2 GET 14:43:35 at game.time=84260159, the 15:00 half-hour confirm GET 14:59:42 at game.time=84260377 and retry2 GET 15:04:46 at game.time=84260446, the 15:17 hourly patrol confirm GET 15:20:18 at game.time=84260654 and retry2 GET 15:24:11 at game.time=84260708, the 15:30 half-hour confirm GET 15:30:09 at game.time=84260788 and retry2 GET 15:35:06 at game.time=84260854, the 16:00 half-hour confirm GET 15:59:29 at game.time=84261187 and retry2 GET 16:04:23 at game.time=84261252, the 16:24 hourly patrol confirm GET 16:30:55 at game.time=84261612, the 16:30 half-hour confirm GET 16:36:23 at game.time=84261685 and retry2 GET 16:41:26 at game.time=84261754, the 17:00 half-hour confirm GET 17:02:25 at game.time=84262041 / retry2 GET 17:07:19 at game.time=84262106, and this 17:30 half-hour confirm GET 17:33:01 at game.time=84262450 / retry2 GET 17:38:25 at game.time=84262523; adjacent W45N7@84257800 and W45N7@84258000, and W46N8/W47N8/W45N8/W47N7@84257900, all HTTP 200 100/100. Mid-window official hole on the weight-1 remote and this 18:00 half-hour confirm GET 18:04:53 at game.time=84262881 / retry2 GET 18:10:15 at game.time=84262951.)",
+    "W47N8@84261900 (ticks 84261901..84262000 still 0 rows in db at finish; official 404 on the 17:00 half-hour first pass at game.time=84262020, confirm GET 17:02:20 at game.time=84262041, and retry2 GET 17:07:14 at game.time=84262106, the 17:30 half-hour first pass at game.time=84262439, confirm GET 17:32:56 at game.time=84262450, and retry2 GET 17:38:20 at game.time=84262523, and this 18:00 half-hour confirm GET 18:04:47 at game.time=84262881 / retry2 GET 18:10:10 at game.time=84262951; adjacent W47N8@84261800, W47N8@84262000, and W46N8/W45N8/W45N7/W47N7@84261900 all HTTP 200 100/100. Mid-window official hole on the weight-5 room, left from the 16:47:44-16:59:54 box freeze. After that thaw the peacetime slot was on W46N8 until ~84262081, then rotated to W47N8 at 84262082, so the hole was not live-filled. Aged out of the 40m window this run (window starts 84262101); it is well behind the published tip.)",
     "W45N7@84256000 (ticks 84256001..84256100 still 0 rows in db at finish; not re-fetched this run)",
     "W45N7@84255200 (ticks 84255201..84255300 still 0 rows in db at finish; not re-fetched this run)",
     "W45N8@84253800 (ticks 84253801..84253900 still 0 rows in db at finish; not re-fetched this run)",
@@ -108,31 +109,31 @@
     "W47N7@84246300 (ticks 84246301..84246400 still 0 rows in db at finish; not re-fetched this run)"
   ],
   "known_official_404s_in_window": [
-    "W47N8@84261900 (ticks 84261901..84262000 still 0 rows in db at finish; official 404 on the 17:00 half-hour first pass at game.time=84262020, confirm GET 17:02:20 at game.time=84262041, and retry2 GET 17:07:14 at game.time=84262106, and on this 17:30 half-hour first pass at game.time=84262439, confirm GET 17:32:56 at game.time=84262450, and retry2 GET 17:38:20 at game.time=84262523; adjacent W47N8@84261800, W47N8@84262000, and W46N8/W45N8/W45N7/W47N7@84261900 all HTTP 200 100/100. Mid-window official hole on the weight-5 room, left from the 16:47:44-16:59:54 box freeze. After that thaw the peacetime slot was on W46N8 until ~84262081, then rotated to W47N8 at 84262082, so the hole was not live-filled. It is now well behind the published tip.)"
+    "W46N8@84262500 (ticks 84262501..84262600 still 0 rows in db at finish; official 404 on this 18:00 half-hour first pass at game.time=84262862, confirm GET 18:04:46 at game.time=84262881, and retry2 GET 18:10:08 at game.time=84262951; adjacent W46N8@84262400, W46N8@84262600, and W47N8/W45N8/W45N7/W47N7@84262500 all HTTP 200 100/100. Mid-window official hole on home (weight-5). The 17:30 half-hour finish had already rotated the peacetime slot to W47N8 at 84262501 (still on W47N8 at 17:38:47 with 470s left), so this 100-tick hole was not live-filled on W46N8. It sits before the 17:51:21-18:01:53 box freeze; official W46N8@84262600 and @84262700 were both HTTP 200 100/100 and filled that later freeze gap. game.time is now 350+ ticks past 84262500, and W46N8@84262600 is published, so this is not an unpublished latest chunk.)"
   ],
   "w45n7_empty_no_creep_in_window": {
     "ranges": [],
     "count": 0
   },
   "db_tips_at_finish": {
-    "creep_ticks": 84262529,
-    "room_stats": 84262520,
-    "creep_cpu": 84262510,
-    "path_arrivals": 84262506
+    "creep_ticks": 84262963,
+    "room_stats": 84262960,
+    "creep_cpu": 84262950,
+    "path_arrivals": 84262950
   },
   "live_ticks_after_official_tip": {
     "W46N8": {
-      "min": 84262401,
-      "max": 84262500,
-      "distinct": 100,
-      "rows": 996
+      "min": 84262846,
+      "max": 84262964,
+      "distinct": 54,
+      "rows": 593,
+      "note": "Official tip 84262800 except the in-window hole 84262501..84262600 still 0 rows; live starts 84262846 when the box thawed (freeze 17:51:21-18:01:53, gameTime jumped to ~84262847). 84262801..84262845 still 0 (unpublished in-progress official chunk 84262800 plus the freeze). Coverage after 84262846 is not contiguous (distinct 54 of 119 ticks through 84262964), including a 16-tick gap 84262943..84262958 around the 18:10:25 ws ping/pong timeout restart."
     },
     "W47N8": {
-      "min": 84262501,
-      "max": 84262530,
-      "distinct": 30,
-      "rows": 493,
-      "note": "Official tip 84262400 except the older hole 84261901..84262000 still 0 rows; live starts 84262501 when the slot rotated to W47N8."
+      "min": null,
+      "max": null,
+      "distinct": 0,
+      "rows": 0
     },
     "W45N8": {
       "min": null,
@@ -154,22 +155,31 @@
     }
   },
   "listener_at_finish": {
-    "listener_py": "2643653 .venv/bin/python tools/listener.py",
+    "listener_py": "2663504 .venv/bin/python tools/listener.py",
     "run_listener_sh": "4035476 /bin/bash tools/run_listener.sh",
     "count": 1,
-    "roomSlot": "W47N8",
+    "roomSlot": "W46N8",
     "rot": {
-      "i": 1,
-      "room": "W47N8",
-      "left": 470.0,
-      "at": "2026-11-14 17:38:47"
+      "i": 0,
+      "room": "W46N8",
+      "left": 87.0,
+      "at": "2026-11-14 18:10:59"
     },
     "yield_file": "absent",
     "new_box_pause": {
-      "from": "2026-11-14 17:14:10",
-      "to": "2026-11-14 17:21:15",
-      "sec": 425
+      "from": "2026-11-14 17:51:21",
+      "to": "2026-11-14 18:01:53",
+      "sec": 631
     },
-    "leftover_slot_after_this_thaw": []
+    "leftover_slot_after_this_thaw": [
+      "2026-11-14 18:02:21 err@room:shard3/W46N8: subscribe limit reached (x1)"
+    ],
+    "ws_timeout_restart": {
+      "error_at": "2026-11-14 18:10:25",
+      "restart_at": "2026-11-14 18:10:28",
+      "listener_py_started": "2026-11-14 18:10:37",
+      "pid": 2663504,
+      "subscribe_limit_after": []
+    }
   }
 }
