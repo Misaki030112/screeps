@@ -1,0 +1,71 @@
+=== defender84268008 ticks coverage ===
+('W46N8', 84268009, 84268502, 201, 201)
+('W45N8', 84268184, 84268800, 591, 591)
+
+=== gaps in defender ticks 84268158..84268800 ===
+n 643 first 84268158 last 84268800
+gaps []
+
+=== state values for defender ===
+('spawning', 149, 84268009, 84268157)
+('empty', 643, 84268158, 84268800)
+
+=== sample around gap edges and mid freeze ===
+window 84268195 84268210 n 16
+  (84268195, 'W45N8', 10, 33, 'empty', 5000)
+  (84268196, 'W45N8', 11, 34, 'empty', 5000)
+  (84268197, 'W45N8', 12, 35, 'empty', 5000)
+  (84268198, 'W45N8', 13, 36, 'empty', 5000)
+  (84268199, 'W45N8', 14, 37, 'empty', 5000)
+  (84268200, 'W45N8', 14, 38, 'empty', 5000)
+  (84268201, 'W45N8', 14, 38, 'empty', 5000)
+  (84268202, 'W45N8', 14, 38, 'empty', 5000)
+  ... last (84268210, 'W45N8', 14, 38, 'empty', 5000)
+window 84268470 84268510 n 41
+  (84268470, 'W45N8', 14, 38, 'empty', 5000)
+  (84268471, 'W45N8', 14, 38, 'empty', 5000)
+  (84268472, 'W45N8', 14, 38, 'empty', 5000)
+  (84268473, 'W45N8', 14, 38, 'empty', 5000)
+  (84268474, 'W45N8', 14, 38, 'empty', 5000)
+  (84268475, 'W45N8', 14, 38, 'empty', 5000)
+  (84268476, 'W45N8', 14, 38, 'empty', 5000)
+  (84268477, 'W46N8', 48, 21, 'empty', 5000)
+  ... last (84268510, 'W45N8', 14, 38, 'empty', 5000)
+window 84268600 84268610 n 11
+  (84268600, 'W45N8', 14, 38, 'empty', 5000)
+  (84268601, 'W45N8', 14, 38, 'empty', 5000)
+  (84268602, 'W45N8', 14, 38, 'empty', 5000)
+  (84268603, 'W45N8', 14, 38, 'empty', 5000)
+  (84268604, 'W45N8', 14, 38, 'empty', 5000)
+  (84268605, 'W45N8', 14, 38, 'empty', 5000)
+  (84268606, 'W45N8', 14, 38, 'empty', 5000)
+  (84268607, 'W45N8', 14, 38, 'empty', 5000)
+  ... last (84268610, 'W45N8', 14, 38, 'empty', 5000)
+window 84268790 84268800 n 11
+  (84268790, 'W45N8', 14, 38, 'empty', 5000)
+  (84268791, 'W45N8', 14, 38, 'empty', 5000)
+  (84268792, 'W45N8', 14, 38, 'empty', 5000)
+  (84268793, 'W45N8', 14, 38, 'empty', 5000)
+  (84268794, 'W45N8', 14, 38, 'empty', 5000)
+  (84268795, 'W45N8', 14, 38, 'empty', 5000)
+  (84268796, 'W45N8', 14, 38, 'empty', 5000)
+  (84268797, 'W45N8', 14, 38, 'empty', 5000)
+  ... last (84268800, 'W45N8', 14, 38, 'empty', 5000)
+
+=== reserve784268262 path rooms ===
+('W47N8', 84268264, 84268800, 537, 34, 30, 27, 44, 'empty')
+
+=== official history scan W45N7/W45N8 for defender and cores ===
+W45N7@84268200 ticks=100 def_rows=1 our=['defender84268008'] core_pos_n=2
+  def first (84268221, 21, 1, 'creep', 5000) last (84268221, 21, 1, 'creep', 5000) n 1
+  cores sample [(84268200, 9, 42, 100000, 100000, 0), (9, 42, 'invaderCore', 100000, None)]
+W45N7@84268300 ticks=100 def_rows=1 our=['defender84268008'] core_pos_n=2
+  def first (84268300, 9, 41, 'creep', 5000) last (84268300, 9, 41, 'creep', 5000) n 1
+  cores sample [(84268300, 9, 42, 70750, 100000, 0), (9, 42, 'invaderCore', 70750, None)]
+W45N7@84268400 ticks=100 def_rows=1 our=['defender84268008', 'reserver84268397', 'rhauler84267615', 'rhauler84267960'] core_pos_n=0
+  def first (84268400, 14, 36, 'creep', 5000) last (84268400, 14, 36, 'creep', 5000) n 1
+W45N7@84268500 ticks=100 def_rows=0 our=['reserver84268397', 'rhauler84267960', 'rhauler84268409', 'rhauler84268469', 'rminer84268397'] core_pos_n=0
+W45N8@84268200 ticks=100 def_rows=0 our=['rhauler84267935', 'rminer84268043'] core_pos_n=0
+W45N8@84268300 ticks=100 def_rows=0 our=['rhauler84267935', 'rminer84268043'] core_pos_n=0
+W45N8@84268400 ticks=100 def_rows=0 our=['rhauler84267615', 'rhauler84267935', 'rhauler84268409', 'rminer84268043', 'rminer84268397'] core_pos_n=0
+W45N8@84268500 ticks=100 def_rows=0 our=['rhauler84267615', 'rhauler84267935', 'rhauler84267960', 'rhauler84268409', 'rhauler84268469', 'rminer84268043', 'rminer84268397'] core_pos_n=0

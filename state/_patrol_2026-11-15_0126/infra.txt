@@ -1,0 +1,9 @@
+services.sh: ok postgres, views_apache, grafana, listener, dashboard
+grafana_check: 20/20 OK
+listener: single-slot 5:5:1:1; rot later W47N8 (i=1, left~560s @01:34); python restarted 01:04:50 after box freeze 00:40:39-01:04:47, and 01:26:09 after freeze 01:12:05-01:26:06; run_listener.sh 4035476 stayed up; commander not live-commanding (Memory.cmd.on=1 but c={} at=84224348 stale)
+freshness at analysis TIP 84268870: room_stats age~12s; creep_ticks live; creep_cpu age~48s
+later room_stats to 84268950 stor 14248 nUp=1 still UNDER, w8up=3 handoff, commit ffdf767
+history_backfill 40m: ok first-pass inserted=12257 already_in_db=15662 ts_realigned=0 tick_s=4.443 missing_chunks=0 window 84268101..84268800; compare overlap differ=1 (w8rhauler84267438 @84268554 W47N8 db 18,49 vs hist 13,37)
+W45N7 DB empty 84268101-84268459 is not a full official hole: official history has defender84268008 in W45N7 (enter 84268221, at 9,41 attacking core @84268300 hits 70750, core gone by 84268400); already_in_db skip left stale W45N8 14,38 rows for those ticks, so in-DB buster path is wrong — official history used for the fight story
+unpublished latest chunk 84268801+ expected
+box freezes this hour: 00:40:39-01:04:47 ~1448s, 01:12:05-01:26:06 ~840s, both self-healed; no subscribe-limit after thaws
