@@ -1,0 +1,13 @@
+services.sh: ok postgres / views_apache / grafana / listener / dashboard (parent, ~17:21 HKT); backup var/backups/screeps-20261114-1518.dump 72M (newest <6h, no new dump this run)
+grafana_check: 20/20
+dashboard:200 grafana:200
+yield: absent
+war_cmd/pulse: NO_WAR_PROCS
+listener: run_listener.sh 4035476 since Nov10; python pid 2643653 since 17:21:18 after box freeze 17:14:10-17:21:15 (425s); earlier restart this hour 16:59:57 after freeze 16:47:44-16:59:54 (725s)
+after 16:24 thaw (end of previous hour): subscribe-limit W46N8@16:24:42 (x1), W47N8@16:28:59 (x1) then @16:36:18 (x100), W45N8@16:39:05 (x1), W45N7@16:41:06 (x1), recovered (same known post-thaw issue)
+after 16:59 and 17:21 thaws: no new subscribe-limit in errors.log
+rot at 17:21:39 i=1 W47N8 left 57.9s; later i=0 W46N8 left 545s @17:27:32 / 450s @17:29:07 (5:5:1:1)
+Memory.cmd.on=1 at=84224348 stale c={} s={} v=1 confirmed live, commander not live, not reclaimed
+DB after analysis: room_stats lag ~42s at 17:29 (max 84262390 @17:28:29), creep_ticks ~4s (max 84262399), creep_cpu ~38s (84262390), path_arrivals ~38s (84262381)
+history_backfill: first pass reconstructed 84261601..84262200 (600) game.time=84262301 published 84261600-84262200 inserted=5671 already_in_db=16315 ts_realigned=0 tick_s=4.383 missing_chunks=6; 5x unpublished 84262200 404 expected plus in-window W47N8@84261900 official 404 (0/100). Other four rooms 600/600 in-window; W45N7 distinct 582 (empty-room 18t 84261642-84261659 after defender84261199 walked out 21,0, rhauler84260325 entered 84261660; not an official 404). confirm GET 17:25:38 game.time=84262352 and retry2 GET 17:27:31 game.time=84262377 still 404 for W47N8@84261900. leftover W46N8@84260300 / W45N7@84259200 / W45N8@84258600 / W45N7@84257900 confirm+retry2 still 404 (unchanged). unpublished 84262201+ expected.
+room_stats freeze gaps this hour (>=30t): 84261840-84262020 (16:47:33-17:00:48, 180t / 794.8s) and 84262190-84262300 (17:13:47-17:21:47, 110t / 479.6s). Official history filled both except the persistent W47N8@84261900 hole inside the first freeze window.
