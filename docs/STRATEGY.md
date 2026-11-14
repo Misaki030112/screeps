@@ -33,7 +33,17 @@ Last full refresh: **2026-11-09 17:1x** (autonomous push — docs/canvas scorebo
 - One-line verdict: `waiting on ticks` | `small safe ship` | `phase exit` — capability to stock a kiter ≠ order to fight.
 
 
-## Current state (2026-11-14 ~08:2x Asia/Hong_Kong · 12h review)
+## Current state (2026-11-14 ~20:2x Asia/Hong_Kong · 12h review)
+
+| Room | Notes |
+|------|-------|
+| W46N8 (home) | **RCL7** 59.86% (6.546M/10.935M); +144k/12h ≈ 14.87 e/t → RCL8 ≈ **15.2 days** at this pace; stor avg 15.1k max 18568 min 10878, **39.0% under 15k** (was 50.2%); live tip 16.7–17.4k why=ok tUp=2 (2nd spawning) upExtra=0; last lab finished 13:21, labsN=6, factory done, sites=0; labs OFF (actOk=1, homeStor over 15k); LIVE **4ff78b4** (@84239549 / 13:26 HKT) |
+| W47N8 | **RCL7** 31.00% (3.390M); +188k/12h ≈ **19.36 e/t** → RCL8 ≈ **20.0 days** (was post-resume 16.09 / ~24.6 d); stor avg 26.3k max 32038 min 22916 (0% <15k, 100% ≥20k, 83.1% ≥25k, 0% ≥40k); live stor 24.2–25.0k keep=2 phase=ready siteRem=0 labsN=6 factory done leanBank0 softCap2 **off** (sticky clear, never <22k ARM); two 10W upgraders |
+
+**20:2x scorecard:** Phase0 home floor **improved but still thin** (39.0% of 12h under 15k, was 50.2%; min 10.9k; 20k gate never latched — zero ≥20k samples, max 18568). Last home lab **DONE**. W47 **softCap2 sticky-cleared**: never below the 22k ARM all window, 83.1% ≥25k, cap off, 40k latch **waiting** (closest 32.0k); labs OFF ✔. Phase1 blocked (do not unpark ceil/seal mid 23–32k camp). Phase2 home still the lead (~15.2 d, was 17.4 d; 3h pace 17.7 e/t). W47 forward pace ~19.4 e/t / ~20.0 d (pre-site was ~18 e/t / ~22 d). Phase3+ deferred — shells are finished, reactions stay off (energy 17–25k ≪ 100k). Verdict: `waiting on ticks` (20k gate + W47 40k latch held; softCap clear is a Phase0 step, not a phase exit; no new game code).
+
+### Previous (2026-11-14 ~08:2x Asia/Hong_Kong · 12h review)
+
 
 | Room | Notes |
 |------|-------|

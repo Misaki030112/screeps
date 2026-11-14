@@ -8,6 +8,10 @@ hauler upkeep (CARRY need = 10 × (round trip × 1.10 + 4) / 50, load split 75% 
 0.03/t each, builder-lite 1000/1500. Upgrade = net / (1 + upgrader upkeep 1150/1500/10). RCL5: 1800 cap, best of source-A link→ctl or hub→ctl link (3% loss).
 reserve7 (2 CLAIM) is spawned and paid by home.
 
+## 2026-11-14 20:2x — keep=2, softCap sticky-cleared above 22k ARM, 40k latch waiting (plan holds)
+
+12h window: W47 upgrade **19.36** e/t vs ideal ~30 (`tools/model.py` / ledger up 19.32; 29.28%→31.00%, +188k). Forward RCL8 ≈ **20.0 d** (was post-resume 16.09 / ~24.6 d). Stor avg 26.3k max **32038** min **22916**; **0% under 15k, 100% ≥20k, 83.1% ≥25k, 0% ≥40k**. Never crossed the 22k ARM, so softCap2 **sticky-cleared** (live softCap2=0 softE=0 threatSoft=0 leanBank=0 phase=ready upgKeep=2 upgCeil=2 sealPark=1). Longest single ≥25k stretch **330 t** — still a 23–32k camp, not a continuous 25k hold, and **not** a 40k latch (closest 32.0k). keep=2 is correct. **contMinPct53 roadCrit0**. Do not unpark ceil/seal mid-band. See `docs/RCL7.md` 20:2x.
+
 ## 2026-11-14 08:2x — sites done, keep=2, upgrade resumed; softCap thrashing 25k (plan holds)
 
 12h window: W47 upgrade **5.25** e/t blended vs ideal **30.03** (`tools/model_w8.py --hours 12`; 28.81%→29.28%). Progress left 3150854 at **04:22:50**; sites first 0 at **04:25:03**; post-resume 3190 t **16.09 e/t** (model 3h 17.09 / 2h 16.68), forward RCL8 ≈ **24.6 d**. Stor avg 10.8k max **25486** min 0 (mid-window crash to 0 at 23:33–00:07 while sites were still up, then recovered); **69.1% under 15k, 20.8% ≥20k, 3.4% ≥25k, 0% ≥40k**. Longest ≥25k only **31 t** — softCap2 still ON, designed [22k, 25k) hysteresis, not a sticky clear. `f7328c4` keep returned to 2 once sites cleared (W47 siteRem **123709→0**; labsN **6**, factory done; a brief 1-site road blip 07:37–08:02 is already gone). Live stor 24733–25183, builders=1, upgraders=2×10W, leanBank=0, threatSoft leftover, phase=ready upgKeep=2 upgCeil=2. **contMinPct50 roadCrit 0–1**. After a sticky ≥25k clear, the 40k latch is the next keep step. Do not unpark ceil/seal mid-thrash. See `docs/RCL7.md` 08:2x.
