@@ -1,0 +1,13 @@
+services.sh: ok postgres / views_apache / grafana / listener / dashboard (~18:24 HKT); backup var/backups/screeps-20261114-1518.dump 72M (newest <6h, no new dump this run)
+grafana_check: 20/20
+dashboard:200 grafana:200
+yield: absent
+war_cmd/pulse: NO_WAR_PROCS
+listener: run_listener.sh 4035476 since Nov10; python pid 2666660 since 18:24:19 after box freeze 18:17:44-18:24:16 (391s); earlier this hour: restart 18:01:56 after freeze 17:51:21-18:01:53 (631s); restart 18:10:28 after ws ping/pong timeout 18:10:25 (no subscribe-limit)
+after 18:01 thaw: subscribe-limit W46N8@18:02:21 (x1) only, recovered quickly (same known post-thaw issue, milder than 16:24; no x100 cascade)
+after 18:10 and 18:24 thaws: no subscribe-limit in errors.log
+rot at 18:25:31 i=1 W47N8 left 220.8s; later i=3 W45N7 left 40s @18:32:31 (weight-1, after the 18:30 W45N7 core alert); then i=0 W46N8 left 600s @18:33:11 (5:5:1:1)
+Memory.cmd.on=1 at=84224348 stale by=cmd c={} s={} v=1 confirmed live, commander not live, not reclaimed
+DB after analysis: room_stats lag ~14s at 18:33 (max 84263260), creep_ticks ~3s (max 84263263), creep_cpu ~38s (84263250), path_arrivals ~38s (84263249)
+history_backfill: first pass reconstructed 84262401..84263100 (700) game.time=84263165 published 84262400-84263000 inserted=11488 already_in_db=15440 ts_realigned=120 tick_s=4.507 missing_chunks=1; 5x unpublished 84263100 expected plus in-window W46N8@84262500 official 404 (0/100). Other four rooms 700/700 in-window. confirm GET 18:28:02 game.time=84263193 and retry2 GET 18:33:05 game.time=84263261 still 404 for W46N8@84262500. leftover W47N8@84261900 / W46N8@84260300 / W45N7@84259200 / W45N8@84258600 / W45N7@84257900 confirm+retry2 still 404 (unchanged). unpublished 84263101+ expected; W47N8 live filled 84263146-84263190 of the unpublished chunk (hour missing only 84263101-84263145).
+room_stats freeze gaps this hour (>=30t): 84262690-84262850 (17:50:56-18:02:27, 160t / 690.9s) and 84263050-84263150 (18:17:28-18:24:53, 100t / 445.0s). Official history filled both except the older in-window W46N8@84262500 hole (84262501-84262600), which sits before the 17:51 freeze while the peacetime slot was on W47N8.

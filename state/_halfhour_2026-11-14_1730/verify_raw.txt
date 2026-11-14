@@ -1,0 +1,37 @@
+2026-11-14 17:33:21 HKT mid-run stats after first+confirm
+==== db tips ====
+  creep_ticks min=83609908 max=84262455 rows=7542512
+  room_stats min=83594467 max=84262450 rows=53610
+  creep_cpu min=83609905 max=84262440 rows=2578269
+  path_arrivals min=83609919 max=84262438 rows=66771
+==== window per room ====
+  W45N7 ticks=84261701..84262400 rows=2185 distinct=700
+  W45N8 ticks=84261701..84262400 rows=3091 distinct=700
+  W46N8 ticks=84261701..84262400 rows=6496 distinct=700
+  W47N7 ticks=84261701..84262400 rows=3353 distinct=700
+  W47N8 ticks=84261701..84262400 rows=11385 distinct=600
+==== unique after (window) ====
+  unique_creep_tick_rows=26510 distinct_room_ticks=3400
+==== W47N8 hole 84261901..84262000 ====
+  distinct=0 range=None..None rows=0
+==== leftover outside-window holes ====
+  W46N8@84260300 (84260301..84260400) distinct=10 range=84260391..84260400 rows=97
+  W45N7@84259200 (84259201..84259300) distinct=0 range=None..None rows=0
+  W45N8@84258600 (84258601..84258700) distinct=0 range=None..None rows=0
+  W45N7@84257900 (84257901..84258000) distinct=0 range=None..None rows=0
+==== live ticks after official tip 84262400 ====
+  W46N8 after 84262400: distinct=55 range=84262401..84262455 rows=536
+  W47N8 after 84262400: distinct=0 range=None..None rows=0
+  W45N8 after 84262400: distinct=0 range=None..None rows=0
+  W45N7 after 84262400: distinct=0 range=None..None rows=0
+  W47N7 after 84262400: distinct=0 range=None..None rows=0
+==== W45N7 empty ticks in window? ====
+  official reconstructed 700, distinct=700, empty_no_creep=0
+==== W47N8 missing ticks in window ====
+  distinct=600 missing=100
+  missing ranges: [(84261901, 84262000, 100)]
+==== live.json now ====
+  updated 2026-11-14 17:33:22
+  gameTime=84262456 roomSlot=W46N8 objects=264
+  cpu={'cpu': 16, 'memory': 24400} stats.t=84262450
+  rot={'i': 0, 'room': 'W46N8', 'left': 195.0, 'at': '2026-11-14 17:33:22'}

@@ -1,0 +1,89 @@
+2026-11-14 17:31:51 HKT
+==== processes ====
+   1565 Thu Nov  5 14:47:18 2026 pulseaudio --daemonize=no --exit-idle-time=-1 --disallow-exit --disallow-module-loading --realtime=no --high-priority=no --use-pid-file=no --log-target=stderr -n -F /tmp/xdg-runtime-box/pulse/box-audio.pa
+   1570 Thu Nov  5 14:47:18 2026 bash /usr/local/bin/box-bounded-log --run /tmp/pulseaudio:1.log -- /usr/local/bin/box-audio.sh /tmp/xdg-runtime-box
+   1571 Thu Nov  5 14:47:18 2026 flock -n /tmp/pulseaudio:1.log.lock /exec-daemon/node /usr/local/bin/box-bounded-log.mjs /tmp/pulseaudio:1.log 1565
+   1573 Thu Nov  5 14:47:18 2026 /exec-daemon/node /usr/local/bin/box-bounded-log.mjs /tmp/pulseaudio:1.log 1565
+   7854 Thu Nov  5 14:49:05 2026 /usr/lib/postgresql/17/bin/postgres -D /workspace/screeps/var/pg17 -c config_file=/etc/postgresql/17/main/postgresql.conf
+   7855 Thu Nov  5 14:49:05 2026 postgres: 17/main: checkpointer 
+   7856 Thu Nov  5 14:49:05 2026 postgres: 17/main: background writer 
+   7858 Thu Nov  5 14:49:05 2026 postgres: 17/main: walwriter 
+   7859 Thu Nov  5 14:49:05 2026 postgres: 17/main: autovacuum launcher 
+   7860 Thu Nov  5 14:49:05 2026 postgres: 17/main: TimescaleDB Background Worker Launcher 
+   7861 Thu Nov  5 14:49:05 2026 postgres: 17/main: logical replication launcher 
+   8028 Thu Nov  5 14:49:14 2026 postgres: 17/main: TimescaleDB Background Worker Scheduler for database 16385 
+   8030 Thu Nov  5 14:49:14 2026 /usr/share/grafana/bin/grafana server --homepath /usr/share/grafana --config grafana/grafana.ini
+   8041 Thu Nov  5 14:49:14 2026 .venv/bin/python -m http.server 8787 --bind 127.0.0.1
+   8078 Thu Nov  5 14:49:14 2026 /usr/share/grafana/data/plugins-bundled/elasticsearch/gpx_grafana_elasticsearch_datasource_linux_amd64
+2391678 Sat Nov 14 09:14:37 2026 pulseaudio --daemonize=no --exit-idle-time=-1 --disallow-exit --disallow-module-loading --realtime=no --high-priority=no --use-pid-file=no --log-target=stderr -n -F /tmp/xdg-runtime-box-6/pulse/box-audio.pa
+2391683 Sat Nov 14 09:14:37 2026 bash /usr/local/bin/box-bounded-log --run /tmp/pulseaudio:6.log -- /usr/local/bin/box-audio.sh /tmp/xdg-runtime-box-6
+2391684 Sat Nov 14 09:14:37 2026 flock -n /tmp/pulseaudio:6.log.lock /exec-daemon/node /usr/local/bin/box-bounded-log.mjs /tmp/pulseaudio:6.log 2391678
+2391686 Sat Nov 14 09:14:37 2026 /exec-daemon/node /usr/local/bin/box-bounded-log.mjs /tmp/pulseaudio:6.log 2391678
+2643653 Sat Nov 14 17:21:27 2026 .venv/bin/python tools/listener.py
+2643719 Sat Nov 14 17:21:30 2026 postgres: 17/main: screeps screeps 127.0.0.1(58424) idle
+2643917 Sat Nov 14 17:21:50 2026 postgres: 17/main: screeps screeps 127.0.0.1(50610) idle
+4035476 Tue Nov 10 22:06:33 2026 /bin/bash tools/run_listener.sh
+
+==== listener pids / locks ====
+2643653 Sat Nov 14 17:21:27 2026 .venv/bin/python tools/listener.py
+4035476 Tue Nov 10 22:06:33 2026 /bin/bash tools/run_listener.sh
+
+listener.py count=1
+yield_files=absent
+-rw-r--r-- listener.pid mtime=2026-11-05 15:06:47 size=8 content=4035476
+
+metrics/listener.lock mtime=2026-11-14 17:21:29 size=0 content=''
+metrics/listener.loop.lock mtime=2026-11-05 15:06:47 size=0 content=''
+==== rot / live.json ====
+live.json updated 2026-11-14 17:31:48 size 89749
+gameTime 84262435
+roomSlot W46N8
+rot {'i': 0, 'room': 'W46N8', 'left': 290.0, 'at': '2026-11-14 17:31:47'}
+objects 263
+cpu {'cpu': 14, 'memory': 24526}
+stats.t 84262430
+keys ['console_tail', 'cpu', 'errors_tail', 'gameTime', 'objects', 'roomSlot', 'stats', 'uid', 'updated']
+==== box_pause last 5 ====
+{"from": "2026-11-14 14:14:25", "to": "2026-11-14 14:17:59", "sec": 204}
+{"from": "2026-11-14 15:40:15", "to": "2026-11-14 15:56:21", "sec": 965}
+{"from": "2026-11-14 16:10:59", "to": "2026-11-14 16:24:20", "sec": 795}
+{"from": "2026-11-14 16:47:44", "to": "2026-11-14 16:59:54", "sec": 725}
+{"from": "2026-11-14 17:14:10", "to": "2026-11-14 17:21:15", "sec": 425}
+==== recent errors (listener / errors.log last relevant) ====
+2026-11-14 12:36:49 [listener] err@room:shard3/W45N7: subscribe limit reached (x1)
+2026-11-14 13:02:26 [listener] box frozen ~1346s since 2026-11-14 12:39:53 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-14 13:20:51 [listener] box frozen ~346s since 2026-11-14 13:15:05 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-14 13:30:15 [listener] [ingest] invalid input syntax for type integer: "{}"
+2026-11-14 13:30:15 [listener] [ingest] dropped 1 incidents rows: invalid input syntax for type integer: "{}"
+2026-11-14 13:56:46 [listener] box frozen ~734s since 2026-11-14 13:44:25 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-14 14:17:58 [listener] box frozen ~204s since 2026-11-14 14:14:25 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-14 14:36:27 [listener] ws error ping/pong timed out
+2026-11-14 15:56:21 [listener] box frozen ~965s since 2026-11-14 15:40:15 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-14 16:00:08 [listener] [ingest] invalid input syntax for type integer: "{}"
+2026-11-14 16:00:08 [listener] [ingest] dropped 1 incidents rows: invalid input syntax for type integer: "{}"
+2026-11-14 16:04:21 [listener] ws error ping/pong timed out
+2026-11-14 16:24:20 [listener] box frozen ~795s since 2026-11-14 16:10:59 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-14 16:24:42 [listener] err@room:shard3/W46N8: subscribe limit reached (x1)
+2026-11-14 16:28:59 [listener] err@room:shard3/W47N8: subscribe limit reached (x1)
+2026-11-14 16:36:18 [listener] err@room:shard3/W47N8: subscribe limit reached (x100)
+2026-11-14 16:39:05 [listener] err@room:shard3/W45N8: subscribe limit reached (x1)
+2026-11-14 16:41:06 [listener] err@room:shard3/W45N7: subscribe limit reached (x1)
+2026-11-14 16:59:54 [listener] box frozen ~725s since 2026-11-14 16:47:44 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-14 17:21:15 [listener] box frozen ~425s since 2026-11-14 17:14:10 (VM hibernated; wall jumped, monotonic did not), reconnecting
+==== listener.out last 10 ====
+2026-11-14 13:02:29 restart
+2026-11-14 13:20:54 restart
+2026-11-14 13:56:50 restart
+2026-11-14 14:18:02 restart
+2026-11-14 14:36:30 restart
+2026-11-14 15:56:24 restart
+2026-11-14 16:04:24 restart
+2026-11-14 16:24:24 restart
+2026-11-14 16:59:57 restart
+2026-11-14 17:21:18 restart
+==== grafana / dashboard / postgres ====
+grafana 200
+dashboard 200
+live.updated 2026-11-14 17:31:48
+live.gameTime 84262435
+postgres ok db=screeps now=2026-11-14 17:31:51.626293+08:00 tips={'creep_ticks': 84262435, 'room_stats': 84262430, 'creep_cpu': 84262430, 'path_arrivals': 84262423}
