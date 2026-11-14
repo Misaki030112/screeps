@@ -78,3 +78,149 @@ listener_rot.json {"i": 1, "room": "W47N8", "left": 520.0, "at": "2026-11-15 01:
 ==== HTTP ====
 grafana 200
 dashboard 200
+==== box_pause last 10 ====
+{"from": "2026-11-14 20:35:57", "to": "2026-11-14 20:57:05", "sec": 1258}
+{"from": "2026-11-14 21:09:40", "to": "2026-11-14 21:23:27", "sec": 822}
+{"from": "2026-11-14 21:42:12", "to": "2026-11-14 22:03:16", "sec": 1264}
+{"from": "2026-11-14 22:10:46", "to": "2026-11-14 22:19:34", "sec": 524}
+{"from": "2026-11-14 22:37:50", "to": "2026-11-14 23:03:03", "sec": 1513}
+{"from": "2026-11-14 23:16:56", "to": "2026-11-14 23:25:24", "sec": 499}
+{"from": "2026-11-14 23:49:33", "to": "2026-11-15 00:01:18", "sec": 704}
+{"from": "2026-11-15 00:15:00", "to": "2026-11-15 00:17:10", "sec": 130}
+{"from": "2026-11-15 00:40:39", "to": "2026-11-15 01:04:47", "sec": 1448}
+{"from": "2026-11-15 01:12:05", "to": "2026-11-15 01:26:06", "sec": 840}
+==== DB tips ====
+       t       |   min    |   max    |            max_ts             |  count  
+---------------+----------+----------+-------------------------------+---------
+ creep_ticks   | 83609908 | 84268960 | 2026-11-15 01:35:38.12309+08  | 7788176
+ room_stats    | 83594467 | 84268950 | 2026-11-15 01:34:54.667818+08 |   54326
+ creep_cpu     | 83609905 | 84268950 | 2026-11-15 01:35:26.12096+08  | 2622093
+ path_arrivals | 83609919 | 84268933 | 2026-11-15 01:34:25.434894+08 |   67522
+(4 rows)
+
+==== leftover holes (known + last window mid-gaps, last ~20 chunks) ====
+  W45N7@84268900: distinct=0 min= max= rows=0
+  W45N8@84268900: distinct=0 min= max= rows=0
+  W46N8@84268900: distinct=37 min=84268901 max=84268937 rows=259
+  W47N7@84268900: distinct=0 min= max= rows=0
+  W47N8@84268900: distinct=23 min=84268938 max=84268960 rows=376
+  W45N7@84268800: distinct=0 min= max= rows=0
+  W45N8@84268800: distinct=0 min= max= rows=0
+  W46N8@84268800: distinct=65 min=84268836 max=84268900 rows=491
+  W47N7@84268800: distinct=0 min= max= rows=0
+  W47N8@84268800: distinct=0 min= max= rows=0
+  W45N7@84268700: distinct=100 min=84268701 max=84268800 rows=400
+  W45N8@84268700: distinct=100 min=84268701 max=84268800 rows=477
+  W46N8@84268700: distinct=100 min=84268701 max=84268800 rows=887
+  W47N7@84268700: distinct=100 min=84268701 max=84268800 rows=510
+  W47N8@84268700: distinct=100 min=84268701 max=84268800 rows=1909
+  W45N7@84268600: distinct=100 min=84268601 max=84268700 rows=400
+  W45N8@84268600: distinct=100 min=84268601 max=84268700 rows=379
+  W46N8@84268600: distinct=100 min=84268601 max=84268700 rows=855
+  W47N7@84268600: distinct=100 min=84268601 max=84268700 rows=366
+  W47N8@84268600: distinct=100 min=84268601 max=84268700 rows=2045
+  W45N7@84268500: distinct=100 min=84268501 max=84268600 rows=264
+  W45N8@84268500: distinct=100 min=84268501 max=84268600 rows=437
+  W46N8@84268500: distinct=100 min=84268501 max=84268600 rows=885
+  W47N7@84268500: distinct=100 min=84268501 max=84268600 rows=281
+  W47N8@84268500: distinct=100 min=84268501 max=84268600 rows=1987
+  W45N7@84268400: distinct=41 min=84268460 max=84268500 rows=87
+  W45N8@84268400: distinct=100 min=84268401 max=84268500 rows=359
+  W46N8@84268400: distinct=100 min=84268401 max=84268500 rows=1055
+  W47N7@84268400: distinct=100 min=84268401 max=84268500 rows=157
+  W47N8@84268400: distinct=100 min=84268401 max=84268500 rows=2104
+  W45N7@84268300: distinct=0 min= max= rows=0
+  W45N8@84268300: distinct=100 min=84268301 max=84268400 rows=343
+  W46N8@84268300: distinct=100 min=84268301 max=84268400 rows=966
+  W47N7@84268300: distinct=100 min=84268301 max=84268400 rows=480
+  W47N8@84268300: distinct=100 min=84268301 max=84268400 rows=1830
+  W45N7@84268200: distinct=0 min= max= rows=0
+  W45N8@84268200: distinct=100 min=84268201 max=84268300 rows=301
+  W46N8@84268200: distinct=100 min=84268201 max=84268300 rows=1156
+  W47N7@84268200: distinct=100 min=84268201 max=84268300 rows=269
+  W47N8@84268200: distinct=100 min=84268201 max=84268300 rows=2045
+  W45N7@84268100: distinct=0 min= max= rows=0
+  W45N8@84268100: distinct=100 min=84268101 max=84268200 rows=415
+  W46N8@84268100: distinct=100 min=84268101 max=84268200 rows=1359
+  W47N7@84268100: distinct=100 min=84268101 max=84268200 rows=450
+  W47N8@84268100: distinct=100 min=84268101 max=84268200 rows=1850
+  W45N7@84268000: distinct=0 min= max= rows=0
+  W45N8@84268000: distinct=100 min=84268001 max=84268100 rows=431
+  W46N8@84268000: distinct=100 min=84268001 max=84268100 rows=1478
+  W47N7@84268000: distinct=100 min=84268001 max=84268100 rows=344
+  W47N8@84268000: distinct=100 min=84268001 max=84268100 rows=1916
+  W45N7@84267900: distinct=1 min=84267995 max=84267995 rows=1
+  W45N8@84267900: distinct=100 min=84267901 max=84268000 rows=334
+  W46N8@84267900: distinct=100 min=84267901 max=84268000 rows=1390
+  W47N7@84267900: distinct=100 min=84267901 max=84268000 rows=302
+  W47N8@84267900: distinct=100 min=84267901 max=84268000 rows=1714
+  W45N7@84267800: distinct=98 min=84267801 max=84267898 rows=98
+  W45N8@84267800: distinct=100 min=84267801 max=84267900 rows=311
+  W46N8@84267800: distinct=100 min=84267801 max=84267900 rows=1291
+  W47N7@84267800: distinct=100 min=84267801 max=84267900 rows=518
+  W47N8@84267800: distinct=100 min=84267801 max=84267900 rows=1563
+  W45N7@84267700: distinct=100 min=84267701 max=84267800 rows=100
+  W45N8@84267700: distinct=100 min=84267701 max=84267800 rows=303
+  W46N8@84267700: distinct=100 min=84267701 max=84267800 rows=1261
+  W47N7@84267700: distinct=100 min=84267701 max=84267800 rows=432
+  W47N8@84267700: distinct=100 min=84267701 max=84267800 rows=1709
+  W45N7@84267600: distinct=1 min=84267700 max=84267700 rows=1
+  W45N8@84267600: distinct=100 min=84267601 max=84267700 rows=292
+  W46N8@84267600: distinct=100 min=84267601 max=84267700 rows=1452
+  W47N7@84267600: distinct=100 min=84267601 max=84267700 rows=620
+  W47N8@84267600: distinct=100 min=84267601 max=84267700 rows=1673
+  W45N7@84267500: distinct=0 min= max= rows=0
+  W45N8@84267500: distinct=100 min=84267501 max=84267600 rows=237
+  W46N8@84267500: distinct=100 min=84267501 max=84267600 rows=1303
+  W47N7@84267500: distinct=100 min=84267501 max=84267600 rows=360
+  W47N8@84267500: distinct=100 min=84267501 max=84267600 rows=1813
+  W45N7@84267400: distinct=100 min=84267401 max=84267500 rows=100
+  W45N8@84267400: distinct=23 min=84267401 max=84267423 rows=69
+  W45N8@84267400: distinct=23 min=84267401 max=84267423 rows=69
+  W46N8@84267400: distinct=100 min=84267401 max=84267500 rows=1169
+  W47N7@84267400: distinct=100 min=84267401 max=84267500 rows=477
+  W47N8@84267400: distinct=100 min=84267401 max=84267500 rows=1728
+  W45N7@84267300: distinct=24 min=84267301 max=84267324 rows=24
+  W45N8@84267300: distinct=100 min=84267301 max=84267400 rows=227
+  W46N8@84267300: distinct=100 min=84267301 max=84267400 rows=1145
+  W47N7@84267300: distinct=100 min=84267301 max=84267400 rows=477
+  W47N8@84267300: distinct=100 min=84267301 max=84267400 rows=1574
+  W45N7@84267200: distinct=100 min=84267201 max=84267300 rows=237
+  W45N8@84267200: distinct=100 min=84267201 max=84267300 rows=500
+  W46N8@84267200: distinct=100 min=84267201 max=84267300 rows=929
+  W47N7@84267200: distinct=100 min=84267201 max=84267300 rows=291
+  W47N8@84267200: distinct=100 min=84267201 max=84267300 rows=1658
+  W45N7@84267100: distinct=100 min=84267101 max=84267200 rows=380
+  W45N8@84267100: distinct=100 min=84267101 max=84267200 rows=392
+  W46N8@84267100: distinct=100 min=84267101 max=84267200 rows=949
+  W47N7@84267100: distinct=100 min=84267101 max=84267200 rows=448
+  W47N8@84267100: distinct=100 min=84267101 max=84267200 rows=1544
+  W45N7@84267000: distinct=100 min=84267001 max=84267100 rows=376
+  W45N8@84267000: distinct=100 min=84267001 max=84267100 rows=523
+  W46N8@84267000: distinct=100 min=84267001 max=84267100 rows=1021
+  W47N7@84267000: distinct=100 min=84267001 max=84267100 rows=431
+  W47N8@84267000: distinct=100 min=84267001 max=84267100 rows=1651
+  W47N8@84266800: distinct=0 min= max= rows=0
+  W45N7@84266100: distinct=11 min=84266185 max=84266195 rows=17
+  W45N8@84265700: distinct=0 min= max= rows=0
+  W45N8@84264100: distinct=12 min=84264189 max=84264200 rows=48
+  W46N8@84263600: distinct=0 min= max= rows=0
+  W46N8@84262500: distinct=0 min= max= rows=0
+  W47N8@84261900: distinct=0 min= max= rows=0
+  W46N8@84260300: distinct=10 min=84260391 max=84260400 rows=97
+  W45N7@84259200: distinct=0 min= max= rows=0
+  W45N8@84258600: distinct=0 min= max= rows=0
+  W45N7@84257900: distinct=0 min= max= rows=0
+==== freeze gap after last backfill tip 84268500.. now, per room ====
+ room  |   min    |   max    | distinct | rows 
+-------+----------+----------+----------+------
+ W45N7 | 84268501 | 84268800 |      300 | 1064
+ W45N8 | 84268501 | 84268800 |      300 | 1293
+ W46N8 | 84268501 | 84268937 |      402 | 3377
+ W47N7 | 84268501 | 84268800 |      300 | 1157
+ W47N8 | 84268501 | 84268964 |      327 | 6384
+(5 rows)
+
+
+Did not run services.sh (postgres/grafana/listener/dashboard already up).
+Listener auto-restarted 01:26:09 (pid 2791481 since 01:26:18). live.json age ~3s, gameTime 84268937, slot W47N8, single listener; no yield; no second slot; did not restart war_cmd/pulse.
