@@ -1,0 +1,26 @@
+=== incidents since last (and +200) ===
+cols ['ts', 'tick', 'remote', 'inc', 'ev', 'from_state', 'state', 'why', 'inv', 'inv_ttl', 'def', 'dur', 'data']
+n 3
+(datetime.datetime(2026, 11, 14, 9, 32, 26, 77044, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84255945, 'W45N7', 84255944, 'spawn_start', None, 'THREAT', None, None, None, 'defender84255945', None, {'n': 1, 'ev': 'spawn_start', 'def': 'defender84255945', 'inc': 84255944, 'tick': 84255945, 'state': 'THREAT', 'remote': 'W45N7', 'waited': 1})
+(datetime.datetime(2026, 11, 14, 11, 11, 44, 267749, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84257293, 'W47N7', 84257142, 'defend', 'THREAT', 'DEFEND', 'dispatched', 0, 0, 'out', 151, {'ev': 'defend', 'def': 'out', 'dur': 151, 'inc': 84257142, 'inv': 0, 'why': 'dispatched', 'from': 'THREAT', 'tick': 84257293, 'state': 'DEFEND', 'invTtl': 0, 'remote': 'W47N7', 'delivered': 0})
+(datetime.datetime(2026, 11, 14, 11, 28, 27, 499747, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84257519, 'W47N7', 84257142, 'cleared', 'DEFEND', 'SAFE', 'killed', 0, 0, 'out', 377, {'ev': 'cleared', 'def': 'out', 'dur': 377, 'inc': 84257142, 'inv': 0, 'why': 'killed', 'from': 'DEFEND', 'tick': 84257519, 'state': 'SAFE', 'invTtl': 0, 'remote': 'W47N7', 'delivered': 0})
+
+=== events non-watch since last ===
+(datetime.datetime(2026, 11, 14, 12, 4, 42, 302437, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84257514, 'box_pause', None, None, None, 'box frozen ~1352s since 2026-11-14 11:42:04', {'sec': 1352, 'from': '2026-11-14 11:42:04'})
+(datetime.datetime(2026, 11, 14, 11, 28, 27, 520548, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84257519, 'alert_ended', 'W47N7', 'low', 'remote-W47N7-84257142', None, {'room': 'W47N7', 'tick': 84257519, 'ended': True, 'action': 'remote resumed', 'remote': 'W47N7', 'episode': 'remote-W47N7-84257142', 'severity': 'low'})
+(datetime.datetime(2026, 11, 14, 12, 22, 4, 523023, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84258116, 'box_pause', None, None, None, 'box frozen ~577s since 2026-11-14 12:12:21', {'sec': 577, 'from': '2026-11-14 12:12:21'})
+
+=== creep_ticks columns ===
+['ts', 'tick', 'room', 'creep', 'role', 'x', 'y', 'hits', 'store', 'state', 'commit']
+
+=== W47 miner stand tiles last hour ===
+stand [('w8miner84256112', 'wminer', 26, 11, 146), ('w8miner84256130', 'wminer', 11, 43, 164), ('w8miner84257521', 'wminer', 11, 43, 547), ('w8miner84257521', 'wminer', 34, 30, 23), ('w8miner84257545', 'wminer', 26, 11, 560), ('w8miner84257545', 'wminer', 34, 30, 23)]
+
+=== all w8miner life ranges ===
+[('w8miner84256112', 84257490, 84257635, 146, 146), ('w8miner84256130', 84257490, 84257653, 164, 164), ('w8miner84257521', 84257522, 84258200, 679, 679), ('w8miner84257545', 84257546, 84258200, 655, 655)]
+all rooms [('w8miner84256112', 'W47N8', 84256990, 84257635, 646), ('w8miner84256130', 'W47N8', 84256990, 84257653, 664), ('w8miner84257521', 'W47N8', 84257522, 84258200, 679), ('w8miner84257545', 'W47N8', 84257546, 84258200, 655)]
+
+=== model source coords if in docs/code comments? skip ===
+
+=== sample miner row ===
+(datetime.datetime(2026, 11, 14, 12, 18, 32, 991727, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84258199, 'W47N8', 'w8miner84257521', 'wminer', 11, 43, 800, 50, 'loaded', '4ff78b4')

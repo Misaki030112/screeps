@@ -1,0 +1,12 @@
+services.sh: ok postgres / views_apache / grafana / listener / dashboard
+grafana_check: 20/20
+dashboard:200 grafana:200
+yield: absent
+war_cmd/pulse: NO_WAR_PROCS
+listener: run_listener.sh 4035476 since Nov10; python pid 2540894 since 12:22:16 after box freeze 12:12:21-12:22:04 577s; prior restart 12:04:45 (freeze 11:42:04-12:04:42 1352s)
+after 12:22 thaw: subscribe limit reached W46N8@12:22:23 (x1) then self-healed (live.json fresh roomSlot W46N8, q.py OK)
+rot at exact2h start i=0 W46N8 left~65s at 12:23:44; later i=1 W47N8 left~380s at 12:28:29 (5:5:1:1)
+Memory.cmd.on=1 at=84224348 stale c={} s={} v=1, commander not live, not reclaimed
+DB after thaw: room_stats lag ~30s at exact2h start, creep_ticks ~6s on the current slot, creep_cpu ~35s
+history_backfill: missing_chunks=1 W45N7@84257900 official 404 (confirm GET 12:23:52 and retry2 GET 12:28:29 still 404; adjacent @84257800 and @84258000 HTTP 200); ticks 84257501..84258200 (700) W46N8/W47N8/W45N8/W47N7 700/700 W45N7 600/700; inserted=7663 already_in_db=18268 ts_realigned=16871 tick_s=4.301; unpublished 84258201+ expected (~80t hour-window hole; W46N8 partial live fill)
+room_stats freeze gaps this hour: 84257700-84258020 (11:41:49-12:05:08, 320t / 1399s), 84258110-84258260 (12:11:48-12:22:54, 150t / 666s)
