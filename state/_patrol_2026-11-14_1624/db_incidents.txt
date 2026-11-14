@@ -1,0 +1,21 @@
+=== incidents since 84260650 ===
+n 2
+84261199 2026-11-14 16:00:10 HKT W45N7 inc 84261198 ev spawn_start from None -> THREAT why None inv None ttl None def defender84261199 dur None data {'n': 1, 'ev': 'spawn_start', 'def': 'defender84261199', 'inc': 84261198, 'tick': 84261199, 'state': 'THREAT', 'remote': 'W45N7', 'waited': 1}
+84261598 2026-11-14 16:29:44 HKT W45N7 inc 84261198 ev cleared from DEFEND -> SAFE why killed inv 0 ttl 0 def out dur 400 data {'ev': 'cleared', 'def': 'out', 'dur': 400, 'inc': 84261198, 'inv': 0, 'why': 'killed', 'from': 'DEFEND', 'tick': 84261598, 'state': 'SAFE', 'invTtl': 0, 'remote': 'W45N7', 'delivered': 2825059}
+
+=== all incidents for inc 84261198 ===
+84261199 2026-11-14 16:00:10 HKT W45N7 ev spawn_start from None -> THREAT why None inv None def defender84261199 dur None data {'n': 1, 'ev': 'spawn_start', 'def': 'defender84261199', 'inc': 84261198, 'tick': 84261199, 'state': 'THREAT', 'remote': 'W45N7', 'waited': 1}
+84261598 2026-11-14 16:29:44 HKT W45N7 ev cleared from DEFEND -> SAFE why killed inv 0 def out dur 400 data {'ev': 'cleared', 'def': 'out', 'dur': 400, 'inc': 84261198, 'inv': 0, 'why': 'killed', 'from': 'DEFEND', 'tick': 84261598, 'state': 'SAFE', 'invTtl': 0, 'remote': 'W45N7', 'delivered': 2825059}
+
+=== events kind not watch since last for remotes/hostiles/box ===
+84260849 2026-11-14 15:56:21 HKT box_pause None None None box frozen ~965s since 2026-11-14 15:40:15 {'sec': 965, 'from': '2026-11-14 15:40:15'}
+84261198 2026-11-14 16:00:06 HKT alert_new W45N7 medium remote-W45N7-84261198 Invader {'why': 'core', 'room': 'W45N7', 'tick': 84261198, 'owner': 'Invader', 'state': 'THREAT', 'action': 'defender requested', 'creeps': 0, 'remote': 'W45N7', 'episode': 'remote-W45N7-84261198', 'invOnly': True, 'severity': 'medium', 'positions': []}
+84261343 2026-11-14 16:24:20 HKT box_pause None None None box frozen ~795s since 2026-11-14 16:10:59 {'sec': 795, 'from': '2026-11-14 16:10:59'}
+84261598 2026-11-14 16:29:44 HKT alert_ended W45N7 low remote-W45N7-84261198 None {'room': 'W45N7', 'tick': 84261598, 'ended': True, 'action': 'remote resumed', 'remote': 'W45N7', 'episode': 'remote-W45N7-84261198', 'severity': 'low'}
+
+=== alert_state for W45N7 84261198 ===
+Traceback (most recent call last):
+  File "<stdin>", line 36, in <module>
+  File "/workspace/screeps/.venv/lib/python3.13/site-packages/psycopg/connection.py", line 304, in execute
+    raise ex.with_traceback(None)
+psycopg.ProgrammingError: only '%s', '%b', '%t' are allowed as placeholders, got '%8'

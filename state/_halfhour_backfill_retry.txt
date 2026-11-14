@@ -1,24 +1,16 @@
-confirm GET start 2026-11-14 14:59:34 Asia/Hong_Kong game.time=84260377 tick_s=4.367
-  pre  W45N7@84259100 distinct=100 rows=250 range=84259101..84259200
-  recovered_or_ok W45N7@84259100 ticks=100 ts=1794634390806 at 14:59:34 inserted=34 nfix=250 db_distinct=100 rows=250
+confirm GET start 2026-11-14 16:36:12 Asia/Hong_Kong game.time=84261685 tick_s=4.349
+  pre  W46N8@84260200 distinct=100 rows=943 range=84260201..84260300
+  recovered_or_ok W46N8@84260200 ticks=100 ts=1794639274264 at 16:36:13 inserted=0
+  pre  W46N8@84260300 distinct=10 rows=97 range=84260391..84260400
+  still_404 W46N8@84260300 at 16:36:16 game.time=84261685
+  pre  W46N8@84260400 distinct=100 rows=963 range=84260401..84260500
+  recovered_or_ok W46N8@84260400 ticks=100 ts=1794640156858 at 16:36:18 inserted=0
   pre  W45N7@84259200 distinct=0 rows=0 range=None..None
-  still_404 W45N7@84259200 at 14:59:37 game.time=84260377
-  pre  W45N7@84259300 distinct=100 rows=236 range=84259301..84259400
-  recovered_or_ok W45N7@84259300 ticks=100 ts=1794635280568 at 14:59:38 inserted=0 nfix=236 db_distinct=100 rows=236
+  still_404 W45N7@84259200 at 16:36:21 game.time=84261685
   pre  W45N8@84258600 distinct=0 rows=0 range=None..None
-  still_404 W45N8@84258600 at 14:59:40 game.time=84260377
+  still_404 W45N8@84258600 at 16:36:22 game.time=84261685
   pre  W45N7@84257900 distinct=0 rows=0 range=None..None
-  still_404 W45N7@84257900 at 14:59:42 game.time=84260377
-confirm done inserted=34 ts_realigned=486 recovered=[] still_404=['W45N7@84259200', 'W45N8@84258600', 'W45N7@84257900']
-retry2 GET start 2026-11-14 15:04:38 Asia/Hong_Kong game.time=84260446 tick_s=4.367
-  pre  W45N7@84259100 distinct=100 rows=250 range=84259101..84259200
-  recovered_or_ok W45N7@84259100 ticks=100 ts=1794634390806 at 15:04:39 inserted=34 nfix=0 db_distinct=100 rows=250
-  pre  W45N7@84259200 distinct=0 rows=0 range=None..None
-  still_404 W45N7@84259200 at 15:04:41 game.time=84260446
-  pre  W45N7@84259300 distinct=100 rows=236 range=84259301..84259400
-  recovered_or_ok W45N7@84259300 ticks=100 ts=1794635280568 at 15:04:42 inserted=0 nfix=0 db_distinct=100 rows=236
-  pre  W45N8@84258600 distinct=0 rows=0 range=None..None
-  still_404 W45N8@84258600 at 15:04:44 game.time=84260446
-  pre  W45N7@84257900 distinct=0 rows=0 range=None..None
-  still_404 W45N7@84257900 at 15:04:46 game.time=84260446
-retry2 done inserted=34 ts_realigned=0 recovered=[] still_404=['W45N7@84259200', 'W45N8@84258600', 'W45N7@84257900']
+  still_404 W45N7@84257900 at 16:36:23 game.time=84261685
+recovered=[] still_404=['W46N8@84260300', 'W45N7@84259200', 'W45N8@84258600', 'W45N7@84257900'] inserted=0 ts_realigned=1906
+gets_written 6 /workspace/screeps/state/_halfhour_2026-11-14_1630/backfill_confirm_gets.json
+finished

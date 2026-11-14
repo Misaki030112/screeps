@@ -1,0 +1,83 @@
+=== tables like incident/threat/event ===
+[('alert_state',), ('events',), ('incident_summary',), ('incidents',)]
+
+-- alert_state cols ['episode', 'severity', 'first', 'latest', 'acked', 'ended', 'seen']
+  rows 394
+  peek [('remote-W47N7-84259169', 'medium', {'why': 'core', 'room': 'W47N7', 'tick': 84259169, 'owner': 'Invader', 'state': 'THREAT', 'action': 'defender requested', 'creeps': 0, 'remote': 'W47N7', 'episode': 'remote-W47N7-84259169', 'invOnly': True, 'severity': 'medium', 'positions': []}, {'room': 'W47N7', 'tick': 84259542, 'ended': True, 'action': 'remote resumed', 'remote': 'W47N7', 'episode': 'remote-W47N7-84259169', 'severity': 'low'}, False, True, datetime.datetime(2026, 11, 14, 13, 30, 15, 192714, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai'))), ('remote-W47N7-84257142', 'medium', {'why': 'core', 'room': 'W47N7', 'tick': 84257250, 'owner': 'Invader', 'state': 'THREAT', 'action': 'defender requested', 'creeps': 0, 'remote': 'W47N7', 'episode': 'remote-W47N7-84257142', 'invOnly': True, 'severity': 'medium', 'positions': []}, {'room': 'W47N7', 'tick': 84257519, 'ended': True, 'action': 'remote resumed', 'remote': 'W47N7', 'episode': 'remote-W47N7-84257142', 'severity': 'low'}, False, True, datetime.datetime(2026, 11, 14, 11, 8, 32, 836637, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai'))), ('remote-W47N7-84253071', 'medium', {'why': 'core', 'room': 'W47N7', 'tick': 84253150, 'owner': 'Invader', 'state': 'THREAT', 'action': 'defender requested', 'creeps': 0, 'remote': 'W47N7', 'episode': 'remote-W47N7-84253071', 'invOnly': True, 'severity': 'medium', 'positions': []}, {'room': 'W47N7', 'tick': 84253448, 'ended': True, 'action': 'remote resumed', 'remote': 'W47N7', 'episode': 'remote-W47N7-84253071', 'severity': 'low'}, False, True, datetime.datetime(2026, 11, 14, 6, 5, 57, 988660, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai'))), ('remote-W47N7-84247689', 'medium', {'why': 'solo', 'room': 'W47N7', 'tick': 84247750, 'owner': 'Invader', 'state': 'THREAT', 'action': 'defender requested', 'creeps': 1, 'remote': 'W47N7', 'episode': 'remote-W47N7-84247689', 'invOnly': True, 'severity': 'medium', 'positions': [[21, 6]]}, {'room': 'W47N7', 'tick': 84247916, 'ended': True, 'action': 'remote resumed', 'remote': 'W47N7', 'episode': 'remote-W47N7-84247689', 'severity': 'low'}, False, True, datetime.datetime(2026, 11, 13, 23, 28, 46, 200442, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai'))), ('remote-W47N7-84240830', 'medium', {'why': 'solo', 'room': 'W47N7', 'tick': 84240850, 'owner': 'Invader', 'state': 'THREAT', 'action': 'defender requested', 'creeps': 1, 'remote': 'W47N7', 'episode': 'remote-W47N7-84240830', 'invOnly': True, 'severity': 'medium', 'positions': [[26, 34]]}, {'room': 'W47N7', 'tick': 84241058, 'ended': True, 'action': 'remote resumed', 'remote': 'W47N7', 'episode': 'remote-W47N7-84240830', 'severity': 'low'}, False, True, datetime.datetime(2026, 11, 13, 15, 1, 45, 603450, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')))]
+
+-- events cols ['ts', 'tick', 'kind', 'room', 'severity', 'episode', 'msg', 'data']
+  rows 70182
+  peek [(datetime.datetime(2026, 11, 14, 16, 29, 44, 685203, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84261598, 'alert_ended', 'W45N7', 'low', 'remote-W45N7-84261198', None, {'room': 'W45N7', 'tick': 84261598, 'ended': True, 'action': 'remote resumed', 'remote': 'W45N7', 'episode': 'remote-W45N7-84261198', 'severity': 'low'}), (datetime.datetime(2026, 11, 14, 16, 24, 20, 902664, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84261343, 'box_pause', None, None, None, 'box frozen ~795s since 2026-11-14 16:10:59', {'sec': 795, 'from': '2026-11-14 16:10:59'}), (datetime.datetime(2026, 11, 14, 16, 2, 49, 515574, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84261235, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'builder84261026'], ['6010ee96cbca26e9512da6f0', 'reserver84261157'], ['6010ee96cbca26e9512da6f0', 'rhauler84260800'], ['6010ee96cbca26e9512da6f0', 'rhauler84260809'], ['6010ee96cbca26e9512da6f0', 'rhauler84261071'], ['6010ee96cbca26e9512da6f0', 'rminer84259729'], ['6010ee96cbca26e9512da6f0', 'rminer84261106']], 'container': [88], 'reservation': [{'endTime': 84263171}]}), (datetime.datetime(2026, 11, 14, 16, 2, 45, 106404, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84261234, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'builder84261026'], ['6010ee96cbca26e9512da6f0', 'reserver84261157'], ['6010ee96cbca26e9512da6f0', 'rhauler84260800'], ['6010ee96cbca26e9512da6f0', 'rhauler84260809'], ['6010ee96cbca26e9512da6f0', 'rhauler84261071'], ['6010ee96cbca26e9512da6f0', 'rminer84259729'], ['6010ee96cbca26e9512da6f0', 'rminer84261106']], 'container': [76], 'reservation': [{'endTime': 84263169}]}), (datetime.datetime(2026, 11, 14, 16, 2, 40, 773147, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84261233, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'builder84261026'], ['6010ee96cbca26e9512da6f0', 'reserver84261157'], ['6010ee96cbca26e9512da6f0', 'rhauler84260569'], ['6010ee96cbca26e9512da6f0', 'rhauler84260800'], ['6010ee96cbca26e9512da6f0', 'rhauler84260809'], ['6010ee96cbca26e9512da6f0', 'rhauler84261071'], ['6010ee96cbca26e9512da6f0', 'rminer84259729'], ['6010ee96cbca26e9512da6f0', 'rminer84261106']], 'container': [64], 'reservation': [{'endTime': 84263167}]})]
+
+-- incident_summary cols ['remote', 'inc', 'started', 'ended', 'ticks_to_spawn', 'ticks_to_dispatch', 'ticks_to_arrive', 'paused_ticks', 'outcome', 'defender_used', 'energy_lost_est']
+  rows 98
+  peek [('W47N7', 83946810, datetime.datetime(2026, 10, 30, 2, 4, 37, 219603, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), datetime.datetime(2026, 10, 30, 2, 10, 22, 80964, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), None, 55, 105, 133, 'killed', False, 798), ('W47N7', 83935636, datetime.datetime(2026, 10, 29, 11, 56, 46, 941312, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), datetime.datetime(2026, 10, 29, 12, 5, 36, 344979, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 1, 37, None, 125, 'killed', True, 750), ('W47N7', 83941555, datetime.datetime(2026, 10, 29, 19, 16, 50, 70871, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), datetime.datetime(2026, 10, 29, 19, 16, 54, 455388, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 5, None, None, None, 'gate', True, None), ('W47N7', 83941639, datetime.datetime(2026, 10, 29, 19, 26, 39, 368171, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), datetime.datetime(2026, 10, 29, 19, 26, 39, 368171, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), None, None, None, 44, 'killed', False, 264), ('W47N7', 83951860, datetime.datetime(2026, 10, 30, 8, 13, 48, 457150, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), datetime.datetime(2026, 10, 30, 8, 13, 52, 804712, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 19, None, None, None, 'gate', True, None)]
+
+-- incidents cols ['ts', 'tick', 'remote', 'inc', 'ev', 'from_state', 'state', 'why', 'inv', 'inv_ttl', 'def', 'dur', 'data']
+  rows 280
+  peek [(datetime.datetime(2026, 11, 14, 16, 29, 44, 666970, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84261598, 'W45N7', 84261198, 'cleared', 'DEFEND', 'SAFE', 'killed', 0, 0, 'out', 400, {'ev': 'cleared', 'def': 'out', 'dur': 400, 'inc': 84261198, 'inv': 0, 'why': 'killed', 'from': 'DEFEND', 'tick': 84261598, 'state': 'SAFE', 'invTtl': 0, 'remote': 'W45N7', 'delivered': 2825059}), (datetime.datetime(2026, 11, 14, 16, 0, 10, 834324, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84261199, 'W45N7', 84261198, 'spawn_start', None, 'THREAT', None, None, None, 'defender84261199', None, {'n': 1, 'ev': 'spawn_start', 'def': 'defender84261199', 'inc': 84261198, 'tick': 84261199, 'state': 'THREAT', 'remote': 'W45N7', 'waited': 1}), (datetime.datetime(2026, 11, 14, 13, 57, 48, 643671, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84259542, 'W47N7', 84259169, 'cleared', 'DEFEND', 'SAFE', 'killed', 0, 0, 'out', 373, {'ev': 'cleared', 'def': 'out', 'dur': 373, 'inc': 84259169, 'inv': 0, 'why': 'killed', 'from': 'DEFEND', 'tick': 84259542, 'state': 'SAFE', 'invTtl': 0, 'remote': 'W47N7', 'delivered': 0}), (datetime.datetime(2026, 11, 14, 13, 44, 21, 557179, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84259360, 'W47N7', 84259169, 'arrive', None, 'DEFEND', None, 0, 0, 'out', None, {'ev': 'arrive', 'def': 'out', 'inc': 84259169, 'inv': 0, 'tick': 84259360, 'state': 'DEFEND', 'invTtl': 0, 'remote': 'W47N7', 'travel': 40, 'delivered': 0}), (datetime.datetime(2026, 11, 14, 13, 41, 26, 855013, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84259320, 'W47N7', 84259169, 'defend', 'THREAT', 'DEFEND', 'dispatched', 0, 0, 'out', 151, {'ev': 'defend', 'def': 'out', 'dur': 151, 'inc': 84259169, 'inv': 0, 'why': 'dispatched', 'from': 'THREAT', 'tick': 84259320, 'state': 'DEFEND', 'invTtl': 0, 'remote': 'W47N7', 'delivered': 0})]
+
+=== defender84261199 trail ===
+n 300 first [(84261201, datetime.datetime(2026, 11, 14, 16, 0, 26, 891725, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 'W46N8', 35, 28, 5000, 0, 'spawning'), (84261202, datetime.datetime(2026, 11, 14, 16, 0, 31, 326135, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 'W46N8', 35, 28, 5000, 0, 'spawning'), (84261203, datetime.datetime(2026, 11, 14, 16, 0, 35, 760545, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 'W46N8', 35, 28, 5000, 0, 'spawning')] last [(84261498, datetime.datetime(2026, 11, 14, 16, 22, 23, 911495, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 'W45N7', 6, 43, 5000, 0, 'empty'), (84261499, datetime.datetime(2026, 11, 14, 16, 22, 28, 345905, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 'W45N7', 6, 43, 5000, 0, 'empty'), (84261500, datetime.datetime(2026, 11, 14, 16, 22, 32, 780315, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 'W45N7', 6, 43, 5000, 0, 'empty')]
+room changes [(84261376, '2026-11-14 16:13:22 HKT', 'W46N8', '->', 'W45N8', 1, 22, 0, 'empty'), (84261422, '2026-11-14 16:16:46 HKT', 'W45N8', '->', 'W45N7', 21, 1, 0, 'empty')]
+first 8:
+  84261201 2026-11-14 16:00:26 HKT W46N8 35 28 hits 5000 st spawning
+  84261202 2026-11-14 16:00:31 HKT W46N8 35 28 hits 5000 st spawning
+  84261203 2026-11-14 16:00:35 HKT W46N8 35 28 hits 5000 st spawning
+  84261204 2026-11-14 16:00:40 HKT W46N8 35 28 hits 5000 st spawning
+  84261205 2026-11-14 16:00:44 HKT W46N8 35 28 hits 5000 st spawning
+  84261206 2026-11-14 16:00:49 HKT W46N8 35 28 hits 5000 st spawning
+  84261207 2026-11-14 16:00:53 HKT W46N8 35 28 hits 5000 st spawning
+  84261208 2026-11-14 16:00:57 HKT W46N8 35 28 hits 5000 st spawning
+last 8:
+  84261493 2026-11-14 16:22:01 HKT W45N7 6 43 hits 5000 st empty
+  84261494 2026-11-14 16:22:06 HKT W45N7 6 43 hits 5000 st empty
+  84261495 2026-11-14 16:22:10 HKT W45N7 6 43 hits 5000 st empty
+  84261496 2026-11-14 16:22:15 HKT W45N7 6 43 hits 5000 st empty
+  84261497 2026-11-14 16:22:19 HKT W45N7 6 43 hits 5000 st empty
+  84261498 2026-11-14 16:22:23 HKT W45N7 6 43 hits 5000 st empty
+  84261499 2026-11-14 16:22:28 HKT W45N7 6 43 hits 5000 st empty
+  84261500 2026-11-14 16:22:32 HKT W45N7 6 43 hits 5000 st empty
+
+=== W45N7 room_stats hostiles/sites since last ===
+n samples 0
+hostile samples []
+
+=== W45N8 room_stats hostiles since last ===
+[]
+
+=== creeps in W45N7 since last (unique names) ===
+  ('rminer84260000', 'rminer', 84260650, 84261241, 592)
+  ('reserver84260388', 'reserver', 84260650, 84260999, 350)
+  ('rhauler84259762', 'rhauler', 84260650, 84261083, 94)
+  ('rhauler84260085', 'rhauler', 84260650, 84261106, 191)
+  ('rhauler84260325', 'rhauler', 84260666, 84261139, 205)
+  ('rhauler84260569', 'rhauler', 84260689, 84261188, 243)
+  ('rhauler84260809', 'rhauler', 84260949, 84261212, 147)
+  ('rhauler84261071', 'rhauler', 84261184, 84261211, 28)
+  ('defender84261199', 'defender', 84261422, 84261500, 79)
+
+=== rminer84260000 last ticks (any room) ===
+n after 84261100 344
+ first 84261100 2026-11-14 15:52:52 HKT W45N7 21 15 50 loaded
+ first 84261101 2026-11-14 15:53:03 HKT W45N7 21 15 50 loaded
+ first 84261102 2026-11-14 15:53:07 HKT W45N7 21 15 50 loaded
+ first 84261103 2026-11-14 15:53:12 HKT W45N7 21 15 50 loaded
+ first 84261104 2026-11-14 15:53:16 HKT W45N7 21 15 50 loaded
+ last 84261500 2026-11-14 16:22:32 HKT W46N8 47 16
+
+=== reserver in W45N7 this hour ===
+[('reserver84259440', 'reserver', 84259800, 84260051), ('reserver84260388', 'reserver', 84260493, 84260999)]
+reserver84260388 last [(84260999, 'W45N7', 6, 39), (84260998, 'W45N7', 6, 39), (84260997, 'W45N7', 6, 39), (84260996, 'W45N7', 6, 39), (84260995, 'W45N7', 6, 39)]
+
+=== w8guard/w8defender spawn trails at hostile time ===
+w8guard84260874 (84260875, 84261500, 'W47N8 33,30', 'W47N8 28,4')
+w8defender84260874 (84260876, 84261500, 'W46N8 30,34', 'W47N8 28,5')
+w8guard84260391 (84260396, 84261500, 'W47N8 34,30', 'W47N8 29,5')
+
+=== CPU 1h neighbors of max ===
+  84260800 2026-11-14 15:30:53 HKT cpu 18.9 bkt 10000 stor 17127
+  84260810 2026-11-14 15:31:37 HKT cpu 17.16 bkt 10000 stor 16927
+  84260820 2026-11-14 15:32:23 HKT cpu 26.27 bkt 10000 stor 16227
+  84260830 2026-11-14 15:33:07 HKT cpu 19.31 bkt 10000 stor 15527
+  84260840 2026-11-14 15:33:51 HKT cpu 17.49 bkt 10000 stor 15627
