@@ -1,0 +1,103 @@
+2026-11-14 19:36:14 HKT
+==== processes (screeps/pg/grafana/listener) ====
+   7854 Thu Nov  5 15:29:21 2026 /usr/lib/postgresql/17/bin/postgres -D /workspace/screeps/var/pg17 -c config_file=/etc/postgresql/17/main/postgresql.conf
+   7855 Thu Nov  5 15:29:21 2026 postgres: 17/main: checkpointer 
+   7856 Thu Nov  5 15:29:21 2026 postgres: 17/main: background writer 
+   7858 Thu Nov  5 15:29:21 2026 postgres: 17/main: walwriter 
+   7859 Thu Nov  5 15:29:21 2026 postgres: 17/main: autovacuum launcher 
+   7860 Thu Nov  5 15:29:21 2026 postgres: 17/main: TimescaleDB Background Worker Launcher 
+   7861 Thu Nov  5 15:29:21 2026 postgres: 17/main: logical replication launcher 
+   8028 Thu Nov  5 15:29:30 2026 postgres: 17/main: TimescaleDB Background Worker Scheduler for database 16385 
+   8030 Thu Nov  5 15:29:30 2026 /usr/share/grafana/bin/grafana server --homepath /usr/share/grafana --config grafana/grafana.ini
+   8041 Thu Nov  5 15:29:30 2026 .venv/bin/python -m http.server 8787 --bind 127.0.0.1
+   8078 Thu Nov  5 15:29:30 2026 /usr/share/grafana/data/plugins-bundled/elasticsearch/gpx_grafana_elasticsearch_datasource_linux_amd64
+2687272 Sat Nov 14 19:25:59 2026 .venv/bin/python tools/listener.py
+2687316 Sat Nov 14 19:26:02 2026 postgres: 17/main: screeps screeps 127.0.0.1(41244) idle
+2693345 Sat Nov 14 19:36:07 2026 postgres: 17/main: screeps screeps 127.0.0.1(49706) SELECT
+4035476 Tue Nov 10 22:46:49 2026 /bin/bash tools/run_listener.sh
+
+==== listener pids / locks ====
+2687272 .venv/bin/python tools/listener.py
+2693388 /bin/sh -c pgrep -af 'tools/listener.py|tools/run_listener.sh' || true
+4035476 /bin/bash tools/run_listener.sh
+listener.py count=1
+yield_files=absent
+metrics/listener.pid mtime=2026-11-05 15:06:47 size=8 content='4035476\n'
+metrics/listener.lock mtime=2026-11-14 19:26:01 size=0 content=''
+metrics/listener.loop.lock mtime=2026-11-05 15:06:47 size=0 content=''
+==== rot / live.json ====
+live.json updated 2026-11-14 19:36:12 size 16118
+gameTime 84264054
+roomSlot W47N8
+objects n=0
+cpu {'cpu': 17, 'memory': 24525}
+stats.t 84264110
+keys ['console_tail', 'cpu', 'errors_tail', 'gameTime', 'objects', 'roomSlot', 'stats', 'uid', 'updated']
+live.json_age_s 1.7
+listener_rot.json {"i": 1, "room": "W47N8", "left": 325.0, "at": "2026-11-14 19:36:10"}
+MISSING room_rot.json
+==== box_pause last 8 ====
+{"from": "2026-11-14 16:10:59", "to": "2026-11-14 16:24:20", "sec": 795}
+{"from": "2026-11-14 16:47:44", "to": "2026-11-14 16:59:54", "sec": 725}
+{"from": "2026-11-14 17:14:10", "to": "2026-11-14 17:21:15", "sec": 425}
+{"from": "2026-11-14 17:51:21", "to": "2026-11-14 18:01:53", "sec": 631}
+{"from": "2026-11-14 18:17:44", "to": "2026-11-14 18:24:16", "sec": 391}
+{"from": "2026-11-14 18:48:26", "to": "2026-11-14 19:02:46", "sec": 855}
+{"from": "2026-11-14 19:11:21", "to": "2026-11-14 19:14:05", "sec": 156}
+{"from": "2026-11-14 19:20:19", "to": "2026-11-14 19:25:47", "sec": 318}
+==== recent errors (listener / errors.log last relevant) ====
+2026-11-14 16:00:08 [listener] [ingest] dropped 1 incidents rows: invalid input syntax for type integer: "{}"
+2026-11-14 16:04:21 [listener] ws error ping/pong timed out
+2026-11-14 16:24:20 [listener] box frozen ~795s since 2026-11-14 16:10:59 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-14 16:24:42 [listener] err@room:shard3/W46N8: subscribe limit reached (x1)
+2026-11-14 16:28:59 [listener] err@room:shard3/W47N8: subscribe limit reached (x1)
+2026-11-14 16:36:18 [listener] err@room:shard3/W47N8: subscribe limit reached (x100)
+2026-11-14 16:39:05 [listener] err@room:shard3/W45N8: subscribe limit reached (x1)
+2026-11-14 16:41:06 [listener] err@room:shard3/W45N7: subscribe limit reached (x1)
+2026-11-14 16:59:54 [listener] box frozen ~725s since 2026-11-14 16:47:44 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-14 17:21:15 [listener] box frozen ~425s since 2026-11-14 17:14:10 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-14 18:01:53 [listener] box frozen ~631s since 2026-11-14 17:51:21 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-14 18:02:21 [listener] err@room:shard3/W46N8: subscribe limit reached (x1)
+2026-11-14 18:10:25 [listener] ws error ping/pong timed out
+2026-11-14 18:24:16 [listener] box frozen ~391s since 2026-11-14 18:17:44 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-14 18:30:13 [listener] [ingest] invalid input syntax for type integer: "{}"
+2026-11-14 18:30:13 [listener] [ingest] dropped 1 incidents rows: invalid input syntax for type integer: "{}"
+2026-11-14 18:42:48 [listener] ws error ping/pong timed out
+2026-11-14 19:02:45 [listener] box frozen ~855s since 2026-11-14 18:48:26 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-14 19:14:05 [listener] box frozen ~156s since 2026-11-14 19:11:21 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-14 19:25:47 [listener] box frozen ~318s since 2026-11-14 19:20:19 (VM hibernated; wall jumped, monotonic did not), reconnecting
+==== listener.out last 12 ====
+2026-11-14 15:56:24 restart
+2026-11-14 16:04:24 restart
+2026-11-14 16:24:24 restart
+2026-11-14 16:59:57 restart
+2026-11-14 17:21:18 restart
+2026-11-14 18:01:56 restart
+2026-11-14 18:10:28 restart
+2026-11-14 18:24:19 restart
+2026-11-14 18:42:51 restart
+2026-11-14 19:02:49 restart
+2026-11-14 19:14:09 restart
+2026-11-14 19:25:50 restart
+==== grafana / dashboard / postgres ====
+grafana 200
+dashboard 200
+tips={'creep_ticks': 84264116, 'room_stats': 84264110, 'creep_cpu': 84264100, 'path_arrivals': 84264098}
+extrema={"creep_ticks": {"min": 83609908, "max": 84264116, "rows": 7599911}, "room_stats": {"min": 83594467, "max": 84264110, "rows": 53826}, "creep_cpu": {"min": 83609905, "max": 84264100, "rows": 2590380}, "path_arrivals": {"min": 83609919, "max": 84264098, "rows": 66972}}
+==== pg_lsclusters ====
+17 main 5432 online postgres /workspace/screeps/var/pg17 /var/log/postgresql/postgresql-17-main.log
+==== war_cmd/pulse (do not restart) ====
+==== late notes after 25s wait ====
+at 2026-11-14 19:36:51 HKT
+{"i": 1, "room": "W47N8", "left": 285.0, "at": "2026-11-14 19:36:50"}
+box_pauses last:
+{"from": "2026-11-14 17:14:10", "to": "2026-11-14 17:21:15", "sec": 425}
+{"from": "2026-11-14 17:51:21", "to": "2026-11-14 18:01:53", "sec": 631}
+{"from": "2026-11-14 18:17:44", "to": "2026-11-14 18:24:16", "sec": 391}
+{"from": "2026-11-14 18:48:26", "to": "2026-11-14 19:02:46", "sec": 855}
+{"from": "2026-11-14 19:11:21", "to": "2026-11-14 19:14:05", "sec": 156}
+{"from": "2026-11-14 19:20:19", "to": "2026-11-14 19:25:47", "sec": 318}
+new freezes this half-hour: 19:11:21-19:14:05 (156s) and 19:20:19-19:25:47 (318s); listener.out restart 19:14:09 and 19:25:50; listener.py pid 2687272 started 19:25:59; run_listener.sh 4035476 stayed up
+After wait: live.json gameTime=84264054 objects_n=0 size=16119 roomSlot=W47N8 age_s=0.1; cpu={'cpu': 15, 'memory': 24504}; stats.t=84264120
+tips after wait {'creep_ticks': 84264124, 'room_stats': 84264120, 'creep_cpu': 84264110, 'path_arrivals': 84264102}
+listener self-healed, CPU/path buffers pulled, single slot, no second listener, war_cmd/pulse not restarted

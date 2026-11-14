@@ -1,0 +1,23 @@
+=== tables like incident ===
+[('events',), ('incidents',), ('pg_event_trigger',), ('telemetry_event',)]
+incidents n_since_last=0
+incident ERR UndefinedTable relation "incident" does not exist
+LINE 1: SELECT count(*) FROM incident WHERE tick>=$1
+                             ^
+threat_incidents ERR UndefinedTable relation "threat_incidents" does not exist
+LINE 1: SELECT count(*) FROM threat_incidents WHERE tick>=$1
+                             ^
+events n_since_last=13
+alerts ERR UndefinedTable relation "alerts" does not exist
+LINE 1: SELECT count(*) FROM alerts WHERE tick>=$1
+                             ^
+console_events ERR UndefinedTable relation "console_events" does not exist
+LINE 1: SELECT count(*) FROM console_events WHERE tick>=$1
+                             ^
+incident_events ERR UndefinedTable relation "incident_events" does not exist
+LINE 1: SELECT count(*) FROM incident_events WHERE tick>=$1
+                             ^
+incident_summary ERR UndefinedColumn column "tick" does not exist
+LINE 1: SELECT count(*) FROM incident_summary WHERE tick>=$1
+                                                    ^
+tables ['alert_state', 'cpu_prof', 'creep_cpu', 'creep_ticks', 'deploys', 'events', 'incidents', 'model_params', 'path_arrivals', 'room_stats']

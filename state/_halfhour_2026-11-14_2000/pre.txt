@@ -1,0 +1,116 @@
+2026-11-14 20:05:53 HKT
+==== processes (screeps/pg/grafana/listener) ====
+   7854 Thu Nov  5 15:46:10 2026 /usr/lib/postgresql/17/bin/postgres -D /workspace/screeps/var/pg17 -c config_file=/etc/postgresql/17/main/postgresql.conf
+   7855 Thu Nov  5 15:46:10 2026 postgres: 17/main: checkpointer 
+   7856 Thu Nov  5 15:46:10 2026 postgres: 17/main: background writer 
+   7858 Thu Nov  5 15:46:10 2026 postgres: 17/main: walwriter 
+   7859 Thu Nov  5 15:46:10 2026 postgres: 17/main: autovacuum launcher 
+   7860 Thu Nov  5 15:46:10 2026 postgres: 17/main: TimescaleDB Background Worker Launcher 
+   7861 Thu Nov  5 15:46:10 2026 postgres: 17/main: logical replication launcher 
+   8028 Thu Nov  5 15:46:19 2026 postgres: 17/main: TimescaleDB Background Worker Scheduler for database 16385 
+   8030 Thu Nov  5 15:46:19 2026 /usr/share/grafana/bin/grafana server --homepath /usr/share/grafana --config grafana/grafana.ini
+   8041 Thu Nov  5 15:46:19 2026 .venv/bin/python -m http.server 8787 --bind 127.0.0.1
+   8078 Thu Nov  5 15:46:19 2026 /usr/share/grafana/data/plugins-bundled/elasticsearch/gpx_grafana_elasticsearch_datasource_linux_amd64
+2699343 Sat Nov 14 20:05:34 2026 .venv/bin/python tools/listener.py
+2699363 Sat Nov 14 20:05:37 2026 postgres: 17/main: screeps screeps 127.0.0.1(60534) idle
+4035476 Tue Nov 10 23:03:38 2026 /bin/bash tools/run_listener.sh
+
+==== listener pids / locks ====
+2699343 .venv/bin/python tools/listener.py
+4035476 /bin/bash tools/run_listener.sh
+listener.py count=1
+yield_files=absent
+metrics/listener.pid mtime=2026-11-05 15:06:47 size=8 content='4035476\n'
+metrics/listener.lock mtime=2026-11-14 20:05:35 size=0 content=''
+metrics/listener.loop.lock mtime=2026-11-05 15:06:47 size=0 content=''
+==== rot / live.json ====
+live.json updated 2026-11-14 20:05:51 size 72089
+gameTime 84264517
+roomSlot W46N8
+objects n= dict
+cpu {'cpu': 15, 'memory': 24642}
+stats.t None
+keys ['console_tail', 'cpu', 'errors_tail', 'gameTime', 'objects', 'roomSlot', 'stats', 'uid', 'updated']
+live.json_age_s 1.6
+listener_rot.json {"i": 0, "room": "W46N8", "left": 408.1, "at": "2026-11-14 20:05:51"}
+MISSING room_rot.json
+==== box_pause last 8 ====
+./metrics/box_pauses.jsonl
+box_pause file not found at usual paths
+==== recent errors (listener / errors.log last relevant) ====
+state:
+total 7472
+drwxr-xr-x 2 box box    4096 Nov 14 20:05 _halfhour_2026-11-14_2000
+drwxr-xr-x 2 box box    4096 Nov 14 19:44 _halfhour_2026-11-14_1930
+-rw-r--r-- 1 box box     148 Nov 14 19:44 _halfhour_backfill_verify.txt
+==== box_pause last 8 ====
+{"from": "2026-11-14 16:47:44", "to": "2026-11-14 16:59:54", "sec": 725}
+{"from": "2026-11-14 17:14:10", "to": "2026-11-14 17:21:15", "sec": 425}
+{"from": "2026-11-14 17:51:21", "to": "2026-11-14 18:01:53", "sec": 631}
+{"from": "2026-11-14 18:17:44", "to": "2026-11-14 18:24:16", "sec": 391}
+{"from": "2026-11-14 18:48:26", "to": "2026-11-14 19:02:46", "sec": 855}
+{"from": "2026-11-14 19:11:21", "to": "2026-11-14 19:14:05", "sec": 156}
+{"from": "2026-11-14 19:20:19", "to": "2026-11-14 19:25:47", "sec": 318}
+{"from": "2026-11-14 19:48:26", "to": "2026-11-14 20:05:21", "sec": 1008}
+==== recent errors (listener / errors.log last relevant) ====
+6574:2026-11-14 14:17:58 [listener] box frozen ~204s since 2026-11-14 14:14:25 (VM hibernated; wall jumped, monotonic did not), reconnecting
+6575:2026-11-14 14:36:27 [listener] ws error ping/pong timed out
+6576:2026-11-14 15:56:21 [listener] box frozen ~965s since 2026-11-14 15:40:15 (VM hibernated; wall jumped, monotonic did not), reconnecting
+6577:2026-11-14 16:00:08 [listener] [ingest] invalid input syntax for type integer: "{}"
+6579:2026-11-14 16:00:08 [listener] [ingest] dropped 1 incidents rows: invalid input syntax for type integer: "{}"
+6581:2026-11-14 16:04:21 [listener] ws error ping/pong timed out
+6582:2026-11-14 16:24:20 [listener] box frozen ~795s since 2026-11-14 16:10:59 (VM hibernated; wall jumped, monotonic did not), reconnecting
+6583:2026-11-14 16:24:42 [listener] err@room:shard3/W46N8: subscribe limit reached (x1)
+6584:2026-11-14 16:28:59 [listener] err@room:shard3/W47N8: subscribe limit reached (x1)
+6585:2026-11-14 16:36:18 [listener] err@room:shard3/W47N8: subscribe limit reached (x100)
+6586:2026-11-14 16:39:05 [listener] err@room:shard3/W45N8: subscribe limit reached (x1)
+6587:2026-11-14 16:41:06 [listener] err@room:shard3/W45N7: subscribe limit reached (x1)
+6588:2026-11-14 16:59:54 [listener] box frozen ~725s since 2026-11-14 16:47:44 (VM hibernated; wall jumped, monotonic did not), reconnecting
+6589:2026-11-14 17:21:15 [listener] box frozen ~425s since 2026-11-14 17:14:10 (VM hibernated; wall jumped, monotonic did not), reconnecting
+6590:2026-11-14 18:01:53 [listener] box frozen ~631s since 2026-11-14 17:51:21 (VM hibernated; wall jumped, monotonic did not), reconnecting
+6591:2026-11-14 18:02:21 [listener] err@room:shard3/W46N8: subscribe limit reached (x1)
+6592:2026-11-14 18:10:25 [listener] ws error ping/pong timed out
+6593:2026-11-14 18:24:16 [listener] box frozen ~391s since 2026-11-14 18:17:44 (VM hibernated; wall jumped, monotonic did not), reconnecting
+6594:2026-11-14 18:30:13 [listener] [ingest] invalid input syntax for type integer: "{}"
+6596:2026-11-14 18:30:13 [listener] [ingest] dropped 1 incidents rows: invalid input syntax for type integer: "{}"
+6598:2026-11-14 18:42:48 [listener] ws error ping/pong timed out
+6599:2026-11-14 19:02:45 [listener] box frozen ~855s since 2026-11-14 18:48:26 (VM hibernated; wall jumped, monotonic did not), reconnecting
+6600:2026-11-14 19:14:05 [listener] box frozen ~156s since 2026-11-14 19:11:21 (VM hibernated; wall jumped, monotonic did not), reconnecting
+6601:2026-11-14 19:25:47 [listener] box frozen ~318s since 2026-11-14 19:20:19 (VM hibernated; wall jumped, monotonic did not), reconnecting
+6602:2026-11-14 20:05:21 [listener] box frozen ~1008s since 2026-11-14 19:48:26 (VM hibernated; wall jumped, monotonic did not), reconnecting
+==== listener.out last 12 ====
+2026-11-14 16:04:24 restart
+2026-11-14 16:24:24 restart
+2026-11-14 16:59:57 restart
+2026-11-14 17:21:18 restart
+2026-11-14 18:01:56 restart
+2026-11-14 18:10:28 restart
+2026-11-14 18:24:19 restart
+2026-11-14 18:42:51 restart
+2026-11-14 19:02:49 restart
+2026-11-14 19:14:09 restart
+2026-11-14 19:25:50 restart
+2026-11-14 20:05:25 restart
+==== grafana / dashboard / postgres ====
+grafana 200
+dashboard 200
+tips={'creep_ticks': 84264518, 'room_stats': 84264280, 'creep_cpu': 84264510, 'path_arrivals': 84264496}
+extrema={"creep_ticks": {"min": 83609908, "max": 84264519, "rows": 7607774}, "room_stats": {"min": 83594467, "max": 84264280, "rows": 53860}, "creep_cpu": {"min": 83609905, "max": 84264510, "rows": 2593072}, "path_arrivals": {"min": 83609919, "max": 84264496, "rows": 67033}}
+==== pg_lsclusters ====
+Ver Cluster Port Status Owner    Data directory              Log file
+17  main    5432 online postgres /workspace/screeps/var/pg17 /var/log/postgresql/postgresql-17-main.log
+==== war_cmd/pulse (do not restart) ====
+==== late notes after 25s wait ====
+at 2026-11-14 20:06:43 HKT
+listener_rot {"i": 0, "room": "W46N8", "left": 358.1, "at": "2026-11-14 20:06:41"}
+box_pauses last:
+{"from": "2026-11-14 17:51:21", "to": "2026-11-14 18:01:53", "sec": 631}
+{"from": "2026-11-14 18:17:44", "to": "2026-11-14 18:24:16", "sec": 391}
+{"from": "2026-11-14 18:48:26", "to": "2026-11-14 19:02:46", "sec": 855}
+{"from": "2026-11-14 19:11:21", "to": "2026-11-14 19:14:05", "sec": 156}
+{"from": "2026-11-14 19:20:19", "to": "2026-11-14 19:25:47", "sec": 318}
+{"from": "2026-11-14 19:48:26", "to": "2026-11-14 20:05:21", "sec": 1008}
+new freeze this half-hour: 19:48:26-20:05:21 (1008s); listener.out restart 20:05:25; listener.py pid 2699343 started 20:05:34; run_listener.sh 4035476 stayed up
+After wait: live.json gameTime=84264528 objects_n=262 size=70394 roomSlot=W46N8 age_s=2.2; cpu={'cpu': 16, 'memory': 24503}; stats.t=84264520
+tips after wait {'creep_ticks': 84264528, 'room_stats': 84264520, 'creep_cpu': 84264520, 'path_arrivals': 84264515}
+listener self-healed, CPU/path buffers pulled, single slot, no second listener, war_cmd/pulse not restarted
