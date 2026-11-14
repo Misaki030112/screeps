@@ -33,7 +33,17 @@ Last full refresh: **2026-11-09 17:1x** (autonomous push — docs/canvas scorebo
 - One-line verdict: `waiting on ticks` | `small safe ship` | `phase exit` — capability to stock a kiter ≠ order to fight.
 
 
-## Current state (2026-11-13 ~20:1x Asia/Hong_Kong · 12h review)
+## Current state (2026-11-14 ~08:2x Asia/Hong_Kong · 12h review)
+
+| Room | Notes |
+|------|-------|
+| W46N8 (home) | **RCL7** 58.54% (6.402M/10.935M); +130k/12h ≈ 13.31 e/t → RCL8 ≈ **17.4 days** at this pace; stor avg 14.5k max 17474 min 8532, **50.2% under 15k** (was 56.6%); live tip 13328–14578 why=floor_bank nUp=1 upExtra=0; one lab site left (34,20 29.1k/50k; labsN=5, factory done); labs OFF (actOk=0 homeStor); LIVE **4ff78b4** (@84239549 / 13:26 HKT) |
+| W47N8 | **RCL7** 29.28% (3.202M); blended +51k/12h ≈ 5.25 e/t, post-resume from 04:22 **16.09 e/t** → RCL8 ≈ **24.6 days**; stor avg 10.8k max 25486 min 0 (20.8% ≥20k, 3.4% ≥25k, 0% ≥40k); live stor 24733–25183 keep=2 phase=ready siteRem=0 labsN=6 factory done leanBank0 softCap2 ON threatSoft leftover; two 10W upgraders |
+
+**08:2x scorecard:** Phase0 home floor **still thin** (50.2% of 12h under 15k, was 56.6%; min 8.5k; 20k gate never latched — zero ≥20k samples, max 17474). W47 **authorized site wave DONE**: upgrade resumed 04:22, keep=2, phase=ready, stor recovered from a mid-window 0 crash to a 25k flicker (max 25486, longest ≥25k 31 t) — softCap2 still on, not a sticky clear; 40k latch **waiting**; labs OFF ✔. Phase1 blocked. Phase2 home still the lead (~17.4 d at this floor-bank pace, should tighten once the last home lab ends and nUp=2 can stick; most hours were a steady 13–14 e/t). W47 forward pace ~16.1 e/t / ~24.6 d (was frozen last window; pre-site pace was ~18 e/t / ~22 d). Phase3+ deferred — last shell may finish, reactions stay off (energy 13–25k ≪ 100k). Verdict: `waiting on ticks` (finish last home lab, let W47 softCap stick, keep the 20k gate; no new game code).
+
+### Previous (2026-11-13 ~20:1x Asia/Hong_Kong · 12h review)
+
 
 | Room | Notes |
 |------|-------|
