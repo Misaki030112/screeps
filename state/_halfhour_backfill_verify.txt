@@ -1,15 +1,15 @@
-2026-11-14 08:05:40 Asia/Hong_Kong
-window ticks 84254001..84254700 (700) published_bases 84254000..84254600 game.time=84254739 tick_s=4.436
-unique_creep_tick_rows=27372 unique_after_room_rows=27372 distinct_ticks=700 distinct_room_ticks=3500
-per_room (all missing_ticks=0):
-  W45N7 ticks=84254001..84254700 rows=2124 distinct=700
-  W45N8 ticks=84254001..84254700 rows=4364 distinct=700
-  W46N8 ticks=84254001..84254700 rows=6890 distinct=700
-  W47N7 ticks=84254001..84254700 rows=2939 distinct=700
-  W47N8 ticks=84254001..84254700 rows=11055 distinct=700
-missing_chunks=0 (first pass 35/35 official chunks HTTP 200 100/100). No confirm/retry.
-Previous in-window official 404s now outside this 40m window and still 0 rows in db (not re-fetched): W47N7@84253600, W45N8@84253800. Also W46N8@84253100 still 0 rows.
-inserted=19037 already_in_db=9946 ts_realigned=0 reconstructed=28983
-live at finish: updated=2026-11-14 08:04:39 gameTime=84254756 roomSlot=W46N8 objects=264 stats.t=84254750
-rot i=0 W46N8 left 540.0s at 2026-11-14 08:04:38 weights 5:5:1:1
-tips: creep_ticks 84254755 room_stats 84254750 creep_cpu 84254750 path_arrivals 84254746
+2026-11-14 09:30 Asia/Hong_Kong
+window ticks 84255101..84255800 (700) published_bases 84255100..84255700 game.time=84255888 tick_s=4.295
+unique_creep_tick_rows=27243 unique_after_room_rows=27243 distinct_ticks=700 distinct_room_ticks=3288
+per_room:
+  W45N7 ticks=84255101..84255800 rows=1082 distinct=488 missing_ticks=212 ranges=84255144(1), 84255146..84255330(185), 84255551..84255576(26)
+  W45N8 ticks=84255101..84255800 rows=3689 distinct=700
+  W46N8 ticks=84255101..84255800 rows=8405 distinct=700
+  W47N7 ticks=84255101..84255800 rows=2902 distinct=700
+  W47N8 ticks=84255101..84255800 rows=11165 distinct=700
+missing_chunks=1 (first pass 34/35 official chunks HTTP 200 100/100). W45N7@84255200 official 404 on first pass, confirm GET 09:29:02, and retry2 GET 09:30:17 at game.time=84255916 still 404 (inserted=0). Adjacent W45N7@84255100 and W45N7@84255300 both HTTP 200 100/100. Mid-window hole; later bases already published. DB W45N7 84255201..84255300 still 0 rows (box frozen 09:08:44-09:21:09, no live fill; also missed during the earlier 08:35-09:00 freeze). Of the other 112 W45N7 missing ticks, 84255144 and 84255146..84255200 plus 84255301..84255330 are empty-remote / missing previous-chunk seed (same pattern as 09:04); 84255551..84255576 (26) sit inside official W45N7@84255500 which was HTTP 200 100/100, so no extra official 404 — no our creeps in that remote span.
+Previous in-window official 404s now outside this 40m window and still 0 rows in db (not re-fetched): W47N7@84253600, W45N8@84253800, W46N8@84253100.
+inserted=3683 already_in_db=23164 ts_realigned=18163 reconstructed=26847
+live at finish: updated=2026-11-14 09:30:25 gameTime=None roomSlot=W45N7 objects=0 stats.t=84255910
+rot i=3 W45N7 left 95.0s at 2026-11-14 09:30:26 weights 5:5:1:1
+tips: creep_ticks 84255918 room_stats 84255910 creep_cpu 84255900 path_arrivals 84255889

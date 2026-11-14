@@ -1,11 +1,9 @@
-2026-11-14 08:29:06
+2026-11-14 09:28:07
     PID                  STARTED CMD
-2481803 Sat Nov 14 08:24:35 2026 .venv/bin/python tools/listener.py
-4035476 Tue Nov 10 18:26:53 2026 /bin/bash tools/run_listener.sh
-rot={"i": 3, "room": "W45N7", "left": 120.0, "at": "2026-11-14 08:27:52"}
+2492451 Sat Nov 14 09:21:22 2026 .venv/bin/python tools/listener.py
+4035476 Tue Nov 10 19:04:34 2026 /bin/bash tools/run_listener.sh
+rot={"i": 2, "room": "W45N8", "left": 115.0, "at": "2026-11-14 09:28:06"}
 box_pause last:
-{"from": "2026-11-13 19:27:58", "to": "2026-11-13 19:31:15", "sec": 190}
-{"from": "2026-11-13 19:39:54", "to": "2026-11-13 20:05:41", "sec": 1542}
 {"from": "2026-11-13 20:43:38", "to": "2026-11-13 20:57:30", "sec": 827}
 {"from": "2026-11-13 21:06:33", "to": "2026-11-13 21:25:57", "sec": 1159}
 {"from": "2026-11-13 21:40:46", "to": "2026-11-13 22:01:58", "sec": 1271}
@@ -24,9 +22,15 @@ box_pause last:
 {"from": "2026-11-14 06:37:48", "to": "2026-11-14 06:57:47", "sec": 1190}
 {"from": "2026-11-14 07:10:51", "to": "2026-11-14 07:17:08", "sec": 368}
 {"from": "2026-11-14 07:39:56", "to": "2026-11-14 08:02:23", "sec": 1337}
+{"from": "2026-11-14 08:35:13", "to": "2026-11-14 09:00:35", "sec": 1521}
+{"from": "2026-11-14 09:08:44", "to": "2026-11-14 09:21:09", "sec": 739}
 yield_file=absent
 run_listener.sh=4035476 listener_count=1
-db tips: creep_ticks 84255084 room_stats 84255080 creep_cpu 84255070 path_arrivals 84255070
-live.json updated 2026-11-14 08:27:53 gameTime None roomSlot W45N7 objects 0 cpu {'cpu': 16, 'memory': 24692} stats.t 84255060
-grafana=200 dashboard=200
-NEW since last half-hour (08:06): no new box pause. errors.log 08:11:58 "ws error ping/pong timed out" and listener.out restart 08:12:02; errors.log 08:24:26 "ws error Connection to remote host was lost" and listener.py self-restarted 08:24:35 (pid 2481803); run_listener.sh 4035476 stayed up through both reconnects. No new subscribe-limit after this start (last recorded 23:31:04). After reconnect: STATS/segment 90 flowing (room_stats tip matches stats.t, cpu advancing, creep_cpu and path_arrivals tips near live). creep_ticks live ingest on current slot W45N7 (weight-1, rot i=3 left ~120s at 08:27:52). live.json gameTime=None objects=0 roomSlot=W45N7 (live.json is the home W46N8 map only and is filled only while the peacetime slot is on home; stats.t and cpu advancing; DB room ingest confirms the slot is live). yield file absent, single peacetime slot, weights 5:5:1:1. did not touch war_cmd/pulse/listener. Last half-hour (08:06) filled official 84254001..84254700 inserted=19037 missing_chunks=0. The 08:22 hourly patrol already prefilled official 84254301..84255000 inserted=9244 missing_chunks=3 at 08:23 (404 W47N8@84254900, W45N8@84254900, W47N7@84254900). This 40m run should pick up newly published bases after 84254600, re-check those in-window 404s, and cover any live-listener gaps after the 08:11 and 08:24 reconnects. errors.log 03:30:08 ingest dropped 1 incidents row remains the last ingest error (not repeated after restarts).
+db tips: creep_ticks 84255886
+room_stats 84255880
+creep_cpu 84255870
+path_arrivals 84255854
+live.json updated 2026-11-14 09:28:04 gameTime None roomSlot W45N8 objects 0 cpu {'cpu': 14, 'memory': 24763} stats.t 84255880
+grafana=200
+dashboard=200
+NEW since last half-hour (09:04): one box pause 09:08:44-09:21:09 (739s). Listener self-healed: errors.log "box frozen ~739s since 2026-11-14 09:08:44 ... reconnecting" and listener.out restart 09:21:12; listener.py pid 2492451 started 09:21:22; run_listener.sh 4035476 stayed up. No new subscribe-limit after this start (last recorded 23:31:04). After reconnect: STATS/segment 90 flowing (room_stats tip matches stats.t, cpu advancing, creep_cpu and path_arrivals tips near live). creep_ticks live ingest on current slot W47N8 (weight-5, rot i=1): W47N8 distinct ticks continue past official-history end 84255700 up to the live tip; other rooms in the last 200 ticks still end at 84255700 (09:21 hourly patrol official backfill). live.json gameTime=None and objects=0 on the W47N8 slot even while W47N8 creep_ticks and stats.t advance (ingest healthy; did not restart listener). yield file absent, single peacetime slot, weights 5:5:1:1. did not touch war_cmd/pulse/listener. Last half-hour (09:04) filled official 84254801..84255500 inserted=19557 (already_in_db=9991) missing_chunks=1: W45N7@84255200 official 404 after confirm 09:03:03 and retry2 09:04:02. The 09:21 hourly patrol already prefilled official 84255001..84255700 (inserted=6904, already_in_db=22381, missing_chunks=1 still W45N7@84255200) at game.time=84255799 published_bases=84255000..84255600. This 40m run should pick up newly published bases after 84255600, retry W45N7@84255200 if still in window, and cover the live-listener gap during the 09:08-09:21 freeze (especially non-current-slot rooms). Concurrent 09:21 hourly patrol is still writing analysis files; history_backfill is not running. errors.log has no new ingest drops after 08:30:10.

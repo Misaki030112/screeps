@@ -1,0 +1,9 @@
+services.sh: ok postgres / views_apache / grafana / listener / dashboard
+grafana_check: 20/20
+yield: absent
+war_cmd/pulse: NO_WAR_PROCS
+listener: run_listener.sh 4035476 since Nov10; python pid 2492451 since 09:21:22 after box freeze 09:08:44-09:21:09 739s; prior restart 09:00:38 after freeze 08:35:13-09:00:35 1521s
+rot at 09:23 i=1 W47N8 left~292s; at 09:31 i=3 W45N7 (5:5:1:1)
+dashboard 8787:200 grafana:200
+DB after thaw: room_stats / creep_ticks / creep_cpu fresh (few seconds)
+history_backfill: see history_backfill.txt; missing_chunks=1 W45N7@84255200 still official 404
