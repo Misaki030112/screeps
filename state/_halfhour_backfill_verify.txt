@@ -1,8 +1,8 @@
-window 84272601..84273300 (700)
-W46N8 distinct=700 rows=6593 range=84272601..84273300 missing_n=0 []
-W47N8 distinct=600 rows=9554 range=84272601..84273200 missing_n=100 [[84273201, 84273300]]
-W45N8 distinct=700 rows=3335 range=84272601..84273300 missing_n=0 []
-W45N7 distinct=700 rows=2284 range=84272601..84273300 missing_n=0 []
-W47N7 distinct=600 rows=2698 range=84272601..84273300 missing_n=100 [[84272801, 84272900]]
-unique_after rows=24464 distinct_ticks=700 distinct_room_ticks=3300
-missing_chunks first_pass=2 recovered=none; leftover official 404 W47N7@84272800 (hole 84272801..84272900) and new official 404 W47N8@84273200 (hole 84273201..84273300) still 404 after confirm GET 07:07:54 game.time=84273402 and retry2 GET 07:09:21 game.time=84273421 (other rooms already had those published chunks; W47N7 db 600/700 and W47N8 db 600/700). 15 older leftovers still 404 (now outside this 40m window, including W45N7@84272400 which aged out). Other three rooms 700/700.
+window 84273101..84273800 (700)
+W46N8 distinct=700 rows=6457 range=84273101..84273800 missing_n=0 []
+W47N8 distinct=500 rows=10080 range=84273101..84273800 missing_n=200 [[84273201, 84273300], [84273501, 84273600]]
+W45N8 distinct=700 rows=3492 range=84273101..84273800 missing_n=0 []
+W45N7 distinct=700 rows=2235 range=84273101..84273800 missing_n=0 []
+W47N7 distinct=700 rows=2770 range=84273101..84273800 missing_n=0 []
+unique_after rows=25034 distinct_ticks=700 distinct_room_ticks=3300
+missing_chunks first_pass=5 recovered=W47N8@84273700,W45N8@84273700,W47N7@84273700 (confirm 07:38:32 game.time=84273831 inserted=1598; retry2 07:40:33 game.time=84273860 inserted=64 more on the same three); leftover official 404 W47N8@84273500 (hole 84273501..84273600) and leftover official 404 W47N8@84273200 (hole 84273201..84273300) still 404 after confirm GET 07:38:46 and retry2 GET 07:40:43 game.time=84273860 (other rooms already had those published chunks; W47N8 db 500/700). 16 older leftovers still 404 (now outside this 40m window, including W47N7@84272800 and W45N7@84272400 which aged out). Other four rooms 700/700.

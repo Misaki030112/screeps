@@ -1,0 +1,20 @@
+# infra 2026-11-15 ~08:28 Asia/Hong_Kong
+services.sh: ok postgres, views_apache, grafana, listener, dashboard
+grafana_check: all panels OK
+listener: peacetime single-slot 5:5:1:1, no yield file, commander not live (Memory.cmd.on=1 at=84224348 stale)
+  roomSlot W45N7 @08:24:13 start; later W46N8 @08:28:39 (rotation, still one slot)
+  listener.py restarted 08:23:49 after box freeze 08:18:16-08:23:46 (~322s); run_listener.sh unchanged
+DB freshness at analysis: room_stats 84274500 ~20s, creep_ticks 84274504 ~4s, creep_cpu 84274490 ~40s, path_arrivals earlier ~77s; live later room_stats through 84274540 @08:28
+history backfill --minutes 40: game.time=84274487 published_bases=84273700..84274300 tick_s=4.155
+  reconstructed 84273701..84274400 (700) creep_rows=27067 missing_chunks=1
+  already_in_db=21023 inserted=6044 ts_realigned=257
+  per_room W46N8:700t W47N8:600t W45N8:700t W45N7:700t W47N7:700t
+  leftover official 404 W47N8@84274000 (hole 84274001..84274100) still 404 on retry; also still 404 W47N8@84273500, W47N8@84273200, W47N7@84272800 (aged/outside this 40m window)
+  unpublished latest ~100 ticks (84274401..TIP) expected
+box freezes this hour (room_stats gaps; trajectories backfilled except official 404):
+  07:32:35-07:34:31 ~110s
+  07:48:39-07:50:34 ~115s
+  07:52:57-08:04:03 ~656s
+  08:18:16-08:23:46 ~322s (this patrol wake)
+CPU 1h avg 17.70 max 21.94@08:09:10 bucket ~10000; not near drain
+no formal (f)
