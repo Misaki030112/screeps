@@ -1,0 +1,49 @@
+{
+  "first_interval": 4.26,
+  "later_mean_w46": 4.226446,
+  "all_mean_w46": 4.232038333333333,
+  "intervals": [
+    {
+      "from": 84283600,
+      "to": 84283700,
+      "tick_s": 4.26
+    },
+    {
+      "from": 84283700,
+      "to": 84283800,
+      "tick_s": 4.35627
+    },
+    {
+      "from": 84283800,
+      "to": 84283900,
+      "tick_s": 4.21028
+    },
+    {
+      "from": 84283900,
+      "to": 84284000,
+      "tick_s": 4.1895299999999995
+    },
+    {
+      "from": 84284000,
+      "to": 84284100,
+      "tick_s": 4.27429
+    },
+    {
+      "from": 84284100,
+      "to": 84284200,
+      "tick_s": 4.101859999999999
+    }
+  ],
+  "gt_first": 84284397,
+  "gt_check": 84284419,
+  "now_check": "2026-11-15T20:03:35.397318+08:00",
+  "tick_s_used_first_pass": 4.26,
+  "ts_realigned_first_pass": 4273,
+  "still_over_45s_vs_first": 762,
+  "still_over_15s_vs_first": 11543,
+  "still_over_45s_vs_later": 0,
+  "still_over_15s_vs_later": 6805,
+  "corrective_applied": false,
+  "ts_realigned_to_later_mean": 0,
+  "reason": "first-interval tick_s=4.260 vs later-mean 4.22645 (delta 0.03355 s/tick, ~26.7s at tmin). At a later anchor (20:03:34 Asia/Hong_Kong game.time=84284419) 762 rows are >45s off the first-interval rate, but still_over_45s_vs_later=0 (6805 rows are 15\u201345s off later mean). No corrective UPDATE \u2014 later-mean already sits inside the 45s gate."
+}
