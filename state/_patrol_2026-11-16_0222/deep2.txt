@@ -1,0 +1,159 @@
+=== later room_stats ===
+W46N8 n 3
+  84289800 02:24:15 p=7037386 stor=17697 ea=5240 cpu=18.31 host=0 ctl=1870 nUp=2 w8u=2 res=1 r7=1 rmin=2
+  84289810 02:24:58 p=7037526 stor=17797 ea=5500 cpu=15.22 host=0 ctl=1870 nUp=2 w8u=2 res=None r7=None rmin=2
+  84289820 02:25:41 p=7037666 stor=17897 ea=5500 cpu=17.78 host=0 ctl=1870 nUp=2 w8u=2 res=None r7=None rmin=2
+W47N8 n 3
+  84289800 02:24:15 p=3864206 stor=29985 ea=5600 cpu=18.31 host=0 ctl=1960 nUp=2 w8u=2 res=1 r7=1 rmin=2
+  84289810 02:24:58 p=3864406 stor=29985 ea=5600 cpu=15.22 host=0 ctl=2000 nUp=2 w8u=2 res=None r7=None rmin=2
+  84289820 02:25:41 p=3864606 stor=29535 ea=5000 cpu=17.78 host=0 ctl=1960 nUp=2 w8u=2 res=None r7=None rmin=2
+
+=== W47 progress deltas (flag unusual rates) ===
+  84289090 01:34:02 dt=10 +248 24.80 e/t stor=25454 up=2 bld=1
+  84289520 02:04:18 dt=420 +5400 12.86 e/t stor=32285 up=2 bld=1
+  84289790 02:23:31 dt=180 +3600 20.00 e/t stor=29985 up=2 bld=2
+  84289800 02:24:15 dt=10 +200 20.00 e/t stor=29985 up=2 bld=2
+
+=== W47 3h stor >=30k/>=40k ===
+n 110 max 84287230 23:22:27 37477 >=30k 58 >=40k 0
+longest>=30k (84287240, 84288210, '23:23:08', '00:31:48', 970, 31008) longest>=40k None
+
+=== W47 upgraders first_loaded / last ===
+  ('w8upgrader84287662', 84288490, 84289700, 84288490, '14,27@W47N8:loaded', '16,10@W47N8:empty', 0)
+  ('w8upgrader84287848', 84288490, 84289386, 84288490, '12,25@W47N8:loaded', '8,22@W47N8:empty', 0)
+  ('w8upgrader84289101', 84289102, 84289700, 84289281, '34,30@W47N8:spawning', '14,26@W47N8:loaded', 38)
+  ('w8upgrader84289287', 84289289, 84289700, 84289499, '34,30@W47N8:spawning', '14,27@W47N8:loaded', 37)
+
+=== home upgraders ===
+  ('upgrader84288052', 84288490, 84289602, 84288490, '30,30:loaded', '30,30:loaded', 0)
+  ('upgrader84288351', 84288490, 84289445, 84288490, '31,30:loaded', '34,29:empty', 0)
+  ('upgrader84289521', 84289523, 84289826, 84289575, '35,28:spawning', '31,30:loaded', 49)
+  ('upgrader84289778', 84289810, 84289826, None, '35,28:spawning', '35,28:spawning', 17)
+
+=== reservers / reserve7 ===
+  ('reserver84287895', 'reserver', 84288090, 84288506, 'W45N8:7,37', 'W45N8:7,37', 0, 417, 0, 0)
+  ('reserve784287950', 'reserve', 84288090, 84288561, 'W47N7:39,27', 'W47N7:39,27', 0, 0, 472, 0)
+  ('reserver84288199', 'reserver', 84288200, 84288810, 'W46N8:35,28', 'W45N7:6,39', 536, 38, 0, 37)
+  ('reserve784288301', 'reserve', 84288303, 84288912, 'W47N8:34,30', 'W47N7:39,25', 0, 0, 567, 0)
+  ('reserver84288963', 'reserver', 84288964, 84289574, 'W46N8:30,34', 'W45N8:7,37', 0, 552, 0, 59)
+  ('reserver84289193', 'reserver', 84289195, 84289803, 'W46N8:35,28', 'W45N7:6,39', 349, 0, 0, 36)
+  ('reserve784289194', 'reserve', 84289196, 84289700, 'W47N8:34,30', 'W47N7:39,27', 0, 0, 311, 0)
+
+=== reserver any room presence ===
+first 84288690 last 84289803 n 876 window 84288690 84289850 gaps>5 [(84288811, 84288963, 153), (84289701, 84289785, 85), (84289804, 84289850, 47)]
+
+=== reserver in W45N8 presence ===
+first 84289023 last 84289574 n 552 window 84288690 84289850 gaps>5 [(84288690, 84289022, 333), (84289575, 84289850, 276)]
+
+=== reserver in W45N7 presence ===
+first 84288490 last 84289803 n 670 window 84288490 84289850 gaps>5 [(84288811, 84289269, 459), (84289301, 84289400, 100), (84289701, 84289785, 85), (84289804, 84289850, 47)]
+
+=== reserve7 any presence ===
+first 84288690 last 84289700 n 577 window 84288690 84289850 gaps>5 [(84288913, 84289195, 283), (84289239, 84289389, 151), (84289701, 84289850, 150)]
+
+=== W47 source miners ===
+  ('w8miner84287608', 84288490, 84289131, 642, 642, 0, 642, '26,11:loaded', '26,11:loaded')
+  ('w8miner84288005', 84288490, 84289700, 1211, 0, 1211, 1211, '11,43:loaded', '11,43:loaded')
+  ('w8miner84289040', 84289041, 84289700, 660, 565, 0, 520, '34,30:spawning', '26,11:loaded')
+  ('w8miner84289394', 84289396, 84289700, 305, 0, 161, 135, '34,30:spawning', '11,43:loaded')
+  distinct ticks w8miner at A 26,11 (807, 84288890, 84289700) span 910
+  distinct ticks w8miner at B 11,43 (811, 84288890, 84289700) span 910
+
+=== w8miner84287608 tile changes ===
+samples 642 changes 1 first (84288490, 'W47N8', 26, 11, 36, 'loaded') last (84289131, 'W47N8', 26, 11, 36, 'loaded')
+   (84288490, 'W47N8', 26, 11, 'loaded', 36)
+
+=== defenders / rdef / guard ===
+  ('defender84286880', 'defender', 84288090, 84288523, 'W45N8:25,41', 'W45N8:2,12', 4800, 4800)
+  ('w8defender84287427', 'wdefender', 84288090, 84289076, 'W47N8:28,5', 'W47N8:28,5', 5000, 5000)
+  ('w8guard84287424', 'wguard', 84288090, 84289046, 'W47N8:29,5', 'W47N8:29,5', 4100, 4100)
+  ('rdef84288188', 'rdef', 84288190, 84288624, 'W47N8:33,30', 'W47N8:33,31', 5000, 5000)
+rdef84288188 samples=435 tile_changes=146 first=(84288190, 'W47N8', 33, 30, 0, 5000, 'spawning') last=(84288624, 'W47N8', 33, 31, 0, 5000, 'empty')
+  ROOM (84288190, 'W47N8', 33, 30, 'spawning', 5000)
+  ROOM (84288377, 'W47N7', 18, 1, 'empty', 5000)
+  ROOM (84288588, 'W47N8', 18, 49, 'empty', 5000)
+  end (84288624, 'W47N8', 33, 31, 'empty', 5000)
+defender84286880 samples=342 tile_changes=169 first=(84288090, 'W45N8', 25, 41, 0, 4800, 'empty') last=(84288523, 'W45N8', 2, 12, 0, 4800, 'empty')
+  ROOM (84288090, 'W45N8', 25, 41, 'empty', 4800)
+  ROOM (84288138, 'W45N7', 20, 2, 'empty', 4800)
+  ROOM (84288168, 'W45N8', 21, 48, 'empty', 4800)
+  ROOM (84288376, 'W45N7', 21, 1, 'empty', 4800)
+  ROOM (84288496, 'W45N8', 1, 16, 'empty', 4800)
+  end (84288523, 'W45N8', 2, 12, 'empty', 4800)
+w8guard84287424 samples=957 tile_changes=1 first=(84288090, 'W47N8', 29, 5, 0, 4100, 'empty') last=(84289046, 'W47N8', 29, 5, 0, 4100, 'empty')
+  ROOM (84288090, 'W47N8', 29, 5, 'empty', 4100)
+w8defender84287427 samples=987 tile_changes=1 first=(84288090, 'W47N8', 28, 5, 0, 5000, 'empty') last=(84289076, 'W47N8', 28, 5, 0, 5000, 'empty')
+  ROOM (84288090, 'W47N8', 28, 5, 'empty', 5000)
+
+=== w8builders ===
+  ('w8builder84288793', 84288795, 84289700, 'W47N8:34,30:spawning', 'W47N8:12,14:loaded')
+  ('w8builder84289688', 84289690, 84289700, 'W47N8:33,30:spawning', 'W47N8:33,30:spawning')
+
+=== home storage since last (all samples) ===
+  84288890 01:20:00 stor=18662 ea=4700 nUp=2 res=None def=None
+  84288900 01:20:42 stor=18762 ea=5400 nUp=2 res=None def=None
+  84288910 01:21:26 stor=18862 ea=5500 nUp=2 res=None def=None
+  84288920 01:22:08 stor=18162 ea=5000 nUp=2 res=None def=None
+  84288930 01:22:50 stor=18262 ea=5100 nUp=2 res=None def=None
+  84288940 01:23:30 stor=18362 ea=5500 nUp=2 res=None def=None
+  84288950 01:24:11 stor=18462 ea=5500 nUp=2 res=None def=None
+  84288960 01:24:54 stor=18562 ea=4800 nUp=2 res=None def=None
+  84288970 01:25:37 stor=18662 ea=4200 nUp=2 res=1 def=None
+  84288980 01:26:19 stor=17662 ea=4300 nUp=2 res=1 def=None
+  84288990 01:27:01 stor=17762 ea=4800 nUp=2 res=1 def=None
+  84289000 01:27:42 stor=17862 ea=5300 nUp=2 res=1 def=None
+  84289010 01:28:26 stor=17962 ea=5300 nUp=2 res=1 def=None
+  84289020 01:29:08 stor=17862 ea=5300 nUp=2 res=1 def=None
+  84289030 01:29:51 stor=17962 ea=5400 nUp=2 res=1 def=None
+  84289040 01:30:32 stor=18062 ea=5500 nUp=2 res=1 def=None
+  84289050 01:31:13 stor=18162 ea=5500 nUp=2 res=1 def=None
+  84289060 01:31:55 stor=18262 ea=5500 nUp=2 res=1 def=None
+  84289070 01:32:37 stor=18312 ea=5500 nUp=2 res=1 def=None
+  84289080 01:33:19 stor=18412 ea=5500 nUp=2 res=1 def=None
+  84289090 01:34:02 stor=18512 ea=5500 nUp=2 res=1 def=None
+  84289100 01:34:44 stor=18612 ea=5500 nUp=2 res=1 def=None
+  84289520 02:04:18 stor=14683 ea=5500 nUp=1 res=2 def=None
+  84289530 02:05:00 stor=14883 ea=4200 nUp=2 res=2 def=None
+  84289540 02:05:43 stor=16183 ea=4900 nUp=2 res=2 def=None
+  84289550 02:06:26 stor=16283 ea=4930 nUp=2 res=2 def=None
+  84289560 02:07:08 stor=15583 ea=4930 nUp=2 res=2 def=None
+  84289570 02:07:51 stor=15683 ea=5400 nUp=2 res=2 def=None
+  84289580 02:08:35 stor=15783 ea=5500 nUp=2 res=1 def=None
+  84289590 02:09:18 stor=15883 ea=5500 nUp=2 res=1 def=None
+  84289600 02:10:00 stor=15983 ea=5500 nUp=2 res=1 def=None
+  84289610 02:10:44 stor=16083 ea=5500 nUp=1 res=1 def=None
+  84289790 02:23:31 stor=17597 ea=4140 nUp=2 res=1 def=None
+  84289800 02:24:15 stor=17697 ea=5240 nUp=2 res=1 def=None
+  84289810 02:24:58 stor=17797 ea=5500 nUp=2 res=None def=None
+  84289820 02:25:41 stor=17897 ea=5500 nUp=2 res=None def=None
+
+=== hostiles since LAST-2000 ===
+n 1
+  W47N8 84287430 23:36:39 host 1
+
+=== W47N8@84287500 hole still? ===
+distinct 0
+
+=== incidents since LAST-200 ===
+incidents cols ['ts', 'tick', 'remote', 'inc', 'ev', 'from_state', 'state', 'why', 'inv', 'inv_ttl', 'def', 'dur', 'data'] err UndefinedColumn column "room" does not exist
+LINE 2:     SELECT tick, ts, room, kind, state, why, dur, def, extra
+                             ^
+n 0
+
+=== W47 upgrader seats 14,26 / 14,27 / 12,25 ===
+w8upgrader84287662 n 1211 first (84288490, 'W47N8', 14, 27, 30, 'loaded') last (84289700, 'W47N8', 16, 10, 0, 'empty') first_near (84288490, 14, 27, 30, 'loaded') first_loaded (84288490, 14, 27, 30, 'loaded') last_loaded (84289140, 14, 27, 10, 'loaded')
+w8upgrader84287848 n 897 first (84288490, 'W47N8', 12, 25, 10, 'loaded') last (84289386, 'W47N8', 8, 22, 0, 'empty') first_near (84288490, 12, 25, 10, 'loaded') first_loaded (84288490, 12, 25, 10, 'loaded') last_loaded (84289371, 12, 25, 30, 'loaded')
+w8upgrader84289101 n 599 first (84289102, 'W47N8', 34, 30, 0, 'spawning') last (84289700, 'W47N8', 14, 26, 20, 'loaded') first_near (84289277, 13, 27, 0, 'empty') first_loaded (84289281, 14, 26, 50, 'loaded') last_loaded (84289700, 14, 26, 20, 'loaded')
+w8upgrader84289287 n 412 first (84289289, 'W47N8', 34, 30, 0, 'spawning') last (84289700, 'W47N8', 14, 27, 40, 'loaded') first_near (84289498, 14, 27, 0, 'empty') first_loaded (84289499, 14, 27, 50, 'loaded') last_loaded (84289700, 14, 27, 40, 'loaded')
+
+=== home upgrader seats ===
+upgrader84288052 n 1113 first (84288490, 'W46N8', 30, 30, 22, 'loaded') last (84289602, 'W46N8', 30, 30, 36, 'loaded') first_loaded (84288490, 30, 30, 22, 'loaded') last_loaded (84289602, 30, 30, 36, 'loaded')
+upgrader84288351 n 956 first (84288490, 'W46N8', 31, 30, 36, 'loaded') last (84289445, 'W46N8', 34, 29, 0, 'empty') first_loaded (84288490, 31, 30, 36, 'loaded') last_loaded (84289434, 31, 30, 8, 'loaded')
+upgrader84289521 n 196 first (84289523, 'W46N8', 35, 28, 0, 'spawning') last (84289827, 'W46N8', 31, 30, 8, 'loaded') first_loaded (84289575, 34, 30, 50, 'loaded') last_loaded (84289827, 31, 30, 8, 'loaded')
+upgrader84289778 n 18 first (84289810, 'W46N8', 35, 28, 0, 'spawning') last (84289827, 'W46N8', 35, 28, 0, 'spawning') first_loaded None last_loaded None
+
+=== freshness ===
+room_stats (84289820, datetime.datetime(2026, 11, 16, 2, 25, 41, 657262, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), datetime.timedelta(seconds=32, microseconds=658802))
+creep_ticks (84289827, datetime.datetime(2026, 11, 16, 2, 26, 9, 910788, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), datetime.timedelta(seconds=4, microseconds=429630))
+creep_cpu (84289820, datetime.datetime(2026, 11, 16, 2, 26, 12, 761247, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), datetime.timedelta(seconds=1, microseconds=847390))
+DONE
