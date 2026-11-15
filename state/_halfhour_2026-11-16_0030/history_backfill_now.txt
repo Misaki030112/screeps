@@ -46,3 +46,8 @@ db_after
   W46N8 ticks=84287501..84288100 rows=5978 distinct=600
   W47N7 ticks=84287501..84288100 rows=3288 distinct=600
   W47N8 ticks=84287601..84288100 rows=8471 distinct=500
+confirm recovered W46N8/W45N8/W45N7@84288100; in-window W47N8@84287500 still 404, W47N8@84288100 and W47N7@84288100 still 404 at confirm, 30 aged leftover official 404s still 404 (including W45N7@84285500, now outside this 40m window) inserted=1287 ts_realigned=0 at 00:32:26 game.time=84288219
+retry2 recovered remaining 84288100 chunks (W47N8/W45N8/W45N7/W47N7) inserted=2046 ts_realigned=0 at 00:33:30 game.time=84288234; in-window W47N8@84287500 still 404
+ts_realigned_first_pass=0 (tick_s=4.240); later-mean already inside 45s gate, no corrective realign (later-mean tick_s=4.25762 nfix=0 still_over_45s_vs_later=0 at 00:34:01 game.time=84288242)
+inserted_total=3333 unique_after rows=26090 distinct_room_ticks=3400 official_with_creeps=3400 empty_no_creep=0 official_recovered=3400 expected=5*700=3500 in_window_official_404=100 (W47N8@84287500)
+no official empty-no-creep ticks in this window

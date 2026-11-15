@@ -1,0 +1,26 @@
+=== later room_stats after script TIP ===
+W46N8 n 3
+  84288890 2026-11-16 01:20:00.396860+08:00 p 7017516 stor 18662 ea 4700 cpu 17.08 host 0 ctl 1266 creeps {'miner': 2, 'queen': 2, 'hauler': 1, 'rminer': 3, 'rhauler': 7, 'w8guard': 1, 'w8miner': 2, 'reserve7': 1, 'upgrader': 2, 'w8filler': 3, 'w8hauler': 3, 'w8rminer': 2, 'w8builder': 1, 'w8rhauler': 7, 'w8defender': 1, 'w8upgrader': 2}
+  84288900 2026-11-16 01:20:42.299806+08:00 p 7017796 stor 18762 ea 5400 cpu 18.41 host 0 ctl 1450 creeps {'miner': 2, 'queen': 2, 'hauler': 1, 'rminer': 3, 'rhauler': 7, 'w8guard': 1, 'w8miner': 2, 'reserve7': 1, 'upgrader': 2, 'w8filler': 3, 'w8hauler': 3, 'w8rminer': 2, 'w8builder': 1, 'w8rhauler': 7, 'w8defender': 1, 'w8upgrader': 2}
+  84288910 2026-11-16 01:21:26.142977+08:00 p 7018076 stor 18862 ea 5500 cpu 19.9 host 0 ctl 1156 creeps {'miner': 2, 'queen': 2, 'hauler': 1, 'rminer': 3, 'rhauler': 7, 'w8guard': 1, 'w8miner': 2, 'reserve7': 1, 'upgrader': 2, 'w8filler': 3, 'w8hauler': 3, 'w8rminer': 2, 'w8builder': 1, 'w8rhauler': 7, 'w8defender': 1, 'w8upgrader': 2}
+W47N8 n 3
+  84288890 2026-11-16 01:20:00.396912+08:00 p 3848904 stor 24261 ea 5600 cpu 17.08 host 0 ctl 1500 creeps {'miner': 2, 'queen': 2, 'hauler': 1, 'rminer': 3, 'rhauler': 7, 'w8guard': 1, 'w8miner': 2, 'reserve7': 1, 'upgrader': 2, 'w8filler': 3, 'w8hauler': 3, 'w8rminer': 2, 'w8builder': 1, 'w8rhauler': 7, 'w8defender': 1, 'w8upgrader': 2}
+  84288900 2026-11-16 01:20:42.299901+08:00 p 3849104 stor 24261 ea 5600 cpu 18.41 host 0 ctl 1420 creeps {'miner': 2, 'queen': 2, 'hauler': 1, 'rminer': 3, 'rhauler': 7, 'w8guard': 1, 'w8miner': 2, 'reserve7': 1, 'upgrader': 2, 'w8filler': 3, 'w8hauler': 3, 'w8rminer': 2, 'w8builder': 1, 'w8rhauler': 7, 'w8defender': 1, 'w8upgrader': 2}
+  84288910 2026-11-16 01:21:26.143046+08:00 p 3849304 stor 25008 ea 5600 cpu 19.9 host 0 ctl 1300 creeps {'miner': 2, 'queen': 2, 'hauler': 1, 'rminer': 3, 'rhauler': 7, 'w8guard': 1, 'w8miner': 2, 'reserve7': 1, 'upgrader': 2, 'w8filler': 3, 'w8hauler': 3, 'w8rminer': 2, 'w8builder': 1, 'w8rhauler': 7, 'w8defender': 1, 'w8upgrader': 2}
+=== reserver / reserve7 trajectories since last ===
+Traceback (most recent call last):
+  File "/workspace/screeps/state/_patrol_2026-11-16_0117/deep.py", line 33, in <module>
+    rows = c.execute('''
+           ~~~~~~~~~^^^^
+        SELECT tick, ts, room, creep, x, y, energy, hits, spawning
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+        ORDER BY creep, tick
+        ^^^^^^^^^^^^^^^^^^^^
+    ''', (LAST-200, TIP+200)).fetchall()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/screeps/.venv/lib/python3.13/site-packages/psycopg/connection.py", line 304, in execute
+    raise ex.with_traceback(None)
+psycopg.errors.UndefinedColumn: column "energy" does not exist
+LINE 2:     SELECT tick, ts, room, creep, x, y, energy, hits, spawni...
+                                                ^
