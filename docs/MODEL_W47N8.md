@@ -8,6 +8,10 @@ hauler upkeep (CARRY need = 10 × (round trip × 1.10 + 4) / 50, load split 75% 
 0.03/t each, builder-lite 1000/1500. Upgrade = net / (1 + upgrader upkeep 1150/1500/10). RCL5: 1800 cap, best of source-A link→ctl or hub→ctl link (3% loss).
 reserve7 (2 CLAIM) is spawned and paid by home.
 
+## 2026-11-15 08:2x — keep=2, 35k closest yet to 40k latch; softCap on from threatSoft leftover (plan holds)
+
+12h window: W47 upgrade **19.20** e/t vs ideal ~30 (`tools/model_w8.py --hours 12` 19.24; 31.00%→32.73%, +189k). Forward RCL8 ≈ **19.7 d** (was 19.36 / 20.0 d). Stor avg 26.2k max **35385** min **21653**; **0% under 15k, 100% ≥20k, 70.2% ≥25k, 0% ≥40k**. One sample below the 22k ARM (21653 @21:24, W47N7 core) then ≥22k the rest of the window. Live stor **~35.0–35.4k**, keep=2 phase=ready leanBank=0 softE=0 softLeft=0, softCap2 **ON** from threatSoft leftover after the 07:27 W47N7 core clear (parked w8guard/w8defender north-exit, ttl ~250) — known class, not a bank failure. Open ≥30k climb from 07:42 (~610 t at 08:25) is the **closest yet** to the 40k/500 t latch (prior 32.3k / last window 32.0k) — not a latch. Longest ≥25k stretch **1650 t** (02:07–04:10). **contMinPct50 roadCrit0**. Do not unpark ceil/seal mid leftover. keep=2 designed 20 e/t = 66.5% of the 30.08 ceiling, so short-soft upgrade ALERTs at that rate are expected. See `docs/RCL7.md` 08:2x.
+
 ## 2026-11-14 20:2x — keep=2, softCap sticky-cleared above 22k ARM, 40k latch waiting (plan holds)
 
 12h window: W47 upgrade **19.36** e/t vs ideal ~30 (`tools/model.py` / ledger up 19.32; 29.28%→31.00%, +188k). Forward RCL8 ≈ **20.0 d** (was post-resume 16.09 / ~24.6 d). Stor avg 26.3k max **32038** min **22916**; **0% under 15k, 100% ≥20k, 83.1% ≥25k, 0% ≥40k**. Never crossed the 22k ARM, so softCap2 **sticky-cleared** (live softCap2=0 softE=0 threatSoft=0 leanBank=0 phase=ready upgKeep=2 upgCeil=2 sealPark=1). Longest single ≥25k stretch **330 t** — still a 23–32k camp, not a continuous 25k hold, and **not** a 40k latch (closest 32.0k). keep=2 is correct. **contMinPct53 roadCrit0**. Do not unpark ceil/seal mid-band. See `docs/RCL7.md` 20:2x.

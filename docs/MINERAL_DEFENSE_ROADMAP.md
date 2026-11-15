@@ -3,6 +3,10 @@
 Live refresh **17:4x UTC+8 2026-11-01** tick ~84003240。**不自动交易、不开 safe mode。**
 Misaki **已点头翻 `RCL6_MINERALS`**（b758f38）；labs/industry/market/W47N9 仍 OFF。W47 **terminal+minCont+trunk DONE**；w8mminer ON；homeTermK≥4k → `labReady.propose=1` 等她设 `ops.labs={W46N8:'KO'}`。§5.20 leanBank re-arm 已让 W47 回到 ~18–20k hold；§5.21 = thin-K + `ops.labs=KO` 激活顺序（仍等她点头）。**02:4x §5.22** = soft-cap 下 link-era HMAX 2→3（溢出搬运阀；不翻 labs）。**08:4x §5.23** 停车带到 25k；**11:4x §5.24** threat soft（`TH.localOn`）在 stor≥25k 时仍把 w8upgrader 压在 ≤2（可逆；不翻 labs）。
 
+## 2026-11-15 08:2x — still defer labs / boost (shells done; reactions stay off; 40k still waiting)
+
+12h review: labs stay OFF (home 6 empty shells + empty factory, sites=0 both rooms). Do not enable reactions, do not add a new cover wave. Energy cushion is still thin (home ~19k / W47 ~35k, closest yet to the 40k latch but far from a 100k pad) ≪ Overmind energyBuffer 100k. termO 126976 termK 172792 still fat but energy is not. `labReady` propose remains the outstanding widget — **no re-ask**. Gates RCL6_LABS / RCL7_INDUSTRY / market stay OFF until the 40k path holds and the energy cushion is fat. Detail: `docs/RCL7.md` 08:2x.
+
 ## 2026-11-14 20:2x — still defer labs / boost (all RCL7 shells done; reactions stay off)
 
 12h review: labs stay OFF (mode=null, actOk=1 now that homeStor is back over 15k, propose=1). Authorized lab/factory **structure sites** are finished on **both** rooms (home last lab 34,20 done 13:21, labsN **6** + factory; W47 labsN 6 + factory already done this morning) — do not enable reactions, do not add a new cover wave (the 34,20 rampart is the structure's own 300k-capped planner cover). Energy cushion is still thin (home ~17k / W47 ~25k, softCap sticky-cleared but far from a 100k pad) ≪ Overmind energyBuffer 100k. termO 126976 termK 172792 still fat but energy is not. `labReady` propose=1 — **no re-ask**. Gates RCL6_LABS / RCL7_INDUSTRY / market stay OFF until the 40k path holds and the energy cushion is fat. Detail: `docs/RCL7.md` 20:2x.

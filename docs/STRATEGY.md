@@ -33,7 +33,17 @@ Last full refresh: **2026-11-09 17:1x** (autonomous push — docs/canvas scorebo
 - One-line verdict: `waiting on ticks` | `small safe ship` | `phase exit` — capability to stock a kiter ≠ order to fight.
 
 
-## Current state (2026-11-14 ~20:2x Asia/Hong_Kong · 12h review)
+## Current state (2026-11-15 ~08:2x Asia/Hong_Kong · 12h review)
+
+| Room | Notes |
+|------|-------|
+| W46N8 (home) | **RCL7** 61.54% (6.730M/10.935M); +184k/12h ≈ 18.67 e/t → RCL8 ≈ **11.6 days** at this pace; stor avg 15.8k max 18946 min 9775, **28.3% under 15k** (was 39.0%); live tip ~18.9–19.0k why=ok nUp=2 tUp=2 work=28 upExtra=0; labsN=6, factory done, sites=0; labs OFF (6 empty shells); LIVE **ffdf767** (@84268045 / 00:27 HKT) |
+| W47N8 | **RCL7** 32.73% (3.579M); +189k/12h ≈ **19.20 e/t** → RCL8 ≈ **19.7 days** (was 19.36 / 20.0 d); stor avg 26.2k max **35385** min 21653 (0% <15k, 100% ≥20k, 70.2% ≥25k, 0% ≥40k); live stor ~35.0–35.4k keep=2 phase=ready siteRem=0 leanBank0 softCap2 **on** (threatSoft leftover after 07:27 W47N7 core, sL=0); two 10W upgraders; closest yet to 40k latch |
+
+**08:2x scorecard:** Phase0 home floor **improved** (28.3% of 12h under 15k, was 39.0%; min 9.8k after a defender bill, recovered; 20k gate never latched — zero ≥20k samples, max 18946). W47 energy-side is above 25k (70.2% of samples, live ~35k, sL=0) but softCap2 is **re-ON from threatSoft leftover** — known class, not a bank failure; 40k latch **waiting** (closest 35.4k, open ≥30k climb from 07:42); labs OFF ✔. Phase1 blocked (do not unpark ceil/seal mid leftover / mid 40k wait). Phase2 home is again the lead (~11.6 d, was 15.2 d; morning 1h 22.6 e/t). W47 pace ~19.2 e/t / ~19.7 d. Phase3+ deferred — shells finished, reactions stay off (energy 19–35k ≪ 100k). Verdict: `waiting on ticks` (20k gate + W47 40k latch held; 35k is progress, not a phase exit; no new game code).
+
+### Previous (2026-11-14 ~20:2x Asia/Hong_Kong · 12h review)
+
 
 | Room | Notes |
 |------|-------|
