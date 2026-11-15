@@ -1,0 +1,150 @@
+2026-11-16 00:00:37 HKT check
+==== processes (screeps/pg/grafana/listener) ====
+   7854 Fri Nov  6 04:50:19 2026 /usr/lib/postgresql/17/bin/postgres -D /workspace/screeps/var/pg17 -c config_file=/etc/postgresql/17/main/postgresql.conf
+   7855 Fri Nov  6 04:50:19 2026 postgres: 17/main: checkpointer 
+   7856 Fri Nov  6 04:50:19 2026 postgres: 17/main: background writer 
+   7858 Fri Nov  6 04:50:19 2026 postgres: 17/main: walwriter 
+   7859 Fri Nov  6 04:50:19 2026 postgres: 17/main: autovacuum launcher 
+   7860 Fri Nov  6 04:50:19 2026 postgres: 17/main: TimescaleDB Background Worker Launcher 
+   7861 Fri Nov  6 04:50:19 2026 postgres: 17/main: logical replication launcher 
+   8028 Fri Nov  6 04:50:28 2026 postgres: 17/main: TimescaleDB Background Worker Scheduler for database 16385 
+   8030 Fri Nov  6 04:50:28 2026 /usr/share/grafana/bin/grafana server --homepath /usr/share/grafana --config grafana/grafana.ini
+   8041 Fri Nov  6 04:50:28 2026 .venv/bin/python -m http.server 8787 --bind 127.0.0.1
+3174626 Sun Nov 15 23:38:28 2026 postgres: 17/main: screeps screeps 127.0.0.1(42522) idle
+3185901 Sun Nov 15 23:59:29 2026 .venv/bin/python tools/listener.py
+3185951 Sun Nov 15 23:59:32 2026 postgres: 17/main: screeps screeps 127.0.0.1(46654) idle
+4035476 Wed Nov 11 12:07:47 2026 /bin/bash tools/run_listener.sh
+==== pg_lsclusters ====
+Ver Cluster Port Status Owner    Data directory              Log file
+17  main    5432 online postgres /workspace/screeps/var/pg17 /var/log/postgresql/postgresql-17-main.log
+==== listener pids / locks ====
+3185901 .venv/bin/python tools/listener.py
+4035476 /bin/bash tools/run_listener.sh
+listener.py count=1
+run_listener.sh count=1
+yield_files=absent
+==== listener locks/pids ====
+-rw-r--r-- 1 box box 0 Nov 15 23:59 metrics/listener.lock
+-rw-r--r-- 1 box box 0 Nov  5 15:06 metrics/listener.loop.lock
+-rw-r--r-- 1 box box 8 Nov  5 15:06 metrics/listener.pid
+pidfile=4035476
+
+==== listener_rot ====
+{"i": 1, "room": "W47N8", "left": 459.1, "at": "2026-11-16 00:00:36"}
+==== live.json summary ====
+keys ['uid', 'stats', 'cpu', 'objects', 'gameTime', 'roomSlot', 'console_tail', 'errors_tail', 'updated']
+  gameTime= None
+  uid= 6010ee96cbca26e9512da6f0
+  roomSlot= W47N8
+  updated= 2026-11-16 00:00:37
+  cpu= {'cpu': 15, 'memory': 23992}
+  stats.t= 84287770 cpu= 17.03 b= 10000
+  live.json_mtime_age_s= 0.6
+  live.json_mtime= 2026-11-16 00:00:37 HKT
+  objects= 0
+  note: live.json objects/gameTime only filled while slot is on HOME W46N8
+==== recent listener log (last 20 lines) ====
+2026-11-15 15:24:28 restart
+2026-11-15 16:01:12 restart
+2026-11-15 16:26:04 restart
+2026-11-15 17:00:47 restart
+2026-11-15 17:23:00 restart
+2026-11-15 18:02:40 restart
+2026-11-15 18:20:02 restart
+2026-11-15 18:42:18 restart
+2026-11-15 18:57:53 restart
+2026-11-15 19:18:01 restart
+2026-11-15 19:36:00 restart
+2026-11-15 20:00:16 restart
+2026-11-15 20:21:25 restart
+2026-11-15 21:00:26 restart
+2026-11-15 21:23:50 restart
+2026-11-15 21:52:17 restart
+2026-11-15 23:03:43 restart
+2026-11-15 23:18:54 restart
+2026-11-15 23:33:11 restart
+2026-11-15 23:59:20 restart
+==== recent errors / box pauses ====
+---- box_pauses last ----
+-rw-r--r-- 1 box box   17754 Nov 15 23:59 metrics/box_pauses.jsonl
+-rw-r--r-- 1 box box 1037342 Nov 15 23:59 metrics/errors.log
+-rw-r--r-- 1 box box      43 Nov  5 17:30 metrics/war_cmd_pause
+metrics/errors.log
+---- errors.log last ----
+2026-11-15 17:00:44 [listener] box frozen ~1313s since 2026-11-15 16:38:40 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-15 17:22:57 [listener] box frozen ~873s since 2026-11-15 17:08:24 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-15 18:02:36 [listener] box frozen ~1309s since 2026-11-15 17:40:38 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-15 18:19:58 [listener] box frozen ~543s since 2026-11-15 18:10:46 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-15 18:42:15 [listener] box frozen ~288s since 2026-11-15 18:37:17 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-15 18:57:50 [listener] box frozen ~452s since 2026-11-15 18:50:18 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-15 19:17:58 [listener] box frozen ~748s since 2026-11-15 19:05:24 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-15 19:30:10 [listener] [ingest] invalid input syntax for type integer: "{}"
+CONTEXT:  unnamed portal parameter $9 = '...'
+2026-11-15 19:30:10 [listener] [ingest] dropped 1 incidents rows: invalid input syntax for type integer: "{}"
+CONTEXT:  unnamed portal parameter $9 = '...'
+2026-11-15 19:35:57 [listener] box frozen ~264s since 2026-11-15 19:31:32 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-15 20:00:13 [listener] box frozen ~996s since 2026-11-15 19:43:37 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-15 20:21:22 [listener] box frozen ~803s since 2026-11-15 20:07:59 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-15 21:00:23 [listener] box frozen ~905s since 2026-11-15 20:45:17 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-15 21:23:46 [listener] box frozen ~916s since 2026-11-15 21:08:30 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-15 21:52:14 [listener] box frozen ~587s since 2026-11-15 21:42:27 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-15 22:00:17 [listener] [ingest] invalid input syntax for type integer: "{}"
+CONTEXT:  unnamed portal parameter $9 = '...'
+2026-11-15 22:00:17 [listener] [ingest] dropped 1 incidents rows: invalid input syntax for type integer: "{}"
+CONTEXT:  unnamed portal parameter $9 = '...'
+2026-11-15 23:03:40 [listener] box frozen ~552s since 2026-11-15 22:54:27 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-15 23:18:51 [listener] box frozen ~345s since 2026-11-15 23:13:06 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-15 23:33:08 [listener] box frozen ~68s since 2026-11-15 23:31:49 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-15 23:59:17 [listener] box frozen ~1053s since 2026-11-15 23:41:40 (VM hibernated; wall jumped, monotonic did not), reconnecting
+==== HTTP ====
+grafana :3000 -> 200
+dashboard 127.0.0.1:8787 -> 200
+---- box_pauses.jsonl last ----
+{"from": "2026-11-15 17:08:24", "to": "2026-11-15 17:22:57", "sec": 873}
+{"from": "2026-11-15 17:40:38", "to": "2026-11-15 18:02:36", "sec": 1309}
+{"from": "2026-11-15 18:10:46", "to": "2026-11-15 18:19:59", "sec": 543}
+{"from": "2026-11-15 18:37:17", "to": "2026-11-15 18:42:15", "sec": 288}
+{"from": "2026-11-15 18:50:18", "to": "2026-11-15 18:57:50", "sec": 452}
+{"from": "2026-11-15 19:05:24", "to": "2026-11-15 19:17:58", "sec": 748}
+{"from": "2026-11-15 19:31:32", "to": "2026-11-15 19:35:57", "sec": 264}
+{"from": "2026-11-15 19:43:37", "to": "2026-11-15 20:00:13", "sec": 996}
+{"from": "2026-11-15 20:07:59", "to": "2026-11-15 20:21:22", "sec": 803}
+{"from": "2026-11-15 20:45:17", "to": "2026-11-15 21:00:23", "sec": 905}
+{"from": "2026-11-15 21:08:30", "to": "2026-11-15 21:23:46", "sec": 916}
+{"from": "2026-11-15 21:42:27", "to": "2026-11-15 21:52:14", "sec": 587}
+{"from": "2026-11-15 22:54:27", "to": "2026-11-15 23:03:40", "sec": 552}
+{"from": "2026-11-15 23:13:06", "to": "2026-11-15 23:18:51", "sec": 345}
+{"from": "2026-11-15 23:31:49", "to": "2026-11-15 23:33:08", "sec": 68}
+{"from": "2026-11-15 23:41:40", "to": "2026-11-15 23:59:17", "sec": 1053}
+==== db health + recent ingest ====
+db_now 2026-11-16 00:00:38.112967+08:00
+tip_room_stats=84287770 window_from=84286070
+  creep_ticks: last2h ticks=84286070..84287771 rows=49095 max_tick=84287771 max_ts=2026-11-16 00:00:35.902208+08:00
+  creep_cpu: last2h ticks=84286070..84287760 rows=12419 max_tick=84287760 max_ts=2026-11-16 00:00:32.333510+08:00
+  path_arrivals: last2h ticks=84286071..84287754 rows=219 max_tick=84287754 max_ts=2026-11-16 00:00:32.333510+08:00
+  room_stats: last2h ticks=84286070..84287770 rows=240 max_tick=84287770 max_ts=2026-11-16 00:00:33.196850+08:00
+creep_ticks since tick 84286601 (prev 23:30 official window start):
+  ('W45N7', 84286601, 84287323, 1531, 487)
+  ('W45N8', 84286601, 84287300, 3035, 700)
+  ('W46N8', 84286601, 84287483, 8317, 838)
+  ('W47N7', 84286601, 84287300, 3323, 700)
+  ('W47N8', 84286601, 84287771, 11573, 732)
+creep_ticks since tick 84287300 (prev 23:30 published/reconstructed end):
+  ('W45N7', 84287300, 84287323, 96, 24)
+  ('W45N8', 84287300, 84287300, 5, 1)
+  ('W46N8', 84287300, 84287483, 1172, 139)
+  ('W47N7', 84287300, 84287300, 3, 1)
+  ('W47N8', 84287300, 84287771, 440, 33)
+creep_cpu since tick 84286601: (84287760, datetime.datetime(2026, 11, 16, 0, 0, 32, 333510, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 8172)
+creep_cpu last200ticks: (84287560, 84287760, 1469)
+path_arrivals since tick 84286601: (84287754, datetime.datetime(2026, 11, 16, 0, 0, 32, 333510, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 128)
+path_arrivals last200ticks: (84287557, 84287754, 20)
+room_stats tip: (84287770, datetime.datetime(2026, 11, 16, 0, 0, 33, 196850, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')))
+creep_ticks tip: (84287771, datetime.datetime(2026, 11, 16, 0, 0, 35, 902208, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')))
+W45N7 hole 84285501..84285600 leftover (prev official 404, 83 official-missing + 17 live): (17, 84285584, 84285600, 63)
+W47N8 hole 84281501..84281600 leftover: (13, 84281501, 84281513, 234)
+W45N8 hole 84281501..84281600 leftover: (0, None, None, 0)
+W45N8 hole 84282501..84282600 leftover: (0, None, None, 0)
+==== note ====
+precheck complete. Did not kill/restart listener, war_cmd, or pulse. Did not start a second listener.
+New box freeze 2026-11-15 23:41:40-23:59:17 Asia/Hong_Kong (1053s; VM hibernated). run_listener.sh already running (pid 4035476 since Nov 11); listener.py pid 3185901 started 23:59:29 after the 23:59:20 restart line. Earlier same-evening freezes: 23:31:49-23:33:08 (68s), 23:13:06-23:18:51 (345s), 22:54:27-23:03:40 (552s). Segment-90/STATS already current without a console query (live.json stats.t=84287770, age <1s, roomSlot W47N8 so objects/gameTime empty as expected, rot left~459s, single slot).

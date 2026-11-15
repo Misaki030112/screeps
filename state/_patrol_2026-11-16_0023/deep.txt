@@ -1,0 +1,47 @@
+=== W47 progress deltas (room_stats) since last ===
+  84287390 23:33:46 dt=30 +600 20.00 e/t stor=34120 host=0 sites=0 up=2 bld=2 g=None def=None
+  84287420 23:35:55 dt=10 +200 20.00 e/t stor=34192 host=0 sites=0 up=2 bld=1 g=None def=None
+  84287430 23:36:39 dt=10 +200 20.00 e/t stor=34192 host=1 sites=0 up=2 bld=1 g=1 def=1 *
+  84287440 23:37:22 dt=10 +200 20.00 e/t stor=33492 host=0 sites=0 up=2 bld=1 g=1 def=1
+  84287760 23:59:51 dt=270 +5000 18.52 e/t stor=30922 host=0 sites=0 up=3 bld=1 g=1 def=1
+  84287770 00:00:33 dt=10 +100 10.00 e/t stor=30981 host=0 sites=0 up=2 bld=1 g=1 def=1 *
+  84287780 00:01:15 dt=10 +100 10.00 e/t stor=30981 host=0 sites=0 up=2 bld=1 g=1 def=1 *
+  84287790 00:01:58 dt=10 +100 10.00 e/t stor=31727 host=0 sites=0 up=2 bld=1 g=1 def=1 *
+  84287800 00:02:39 dt=10 +100 10.00 e/t stor=31727 host=0 sites=0 up=2 bld=1 g=1 def=1 *
+  84287810 00:03:23 dt=10 +100 10.00 e/t stor=31727 host=0 sites=0 up=2 bld=1 g=1 def=1 *
+  84287820 00:04:05 dt=10 +100 10.00 e/t stor=31727 host=0 sites=0 up=2 bld=1 g=1 def=1 *
+  84287830 00:04:48 dt=10 +100 10.00 e/t stor=31727 host=0 sites=0 up=2 bld=1 g=1 def=1 *
+  84287840 00:05:31 dt=10 +100 10.00 e/t stor=32473 host=0 sites=0 up=2 bld=1 g=1 def=1 *
+  84287850 00:06:12 dt=10 +100 10.00 e/t stor=32473 host=0 sites=0 up=3 bld=1 g=1 def=1 *
+  84287860 00:07:09 dt=10 +100 10.00 e/t stor=32523 host=0 sites=0 up=3 bld=1 g=1 def=1 *
+  84288100 00:23:57 dt=240 +4011 16.71 e/t stor=31108 host=0 sites=0 up=2 bld=1 g=1 def=1
+  84288110 00:24:42 dt=10 +248 24.80 e/t stor=31108 host=0 sites=0 up=2 bld=1 g=1 def=1 *
+  84288120 00:25:25 dt=10 +260 26.00 e/t stor=31108 host=0 sites=0 up=2 bld=1 g=1 def=1 *
+  84288130 00:26:06 dt=10 +260 26.00 e/t stor=31108 host=0 sites=0 up=2 bld=1 g=1 def=1 *
+  84288140 00:26:49 dt=10 +260 26.00 e/t stor=31108 host=0 sites=0 up=2 bld=1 g=1 def=1 *
+
+=== W47 3h stor >=30k/>=40k ===
+n 169 max 84285570 21:24:42 39213 >=30k 115 >=40k 0
+longest>=30k (84286750, 84288140, '22:48:32', '00:26:49', 1391, 31108) longest>=40k None
+
+=== hostiles all rooms since last ===
+n 1
+  W47N8 84287430 23:36:39 host 1 creeps {'miner': 2, 'queen': 2, 'hauler': 1, 'rminer': 3, 'rhauler': 7, 'w8guard': 1, 'w8miner': 2, 'defender': 1, 'reserver': 2, 'upgrader': 1, 'w8filler': 3, 'w8hauler': 2, 'w8rminer': 3, 'w8builder': 1, 'w8rhauler': 4, 'w8defender': 1, 'w8upgrader': 2}
+
+=== creep names near 84287420-84287500 in W47N8/W47N9/W47N7 ===
+Traceback (most recent call last):
+  File "/workspace/screeps/state/_patrol_2026-11-16_0023/deep.py", line 76, in <module>
+    rows=c.execute("""
+         ~~~~~~~~~^^^^
+    SELECT tick, name, role, x, y, room, energy, spawning
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+    ORDER BY tick, name
+    ^^^^^^^^^^^^^^^^^^^
+    """).fetchall()
+    ^^^^
+  File "/workspace/screeps/.venv/lib/python3.13/site-packages/psycopg/connection.py", line 304, in execute
+    raise ex.with_traceback(None)
+psycopg.errors.UndefinedColumn: column "name" does not exist
+LINE 2: SELECT tick, name, role, x, y, room, energy, spawning
+                     ^
