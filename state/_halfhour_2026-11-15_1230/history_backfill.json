@@ -1,0 +1,1244 @@
+{
+  "ok": true,
+  "routine": "Screeps 半小时轨迹补数",
+  "finished_at": "2026-11-15T12:38:03.101253+08:00",
+  "finished_at_hkt": "2026-11-15 12:38 Asia/Hong_Kong",
+  "shard": "shard3",
+  "rooms": [
+    "W46N8",
+    "W47N8",
+    "W45N8",
+    "W45N7",
+    "W47N7"
+  ],
+  "minutes": 40,
+  "game_time": 84278057,
+  "live_json_gameTime_at_finish": 84278057,
+  "live_json_stats_t_at_finish": 84278090,
+  "live_json_gameTime_note": "Since the 12:00 half-hour, one new box freeze: 2026-11-15 12:06:03–12:21:48 Asia/Hong_Kong (945s; VM hibernated; wall jumped, monotonic did not), logged by listener.py at 12:21:48, run_listener.sh relaunched it at 12:21:51 (pid 2972794 at pre-check 12:35). run_listener.sh pid 4035476 unchanged since 2026-11-11. yield_files=absent, single room slot, peacetime 5:5:1:1. Did not start a second loop or kill war_cmd/pulse. After the 12:21:51 relaunch, segment-90 and STATS were current without a console query: at pre-check 12:35:35 creep_cpu tip 84278050 (2898 rows since 12:21, buffer pull), path_arrivals tip 84278050 (38 rows), room_stats tip 84278050; live.json was updating (mtime age ~2s, roomSlot=W46N8, stats.t=84278040, gameTime=84278048). At finish gameTime=84278057, stats.t=84278090, roomSlot=W47N8. The previous 12:00 half-hour had already backfilled official 84276801..84277500 at game.time=84277538 (inserted=11647, already_in_db=13038, ts_realigned=0, tick_s=4.279, missing_chunks=0). A 1h peacetime patrol ran ~12:23–12:31 Asia/Hong_Kong between the 12:00 half-hour and this 12:30 run.",
+  "published_bases": "84277300..84277900",
+  "ticks": {
+    "min": 84277301,
+    "max": 84278000,
+    "count": 700
+  },
+  "tick_s": 4.139,
+  "missing_chunks": 1,
+  "missing_chunk_list": [
+    "W45N8@84277800"
+  ],
+  "missing_chunk_first_pass": [
+    "W45N8@84277800"
+  ],
+  "missing_chunk_note": "First pass (game.time=84278057) published_bases 84277300..84277900, reconstructed 84277301..84278000 (700). 34 of 35 official GETs were 200; missing_chunks=1 W45N8@84277800 (neighbors W45N8@84277700 and W45N8@84277900 both 200). Confirm GET 2026-11-15 12:36:54 Asia/Hong_Kong game.time=84278074 retried that in-window 404 plus 24 aged leftover official 404s and recovered none. retry2 2026-11-15 12:37:31 Asia/Hong_Kong game.time=84278083 retried W45N8@84277800 only, still 404. W45N8 official reconstruction was 600 ticks; db has 624 distinct because the listener filled 24 ticks 84277864..84277887 after the 12:21:48 wake (not a published official chunk). Remaining official hole is 84277801..84277863 (63) and 84277888..84277900 (13) = 76 ticks. Other four rooms officially 700/700. W45N7 official reconstruction was 700 ticks; db has 483 distinct because 84277301..84277330 (30, tail of the previous empty span 84277281..84277330), 84277603 (1), 84277605..84277776 (172) and 84277979..84277992 (14) had no our creeps (217 empty-no-creep ticks, not 404s; official W45N7@84277300/84277400/84277500/84277600/84277700/84277800/84277900 were all 200; neighbors hold those empty spans fully except W45N8 which is missing only the unrelated 84277800 official 404). A 1-tick presence remains at 84277604 between the 1-tick and 172-tick empty spans. W47N8@84276400 and W47N8@84276500 leftover official 404s (previous in-window holes) remain aged out of this window; listener holds 0 ticks in both spans (standing official 404s, already documented). W45N7@84275600, W47N8@84275800 and W45N8@84275000 leftover official 404s remain aged out of this window and 19 older leftover official 404s still 404 after confirm GET. distinct_room_ticks=3207=5*700-217 empty W45N7-76 official W45N8 hole; official room-ticks recovered=3400=5*700-100.",
+  "creep_rows_reconstructed": 27613,
+  "already_in_db": 24519,
+  "inserted": 3094,
+  "inserted_first_pass": 3094,
+  "inserted_retry": 0,
+  "inserted_retry2": 0,
+  "inserted_note": "The previous 12:00 Asia/Hong_Kong half-hour run had filled official 84276801..84277500 (inserted=11647 = first 11647 + confirm 0 + retry2 0, already_in_db=13038, ts_realigned=0, tick_s=4.279, missing_chunks=0). That window overlaps 200 ticks of this run (84277301..84277500). A 1h peacetime patrol ran ~12:23–12:31 in between, and the listener has been ingesting since the 12:21:51 relaunch after a 12:06:03–12:21:48 (945s) box freeze. This run's first pass therefore saw already_in_db=24519 in 84277301..84278000 (200-tick overlap with the 12:00 official fill, plus live listener rows in the newly published 84277500..84277900 chunks) and inserted 3094 new official rows. Confirm of the in-window W45N8@84277800 plus 24 aged leftovers inserted=0; retry2 of W45N8@84277800 also inserted=0 (still 404).",
+  "ts_realigned": 8341,
+  "ts_realigned_confirm": 0,
+  "ts_realigned_retry2": 0,
+  "ts_realigned_note": "First pass (tick_s=4.139, live anchor game.time=84278057) reported ts_realigned=8341. The script's tick_s is taken from the earliest two distinct published-chunk timestamps in this fetch (W46N8@84277300 ts=1794714598295 and W46N8@84277400 ts=1794715012213, 413.918s / 100 ticks). Later intervals in the same fetch are 4.241, 4.237, 4.255, 4.230, 4.248. Compared with the 12:00 half-hour tick_s=4.279, overlap is 200 ticks (84277301..84277500) ≈ 28.0s of tick_s-only drift, under the 45s realign gate. The 8341 realigns come from comparing existing row ts (written under the previous 4.279 anchor at game.time=84277538, plus listener wall-clock rows) against this run's live anchor at game.time=84278057 with the slower first-interval tick_s=4.139; that combination pushed those rows past the 45s gate, so they were moved onto this run's live anchor. Intended behavior of realign_ts, not a write error.",
+  "ssl_first_attempt": false,
+  "hourly_patrol_prefilled": "A 1h peacetime patrol ran ~12:23–12:31 Asia/Hong_Kong between the 12:00 half-hour and this 12:30 run. The 12:00 half-hour had filled official 84276801..84277500 (inserted=11647, already_in_db=13038, tick_s=4.279, missing_chunks=0), overlapping 200 ticks of this window (84277301..84277500). W45N8@84277800 is a new in-window official 404.",
+  "per_room": {
+    "W46N8": {
+      "ticks": 700,
+      "new": 189,
+      "db_distinct": 700,
+      "db_rows": 7980
+    },
+    "W47N8": {
+      "ticks": 700,
+      "new": 1562,
+      "db_distinct": 700,
+      "db_rows": 11670
+    },
+    "W45N8": {
+      "ticks": 600,
+      "new": 686,
+      "db_distinct": 624,
+      "db_rows": 3486
+    },
+    "W45N7": {
+      "ticks": 700,
+      "new": 71,
+      "db_distinct": 483,
+      "db_rows": 1189
+    },
+    "W47N7": {
+      "ticks": 700,
+      "new": 586,
+      "db_distinct": 700,
+      "db_rows": 3231
+    }
+  },
+  "known_official_404s_outside_window": [
+    "W47N8@84276400 (0 rows / 0 distinct, range None..None; aged out of this 40m window, still 404)",
+    "W47N8@84276500 (0 rows / 0 distinct, range None..None; aged out of this 40m window, still 404)",
+    "W45N7@84275600 (0 rows / 0 distinct, range None..None; aged out of this 40m window, still 404)",
+    "W47N8@84275800 (0 rows / 0 distinct, range None..None; aged out of this 40m window, still 404)",
+    "W45N8@84275000 (190 rows / 28 distinct, range 84275065..84275092; aged out of this 40m window, still 404)",
+    "W47N8@84274000 (0 rows / 0 distinct, range None..None; aged out of this 40m window, still 404)",
+    "W47N8@84273500 (0 rows / 0 distinct, range None..None; aged out of this 40m window, still 404)",
+    "W47N8@84273200 (0 rows / 0 distinct, range None..None; aged out of this 40m window, still 404)",
+    "W47N7@84272800 (0 rows / 0 distinct, range None..None; aged out of this 40m window, still 404)",
+    "W45N7@84272400 (0 rows / 0 distinct, range None..None; aged out of this 40m window, still 404)",
+    "W47N7@84269700 (0 rows / 0 distinct, range None..None; aged out of this 40m window, still 404)",
+    "W46N8@84269200 (0 rows / 0 distinct, range None..None; aged out of this 40m window, still 404)",
+    "W45N8@84267400 (69 rows / 23 distinct, range 84267401..84267423; aged out of this 40m window, still 404)",
+    "W47N8@84266800 (0 rows / 0 distinct, range None..None; aged out of this 40m window, still 404)",
+    "W45N7@84266100 (17 rows / 11 distinct, range 84266185..84266195; aged out of this 40m window, still 404)",
+    "W45N8@84265700 (0 rows / 0 distinct, range None..None; aged out of this 40m window, still 404)",
+    "W45N8@84264100 (48 rows / 12 distinct, range 84264189..84264200; aged out of this 40m window, still 404)",
+    "W46N8@84263600 (0 rows / 0 distinct, range None..None; aged out of this 40m window, still 404)",
+    "W46N8@84262500 (0 rows / 0 distinct, range None..None; aged out of this 40m window, still 404)",
+    "W47N8@84261900 (0 rows / 0 distinct, range None..None; aged out of this 40m window, still 404)",
+    "W46N8@84260300 (97 rows / 10 distinct, range 84260391..84260400; aged out of this 40m window, still 404)",
+    "W45N7@84259200 (0 rows / 0 distinct, range None..None; aged out of this 40m window, still 404)",
+    "W45N8@84258600 (0 rows / 0 distinct, range None..None; aged out of this 40m window, still 404)",
+    "W45N7@84257900 (0 rows / 0 distinct, range None..None; aged out of this 40m window, still 404)"
+  ],
+  "known_official_404s_in_window": [
+    "W45N8@84277800 (55 rows / 24 distinct, range 84277864..84277887; in this 40m window, still 404)"
+  ],
+  "w45n7_empty_no_creep_in_window": [
+    84277301,
+    84277302,
+    84277303,
+    84277304,
+    84277305,
+    84277306,
+    84277307,
+    84277308,
+    84277309,
+    84277310,
+    84277311,
+    84277312,
+    84277313,
+    84277314,
+    84277315,
+    84277316,
+    84277317,
+    84277318,
+    84277319,
+    84277320,
+    84277321,
+    84277322,
+    84277323,
+    84277324,
+    84277325,
+    84277326,
+    84277327,
+    84277328,
+    84277329,
+    84277330,
+    84277603,
+    84277605,
+    84277606,
+    84277607,
+    84277608,
+    84277609,
+    84277610,
+    84277611,
+    84277612,
+    84277613,
+    84277614,
+    84277615,
+    84277616,
+    84277617,
+    84277618,
+    84277619,
+    84277620,
+    84277621,
+    84277622,
+    84277623,
+    84277624,
+    84277625,
+    84277626,
+    84277627,
+    84277628,
+    84277629,
+    84277630,
+    84277631,
+    84277632,
+    84277633,
+    84277634,
+    84277635,
+    84277636,
+    84277637,
+    84277638,
+    84277639,
+    84277640,
+    84277641,
+    84277642,
+    84277643,
+    84277644,
+    84277645,
+    84277646,
+    84277647,
+    84277648,
+    84277649,
+    84277650,
+    84277651,
+    84277652,
+    84277653,
+    84277654,
+    84277655,
+    84277656,
+    84277657,
+    84277658,
+    84277659,
+    84277660,
+    84277661,
+    84277662,
+    84277663,
+    84277664,
+    84277665,
+    84277666,
+    84277667,
+    84277668,
+    84277669,
+    84277670,
+    84277671,
+    84277672,
+    84277673,
+    84277674,
+    84277675,
+    84277676,
+    84277677,
+    84277678,
+    84277679,
+    84277680,
+    84277681,
+    84277682,
+    84277683,
+    84277684,
+    84277685,
+    84277686,
+    84277687,
+    84277688,
+    84277689,
+    84277690,
+    84277691,
+    84277692,
+    84277693,
+    84277694,
+    84277695,
+    84277696,
+    84277697,
+    84277698,
+    84277699,
+    84277700,
+    84277701,
+    84277702,
+    84277703,
+    84277704,
+    84277705,
+    84277706,
+    84277707,
+    84277708,
+    84277709,
+    84277710,
+    84277711,
+    84277712,
+    84277713,
+    84277714,
+    84277715,
+    84277716,
+    84277717,
+    84277718,
+    84277719,
+    84277720,
+    84277721,
+    84277722,
+    84277723,
+    84277724,
+    84277725,
+    84277726,
+    84277727,
+    84277728,
+    84277729,
+    84277730,
+    84277731,
+    84277732,
+    84277733,
+    84277734,
+    84277735,
+    84277736,
+    84277737,
+    84277738,
+    84277739,
+    84277740,
+    84277741,
+    84277742,
+    84277743,
+    84277744,
+    84277745,
+    84277746,
+    84277747,
+    84277748,
+    84277749,
+    84277750,
+    84277751,
+    84277752,
+    84277753,
+    84277754,
+    84277755,
+    84277756,
+    84277757,
+    84277758,
+    84277759,
+    84277760,
+    84277761,
+    84277762,
+    84277763,
+    84277764,
+    84277765,
+    84277766,
+    84277767,
+    84277768,
+    84277769,
+    84277770,
+    84277771,
+    84277772,
+    84277773,
+    84277774,
+    84277775,
+    84277776,
+    84277979,
+    84277980,
+    84277981,
+    84277982,
+    84277983,
+    84277984,
+    84277985,
+    84277986,
+    84277987,
+    84277988,
+    84277989,
+    84277990,
+    84277991,
+    84277992
+  ],
+  "w45n7_empty_no_creep_ranges": [
+    [
+      84277301,
+      84277330
+    ],
+    [
+      84277603,
+      84277603
+    ],
+    [
+      84277605,
+      84277776
+    ],
+    [
+      84277979,
+      84277992
+    ]
+  ],
+  "db_tips_at_finish": {
+    "creep_ticks": {
+      "max_tick": 84278091,
+      "max_ts": "2026-11-15T12:38:04.440346+08:00"
+    },
+    "room_stats": {
+      "max_tick": 84278090,
+      "max_ts": "2026-11-15T12:38:01.877793+08:00"
+    },
+    "creep_cpu": {
+      "max_tick": 84278080,
+      "max_ts": "2026-11-15T12:37:20.599597+08:00"
+    },
+    "path_arrivals": {
+      "max_tick": 84278074,
+      "max_ts": "2026-11-15T12:37:20.599597+08:00"
+    }
+  },
+  "live_ticks_after_official_tip": {
+    "W46N8": {
+      "distinct": 57,
+      "min": 84278001,
+      "max": 84278057,
+      "rows": 587
+    },
+    "W47N8": {
+      "distinct": 34,
+      "min": 84278058,
+      "max": 84278091,
+      "rows": 542
+    },
+    "W45N8": {
+      "distinct": 0,
+      "min": null,
+      "max": null,
+      "rows": 0
+    },
+    "W45N7": {
+      "distinct": 0,
+      "min": null,
+      "max": null,
+      "rows": 0
+    },
+    "W47N7": {
+      "distinct": 0,
+      "min": null,
+      "max": null,
+      "rows": 0
+    }
+  },
+  "listener_at_finish": {
+    "listener_count": 1,
+    "run_listener_count": 1,
+    "listener_ps": [
+      "2972794 .venv/bin/python tools/listener.py",
+      "2981983 /bin/sh -c pgrep -af 'tools/listener.py|tools/run_listener.sh' || true",
+      "4035476 /bin/bash tools/run_listener.sh"
+    ],
+    "yield_files": "absent",
+    "roomSlot": "W47N8",
+    "rot": {
+      "i": 1,
+      "room": "W47N8",
+      "left": 460.0,
+      "at": "2026-11-15 12:38:02"
+    },
+    "live_updated": "2026-11-15 12:38:01",
+    "live_gameTime": 84278057,
+    "live_stats_t": 84278090,
+    "live_json_mtime_age_s": 1.3,
+    "single_slot": true,
+    "did_not_start_second_listener": true
+  },
+  "unique_after_window": {
+    "rows": 27556,
+    "unique_creep_tick_rows": 27556,
+    "distinct_ticks": 700,
+    "distinct_room_ticks": 3207
+  },
+  "leftover_holes_db_at_finish": {
+    "W47N8@84276400": {
+      "distinct": 0,
+      "rows": 0,
+      "min": null,
+      "max": null,
+      "span": [
+        84276401,
+        84276500
+      ]
+    },
+    "W47N8@84276500": {
+      "distinct": 0,
+      "rows": 0,
+      "min": null,
+      "max": null,
+      "span": [
+        84276501,
+        84276600
+      ]
+    },
+    "W45N7@84275600": {
+      "distinct": 0,
+      "rows": 0,
+      "min": null,
+      "max": null,
+      "span": [
+        84275601,
+        84275700
+      ]
+    },
+    "W47N8@84275800": {
+      "distinct": 0,
+      "rows": 0,
+      "min": null,
+      "max": null,
+      "span": [
+        84275801,
+        84275900
+      ]
+    },
+    "W45N8@84275000": {
+      "distinct": 28,
+      "rows": 190,
+      "min": 84275065,
+      "max": 84275092,
+      "span": [
+        84275001,
+        84275100
+      ]
+    },
+    "W47N8@84274000": {
+      "distinct": 0,
+      "rows": 0,
+      "min": null,
+      "max": null,
+      "span": [
+        84274001,
+        84274100
+      ]
+    },
+    "W47N8@84273500": {
+      "distinct": 0,
+      "rows": 0,
+      "min": null,
+      "max": null,
+      "span": [
+        84273501,
+        84273600
+      ]
+    },
+    "W47N8@84273200": {
+      "distinct": 0,
+      "rows": 0,
+      "min": null,
+      "max": null,
+      "span": [
+        84273201,
+        84273300
+      ]
+    },
+    "W47N7@84272800": {
+      "distinct": 0,
+      "rows": 0,
+      "min": null,
+      "max": null,
+      "span": [
+        84272801,
+        84272900
+      ]
+    },
+    "W45N7@84272400": {
+      "distinct": 0,
+      "rows": 0,
+      "min": null,
+      "max": null,
+      "span": [
+        84272401,
+        84272500
+      ]
+    },
+    "W47N7@84269700": {
+      "distinct": 0,
+      "rows": 0,
+      "min": null,
+      "max": null,
+      "span": [
+        84269701,
+        84269800
+      ]
+    },
+    "W46N8@84269200": {
+      "distinct": 0,
+      "rows": 0,
+      "min": null,
+      "max": null,
+      "span": [
+        84269201,
+        84269300
+      ]
+    },
+    "W45N8@84267400": {
+      "distinct": 23,
+      "rows": 69,
+      "min": 84267401,
+      "max": 84267423,
+      "span": [
+        84267401,
+        84267500
+      ]
+    },
+    "W47N8@84266800": {
+      "distinct": 0,
+      "rows": 0,
+      "min": null,
+      "max": null,
+      "span": [
+        84266801,
+        84266900
+      ]
+    },
+    "W45N7@84266100": {
+      "distinct": 11,
+      "rows": 17,
+      "min": 84266185,
+      "max": 84266195,
+      "span": [
+        84266101,
+        84266200
+      ]
+    },
+    "W45N8@84265700": {
+      "distinct": 0,
+      "rows": 0,
+      "min": null,
+      "max": null,
+      "span": [
+        84265701,
+        84265800
+      ]
+    },
+    "W45N8@84264100": {
+      "distinct": 12,
+      "rows": 48,
+      "min": 84264189,
+      "max": 84264200,
+      "span": [
+        84264101,
+        84264200
+      ]
+    },
+    "W46N8@84263600": {
+      "distinct": 0,
+      "rows": 0,
+      "min": null,
+      "max": null,
+      "span": [
+        84263601,
+        84263700
+      ]
+    },
+    "W46N8@84262500": {
+      "distinct": 0,
+      "rows": 0,
+      "min": null,
+      "max": null,
+      "span": [
+        84262501,
+        84262600
+      ]
+    },
+    "W47N8@84261900": {
+      "distinct": 0,
+      "rows": 0,
+      "min": null,
+      "max": null,
+      "span": [
+        84261901,
+        84262000
+      ]
+    },
+    "W46N8@84260300": {
+      "distinct": 10,
+      "rows": 97,
+      "min": 84260391,
+      "max": 84260400,
+      "span": [
+        84260301,
+        84260400
+      ]
+    },
+    "W45N7@84259200": {
+      "distinct": 0,
+      "rows": 0,
+      "min": null,
+      "max": null,
+      "span": [
+        84259201,
+        84259300
+      ]
+    },
+    "W45N8@84258600": {
+      "distinct": 0,
+      "rows": 0,
+      "min": null,
+      "max": null,
+      "span": [
+        84258601,
+        84258700
+      ]
+    },
+    "W45N7@84257900": {
+      "distinct": 0,
+      "rows": 0,
+      "min": null,
+      "max": null,
+      "span": [
+        84257901,
+        84258000
+      ]
+    }
+  },
+  "http_status": {
+    "grafana": 200,
+    "dashboard": 200
+  },
+  "extrema_at_finish": {
+    "creep_ticks": {
+      "min_tick": 83609908,
+      "max_tick": 84278091,
+      "min_ts": "2026-10-13T10:04:42+08:00",
+      "max_ts": "2026-11-15T12:38:04.440346+08:00"
+    },
+    "room_stats": {
+      "min_tick": 83594467,
+      "max_tick": 84278090,
+      "min_ts": "2026-10-12T17:20:11+08:00",
+      "max_ts": "2026-11-15T12:38:01.877793+08:00"
+    },
+    "creep_cpu": {
+      "min_tick": 83609905,
+      "max_tick": 84278080,
+      "min_ts": "2026-10-13T10:04:33+08:00",
+      "max_ts": "2026-11-15T12:37:20.599597+08:00"
+    },
+    "path_arrivals": {
+      "min_tick": 83609919,
+      "max_tick": 84278074,
+      "min_ts": "2026-10-13T10:05:24+08:00",
+      "max_ts": "2026-11-15T12:37:20.599597+08:00"
+    }
+  },
+  "confirm": {
+    "at": "2026-11-15 12:36:54 Asia/Hong_Kong",
+    "game_time": 84278074,
+    "inserted": 0,
+    "ts_realigned": 0,
+    "recovered": [],
+    "still_404": [
+      "W45N8@84277800",
+      "W47N8@84276400",
+      "W47N8@84276500",
+      "W45N7@84275600",
+      "W47N8@84275800",
+      "W45N8@84275000",
+      "W47N8@84274000",
+      "W47N8@84273500",
+      "W47N8@84273200",
+      "W47N7@84272800",
+      "W45N7@84272400",
+      "W47N7@84269700",
+      "W46N8@84269200",
+      "W45N8@84267400",
+      "W47N8@84266800",
+      "W45N7@84266100",
+      "W45N8@84265700",
+      "W45N8@84264100",
+      "W46N8@84263600",
+      "W46N8@84262500",
+      "W47N8@84261900",
+      "W46N8@84260300",
+      "W45N7@84259200",
+      "W45N8@84258600",
+      "W45N7@84257900"
+    ]
+  },
+  "retry2": {
+    "at": "2026-11-15 12:37:31 Asia/Hong_Kong",
+    "game_time": 84278083,
+    "inserted": 0,
+    "ts_realigned": 0,
+    "recovered": [],
+    "still_404": [
+      "W45N8@84277800"
+    ],
+    "note": "Ran in-window only: W45N8@84277800 still 404 at 12:37:32 game.time=84278083. Neighbors W45N8@84277700 and W45N8@84277900 both 200. Listener holds 24 ticks 84277864..84277887 in that span."
+  },
+  "w47n8_last_before_84276400_hole": [
+    {
+      "tick": 84276400,
+      "creep": "w8builder84275172",
+      "role": "wbuilder",
+      "x": 31,
+      "y": 35,
+      "hits": 1800,
+      "store": 224,
+      "state": "loaded"
+    },
+    {
+      "tick": 84276400,
+      "creep": "w8filler84275385",
+      "role": "wfiller",
+      "x": 34,
+      "y": 32,
+      "hits": 3600,
+      "store": 1200,
+      "state": "loaded"
+    },
+    {
+      "tick": 84276400,
+      "creep": "w8filler84275662",
+      "role": "wfiller",
+      "x": 34,
+      "y": 33,
+      "hits": 3600,
+      "store": 1200,
+      "state": "loaded"
+    },
+    {
+      "tick": 84276400,
+      "creep": "w8hauler84275074",
+      "role": "whauler",
+      "x": 32,
+      "y": 30,
+      "hits": 1500,
+      "store": 0,
+      "state": "empty"
+    },
+    {
+      "tick": 84276400,
+      "creep": "w8hauler84275596",
+      "role": "whauler",
+      "x": 36,
+      "y": 30,
+      "hits": 1500,
+      "store": 0,
+      "state": "empty"
+    },
+    {
+      "tick": 84276400,
+      "creep": "w8hauler84275607",
+      "role": "whauler",
+      "x": 35,
+      "y": 31,
+      "hits": 1500,
+      "store": 0,
+      "state": "empty"
+    },
+    {
+      "tick": 84276400,
+      "creep": "w8hauler84276241",
+      "role": "whauler",
+      "x": 12,
+      "y": 42,
+      "hits": 1500,
+      "store": 0,
+      "state": "empty"
+    },
+    {
+      "tick": 84276400,
+      "creep": "w8miner84275493",
+      "role": "wminer",
+      "x": 11,
+      "y": 43,
+      "hits": 800,
+      "store": 50,
+      "state": "loaded"
+    },
+    {
+      "tick": 84276400,
+      "creep": "w8miner84276147",
+      "role": "wminer",
+      "x": 26,
+      "y": 11,
+      "hits": 800,
+      "store": 12,
+      "state": "loaded"
+    },
+    {
+      "tick": 84276400,
+      "creep": "w8mminer84275687",
+      "role": "wmminer",
+      "x": 37,
+      "y": 44,
+      "hits": 1500,
+      "store": 0,
+      "state": "empty"
+    },
+    {
+      "tick": 84276400,
+      "creep": "w8rhauler84274996",
+      "role": "wrhauler",
+      "x": 28,
+      "y": 35,
+      "hits": 2400,
+      "store": 750,
+      "state": "loaded"
+    },
+    {
+      "tick": 84276400,
+      "creep": "w8rhauler84276286",
+      "role": "wrhauler",
+      "x": 16,
+      "y": 46,
+      "hits": 2400,
+      "store": 0,
+      "state": "empty"
+    },
+    {
+      "tick": 84276400,
+      "creep": "w8rminer84276358",
+      "role": "wrminer",
+      "x": 32,
+      "y": 35,
+      "hits": 1000,
+      "store": 0,
+      "state": "empty"
+    },
+    {
+      "tick": 84276400,
+      "creep": "w8upgrader84274892",
+      "role": "wupgrader",
+      "x": 12,
+      "y": 25,
+      "hits": 1300,
+      "store": 20,
+      "state": "loaded"
+    },
+    {
+      "tick": 84276400,
+      "creep": "w8upgrader84276123",
+      "role": "wupgrader",
+      "x": 14,
+      "y": 26,
+      "hits": 1300,
+      "store": 30,
+      "state": "loaded"
+    },
+    {
+      "tick": 84276400,
+      "creep": "w8upgrader84276335",
+      "role": "wupgrader",
+      "x": 32,
+      "y": 29,
+      "hits": 1300,
+      "store": 0,
+      "state": "empty"
+    }
+  ],
+  "w45n7_last_before_84275600_hole": [
+    {
+      "tick": 84275600,
+      "creep": "reserver84275485",
+      "role": "reserver",
+      "x": 6,
+      "y": 39,
+      "hits": 400,
+      "store": 0,
+      "state": "empty"
+    },
+    {
+      "tick": 84275600,
+      "creep": "rhauler84274990",
+      "role": "rhauler",
+      "x": 21,
+      "y": 3,
+      "hits": 1600,
+      "store": 0,
+      "state": "empty"
+    },
+    {
+      "tick": 84275600,
+      "creep": "rhauler84275230",
+      "role": "rhauler",
+      "x": 21,
+      "y": 7,
+      "hits": 1600,
+      "store": 400,
+      "state": "loaded"
+    },
+    {
+      "tick": 84275600,
+      "creep": "rminer84274897",
+      "role": "rminer",
+      "x": 21,
+      "y": 15,
+      "hits": 1000,
+      "store": 50,
+      "state": "loaded"
+    }
+  ],
+  "w47n8_last_before_84275800_hole": [
+    {
+      "tick": 84275800,
+      "creep": "w8builder84274724",
+      "role": "wbuilder",
+      "x": 29,
+      "y": 35,
+      "hits": 1800,
+      "store": 193,
+      "state": "loaded"
+    },
+    {
+      "tick": 84275800,
+      "creep": "w8builder84275172",
+      "role": "wbuilder",
+      "x": 33,
+      "y": 34,
+      "hits": 1800,
+      "store": 300,
+      "state": "loaded"
+    },
+    {
+      "tick": 84275800,
+      "creep": "w8filler84274203",
+      "role": "wfiller",
+      "x": 36,
+      "y": 30,
+      "hits": 3600,
+      "store": 1200,
+      "state": "loaded"
+    },
+    {
+      "tick": 84275800,
+      "creep": "w8filler84275385",
+      "role": "wfiller",
+      "x": 35,
+      "y": 31,
+      "hits": 3600,
+      "store": 1200,
+      "state": "loaded"
+    },
+    {
+      "tick": 84275800,
+      "creep": "w8filler84275662",
+      "role": "wfiller",
+      "x": 34,
+      "y": 32,
+      "hits": 3600,
+      "store": 1200,
+      "state": "loaded"
+    },
+    {
+      "tick": 84275800,
+      "creep": "w8hauler84274669",
+      "role": "whauler",
+      "x": 31,
+      "y": 35,
+      "hits": 1500,
+      "store": 376,
+      "state": "loaded"
+    },
+    {
+      "tick": 84275800,
+      "creep": "w8hauler84275074",
+      "role": "whauler",
+      "x": 34,
+      "y": 31,
+      "hits": 1500,
+      "store": 0,
+      "state": "empty"
+    },
+    {
+      "tick": 84275800,
+      "creep": "w8hauler84275596",
+      "role": "whauler",
+      "x": 33,
+      "y": 33,
+      "hits": 1500,
+      "store": 0,
+      "state": "empty"
+    },
+    {
+      "tick": 84275800,
+      "creep": "w8hauler84275607",
+      "role": "whauler",
+      "x": 33,
+      "y": 31,
+      "hits": 1500,
+      "store": 0,
+      "state": "empty"
+    },
+    {
+      "tick": 84275800,
+      "creep": "w8miner84274714",
+      "role": "wminer",
+      "x": 26,
+      "y": 11,
+      "hits": 800,
+      "store": 36,
+      "state": "loaded"
+    },
+    {
+      "tick": 84275800,
+      "creep": "w8miner84275493",
+      "role": "wminer",
+      "x": 11,
+      "y": 43,
+      "hits": 800,
+      "store": 50,
+      "state": "loaded"
+    },
+    {
+      "tick": 84275800,
+      "creep": "w8mminer84274193",
+      "role": "wmminer",
+      "x": 37,
+      "y": 44,
+      "hits": 1500,
+      "store": 0,
+      "state": "empty"
+    },
+    {
+      "tick": 84275800,
+      "creep": "w8mminer84275687",
+      "role": "wmminer",
+      "x": 37,
+      "y": 44,
+      "hits": 1500,
+      "store": 0,
+      "state": "empty"
+    },
+    {
+      "tick": 84275800,
+      "creep": "w8rhauler84274899",
+      "role": "wrhauler",
+      "x": 34,
+      "y": 33,
+      "hits": 2400,
+      "store": 748,
+      "state": "loaded"
+    },
+    {
+      "tick": 84275800,
+      "creep": "w8rhauler84274996",
+      "role": "wrhauler",
+      "x": 30,
+      "y": 35,
+      "hits": 2400,
+      "store": 0,
+      "state": "empty"
+    },
+    {
+      "tick": 84275800,
+      "creep": "w8rhauler84275301",
+      "role": "wrhauler",
+      "x": 32,
+      "y": 35,
+      "hits": 2400,
+      "store": 750,
+      "state": "loaded"
+    },
+    {
+      "tick": 84275800,
+      "creep": "w8rhauler84275385",
+      "role": "wrhauler",
+      "x": 22,
+      "y": 34,
+      "hits": 2400,
+      "store": 748,
+      "state": "loaded"
+    },
+    {
+      "tick": 84275800,
+      "creep": "w8upgrader84274684",
+      "role": "wupgrader",
+      "x": 14,
+      "y": 27,
+      "hits": 1300,
+      "store": 40,
+      "state": "loaded"
+    },
+    {
+      "tick": 84275800,
+      "creep": "w8upgrader84274892",
+      "role": "wupgrader",
+      "x": 12,
+      "y": 25,
+      "hits": 1300,
+      "store": 20,
+      "state": "loaded"
+    }
+  ],
+  "w45n8_last_before_84275000_hole": [
+    {
+      "tick": 84275000,
+      "creep": "rhauler84273643",
+      "role": "rhauler",
+      "x": 12,
+      "y": 10,
+      "hits": 3600,
+      "store": 1146,
+      "state": "loaded"
+    },
+    {
+      "tick": 84275000,
+      "creep": "rhauler84273943",
+      "role": "rhauler",
+      "x": 25,
+      "y": 39,
+      "hits": 1600,
+      "store": 0,
+      "state": "empty"
+    },
+    {
+      "tick": 84275000,
+      "creep": "rhauler84274510",
+      "role": "rhauler",
+      "x": 10,
+      "y": 34,
+      "hits": 1600,
+      "store": 400,
+      "state": "loaded"
+    },
+    {
+      "tick": 84275000,
+      "creep": "rminer84273558",
+      "role": "rminer",
+      "x": 13,
+      "y": 11,
+      "hits": 1000,
+      "store": 50,
+      "state": "loaded"
+    }
+  ],
+  "w45n8_last_before_84277800_hole": [
+    {
+      "tick": 84277800,
+      "creep": "defender84277048",
+      "role": "defender",
+      "x": 6,
+      "y": 10,
+      "hits": 4800,
+      "store": 0,
+      "state": "empty"
+    },
+    {
+      "tick": 84277800,
+      "creep": "reserver84277251",
+      "role": "reserver",
+      "x": 7,
+      "y": 37,
+      "hits": 400,
+      "store": 0,
+      "state": "empty"
+    },
+    {
+      "tick": 84277800,
+      "creep": "rhauler84276497",
+      "role": "rhauler",
+      "x": 1,
+      "y": 13,
+      "hits": 3600,
+      "store": 0,
+      "state": "empty"
+    },
+    {
+      "tick": 84277800,
+      "creep": "rminer84276338",
+      "role": "rminer",
+      "x": 13,
+      "y": 11,
+      "hits": 1000,
+      "store": 50,
+      "state": "loaded"
+    },
+    {
+      "tick": 84277800,
+      "creep": "rminer84277727",
+      "role": "rminer",
+      "x": 12,
+      "y": 10,
+      "hits": 1000,
+      "store": 0,
+      "state": "empty"
+    }
+  ],
+  "in_window_hole_listener": {
+    "W45N8@84277800": {
+      "distinct": 24,
+      "min": 84277864,
+      "max": 84277887,
+      "rows": 55,
+      "span": [
+        84277801,
+        84277900
+      ],
+      "note": "Listener filled 24 ticks 84277864..84277887 after the 12:21:48 wake (W45N8 briefly had the slot). Official GET still 404 at confirm 12:37:27 and retry2 12:37:32. Neighbors W45N8@84277700 and W45N8@84277900 both 200 with 100/100 ticks; the other four rooms hold 84277801..84277900 fully (100/100). Remaining official hole 84277801..84277863 (63) and 84277888..84277900 (13) = 76 ticks."
+    }
+  }
+}

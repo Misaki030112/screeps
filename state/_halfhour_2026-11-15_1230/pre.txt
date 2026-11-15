@@ -1,0 +1,132 @@
+2026-11-15 12:35:35 HKT check
+==== processes (screeps/pg/grafana/listener) ====
+   7854 Thu Nov  5 23:34:20 2026 /usr/lib/postgresql/17/bin/postgres -D /workspace/screeps/var/pg17 -c config_file=/etc/postgresql/17/main/postgresql.conf
+   7855 Thu Nov  5 23:34:20 2026 postgres: 17/main: checkpointer 
+   7856 Thu Nov  5 23:34:20 2026 postgres: 17/main: background writer 
+   7858 Thu Nov  5 23:34:20 2026 postgres: 17/main: walwriter 
+   7859 Thu Nov  5 23:34:20 2026 postgres: 17/main: autovacuum launcher 
+   7860 Thu Nov  5 23:34:20 2026 postgres: 17/main: TimescaleDB Background Worker Launcher 
+   7861 Thu Nov  5 23:34:20 2026 postgres: 17/main: logical replication launcher 
+   8028 Thu Nov  5 23:34:29 2026 postgres: 17/main: TimescaleDB Background Worker Scheduler for database 16385 
+   8030 Thu Nov  5 23:34:29 2026 /usr/share/grafana/bin/grafana server --homepath /usr/share/grafana --config grafana/grafana.ini
+   8041 Thu Nov  5 23:34:29 2026 .venv/bin/python -m http.server 8787 --bind 127.0.0.1
+2972794 Sun Nov 15 12:22:01 2026 .venv/bin/python tools/listener.py
+2972824 Sun Nov 15 12:22:04 2026 postgres: 17/main: screeps screeps 127.0.0.1(50116) idle
+2974461 Sun Nov 15 12:25:07 2026 postgres: 17/main: screeps screeps 127.0.0.1(40964) idle
+4035476 Wed Nov 11 06:51:48 2026 /bin/bash tools/run_listener.sh
+==== pg_lsclusters ====
+Ver Cluster Port Status Owner    Data directory              Log file
+17  main    5432 online postgres /workspace/screeps/var/pg17 /var/log/postgresql/postgresql-17-main.log
+==== listener pids / locks ====
+2972794 .venv/bin/python tools/listener.py
+4035476 /bin/bash tools/run_listener.sh
+listener.py count=1
+run_listener.sh count=1
+yield_files=absent
+==== listener locks/pids ====
+-rw-r--r-- 1 box box 0 Nov 15 12:22 metrics/listener.lock
+-rw-r--r-- 1 box box 0 Nov  5 15:06 metrics/listener.loop.lock
+-rw-r--r-- 1 box box 8 Nov  5 15:06 metrics/listener.pid
+pidfile=4035476
+
+==== listener_rot ====
+{"i": 0, "room": "W46N8", "left": 9.9, "at": "2026-11-15 12:35:32"}
+==== live.json summary ====
+keys ['uid', 'stats', 'cpu', 'objects', 'gameTime', 'roomSlot', 'console_tail', 'errors_tail', 'updated']
+  gameTime= 84278055
+  uid= 6010ee96cbca26e9512da6f0
+  roomSlot= W46N8
+  updated= 2026-11-15 12:35:32
+  cpu= {'cpu': 16, 'memory': 25112}
+  stats.t= 84278050 cpu= 16.82 b= 10000
+  live.json_mtime_age_s= 3.2
+  live.json_mtime= 2026-11-15 12:35:32 HKT
+==== recent listener log (last 15 lines) ====
+2026-11-15 08:04:06 restart
+2026-11-15 08:23:49 restart
+2026-11-15 08:33:45 restart
+2026-11-15 09:03:56 restart
+2026-11-15 09:23:43 restart
+2026-11-15 09:32:20 restart
+2026-11-15 10:06:17 restart
+2026-11-15 10:19:58 restart
+2026-11-15 10:34:33 restart
+2026-11-15 11:00:13 restart
+2026-11-15 11:19:34 restart
+2026-11-15 11:33:06 restart
+2026-11-15 11:43:15 restart
+2026-11-15 11:58:13 restart
+2026-11-15 12:21:51 restart
+==== recent errors / box pauses ====
+4104:2026-10-19 06:21:32 [listener] segment poll HTTP Error 502: Bad Gateway
+4105:2026-10-19 06:22:33 [listener] segment poll HTTP Error 502: Bad Gateway
+4422:2026-10-20 17:57:11 [listener] prof poll HTTP Error 502: Bad Gateway
+4436:2026-10-20 19:55:33 [listener] prof poll HTTP Error 429: Too Many Requests
+4437:2026-10-20 20:00:37 [listener] prof poll HTTP Error 429: Too Many Requests
+4438:2026-10-20 20:05:47 [listener] prof poll HTTP Error 429: Too Many Requests
+4439:2026-10-20 20:10:51 [listener] prof poll HTTP Error 429: Too Many Requests
+4440:2026-10-20 20:16:00 [listener] prof poll HTTP Error 429: Too Many Requests
+4441:2026-10-20 20:21:04 [listener] prof poll HTTP Error 429: Too Many Requests
+4442:2026-10-20 20:26:13 [listener] prof poll HTTP Error 429: Too Many Requests
+4443:2026-10-20 20:31:17 [listener] prof poll HTTP Error 429: Too Many Requests
+4444:2026-10-20 20:36:26 [listener] prof poll HTTP Error 429: Too Many Requests
+4445:2026-10-20 20:41:30 [listener] prof poll HTTP Error 429: Too Many Requests
+5722:2026-11-02 05:51:39 [listener] segment poll HTTP Error 502: Bad Gateway
+5725:2026-11-02 05:58:33 [listener] segment poll HTTP Error 502: Bad Gateway
+---- box_pauses last ----
+2026-11-15 08:33:42 [listener] box frozen ~153s since 2026-11-15 08:31:05 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-15 09:03:53 [listener] box frozen ~1032s since 2026-11-15 08:46:36 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-15 10:06:14 [listener] box frozen ~1615s since 2026-11-15 09:39:19 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-15 10:19:55 [listener] box frozen ~65s since 2026-11-15 10:18:43 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-15 10:34:29 [listener] box frozen ~96s since 2026-11-15 10:32:44 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-15 11:00:10 [listener] box frozen ~1094s since 2026-11-15 10:41:51 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-15 11:19:31 [listener] box frozen ~687s since 2026-11-15 11:07:59 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-15 11:43:12 [listener] box frozen ~166s since 2026-11-15 11:40:16 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-15 11:58:10 [listener] box frozen ~430s since 2026-11-15 11:50:51 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-15 12:21:48 [listener] box frozen ~945s since 2026-11-15 12:06:03 (VM hibernated; wall jumped, monotonic did not), reconnecting
+{"from": "2026-11-15 10:41:51", "to": "2026-11-15 11:00:10", "sec": 1094}
+{"from": "2026-11-15 11:07:59", "to": "2026-11-15 11:19:31", "sec": 687}
+{"from": "2026-11-15 11:40:16", "to": "2026-11-15 11:43:12", "sec": 166}
+{"from": "2026-11-15 11:50:51", "to": "2026-11-15 11:58:10", "sec": 430}
+{"from": "2026-11-15 12:06:03", "to": "2026-11-15 12:21:48", "sec": 945}
+==== db health + recent ingest ====
+db_now 2026-11-15 12:35:35.820822+08:00
+  creep_ticks: last2h ticks=84276350..84278055 rows=57403 max_tick=84278055 max_ts=2026-11-15 12:35:31.565071+08:00
+  creep_cpu: last2h ticks=84276345..84278050 rows=11713 max_tick=84278050 max_ts=2026-11-15 12:35:19.009098+08:00
+  path_arrivals: last2h ticks=84276346..84278050 rows=198 max_tick=84278050 max_ts=2026-11-15 12:35:19.009098+08:00
+  room_stats: last2h ticks=84276360..84278050 rows=176 max_tick=84278050 max_ts=2026-11-15 12:35:10.126025+08:00
+creep_ticks since 12:21 HKT:
+  ('W45N7', 84277861, 84277915, 55, 55)
+  ('W45N8', 84277864, 84277887, 55, 24)
+  ('W46N8', 84277861, 84278055, 2073, 180)
+  ('W47N7', 84277859, 84277900, 273, 42)
+  ('W47N8', 84277861, 84277900, 661, 40)
+creep_cpu since 12:21 HKT: (84278050, datetime.datetime(2026, 11, 15, 12, 35, 19, 9098, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 2898)
+path_arrivals since 12:21 HKT: (84278050, datetime.datetime(2026, 11, 15, 12, 35, 19, 9098, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 38)
+room_stats tip: (84278050, datetime.datetime(2026, 11, 15, 12, 35, 10, 125982, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')))
+==== errors.log (freezes / latest ws) ====
+2026-11-15 07:16:28 [listener] ws error Connection to remote host was lost.
+2026-11-15 07:19:25 [listener] box frozen ~106s since 2026-11-15 07:17:39 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-15 07:34:31 [listener] box frozen ~110s since 2026-11-15 07:32:35 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-15 07:50:34 [listener] box frozen ~115s since 2026-11-15 07:48:39 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-15 08:04:03 [listener] box frozen ~656s since 2026-11-15 07:52:57 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-15 08:23:46 [listener] box frozen ~322s since 2026-11-15 08:18:16 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-15 08:33:42 [listener] box frozen ~153s since 2026-11-15 08:31:05 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-15 09:03:53 [listener] box frozen ~1032s since 2026-11-15 08:46:36 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-15 09:23:40 [listener] ws error ping/pong timed out
+2026-11-15 09:30:10 [listener] [ingest] invalid input syntax for type integer: "{}"
+2026-11-15 09:30:10 [listener] [ingest] dropped 1 incidents rows: invalid input syntax for type integer: "{}"
+2026-11-15 09:32:16 [listener] ws error ping/pong timed out
+2026-11-15 10:06:14 [listener] box frozen ~1615s since 2026-11-15 09:39:19 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-15 10:19:55 [listener] box frozen ~65s since 2026-11-15 10:18:43 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-15 10:34:29 [listener] box frozen ~96s since 2026-11-15 10:32:44 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-15 11:00:10 [listener] box frozen ~1094s since 2026-11-15 10:41:51 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-15 11:19:31 [listener] box frozen ~687s since 2026-11-15 11:07:59 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-15 11:24:19 [listener] [ingest] cannot adapt type 'dict' using placeholder '%s' (format: AUTO)
+2026-11-15 11:24:19 [listener] [ingest] dropped 1 incidents rows: cannot adapt type 'dict' using placeholder '%s' (format: AUTO)
+2026-11-15 11:33:03 [listener] ws error ping/pong timed out
+2026-11-15 11:43:12 [listener] box frozen ~166s since 2026-11-15 11:40:16 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-15 11:58:10 [listener] box frozen ~430s since 2026-11-15 11:50:51 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-15 12:00:22 [listener] [ingest] invalid input syntax for type integer: "{}"
+2026-11-15 12:00:22 [listener] [ingest] dropped 1 incidents rows: invalid input syntax for type integer: "{}"
+2026-11-15 12:21:48 [listener] box frozen ~945s since 2026-11-15 12:06:03 (VM hibernated; wall jumped, monotonic did not), reconnecting
