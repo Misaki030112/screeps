@@ -1,0 +1,105 @@
+2026-11-15 11:33:24 HKT check
+==== processes (screeps/pg/grafana/listener) ====
+   7854 Thu Nov  5 23:08:37 2026 /usr/lib/postgresql/17/bin/postgres -D /workspace/screeps/var/pg17 -c config_file=/etc/postgresql/17/main/postgresql.conf
+   7855 Thu Nov  5 23:08:37 2026 postgres: 17/main: checkpointer 
+   7856 Thu Nov  5 23:08:37 2026 postgres: 17/main: background writer 
+   7858 Thu Nov  5 23:08:37 2026 postgres: 17/main: walwriter 
+   7859 Thu Nov  5 23:08:37 2026 postgres: 17/main: autovacuum launcher 
+   7860 Thu Nov  5 23:08:37 2026 postgres: 17/main: TimescaleDB Background Worker Launcher 
+   7861 Thu Nov  5 23:08:37 2026 postgres: 17/main: logical replication launcher 
+   8028 Thu Nov  5 23:08:46 2026 postgres: 17/main: TimescaleDB Background Worker Scheduler for database 16385 
+   8030 Thu Nov  5 23:08:46 2026 /usr/share/grafana/bin/grafana server --homepath /usr/share/grafana --config grafana/grafana.ini
+   8041 Thu Nov  5 23:08:46 2026 .venv/bin/python -m http.server 8787 --bind 127.0.0.1
+   8078 Thu Nov  5 23:08:46 2026 /usr/share/grafana/data/plugins-bundled/elasticsearch/gpx_grafana_elasticsearch_datasource_linux_amd64
+2906528 Sun Nov 15 09:56:44 2026 postgres: 17/main: screeps screeps 127.0.0.1(55474) idle
+2960187 Sun Nov 15 11:33:15 2026 .venv/bin/python tools/listener.py
+2960207 Sun Nov 15 11:33:18 2026 postgres: 17/main: screeps screeps 127.0.0.1(60812) idle
+4035476 Wed Nov 11 06:26:05 2026 /bin/bash tools/run_listener.sh
+==== pg_lsclusters ====
+Ver Cluster Port Status Owner    Data directory              Log file
+17  main    5432 online postgres /workspace/screeps/var/pg17 /var/log/postgresql/postgresql-17-main.log
+==== listener pids / locks ====
+2960187 .venv/bin/python tools/listener.py
+4035476 /bin/bash tools/run_listener.sh
+listener.py count=1
+run_listener.sh count=1
+yield_files=absent
+==== listener locks/pids ====
+-rw-r--r-- 1 box box 0 Nov 15 11:33 metrics/listener.lock
+-rw-r--r-- 1 box box 0 Nov  5 15:06 metrics/listener.loop.lock
+-rw-r--r-- 1 box box 8 Nov  5 15:06 metrics/listener.pid
+pidfile=4035476
+
+==== listener_rot ====
+{"i": 3, "room": "W45N7", "left": 115.0, "at": "2026-11-15 11:33:22"}==== live.json summary ====
+keys ['uid', 'stats', 'cpu', 'objects', 'gameTime', 'roomSlot', 'console_tail', 'errors_tail', 'updated']
+  gameTime= None
+  uid= 6010ee96cbca26e9512da6f0
+  roomSlot= W45N7
+  updated= 2026-11-15 11:33:21
+  cpu= {'cpu': 13, 'memory': 23887}
+  stats.t= None cpu= None b= None
+  live.json_mtime_age_s= 3.1
+  live.json_mtime= 2026-11-15 11:33:21 HKT
+==== recent listener log (last 15 lines) ====
+2026-11-15 07:19:28 restart
+2026-11-15 07:34:34 restart
+2026-11-15 07:50:37 restart
+2026-11-15 08:04:06 restart
+2026-11-15 08:23:49 restart
+2026-11-15 08:33:45 restart
+2026-11-15 09:03:56 restart
+2026-11-15 09:23:43 restart
+2026-11-15 09:32:20 restart
+2026-11-15 10:06:17 restart
+2026-11-15 10:19:58 restart
+2026-11-15 10:34:33 restart
+2026-11-15 11:00:13 restart
+2026-11-15 11:19:34 restart
+2026-11-15 11:33:06 restart
+==== recent errors / box pauses ====
+1600:  File "/usr/lib/python3.13/urllib/request.py", line 613, in http_error_default
+1602:urllib.error.HTTPError: HTTP Error 502: Bad Gateway
+1609:    return json.load(urllib.request.urlopen(r, timeout=30))
+1612:    return opener.open(url, data, timeout)
+1617:    response = self.parent.error(
+1619:  File "/usr/lib/python3.13/urllib/request.py", line 533, in error
+1624:  File "/usr/lib/python3.13/urllib/request.py", line 613, in http_error_default
+1626:urllib.error.HTTPError: HTTP Error 502: Bad Gateway
+1633:    return json.load(urllib.request.urlopen(r, timeout=30))
+1636:    return opener.open(url, data, timeout)
+1641:    response = self.parent.error(
+1643:  File "/usr/lib/python3.13/urllib/request.py", line 533, in error
+1648:  File "/usr/lib/python3.13/urllib/request.py", line 613, in http_error_default
+1650:urllib.error.HTTPError: HTTP Error 502: Bad Gateway
+1659:    return json.load(urllib.request.urlopen(r, timeout=30))
+1662:    return opener.open(url, data, timeout)
+1667:    response = self.parent.error(
+1669:  File "/usr/lib/python3.13/urllib/request.py", line 533, in error
+1674:  File "/usr/lib/python3.13/urllib/request.py", line 613, in http_error_default
+1676:urllib.error.HTTPError: HTTP Error 502: Bad Gateway
+---- box_pauses last 3 ----
+{"from": "2026-11-15 10:32:44", "to": "2026-11-15 10:34:30", "sec": 96}
+{"from": "2026-11-15 10:41:51", "to": "2026-11-15 11:00:10", "sec": 1094}
+{"from": "2026-11-15 11:07:59", "to": "2026-11-15 11:19:31", "sec": 687}
+==== db health + recent ingest ====
+db_now 2026-11-15 11:33:24.532036+08:00
+  creep_ticks: last2h ticks=84275477..84277159 rows=54550 max_tick=84277159 max_ts=2026-11-15 11:32:15.328275+08:00
+  creep_cpu: last2h ticks=84275455..84277170 rows=10831 max_tick=84277170 max_ts=2026-11-15 11:33:17.509603+08:00
+  path_arrivals: last2h ticks=84275458..84277162 rows=204 max_tick=84277162 max_ts=2026-11-15 11:33:17.509603+08:00
+  room_stats: last2h ticks=84275470..84277150 rows=164 max_tick=84277150 max_ts=2026-11-15 11:31:37.027966+08:00
+creep_ticks since 11:30 HKT:
+  ('W45N8', 84277136, 84277159, 59, 24)
+  ('W47N8', 84277128, 84277135, 128, 8)
+creep_cpu since 11:30 HKT: (84277170, datetime.datetime(2026, 11, 15, 11, 33, 17, 509603, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 34)
+path_arrivals since 11:30 HKT: (84277162, datetime.datetime(2026, 11, 15, 11, 33, 17, 509603, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 1)
+room_stats tip: (84277150, datetime.datetime(2026, 11, 15, 11, 31, 37, 27937, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')))
+==== errors.log (freezes / latest ws) ====
+2026-11-15 10:19:55 [listener] box frozen ~65s since 2026-11-15 10:18:43 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-15 10:34:29 [listener] box frozen ~96s since 2026-11-15 10:32:44 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-15 11:00:10 [listener] box frozen ~1094s since 2026-11-15 10:41:51 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-15 11:19:31 [listener] box frozen ~687s since 2026-11-15 11:07:59 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-15 11:24:19 [listener] [ingest] cannot adapt type 'dict' using placeholder '%s' (format: AUTO)
+2026-11-15 11:24:19 [listener] [ingest] dropped 1 incidents rows: cannot adapt type 'dict' using placeholder '%s' (format: AUTO)
+2026-11-15 11:33:03 [listener] ws error ping/pong timed out
+2026-11-15 11:33:03 [listener] rotate Connection is already closed.

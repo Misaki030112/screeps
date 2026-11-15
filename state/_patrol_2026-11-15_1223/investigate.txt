@@ -1,0 +1,23 @@
+=== incidents tick>=84277000 ===
+cols ['ts', 'tick', 'remote', 'inc', 'ev', 'from_state', 'state', 'why', 'inv', 'inv_ttl', 'def', 'dur', 'data']
+n 5
+(datetime.datetime(2026, 11, 15, 11, 24, 21, 792608, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84277048, 'W45N7', 84277047, 'spawn_start', None, 'THREAT', None, None, None, 'defender84277048', None, {'n': 1, 'ev': 'spawn_start', 'def': 'defender84277048', 'inc': 84277047, 'tick': 84277048, 'state': 'THREAT', 'remote': 'W45N7', 'waited': 1})
+(datetime.datetime(2026, 11, 15, 11, 34, 38, 412799, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84277192, 'W45N7', 84277047, 'defend', 'THREAT', 'DEFEND', 'dispatched', 0, 0, 'out', 145, {'ev': 'defend', 'def': 'out', 'dur': 145, 'inc': 84277047, 'inv': 0, 'why': 'dispatched', 'from': 'THREAT', 'tick': 84277192, 'state': 'DEFEND', 'invTtl': 0, 'remote': 'W45N7', 'delivered': 2941361})
+(datetime.datetime(2026, 11, 15, 11, 39, 17, 177232, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84277257, 'W45N7', 84277047, 'arrive', None, 'DEFEND', None, 1, 1290, 'out', None, {'ev': 'arrive', 'def': 'out', 'inc': 84277047, 'inv': 1, 'tick': 84277257, 'state': 'DEFEND', 'invTtl': 1290, 'remote': 'W45N7', 'travel': 65, 'delivered': 2941361})
+(datetime.datetime(2026, 11, 15, 12, 0, 24, 854247, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84277557, 'W45N7', 84277556, 'spawn_start', None, 'THREAT', None, None, None, 'defender84277557', None, {'n': 1, 'ev': 'spawn_start', 'def': 'defender84277557', 'inc': 84277556, 'tick': 84277557, 'state': 'THREAT', 'remote': 'W45N7', 'waited': 1})
+(datetime.datetime(2026, 11, 15, 12, 27, 42, 572992, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84277944, 'W45N7', 84277556, 'cleared', 'DEFEND', 'SAFE', 'killed', 0, 0, 'out', 388, {'ev': 'cleared', 'def': 'out', 'dur': 388, 'inc': 84277556, 'inv': 0, 'why': 'killed', 'from': 'DEFEND', 'tick': 84277944, 'state': 'SAFE', 'invTtl': 0, 'remote': 'W45N7', 'delivered': 2942277})
+
+=== threat / console-like tables ===
+[('alert_state',), ('events',), ('incident_summary',), ('incidents',)]
+
+=== W45N7 hostiles / cores in room_stats if any ===
+room_stats cols ['ts', 'tick', 'room', 'rcl', 'progress', 'progress_total', 'energy', 'energy_cap', 'sites', 'hostiles', 'safe_mode', 'cpu', 'bucket', 'trace_cpu', 'gcl_progress', 'creeps', 'commit', 'storage', 'ctl', 'ctl_ema']
+
+=== W45N7 creep presence since 84277000 (name, first, last, n, last pos) ===
+Traceback (most recent call last):
+  File "<stdin>", line 38, in <module>
+  File "/workspace/screeps/.venv/lib/python3.13/site-packages/psycopg/connection.py", line 304, in execute
+    raise ex.with_traceback(None)
+psycopg.errors.UndefinedColumn: column "name" does not exist
+LINE 2:   SELECT name, role, min(tick), max(tick), count(*),
+                 ^
