@@ -1,0 +1,121 @@
+2026-11-15 10:06:38 HKT check
+==== processes (screeps/pg/grafana/listener) ====
+   7854 Thu Nov  5 22:35:47 2026 /usr/lib/postgresql/17/bin/postgres -D /workspace/screeps/var/pg17 -c config_file=/etc/postgresql/17/main/postgresql.conf
+   8030 Thu Nov  5 22:35:56 2026 /usr/share/grafana/bin/grafana server --homepath /usr/share/grafana --config grafana/grafana.ini
+   8041 Thu Nov  5 22:35:56 2026 .venv/bin/python -m http.server 8787 --bind 127.0.0.1
+2931126 Sun Nov 15 10:06:27 2026 .venv/bin/python tools/listener.py
+4035476 Wed Nov 11 05:53:15 2026 /bin/bash tools/run_listener.sh
+==== pg_lsclusters ====
+17 main 5432 online postgres /workspace/screeps/var/pg17 /var/log/postgresql/postgresql-17-main.log
+==== listener pids / locks ====
+2931126 .venv/bin/python tools/listener.py
+4035476 /bin/bash tools/run_listener.sh
+listener.py count=1
+run_listener.sh count=1
+yield_files=absent
+==== listener locks/pids ====
+-rw-r--r-- 1 box box 0 Nov 15 10:06 metrics/listener.lock
+-rw-r--r-- 1 box box 0 Nov  5 15:06 metrics/listener.loop.lock
+-rw-r--r-- 1 box box 8 Nov  5 15:06 metrics/listener.pid
+pidfile=4035476
+==== listener_rot ====
+{"i": 1, "room": "W47N8", "left": 161.5, "at": "2026-11-15 10:06:34"}==== live.json summary ====
+keys ['uid', 'stats', 'cpu', 'objects', 'gameTime', 'roomSlot', 'console_tail', 'errors_tail', 'updated']
+  gameTime= None
+  uid= 6010ee96cbca26e9512da6f0
+  roomSlot= W47N8
+  updated= 2026-11-15 10:06:38
+  cpu= {'cpu': 16, 'memory': 25137}
+  stats.t= None
+  live.json_mtime_age_s=0.8
+  live.json_mtime= 2026-11-15 10:06:38 HKT
+  roomSlot= W47N8
+==== recent listener log (last 40 lines) ====
+2026-11-14 19:14:09 restart
+2026-11-14 19:25:50 restart
+2026-11-14 20:05:25 restart
+2026-11-14 20:14:26 restart
+2026-11-14 20:57:08 restart
+2026-11-14 21:23:30 restart
+2026-11-14 22:03:19 restart
+2026-11-14 22:19:37 restart
+2026-11-14 23:03:06 restart
+2026-11-14 23:25:27 restart
+2026-11-15 00:01:21 restart
+2026-11-15 00:17:14 restart
+2026-11-15 01:04:50 restart
+2026-11-15 01:26:09 restart
+2026-11-15 02:03:58 restart
+2026-11-15 02:19:38 restart
+2026-11-15 02:33:47 restart
+2026-11-15 03:00:14 restart
+2026-11-15 03:17:59 restart
+2026-11-15 03:34:25 restart
+2026-11-15 04:05:51 restart
+2026-11-15 04:26:29 restart
+2026-11-15 05:02:57 restart
+2026-11-15 05:18:52 restart
+2026-11-15 05:32:33 restart
+2026-11-15 06:04:16 restart
+2026-11-15 06:19:10 restart
+2026-11-15 06:35:14 restart
+2026-11-15 07:04:06 restart
+2026-11-15 07:16:28 restart
+2026-11-15 07:19:28 restart
+2026-11-15 07:34:34 restart
+2026-11-15 07:50:37 restart
+2026-11-15 08:04:06 restart
+2026-11-15 08:23:49 restart
+2026-11-15 08:33:45 restart
+2026-11-15 09:03:56 restart
+2026-11-15 09:23:43 restart
+2026-11-15 09:32:20 restart
+2026-11-15 10:06:17 restart
+==== recent errors.log (last 15, box frozen / subscribe) ====
+2026-11-15 07:16:28 [listener] ws error Connection to remote host was lost.
+2026-11-15 07:19:25 [listener] box frozen ~106s since 2026-11-15 07:17:39 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-15 07:34:31 [listener] box frozen ~110s since 2026-11-15 07:32:35 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-15 07:50:34 [listener] box frozen ~115s since 2026-11-15 07:48:39 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-15 08:04:03 [listener] box frozen ~656s since 2026-11-15 07:52:57 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-15 08:23:46 [listener] box frozen ~322s since 2026-11-15 08:18:16 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-15 08:33:42 [listener] box frozen ~153s since 2026-11-15 08:31:05 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-15 09:03:53 [listener] box frozen ~1032s since 2026-11-15 08:46:36 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-15 09:23:40 [listener] ws error ping/pong timed out
+2026-11-15 09:30:10 [listener] [ingest] invalid input syntax for type integer: "{}"
+CONTEXT:  unnamed portal parameter $9 = '...'
+2026-11-15 09:30:10 [listener] [ingest] dropped 1 incidents rows: invalid input syntax for type integer: "{}"
+CONTEXT:  unnamed portal parameter $9 = '...'
+2026-11-15 09:32:16 [listener] ws error ping/pong timed out
+2026-11-15 10:06:14 [listener] box frozen ~1615s since 2026-11-15 09:39:19 (VM hibernated; wall jumped, monotonic did not), reconnecting
+==== box_pauses last 5 ====
+missing
+==== db ping ====
+2026-11-15 10:06:38.922673+08|84275550|2026-11-15 10:06:36.398972+08
+==== post-reconnect 2026-11-15 10:07:27 HKT ====
+listener.py count=1 run_listener.sh count=1 yield=absent
+2931126 .venv/bin/python tools/listener.py
+4035476 /bin/bash tools/run_listener.sh
+listener.out last:
+2026-11-15 08:33:45 restart
+2026-11-15 09:03:56 restart
+2026-11-15 09:23:43 restart
+2026-11-15 09:32:20 restart
+2026-11-15 10:06:17 restart
+errors.log last 3:
+CONTEXT:  unnamed portal parameter $9 = '...'
+2026-11-15 09:32:16 [listener] ws error ping/pong timed out
+2026-11-15 10:06:14 [listener] box frozen ~1615s since 2026-11-15 09:39:19 (VM hibernated; wall jumped, monotonic did not), reconnecting
+box_pauses last 3:
+{"from": "2026-11-15 08:31:05", "to": "2026-11-15 08:33:42", "sec": 153}
+{"from": "2026-11-15 08:46:36", "to": "2026-11-15 09:03:53", "sec": 1032}
+{"from": "2026-11-15 09:39:19", "to": "2026-11-15 10:06:14", "sec": 1615}
+live.json gameTime= None stats.t= 84275950 roomSlot= W47N8 updated= 2026-11-15 10:07:25 cpu= {'cpu': 20, 'memory': 24831} mtime_age_s=2.7
+       t       | max_tick |            max_ts             
+---------------+----------+-------------------------------
+ room_stats    | 84275950 | 2026-11-15 10:07:07.40041+08
+ creep_cpu     | 84275940 | 2026-11-15 10:06:29.199147+08
+ path_arrivals | 84275938 | 2026-11-15 10:06:29.199147+08
+ creep_ticks   | 84275954 | 2026-11-15 10:07:24.00668+08
+(4 rows)
+
+Listener already self-reconnected after box frozen ~1615s (09:39:19→10:06:14; listener.out restart 10:06:17). Did not start a second loop or kill war_cmd/pulse. Segment 90 / path / stats already ingesting after relaunch (creep_cpu max 84275940, path_arrivals 84275938, room_stats 84275950 at 10:07:27). live.json gameTime still None but stats.t=84275950 and creep_ticks max 84275954 live. roomSlot=W47N8 peacetime 5:5:1:1.

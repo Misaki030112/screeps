@@ -1,0 +1,11 @@
+ok   postgres
+ok   views_apache
+ok   grafana
+ok   listener
+ok   dashboard
+listener_rot: peacetime single-slot 5:5:1:1, no yield file; at 10:21 W46N8 left=201s; at 10:25 W47N8 left=570s
+listener python restarted 10:19:58 (box wake; run_listener.sh since Nov11)
+grafana_check: all panels OK
+backfill 40m: ticks 84275401..84276100 tick_s=4.325 inserted=7032 already_in_db=19790 ts_realigned=2148 missing_chunks=2 (W45N7@84275600, W47N8@84275800) retried still 404
+unpublished latest ~50-100 ticks expected
+DB at 10:22: room_stats lag 25s, creep_ticks lag 3s (live slot), creep_cpu lag 14s

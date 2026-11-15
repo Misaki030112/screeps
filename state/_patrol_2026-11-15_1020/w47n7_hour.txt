@@ -1,0 +1,15 @@
+=== incidents ===
+n 1
+(datetime.datetime(2026, 11, 15, 9, 32, 31, 856705, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84275457, 'W47N7', 84275423, 'spawn_start', None, 'THREAT', None, None, None, 'rdef84275457', None, {'n': 1, 'ev': 'spawn_start', 'def': 'rdef84275457', 'inc': 84275423, 'tick': 84275457, 'state': 'THREAT', 'remote': 'W47N7', 'waited': 34})
+=== threat / invader related tables? ===
+events exists
+=== room_stats hostiles W47N8 since last ===
+hostile_or_sites 0
+=== creep_ticks W47N7 defenders / cores / hostiles names ===
+Traceback (most recent call last):
+  File "<stdin>", line 48, in <module>
+  File "/workspace/screeps/.venv/lib/python3.13/site-packages/psycopg/connection.py", line 304, in execute
+    raise ex.with_traceback(None)
+psycopg.errors.UndefinedColumn: column "name" does not exist
+LINE 2:   SELECT name, role, min(tick), max(tick), count(*),
+                 ^
