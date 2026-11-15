@@ -1,0 +1,16 @@
+# Ledger windows vs newest snap t84284775 / 2026-11-15 20:28:41 Asia/Hong_Kong
+# Official 12h review window is t84274500→84284720; there was NO ledger snap in that window until this review.
+# Closest ≥12h snap is the stale t84267292 / 2026-11-14 23:31:01 (used by `ledger.py snapdiff 12`).
+# Morning review already noted this stale snap. Do not treat 20.96h as the official 12h window.
+
+window t84267292 -> t84284775 = 17483 ticks (20.96 h wall)   [snapdiff 12 result]
+W46N8: spawn 15.38 e/t (rf 1.29, net 14.08) | repair 5.25 (walls/ramparts 1.42) | up 16.69 | build 0.00
+       sp:upgrader=2.31  rf:upgrader=0.73  net sp:upgrader=1.58  (under 5 e/t waste gate)
+W47N8: spawn 16.69 e/t (rf 0.88, net 15.81) | repair 2.74 (walls/ramparts 0.77) | up 19.06 | build 0.00
+       sp:w8upgrader=1.64  rf:w8upgrader=0.00  net=1.64
+Note: ledger `up` undercounts ~13% (docs/MODEL.md). Official room_stats e/t is the pace number (home 20.16, W47 18.97).
+
+Other available same-t0 diffs vs t84284775 (for context only):
+t84264699 (24.15h, near morning-window start 84264650): home up 16.61 net sp:upgrader 1.52; W47 up 19.11 net w8 1.60
+t84257520 (33.00h, the window morning review cited for 1.35): home up 15.77 net 1.50; W47 up 19.16 net 1.60
+No snap exists near official start 84274500 (08:25). Cannot produce a clean 12h ledger net for this review window.

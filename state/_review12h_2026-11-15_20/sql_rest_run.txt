@@ -1,0 +1,17 @@
+Traceback (most recent call last):
+  File "/workspace/screeps/state/_review12h_2026-11-15_20/_sql_rest.py", line 174, in <module>
+    run("sql_alerts.txt", """
+    ~~~^^^^^^^^^^^^^^^^^^^^^^
+    SELECT ts, tick, kind, room, severity, episode, msg, data
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<2 lines>...
+    ORDER BY tick, kind;
+    ^^^^^^^^^^^^^^^^^^^^
+    """, params)
+    ^^^^^^^^^^^^
+  File "/workspace/screeps/state/_review12h_2026-11-15_20/_sql_rest.py", line 20, in run
+    cur.execute(sql, args or {})
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/home/box/.local/lib/python3.13/site-packages/psycopg/cursor.py", line 117, in execute
+    raise ex.with_traceback(None)
+psycopg.ProgrammingError: only '%s', '%b', '%t' are allowed as placeholders, got '%''

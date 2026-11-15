@@ -1,0 +1,99 @@
+=== date ===
+2026-11-15 20:24:20 CST
+=== HEAD ===
+14aa37f 2026-11-15 19:25:00 +0800 routine state 2026-11-15 19:24
+=== last game-code ===
+ffdf767 2026-11-15 00:27:15 +0800 Fix core threat wait-out: do not readyTimeout a live Invader core, and re-arm from WAIT instead of going SAFE on the timer.
+=== ffdf767 ===
+ffdf767 2026-11-15 00:27:15 +0800 Fix core threat wait-out: do not readyTimeout a live Invader core, and re-arm from WAIT instead of going SAFE on the timer.
+dist/main.js mtime: 2026-11-15 00:27:15.409430806 +0800
+=== deploy.lock ===
+NO deploy.lock
+=== src/docs dirty ===
+ M docs/model_routes.png
+=== full status (short) ===
+ M docs/model_routes.png
+ M state/_halfhour_backfill_now.txt
+ M state/_halfhour_backfill_pre.txt
+ M state/_halfhour_backfill_verify.txt
+ M state/history_backfill.json
+ M state/history_backfill.prev.json
+?? scripts/_patrol_audit_now.txt
+?? scripts/_patrol_commit_state.txt
+?? scripts/_patrol_db_gap.txt
+?? scripts/_patrol_exact2h.txt
+?? scripts/_patrol_ledger.txt
+?? scripts/_patrol_model_1h.txt
+?? scripts/_patrol_model_now.txt
+?? scripts/_patrol_model_w8_1h.txt
+?? scripts/_patrol_model_w8_now.txt
+?? scripts/_patrol_motion.txt
+?? scripts/_patrol_motion_now.txt
+?? scripts/_patrol_motion_patrol.txt
+?? scripts/_patrol_q_cmt.txt
+?? scripts/_patrol_q_creeps.txt
+?? scripts/_patrol_q_def.txt
+?? scripts/_patrol_q_end.txt
+?? scripts/_patrol_q_final.txt
+?? scripts/_patrol_q_home.txt
+?? scripts/_patrol_q_lab.txt
+?? scripts/_patrol_q_live.txt
+?? scripts/_patrol_q_min.txt
+?? scripts/_patrol_q_misc.txt
+?? scripts/_patrol_q_ops.txt
+?? scripts/_patrol_q_opskeys.txt
+?? scripts/_patrol_q_ping.txt
+?? scripts/_patrol_q_r7.txt
+?? scripts/_patrol_q_rem.txt
+?? scripts/_patrol_q_rem2.txt
+?? scripts/_patrol_q_roles.txt
+?? scripts/_patrol_q_roles2.txt
+?? scripts/_patrol_q_roles_end.txt
+?? scripts/_patrol_q_sites.txt
+?? scripts/_patrol_q_soft.txt
+?? scripts/_patrol_q_soft2.txt
+?? scripts/_patrol_q_soft_end.txt
+?? scripts/_patrol_q_spawns.txt
+?? scripts/_patrol_q_uf.txt
+?? scripts/_patrol_q_uf2.txt
+?? scripts/_patrol_q_uf_end.txt
+?? scripts/_patrol_q_w47.txt
+?? scripts/_patrol_remote_status.txt
+?? scripts/_short_upg.txt
+?? state/_halfhour_2026-11-15_1930/
+?? state/_halfhour_2026-11-15_2000/
+?? state/_patrol_backfill_2026-11-15_2023.txt
+?? state/_review12h_2026-11-15_20/
+?? tools/war_cmd_loop.py
+?? tools/war_listen.py
+?? tools/war_pulse.py
+=== commits since morning review f94c06f ===
+14aa37f routine state 2026-11-15 19:24
+98a15c3 routine state 2026-11-15 18:27
+50ed433 routine state 2026-11-15 17:31
+f434f17 routine state 2026-11-15 16:32
+7ed243a routine state 2026-11-15 15:32
+0de6a77 routine state 2026-11-15 14:32
+c39e6d0 routine state 2026-11-15 13:32
+b03798a routine state 2026-11-15 12:31
+965d8a6 routine state 2026-11-15 11:26
+2230e90 routine state 2026-11-15 10:26
+f2929b5 routine state 2026-11-15 09:29
+a10d7cf routine state 2026-11-15 08:29
+f94c06f 12h review 2026-11-15 08:2x: plan holds; home pace recovered, W47 closest yet to 40k, 20k gate held (docs only)
+=== war processes ===
+no war_*
+=== listener yield ===
+listener_yield_rooms absent (peacetime)
+=== listener rot ===
+{"i": 1, "room": "W47N8", "left": 237.3, "at": "2026-11-15 20:24:17"}
+=== deploys (db) ===
+ts_hkt	tick	commit	note
+2026-11-15 00:27:27.254113	84268045	ffdf767	core fight: no readyTimeout wait-out; WAIT+core re-arms (W45N7 9,42)
+2026-11-15 00:26:59.298096	84268039	a41564a+dirty	--help [dirty: src/managers/threat.js]
+2026-11-13 13:26:09.349632	84239549	4ff78b4	fix military paths through structures (PR 47)
+2026-11-13 13:24:48.528258	84239531	4415b5f	W47N8 hub link 33,34 → 32,33 (PR 46)
+2026-11-13 12:49:28.028454	84239049	e699abe	W47 计划路在实验室等工地占用时也会自动补点 (#45)
+2026-11-13 07:34:13.517363	84234754	a72e3c0	planDefender nearFull 5500/5600 kite 5400; unstick W45N7 hold
+2026-11-13 01:30:16.676618	84229833	5957d6d	PR 44: spawn W47 rhauler before mineral miner when the bank is crashed
+2026-11-12 18:43:37.656181	84224625	afde7dd	PR 43: stay armed on short pile, judged-wave extras under floors, kite melee at range 3

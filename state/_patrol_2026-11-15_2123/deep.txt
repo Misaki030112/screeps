@@ -1,0 +1,62 @@
+=== w8upgrader lives ===
+[('w8upgrader84283326', 84284340, 84284864, 525, 0, 40), ('w8upgrader84283531', 84284340, 84285500, 1161, 10, 40), ('w8upgrader84284765', 84284766, 84285500, 735, 0, 50), ('w8upgrader84284970', 84284971, 84285500, 530, 0, 50)]
+
+-- w8upgrader84283326 ticks 84284340-84284864 n=525 store 0-40 --
+  first (84284340, 'W47N8', 14, 27, 20, 1300, 'loaded')
+  last  (84284864, 'W47N8', 12, 14, 0, 1300, 'empty')
+  first_loaded (84284340, 'W47N8', 14, 27, 20, 1300, 'loaded')
+  state {'loaded': 481, 'empty': 44} empty 44 / 525 at_stand 488
+  run F@W47N8:14,27:loaded 84284340-84284820 (481t)
+
+-- w8upgrader84283531 ticks 84284340-84285500 n=1161 store 10-40 --
+  first (84284340, 'W47N8', 12, 25, 10, 1300, 'loaded')
+  last  (84285500, 'W47N8', 12, 25, 10, 1300, 'loaded')
+  first_loaded (84284340, 'W47N8', 12, 25, 10, 1300, 'loaded')
+  state {'loaded': 1161} empty 0 / 1161 at_stand 1161
+  run F@W47N8:12,25:loaded 84284340-84285500 (1161t)
+
+-- w8upgrader84284765 ticks 84284766-84285500 n=735 store 0-50 --
+  first (84284766, 'W47N8', 34, 30, 0, 1300, 'spawning')
+  last  (84285500, 'W47N8', 14, 26, 10, 1300, 'loaded')
+  first_loaded (84284932, 'W47N8', 14, 26, 50, 1300, 'loaded')
+  state {'spawning': 38, 'empty': 128, 'loaded': 569} empty 166 / 735 at_stand 573
+  run E@W47N8:34,30:spawning 84284766-84284803 (38t)
+  run F@W47N8:14,26:loaded 84284932-84285500 (569t)
+
+-- w8upgrader84284970 ticks 84284971-84285500 n=530 store 0-50 --
+  first (84284971, 'W47N8', 34, 30, 0, 1300, 'spawning')
+  last  (84285500, 'W47N8', 14, 27, 30, 1300, 'loaded')
+  first_loaded (84285350, 'W47N8', 14, 27, 50, 1300, 'loaded')
+  state {'spawning': 128, 'empty': 251, 'loaded': 151} empty 379 / 530 at_stand 152
+  run E@W47N8:34,30:spawning 84284971-84285098 (128t)
+  run F@W47N8:14,27:loaded 84285350-84285500 (151t)
+
+=== home upgrader lives ===
+[('upgrader84283854', 84284340, 84285404, 1065), ('upgrader84283993', 84284340, 84285131, 792), ('upgrader84285323', 84285325, 84285620, 184), ('upgrader84285580', 84285613, 84285620, 8)]
+  upgrader84283854 84284340-84285404 n=1065 first=(84284340, 'W46N8', 31, 30, 36, 1700, 'loaded') last=(84285404, 'W46N8', 31, 30, 36, 1700, 'loaded') first_loaded=(84284340, 'W46N8', 31, 30, 36, 1700, 'loaded') state={'loaded': 1011, 'empty': 54}
+  upgrader84283993 84284340-84285131 n=792 first=(84284340, 'W46N8', 29, 30, 22, 1700, 'loaded') last=(84285131, 'W46N8', 34, 29, 0, 1700, 'empty') first_loaded=(84284340, 'W46N8', 29, 30, 22, 1700, 'loaded') state={'loaded': 748, 'empty': 44}
+  upgrader84285323 84285325-84285620 n=184 first=(84285325, 'W46N8', 35, 28, 0, 1700, 'spawning') last=(84285620, 'W46N8', 30, 30, 22, 1700, 'loaded') first_loaded=(84285392, 'W46N8', 30, 30, 50, 1700, 'loaded') state={'spawning': 49, 'empty': 19, 'loaded': 116}
+  upgrader84285580 84285613-84285620 n=8 first=(84285613, 'W46N8', 35, 28, 0, 1700, 'spawning') last=(84285620, 'W46N8', 35, 28, 0, 1700, 'spawning') first_loaded=None state={'spawning': 8}
+
+=== reserver / reserve7 lives ===
+  reserve784283680 role=reserve 84283940-84284291 n=352 first=(84283940, 'W47N7', 39, 27, 0, 400, 'empty') last=(84284291, 'W47N7', 39, 27, 0, 400, 'empty')
+  reserver84283343 role=reserver 84283940-84283954 n=15 first=(84283940, 'W45N7', 6, 39, 0, 400, 'empty') last=(84283954, 'W45N7', 6, 39, 0, 400, 'empty')
+  reserver84283583 role=reserver 84283940-84284194 n=255 first=(84283940, 'W45N8', 7, 37, 0, 400, 'empty') last=(84284194, 'W45N8', 7, 37, 0, 400, 'empty')
+  reserve784284092 role=reserve 84284094-84284703 n=610 first=(84284094, 'W47N8', 33, 30, 0, 400, 'spawning') last=(84284703, 'W47N7', 39, 25, 0, 400, 'empty')
+  reserver84284279 role=reserver 84284281-84285200 n=920 first=(84284281, 'W46N8', 35, 28, 0, 400, 'spawning') last=(84285200, 'W45N7', 6, 39, 0, 400, 'empty')
+  reserver84284673 role=reserver 84284675-84285284 n=549 first=(84284675, 'W46N8', 35, 28, 0, 400, 'spawning') last=(84285284, 'W45N8', 7, 37, 0, 400, 'empty')
+  reserve784284988 role=reserve 84284989-84285500 n=512 first=(84284989, 'W47N8', 33, 30, 0, 400, 'spawning') last=(84285500, 'W47N8', 33, 29, 0, 400, 'empty')
+  reserver84285271 role=reserver 84285273-84285612 n=213 first=(84285273, 'W46N8', 35, 28, 0, 400, 'spawning') last=(84285612, 'W45N7', 6, 39, 0, 400, 'empty')
+
+=== w8builder this hour (upgrade assist?) ===
+  w8builder84284534 84284740-84285500 n=761 state={'loaded': 634, 'empty': 127} toppos=[(('W47N8', 10, 6), 300), (('W47N8', 8, 22), 102), (('W47N8', 34, 33), 16), (('W47N8', 14, 10), 13), (('W47N8', 13, 9), 13), (('W47N8', 12, 8), 13)]
+
+=== incidents cols and rows ===
+cols ['ts', 'tick', 'remote', 'inc', 'ev', 'from_state', 'state', 'why', 'inv', 'inv_ttl', 'def', 'dur', 'data']
+n 2
+  (datetime.datetime(2026, 11, 15, 19, 30, 13, 994421, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84283942, 'W47N7', 84283941, 'spawn_start', None, 'THREAT', None, None, None, 'rdef84283942', None, {'n': 1, 'ev': 'spawn_start', 'def': 'rdef84283942', 'inc': 84283941, 'tick': 84283942, 'state': 'THREAT', 'remote': 'W47N7', 'waited': 1})
+  (datetime.datetime(2026, 11, 15, 19, 40, 47, 80580, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84284092, 'W47N7', 84283941, 'defend', 'THREAT', 'DEFEND', 'dispatched', 0, 0, 'out', 151, {'ev': 'defend', 'def': 'out', 'dur': 151, 'inc': 84283941, 'inv': 0, 'why': 'dispatched', 'from': 'THREAT', 'tick': 84284092, 'state': 'DEFEND', 'invTtl': 0, 'remote': 'W47N7', 'delivered': 0})
+
+=== console errors since 20:26 ===
+tables [('alert_state',), ('events',)]
+DONE

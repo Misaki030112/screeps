@@ -1,0 +1,21 @@
+Overmind UpgradeSite constants re-fetched 2026-11-15 20:2x Asia/Hong_Kong
+
+1) https://raw.githubusercontent.com/bencbartlett/Overmind/master/src/hiveClusters/upgradeSite.ts
+   (also https://github.com/bencbartlett/Overmind/blob/master/src/hiveClusters/upgradeSite.ts)
+   static settings on master (live fetch this run):
+     energyBuffer : 100000
+     energyPerBodyUnit: 10000
+     minLinkDistance : 10
+     linksRequestBelow: 200
+   getUpgradePowerNeeded() still: amountOver = max(energy - energyBuffer, 0); upgradePower = 1 + floor(amountOver / energyPerBodyUnit)
+   Unchanged vs prior 12h reviews.
+
+2) https://raw.githubusercontent.com/bencbartlett/Overmind/2eae97b/src/hiveClusters/upgradeSite.ts
+   blob 2eae97b (live fetch this run):
+     storageBuffer : 100000
+     energyPerBodyUnit: 25000
+     minLinkDistance : 10
+     linksRequestBelow: 200
+   amountOver uses storageBuffer. 100k buffer gate unchanged.
+
+Conclusion: 100k buffer gate still holds on both master and 2eae97b. Do not invent other numbers.

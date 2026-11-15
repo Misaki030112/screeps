@@ -1,0 +1,508 @@
+[
+  {
+    "t": "08:2x",
+    "kind": "REVIEW",
+    "len": 610,
+    "alerts": [],
+    "cores_bits": [],
+    "stor_bits": [],
+    "handoff_bits": [
+      "nUp=2. W47 32.73% 19.20 e/t (was 19.36) keep=2, stor live ~35k closest yet to 40k lat"
+    ],
+    "freeze_bits": [],
+    "deploy_bits": [
+      "LIVE ffdf767 held (@84268045 / 00:27"
+    ],
+    "soft_bits": [
+      "40k latch (max 35385, 0% ≥40k), softCap2 on from 07:27 threatSoft leftover (sL=0)",
+      "40k latch."
+    ],
+    "head": "2026-11-15 08:2x Asia/Hong_Kong 12h review: PLAN HOLDS, docs only, no game deploy. LIVE ffdf767 held (@84268045 / 00:27; already-live ops ship, not this review). Home 61.54% 18.67 e/t (was 14.87) RCL8~11.6d at this pace, 20k gate held (max 18946, zero ≥20k samples), under-15k 28.3% (was 39.0%), min 9775, live ~18.9–19.0k why=ok nUp=2. W47 32.73% 19.20 e/t (was 19.36) keep=2, stor live ~35k closest yet to 40k latch (max 35385, 0% ≥40k), softCap2 on from 07:27 threatSoft leftover (sL=0); do not un"
+  },
+  {
+    "t": "08:28",
+    "kind": "PATROL",
+    "len": 3153,
+    "alerts": [
+      "FORMAL ALERT (a) holds on W47: exact2h 18.",
+      "FORMAL ALERT (a) CLEARS on home: exact2h 20.",
+      "FORMAL ALERT (b) RESET at analysis tip 18892 ABOVE consec-under=0 (prev tip 14914 UNDER consec-under=1);"
+    ],
+    "cores_bits": [
+      "W47N7 Invader core inc=84273302 KILLED 84273674 07:27 why=killed dur=372 (last patrol 7000 hits@84273664 ETA ~9-10t, matched)"
+    ],
+    "stor_bits": [
+      "W47 stor min 24187@84273600 07:22 max 34965@tip later 35385-36878@84274510-84274540, bankWhy=threatSoft softCap2=1 threatSoft=1 (w8threat=84273147 age=1388@84274535 WINDOW=1500 expires 842"
+    ],
+    "handoff_bits": [
+      "keep=2 designed 20 e/t=66.5% already under the 70% bar",
+      "handoff softness has recovered to a solid 20.00 all short windows",
+      "keep=2",
+      "nUp=1@84273600 stor 14914 why=floor_bank → 2@84273910 07:43:59 stor 17552 why=ok work",
+      "nUp=2 tUp=2 work=28",
+      "keep=2 sealPark 1 (known, deferred) sealMinE=25000 phase=ready why=done siteRem=0 feed"
+    ],
+    "freeze_bits": [
+      "freeze not used alone",
+      "freeze then stayed ABOVE",
+      "box freezes 07:32-07:35 ~110s, 07:48-07:51 ~115s, 07:52-08:04 ~656s, 08:18-08:24 ~322s (this wake)"
+    ],
+    "deploy_bits": [
+      "LIVE ffdf767 (held, deploy@84268045 00:27",
+      "no new deploy this patrol)",
+      "no new deploy, no src change"
+    ],
+    "soft_bits": [
+      "threatSoft/evac/handoff softness has recovered to a solid 20.00 all short windows",
+      "20k/300t not hit (3h max 18892 later 18992, best>=20k span=0)",
+      "threatSoft softCap2=1 threatSoft=1 (w8threat=84273147 age=1388@84274535 WINDOW=1500 expire"
+    ],
+    "head": "2026-11-15 08:28 Asia/Hong_Kong (08:28 HKT) patrol(1h peacetime): tick~84273600–84274500 LIVE ffdf767 (held, deploy@84268045 00:27; no new deploy this patrol); FORMAL ALERT (a) holds on W47: exact2h 18.72/30.08=62.3% (prev 18.12=60.2%) is the FIFTH consecutive patrol under 70% AND short is soft (last20-100 span=10 after 08:18-08:24 freeze not used alone; last140-200 20.00=66.5% span=140-200, last300 20.00=66.5% span=290; 1h 20.00=66.5%); keep=2 designed 20 e/t=66.5% already under the 70% bar; la"
+  },
+  {
+    "t": "09:28",
+    "kind": "REVIEW",
+    "len": 6790,
+    "alerts": [
+      "FORMAL ALERT (a) holds on W47: exact2h 19.",
+      "FORMAL ALERT (b) stays RESET at analysis tip 17532 ABOVE consec-under=0 (prev tip 18892 ABOVE consec-under=0);"
+    ],
+    "cores_bits": [
+      "W47N7 core inc=84273302 cleared 84273674 07:27 expired 84274647 ~08:36 as designed"
+    ],
+    "stor_bits": [
+      "W47 stor min 28236@tip later 27936@84275390 / 27336@84275400 09:28 max 38466@84274670 08:37 (closest yet to the 40k/500t lock, prior high 36878 last hour / 35385 12h review",
+      "W47 stor min 28236 max 38466 live later 27336 keep=2 phase=ready bankWhy=ready leanBank=0 threatSoft=0 softCap2=0 sealPark off sealMinE=25000 hubLink=1 feedOk=1 upLatched=0 softLeft=0"
+    ],
+    "handoff_bits": [
+      "keep=2 designed",
+      "w8up 2→3@84274690 08:38 →2@84274790 08:45 handoff plus two box-sleep gaps)",
+      "keep=2 designed 20 e/t=66.5% already under the 70% bar",
+      "keep=2",
+      "nUp=1 after the 08:46-09:03 freeze then designed handoff (upgrader84273906 ttl~85 + u",
+      "nUp=2@84275360 then brief nUp=3@84275380)"
+    ],
+    "freeze_bits": [
+      "freeze then designed handoff (upgrader84273906 ttl~85 + upgrader84275355 spawning at t",
+      "freeze to 32103@09:04 then 28236@09:24 (model 1h storage_delta -10.17 e/t)",
+      "freeze (why later=ok, tUp=2, replacement spawning) → 2@84275360 stor 17532 → 3@8427538",
+      "box freezes 08:31:05-08:33:42 ~153s (room_stats gap 50t/208s 84274580-84274630) and 08:46:36-09:03:53 ~1032s (260t/1088s 84274800-84275060) self-healed"
+    ],
+    "deploy_bits": [
+      "LIVE ffdf767 (held, deploy@84268045 00:27",
+      "no new deploy this patrol)",
+      "src change from this patrol."
+    ],
+    "soft_bits": [
+      "20k/300t not hit (3h max 18992, best>=20k span=0)",
+      "40k/500t lock, prior high 36878 last hour / 35385 12h review",
+      "40k, best>=40k span=0, not a latch)",
+      "softCap2=0 threatSoft=0 sealPark=0 (WINDOW leftover from W47N7 core inc=84273302 cleared",
+      "threatSoft=0 softCap2=0 sealPark off sealMinE=25000 hubLink=1 feedOk=1 upLatched=0 softLef"
+    ],
+    "head": "2026-11-15 09:28 Asia/Hong_Kong (09:28 HKT) patrol(1h peacetime): tick~84274500–84275360 LIVE ffdf767 (held, deploy@84268045 00:27; no new deploy this patrol); FORMAL ALERT (a) holds on W47: exact2h 19.04/30.08=63.3% (prev 18.72=62.3%) is the SIXTH consecutive patrol under 70% AND short is soft (last20-200 span=20 after 09:10-09:24 gap not used alone; last300 20.00=66.5% span=300 is keep=2 designed; 1h 18.08=60.1% dragged by w8up 2→3@84274690 08:38 →2@84274790 08:45 handoff plus two box-sleep ga"
+  },
+  {
+    "t": "10:25",
+    "kind": "PATROL",
+    "len": 2917,
+    "alerts": [
+      "FORMAL ALERT (a) holds on W47: exact2h 19.",
+      "FORMAL ALERT (b) stays RESET at analysis tip 16974 ABOVE consec-under=0 (prev tip 17532 ABOVE consec-under=0);"
+    ],
+    "cores_bits": [],
+    "stor_bits": [
+      "W47 stor since_last min 22082@84275510 09:36 max 28236@84275360 09:25 (last tip) tip 25180 later 24780-25070@84276160-84276200"
+    ],
+    "handoff_bits": [
+      "keep=2 design 20.00=66.5% span=70-200",
+      "keep=2 designed 20 e/t=66.5% already under the 70% bar",
+      "keep=2",
+      "nUp=2 why=ok work=28 through tip",
+      "keep=2 siteRem=0 feedOk=1 hubLink=1 hubReady=1 leanBank=0 upLatched=0 upArm=40000 ttdW",
+      "w8up 2→3@84276140 10:20 handoff (w8upgrader84274684 ttl~58 + newborn 84276123) not the 40k latch"
+    ],
+    "freeze_bits": [],
+    "deploy_bits": [
+      "LIVE ffdf767 (held, deploy@84268045 00:27",
+      "no new deploy this patrol)",
+      "src change) sealMinE=25000 phase=ready why=done ke",
+      "src change, no deploy"
+    ],
+    "soft_bits": [
+      "20k/300t not hit (3h max 18992, best>=20k span=0)",
+      "40k, not a latch)",
+      "softCap2=0 threatSoft=0 sealPark=1 (known, updateSealPark clears only at nUp>=3, deferre",
+      "40k latch"
+    ],
+    "head": "2026-11-15 10:25 Asia/Hong_Kong (10:25 HKT) patrol(1h peacetime): tick~84275360–84276150 LIVE ffdf767 (held, deploy@84268045 00:27; no new deploy this patrol); FORMAL ALERT (a) holds on W47: exact2h 19.04/30.08=63.3% (prev 19.04=63.3%) is the SEVENTH consecutive patrol under 70% AND short is soft (last20-30 span=10 after sparse samples not used alone; last70-200 all keep=2 design 20.00=66.5% span=70-200; last300 span=200 also 20.00=66.5%; 1h 20.00=66.5%); keep=2 designed 20 e/t=66.5% already und"
+  },
+  {
+    "t": "11:26",
+    "kind": "PATROL",
+    "len": 6585,
+    "alerts": [
+      "FORMAL ALERT (a) holds on W47: exact2h 18.",
+      "FORMAL ALERT (b) stays RESET at analysis tip 18036 ABOVE consec-under=0 (prev tip 16974 ABOVE consec-under=0);"
+    ],
+    "cores_bits": [],
+    "stor_bits": [
+      "W47 stor since_last min 24073@84276990 11:20 (thaw dip) max 28194@84276780 11:05 tip 25223 later 25223",
+      "W47 stor min 24073 max 28194 live later 25223 keep=2 phase=ready bankWhy=ready leanBank=0 threatSoft=0 softCap2=0 sealPark on sealMinE=25000 hubLink=1 feedOk=1 upLatched=0 softLeft=0"
+    ],
+    "handoff_bits": [
+      "keep=2 designed",
+      "keep=2 plus two long freezes)",
+      "keep=2 designed 20 e/t=66.5% already under the 70% bar",
+      "keep=2",
+      "nUp=2@84276150 stor 16974 why=ok work=28 → 1@84276350 10:35 stor 14094 why=floor_bank",
+      "keep=2 siteRem=0 feedOk=1 hubLink=1 hubReady=1 leanBank=0 upLatched=0 upArm=40000 soft"
+    ],
+    "freeze_bits": [
+      "freeze not used alone",
+      "freezes)",
+      "freeze not used alone",
+      "box freezes 10:32:44-10:34:29 ~96s (room_stats gap 40t/165s 84276310-84276350), 10:41:51-11:00:10 ~1094s (270t/1131s 84276440-84276710), 11:07:59-11:19:31 ~687s (180t/760s 84276810-84276990) all self-healed"
+    ],
+    "deploy_bits": [
+      "LIVE ffdf767 (held, deploy@84268045 00:27",
+      "no new deploy this patrol)",
+      "src change) sealMinE=25000 phase=ready why=done ke",
+      "src change from this patrol."
+    ],
+    "soft_bits": [
+      "20k/300t not hit (3h max 18992@84274510 08:26, best>=20k span=0)",
+      "40k, not a latch)",
+      "softCap2=0 threatSoft=0 (w8threat stamp 84273147 is expired residue, WINDOW=1500 ended 0",
+      "threatSoft=0 softCap2=0 sealPark on sealMinE=25000 hubLink=1 feedOk=1 upLatched=0 softLeft"
+    ],
+    "head": "2026-11-15 11:26 Asia/Hong_Kong (11:26 HKT) patrol(1h peacetime): tick~84276150–84277040 LIVE ffdf767 (held, deploy@84268045 00:27; no new deploy this patrol); FORMAL ALERT (a) holds on W47: exact2h 18.60/30.08=61.9% (prev 19.04=63.3%) is the EIGHTH consecutive patrol under 70% AND short is soft (last20-100 20.00=66.5% but span=20-50 after 11:07-11:19 freeze not used alone; last140-200 span=230 also 20.00=66.5%; last300 20.00=66.5% span=300 is keep=2 designed; 1h 17.08=56.8% dragged by keep=2 pl"
+  },
+  {
+    "t": "12:26",
+    "kind": "PATROL",
+    "len": 5448,
+    "alerts": [
+      "FORMAL ALERT (a) holds on W47: exact2h 17.",
+      "FORMAL ALERT (b) not fired: analysis tip 14162 UNDER consec-under=1 (prev tip 18036 ABOVE consec-under=0);"
+    ],
+    "cores_bits": [],
+    "stor_bits": [
+      "W47 stor since_last min 24147@84277240 11:38 max 28932@tip later 29902@84277960 / 29552@84277970",
+      "W47 stor min 24147 max 28932 live later 29552–29902 keep=2 phase=ready bankWhy=ready leanBank=0 threatSoft=0 softCap2=0 sealPark off sealMinE=25000 hubLink=1 feedOk=1 upLatched=0 softLeft="
+    ],
+    "handoff_bits": [
+      "keep=2 20 e/t=66.5%",
+      "w8up 2→3@84277570 12:01 handoff →2@84277880 12:23 with waiting_feed on newborns",
+      "keep=2 designed 20 e/t=66.5% already under the 70% bar",
+      "keep=2 or add a third until 40k/500t lock",
+      "nUp=2@84277040 stor 18036 why=ok → 1@84277190 11:34 stor 14733 why=floor_bank through",
+      "nUp=1 stor 12162@84277970 after core cleared"
+    ],
+    "freeze_bits": [
+      "freeze not used alone",
+      "box freezes 11:31-11:33 ~30t/130s, 11:40-11:43 ~50t/212s, 11:50-11:58 ~110t/467s, 12:05-12:22 ~240t/1010s (this wake, listener restart 12:21:51)"
+    ],
+    "deploy_bits": [
+      "LIVE ffdf767 (held, deploy@84268045 00:27",
+      "no new deploy this patrol)",
+      "src change from this patrol."
+    ],
+    "soft_bits": [
+      "40k/500t lock",
+      "20k/300t not hit (3h max 18778@84276760 11:04, 18992@08:26 aged out, best>=20k span=0)",
+      "40k, not a latch",
+      "softCap2=0 threatSoft=0 sealPark=0 (cleared when w8up briefly hit 3 at 12:01) sealMinE=2",
+      "threatSoft=0 softCap2=0 sealPark off sealMinE=25000 hubLink=1 feedOk=1 upLatched=0 softLef"
+    ],
+    "head": "2026-11-15 12:26 Asia/Hong_Kong (12:26 HKT) patrol(1h peacetime): tick~84277040–84277930 LIVE ffdf767 (held, deploy@84268045 00:27; no new deploy this patrol); FORMAL ALERT (a) holds on W47: exact2h 17.07/30.08=56.8% (prev 18.60=61.9%) is the NINTH consecutive patrol under 70% AND short is soft (last20-200 span=20-60 after 12:05-12:22 freeze not used alone; last300 10.77=35.8% span=300 below designed keep=2 20 e/t=66.5%; 1h 16.62=55.2%); w8up 2→3@84277570 12:01 handoff →2@84277880 12:23 with wai"
+  },
+  {
+    "t": "13:31",
+    "kind": "PATROL",
+    "len": 6413,
+    "alerts": [
+      "FORMAL ALERT (a) FIRES on home: exact2h 11.",
+      "FORMAL ALERT (a) CLEARS on W47: exact2h 19.",
+      "FORMAL ALERT (b) RESET at analysis tip 16747 ABOVE consec-under=0 (prev tip 14162 UNDER consec-under=1);"
+    ],
+    "cores_bits": [],
+    "stor_bits": [
+      "W47 stor since_last min 26901@84278710 13:22 max 32486@84278240 12:48 tip 27751 later 27751@84278820 / 27847@84278830-84278840",
+      "W47 stor min 26901 max 32486 live later 27847 keep=2 phase=ready bankWhy=threatSoft leanBank=0 threatSoft=1 softCap2=1 sealPark on sealMinE=25000 hubLink=1 feedOk=1 upLatched=0 softLeft=0"
+    ],
+    "handoff_bits": [
+      "nUp=1@84277930 stor 14162 why=floor_bank → brief 2@84278230 12:47 stor 11927 (handoff",
+      "keep=2 design 20.00=66.5% span=20-30",
+      "keep=2 designed, do not revert or add a third until 40k/500t lock",
+      "keep=2 siteRem=0 feedOk=1 hubLink=1 hubReady=1 leanBank=0 upLatched=0 upArm=40000 soft",
+      "nUp=1 tUp=1 work=14 surplus=1797 floor=15000 allowExtra=20000",
+      "keep=2 phase=ready bankWhy=threatSoft leanBank=0 threatSoft=1 softCap2=1 sealPark on s"
+    ],
+    "freeze_bits": [
+      "freeze not used alone",
+      "freeze not used alone",
+      "box freeze 13:22:27-13:25:56 ~203s (room_stats gap 60t/256s 84278710-84278770) self-healed, listener restart 13:25:59",
+      "freeze this hour after the 12:21 thaw"
+    ],
+    "deploy_bits": [
+      "LIVE ffdf767 (held, deploy@84268045 00:27",
+      "no new deploy this patrol)",
+      "src change",
+      "src change from this patrol."
+    ],
+    "soft_bits": [
+      "40k/500t lock",
+      "20k/300t not hit (3h max 18778@84276760 11:04, best>=20k span=0)",
+      "40k, not a latch",
+      "threatSoft softCap2=1 threatSoft=1 (w8threat=84278015 age=825@84278840 WINDOW=1500 expires",
+      "threatSoft leanBank=0 threatSoft=1 softCap2=1 sealPark on sealMinE=25000 hubLink=1 feedOk="
+    ],
+    "head": "2026-11-15 13:31 Asia/Hong_Kong (13:31 HKT) patrol(1h peacetime): tick~84277930–84278810 LIVE ffdf767 (held, deploy@84268045 00:27; no new deploy this patrol); FORMAL ALERT (a) FIRES on home: exact2h 11.95/26=45.9% (prev 16.28=62.6%) is the SECOND consecutive patrol under 70% AND short is soft (last20-140 all designed floor_bank 14.00=53.8% span=20-140; last200 13.84=53.2% span=200; last300 12.17=46.8% span=300; last70 span=40 after 13:22-13:26 freeze not used alone; 1h 10.62=40.8%); nUp=1@84277"
+  },
+  {
+    "t": "14:31",
+    "kind": "PATROL",
+    "len": 6389,
+    "alerts": [
+      "FORMAL ALERT (a) HOLDS on home: exact2h 12.",
+      "FORMAL ALERT (b) stays RESET at analysis tip 17291 ABOVE consec-under=0 (prev tip 16747 ABOVE consec-under=0);"
+    ],
+    "cores_bits": [],
+    "stor_bits": [
+      "W47 stor since_last min 24488@tip max 32083@84278930 13:37 later 25127@84279650-84279680 then 24127@84279690-84279700 after the core-breaker spawn+refill",
+      "W47 stor min 24488 max 32083 live later 24127 keep=2 phase=ready bankWhy=ready leanBank=0 threatSoft=0 softCap2=0 sealPark on sealMinE=25000 hubLink=1 feedOk=1 upLatched=0 softLeft=873"
+    ],
+    "handoff_bits": [
+      "nUp=1@84278810 stor 16747 why=floor_bank through almost the hour → 2@84279630 14:26 s",
+      "keep=2 designed 20 e/t=66.5%",
+      "keep=2 designed, do not revert or add a third until 40k/500t lock",
+      "w8up 2→3@84279260 14:00:59 handoff →2@84279320 14:05:13",
+      "keep=2 siteRem=0 feedOk=1 hubLink=1 hubReady=1 leanBank=0 upLatched=0 upArm=40000 soft",
+      "nUp=2 tUp=2 work=28 surplus=2781 floor=15000 allowExtra=20000"
+    ],
+    "freeze_bits": [
+      "freeze not used alone",
+      "freeze not used alone",
+      "freeze (under15k dips 84278870/84278890/84278940), over16k 16543@84279260, under16k 15",
+      "box freezes 13:38:25-14:00:29 ~1315s (room_stats gap 320t/1358s 84278940-84279260) and 14:08:28-14:26:16 ~1059s (270t/1132s 84279360-84279630) self-healed, listener restarts 14:00:32, 14:26:19"
+    ],
+    "deploy_bits": [
+      "LIVE ffdf767 (held, deploy@84268045 00:27",
+      "no new deploy this patrol)",
+      "src change from this patrol."
+    ],
+    "soft_bits": [
+      "40k/500t lock",
+      "20k/300t not hit (3h max now 17291@tip, 18778@11:04 aged out, best>=20k span=0)",
+      "40k, not a latch",
+      "softCap2=0 threatSoft=0 (w8threat=84278015 age=1670@84279685 WINDOW=1500 expired 8427951",
+      "threatSoft=0 softCap2=0 sealPark on sealMinE=25000 hubLink=1 feedOk=1 upLatched=0 softLeft"
+    ],
+    "head": "2026-11-15 14:31 Asia/Hong_Kong (14:31 HKT) patrol(1h peacetime): tick~84278810–84279640 LIVE ffdf767 (held, deploy@84268045 00:27; no new deploy this patrol); FORMAL ALERT (a) HOLDS on home: exact2h 12.23/26=47.0% (prev 11.95=45.9%) is the THIRD consecutive patrol under 70% AND short is soft (last20-200 span=10 after 14:08-14:26 freeze not used alone; last300 14.00=53.8% span=300 designed floor_bank 14 e/t; 1h 14.00=53.8%); nUp=1@84278810 stor 16747 why=floor_bank through almost the hour → 2@84"
+  },
+  {
+    "t": "15:31",
+    "kind": "PATROL",
+    "len": 6344,
+    "alerts": [
+      "FORMAL ALERT (a) FIRES on W47: exact2h 20.",
+      "FORMAL ALERT (b) not formal: analysis tip 14447 UNDER consec-under=1 (prev tip 17291 ABOVE consec-under=0);"
+    ],
+    "cores_bits": [],
+    "stor_bits": [
+      "W47 stor since_last min 24104@84279790 14:38 max 25595@84279810 14:39 later 25020@tip then 25346@84280510 / 26739@84280530 / 27239@84280540-84280550",
+      "W47 stor min 24104 max 25595 live later 27239 keep=2 phase=ready bankWhy=ready leanBank=0 threatSoft=0 softCap2=0 sealPark off sealMinE=25000 hubLink=1 feedOk=1 upLatched=0 softLeft=0"
+    ],
+    "handoff_bits": [
+      "keep=2 20 e/t=66.5%",
+      "keep=2 designed, do not revert or add a third until 40k/500t lock",
+      "w8up 2→3@84280460 15:24:56 handoff (84279001 ttl dying + 84280440 arriving) →2@84280540 15:30:31",
+      "nUp=2 why=ok from 14:26 plus the 12:32 ~5000 north-exit defender aging out of the 2h ",
+      "nUp=2@84279640 stor 17291 why=ok through the hour until floor recross: 2@tip 84280490",
+      "nUp=1@84280500 stor 14775 work=14"
+    ],
+    "freeze_bits": [
+      "freeze not used alone 16.67=55.4%",
+      "freeze 22.20=85.4% / last20 19.30=74.2% also not soft)",
+      "box freeze, known ingest class",
+      "box freezes 14:39:39-14:56:20 ~996s (room_stats gap 250t/1042s 84279810-84280060) and 15:03:52-15:24:25 ~1223s (310t/1303s 84280150-84280460) self-healed, listener restarts 14:56:23, 15:24:28"
+    ],
+    "deploy_bits": [
+      "LIVE ffdf767 (held, deploy@84268045 00:27",
+      "no new deploy this patrol)",
+      "src change from this patrol."
+    ],
+    "soft_bits": [
+      "40k/500t lock",
+      "20k/300t not hit (3h max still 17781@84279700, best>=20k span=0)",
+      "40k, not a latch",
+      "softCap2=0 threatSoft=0",
+      "threatSoft=0 softCap2=0 sealPark off sealMinE=25000 hubLink=1 feedOk=1 upLatched=0 softLef"
+    ],
+    "head": "2026-11-15 15:31 Asia/Hong_Kong (15:31 HKT) patrol(1h peacetime): tick~84279640–84280490 LIVE ffdf767 (held, deploy@84268045 00:27; no new deploy this patrol); FORMAL ALERT (a) FIRES on W47: exact2h 20.37/30.08=67.7% (prev 20.76=69.0% after CLEARED) is the SECOND consecutive patrol under 70% AND short is slightly soft (last20-200 span=30 after 15:03-15:24 freeze not used alone 16.67=55.4%; last300 INTERP 21.01=69.8% span=300 slightly under 70% near designed keep=2 20 e/t=66.5%; last400 20.91=69."
+  },
+  {
+    "t": "16:31",
+    "kind": "PATROL",
+    "len": 6579,
+    "alerts": [
+      "FORMAL ALERT (a) HOLDS on W47: exact2h 19.",
+      "FORMAL ALERT (b) RESET at analysis tip 17638 ABOVE consec-under=0 (prev tip 14447 UNDER consec-under=1);"
+    ],
+    "cores_bits": [],
+    "stor_bits": [
+      "W47 stor since_last min 23858@84281340 16:26 max 30264@84280690 15:40 later 25291@tip then 25791@84281390-84281410 16:31",
+      "W47 stor min 23858 max 30264 live later 25791 keep=2 phase=ready bankWhy=ready leanBank=0 threatSoft=0 softCap2=0 sealPark designed around sealMinE=25000 hubLink=1 feedOk=1 upLatched=0 sof"
+    ],
+    "handoff_bits": [
+      "keep=2 20 e/t=66.5%",
+      "handoff ran ~10 e/t with waiting_feed on w8upgrader84280440/84279001",
+      "keep=2 designed, do not revert or add a third until 40k/500t lock",
+      "w8up 3@tip-prev 84280490 handoff →2@84280540 15:30:31, rate stayed ~10 until 15:37 then 20",
+      "handoff →2@84280990 16:01:57 after first freeze",
+      "keep=2 through tip and later"
+    ],
+    "freeze_bits": [
+      "freeze not used alone 20.30=67.5%",
+      "freeze gaps the rate is designed 20, later 16:30-16:31 24-26)",
+      "freeze",
+      "freeze 27.50=105.8% / last20 27.00=103.8% also not soft)"
+    ],
+    "deploy_bits": [
+      "LIVE ffdf767 (held, deploy@84268045 00:27",
+      "no new deploy this patrol)",
+      "src change from this patrol."
+    ],
+    "soft_bits": [
+      "40k/500t lock",
+      "20k/300t not hit (3h max still 17781@84279700 14:31, best>=20k span=0)",
+      "40k, not a latch",
+      "softCap2=0 threatSoft=0",
+      "threatSoft=0 softCap2=0 sealPark designed around sealMinE=25000 hubLink=1 feedOk=1 upLatch"
+    ],
+    "head": "2026-11-15 16:31 Asia/Hong_Kong (16:31 HKT) patrol(1h peacetime): tick~84280490–84281380 LIVE ffdf767 (held, deploy@84268045 00:27; no new deploy this patrol); FORMAL ALERT (a) HOLDS on W47: exact2h 19.35/30.08=64.3% (prev 20.37=67.7%) is the THIRD consecutive patrol under 70% AND short is still slightly soft (last20-200 span=40 after 16:09-16:26 freeze not used alone 20.30=67.5%; last30 20.40=67.8%; last300 20.04=66.6% span=300 slightly under 70% at designed keep=2 20 e/t=66.5%; 1h 17.48=58.1% "
+  },
+  {
+    "t": "17:31",
+    "kind": "PATROL",
+    "len": 6885,
+    "alerts": [
+      "FORMAL ALERT (a) HOLDS on W47: exact2h 17.",
+      "FORMAL ALERT (b) stays RESET at analysis tip 16318 ABOVE consec-under=0 (prev tip 17638 ABOVE consec-under=0);"
+    ],
+    "cores_bits": [
+      "W47N7 core, not new stuck"
+    ],
+    "stor_bits": [
+      "W47 stor since_last min 22111@84281910 17:06:29 max 27804@tip later 28552@84282230-84282240 / 29302@84282250 17:30",
+      "W47 stor min 22111 max 27804 live later 29302 keep=2 phase=ready bankWhy=ready leanBank=0 threatSoft=0 softCap2=0 sealPark designed around sealMinE=25000 hubLink=1 feedOk=1 upLatched=0 sof"
+    ],
+    "handoff_bits": [
+      "keep=2 20 e/t=66.5%",
+      "handoff: w8up 2→3@84281890 17:05:06 (w8upgrader84281887 spawn) then w8upgrader84280440 left the 14,26 stand empty@84281941 and died ~84281978 walki",
+      "w8upgrader84280653 kept working at ~10 e/t",
+      "w8upgrader84282092 spawned@84282094",
+      "keep=2 designed 20 e/t=66.5% already under the 70% bar",
+      "keep=2 or add a third until 40k/500t lock"
+    ],
+    "freeze_bits": [
+      "freeze not used alone 6.67-10.00",
+      "freeze 28.00=107.7% also not soft)",
+      "box freezes 16:38:40-17:00:44 ~1313s (room_stats gap 330t/1389s 84281510-84281840) and 17:08:24-17:22:57 ~873s (220t/932s 84281930-84282150) self-healed, listener restarts 17:00:47, 17:23:00"
+    ],
+    "deploy_bits": [
+      "LIVE ffdf767 (held, deploy@84268045 00:27",
+      "no new deploy this patrol)",
+      "src change from this patrol."
+    ],
+    "soft_bits": [
+      "40k/500t lock",
+      "20k/300t not hit (3h max 17948@84281840, best>=20k span=0)",
+      "40k, not a latch",
+      "softCap2=0 threatSoft=0",
+      "threatSoft=0 softCap2=0 sealPark designed around sealMinE=25000 hubLink=1 feedOk=1 upLatch"
+    ],
+    "head": "2026-11-15 17:31 Asia/Hong_Kong (17:31 HKT) patrol(1h peacetime): tick~84281380–84282210 LIVE ffdf767 (held, deploy@84268045 00:27; no new deploy this patrol); FORMAL ALERT (a) HOLDS on W47: exact2h 17.72/30.08=58.9% (prev 19.35=64.3%) is the FOURTH consecutive patrol under 70% AND short is soft (last20-200 span=20-60 after 17:08-17:23 freeze not used alone 6.67-10.00; last300 10.00=33.2% span=300 well under designed keep=2 20 e/t=66.5%; 1h 18.25=60.7% UNDER); root of the short dip is the 17:05 "
+  },
+  {
+    "t": "18:26",
+    "kind": "PATROL",
+    "len": 6934,
+    "alerts": [
+      "FORMAL ALERT (a) HOLDS on W47: exact2h 17.",
+      "FORMAL ALERT (b) stays RESET at analysis tip 19659 ABOVE consec-under=0 (prev tip 16318 ABOVE consec-under=0);"
+    ],
+    "cores_bits": [],
+    "stor_bits": [
+      "W47 stor since_last min 27804@84282210 17:27:41 max 39332@84282960 18:20:52 tip 38632 later 38032@84282990 / 37582@84283020 / 37082@84283030-84283038",
+      "W47 stor min 27804 max 39332 live later 37082 keep=2 phase=ready bankWhy=ready leanBank=0 threatSoft=0 softCap2=0 sealPark=0 hubLink=1 feedOk=1 upLatched=0 softLeft=0"
+    ],
+    "handoff_bits": [
+      "keep=2 20 e/t=66.5%",
+      "handoff tail continued: w8upgrader84281887 first loaded 12,25@84282170 17:24 after ~223t hub waiting_feed, but w8upgrader84282092 spawned@84282094 ",
+      "keep=2 designed 20 e/t=66.5% already under the 70% bar",
+      "keep=2 or add a third until 40k/500t lock",
+      "w8up stayed 2 all hour",
+      "nUp=1 from 17:36 until the 18:10 thaw after stor dipped under 15k"
+    ],
+    "freeze_bits": [
+      "freeze not used alone 20.00=66.5%",
+      "freeze",
+      "freeze-gap 84282390-84282710 average 16.47 as the second seated mid-gap)",
+      "freeze the rate is designed 20"
+    ],
+    "deploy_bits": [
+      "LIVE ffdf767 (held, deploy@84268045 00:27",
+      "no new deploy this patrol)",
+      "src change from this patrol."
+    ],
+    "soft_bits": [
+      "40k/500t lock",
+      "20k/300t not hit (just recrossed at 18:25, 3h max now 20259@later, best>=20k span ~16t s",
+      "40k, not a latch",
+      "softCap2=0 threatSoft=0",
+      "threatSoft=0 softCap2=0 sealPark=0 hubLink=1 feedOk=1 upLatched=0 softLeft=0"
+    ],
+    "head": "2026-11-15 18:26 Asia/Hong_Kong (18:26 HKT) patrol(1h peacetime): tick~84282210–84282980 LIVE ffdf767 (held, deploy@84268045 00:27; no new deploy this patrol); FORMAL ALERT (a) HOLDS on W47: exact2h 17.40/30.08=57.8% (prev 17.72=58.9%) is the FIFTH consecutive patrol under 70% AND short is still slightly soft (last20-140 span=20 after 18:10-18:20 freeze not used alone 20.00=66.5%; last200 20.00=66.5% span=200; last300 20.00=66.5% span=270 at designed keep=2 20 e/t=66.5%; 1h 15.40=51.2% UNDER bec"
+  },
+  {
+    "t": "19:24",
+    "kind": "PATROL",
+    "len": 5151,
+    "alerts": [
+      "FORMAL ALERT (a) CLEARED on W47: exact2h 17.",
+      "FORMAL ALERT (b) stays RESET at analysis tip 15093 ABOVE consec-under=0 (prev tip 19659 ABOVE consec-under=0);"
+    ],
+    "cores_bits": [],
+    "stor_bits": [
+      "W47 stor since_last min 30978@84283350 18:48:20 max 38632@84282980 (prev tip) later 32058@tip / 31958@84283810 / 31608@84283822-84283850",
+      "W47 stor dropped around the spawn/refill (home 20459→14859, W47 37082→30978)",
+      "home stor E17361 O17324 term K172792 O126976, W47 stor E31608 K64 term E1096 K33708"
+    ],
+    "handoff_bits": [
+      "keep=2 designed 20 e/t=66.5% plus w8builder84282432 dwelling at 15,26 from ~84283266 1",
+      "w8up 2@84282980 →3@84283330 18:46:59 handoff (w8upgrader84283326 spawn, seated 14,27) →2@84283490 18:58:",
+      "w8upgrader84281887 ttl (last 12,25 then walked out 84283425) →3@84283540 19:01:42 handoff (w8upgrader842",
+      "w8upgrader84282092 ttl (last 14,26 then walked out 84283630)",
+      "keep=2 designed, do not add a third until 40k/500t lock",
+      "nUp=1 from 18:58 after stor dipped under 15k"
+    ],
+    "freeze_bits": [
+      "freeze not used alone 26.00=86.4%",
+      "freeze also 14.00 not used alone",
+      "box freezes this hour (known platform, self-healed): 18:37:17-18:42:15 (288s), 18:50:18-18:57:50 (452s), 19:05:24-19:17:58 (748s)"
+    ],
+    "deploy_bits": [
+      "LIVE ffdf767 (held, deploy@84268045 00:27",
+      "no new deploy this patrol)"
+    ],
+    "soft_bits": [
+      "40k/500t lock",
+      "20k/300t not hit (3h max 20459@84283060, best>=20k span=50)",
+      "40k, not a latch",
+      "threatSoft softCap2=1 threatSoft=1 (w8threat/w8inv=84283072) sealPark=1 sealMinE=25000 kee"
+    ],
+    "head": "2026-11-15 19:24 Asia/Hong_Kong (19:24 HKT) patrol(1h peacetime): tick~84282980–84283790 LIVE ffdf767 (held, deploy@84268045 00:27; no new deploy this patrol); FORMAL ALERT (a) CLEARED on W47: exact2h 17.76/30.08=59.0% (prev 17.40=57.8%) is still under 70% and would be the SIXTH consecutive exact2h under, BUT short is no longer soft (last20-140 span=10 after 19:05-19:18 freeze not used alone 26.00=86.4%; last200 21.32=70.9% span=200 ABOVE 70%; last300 22.33=74.2% span=300 ABOVE 70%; 1h 20.58=68."
+  }
+]

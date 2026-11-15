@@ -1,0 +1,19 @@
+Traceback (most recent call last):
+  File "/workspace/screeps/state/_review12h_2026-11-15_20/_sql.py", line 213, in <module>
+    run("sql_stor_stretches.txt", """
+    ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    WITH base AS (
+    ^^^^^^^^^^^^^^
+    ...<81 lines>...
+    ORDER BY room, kind, tick_span DESC, t0;
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    """, params)
+    ^^^^^^^^^^^^
+  File "/workspace/screeps/state/_review12h_2026-11-15_20/_sql.py", line 20, in run
+    cur.execute(sql, args or {})
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/home/box/.local/lib/python3.13/site-packages/psycopg/cursor.py", line 117, in execute
+    raise ex.with_traceback(None)
+psycopg.errors.WindowingError: window function calls cannot be nested
+LINE 26:          sum(CASE WHEN under15 IS DISTINCT FROM lag(under15)...
+                                                         ^
