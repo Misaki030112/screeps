@@ -1,0 +1,84 @@
+2026-11-15 11:01:43 HKT check
+==== processes (screeps/pg/grafana/listener) ====
+   7854 Thu Nov  5 22:56:43 2026 /usr/lib/postgresql/17/bin/postgres -D /workspace/screeps/var/pg17 -c config_file=/etc/postgresql/17/main/postgresql.conf
+   7855 Thu Nov  5 22:56:43 2026 postgres: 17/main: checkpointer 
+   7856 Thu Nov  5 22:56:43 2026 postgres: 17/main: background writer 
+   7858 Thu Nov  5 22:56:43 2026 postgres: 17/main: walwriter 
+   7859 Thu Nov  5 22:56:43 2026 postgres: 17/main: autovacuum launcher 
+   7860 Thu Nov  5 22:56:43 2026 postgres: 17/main: TimescaleDB Background Worker Launcher 
+   7861 Thu Nov  5 22:56:43 2026 postgres: 17/main: logical replication launcher 
+   8028 Thu Nov  5 22:56:52 2026 postgres: 17/main: TimescaleDB Background Worker Scheduler for database 16385 
+   8030 Thu Nov  5 22:56:52 2026 /usr/share/grafana/bin/grafana server --homepath /usr/share/grafana --config grafana/grafana.ini
+   8041 Thu Nov  5 22:56:52 2026 .venv/bin/python -m http.server 8787 --bind 127.0.0.1
+   8078 Thu Nov  5 22:56:52 2026 /usr/share/grafana/data/plugins-bundled/elasticsearch/gpx_grafana_elasticsearch_datasource_linux_amd64
+2906528 Sun Nov 15 09:44:50 2026 postgres: 17/main: screeps screeps 127.0.0.1(55474) idle
+2948755 Sun Nov 15 11:00:22 2026 .venv/bin/python tools/listener.py
+2948775 Sun Nov 15 11:00:25 2026 postgres: 17/main: screeps screeps 127.0.0.1(56324) idle
+4035476 Wed Nov 11 06:14:11 2026 /bin/bash tools/run_listener.sh
+==== pg_lsclusters ====
+Ver Cluster Port Status Owner    Data directory              Log file
+17  main    5432 online postgres /workspace/screeps/var/pg17 /var/log/postgresql/postgresql-17-main.log
+==== listener pids / locks ====
+2948755 .venv/bin/python tools/listener.py
+4035476 /bin/bash tools/run_listener.sh
+listener.py count=1
+run_listener.sh count=1
+yield_files=absent
+==== listener locks/pids ====
+-rw-r--r-- 1 box box 0 Nov 15 11:00 metrics/listener.lock
+-rw-r--r-- 1 box box 0 Nov  5 15:06 metrics/listener.loop.lock
+-rw-r--r-- 1 box box 8 Nov  5 15:06 metrics/listener.pid
+pidfile=4035476
+
+==== listener_rot ====
+{"i": 0, "room": "W46N8", "left": 435.5, "at": "2026-11-15 11:01:39"}
+==== live.json summary ====
+keys ['uid', 'stats', 'cpu', 'objects', 'gameTime', 'roomSlot', 'console_tail', 'errors_tail', 'updated']
+  gameTime= 84276727
+  uid= 6010ee96cbca26e9512da6f0
+  roomSlot= W46N8
+  updated= 2026-11-15 11:01:43
+  cpu= {'cpu': 15, 'memory': 24083}
+  stats.t= 84276720 cpu= 16.09 b= 10000
+  live.json_mtime_age_s=1.0
+  live.json_mtime= 2026-11-15 11:01:43 HKT
+==== recent listener log (last 15 lines) ====
+2026-11-15 07:04:06 restart
+2026-11-15 07:16:28 restart
+2026-11-15 07:19:28 restart
+2026-11-15 07:34:34 restart
+2026-11-15 07:50:37 restart
+2026-11-15 08:04:06 restart
+2026-11-15 08:23:49 restart
+2026-11-15 08:33:45 restart
+2026-11-15 09:03:56 restart
+2026-11-15 09:23:43 restart
+2026-11-15 09:32:20 restart
+2026-11-15 10:06:17 restart
+2026-11-15 10:19:58 restart
+2026-11-15 10:34:33 restart
+2026-11-15 11:00:13 restart
+==== recent errors / box pauses ====
+CONTEXT:  unnamed portal parameter $9 = '...'
+2026-11-15 09:30:10 [listener] [ingest] dropped 1 incidents rows: invalid input syntax for type integer: "{}"
+CONTEXT:  unnamed portal parameter $9 = '...'
+2026-11-15 09:32:16 [listener] ws error ping/pong timed out
+2026-11-15 10:06:14 [listener] box frozen ~1615s since 2026-11-15 09:39:19 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-15 10:19:55 [listener] box frozen ~65s since 2026-11-15 10:18:43 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-15 10:34:29 [listener] box frozen ~96s since 2026-11-15 10:32:44 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-15 11:00:10 [listener] box frozen ~1094s since 2026-11-15 10:41:51 (VM hibernated; wall jumped, monotonic did not), reconnecting
+---- box_pauses last 3 ----
+{"from": "2026-11-15 10:18:43", "to": "2026-11-15 10:19:55", "sec": 65}
+{"from": "2026-11-15 10:32:44", "to": "2026-11-15 10:34:30", "sec": 96}
+{"from": "2026-11-15 10:41:51", "to": "2026-11-15 11:00:10", "sec": 1094}
+==== db health + recent ingest ====
+db_now 2026-11-15 11:01:44.147531+08:00
+  creep_ticks: last2h ticks=84275015..84276727 rows=50782 max_tick=84276727 max_ts=2026-11-15 11:01:43.050786+08:00
+  creep_cpu: last2h ticks=84274875..84276720 rows=11911 max_tick=84276720 max_ts=2026-11-15 11:01:25.637474+08:00
+  path_arrivals: last2h ticks=84274807..84276720 rows=235 max_tick=84276720 max_ts=2026-11-15 11:01:25.637474+08:00
+  room_stats: last2h ticks=84275060..84276720 rows=154 max_tick=84276720 max_ts=2026-11-15 11:01:14.284237+08:00
+creep_ticks since 11:00 HKT:
+  ('W46N8', 84276709, 84276727, 167, 19)
+creep_cpu since 11:00 HKT: (84276720, datetime.datetime(2026, 11, 15, 11, 1, 25, 637474, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 1571)
+path_arrivals since 11:00 HKT: (84276720, datetime.datetime(2026, 11, 15, 11, 1, 25, 637474, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 34)
+room_stats tip: (84276720, datetime.datetime(2026, 11, 15, 11, 1, 14, 284237, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')))
