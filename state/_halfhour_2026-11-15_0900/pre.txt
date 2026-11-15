@@ -1,0 +1,102 @@
+2026-11-15 09:04:19 HKT check
+==== processes (screeps/pg/grafana/listener) ====
+   7854 Thu Nov  5 21:55:52 2026 /usr/lib/postgresql/17/bin/postgres -D /workspace/screeps/var/pg17 -c config_file=/etc/postgresql/17/main/postgresql.conf
+   8030 Thu Nov  5 21:56:01 2026 /usr/share/grafana/bin/grafana server --homepath /usr/share/grafana --config grafana/grafana.ini
+   8041 Thu Nov  5 21:56:01 2026 .venv/bin/python -m http.server 8787 --bind 127.0.0.1
+2918422 Sun Nov 15 09:04:06 2026 .venv/bin/python tools/listener.py
+4035476 Wed Nov 11 05:13:20 2026 /bin/bash tools/run_listener.sh
+==== pg_lsclusters ====
+17 main 5432 online postgres /workspace/screeps/var/pg17 /var/log/postgresql/postgresql-17-main.log
+==== listener pids / locks ====
+2918422 .venv/bin/python tools/listener.py
+4035476 /bin/bash tools/run_listener.sh
+listener.py count=1
+run_listener.sh count=1
+yield_files=absent
+-rw-r--r-- 1 box box   0 2026-11-15 09:04:07.353539824 +0800 metrics/listener.lock
+-rw-r--r-- 1 box box   0 2026-11-05 15:06:47.826222813 +0800 metrics/listener.loop.lock
+-rw-r--r-- 1 box box   8 2026-11-05 15:06:47.826222813 +0800 metrics/listener.pid
+-rw-r--r-- 1 box box  68 2026-11-15 09:04:17.957524295 +0800 metrics/listener_rot.json
+-rw-r--r-- 1 box box 214 2026-11-15 09:04:16.753526059 +0800 metrics/live.json
+==== listener_rot ====
+{"i": 1, "room": "W47N8", "left": 19.4, "at": "2026-11-15 09:04:17"}==== live.json summary ====
+keys ['uid', 'stats', 'cpu', 'objects', 'gameTime', 'roomSlot', 'console_tail', 'errors_tail', 'updated']
+  gameTime=None
+  uid=6010ee96cbca26e9512da6f0
+  roomSlot=W47N8
+  updated=2026-11-15 09:04:16
+  cpu={'cpu': 15, 'memory': 24097}
+  live.json_mtime_age_s=3.2
+  live.json_mtime=2026-11-15 09:04:16 HKT
+  roomSlot=W47N8
+==== recent listener log (last 40 lines) ====
+2026-11-14 18:24:19 restart
+2026-11-14 18:42:51 restart
+2026-11-14 19:02:49 restart
+2026-11-14 19:14:09 restart
+2026-11-14 19:25:50 restart
+2026-11-14 20:05:25 restart
+2026-11-14 20:14:26 restart
+2026-11-14 20:57:08 restart
+2026-11-14 21:23:30 restart
+2026-11-14 22:03:19 restart
+2026-11-14 22:19:37 restart
+2026-11-14 23:03:06 restart
+2026-11-14 23:25:27 restart
+2026-11-15 00:01:21 restart
+2026-11-15 00:17:14 restart
+2026-11-15 01:04:50 restart
+2026-11-15 01:26:09 restart
+2026-11-15 02:03:58 restart
+2026-11-15 02:19:38 restart
+2026-11-15 02:33:47 restart
+2026-11-15 03:00:14 restart
+2026-11-15 03:17:59 restart
+2026-11-15 03:34:25 restart
+2026-11-15 04:05:51 restart
+2026-11-15 04:26:29 restart
+2026-11-15 05:02:57 restart
+2026-11-15 05:18:52 restart
+2026-11-15 05:32:33 restart
+2026-11-15 06:04:16 restart
+2026-11-15 06:19:10 restart
+2026-11-15 06:35:14 restart
+2026-11-15 07:04:06 restart
+2026-11-15 07:16:28 restart
+2026-11-15 07:19:28 restart
+2026-11-15 07:34:34 restart
+2026-11-15 07:50:37 restart
+2026-11-15 08:04:06 restart
+2026-11-15 08:23:49 restart
+2026-11-15 08:33:45 restart
+2026-11-15 09:03:56 restart
+==== recent errors.log (last 20) ====
+2026-11-15 04:31:17 < QQ1794688273600829{"t":84271313,"v":{"t":84271313,"le":83976900,"gcl":{"level":4,"progress":11957271.834761765,"progressTotal":13891007.860237733},"keys":["sw","time","gcl","rooms","creeps","bucket","errors","lastErrorTick","alerts","cpu","prof","remote","lastAlertTick"]}}
+2026-11-15 04:32:12 < QQ17946883279096324{"t":84271325,"v":{"t":84271325,"nErr":10,"le":83976900,"la":84266606,"tail":["83976899 creep reserver83976833: TypeError: Cannot read properties of undefined (reading 'via') |     at viaGateOf (roles.remote:131:10) |     at Object.reserver [as run] (roles.remote:206:9)","83976900 creep rhauler83976769: TypeError: Cannot read properties of undefined (reading 'via') |     at viaGateOf (roles.remote:131:10) |     at Object.rhauler [as run] (roles.remote:168:16)","83976900 creep reserver83976833: TypeError: Cannot read properties of undefined (reading 'via') |     at viaGateOf (roles.remote:131:10) |     at Object.reserver [as run] (roles.remote:206:9)"],"alerts":[{"episode":"W45N7-Invader-84244861","tick":84245100,"room":"W45N7","owner":"Invader","severity":"high","creeps":1,"body":{"tough":1,"move":5,"ranged_attack":1,"work":1,"attack":1},"bodies":[{"tough":2,"move":5,"ranged_attack":1,"work":1,"attack":1}],"structureHitLoss":10000,"damaged":["container"],"eventDamage":20,"totalDamage":10020,"positions":[[20,3]]},{"episode":"W45N7-Invader-84244861","tick":84245167,"room":"W45N7","owner":"Invader","severity":"high","ended":true,"duration":244,"totalDamage":10340,"maxCreeps":1},{"episode":"W45N7-unknown-84251290","tick":84251290,"room":"W45N7","owner":"unknown","severity":"medium","structureHitLoss":10000,"damaged":["container"]},{"episode":"W45N7-Invader-84255944","tick":84255944,"room":"W45N7","owner":"Invader","severity":"medium","creeps":1,"body":{"tough":2,"move":5,"ranged_attack":1,"work":1,"attack":1},"bodies":[{"tough":2,"move":5,"ranged_attack":1,"work":1,"attack":1}],"structureHitLoss":0,"damaged":[],"eventDamage":0,"totalDamage":0,"positions":[[49,8]]},{"episode":"W45N7-Invader-84255944","tick":84255970,"room":"W45N7","owner":"Invader","severity":"high","creeps":1,"body":{"tough":2,"move":5,"ranged_attack":1,"work":1,"attack":1},"bodies":[{"tough":2,"move":5,"ranged_attack":1,"work":1,"attack":1}],"structureHitLoss":0,"damaged":[],"eventDamage":20,"totalDamage":20,"positions":[[23,6]]},{"episode":"W45N7-Invader-84255944","tick":84255980,"room":"W45N7","owner":"Invader","severity":"high","creeps":1,"body":{"tough":2,"move":5,"ranged_attack":1,"work":1,"attack":1},"bodies":[{"tough":2,"move":5,"ranged_attack":1,"work":1,"attack":1}],"structureHitLoss":0,"damaged":[],"eventDamage":80,"totalDamage":760,"positions":[[21,5]]},{"episode":"W45N7-Invader-84255944","tick":84256200,"room":"W45N7","owner":"Invader","severity":"high","creeps":1,"body":{"attack":1,"move":1},"bodies":[{"tough":2,"move":5,"ranged_attack":1,"work":1,"attack":1}],"structureHitLoss":0,"damaged":[],"eventDamage":20,"totalDamage":1340,"positions":[[34,1]]},{"episode":"W45N7-Invader-84255944","tick":84256269,"room":"W45N7","owner":"Invader","severity":"high","ended":true,"duration":257,"totalDamage":1340,"maxCreeps":1},{"episode":"W45N7-Invader-84266326","tick":84266326,"room":"W45N7","owner":"Invader","severity":"medium","creeps":1,"body":{"tough":2,"move":5,"ranged_attack":1,"work":1,"attack":1},"bodies":[{"tough":2,"move":5,"ranged_attack":1,"work":1,"attack":1}],"structureHitLoss":0,"damaged":[],"eventDamage":0,"totalDamage":0,"positions":[[5,49]]},{"episode":"W45N7-Invader-84266326","tick":84266539,"room":"W45N7","owner":"Invader","severity":"high","creeps":1,"body":{"tough":1,"move":5,"ranged_attack":1,"work":1,"attack":1},"bodies":[{"tough":2,"move":5,"ranged_attack":1,"work":1,"attack":1}],"structureHitLoss":0,"damaged":[],"eventDamage":20,"totalDamage":20,"positions":[[21,3]]},{"episode":"W45N7-Invader-84266326","tick":84266540,"room":"W45N7","owner":"Invader","severity":"high","creeps":1,"body":{"move":5,"ranged_attack":1,"work":1,"attack":1},"bodies":[{"tough":2,"move":5,"ranged_attack":1,"work":1,"attack":1}],"structureHitLoss":0,"damaged":[],"eventDamage":20,"totalDamage":40,"positions":[[21,2]]},{"episode":"W45N7-Invader-84266326","tick":84266606,"room":"W45N7","owner":"Invader","severity":"high","ended":true,"duration":218,"totalDamage":340,"maxCreeps":1}]}}
+2026-11-15 05:02:54 [listener] box frozen ~1434s since 2026-11-15 04:39:00 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-15 05:18:49 [listener] box frozen ~437s since 2026-11-15 05:11:25 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-15 05:32:30 [listener] box frozen ~61s since 2026-11-15 05:31:28 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-15 05:32:52 [listener] err@room:shard3/W46N8: subscribe limit reached (x1)
+2026-11-15 05:39:17 [listener] err@room:shard3/W47N8: subscribe limit reached (x1)
+2026-11-15 06:04:12 [listener] box frozen ~1453s since 2026-11-15 05:39:59 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-15 06:19:07 [listener] box frozen ~400s since 2026-11-15 06:12:26 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-15 06:35:11 [listener] box frozen ~176s since 2026-11-15 06:32:11 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-15 07:04:03 [listener] box frozen ~1263s since 2026-11-15 06:42:50 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-15 07:04:03 [listener] ws error ping/pong timed out
+2026-11-15 07:16:28 [listener] ws error Connection to remote host was lost.
+2026-11-15 07:19:25 [listener] box frozen ~106s since 2026-11-15 07:17:39 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-15 07:34:31 [listener] box frozen ~110s since 2026-11-15 07:32:35 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-15 07:50:34 [listener] box frozen ~115s since 2026-11-15 07:48:39 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-15 08:04:03 [listener] box frozen ~656s since 2026-11-15 07:52:57 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-15 08:23:46 [listener] box frozen ~322s since 2026-11-15 08:18:16 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-15 08:33:42 [listener] box frozen ~153s since 2026-11-15 08:31:05 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-15 09:03:53 [listener] box frozen ~1032s since 2026-11-15 08:46:36 (VM hibernated; wall jumped, monotonic did not), reconnecting
+==== recent box_pauses (last 8) ====
+{"from": "2026-11-15 06:42:50", "to": "2026-11-15 07:04:03", "sec": 1263}
+{"from": "2026-11-15 07:17:39", "to": "2026-11-15 07:19:25", "sec": 106}
+{"from": "2026-11-15 07:32:35", "to": "2026-11-15 07:34:31", "sec": 110}
+{"from": "2026-11-15 07:48:39", "to": "2026-11-15 07:50:34", "sec": 115}
+{"from": "2026-11-15 07:52:57", "to": "2026-11-15 08:04:03", "sec": 656}
+{"from": "2026-11-15 08:18:16", "to": "2026-11-15 08:23:46", "sec": 322}
+{"from": "2026-11-15 08:31:05", "to": "2026-11-15 08:33:42", "sec": 153}
+{"from": "2026-11-15 08:46:36", "to": "2026-11-15 09:03:53", "sec": 1032}
