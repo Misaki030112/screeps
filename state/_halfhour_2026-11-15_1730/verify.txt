@@ -1,0 +1,8 @@
+window 84281501..84282200 (700)
+W46N8 distinct=700 rows=6978 range=84281501..84282200 missing_n=0 []
+W47N8 distinct=613 rows=11363 range=84281501..84282200 missing_n=87 [[84281514, 84281600]]
+W45N8 distinct=600 rows=2772 range=84281601..84282200 missing_n=100 [[84281501, 84281600]]
+W45N7 distinct=700 rows=2698 range=84281501..84282200 missing_n=0 []
+W47N7 distinct=700 rows=3372 range=84281501..84282200 missing_n=0 []
+unique_after rows=27183 distinct_ticks=700 distinct_room_ticks=3313
+missing_chunks first_pass=2 (W47N8@84281500 and W45N8@84281500 at game.time=84282273; mid-window official 404s — neighbors @84281400 and @84281600 already 200, and later @84281700..@84282100 also 200; W46N8/W45N7/W47N7 @84281500 already 200 for published_bases 84281500..84282100). Confirm 2026-11-15 17:33:44 Asia/Hong_Kong game.time=84282296 and retry2 17:34:37 Asia/Hong_Kong game.time=84282309 both still 404 (inserted=0, ts_realigned=0). W47N8 hole 84281514..84281600 missing_n=87 (live listener already held 84281501..84281513, 13 ticks / 234 rows, before later box freezes). W45N8 hole 84281501..84281600 missing_n=100 (db 0 rows / 0 distinct). distinct_room_ticks=3313 (5*700 would be 3500; official room-ticks recovered=3300 = 3500-200, plus 13 live ticks inside the W47N8 official-404 hole). W45N8@84279700 official 404 remains aged out of this window (hole 84279701..84279800, db 0 rows / 0 distinct); neighbors W45N8@84279600 and W45N8@84279800 both 200 with 100/100 from prior runs. Other aged leftover official 404s still 404 after confirm GET. No empty-no-creep in this window (missing ticks coincide with the two official 404 chunks, not with published chunks that have no creeps).
