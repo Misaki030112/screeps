@@ -75,6 +75,7 @@ execSync('node ' + path.join(__dirname, '..', 'tests', 'rminer_lead.js'), { stdi
 execSync('node ' + path.join(__dirname, '..', 'tests', 'labs.js'), { stdio: 'pipe' });
 execSync('node ' + path.join(__dirname, '..', 'tests', 'lab_ramparts.js'), { stdio: 'pipe' });
 execSync('node ' + path.join(__dirname, '..', 'tests', 'labs_hauler.js'), { stdio: 'pipe' });
+execSync('node ' + path.join(__dirname, '..', 'tests', 'term_park.js'), { stdio: 'pipe' });
 execSync('node ' + path.join(__dirname, '..', 'tests', 'mineral_line.js'), { stdio: 'pipe' });
 execSync('node ' + path.join(__dirname, '..', 'tests', 'w47n8_mminer.js'), { stdio: 'pipe' });
 execSync('node ' + path.join(__dirname, '..', 'tests', 'w47n8_rhaul_crash.js'), { stdio: 'pipe' });

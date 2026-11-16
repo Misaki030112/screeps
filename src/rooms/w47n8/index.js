@@ -107,6 +107,11 @@ function spawnRun(spawn) {
     if (sid) g.who = g.who || sid;
     g.planned = 1; g.passes++; g.mem.passes = g.passes;
   }
+  // A busy spawn used to repeat mine() + construction-site find + updateSealPark after another
+  // spawn already did that work this tick. Skip the second census. Hostiles, commander, and
+  // remote defence (g.force) still walk it. Does not drop a spawn.
+  if (spawn.spawning && (g.planned || g.census) && !g.force) return;
+  if (spawn.spawning) g.census = 1;
   const markSpawn = () => { g.spawned++; if (sid) { g.mem.waitCost = 0; g.mem.ne = 0; } };
   const markIdle = () => { if (sid) { g.mem.waitCost = 0; g.mem.ne = Game.time + IDLE_EVERY; } FM.idle(); };
   const markWait = (role, cost, avail) => { if (sid) { g.mem.waitCost = cost; g.mem.ne = Game.time + IDLE_EVERY; } FM.wait(role, cost, avail); };

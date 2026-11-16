@@ -172,4 +172,92 @@ function world(o) {
   assert.ok(cmdHits >= 1);
   cmdArmed = false;
 }
+
+// Busy spawns share one roleTargets refresh, and the window stays armed afterwards.
+{
+  Memory.stats = {};
+  const w = world({ time: 11000, upgraders: 2, energy: 5600 });
+  w.a.spawning = { name: 'busyA' };
+  w.b.spawning = { name: 'busyB' };
+  S.run(w.a);
+  S.run(w.b);
+  assert.strictEqual(passes, 1, 'two busy spawns, one setRoleTargets');
+  assert.ok(Memory.stats.sw.W46N8.ne > 11000, 'busy refresh keeps the skip window armed');
+  const mid = passes;
+  Game.time = 11001;
+  S.run(w.a);
+  S.run(w.b);
+  assert.strictEqual(passes, mid, 'next tick both busy stay off the cascade');
+  assert.ok(Memory.stats.sw.W46N8.busy >= 2, 'busy ticks still count');
+}
+
+// A spawn that actually starts re-arms the window, so the following tick does not double-plan.
+{
+  Memory.stats = {};
+  const w = world({ time: 12000, upgraders: 1, energy: 5600, storage: 20000 });
+  S.run(w.a);
+  assert.ok(w.spawned.includes('upgrader'), 'the open tick still spawns');
+  assert.ok(Memory.stats.sw.W46N8.ne > 12000, 'successful spawn keeps the skip armed');
+  const mid = passes;
+  Game.time = 12001;
+  w.a.spawning = { name: 'upgrader12000' };
+  S.run(w.a);
+  S.run(w.b);
+  assert.strictEqual(passes, mid, 'sibling does not full-plan while the body is spawning');
+}
+
+// defenseDue (no hostile in this room) forces the same-tick max kite. PR 42 body is unchanged.
+{
+  Memory.stats = {};
+  const threat = require(src('managers/threat.js'));
+  const prev = {
+    wantDefender: threat.wantDefender, armed: threat.armed, holding: threat.holding,
+    energyHold: threat.energyHold, state: threat.state, squadAlive: threat.squadAlive,
+    squadSize: threat.squadSize, coreMission: threat.coreMission,
+  };
+  threat.wantDefender = () => null;
+  threat.armed = () => false;
+  threat.holding = () => false;
+  threat.energyHold = () => false;
+  threat.coreMission = () => false;
+  const held = world({ time: 13000, upgraders: 2, energy: 5600 });
+  S.run(held.a);
+  assert.strictEqual(passes, 1);
+  assert.ok(Memory.stats.sw.W46N8.ne > 13000);
+  Game.time = 13001;
+  threat.holding = () => true;
+  const before = passes;
+  S.run(held.a);
+  assert.strictEqual(passes, before + 1, 'holding bypasses the idle window');
+  threat.holding = () => false;
+  threat.wantDefender = () => 'W45N8';
+  threat.armed = () => true;
+  threat.state = () => ({ st: 'DEFEND', last: [], mission: null });
+  threat.squadAlive = () => 0;
+  threat.squadSize = () => 1;
+  threat.coreMission = () => false;
+  const kite = world({ time: 13100, upgraders: 2, energy: 5600, storage: 20000 });
+  const bodies = [];
+  kite.a.spawnCreep = (body, name, opts) => { bodies.push(body); kite.spawned.push(opts.memory.role); return 0; };
+  S.run(kite.a);
+  assert.strictEqual(kite.spawned[0], 'defender', 'threat spawns on the tick it is due');
+  const nRA = bodies[0].filter(p => p === 'ranged_attack').length;
+  const nH = bodies[0].filter(p => p === 'heal').length;
+  const nM = bodies[0].filter(p => p === 'move').length;
+  assert.strictEqual(nRA, 19, 'max kite ranged');
+  assert.strictEqual(nH, 6);
+  assert.strictEqual(nM, 25);
+  Game.time = 13101;
+  threat.coreMission = () => true;
+  const bust = world({ time: 13200, upgraders: 2, energy: 5600, storage: 20000 });
+  const bb = [];
+  bust.a.spawnCreep = (body, name, opts) => { bb.push(body); bust.spawned.push(opts.memory.role); return 0; };
+  S.run(bust.a);
+  assert.strictEqual(bust.spawned[0], 'defender');
+  assert.strictEqual(bb[0].filter(p => p === 'attack').length, 25, 'core buster stays 25A');
+  assert.strictEqual(bb[0].filter(p => p === 'move').length, 25, 'core buster stays 25M');
+  assert.strictEqual(bb[0].filter(p => p === 'ranged_attack').length, 0, 'core buster is not a kite');
+  Object.assign(threat, prev);
+  threat.coreMission = prev.coreMission;
+}
 console.log('spawn throttle ok');
