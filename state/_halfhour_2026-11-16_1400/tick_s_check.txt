@@ -1,0 +1,46 @@
+intervals_w46:
+  84298600..84298700 4.79582
+  84298700..84298800 4.64667
+  84298800..84298900 4.72106
+  84298900..84299000 4.73664
+  84299000..84299100 4.78267
+  84299100..84299200 4.78658
+intervals_min_all_rooms:
+  84298600..84298700 4.79582
+  84298700..84298800 4.64667
+  84298800..84298900 4.72106
+  84298900..84299000 4.73664
+  84299000..84299100 4.78267
+  84299100..84299200 4.78658
+first=4.79582 later_mean_raw=4.73472 later_mean_robust=4.73472
+all_mean=4.74491 span_mean=4.74491 script_tick_s=4.79582 prev_later=4.67104
+delta_first_minus_later_raw=0.06110 s/tick; at tmin vs gt_first ~47.8s
+delta_first_minus_later_robust=0.06110 s/tick; at tmin vs gt_first ~47.8s
+anchor 2026-11-16 14:08:09 Asia/Hong_Kong game.time=84299400
+vs_first tick_s=4.79582 {'over45': 0, 'over15': 3129, 'n': 27413, 'mean_off': 2.7646784709444425, 'min_off': 0.335232, 'max_off': 43.705798}
+vs_later_raw tick_s=4.73472 {'over45': 2140, 'over15': 17728, 'n': 27413, 'mean_off': -24.150256904242514, 'min_off': -48.480472, 'max_off': 27.33207}
+vs_later_robust tick_s=4.73472 {'over45': 2140, 'over15': 17728, 'n': 27413, 'mean_off': -24.150256904242514, 'min_off': -48.480472, 'max_off': 27.33207}
+vs_all_mean tick_s=4.74491 {'over45': 0, 'over15': 15806, 'n': 27413, 'mean_off': -19.664434341188485, 'min_off': -40.344521, 'max_off': 30.061025}
+vs_span_mean tick_s=4.74491 {'over45': 0, 'over15': 15806, 'n': 27413, 'mean_off': -19.664434341188485, 'min_off': -40.344521, 'max_off': 30.061025}
+vs_prev_later tick_s=4.67104 {'over45': 13530, 'over15': 26434, 'n': 27413, 'mean_off': -52.20529724130887, 'min_off': -99.363988, 'max_off': 10.264758}
+lowest_over45_among_sane=first {'over45': 0, 'over15': 3129, 'n': 27413, 'mean_off': 2.7646784709444425, 'min_off': 0.335232, 'max_off': 43.705798}
+corrective realign applied nfix=3452 at game.time=84299400 tick_s=4.73472
+after vs_later_mean_robust {'over45': 0, 'over15': 15775, 'n': 27413, 'mean_off': -20.316861467369495, 'min_off': -44.996761, 'max_off': 25.133853}
+after vs_first {'over45': 2362, 'over15': 6479, 'n': 27413, 'mean_off': 6.598073907817459, 'min_off': -1.862985, 'max_off': 48.815704}
+wrote /workspace/screeps/state/_halfhour_2026-11-16_1400/tick_s_realign.json
+corrective_applied=True nfix=3452
+reason: first-interval tick_s=4.79582 (printed 4.796) is in the sane 3-6s band; later-mean-robust 4.73472 (raw later-mean 4.73472; delta first-robust 0.06110 s/tick, ~47.8s at tmin); applied corrective later-mean-robust realign of 3452 rows at game.time=84299400; still_over_45s_vs_later=0
+
+==== revert later-mean (worse than first vs live anchor) ====
+revert start 2026-11-16 14:08:47 Asia/Hong_Kong game.time=84299407
+before vs_first {'over45': 1363, 'over15': 5788, 'n': 27413, 'mean_off': 4.942088907817459, 'min_off': -3.51897, 'max_off': 47.159719}
+before vs_later {'over45': 1271, 'over15': 17198, 'n': 27413, 'mean_off': -22.400518467369498, 'min_off': -47.080418, 'max_off': 23.050196}
+reverted nrev=1363 at game.time=84299407 tick_s=4.79582
+after vs_first {'over45': 1873, 'over15': 5168, 'n': 27413, 'mean_off': 5.774059473133185, 'min_off': -0.395162, 'max_off': 48.084071}
+after vs_later {'over45': 760, 'over15': 16473, 'n': 27413, 'mean_off': -21.629643902053772, 'min_off': -46.180664, 'max_off': 26.112908}
+corrective_applied=False (reverted)
+reason: first-interval tick_s=4.79582 (printed 4.796) is in the sane 3-6s band; later-mean-robust 4.73472 (raw later-mean 4.73472; delta first-robust 0.06110 s/tick, ~47.8s at tmin vs gt_first). A later-mean-robust realign of 3452 rows was applied at 14:08:09 game.time=84299400 (after later over45=0 over15=15775), but first was already inside the 45s live-anchor gate (over45=0 over15=3129 mean_off=2.76) and was the lowest-over45 sane candidate; after later-mean, vs_first over45 rose to 2362. Reverted nrev=1363 at 2026-11-16 14:08:47 Asia/Hong_Kong game.time=84299407 back to first-interval 4.79582; after-revert vs_first over45=1873 over15=5168 mean_off=5.77.
+
+==== cleanup 45s-gated realign to first ====
+cleanup start 2026-11-16 14:09:50 Asia/Hong_Kong game.time=84299420 before vs_first {'over45': 0, 'over15': 4096, 'n': 27413, 'mean_off': 2.291881473133185}
+cleanup nfix=0 after_same_anchor vs_first {'over45': 0, 'over15': 4096, 'n': 27413, 'mean_off': 2.291881473133185}

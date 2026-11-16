@@ -1,0 +1,173 @@
+{
+  "first_interval": 4.79582,
+  "later_mean_w46": 4.734724,
+  "later_mean_w46_raw": 4.734724,
+  "later_mean_w46_robust": 4.734724,
+  "all_mean_w46": 4.744906666666666,
+  "span_mean": 4.744906666666666,
+  "prev_later_mean": 4.67104,
+  "intervals": [
+    {
+      "from": 84298600,
+      "to": 84298700,
+      "tick_s": 4.79582,
+      "outlier": false
+    },
+    {
+      "from": 84298700,
+      "to": 84298800,
+      "tick_s": 4.646669999999999,
+      "outlier": false
+    },
+    {
+      "from": 84298800,
+      "to": 84298900,
+      "tick_s": 4.72106,
+      "outlier": false
+    },
+    {
+      "from": 84298900,
+      "to": 84299000,
+      "tick_s": 4.7366399999999995,
+      "outlier": false
+    },
+    {
+      "from": 84299000,
+      "to": 84299100,
+      "tick_s": 4.7826699999999995,
+      "outlier": false
+    },
+    {
+      "from": 84299100,
+      "to": 84299200,
+      "tick_s": 4.78658,
+      "outlier": false
+    }
+  ],
+  "gt_first": 84299384,
+  "gt_check": 84299400,
+  "gt_realign": 84299400,
+  "now_check": "2026-11-16T14:08:13.453158+08:00",
+  "now_realign": "2026-11-16T14:08:13.453102+08:00",
+  "tick_s_used_first_pass": 4.79582,
+  "ts_realigned_first_pass": 10377,
+  "still_over_45s_vs_first": 0,
+  "still_over_15s_vs_first": 3129,
+  "vs_candidates": {
+    "first": {
+      "over45": 0,
+      "over15": 3129,
+      "n": 27413,
+      "mean_off": 2.7646784709444425,
+      "min_off": 0.335232,
+      "max_off": 43.705798,
+      "tick_s": 4.79582
+    },
+    "later_raw": {
+      "over45": 2140,
+      "over15": 17728,
+      "n": 27413,
+      "mean_off": -24.150256904242514,
+      "min_off": -48.480472,
+      "max_off": 27.33207,
+      "tick_s": 4.734724
+    },
+    "later_robust": {
+      "over45": 2140,
+      "over15": 17728,
+      "n": 27413,
+      "mean_off": -24.150256904242514,
+      "min_off": -48.480472,
+      "max_off": 27.33207,
+      "tick_s": 4.734724
+    },
+    "all_mean": {
+      "over45": 0,
+      "over15": 15806,
+      "n": 27413,
+      "mean_off": -19.664434341188485,
+      "min_off": -40.344521,
+      "max_off": 30.061025,
+      "tick_s": 4.744906666666666
+    },
+    "span_mean": {
+      "over45": 0,
+      "over15": 15806,
+      "n": 27413,
+      "mean_off": -19.664434341188485,
+      "min_off": -40.344521,
+      "max_off": 30.061025,
+      "tick_s": 4.744906666666666
+    },
+    "prev_later": {
+      "over45": 13530,
+      "over15": 26434,
+      "n": 27413,
+      "mean_off": -52.20529724130887,
+      "min_off": -99.363988,
+      "max_off": 10.264758,
+      "tick_s": 4.67104
+    }
+  },
+  "still_over_45s_vs_later_before": 2140,
+  "still_over_15s_vs_later_before": 17728,
+  "still_over_45s_vs_later": 760,
+  "still_over_15s_vs_later": 16473,
+  "corrective_applied": false,
+  "ts_realigned_to_later_mean": 0,
+  "reason": "first-interval tick_s=4.79582 (printed 4.796) is in the sane 3-6s band; later-mean-robust 4.73472 (raw later-mean 4.73472; delta first-robust 0.06110 s/tick, ~47.8s at tmin vs gt_first). A later-mean-robust realign of 3452 rows was applied at 14:08:09 game.time=84299400 (after later over45=0 over15=15775), but first was already inside the 45s live-anchor gate (over45=0 over15=3129 mean_off=2.76) and was the lowest-over45 sane candidate; after later-mean, vs_first over45 rose to 2362. Reverted nrev=1363 at 2026-11-16 14:08:47 Asia/Hong_Kong game.time=84299407 back to first-interval 4.79582; after-revert vs_first over45=1873 over15=5168 mean_off=5.77. Cleanup 45s-gated realign to first-interval 4.79582 nfix=0 at 2026-11-16 14:09:50 Asia/Hong_Kong game.time=84299420; after same-anchor vs_first over45=0 over15=4096 mean_off=2.29.",
+  "game_time_error": null,
+  "lowest_over45_sane": "first",
+  "vs_first": {
+    "over45": 0,
+    "over15": 3129,
+    "n": 27413,
+    "mean_off": 2.7646784709444425,
+    "min_off": 0.335232,
+    "max_off": 43.705798
+  },
+  "vs_later_after": {
+    "over45": 0,
+    "over15": 15775,
+    "n": 27413,
+    "mean_off": -20.316861467369495,
+    "min_off": -44.996761,
+    "max_off": 25.133853
+  },
+  "later_mean_applied_then_reverted": true,
+  "later_mean_nfix_before_revert": 3452,
+  "later_mean_gt_applied": 84299400,
+  "revert_nrev": 1363,
+  "gt_revert": 84299407,
+  "gt_revert_check": 84299408,
+  "now_revert": "2026-11-16T14:08:49.628467+08:00",
+  "still_over_45s_vs_first_after_revert": 1873,
+  "still_over_15s_vs_first_after_revert": 5168,
+  "vs_first_after_revert": {
+    "over45": 1873,
+    "over15": 5168,
+    "n": 27413,
+    "mean_off": 5.774059473133185,
+    "min_off": -0.395162,
+    "max_off": 48.084071
+  },
+  "vs_later_after_revert": {
+    "over45": 760,
+    "over15": 16473,
+    "n": 27413,
+    "mean_off": -21.629643902053772,
+    "min_off": -46.180664,
+    "max_off": 26.112908
+  },
+  "cleanup_nfix": 0,
+  "gt_cleanup": 84299420,
+  "now_cleanup": "2026-11-16T14:09:51.293624+08:00",
+  "still_over_45s_vs_first_after_cleanup": 0,
+  "still_over_15s_vs_first_after_cleanup": 4096,
+  "vs_first_after_cleanup": {
+    "over45": 0,
+    "over15": 4096,
+    "n": 27413,
+    "mean_off": 2.291881473133185
+  }
+}
