@@ -107,6 +107,22 @@ function labRun(c, room) {
   if (move.to(c, src.pos.x, src.pos.y, 1)) { c.withdraw(src, t.res); delete c.memory.lr; }
   return true;
 }
+// Creep.withdraw(amount) returns ERR_FULL and moves nothing when amount exceeds free capacity.
+// Home haulers carry 300. Pass min(want, free, source) so a 123976 O surplus still moves, one load at a time.
+function freeCarry(c) {
+  const s = c && c.store;
+  if (!s || typeof s.getFreeCapacity !== 'function') return 0;
+  const n = s.getFreeCapacity();
+  return typeof n === 'number' && n > 0 ? n : 0;
+}
+function pull(c, src, res, want) {
+  const have = (src && src.store && typeof src.store[res] === 'number') ? src.store[res] : 0;
+  const w = typeof want === 'number' && want > 0 ? want : have;
+  const n = Math.min(w, freeCarry(c), have);
+  if (!(n > 0)) return 0;
+  c.withdraw(src, res, n);
+  return n;
+}
 // Terminal is full (or too tight for a 1000 KO dump + a 5000 W47 K send): move surplus O, then
 // excess K, then KO into storage, leaving labs ACT_O_BUF / ACT_K_BUF in the terminal.
 // idle=false runs only while tight, ahead of labRun. idle=true drains the rest of the surplus
@@ -128,7 +144,10 @@ function termPark(c, room, idle) {
     if (!src || c.memory.tpRes === RESOURCE_ENERGY || c.memory.tpRes === 'energy') {
       delete c.memory.tp; delete c.memory.tpFrom; delete c.memory.tpTo; delete c.memory.tpRes; delete c.memory.tpAmt; return false;
     }
-    if (move.to(c, src.pos.x, src.pos.y, 1)) c.withdraw(src, c.memory.tpRes, c.memory.tpAmt);
+    if (move.to(c, src.pos.x, src.pos.y, 1) && !pull(c, src, c.memory.tpRes, c.memory.tpAmt)) {
+      const have = (src.store && src.store[c.memory.tpRes]) || 0;
+      if (!(have > 0)) { delete c.memory.tp; delete c.memory.tpFrom; delete c.memory.tpTo; delete c.memory.tpRes; delete c.memory.tpAmt; return false; }
+    }
     return true;
   }
   if (held || (c.store && c.store[RESOURCE_ENERGY] > 0) || c.memory.working) return false;
@@ -140,7 +159,7 @@ function termPark(c, room, idle) {
   if (!t || t.res === RESOURCE_ENERGY || t.res === 'energy') return false;
   const src = Game.getObjectById(t.from); if (!src || !src.pos) return false;
   c.memory.tp = 1; c.memory.tpFrom = t.from; c.memory.tpTo = t.to; c.memory.tpRes = t.res; c.memory.tpAmt = t.amt;
-  if (move.to(c, src.pos.x, src.pos.y, 1)) c.withdraw(src, t.res, t.amt);
+  if (move.to(c, src.pos.x, src.pos.y, 1)) pull(c, src, t.res, t.amt);
   return true;
 }
 // Build hold (walls.noUpgrade): hub -> controller link is off, so source A's energy (link 30,11) piles up in the hub link and
