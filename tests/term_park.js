@@ -75,6 +75,8 @@ stub('utils/roomcache.js', { at: () => null, all: () => [], sites: () => [] });
 stub('utils/move.js', { to: () => true });
 stub('utils/salvage.js', { dump: () => false, retire: () => false, pick: () => null, take: () => {} });
 stub('utils/trace.js', { why() {} });
+stub('utils/cmd.js', { yieldCreep: () => false });
+stub('managers/boost.js', { haulTask: () => null, STOR_SAFE: 20000 });
 stub('managers/walls.js', { noUpgrade: () => false, defLow: () => false });
 stub('managers/links.js', { roles: () => ({ hub: null, sources: [] }), SEND: 800 });
 stub('utils/plan.js', { get: () => ({ pos: { mineralMiner: [41, 24], miners: [], storageDoor: [36, 29], controllerContainer: [30, 30], controllerDrop: [30, 30], upgraders: [], manager: [36, 30], fillers: [], fillerContainerA: [35, 24] }, any: {} }), key: (x, y) => x * 50 + y });
@@ -175,5 +177,23 @@ function creep(store, mem, cap = 300) {
   const c = creep({}, {}, 800);
   assert.strictEqual(H.termPark(c, roomOf(t, s), false), false, '800 carry still skips the park under the 15k floor');
   assert.deepStrictEqual(c.got, []);
+}
+// run() regression: mineralRun used to steal this load and transfer it back into the full terminal.
+{
+  Memory.ops.labs = { W46N8: 'KO' };
+  const t = term({ O: 125376, K: 174392, KO: 36, energy: 0 }, 0);
+  const s = stor({ energy: 16000 });
+  const rm = roomOf(t, s);
+  const c = creep({ O: 300 }, { tp: 1, tpFrom: 't', tpTo: 's', tpRes: 'O', tpAmt: 122376 });
+  c.room = rm;
+  c.name = 'hauler84302840';
+  H.run(c);
+  assert.deepStrictEqual(c.got, [['t', 's', 'O', 300]], 'run delivers termPark O to storage');
+  assert.ok(!c.got.some(g => g[1] === 't'), 'does not dump the load back into the terminal');
+  assert.strictEqual(t.store.O, 125376, 'terminal O is unchanged');
+  assert.strictEqual(s.store.O, 300);
+  assert.strictEqual(c.store.O || 0, 0);
+  assert.ok(!c.memory.tp && !c.memory.mr);
+  assert.strictEqual(Memory.ops.labs.W46N8, 'KO');
 }
 console.log('term park ok');

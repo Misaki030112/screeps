@@ -13,7 +13,9 @@ stub('utils/roomcache.js', { at: () => null, all: () => [], sites: () => [] });
 stub('utils/move.js', { to: () => true });
 stub('utils/salvage.js', {});
 stub('utils/trace.js', { why() {} });
-stub('managers/walls.js', { noUpgrade: () => false });
+stub('utils/cmd.js', { yieldCreep: () => false });
+stub('managers/boost.js', { haulTask: () => null, STOR_SAFE: 20000 });
+stub('managers/walls.js', { noUpgrade: () => false, defLow: () => false });
 stub('managers/links.js', { roles: () => ({ hub: null, sources: [] }), SEND: 800 });
 stub('utils/plan.js', { get: () => ({ pos: { mineralMiner: [41, 24], miners: [], storageDoor: [36, 29], controllerContainer: [30, 30], controllerDrop: [30, 30], upgraders: [], manager: [36, 30] }, any: {} }), key: (x, y) => x * 50 + y });
 
@@ -54,4 +56,12 @@ assert.deepStrictEqual(cMiss.got, [['t', term.id, 'K']], 'held K aimed at a miss
 OBJS.a = gone;
 const c3 = creep({ energy: 50 });
 assert.strictEqual(H.labRun(c3, room), false, 'carrying energy: skip');
+{
+  const c = creep({ K: 100 });
+  c.room = room;
+  assert.ok(!c.memory.mr);
+  H.run(c);
+  assert.deepStrictEqual(c.got, [['t', 'a', 'K']], 'run delivers held K to the input lab, not the terminal');
+  assert.strictEqual(Memory.ops.labs.W46N8, 'KO');
+}
 console.log('labs hauler ok');

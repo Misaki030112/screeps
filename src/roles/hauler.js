@@ -69,13 +69,18 @@ function legacyPickup(c, room, P) {
   if (move.to(c, src.pos.x, src.pos.y, 1)) { (src.store ? c.withdraw(src, RESOURCE_ENERGY) : c.pickup(src)); delete c.memory.src; }
 }
 // Mineral run (RCL6 mineral line): an empty home hauler takes the mineral container (>= MIN_RUN or full) to terminal/storage.
-// Sticky in memory.mr until delivered. Returns true while busy with it.
+// Sticky in memory.mr until the transfer is issued. Held minerals without mr belong to termPark / labRun / boostHaul
+// (live 84303037: deleting mr on withdraw made the next tick dump 300 O back into a full terminal).
 const MIN_RUN = 1000;
 function mineralRun(c, room, P) {
   const mm = P.pos.mineralMiner; if (!mm || room.name !== c.memory.home) return false;
   const dst = room.terminal || room.storage; if (!dst) return false;
   const held = Object.keys(c.store).find(r => r !== RESOURCE_ENERGY && c.store[r] > 0);
-  if (held) { if (move.to(c, dst.pos.x, dst.pos.y, 1)) c.transfer(dst, held); return true; }
+  if (held) {
+    if (!c.memory.mr) return false;
+    if (move.to(c, dst.pos.x, dst.pos.y, 1)) { c.transfer(dst, held); delete c.memory.mr; }
+    return true;
+  }
   // Under defence floor: finish delivering held minerals, but do not start a new mineralRun (hauler banks energy first).
   if (require('../managers/walls').defLow(room)) { delete c.memory.mr; return false; }
   if (c.store[RESOURCE_ENERGY] > 0 || c.memory.working) return false;
@@ -84,7 +89,7 @@ function mineralRun(c, room, P) {
   if (!r) { delete c.memory.mr; return false; }
   if (!c.memory.mr && k.store[r] < Math.min(MIN_RUN, c.store.getCapacity()) && k.store.getFreeCapacity() > 200) return false;
   c.memory.mr = 1;
-  if (move.to(c, mm[0], mm[1], 1)) { c.withdraw(k, r); delete c.memory.mr; }
+  if (move.to(c, mm[0], mm[1], 1)) c.withdraw(k, r);
   return true;
 }
 // Lab logistics (docs/MINERAL_DEFENSE_ROADMAP.md): empty home hauler runs managers/labs.task when Memory.ops.labs is set.
