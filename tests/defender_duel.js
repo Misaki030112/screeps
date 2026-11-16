@@ -63,11 +63,14 @@ function scenario(name, invTypes, boosted, opt = {}) {
   const observe = () => ({ vis: true, players: 0, core: false, hurtNoInv: false, bucket: 10000, armed: true, def: d.hits > 0 ? 'out' : 'dead',
     inv: creeps.filter(c => !c.my && c.hits > 0).map(c => ({ x: c.pos.x, y: c.pos.y, ttl: 1400, heal: act(c, 'heal') > 0, ranged3: act(c, 'ranged_attack') >= 3 })) });
   const moveMock = { to(c, x, y, r) { if (rng(c.pos, { x, y }) > r) stepTo(c, x, y, occ, r); return rng(c.pos, { x, y }) <= r; } };
+  // Real boost.hold: a defender already in W45N8 is away from W46N8, so hold sets noBoost and returns false.
+  // The vm require used to fall through to {} and throw "hold is not a function" on the first tick.
+  const boostMod = require(path.join(ROOT, 'src/managers/boost.js'));
   const kiteMod = { exports: {} }; vm.runInNewContext(fs.readFileSync(path.join(ROOT, 'src/utils/kite.js'), 'utf8'), Object.assign({}, G, { module: kiteMod })); const kiteM = kiteMod.exports;
   const src = fs.readFileSync(path.join(ROOT, 'src/roles/remote.js'), 'utf8');
   const mod = { exports: {} };
   const milMock = { isMilitary: () => false, moveTo: (c, t, o) => c.moveTo(t, o), pullSwap: () => false, fresh: () => {}, step: () => 'no', block: () => false, flush: () => {} };
-  vm.runInNewContext(src, Object.assign(G, { module: mod, require: p => p.includes('utils/cmd') ? { yieldCreep: () => false, armed: () => false } : p.includes('utils/military') ? milMock : p.includes('utils/kite') ? kiteM : p.includes('managers/threat') ? threatMock : p.includes('managers/remote') ? remoteMock : p.includes('utils/move') ? moveMock : p.includes('utils/focus') ? require(path.join(ROOT, 'src/utils/focus.js')) : p.includes('managers/home') ? { on: () => false } : {} }));
+  vm.runInNewContext(src, Object.assign(G, { module: mod, require: p => p.includes('utils/cmd') ? { yieldCreep: () => false, armed: () => false } : p.includes('utils/military') ? milMock : p.includes('utils/kite') ? kiteM : p.includes('managers/threat') ? threatMock : p.includes('managers/remote') ? remoteMock : p.includes('utils/move') ? moveMock : p.includes('utils/focus') ? require(path.join(ROOT, 'src/utils/focus.js')) : p.includes('managers/home') ? { on: () => false } : p.includes('managers/boost') ? boostMod : {} }));
   const role = mod.exports.defender.run;
   let t = 0, retreated = false, dmgTaken = 0, meleeHits = 0;
   for (; t < 400; t++) {
