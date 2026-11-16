@@ -1,0 +1,136 @@
+2026-11-17 01:32:12 HKT wrapup ok quiet
+window 84307101..84307800 inserted=3704 missing_chunks=0 tick_s_in_use=4.84827 corrective_nfix=0
+wrote history_backfill.json history_backfill_now.txt verify.txt
+
+in_window None
+freeze_fill {
+  "published_through_tip": {
+    "W46N8": {
+      "distinct": 180,
+      "min": 84307621,
+      "max": 84307800,
+      "rows": 1677,
+      "span": 180
+    },
+    "W47N8": {
+      "distinct": 180,
+      "min": 84307621,
+      "max": 84307800,
+      "rows": 2892,
+      "span": 180
+    },
+    "W45N8": {
+      "distinct": 180,
+      "min": 84307621,
+      "max": 84307800,
+      "rows": 476,
+      "span": 180
+    },
+    "W45N7": {
+      "distinct": 180,
+      "min": 84307621,
+      "max": 84307800,
+      "rows": 721,
+      "span": 180
+    },
+    "W47N7": {
+      "distinct": 180,
+      "min": 84307621,
+      "max": 84307800,
+      "rows": 1060,
+      "span": 180
+    }
+  },
+  "published_gap": {
+    "W46N8": {
+      "distinct": 179,
+      "min": 84307621,
+      "max": 84307799,
+      "rows": 1666,
+      "span": 179
+    },
+    "W47N8": {
+      "distinct": 179,
+      "min": 84307621,
+      "max": 84307799,
+      "rows": 2877,
+      "span": 179
+    },
+    "W45N8": {
+      "distinct": 179,
+      "min": 84307621,
+      "max": 84307799,
+      "rows": 474,
+      "span": 179
+    },
+    "W45N7": {
+      "distinct": 179,
+      "min": 84307621,
+      "max": 84307799,
+      "rows": 718,
+      "span": 179
+    },
+    "W47N7": {
+      "distinct": 179,
+      "min": 84307621,
+      "max": 84307799,
+      "rows": 1055,
+      "span": 179
+    }
+  },
+  "full_rs_gap": {
+    "W46N8": {
+      "distinct": 179,
+      "min": 84307621,
+      "max": 84307799,
+      "rows": 1666,
+      "span": 179
+    },
+    "W47N8": {
+      "distinct": 179,
+      "min": 84307621,
+      "max": 84307799,
+      "rows": 2877,
+      "span": 179
+    },
+    "W45N8": {
+      "distinct": 179,
+      "min": 84307621,
+      "max": 84307799,
+      "rows": 474,
+      "span": 179
+    },
+    "W45N7": {
+      "distinct": 179,
+      "min": 84307621,
+      "max": 84307799,
+      "rows": 718,
+      "span": 179
+    },
+    "W47N7": {
+      "distinct": 179,
+      "min": 84307621,
+      "max": 84307799,
+      "rows": 1055,
+      "span": 179
+    }
+  }
+}
+live_after {'W46N8': {'distinct': 30, 'min': 84307801, 'max': 84307830, 'rows': 233, 'runs': [[84307801, 84307830, 30]]}, 'W47N8': {'distinct': 80, 'min': 84307831, 'max': 84307910, 'rows': 1325, 'runs': [[84307831, 84307910, 80]]}, 'W45N8': {'distinct': 0, 'min': None, 'max': None, 'rows': 0, 'runs': []}, 'W45N7': {'distinct': 0, 'min': None, 'max': None, 'rows': 0, 'runs': []}, 'W47N7': {'distinct': 0, 'min': None, 'max': None, 'rows': 0, 'runs': []}}
+cpu_after {'min': 84307635, 'max': 84307900, 'rows': 2016, 'min_ts': '2026-11-17T01:22:36.995268+08:00', 'max_ts': '2026-11-17T01:31:42.743819+08:00'}
+path_after {'min': 84307611, 'max': 84307898, 'rows': 26, 'min_ts': '2026-11-17T01:22:36.995268+08:00', 'max_ts': '2026-11-17T01:31:42.743819+08:00'}
+leftovers:
+  W45N8@84306500 (0 rows / 0 distinct, range None..None; hole 84306501..84306600; official 84306500 still 404 after confirm and retry2; retry next run)
+  W45N7@84305100 (0 rows / 0 distinct, range None..None; hole 84305101..84305200; official 84305100 still 404 after confirm and retry2; retry next run)
+  W47N8@84304700 (0 rows / 0 distinct, range None..None; hole 84304701..84304800; official 84304700 still 404 after confirm and retry2; retry next run)
+  W45N7@84303900 (0 rows / 0 distinct, range None..None; hole 84303901..84304000; official 84303900 still 404 after confirm and retry2; retry next run)
+  W45N8@84302200 (0 rows / 0 distinct, range None..None; hole 84302201..84302300; official 84302200 still 404 after confirm and retry2; retry next run)
+  W47N8@84300900 (74 live-filled 84300901..84300993 / 1008 rows; 26 empty [[84300965, 84300983], [84300994, 84301000]]; official 84300900 still 404 after confirm and retry2; retry next run)
+  W45N8@84300900 (7 live-filled 84300994..84301000 / 28 rows; 93 empty [[84300901, 84300993]]; official 84300900 still 404 after confirm and retry2; retry next run)
+  W45N8@84300000 (26 live-filled 84300067..84300092 / 159 rows; 74 empty [[84300001, 84300066], [84300093, 84300100]]; official 84300000 still 404 after confirm and retry2; retry next run)
+  W47N8@84298000 (0 rows / 0 distinct, range None..None; hole 84298001..84298100; official 84298000 still 404 after confirm and retry2; retry next run)
+  W47N8@84297200 (already live-filled 100 distinct / 1562 rows; official 84297200 still 404 after confirm and retry2; retry next run)
+  W47N7@84296500 (0 rows / 0 distinct, range None..None; hole 84296501..84296600; official 84296500 still 404 after confirm and retry2; retry next run)
+  W45N8@84295900 (0 rows / 0 distinct, range None..None; hole 84295901..84296000; official 84295900 still 404 after confirm and retry2; retry next run)
+  W45N7@84295800 (0 rows / 0 distinct, range None..None; hole 84295801..84295900; official 84295800 still 404 after confirm and retry2; retry next run)
+wrote status records
