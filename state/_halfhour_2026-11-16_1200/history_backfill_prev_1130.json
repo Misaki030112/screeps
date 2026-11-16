@@ -1,0 +1,232 @@
+{
+  "ok": true,
+  "routine": "Screeps 半小时轨迹补数",
+  "finished_at": "2026-11-16T11:32:43.896935+08:00",
+  "finished_at_hkt": "2026-11-16 11:32 Asia/Hong_Kong",
+  "shard": "shard3",
+  "rooms": [
+    "W46N8",
+    "W47N8",
+    "W45N8",
+    "W45N7",
+    "W47N7"
+  ],
+  "minutes": 40,
+  "game_time": 84297303,
+  "live_json_gameTime_at_finish": 84297188,
+  "live_json_stats_t_at_finish": 84297360,
+  "live_json_gameTime_note": "No new box freeze after the 11:00 backfill. The last freeze was 2026-11-16 10:48:46–11:06:00 Asia/Hong_Kong (1023s; VM hibernated; wall jumped, monotonic did not), logged by listener.py at 11:06:00 with run_listener.sh relaunch at 11:06:03 (listener.py pid 3361024 since 11:06:12). run_listener.sh pid 4035476 unchanged since 2026-11-11. yield_files=absent, single room slot, peacetime 5:5:1:1 (rot at pre-check on W47N8, i=1, left 99.9s). Did not start a second loop or kill war_cmd/pulse. Segment-90 was already current without a console query: at pre-check 11:27:30 creep_cpu tip 84297290 (last200 84297090..84297290, 1590 rows; max_ts 11:26:49), path_arrivals tip 84297289 (last200 84297098..84297289, 27 rows, max_ts 11:26:49). room_stats tip was already current (84297290 / 11:26:46). live.json at pre-check was on W47N8 (objects=0, gameTime stale because the slot was not HOME, stats.t=84297290, cpu=18.09, bucket=10000, updated 11:27:26, age 4.1s). No concurrent hourly patrol was running during this backfill, and this backfill issued no extra console queries. This run did not change the peacetime single-slot 5:5:1:1 arrangement. The first official game/time request succeeded.",
+  "published_bases": "84296600..84297200",
+  "ticks": {
+    "min": 84296601,
+    "max": 84297300,
+    "count": 700
+  },
+  "tick_s": 4.4284,
+  "tick_s_later_mean": 4.4284,
+  "tick_s_first_pass_outlier": null,
+  "missing_chunks": 3,
+  "missing_chunk_list": [
+    "W47N8@84297200"
+  ],
+  "missing_chunk_first_pass": [
+    "W47N8@84297200",
+    "W45N8@84297200",
+    "W47N7@84297200"
+  ],
+  "missing_chunk_note": "First pass (game.time=84297303) published_bases 84296600..84297200, reconstructed 84296601..84297300 (700). missing_chunks=3 of 35 official GETs: W47N8@84297200, W45N8@84297200, W47N7@84297200 (the other 32 were 200). already_in_db=21209 would_insert=4438; first pass inserted=4438 (W46N8 1120 / W47N8 1458 / W45N8 588 / W45N7 761 / W47N7 511), ts_realigned=248 on first-interval tick_s=4.29391 (printed 4.294), which is in the sane 3-6s band. later-mean-robust 4.42840 was over the 45s gate versus those first-pass rows (check at 11:28:57 game.time=84297319: later over45=11138 over15=22212 mean_off~37.37s max_off~82.25s; first over45=28 over15=10032 mean_off~-13.09s min_off~-45.81s). A corrective later-mean-robust realign of 10078 rows was applied at 11:29:01 game.time=84297319; after over45=0 over15=11489 mean_off~13.36s max_off~44.99s vs later, and was kept (not reverted). Confirm GET 2026-11-16 11:29:14 Asia/Hong_Kong game.time=84297323 recovered W45N8@84297200 (100 ticks, ts=1794799736673, inserted=430). In-window W47N8@84297200 and W47N7@84297200 still 404 at confirm; leftovers W47N7@84296500, W45N8@84295900 and W45N7@84295800 (just outside this window) still 404. It also retried 35 aged leftover official 404s including W46N8@84292000, all still 404. Confirm inserted=430 ts_realigned=0. retry2 at 11:30:21 game.time=84297338 recovered W47N7@84297200 (100 ticks, ts=1794799780943, inserted=484); W45N8@84297200 already present (inserted=0); W47N8@84297200 still official 404 (but the live listener already had all 100 ticks, 1562 rows, range 84297201..84297300). Leftovers W47N7@84296500, W45N8@84295900 and W45N7@84295800 still 404; retry2 ts_realigned=0. Official coverage after retry2 is 3400 of 3500 official room-ticks (100 still 404: W47N8@84297200). All five rooms have 700 distinct ticks with creeps in this window (W47N8's last 100 ticks came from the live listener). The previous in-window official 404 W47N7@84296500 has aged just outside this 40m window (hole 84296501..84296600). No official empty-no-creep ticks in the recovered portion.",
+  "creep_rows_reconstructed": 25647,
+  "already_in_db": 21209,
+  "inserted": 5352,
+  "inserted_first_pass": 4438,
+  "inserted_retry": 430,
+  "inserted_retry2": 484,
+  "inserted_note": "The previous 11:00 Asia/Hong_Kong half-hour backfill prefilled official 84296301..84297000 (inserted_total=13951, already_in_db=12903, first-pass ts_realigned=7707 on tick_s=4.37624, later-mean-robust 4.27102 applied a corrective realign of 8218 rows, first-pass missing_chunks=1, game.time=84297031). That window overlaps 400 ticks of this run (84296601..84297000). No new box freeze after the 11:00 backfill; the last freeze was 10:48:46–11:06:00 Asia/Hong_Kong (1023s; VM hibernated; wall jumped, monotonic did not) with listener.py logged freeze at 11:06:00 and run_listener.sh relaunch at 11:06:03 (listener.py pid 3361024 since 11:06:12). run_listener.sh (pid 4035476, unchanged since 2026-11-11) stayed up. The listener was already healthy at pre-check (11:27:30), having pulled segment-90 itself (creep_cpu tip 84297290 / path_arrivals tip 84297289 at 11:26:49). This half-hour first pass (game.time=84297303) had missing_chunks=3, inserted=4438, already_in_db=21209. Confirm recovered 1 of 3 in-window official 404s (W45N8@84297200, inserted=430) and left 35 aged leftover official 404s still 404, plus leftovers W47N7@84296500, W45N8@84295900 and W45N7@84295800 (just outside this window) still 404. retry2 recovered W47N7@84297200 (inserted=484); W47N8@84297200 remains official 404 in window but is already fully filled by the live listener (100 distinct / 1562 rows). inserted_total=5352. First-pass ts_realigned=248 on tick_s=4.29391; later-mean-robust 4.42840 applied a corrective realign of 10078 rows at game.time=84297319 (after over45=0). First game/time request succeeded.",
+  "ts_realigned": 248,
+  "ts_realigned_corrective_later_mean": 10078,
+  "ts_realigned_confirm": 0,
+  "ts_realigned_retry2": 0,
+  "ts_realigned_note": "First pass (tick_s=4.29391 printed 4.294, live anchor game.time=84297303) reported ts_realigned=248. The script's tick_s is taken from the earliest two distinct published-chunk timestamps in this fetch (min 84296600 ts=1794797050233 W46N8 to min 84296700 ts=1794797479624 W46N8 → 4.29391s; printed 4.294). All six W46N8 / min-all intervals are in the sane 3-6s band (4.29391, 4.20001, 4.44003, 4.48886, 4.51886, 4.49424). later_mean_raw = later_mean_robust = 4.42840; all_mean = 4.40599; span_mean = 4.40599. A later-anchor check at 2026-11-16 11:28:57 Asia/Hong_Kong game.time=84297319 found over45=28 versus first (over15=10032, mean_off~-13.09s, min_off~-45.81s) and over45=11138 over15=22212 versus later-mean-robust 4.42840 (mean_off~37.37s, max_off~82.25s). Delta first-robust is -0.13449 s/tick (~94.4s at tmin), over the 45s gate, so a corrective later-mean-robust realign of 10078 rows was applied at 11:29:01 game.time=84297319; after over45=0 over15=11489 mean_off~13.36s max_off~44.99s vs later, and was kept. 4.42840 is the tick_s now in db. Confirm reported ts_realigned=0 (recovered W45N8@84297200, inserted=430; 35 aged leftover official 404s including W46N8@84292000 still 404). retry2 reported ts_realigned=0 (recovered W47N7@84297200, inserted=484).",
+  "ssl_first_attempt": "ok first try",
+  "hourly_patrol_prefilled": "The previous 11:00 half-hour backfill had already prefilled 84296301..84297000 (inserted_total=13951, tick_s first-pass 4.37624 then later-mean-robust 4.27102 applied a corrective realign of 8218 rows, first-pass missing_chunks=1, game.time=84297031), overlapping 400 ticks of this window (84296601..84297000), which together with live listener rows accounts for already_in_db=21209 of 25647 first-pass reconstructed rows. The previous run's in-window official 404 W47N7@84296500 has aged just outside this 40m window (hole 84296501..84296600) and remained official 404 on confirm and retry2. The previous leftovers W45N8@84295900 (hole 84295901..84296000) and W45N7@84295800 (hole 84295801..84295900) remain just outside this 40m window and remained official 404. W46N8@84292000 remains aged out of this 40m window and remained official 404 on confirm. No official empty-no-creep ticks in the recovered portion of this window.",
+  "per_room": {
+    "W46N8": {
+      "ticks": 700,
+      "ticks_official": 700,
+      "new": 1120,
+      "new_first_pass": 1120,
+      "new_confirm": 0,
+      "new_retry2": 0,
+      "db_distinct": 700,
+      "db_rows": 6990
+    },
+    "W47N8": {
+      "ticks": 700,
+      "ticks_official": 600,
+      "new": 1458,
+      "new_first_pass": 1458,
+      "new_confirm": 0,
+      "new_retry2": 0,
+      "db_distinct": 700,
+      "db_rows": 11462
+    },
+    "W45N8": {
+      "ticks": 700,
+      "ticks_official": 700,
+      "new": 1018,
+      "new_first_pass": 588,
+      "new_confirm": 430,
+      "new_retry2": 0,
+      "db_distinct": 700,
+      "db_rows": 4472
+    },
+    "W45N7": {
+      "ticks": 700,
+      "ticks_official": 700,
+      "new": 761,
+      "new_first_pass": 761,
+      "new_confirm": 0,
+      "new_retry2": 0,
+      "db_distinct": 700,
+      "db_rows": 1704
+    },
+    "W47N7": {
+      "ticks": 700,
+      "ticks_official": 700,
+      "new": 995,
+      "new_first_pass": 511,
+      "new_confirm": 0,
+      "new_retry2": 484,
+      "db_distinct": 700,
+      "db_rows": 2739
+    }
+  },
+  "known_official_404s_outside_window": [
+    "W47N7@84296500 (0 rows / 0 distinct, range None..None; aged out of this 40m window, still 404)",
+    "W45N8@84295900 (0 rows / 0 distinct, range None..None; aged out of this 40m window, still 404)",
+    "W45N7@84295800 (0 rows / 0 distinct, range None..None; aged out of this 40m window, still 404)",
+    "W46N8@84292000 (0 rows / 0 distinct, range None..None; aged out of this 40m window, still 404)",
+    "W47N8@84290200 (726 rows / 44 distinct, range 84290257..84290300; aged out of this 40m window, still 404)",
+    "W47N7@84289200 (0 rows / 0 distinct, range None..None; aged out of this 40m window, still 404)",
+    "W45N7@84289300 (0 rows / 0 distinct, range None..None; aged out of this 40m window, still 404)",
+    "W47N8@84287500 (0 rows / 0 distinct, range None..None; aged out of this 40m window, still 404)",
+    "W45N7@84285500 (63 rows / 17 distinct, range 84285584..84285600; aged out of this 40m window, still 404)",
+    "W45N8@84282500 (0 rows / 0 distinct, range None..None; aged out of this 40m window, still 404)",
+    "W47N8@84281500 (234 rows / 13 distinct, range 84281501..84281513; aged out of this 40m window, still 404)",
+    "W45N8@84281500 (0 rows / 0 distinct, range None..None; aged out of this 40m window, still 404)",
+    "W45N8@84279700 (0 rows / 0 distinct, range None..None; aged out of this 40m window, still 404)",
+    "W45N8@84277800 (55 rows / 24 distinct, range 84277864..84277887; aged out of this 40m window, still 404)",
+    "W47N8@84276400 (0 rows / 0 distinct, range None..None; aged out of this 40m window, still 404)",
+    "W47N8@84276500 (0 rows / 0 distinct, range None..None; aged out of this 40m window, still 404)",
+    "W45N7@84275600 (0 rows / 0 distinct, range None..None; aged out of this 40m window, still 404)",
+    "W47N8@84275800 (0 rows / 0 distinct, range None..None; aged out of this 40m window, still 404)",
+    "W45N8@84275000 (190 rows / 28 distinct, range 84275065..84275092; aged out of this 40m window, still 404)",
+    "W47N8@84274000 (0 rows / 0 distinct, range None..None; aged out of this 40m window, still 404)",
+    "W47N8@84273500 (0 rows / 0 distinct, range None..None; aged out of this 40m window, still 404)",
+    "W47N8@84273200 (0 rows / 0 distinct, range None..None; aged out of this 40m window, still 404)",
+    "W47N7@84272800 (0 rows / 0 distinct, range None..None; aged out of this 40m window, still 404)",
+    "W45N7@84272400 (0 rows / 0 distinct, range None..None; aged out of this 40m window, still 404)",
+    "W47N7@84269700 (0 rows / 0 distinct, range None..None; aged out of this 40m window, still 404)",
+    "W46N8@84269200 (0 rows / 0 distinct, range None..None; aged out of this 40m window, still 404)",
+    "W45N8@84267400 (69 rows / 23 distinct, range 84267401..84267423; aged out of this 40m window, still 404)",
+    "W47N8@84266800 (0 rows / 0 distinct, range None..None; aged out of this 40m window, still 404)",
+    "W45N7@84266100 (17 rows / 11 distinct, range 84266185..84266195; aged out of this 40m window, still 404)",
+    "W45N8@84265700 (0 rows / 0 distinct, range None..None; aged out of this 40m window, still 404)",
+    "W45N8@84264100 (48 rows / 12 distinct, range 84264189..84264200; aged out of this 40m window, still 404)",
+    "W46N8@84263600 (0 rows / 0 distinct, range None..None; aged out of this 40m window, still 404)",
+    "W46N8@84262500 (0 rows / 0 distinct, range None..None; aged out of this 40m window, still 404)",
+    "W47N8@84261900 (0 rows / 0 distinct, range None..None; aged out of this 40m window, still 404)",
+    "W46N8@84260300 (97 rows / 10 distinct, range 84260391..84260400; aged out of this 40m window, still 404)",
+    "W45N7@84259200 (0 rows / 0 distinct, range None..None; aged out of this 40m window, still 404)",
+    "W45N8@84258600 (0 rows / 0 distinct, range None..None; aged out of this 40m window, still 404)",
+    "W45N7@84257900 (0 rows / 0 distinct, range None..None; aged out of this 40m window, still 404)"
+  ],
+  "known_official_404s_in_window": [
+    "W47N8@84297200 (1562 rows / 100 distinct, range 84297201..84297300; in this 40m window, still 404)"
+  ],
+  "w45n7_empty_no_creep_in_window": false,
+  "w45n7_empty_no_creep_ranges": [],
+  "empty_no_creep_in_window": false,
+  "empty_no_creep_ranges": {},
+  "empty_no_creep_ticks": 0,
+  "official_room_ticks_fetched": 3400,
+  "official_room_ticks_with_creeps": 3500,
+  "db_tips_at_finish": {
+    "creep_ticks": {
+      "max_tick": 84297371,
+      "max_ts": "2026-11-16T11:32:47.895646+08:00"
+    },
+    "room_stats": {
+      "max_tick": 84297370,
+      "max_ts": "2026-11-16T11:32:45.110513+08:00"
+    },
+    "creep_cpu": {
+      "max_tick": 84297350,
+      "max_ts": "2026-11-16T11:31:52.836016+08:00"
+    },
+    "path_arrivals": {
+      "max_tick": 84297337,
+      "max_ts": "2026-11-16T11:30:52.268672+08:00"
+    }
+  },
+  "live_ticks_after_official_tip": {
+    "W46N8": {
+      "distinct": 0,
+      "min": null,
+      "max": null,
+      "rows": 0
+    },
+    "W47N8": {
+      "distinct": 22,
+      "min": 84297301,
+      "max": 84297322,
+      "rows": 371
+    },
+    "W45N8": {
+      "distinct": 26,
+      "min": 84297323,
+      "max": 84297348,
+      "rows": 114
+    },
+    "W45N7": {
+      "distinct": 23,
+      "min": 84297349,
+      "max": 84297371,
+      "rows": 98
+    },
+    "W47N7": {
+      "distinct": 0,
+      "min": null,
+      "max": null,
+      "rows": 0
+    }
+  },
+  "listener_at_finish": {
+    "listener_count": 1,
+    "run_listener_count": 1,
+    "listener_ps": [
+      "3361024 .venv/bin/python tools/listener.py",
+      "4035476 /bin/bash tools/run_listener.sh"
+    ],
+    "yield_files": "absent",
+    "roomSlot": "W45N7",
+    "rot": {
+      "i": 3,
+      "room": "W45N7",
+      "left": 30.0,
+      "at": "2026-11-16 11:32:39"
+    },
+    "live_updated": "2026-11-16 11:32:39",
+    "live_gameTime": 84297188,
+    "live_stats_t": 84297360,
+    "live_json_mtime_age_s": 4.5,
+    "single_slot": true,
+    "did_not_start_second_listener": true
+  },
+  "unique_after_window": {
+    "rows": 27367,
+    "unique_creep_tick_rows": 27367,
+    "distinct_ticks": 700,
+    "distinct_room_ticks": 3500
+  }
+}

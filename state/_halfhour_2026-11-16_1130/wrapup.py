@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Write coverage + status records for the 11:00 half-hour history backfill."""
+"""Write coverage + status records for the 11:30 half-hour history backfill."""
 from __future__ import annotations
 import json, os, sys, time, subprocess
 from datetime import datetime
@@ -14,25 +14,28 @@ import db
 
 TZ = ZoneInfo("Asia/Hong_Kong")
 ROOMS = ("W46N8", "W47N8", "W45N8", "W45N7", "W47N7")
-TMIN, TMAX = 84296301, 84297000
+TMIN, TMAX = 84296601, 84297300
 WINDOW_N = TMAX - TMIN + 1  # 700
-TICK_S = 4.27102  # later-mean-robust; applied correctly and left in db
-TICK_S_LATER = 4.27102  # later-mean-robust (raw later-mean same); applied
-TICK_S_FIRST = 4.37624  # first-interval used by the script (printed 4.376); sane but later applied
-GAME_TIME_FIRST = 84297031
-PUBLISHED = "84296300..84296900"
-CONFIRM_GT = 84297057
-CONFIRM_AT = "11:09:26"
-RETRY2_GT = 84297071
-RETRY2_AT = "11:10:28"
+TICK_S = 4.42840  # later-mean-robust; applied correctly and left in db
+TICK_S_LATER = 4.42840  # later-mean-robust (raw later-mean same); applied
+TICK_S_FIRST = 4.29391  # first-interval used by the script (printed 4.294); sane but later applied
+GAME_TIME_FIRST = 84297303
+PUBLISHED = "84296600..84297200"
+CONFIRM_GT = 84297323
+CONFIRM_AT = "11:29:14"
+RETRY2_GT = 84297338
+RETRY2_AT = "11:30:21"
 RETRY2_SKIPPED = False
 IN_WINDOW_404S_FIRST = [
-    ("W47N7", 84296500),
+    ("W47N8", 84297200),
+    ("W45N8", 84297200),
+    ("W47N7", 84297200),
 ]
 IN_WINDOW_404S_FINAL = [
-    ("W47N7", 84296500),
+    ("W47N8", 84297200),  # still official 404; live already filled all 100 ticks
 ]
 LEFTOVER_404S = [
+    ("W47N7", 84296500),
     ("W45N8", 84295900),
     ("W45N7", 84295800),
     ("W46N8", 84292000),
@@ -71,25 +74,25 @@ LEFTOVER_404S = [
     ("W45N8", 84258600),
     ("W45N7", 84257900),
 ]
-NEW_FIRST = {"W46N8": 3764, "W47N8": 4332, "W45N8": 3006, "W45N7": 1296, "W47N7": 1553}
-NEW_CONFIRM = {"W46N8": 0, "W47N8": 0, "W45N8": 0, "W45N7": 0, "W47N7": 0}
-NEW_RETRY2 = {"W46N8": 0, "W47N8": 0, "W45N8": 0, "W45N7": 0, "W47N7": 0}
+NEW_FIRST = {"W46N8": 1120, "W47N8": 1458, "W45N8": 588, "W45N7": 761, "W47N7": 511}
+NEW_CONFIRM = {"W46N8": 0, "W47N8": 0, "W45N8": 430, "W45N7": 0, "W47N7": 0}
+NEW_RETRY2 = {"W46N8": 0, "W47N8": 0, "W45N8": 0, "W45N7": 0, "W47N7": 484}
 EMPTY_NO_CREEP = {}
 EMPTY_NO_CREEP_N = 0
-INSERTED_FIRST = 13951
-ALREADY_IN_DB = 12903
-CREEP_ROWS_RECONSTRUCTED = 26854
-INSERTED_CONFIRM = 0
-INSERTED_RETRY2 = 0
-INSERTED_TOTAL = 13951
-TICK_S_CHECK_AT = "11:08:49"
-TICK_S_CHECK_GT = 84297049
-TICK_S_REALIGN_AT = "11:08:53"
-TICK_S_REALIGN_GT = 84297050
-TS_REALIGNED_FIRST = 7707
-TS_REALIGNED_LATER = 8218
+INSERTED_FIRST = 4438
+ALREADY_IN_DB = 21209
+CREEP_ROWS_RECONSTRUCTED = 25647
+INSERTED_CONFIRM = 430
+INSERTED_RETRY2 = 484
+INSERTED_TOTAL = 5352
+TICK_S_CHECK_AT = "11:28:57"
+TICK_S_CHECK_GT = 84297319
+TICK_S_REALIGN_AT = "11:29:01"
+TICK_S_REALIGN_GT = 84297319
+TS_REALIGNED_FIRST = 248
+TS_REALIGNED_LATER = 10078
 TS_REALIGNED_CONFIRM = 0
-OFFICIAL_404_TICKS = 100  # W47N7@84296500 still 404 after retry2
+OFFICIAL_404_TICKS = 100  # W47N8@84297200 still official 404 after retry2; live already filled all 100 ticks
 
 
 def missing_ranges(present):
@@ -223,9 +226,10 @@ def main():
     w45n7_893 = leftover["W45N7@84289300"]
     w45n7_958 = leftover["W45N7@84295800"]
     w45n8_959 = leftover["W45N8@84295900"]
+    w47n7_965 = leftover["W47N7@84296500"]
 
     official_ticks = {room: WINDOW_N for room in ROOMS}
-    official_ticks["W47N7"] = 600  # W47N7@84296500 still official 404
+    official_ticks["W47N8"] = 600  # W47N8@84297200 still official 404; live already filled 100 ticks
     per_room = {}
     for room in ROOMS:
         new_first = NEW_FIRST[room]
@@ -261,96 +265,102 @@ def main():
     known_in = [fmt_hole(r, b, in_window_404[f"{r}@{b}"], aged=False) for r, b in IN_WINDOW_404S_FINAL]
 
     missing_chunk_note = (
-        "First pass (game.time=84297031) published_bases 84296300..84296900, reconstructed "
-        "84296301..84297000 (700). missing_chunks=1 of 35 official GETs: W47N7@84296500 "
-        "(the other 34 were 200). already_in_db=12903 would_insert=13951; first pass inserted="
-        "13951 (W46N8 3764 / W47N8 4332 / W45N8 3006 / W45N7 1296 / W47N7 1553), ts_realigned="
-        "7707 on first-interval tick_s=4.37624 (printed 4.376), which is in the sane 3-6s band. "
-        "later-mean-robust 4.27102 was over the 45s gate versus those first-pass rows (check at "
-        "11:08:49 game.time=84297049: later over45=8712 over15=19062 mean_off~-36.94s min_off~"
-        "-80.94s; first over45=0 over15=4725 mean_off~4.19s max_off~42.75s). A corrective later-"
-        "mean-robust realign of 8218 rows was applied at 11:08:53 game.time=84297050; after "
-        "over45=0 over15=8915 mean_off~-13.44s min_off~-44.97s vs later, and was kept (not "
-        "reverted). Confirm GET 2026-11-16 11:09:26 Asia/Hong_Kong game.time=84297057 recovered "
-        "nothing: in-window W47N7@84296500 still 404, leftovers W45N8@84295900 and W45N7@84295800 "
-        "(just outside this window) still 404. It also retried 35 aged leftover official 404s "
-        "including W46N8@84292000, all still 404. Confirm inserted=0 ts_realigned=0. retry2 at "
-        "11:10:28 game.time=84297071 still 404 on W47N7@84296500, W45N8@84295900 and W45N7@"
-        "84295800; inserted=0 ts_realigned=0. Official coverage after retry2 is 3400 of 3500 "
-        "official room-ticks (100 still 404). W46N8, W47N8, W45N8 and W45N7 each have 700 distinct "
-        "ticks with creeps in this window; W47N7 has 600 distinct (hole 84296501..84296600 official "
-        "404). The previous in-window official 404 W45N8@84295900 has aged just outside this 40m "
-        "window (hole 84295901..84296000). No official empty-no-creep ticks in the recovered portion."
+        "First pass (game.time=84297303) published_bases 84296600..84297200, reconstructed "
+        "84296601..84297300 (700). missing_chunks=3 of 35 official GETs: W47N8@84297200, "
+        "W45N8@84297200, W47N7@84297200 (the other 32 were 200). already_in_db=21209 "
+        "would_insert=4438; first pass inserted=4438 (W46N8 1120 / W47N8 1458 / W45N8 588 / "
+        "W45N7 761 / W47N7 511), ts_realigned=248 on first-interval tick_s=4.29391 (printed 4.294), "
+        "which is in the sane 3-6s band. later-mean-robust 4.42840 was over the 45s gate versus "
+        "those first-pass rows (check at 11:28:57 game.time=84297319: later over45=11138 over15="
+        "22212 mean_off~37.37s max_off~82.25s; first over45=28 over15=10032 mean_off~-13.09s "
+        "min_off~-45.81s). A corrective later-mean-robust realign of 10078 rows was applied at "
+        "11:29:01 game.time=84297319; after over45=0 over15=11489 mean_off~13.36s max_off~44.99s "
+        "vs later, and was kept (not reverted). Confirm GET 2026-11-16 11:29:14 Asia/Hong_Kong "
+        "game.time=84297323 recovered W45N8@84297200 (100 ticks, ts=1794799736673, inserted=430). "
+        "In-window W47N8@84297200 and W47N7@84297200 still 404 at confirm; leftovers W47N7@"
+        "84296500, W45N8@84295900 and W45N7@84295800 (just outside this window) still 404. It "
+        "also retried 35 aged leftover official 404s including W46N8@84292000, all still 404. "
+        "Confirm inserted=430 ts_realigned=0. retry2 at 11:30:21 game.time=84297338 recovered "
+        "W47N7@84297200 (100 ticks, ts=1794799780943, inserted=484); W45N8@84297200 already "
+        "present (inserted=0); W47N8@84297200 still official 404 (but the live listener already "
+        "had all 100 ticks, 1562 rows, range 84297201..84297300). Leftovers W47N7@84296500, "
+        "W45N8@84295900 and W45N7@84295800 still 404; retry2 ts_realigned=0. Official coverage "
+        "after retry2 is 3400 of 3500 official room-ticks (100 still 404: W47N8@84297200). All "
+        "five rooms have 700 distinct ticks with creeps in this window (W47N8's last 100 ticks "
+        "came from the live listener). The previous in-window official 404 W47N7@84296500 has "
+        "aged just outside this 40m window (hole 84296501..84296600). No official empty-no-creep "
+        "ticks in the recovered portion."
     )
 
     inserted_note = (
-        "The previous 10:30 Asia/Hong_Kong half-hour backfill prefilled official 84295901..84296600 "
-        "(inserted_total=5431 after first=3513 + confirm=1794 + retry2=124, already_in_db=18664, "
-        "first-pass ts_realigned=8357 on tick_s=4.20627, later-mean-robust 4.28517 applied a "
-        "corrective realign of 4379 rows, first-pass missing_chunks=4, game.time=84296605). That "
-        "window overlaps 300 ticks of this run (84296301..84296600). After the 10:30 backfill there "
-        "was one box freeze: 10:48:46–11:06:00 Asia/Hong_Kong (1023s; VM hibernated; wall jumped, "
-        "monotonic did not) with listener.py logged freeze at 11:06:00 and run_listener.sh relaunch "
-        "at 11:06:03 (new listener.py pid 3361024 at 11:06:12). run_listener.sh (pid 4035476, "
-        "unchanged since 2026-11-11) stayed up. The listener was already healthy at pre-check "
-        "(11:07:06), having pulled segment-90 itself (creep_cpu tip 84297010 / path_arrivals tip "
-        "84297006 at 11:06:01). This half-hour first pass (game.time=84297031) had missing_chunks=1, "
-        "inserted=13951, already_in_db=12903. Confirm recovered 0 of 1 in-window official 404s "
-        "(inserted=0) and left 35 aged leftover official 404s still 404, plus leftovers W45N8@"
-        "84295900 and W45N7@84295800 (just outside this window) still 404. retry2 inserted=0; "
-        "W47N7@84296500 remains official 404 in window. inserted_total=13951. First-pass "
-        "ts_realigned=7707 on tick_s=4.37624; later-mean-robust 4.27102 applied a corrective realign "
-        "of 8218 rows at game.time=84297050 (after over45=0). First game/time request succeeded."
+        "The previous 11:00 Asia/Hong_Kong half-hour backfill prefilled official 84296301..84297000 "
+        "(inserted_total=13951, already_in_db=12903, first-pass ts_realigned=7707 on tick_s=4.37624, "
+        "later-mean-robust 4.27102 applied a corrective realign of 8218 rows, first-pass "
+        "missing_chunks=1, game.time=84297031). That window overlaps 400 ticks of this run "
+        "(84296601..84297000). No new box freeze after the 11:00 backfill; the last freeze was "
+        "10:48:46–11:06:00 Asia/Hong_Kong (1023s; VM hibernated; wall jumped, monotonic did not) "
+        "with listener.py logged freeze at 11:06:00 and run_listener.sh relaunch at 11:06:03 "
+        "(listener.py pid 3361024 since 11:06:12). run_listener.sh (pid 4035476, unchanged since "
+        "2026-11-11) stayed up. The listener was already healthy at pre-check (11:27:30), having "
+        "pulled segment-90 itself (creep_cpu tip 84297290 / path_arrivals tip 84297289 at "
+        "11:26:49). This half-hour first pass (game.time=84297303) had missing_chunks=3, "
+        "inserted=4438, already_in_db=21209. Confirm recovered 1 of 3 in-window official 404s "
+        "(W45N8@84297200, inserted=430) and left 35 aged leftover official 404s still 404, plus "
+        "leftovers W47N7@84296500, W45N8@84295900 and W45N7@84295800 (just outside this window) "
+        "still 404. retry2 recovered W47N7@84297200 (inserted=484); W47N8@84297200 remains official "
+        "404 in window but is already fully filled by the live listener (100 distinct / 1562 rows). "
+        "inserted_total=5352. First-pass ts_realigned=248 on tick_s=4.29391; later-mean-robust "
+        "4.42840 applied a corrective realign of 10078 rows at game.time=84297319 (after over45=0). "
+        "First game/time request succeeded."
     )
 
     ts_realigned_note = (
-        "First pass (tick_s=4.37624 printed 4.376, live anchor game.time=84297031) reported "
-        "ts_realigned=7707. The script's tick_s is taken from the earliest two distinct published-"
-        "chunk timestamps in this fetch (min 84296300 ts=1794795770493 W46N8 to min 84296400 "
-        "ts=1794796208117 W46N8 → 4.37624s; printed 4.376). All six W46N8 / min-all intervals "
-        "are in the sane 3-6s band (4.37624, 4.19640, 4.22476, 4.29391, 4.20001, 4.44003). "
-        "later_mean_raw = later_mean_robust = 4.27102; all_mean = 4.28856; span_mean = 4.28856. A "
-        "later-anchor check at 2026-11-16 11:08:49 Asia/Hong_Kong game.time=84297049 found over45=0 "
-        "versus first (over15=4725, mean_off~4.19s, max_off~42.75s) and over45=8712 over15=19062 "
-        "versus later-mean-robust 4.27102 (mean_off~-36.94s, min_off~-80.94s). Delta first-robust is "
-        "0.10522 s/tick (~76.8s at tmin), over the 45s gate, so a corrective later-mean-robust "
-        "realign of 8218 rows was applied at 11:08:53 game.time=84297050; after over45=0 over15=8915 "
-        "mean_off~-13.44s min_off~-44.97s vs later, and was kept. 4.27102 is the tick_s now in db. "
-        "Confirm reported ts_realigned=0 (no recoveries, inserted=0; 35 aged leftover official 404s "
-        "including W46N8@84292000 still 404). retry2 reported ts_realigned=0 (inserted=0)."
+        "First pass (tick_s=4.29391 printed 4.294, live anchor game.time=84297303) reported "
+        "ts_realigned=248. The script's tick_s is taken from the earliest two distinct published-"
+        "chunk timestamps in this fetch (min 84296600 ts=1794797050233 W46N8 to min 84296700 "
+        "ts=1794797479624 W46N8 → 4.29391s; printed 4.294). All six W46N8 / min-all intervals "
+        "are in the sane 3-6s band (4.29391, 4.20001, 4.44003, 4.48886, 4.51886, 4.49424). "
+        "later_mean_raw = later_mean_robust = 4.42840; all_mean = 4.40599; span_mean = 4.40599. A "
+        "later-anchor check at 2026-11-16 11:28:57 Asia/Hong_Kong game.time=84297319 found over45=28 "
+        "versus first (over15=10032, mean_off~-13.09s, min_off~-45.81s) and over45=11138 over15="
+        "22212 versus later-mean-robust 4.42840 (mean_off~37.37s, max_off~82.25s). Delta first-"
+        "robust is -0.13449 s/tick (~94.4s at tmin), over the 45s gate, so a corrective later-mean-"
+        "robust realign of 10078 rows was applied at 11:29:01 game.time=84297319; after over45=0 "
+        "over15=11489 mean_off~13.36s max_off~44.99s vs later, and was kept. 4.42840 is the tick_s "
+        "now in db. Confirm reported ts_realigned=0 (recovered W45N8@84297200, inserted=430; 35 aged "
+        "leftover official 404s including W46N8@84292000 still 404). retry2 reported ts_realigned=0 "
+        "(recovered W47N7@84297200, inserted=484)."
     )
 
     live_json_note = (
-        "After the 10:30 backfill there was one box freeze: 2026-11-16 10:48:46–11:06:00 "
-        "Asia/Hong_Kong (1023s; VM hibernated; wall jumped, monotonic did not), logged by "
-        "listener.py at 11:06:00 with run_listener.sh relaunch at 11:06:03 (new listener.py pid "
-        "3361024 at 11:06:12). run_listener.sh pid 4035476 unchanged since 2026-11-11. "
-        "yield_files=absent, single room slot, peacetime 5:5:1:1 (rot at pre-check on W45N8, i=2, "
-        "left 4.3s; by finish it had rotated back to W46N8). Did not start a second loop or kill "
-        "war_cmd/pulse. Segment-90 was already current without a console query: at pre-check "
-        "11:07:06 creep_cpu tip 84297010 (last200 84296825..84297010, 1457 rows; max_ts 11:06:01 "
-        "after reconnect pull), path_arrivals tip 84297006 (last200 22 rows, max_ts 11:06:01). "
-        "room_stats tip was already current (84297020 / 11:06:39). live.json at pre-check was on "
-        "W45N8 (objects=0, gameTime unset because the slot was not HOME, stats.t=84297020, "
-        "cpu=16.88, bucket=10000, updated 11:07:00, age 5.5s). No concurrent hourly patrol was "
-        "running during this backfill, and this backfill issued no extra console queries. This run "
-        "did not change the peacetime single-slot 5:5:1:1 arrangement. The first official game/time "
-        "request succeeded."
+        "No new box freeze after the 11:00 backfill. The last freeze was 2026-11-16 10:48:46–"
+        "11:06:00 Asia/Hong_Kong (1023s; VM hibernated; wall jumped, monotonic did not), logged by "
+        "listener.py at 11:06:00 with run_listener.sh relaunch at 11:06:03 (listener.py pid "
+        "3361024 since 11:06:12). run_listener.sh pid 4035476 unchanged since 2026-11-11. "
+        "yield_files=absent, single room slot, peacetime 5:5:1:1 (rot at pre-check on W47N8, i=1, "
+        "left 99.9s). Did not start a second loop or kill war_cmd/pulse. Segment-90 was already "
+        "current without a console query: at pre-check 11:27:30 creep_cpu tip 84297290 (last200 "
+        "84297090..84297290, 1590 rows; max_ts 11:26:49), path_arrivals tip 84297289 (last200 "
+        "84297098..84297289, 27 rows, max_ts 11:26:49). room_stats tip was already current "
+        "(84297290 / 11:26:46). live.json at pre-check was on W47N8 (objects=0, gameTime stale "
+        "because the slot was not HOME, stats.t=84297290, cpu=18.09, bucket=10000, updated "
+        "11:27:26, age 4.1s). No concurrent hourly patrol was running during this backfill, and "
+        "this backfill issued no extra console queries. This run did not change the peacetime "
+        "single-slot 5:5:1:1 arrangement. The first official game/time request succeeded."
     )
 
     hourly_note = (
-        "The previous 10:30 half-hour backfill had already prefilled 84295901..84296600 "
-        "(inserted_total=5431, tick_s first-pass 4.20627 then later-mean-robust 4.28517 applied a "
-        "corrective realign of 4379 rows, first-pass missing_chunks=4, game.time=84296605), "
-        "overlapping 300 ticks of this window (84296301..84296600), which together with live "
-        "listener rows accounts for already_in_db=12903 of 26854 first-pass reconstructed rows. "
-        "The previous run's in-window official 404 W45N8@84295900 has aged just outside this 40m "
-        "window (hole 84295901..84296000) and remained official 404 on confirm and retry2. The "
-        "previous in-window official 404 W47N7@84296500 is still inside this window (hole "
-        "84296501..84296600) and remained official 404 on first pass, confirm and retry2. The "
-        "previous leftover W45N7@84295800 remains just outside this 40m window and remained official "
-        "404. W46N8@84292000 remains aged out of this 40m window and remained official 404 on "
-        "confirm. No official empty-no-creep ticks in the recovered portion of this window."
+        "The previous 11:00 half-hour backfill had already prefilled 84296301..84297000 "
+        "(inserted_total=13951, tick_s first-pass 4.37624 then later-mean-robust 4.27102 applied a "
+        "corrective realign of 8218 rows, first-pass missing_chunks=1, game.time=84297031), "
+        "overlapping 400 ticks of this window (84296601..84297000), which together with live "
+        "listener rows accounts for already_in_db=21209 of 25647 first-pass reconstructed rows. "
+        "The previous run's in-window official 404 W47N7@84296500 has aged just outside this 40m "
+        "window (hole 84296501..84296600) and remained official 404 on confirm and retry2. The "
+        "previous leftovers W45N8@84295900 (hole 84295901..84296000) and W45N7@84295800 (hole "
+        "84295801..84295900) remain just outside this 40m window and remained official 404. "
+        "W46N8@84292000 remains aged out of this 40m window and remained official 404 on confirm. "
+        "No official empty-no-creep ticks in the recovered portion of this window."
     )
 
     payload = {
@@ -370,10 +380,12 @@ def main():
         "tick_s": TICK_S,
         "tick_s_later_mean": TICK_S_LATER,
         "tick_s_first_pass_outlier": None,
-        "missing_chunks": 1,
-        "missing_chunk_list": ["W47N7@84296500"],
+        "missing_chunks": 3,
+        "missing_chunk_list": ["W47N8@84297200"],
         "missing_chunk_first_pass": [
-            "W47N7@84296500",
+            "W47N8@84297200",
+            "W45N8@84297200",
+            "W47N7@84297200",
         ],
         "missing_chunk_note": missing_chunk_note,
         "creep_rows_reconstructed": CREEP_ROWS_RECONSTRUCTED,
@@ -418,24 +430,29 @@ def main():
         f"distinct_room_ticks={unique_after['distinct_room_ticks']}"
     )
     verify_lines.append(
-        "missing_chunks first_pass=1 at game.time=84297031 (34 of 35 official GETs 200; 404: "
-        "W47N7@84296500); "
-        "published_bases 84296300..84296900, reconstructed 84296301..84297000 (700), "
-        "already_in_db=12903 inserted=13951, ts_realigned=7707 on tick_s=4.37624 (printed 4.376, "
-        "sane first interval). later-mean-robust 4.27102 was over the 45s gate at 11:08:49 "
-        "game.time=84297049 (later over45=8712 over15=19062; first over45=0 over15=4725), so a "
-        "corrective later-mean-robust realign of 8218 rows was applied at 11:08:53 "
-        "game.time=84297050 (after over45=0 over15=8915 vs later) and kept. Confirm 2026-11-16 "
-        "11:09:26 Asia/Hong_Kong game.time=84297057 recovered nothing; W47N7@84296500, leftover "
-        "W45N8@84295900, and leftover W45N7@84295800 still 404; retried 35 aged leftover official "
-        "404s including W46N8@84292000 — all still 404; inserted=0 ts_realigned=0. retry2 at "
-        "11:10:28 game.time=84297071 still 404 on W47N7@84296500, W45N8@84295900 and W45N7@"
-        "84295800; inserted=0. After retry2: W46N8/W47N8/W45N8/W45N7 each distinct=700 "
-        "missing_n=0; W47N7 distinct=600 missing_n=100 official 404 (84296501..84296600). "
+        "missing_chunks first_pass=3 at game.time=84297303 (32 of 35 official GETs 200; 404: "
+        "W47N8@84297200, W45N8@84297200, W47N7@84297200); "
+        "published_bases 84296600..84297200, reconstructed 84296601..84297300 (700), "
+        "already_in_db=21209 inserted=4438, ts_realigned=248 on tick_s=4.29391 (printed 4.294, "
+        "sane first interval). later-mean-robust 4.42840 was over the 45s gate at 11:28:57 "
+        "game.time=84297319 (later over45=11138 over15=22212; first over45=28 over15=10032), so a "
+        "corrective later-mean-robust realign of 10078 rows was applied at 11:29:01 "
+        "game.time=84297319 (after over45=0 over15=11489 vs later) and kept. Confirm 2026-11-16 "
+        "11:29:14 Asia/Hong_Kong game.time=84297323 recovered W45N8@84297200 (inserted=430); "
+        "W47N8@84297200 and W47N7@84297200 still 404; leftovers W47N7@84296500, W45N8@84295900, "
+        "and W45N7@84295800 still 404; retried 35 aged leftover official "
+        "404s including W46N8@84292000 — all still 404; confirm ts_realigned=0. retry2 at "
+        "11:30:21 game.time=84297338 recovered W47N7@84297200 (inserted=484); W47N8@84297200 still "
+        "official 404 but already live-filled (100 distinct / 1562 rows, 84297201..84297300). "
+        "After retry2: all five rooms distinct=700 missing_n=0. "
         f"distinct_room_ticks={unique_after['distinct_room_ticks']} "
         f"(5*{WINDOW_N} would be {expected_official}; official room-ticks with creeps="
         f"{official_with_creeps}; official empty-no-creep={EMPTY_NO_CREEP_N}; official room-ticks "
-        f"fetched/recovered={official_recovered}; official 404 in window after retry2=1 / 100 ticks). "
+        f"fetched/recovered={official_recovered}; official 404 in window after retry2=1 / 100 ticks, "
+        f"W47N8@84297200 live-filled). "
+        f"Previously in-window official 404 W47N7@84296500 is just outside this 40m window "
+        f"(hole 84296501..84296600 still {w47n7_965['rows']} rows / {w47n7_965['distinct']} "
+        f"distinct; official 84296501..84296600 still empty; confirm and retry2 still 404). "
         f"Previously in-window official 404 W45N8@84295900 is just outside this 40m window "
         f"(hole 84295901..84296000 still {w45n8_959['rows']} rows / {w45n8_959['distinct']} "
         f"distinct; official 84295901..84296000 still empty; confirm and retry2 still 404). "
@@ -466,8 +483,8 @@ def main():
         f"{leftover['W45N8@84281500']['distinct']}. W45N8@84279700 official 404 remains aged out "
         f"(hole 84279701..84279800, db {leftover['W45N8@84279700']['rows']} rows / "
         f"{leftover['W45N8@84279700']['distinct']} distinct). Other aged leftover official 404s still "
-        "404 after confirm GET. First-pass tick_s=4.37624 (printed 4.376) was sane; later-mean-robust "
-        f"4.27102 was applied (check at {TICK_S_CHECK_AT} game.time={TICK_S_CHECK_GT}; "
+        "404 after confirm GET. First-pass tick_s=4.29391 (printed 4.294) was sane; later-mean-robust "
+        f"4.42840 was applied (check at {TICK_S_CHECK_AT} game.time={TICK_S_CHECK_GT}; "
         f"realign at {TICK_S_REALIGN_AT} game.time={TICK_S_REALIGN_GT}; after over45=0)."
     )
 
@@ -480,25 +497,28 @@ def main():
             first = first.split(marker)[0].rstrip() + "\n"
             break
     now_extra = (
-        "confirm recovered nothing at 11:09:26 game.time=84297057 inserted=0 ts_realigned=0; "
-        "W47N7@84296500, W45N8@84295900, W45N7@84295800 still 404; retried 35 aged leftover official "
-        "404s including W46N8@84292000, all still 404; retry2 at 11:10:28 game.time=84297071 "
-        "inserted=0 ts_realigned=0; W47N7@84296500 still 404 in window; leftovers W45N8@84295900 "
-        "and W45N7@84295800 still 404\n"
-        "ts_realigned_first_pass=7707 (tick_s=4.37624 printed 4.376, sane first interval); "
-        f"later-mean-robust 4.27102 applied corrective realign of 8218 rows "
+        "confirm recovered W45N8@84297200 at 11:29:14 game.time=84297323 inserted=430 ts_realigned=0; "
+        "W47N8@84297200 and W47N7@84297200 still 404; leftovers W47N7@84296500, W45N8@84295900, "
+        "W45N7@84295800 still 404; retried 35 aged leftover official "
+        "404s including W46N8@84292000, all still 404; retry2 at 11:30:21 game.time=84297338 "
+        "recovered W47N7@84297200 inserted=484 ts_realigned=0; W47N8@84297200 still official 404 "
+        "in window but already live-filled (100 distinct / 1562 rows); leftovers W47N7@84296500, "
+        "W45N8@84295900 and W45N7@84295800 still 404\n"
+        "ts_realigned_first_pass=248 (tick_s=4.29391 printed 4.294, sane first interval); "
+        f"later-mean-robust 4.42840 applied corrective realign of 10078 rows "
         f"(check at {TICK_S_CHECK_AT} game.time={TICK_S_CHECK_GT}, realign at {TICK_S_REALIGN_AT} "
-        f"game.time={TICK_S_REALIGN_GT}, after over45=0 over15=8915 vs later)\n"
-        f"inserted_total=13951 unique_after rows={unique_after['rows']} "
+        f"game.time={TICK_S_REALIGN_GT}, after over45=0 over15=11489 vs later)\n"
+        f"inserted_total=5352 unique_after rows={unique_after['rows']} "
         f"distinct_room_ticks={unique_after['distinct_room_ticks']} "
         f"official_with_creeps={official_with_creeps} empty_no_creep={EMPTY_NO_CREEP_N} "
         f"official_recovered={official_recovered} expected=5*{WINDOW_N}={expected_official} "
-        f"in_window_official_404=1 after retry2 (first-pass missing_chunks=1; confirm recovered 0, "
-        "retry2 recovered 0)\n"
+        f"in_window_official_404=1 after retry2 (first-pass missing_chunks=3; confirm recovered 1, "
+        "retry2 recovered 1)\n"
         "official empty-no-creep ticks in this window: none in the recovered portion. Remaining "
-        "holes: W47N7 official 404 84296501..84296600. Leftover just outside window: W45N8 official "
+        "official 404 in window: W47N8@84297200 (live already filled 84297201..84297300). Leftover "
+        "just outside window: W47N7 official 404 84296501..84296600; W45N8 official "
         "404 84295901..84296000; W45N7 official 404 84295801..84295900. "
-        "W46N8/W47N8/W45N8/W45N7 each 700 distinct with creeps\n"
+        "All five rooms 700 distinct with creeps\n"
     )
 
     now_text = first + now_extra
@@ -513,6 +533,7 @@ def main():
         "empty_no_creep_ticks": EMPTY_NO_CREEP_N,
         "in_window_official_404": in_window_404,
         "in_window_official_404_first_pass": in_window_404_first,
+        "hole_W47N7_84296500": w47n7_965,
         "hole_W45N8_84295900": w45n8_959,
         "hole_W45N7_84295800": w45n7_958,
         "hole_W46N8_84292000": w46_920,
@@ -544,6 +565,7 @@ def main():
         "coverage": cov,
         "empty_no_creep": EMPTY_NO_CREEP,
         "in_window_official_404": in_window_404,
+        "hole_W47N7_84296500": w47n7_965,
         "hole_W45N8_84295900": w45n8_959,
         "hole_W45N7_84295800": w45n7_958,
         "hole_W46N8_84292000": w46_920,
@@ -570,10 +592,12 @@ def main():
         "already_in_db": ALREADY_IN_DB,
         "ts_realigned": TS_REALIGNED_FIRST,
         "ts_realigned_corrective_later_mean": TS_REALIGNED_LATER,
-        "missing_chunks": 1,
-        "missing_chunk_list": ["W47N7@84296500"],
+        "missing_chunks": 3,
+        "missing_chunk_list": ["W47N8@84297200"],
         "missing_chunk_first_pass": [
-            "W47N7@84296500",
+            "W47N8@84297200",
+            "W45N8@84297200",
+            "W47N7@84297200",
         ],
         "unique_after_window": unique_after,
         "empty_no_creep_in_window": False,
@@ -602,16 +626,18 @@ def main():
     dump(DIR / "final_collect.json", snap)
     dump(DIR / "final_snap.json", snap)
     retry2_note = (
-        "retry2 2026-11-16 11:10:28 Asia/Hong_Kong game.time=84297071: first pass missing_chunks=1 "
-        "at game.time=84297031; confirm at 11:09:26 game.time=84297057 recovered nothing and left "
-        "W47N7@84296500, leftover W45N8@84295900, and leftover W45N7@84295800 still 404 (also "
-        "retried 35 aged leftovers, all still 404, confirm inserted=0). retry2 still 404 on all "
-        "three; inserted=0. W47N7@84296500 remains official 404 in window; leftovers W45N8@"
-        "84295900 and W45N7@84295800 remain official 404 just outside this window; all three should "
-        "be retried next run.\n"
+        "retry2 2026-11-16 11:30:21 Asia/Hong_Kong game.time=84297338: first pass missing_chunks=3 "
+        "at game.time=84297303 (W47N8@84297200, W45N8@84297200, W47N7@84297200); confirm at "
+        "11:29:14 game.time=84297323 recovered W45N8@84297200 (inserted=430) and left W47N8@"
+        "84297200 and W47N7@84297200 still 404, plus leftovers W47N7@84296500, W45N8@84295900, "
+        "and W45N7@84295800 still 404 (also retried 35 aged leftovers, all still 404). retry2 "
+        "recovered W47N7@84297200 (inserted=484); W47N8@84297200 remains official 404 in window "
+        "but is already fully filled by the live listener (100 distinct / 1562 rows) and should "
+        "still be retried next run. Leftovers W47N7@84296500, W45N8@84295900 and W45N7@84295800 "
+        "remain official 404 just outside this window and should be retried next run.\n"
     )
     # keep DIR/backfill_retry2.txt as the actual GET log
-    (ROOT / "state" / "_halfhour_backfill_retry2_1100.txt").write_text(retry2_note)
+    (ROOT / "state" / "_halfhour_backfill_retry2_1130.txt").write_text(retry2_note)
 
     print("finished_at", finished_hkt)
     print("unique_after", unique_after)
@@ -620,7 +646,7 @@ def main():
         print(" ", room, info)
     print("official_with_creeps", official_with_creeps, "empty_no_creep", EMPTY_NO_CREEP_N,
           "official_recovered", official_recovered, "expected", expected_official,
-          "in_window_404", 1)
+          "in_window_404", 1)  # W47N8@84297200 official 404, live-filled
     print("db_tips", tips)
     print("live_after", live_after)
     print("listener", listener_at_finish)

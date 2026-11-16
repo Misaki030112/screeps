@@ -9,11 +9,15 @@ import history_backfill as hb
 import db, api
 
 ROOMS = ("W46N8", "W47N8", "W45N8", "W45N7", "W47N7")
-# First pass missing_chunks=1 at game.time=84297031; published_bases 84296300..84296900,
-# reconstructed 84296301..84297000 (700). inserted=13951, already_in_db=12903,
-# ts_realigned=7707 on tick_s=4.37624 (printed 4.376). In-window official 404:
-# W47N7@84296500. Leftovers just outside this window: W45N8@84295900, W45N7@84295800.
+# First pass missing_chunks=3 at game.time=84297303; published_bases 84296600..84297200,
+# reconstructed 84296601..84297300 (700). inserted=4438, already_in_db=21209,
+# ts_realigned=248 on tick_s=4.29391 (printed 4.294). In-window official 404:
+# W47N8@84297200, W45N8@84297200, W47N7@84297200. Leftovers just outside this window:
+# W47N7@84296500, W45N8@84295900, W45N7@84295800.
 IN_WINDOW = [
+    ("W47N8", 84297200),
+    ("W45N8", 84297200),
+    ("W47N7", 84297200),
     ("W47N7", 84296500),
     ("W45N8", 84295900),
     ("W45N7", 84295800),
@@ -55,7 +59,7 @@ AGED = [
     ("W45N8", 84258600),
     ("W45N7", 84257900),
 ]
-TICK_S = 4.37624  # placeholder; overwritten from tick_s_realign.json later_mean_w46
+TICK_S = 4.29391  # placeholder; overwritten from tick_s_realign.json later_mean_w46
 PASS = sys.argv[1] if len(sys.argv) > 1 else "confirm"
 OUT = "/workspace/screeps/state/_halfhour_2026-11-16_1130/backfill_confirm_gets.json"
 TICK_S_FILE = "/workspace/screeps/state/_halfhour_2026-11-16_1130/tick_s_realign.json"

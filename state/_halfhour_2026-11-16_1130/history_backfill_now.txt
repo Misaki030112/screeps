@@ -1,0 +1,52 @@
+game.time=84297303 published_bases=84296600..84297200 rooms=W46N8,W47N8,W45N8,W45N7,W47N7 dry=False
+  ok  W46N8@84296600 ticks=100 ts=1794797050233
+  ok  W47N8@84296600 ticks=100 ts=1794797086212
+  ok  W45N8@84296600 ticks=100 ts=1794797083700
+  ok  W45N7@84296600 ticks=100 ts=1794797052606
+  ok  W47N7@84296600 ticks=100 ts=1794797116117
+  ok  W46N8@84296700 ticks=100 ts=1794797479624
+  ok  W47N8@84296700 ticks=100 ts=1794797515918
+  ok  W45N8@84296700 ticks=100 ts=1794797512892
+  ok  W45N7@84296700 ticks=100 ts=1794797481312
+  ok  W47N7@84296700 ticks=100 ts=1794797545866
+  ok  W46N8@84296800 ticks=100 ts=1794797899625
+  ok  W47N8@84296800 ticks=100 ts=1794797936063
+  ok  W45N8@84296800 ticks=100 ts=1794797931507
+  ok  W45N7@84296800 ticks=100 ts=1794797900441
+  ok  W47N7@84296800 ticks=100 ts=1794797960666
+  ok  W46N8@84296900 ticks=100 ts=1794798343628
+  ok  W47N8@84296900 ticks=100 ts=1794798381176
+  ok  W45N8@84296900 ticks=100 ts=1794798377381
+  ok  W45N7@84296900 ticks=100 ts=1794798344742
+  ok  W47N7@84296900 ticks=100 ts=1794798410893
+  ok  W46N8@84297000 ticks=100 ts=1794798792514
+  ok  W47N8@84297000 ticks=100 ts=1794798832881
+  ok  W45N8@84297000 ticks=100 ts=1794798828862
+  ok  W45N7@84297000 ticks=100 ts=1794798794347
+  ok  W47N7@84297000 ticks=100 ts=1794798865411
+  ok  W46N8@84297100 ticks=100 ts=1794799244400
+  ok  W47N8@84297100 ticks=100 ts=1794799297616
+  ok  W45N8@84297100 ticks=100 ts=1794799294068
+  ok  W45N7@84297100 ticks=100 ts=1794799248116
+  ok  W47N7@84297100 ticks=100 ts=1794799333793
+  ok  W46N8@84297200 ticks=100 ts=1794799693824
+  404 W47N8@84297200
+  404 W45N8@84297200
+  ok  W45N7@84297200 ticks=100 ts=1794799694217
+  404 W47N7@84297200
+tick_s=4.294
+reconstructed ticks=84296601..84297300 (700) creep_rows=25647 missing_chunks=3
+already_in_db=21209 would_insert=4438
+per_room W46N8:700t/1120new W47N8:600t/1458new W45N8:600t/588new W45N7:700t/761new W47N7:600t/511new
+inserted=4438
+ts_realigned=248
+db_after
+  W45N7 ticks=84296601..84297300 rows=1704 distinct=700
+  W45N8 ticks=84296601..84297200 rows=4042 distinct=600
+  W46N8 ticks=84296601..84297300 rows=6990 distinct=700
+  W47N7 ticks=84296601..84297200 rows=2256 distinct=600
+  W47N8 ticks=84296601..84297300 rows=11462 distinct=700
+confirm recovered W45N8@84297200 at 11:29:14 game.time=84297323 inserted=430 ts_realigned=0; W47N8@84297200 and W47N7@84297200 still 404; leftovers W47N7@84296500, W45N8@84295900, W45N7@84295800 still 404; retried 35 aged leftover official 404s including W46N8@84292000, all still 404; retry2 at 11:30:21 game.time=84297338 recovered W47N7@84297200 inserted=484 ts_realigned=0; W47N8@84297200 still official 404 in window but already live-filled (100 distinct / 1562 rows); leftovers W47N7@84296500, W45N8@84295900 and W45N7@84295800 still 404
+ts_realigned_first_pass=248 (tick_s=4.29391 printed 4.294, sane first interval); later-mean-robust 4.42840 applied corrective realign of 10078 rows (check at 11:28:57 game.time=84297319, realign at 11:29:01 game.time=84297319, after over45=0 over15=11489 vs later)
+inserted_total=5352 unique_after rows=27367 distinct_room_ticks=3500 official_with_creeps=3500 empty_no_creep=0 official_recovered=3400 expected=5*700=3500 in_window_official_404=1 after retry2 (first-pass missing_chunks=3; confirm recovered 1, retry2 recovered 1)
+official empty-no-creep ticks in this window: none in the recovered portion. Remaining official 404 in window: W47N8@84297200 (live already filled 84297201..84297300). Leftover just outside window: W47N7 official 404 84296501..84296600; W45N8 official 404 84295901..84296000; W45N7 official 404 84295801..84295900. All five rooms 700 distinct with creeps

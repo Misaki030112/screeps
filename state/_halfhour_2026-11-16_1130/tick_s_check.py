@@ -16,30 +16,30 @@ import history_backfill as hb
 
 # Official chunk timestamps printed by history_backfill.py
 W46 = {
-    84296300: 1794795770493,
-    84296400: 1794796208117,
-    84296500: 1794796627757,
     84296600: 1794797050233,
     84296700: 1794797479624,
     84296800: 1794797899625,
     84296900: 1794798343628,
+    84297000: 1794798792514,
+    84297100: 1794799244400,
+    84297200: 1794799693824,
 }
 # min timestamp across all five rooms per base (same as history_backfill.tick_seconds)
 MIN_ALL = {
-    84296300: 1794795770493,  # W46N8
-    84296400: 1794796208117,  # W46N8
-    84296500: 1794796627757,  # W46N8
     84296600: 1794797050233,  # W46N8
     84296700: 1794797479624,  # W46N8
     84296800: 1794797899625,  # W46N8
     84296900: 1794798343628,  # W46N8
+    84297000: 1794798792514,  # W46N8
+    84297100: 1794799244400,  # W46N8
+    84297200: 1794799693824,  # W46N8 (W47N8/W45N8/W47N7 404 this base)
 }
-TMIN, TMAX = 84296301, 84297000
+TMIN, TMAX = 84296601, 84297300
 ROOMS = ("W46N8", "W47N8", "W45N8", "W45N7", "W47N7")
-TICK_S_FIRST = (MIN_ALL[84296400] - MIN_ALL[84296300]) / 1000.0 / 100  # 4.37624; printed 4.376
-GT_FIRST = 84297031
-TS_REALIGNED_FIRST = 7707
-PREV_LATER_MEAN = 4.28517  # 10:30 later-mean-robust
+TICK_S_FIRST = (MIN_ALL[84296700] - MIN_ALL[84296600]) / 1000.0 / 100  # 4.29391; printed 4.294
+GT_FIRST = 84297303
+TS_REALIGNED_FIRST = 248
+PREV_LATER_MEAN = 4.27102  # 11:00 later-mean-robust
 
 def intervals(d):
     bases = sorted(d)
@@ -137,7 +137,7 @@ def main():
     nfix = 0
     first_outlier = not (3.0 <= TICK_S_FIRST <= 6.0)
     reason = (
-        f"first-interval tick_s={TICK_S_FIRST:.5f} (printed 4.376) "
+        f"first-interval tick_s={TICK_S_FIRST:.5f} (printed 4.294) "
         f"{'is an OUTLIER' if first_outlier else 'is in the sane 3-6s band'}; "
         f"later-mean-robust {later_mean_robust:.5f} (raw later-mean {later_mean_raw:.5f}; "
         f"delta first-robust {first-later_mean_robust:.5f} s/tick, "
