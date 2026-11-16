@@ -1,0 +1,35 @@
+room_stats columns: ['ts', 'tick', 'room', 'rcl', 'progress', 'progress_total', 'energy', 'energy_cap', 'sites', 'hostiles', 'safe_mode', 'cpu', 'bucket', 'trace_cpu', 'gcl_progress', 'creeps', 'commit', 'storage', 'ctl', 'ctl_ema']
+room_stats max: [('W46N8', 84310890, datetime.datetime(2026, 11, 17, 5, 28, 7, 227670, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai'))), ('W47N8', 84310890, datetime.datetime(2026, 11, 17, 5, 28, 7, 227710, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')))]
+HOME tip 84310890 2026-11-17 05:28:07.227670+08:00
+storage under15k runs since 84310060 (n_runs=1 max_span=91 tip_consec_under=0):
+  84310190..84310280 span=91 minstor=13551 2026-11-17 04:33:31.320048+08:00 -> 2026-11-17 04:40:30.388675+08:00
+20k/3h maxstor=18508 best_span=0 run=None
+20k/6h maxstor=20753 best_span=50 run=[84307800, 84307850, datetime.datetime(2026, 11, 17, 1, 23, 16, 119598, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), datetime.datetime(2026, 11, 17, 1, 27, 24, 301438, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 20753, 50]
+cpu 1h-ish room_stats: (47, 14.03, 33.69, 18.24914893698185, 10000, 10000, 84310090, 84310890)
+cpu 2h-ish room_stats: (96, 14.03, 33.69, 17.74854166309039, 9999, 10000)
+room_stats gaps >=30t since last-20:
+  84310280..84310530 dtick=250 wall_s=1159 2026-11-17 04:40:30.388675+08:00 -> 2026-11-17 04:59:49.706251+08:00
+  84310670..84310780 dtick=110 wall_s=516 2026-11-17 05:10:56.022929+08:00 -> 2026-11-17 05:19:32.251903+08:00
+nUp samples 45 from 84310110..84310890:
+  84310110 2026-11-17 04:27:17.900887+08:00 stor=15646 nUp=1 w8=2
+  84310650 2026-11-17 05:09:21.117109+08:00 stor=18508 nUp=2 w8=2
+  TIP 84310890 2026-11-17 05:28:07.227670+08:00 stor=16008 nUp=2 w8=2
+Traceback (most recent call last):
+  File "/workspace/screeps/state/_patrol_2026-11-17_0518/deep.py", line 263, in <module>
+    main()
+    ~~~~^^
+  File "/workspace/screeps/state/_patrol_2026-11-17_0518/deep.py", line 145, in main
+    c.execute("""
+    ~~~~~~~~~^^^^
+      SELECT name, min(tick), max(tick), min(x) filter (where x is not null), max(x),
+      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<6 lines>...
+      GROUP BY name ORDER BY min(tick)
+      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    """, (last, tip))
+    ^^^^^^^^^^^^^^^^^
+  File "/workspace/screeps/.venv/lib/python3.13/site-packages/psycopg/cursor.py", line 117, in execute
+    raise ex.with_traceback(None)
+psycopg.errors.UndefinedColumn: column "name" does not exist
+LINE 2:       SELECT name, min(tick), max(tick), min(x) filter (wher...
+                     ^

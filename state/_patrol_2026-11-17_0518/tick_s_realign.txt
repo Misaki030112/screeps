@@ -1,0 +1,43 @@
+intervals_w46:
+  84310000..84310100 4.66027
+  84310100..84310200 4.66292
+  84310200..84310300 4.68768
+  84310300..84310400 4.52606
+  84310400..84310600 4.70280
+intervals_min_all_rooms:
+  84310000..84310100 4.66027
+  84310100..84310200 4.66292
+  84310200..84310300 4.68768
+  84310300..84310400 4.52606
+  84310400..84310500 4.72228
+  84310500..84310600 4.68332
+first=4.66027 later_mean_raw=4.64486 later_mean_robust=4.64486
+all_mean=4.64795 span_mean=4.65709 script_tick_s=4.66027 prev_later=4.65906
+delta_first_minus_later_raw=0.01541 s/tick; at tmin vs gt_first ~11.9s
+delta_first_minus_later_robust=0.01541 s/tick; at tmin vs gt_first ~11.9s
+anchor 2026-11-17 05:22:31 Asia/Hong_Kong game.time=84310818
+vs_first tick_s=4.66027 {'over45': 746, 'over15': 14678, 'n': 25066, 'mean_off': -18.108393347801805, 'min_off': -47.480268, 'max_off': -2.583358}
+vs_later_raw tick_s=4.64486 {'over45': 3323, 'over15': 16014, 'n': 25066, 'mean_off': -25.38148066288997, 'min_off': -55.906803, 'max_off': -4.401148}
+vs_later_robust tick_s=4.64486 {'over45': 3323, 'over15': 16014, 'n': 25066, 'mean_off': -25.38148066288997, 'min_off': -55.906803, 'max_off': -4.401148}
+vs_all_mean tick_s=4.64795 {'over45': 2879, 'over15': 15946, 'n': 25066, 'mean_off': -23.926863199872336, 'min_off': -54.221496, 'max_off': -4.03759}
+vs_span_mean tick_s=4.65709 {'over45': 1331, 'over15': 15231, 'n': 25066, 'mean_off': -19.61053807248863, 'min_off': -49.22064, 'max_off': -2.958795}
+vs_prev_later tick_s=4.65906 {'over45': 980, 'over15': 14773, 'n': 25066, 'mean_off': -18.679664730551345, 'min_off': -48.142138, 'max_off': -2.726138}
+vs_prev_in_use tick_s=4.65906 {'over45': 980, 'over15': 14773, 'n': 25066, 'mean_off': -18.679664730551345, 'min_off': -48.142138, 'max_off': -2.726138}
+vs_prev_1h_patrol tick_s=4.71217 {'over45': 0, 'over15': 12497, 'n': 25066, 'mean_off': 6.394899846166122, 'min_off': -19.090968, 'max_off': 33.123842}
+subwindow_overlap_to_84310500:
+  first tick_s=4.66027 {'over45': 746, 'over15': 13242, 'n': 18451, 'mean_off': -22.029574832908786, 'min_off': -47.480268, 'max_off': -2.583358}
+  later_robust tick_s=4.64486 {'over45': 3323, 'over15': 14238, 'n': 18451, 'mean_off': -30.735549736708037, 'min_off': -55.906803, 'max_off': -11.025298}
+  prev_in_use tick_s=4.65906 {'over45': 980, 'over15': 13320, 'n': 18451, 'mean_off': -22.7133936990949, 'min_off': -48.142138, 'max_off': -3.246438}
+subwindow_new_tail_84310501:
+  first tick_s=4.66027 {'over45': 0, 'over15': 1436, 'n': 6615, 'mean_off': -7.171171944671202, 'min_off': -21.05473, 'max_off': -2.583358}
+  later_robust tick_s=4.64486 {'over45': 0, 'over15': 1776, 'n': 6615, 'mean_off': -10.447553454875283, 'min_off': -25.475965, 'max_off': -4.401148}
+  prev_in_use tick_s=4.65906 {'over45': 0, 'over15': 1453, 'n': 6615, 'mean_off': -7.428518366439909, 'min_off': -21.402, 'max_off': -2.726138}
+lowest_over45_among_sane=prev_1h_patrol {'over45': 0, 'over15': 12497, 'n': 25066, 'mean_off': 6.394899846166122, 'min_off': -19.090968, 'max_off': 33.123842}
+realign target tick_s=4.71217 (best=prev_1h_patrol, later_robust=4.64486)
+corrective realign applied nfix=0 at game.time=84310819 tick_s=4.71217
+after vs_target {'over45': 0, 'over15': 12222, 'n': 25066, 'mean_off': 6.827666846166121, 'min_off': -18.658201, 'max_off': 33.556609}
+after vs_first {'over45': 590, 'over15': 14519, 'n': 25066, 'mean_off': -17.727526347801803, 'min_off': -47.099401, 'max_off': -2.202491}
+in-use tick_s=4.71217 (applied=True reverted=False best=prev_1h_patrol)
+wrote /workspace/screeps/state/_patrol_2026-11-17_0518/tick_s_realign.json
+corrective_applied=True nfix=0 reverted=False
+reason: first-interval tick_s=4.66027 (printed 4.660) is in the sane 3-6s band; later-mean-robust 4.64486 (raw later-mean 4.64486; delta first-robust 0.01541 s/tick, ~11.9s at tmin); 05:00 half-hour in-use 4.65906 (later-mean-robust already inside 45s gate, not applied); last 1h patrol in-use was 4.71217; first is over the 45s gate (over45=746) and prev_1h_patrol is clearly better; applied corrective realign of 0 rows at game.time=84310819 to tick_s=4.71217 (prev_1h_patrol); still_over_45s_vs_target=0
