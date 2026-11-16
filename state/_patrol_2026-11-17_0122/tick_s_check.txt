@@ -1,0 +1,45 @@
+intervals_w46:
+  84307000..84307100 4.79078
+  84307100..84307200 4.84827
+  84307200..84307300 4.78129
+  84307300..84307400 4.87163
+  84307400..84307500 4.82116
+  84307500..84307600 4.88340
+intervals_min_all_rooms:
+  84307000..84307100 4.79078
+  84307100..84307200 4.84827
+  84307200..84307300 4.78129
+  84307300..84307400 4.87163
+  84307400..84307500 4.82116
+  84307500..84307600 4.87786
+first=4.79078 later_mean_raw=4.84115 later_mean_robust=4.84115
+all_mean=4.83275 span_mean=4.83183 script_tick_s=4.79078 prev_later=4.83562
+delta_first_minus_later_raw=-0.05037 s/tick; at tmin vs gt_first ~40.1s
+delta_first_minus_later_robust=-0.05037 s/tick; at tmin vs gt_first ~40.1s
+anchor 2026-11-17 01:25:12 Asia/Hong_Kong game.time=84307823
+vs_first tick_s=4.79078 {'over45': 464, 'over15': 18946, 'n': 26310, 'mean_off': -23.51435890209046, 'min_off': -46.038081, 'max_off': 2.87973}
+vs_later_raw tick_s=4.84115 {'over45': 0, 'over15': 0, 'n': 26310, 'mean_off': 0.264686319118206, 'min_off': -9.670941, 'max_off': 13.25595}
+vs_later_robust tick_s=4.84115 {'over45': 0, 'over15': 0, 'n': 26310, 'mean_off': 0.264686319118206, 'min_off': -9.670941, 'max_off': 13.25595}
+vs_all_mean tick_s=4.83275 {'over45': 0, 'over15': 756, 'n': 26310, 'mean_off': -3.6984878844165716, 'min_off': -15.732131, 'max_off': 11.52658}
+vs_span_mean tick_s=4.83183 {'over45': 0, 'over15': 1384, 'n': 26310, 'mean_off': -4.134381969935386, 'min_off': -16.398778, 'max_off': 11.336373}
+vs_prev_later tick_s=4.83562 {'over45': 0, 'over15': 0, 'n': 26310, 'mean_off': -2.345957319422273, 'min_off': -13.663601, 'max_off': 12.11677}
+vs_prev_in_use tick_s=4.85997 {'over45': 0, 'over15': 6069, 'n': 26310, 'mean_off': 9.149372264386164, 'min_off': 1.632081, 'max_off': 23.66126}
+vs_prev_1h_patrol tick_s=4.91661 {'over45': 5987, 'over15': 24462, 'n': 26310, 'mean_off': 35.88840584249335, 'min_off': 9.284608, 'max_off': 64.61198}
+subwindow_overlap_to_84307500:
+  first tick_s=4.79078 {'over45': 464, 'over15': 18624, 'n': 18624, 'mean_off': -30.37023140329682, 'min_off': -46.038081, 'max_off': -18.431271}
+  later_robust tick_s=4.84115 {'over45': 0, 'over15': 0, 'n': 18624, 'mean_off': -1.373877062124141, 'min_off': -9.670941, 'max_off': 10.0544}
+  prev_in_use tick_s=4.85997 {'over45': 0, 'over15': 5469, 'n': 18624, 'mean_off': 9.460178699259021, 'min_off': 3.917099, 'max_off': 23.66126}
+subwindow_new_tail_84307501:
+  first tick_s=4.79078 {'over45': 0, 'over15': 322, 'n': 7686, 'mean_off': -6.901846611891751, 'min_off': -17.515434, 'max_off': 2.87973}
+  later_robust tick_s=4.84115 {'over45': 0, 'over15': 0, 'n': 7686, 'mean_off': 4.235100632448608, 'min_off': -3.185839, 'max_off': 13.25595}
+  prev_in_use tick_s=4.85997 {'over45': 0, 'over15': 600, 'n': 7686, 'mean_off': 8.396255032656779, 'min_off': 1.632081, 'max_off': 17.13287}
+lowest_over45_among_sane=later_raw {'over45': 0, 'over15': 0, 'n': 26310, 'mean_off': 0.264686319118206, 'min_off': -9.670941, 'max_off': 13.25595}
+realign target tick_s=4.84115 (best=later_raw, later_robust=4.84115)
+corrective realign applied nfix=0 at game.time=84307824 tick_s=4.84115
+after vs_target {'over45': 0, 'over15': 0, 'n': 26310, 'mean_off': 0.444648319118206, 'min_off': -9.490979, 'max_off': 13.435912}
+after vs_first {'over45': 410, 'over15': 18924, 'n': 26310, 'mean_off': -23.38476690209046, 'min_off': -45.908489, 'max_off': 3.009322}
+in-use tick_s=4.84115 (applied=True reverted=False best=later_raw)
+wrote /workspace/screeps/state/_patrol_2026-11-17_0122/tick_s_realign.json
+corrective_applied=True nfix=0 reverted=False
+reason: first-interval tick_s=4.79078 (printed 4.791) is in the sane 3-6s band; later-mean-robust 4.84115 (raw later-mean 4.84115; delta first-robust -0.05037 s/tick, ~40.1s at tmin); 01:06 in-use first-interval 4.85997 (later-mean-robust already inside 45s gate, not applied); last 1h patrol in-use was 4.91661; first is over the 45s gate (over45=464) and later_raw is clearly better; applied corrective realign of 0 rows at game.time=84307824 to tick_s=4.84115 (later_raw); still_over_45s_vs_target=0
+EXIT:0
