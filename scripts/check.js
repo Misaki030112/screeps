@@ -44,6 +44,7 @@ execSync('node ' + path.join(__dirname, '..', 'tests', 'w47n8_roads_connected.js
 execSync('node ' + path.join(__dirname, '..', 'tests', 'w47n8_road_maintain.js'), { stdio: 'pipe' });
 execSync('node ' + path.join(__dirname, '..', 'tests', 'queen_standby.js'), { stdio: 'pipe' });
 execSync('node ' + path.join(__dirname, '..', 'tests', 'queen_stamp_b_reach.js'), { stdio: 'pipe' });
+execSync('node ' + path.join(__dirname, '..', 'tests', 'trapped_hatch.js'), { stdio: 'pipe' });
 execSync('node ' + path.join(__dirname, '..', 'tests', 'hauler_fill_sticky.js'), { stdio: 'pipe' });
 execSync('node ' + path.join(__dirname, '..', 'tests', 'hauler_hub_pickup.js'), { stdio: 'pipe' });
 execSync('node ' + path.join(__dirname, '..', 'tests', 'salvage.js'), { stdio: 'pipe' });
@@ -86,4 +87,4 @@ execSync('node ' + path.join(__dirname, '..', 'tests', 'raid9.js'), { stdio: 'pi
 execSync('node ' + path.join(__dirname, '..', 'tests', 'commander.js'), { stdio: 'pipe' });
 execSync('node ' + path.join(__dirname, '..', 'tests', 'commander_roles.js'), { stdio: 'pipe' });
 execSync('node ' + path.join(__dirname, '..', 'tests', 'commander_tower.js'), { stdio: 'pipe' });
-console.log('threat FSM tests + defender energy hold + defender duel + kite + queen standby + queen stamp B reach + spawn upgraders + builder remote + spawn rhauler + spawn remote gate + rcl5 gate + move detour + salvage passed');
+console.log('threat FSM tests + defender energy hold + defender duel + kite + queen standby + queen stamp B reach + trapped hatch + spawn upgraders + builder remote + spawn rhauler + spawn remote gate + rcl5 gate + move detour + salvage passed');
