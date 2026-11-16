@@ -297,6 +297,21 @@ C.RCL6_MINERALS = true;
   assert.strictEqual(Memory.ops.w8min.batch, 5000);
   room.storage.store.energy = 25000;
 
+  // Keep 6000 free at home (labs.TERM_FREE_TARGET) so termPark can un-tight and labRun can start.
+  // Live 84303276: homeFree=4300, lastAmt=4300, tf returned to 0.
+  homeTermStore.getFreeCapacity = () => 4300;
+  termStore.K = 8000; termStore.energy = 500; sent.length = 0;
+  W.mineralSend(room);
+  assert.strictEqual(Memory.ops.w8min.sendWhy, 'homeFull', 'tight home must not fill the park opening');
+  assert.strictEqual(sent.length, 0);
+  assert.strictEqual(Memory.ops.w8min.homeFree, 4300);
+  homeTermStore.getFreeCapacity = () => 7000;
+  sent.length = 0;
+  W.mineralSend(room);
+  assert.strictEqual(Memory.ops.w8min.sendWhy, 'sent');
+  assert.strictEqual(sent[0][1], 1000, 'headroom 7000-6000=' + sent[0][1]);
+  homeTermStore.getFreeCapacity = () => 50000;
+
   // cooldown
   term.cooldown = 5; sent.length = 0;
   W.mineralSend(room);

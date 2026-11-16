@@ -796,8 +796,13 @@ function mineralSend(room) {
     ? hTerm.store.getFreeCapacity()
     : Math.max(0, (hTerm.storeCapacity || 300000) - _.sum(hTerm.store));
   w.homeFree = free;
-  if (free < TERM_MIN_SEND) { w.sendWhy = 'homeFull'; return; }
-  let amount = Math.min(k, batchMax, free);
+  // Leave TERM_FREE_TARGET (6000: 1k KO dump + 5k next send) so home termPark can
+  // un-tight and labRun can start. Live 84303209–84303276: park freed 4300, then
+  // this send used the whole opening (lastAmt=4300) and home tf went back to 0.
+  const head = require('../../managers/labs').TERM_FREE_TARGET || 6000;
+  const roomFor = Math.max(0, free - head);
+  if (roomFor < TERM_MIN_SEND) { w.sendWhy = 'homeFull'; return; }
+  let amount = Math.min(k, batchMax, roomFor);
   let cost = sendCost(amount, room.name, HOME_ROOM);
   const e = term.store[(typeof RESOURCE_ENERGY !== 'undefined') ? RESOURCE_ENERGY : 'energy'] || 0;
   while (amount >= TERM_MIN_SEND && e < cost) {
