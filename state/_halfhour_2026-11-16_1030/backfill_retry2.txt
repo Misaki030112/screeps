@@ -1,0 +1,14 @@
+retry2 GET start 2026-11-16 10:40:57 Asia/Hong_Kong game.time=84296661 tick_s=4.2851680000000005 targets=5
+  pre  W45N8@84295900 distinct=0 rows=0 range=None..None
+  still_404 W45N8@84295900 at 10:40:58 game.time=84296661
+  pre  W47N8@84296500 distinct=100 rows=1384 range=84296501..84296600
+  recovered_or_ok W47N8@84296500 ticks=100 ts=1794796660411 at 10:40:59 inserted=0
+  pre  W45N8@84296500 distinct=100 rows=286 range=84296501..84296600
+  recovered_or_ok W45N8@84296500 ticks=100 ts=1794796657663 at 10:41:03 inserted=124
+  pre  W47N7@84296500 distinct=0 rows=0 range=None..None
+  still_404 W47N7@84296500 at 10:41:05 game.time=84296661
+  pre  W45N7@84295800 distinct=0 rows=0 range=None..None
+  still_404 W45N7@84295800 at 10:41:06 game.time=84296661
+recovered=['W45N8@84296500'] still_404=['W45N8@84295900', 'W47N7@84296500', 'W45N7@84295800'] inserted=124 ts_realigned=0
+gets_written 5 /workspace/screeps/state/_halfhour_2026-11-16_1030/backfill_confirm_gets.json
+finished
