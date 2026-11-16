@@ -1,0 +1,29 @@
+intervals_w46:
+  84310200..84310300 4.68768
+  84310300..84310400 4.52606
+  84310400..84310600 4.70280
+  84310600..84310700 4.75419
+  84310700..84310800 4.68449
+intervals_min_all_rooms:
+  84310200..84310300 4.68768
+  84310300..84310400 4.52606
+  84310400..84310500 4.72228
+  84310500..84310600 4.68332
+  84310600..84310700 4.75419
+  84310700..84310800 4.68449
+first=4.68768 later_mean_raw=4.66688 later_mean_robust=4.66688
+all_mean=4.67104 span_mean=4.67634 script_tick_s=4.68768 prev_later=4.65906
+delta_first_minus_later_raw=0.02079 s/tick; at tmin vs gt_first ~15.9s
+delta_first_minus_later_robust=0.02079 s/tick; at tmin vs gt_first ~15.9s
+anchor 2026-11-17 05:35:26 Asia/Hong_Kong game.time=84310984
+vs_first tick_s=4.68768 {'over45': 0, 'over15': 8758, 'n': 25911, 'mean_off': -4.50628395619621, 'min_off': -29.287584, 'max_off': 17.528026}
+vs_later_raw tick_s=4.66688 {'over45': 0, 'over15': 9723, 'n': 25911, 'mean_off': -13.419982737987727, 'min_off': -44.114419, 'max_off': 1.245541}
+vs_later_robust tick_s=4.66688 {'over45': 0, 'over15': 9723, 'n': 25911, 'mean_off': -13.419982737987727, 'min_off': -44.114419, 'max_off': 1.245541}
+vs_all_mean tick_s=4.67104 {'over45': 0, 'over15': 9534, 'n': 25911, 'mean_off': -11.637242981629424, 'min_off': -41.149052, 'max_off': 4.502038}
+vs_span_mean tick_s=4.67634 {'over45': 0, 'over15': 8603, 'n': 25911, 'mean_off': -9.36856125923353, 'min_off': -37.375381, 'max_off': 8.646196}
+vs_prev_later tick_s=4.65906 {'over45': 1565, 'over15': 10683, 'n': 25911, 'mean_off': -16.77413964914515, 'min_off': -49.693644, 'max_off': -0.699804}
+lowest_over45_among_sane=first {'over45': 0, 'over15': 8758, 'n': 25911, 'mean_off': -4.50628395619621, 'min_off': -29.287584, 'max_off': 17.528026}
+corrective_applied=False
+wrote /workspace/screeps/state/_halfhour_2026-11-17_0530/tick_s_realign.json
+corrective_applied=False nfix=0
+reason: first-interval tick_s=4.68768 (printed 4.688) is in the sane 3-6s band; later-mean-robust 4.66688 (raw later-mean 4.66688; delta first-robust 0.02079 s/tick, ~15.9s at tmin); later-mean-robust already inside 45s gate, no corrective realign

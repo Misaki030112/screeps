@@ -1,8 +1,8 @@
 {
   "ok": true,
   "routine": "Screeps 半小时轨迹补数",
-  "finished_at": "2026-11-17T05:08:32.876594+08:00",
-  "finished_at_hkt": "2026-11-17 05:08 Asia/Hong_Kong",
+  "finished_at": "2026-11-17T06:08:05.786089+08:00",
+  "finished_at_hkt": "2026-11-17 06:08 Asia/Hong_Kong",
   "shard": "shard3",
   "rooms": [
     "W46N8",
@@ -12,64 +12,92 @@
     "W47N7"
   ],
   "minutes": 40,
-  "game_time": 84310546,
-  "live_json_gameTime_at_finish": 84310532,
-  "live_json_stats_t_at_finish": 84310630,
-  "live_json_gameTime_note": "Listener self-reconnected after the box freeze following the 04:30 wrapup, recorded in box_pauses.jsonl / errors.log: 04:09:40–04:23:58 Asia/Hong_Kong (~846s) hibernate (already handled last run); 2026-11-17 04:41:28–2026-11-17 04:58:52 Asia/Hong_Kong (~1044s) hibernate (relaunch 04:58:55, current tools/listener.py pid 3749515; pidfile 4035476). After the 04:58:52 reconnect the listener itself pulled recent CPU / path buffers (creep_cpu 84310335..84310630, 2210 rows, first ts 2026-11-17T04:59:06.685984+08:00; path_arrivals 84310288..84310629, 35 rows, first ts 2026-11-17T04:59:06.685984+08:00). Peacetime single-slot rotation holds (roomSlot=W47N8, rot={'i': 1, 'room': 'W47N8', 'left': 89.9, 'at': '2026-11-17 05:08:30'}, yield_files=absent). This run did not restart the listener, start a second one, or change the 5:5:1:1 poll. Official history HTTP does not use a room slot.",
-  "published_bases": "84309800..84310400",
+  "game_time": 84311292,
+  "live_json_gameTime_at_finish": 84311398,
+  "live_json_stats_t_at_finish": 84311390,
+  "live_json_gameTime_note": "Listener self-reconnected after the new box freeze following the 05:30 wrapup, recorded in box_pauses.jsonl / errors.log: 2026-11-17 05:47:25–2026-11-17 05:57:21 Asia/Hong_Kong (~588s) hibernate (relaunch 05:57:24, current tools/listener.py pid 3771939; pidfile 4035476). Earlier this half-hour a websocket ping/pong timeout at 05:41:17 relaunched the same loop at 05:41:20, and the prior 05:30:49–05:32:20 (~78s) hibernate had already self-reconnected at 05:32:20. After the 05:57:21 reconnect the listener itself pulled recent CPU / path buffers (creep_cpu 84311125..84311390, 1961 rows, first ts 2026-11-17T05:57:23.793135+08:00; path_arrivals 84311124..84311382, 43 rows, first ts 2026-11-17T05:57:23.793135+08:00). Peacetime single-slot rotation holds (roomSlot=W46N8, rot={'i': 0, 'room': 'W46N8', 'left': 9.9, 'at': '2026-11-17 06:08:05'}, yield_files=absent). This run did not restart the listener, start a second one, or change the 5:5:1:1 poll. Official history HTTP does not use a room slot.",
+  "published_bases": "84310500..84311100",
   "ticks": {
-    "min": 84309801,
-    "max": 84310500,
+    "min": 84310501,
+    "max": 84311200,
     "count": 700
   },
-  "tick_s": 4.76542,
-  "tick_s_later_mean": 4.65906,
-  "tick_s_in_use": 4.65906,
+  "tick_s": 4.68332,
+  "tick_s_later_mean": 4.69945,
+  "tick_s_in_use": 4.68332,
   "tick_s_first_pass_outlier": false,
   "tick_s_later_mean_applied_then_reverted": false,
-  "tick_s_corrective_applied": true,
-  "missing_chunks": 0,
-  "missing_chunk_list": [],
-  "missing_chunk_first_pass": [],
-  "missing_chunk_note": "First pass (game.time=84310546) published_bases 84309800..84310400, reconstructed 84309801..84310500 (700). missing_chunks=0 of 35 official GETs (35 of 35 200). Official 84309800/84309900/84310000/84310100/84310200/84310300/84310400 were all 200. The previous 04:30 half-hour run official-backfilled 84309401..84310100 (inserted=3334 already_in_db=22189 at game.time=84310143, published_bases 84309400..84310000, missing_chunks=0, tick_s=4.65056 printed 4.651, ts_realigned_first=5654, corrective later-mean-robust nfix=5654 in-use 4.73825). The 04:23 Asia/Hong_Kong hourly patrol official-backfilled 84309301..84310000 (inserted=9196 already_in_db=16059 at game.time=84310077, published_bases 84309300..84309900, missing_chunks=0, tick_s=4.741, ts_realigned=0). This run overlapped 84309801..84310100 and newly filled 84310101..84310500 (the newly published chunks covering the new 04:41 freeze band through 84310500, plus live-dark ticks the rotator had not visited after the previous official tip). Prior official 404s (now all outside this window) were retried: confirm at 2026-11-17 05:03:09 Asia/Hong_Kong game.time=84310572 and retry2 at 2026-11-17 05:06:38 Asia/Hong_Kong game.time=84310616 both still 404 (inserted=0); retry next run.",
-  "creep_rows_reconstructed": 25531,
-  "already_in_db": 12142,
-  "inserted": 13389,
-  "inserted_first_pass": 13389,
+  "tick_s_corrective_applied": false,
+  "missing_chunks": 1,
+  "missing_chunk_list": [
+    [
+      "W46N8",
+      84310500
+    ]
+  ],
+  "missing_chunk_first_pass": [
+    [
+      "W46N8",
+      84310500
+    ]
+  ],
+  "missing_chunk_note": "First pass (game.time=84311292) published_bases 84310500..84311100, reconstructed 84310501..84311200 (700). missing_chunks=1 of 35 official GETs (34 of 35 200). Official 84310500 (except W46N8)/84310600/84310700/84310800/84310900/84311000/84311100 were 200; W46N8@84310500 was 404 (W46N8 first-pass official ticks=600, 11 live-filled 84310522..84310532 in that chunk). The previous 05:30 half-hour run official-backfilled 84310201..84310900 (inserted=7081 already_in_db=18919 at game.time=84310965, published_bases 84310200..84310800, missing_chunks=1 W46N8@84310500, tick_s=4.68768 printed 4.688, ts_realigned_first=0, later-mean-robust 4.66688 inside 45s gate, in-use 4.68768). This run overlapped 84310501..84310900 and newly filled 84310901..84311200 (the newly published chunks covering the 05:30 freeze band 84310921..84310949, the 05:41 ping/pong gap 84311041..84311069, the published portion of the 05:47 freeze 84311131..84311200, and live-dark ticks the rotator had not visited). In-window official 404 W46N8@84310500 and prior official 404s (now all outside this window except that hole) were retried: confirm at 2026-11-17 06:01:39 Asia/Hong_Kong game.time=84311316 recovered none inserted=0; retry2 at 2026-11-17 06:07:38 Asia/Hong_Kong game.time=84311392 recovered none inserted=0.",
+  "creep_rows_reconstructed": 26749,
+  "already_in_db": 16955,
+  "inserted": 9794,
+  "inserted_first_pass": 9794,
   "inserted_retry": 0,
   "inserted_retry2": 0,
-  "inserted_note": "This 05:00 first pass inserted 13389 new rows (already_in_db=12142) because the overlap 84309801..84310100 was already official-backfilled by the 04:30 half-hour run (and the 04:23 hourly patrol), while 84310101..84310500 is new (covering the published portion of the new 04:41 freeze band through 84310500, plus live-dark ticks the rotator had not visited after the previous official tip). Confirm and retry2 recovered none (inserted=0). inserted_total=13389. First pass realigned ts on 11227 rows (tick_s=4.76542 printed 4.765). later-mean-robust 4.65906 had 12589 rows over the 45s gate, so a corrective realign of 11797 rows was applied at game.time=84310569 (after later over45=0 over15=9423 mean_off=-11.91 max_off=6.11; first after over45=11926 over15=12893 mean_off=32.20 max_off=81.68). In-use tick_s=4.65906.",
-  "ts_realigned": 11227,
-  "ts_realigned_corrective_later_mean": 11797,
+  "inserted_note": "This 06:00 first pass inserted 9794 new rows (already_in_db=16955) because the overlap 84310501..84310900 was already official-backfilled by the 05:30 half-hour run (except the still-404 W46N8@84310500 hole), while 84310901..84311200 is new (covering the 05:30 freeze band 84310921..84310949, the 05:41 ping/pong gap 84311041..84311069, the published portion of the 05:47 freeze 84311131..84311200, plus live-dark ticks the rotator had not visited after the previous official tip; W46N8@84310500 was still 404 so W46N8 84310501..84310600 stayed mostly empty except 11 live ticks). Confirm recovered none inserted=0; retry2 recovered none inserted=0. inserted_total=9794. First pass realigned ts on 0 rows (tick_s=4.68332 printed 4.683). later-mean-robust 4.69945 was already inside the 45s gate (later over45=0 over15=3031 mean_off=-5.68 max_off=4.89; first over45=0 over15=14548 mean_off=-12.95 max_off=-1.74); no corrective realign. In-use tick_s=4.68332.",
+  "ts_realigned": 0,
+  "ts_realigned_corrective_later_mean": 0,
   "ts_realigned_confirm": 0,
   "ts_realigned_retry2": 0,
-  "ts_realigned_note": "First pass (tick_s=4.76542 printed 4.765, live anchor game.time=84310546) reported ts_realigned=11227. later-mean-robust 4.65906 (raw later-mean also 4.65906; delta first-robust 0.10636 s/tick, ~79.2s at tmin) was over the 45s gate at 05:02:50 game.time=84310568 (later over45=12589 over15=22065 mean_off=-43.09 max_off=3.68; first over45=0 over15=1096 mean_off=0.90 max_off=44.15). Applied corrective later-mean-robust realign of 11797 rows at game.time=84310569; after later over45=0 over15=9423 mean_off=-11.91 max_off=6.11 (first after over45=11926 over15=12893 mean_off=32.20 max_off=81.68). In-use tick_s=4.65906.",
+  "ts_realigned_note": "First pass (tick_s=4.68332 printed 4.683, live anchor game.time=84311292) reported ts_realigned=0. later-mean-robust 4.69945 (raw later-mean also 4.69945; delta first-robust -0.01613 s/tick, ~12.8s at tmin) was already inside the 45s gate at 06:01:21 game.time=84311312 (later over45=0 over15=3031 mean_off=-5.68 max_off=4.89; first over45=0 over15=14548 mean_off=-12.95 max_off=-1.74, lowest over45 among sane=all_mean). No corrective realign. In-use tick_s=4.68332.",
   "ssl_first_attempt": "ok first try",
-  "hourly_patrol_prefilled": "The previous 04:30 half-hour run official-backfilled 84309401..84310100 (inserted=3334 already_in_db=22189 at game.time=84310143, published_bases 84309400..84310000, missing_chunks=0, tick_s=4.65056 printed 4.651, corrective later-mean-robust nfix=5654 in-use 4.73825). The 04:23 Asia/Hong_Kong hourly patrol official-backfilled 84309301..84310000 (inserted=9196 already_in_db=16059 at game.time=84310077, published_bases 84309300..84309900, missing_chunks=0, tick_s=4.741, ts_realigned=0). This 05:00 run overlapped 84309801..84310100 and newly filled 84310101..84310500 (inserted=13389, missing_chunks=0).",
+  "hourly_patrol_prefilled": "The previous 05:30 half-hour run official-backfilled 84310201..84310900 (inserted=7081 already_in_db=18919 at game.time=84310965, published_bases 84310200..84310800, missing_chunks=1 W46N8@84310500, tick_s=4.68768 printed 4.688, ts_realigned_first=0, later-mean-robust 4.66688 inside 45s gate, in-use 4.68768). The 05:18 Asia/Hong_Kong hourly patrol ran before this window; this half-hour backfill is the official-history catch-up for 84310501..84311200 (inserted=9794 first pass, missing_chunks=1 W46N8@84310500 still 404).",
   "per_room": {
     "W46N8": {
-      "official_ticks_first_pass": 700,
-      "new_rows_first_pass": 2440,
-      "distinct": 700,
-      "rows": 5917,
+      "official_ticks_first_pass": 600,
+      "new_rows_first_pass": 3057,
+      "distinct": 611,
+      "rows": 6428,
       "range": [
-        84309801,
-        84310500
+        84310522,
+        84311200
       ],
-      "missing_n": 0,
-      "missing_ranges": [],
-      "official_404_missing": 0,
-      "official_404_missing_ranges": [],
+      "missing_n": 89,
+      "missing_ranges": [
+        [
+          84310501,
+          84310521
+        ],
+        [
+          84310533,
+          84310600
+        ]
+      ],
+      "official_404_missing": 89,
+      "official_404_missing_ranges": [
+        [
+          84310501,
+          84310521
+        ],
+        [
+          84310533,
+          84310600
+        ]
+      ],
       "official_empty_no_creep": 0
     },
     "W47N8": {
       "official_ticks_first_pass": 700,
-      "new_rows_first_pass": 6072,
+      "new_rows_first_pass": 2639,
       "distinct": 700,
-      "rows": 10784,
+      "rows": 11065,
       "range": [
-        84309801,
-        84310500
+        84310501,
+        84311200
       ],
       "missing_n": 0,
       "missing_ranges": [],
@@ -79,12 +107,12 @@
     },
     "W45N8": {
       "official_ticks_first_pass": 700,
-      "new_rows_first_pass": 1462,
+      "new_rows_first_pass": 1038,
       "distinct": 700,
-      "rows": 2962,
+      "rows": 2186,
       "range": [
-        84309801,
-        84310500
+        84310501,
+        84311200
       ],
       "missing_n": 0,
       "missing_ranges": [],
@@ -94,27 +122,36 @@
     },
     "W45N7": {
       "official_ticks_first_pass": 700,
-      "new_rows_first_pass": 2054,
-      "distinct": 700,
-      "rows": 3523,
+      "new_rows_first_pass": 1305,
+      "distinct": 653,
+      "rows": 3383,
       "range": [
-        84309801,
-        84310500
+        84310501,
+        84311154
       ],
-      "missing_n": 0,
-      "missing_ranges": [],
+      "missing_n": 47,
+      "missing_ranges": [
+        [
+          84311153,
+          84311153
+        ],
+        [
+          84311155,
+          84311200
+        ]
+      ],
       "official_404_missing": 0,
       "official_404_missing_ranges": [],
-      "official_empty_no_creep": 0
+      "official_empty_no_creep": 47
     },
     "W47N7": {
       "official_ticks_first_pass": 700,
-      "new_rows_first_pass": 1361,
+      "new_rows_first_pass": 1755,
       "distinct": 700,
-      "rows": 2427,
+      "rows": 3260,
       "range": [
-        84309801,
-        84310500
+        84310501,
+        84311200
       ],
       "missing_n": 0,
       "missing_ranges": [],
@@ -140,100 +177,270 @@
     "W45N8@84295900 (0 rows / 0 distinct, range None..None; hole 84295901..84296000; official 84295900 still 404 after confirm and retry2; retry next run)",
     "W45N7@84295800 (0 rows / 0 distinct, range None..None; hole 84295801..84295900; official 84295800 still 404 after confirm and retry2; retry next run)"
   ],
-  "known_official_404s_in_window": [],
-  "w45n7_empty_no_creep_in_window": false,
-  "w45n7_empty_no_creep_ranges": [],
-  "empty_no_creep_in_window": false,
-  "empty_no_creep_ranges": {},
-  "empty_no_creep_ticks": 0,
-  "official_room_ticks_fetched": 3500,
-  "official_room_ticks_with_creeps": 3500,
+  "known_official_404s_in_window": [
+    "W46N8@84310500"
+  ],
+  "w45n7_empty_no_creep_in_window": true,
+  "w45n7_empty_no_creep_ranges": [
+    [
+      84311153,
+      84311153
+    ],
+    [
+      84311155,
+      84311200
+    ]
+  ],
+  "empty_no_creep_in_window": true,
+  "empty_no_creep_ranges": {
+    "W45N7": [
+      [
+        84311153,
+        84311153
+      ],
+      [
+        84311155,
+        84311200
+      ]
+    ]
+  },
+  "empty_no_creep_ticks": 47,
+  "official_room_ticks_fetched": 3411,
+  "official_room_ticks_with_creeps": 3364,
   "new_box_freeze": {
-    "from": "2026-11-17 04:41:28",
-    "to": "2026-11-17 04:58:52",
-    "sec": 1044,
+    "from": "2026-11-17 05:47:25",
+    "to": "2026-11-17 05:57:21",
+    "sec": 588,
     "kind": "box_hibernate",
     "live_room_stats_gap": [
-      84310281,
-      84310529
+      84311131,
+      84311269
     ],
-    "live_room_stats_gap_ticks": 249,
+    "live_room_stats_gap_ticks": 139,
     "official_fill": {
       "published_through_tip": {
         "W46N8": {
-          "distinct": 220,
-          "min": 84310281,
-          "max": 84310500,
-          "rows": 1867,
-          "span": 220
+          "distinct": 70,
+          "min": 84311131,
+          "max": 84311200,
+          "rows": 876,
+          "span": 70
         },
         "W47N8": {
-          "distinct": 220,
-          "min": 84310281,
-          "max": 84310500,
-          "rows": 3659,
-          "span": 220
+          "distinct": 70,
+          "min": 84311131,
+          "max": 84311200,
+          "rows": 1026,
+          "span": 70
         },
         "W45N8": {
-          "distinct": 220,
-          "min": 84310281,
-          "max": 84310500,
-          "rows": 904,
-          "span": 220
+          "distinct": 70,
+          "min": 84311131,
+          "max": 84311200,
+          "rows": 275,
+          "span": 70
         },
         "W45N7": {
-          "distinct": 220,
-          "min": 84310281,
-          "max": 84310500,
-          "rows": 1234,
-          "span": 220
+          "distinct": 23,
+          "min": 84311131,
+          "max": 84311154,
+          "rows": 29,
+          "span": 70
         },
         "W47N7": {
-          "distinct": 220,
-          "min": 84310281,
-          "max": 84310500,
-          "rows": 643,
-          "span": 220
+          "distinct": 70,
+          "min": 84311131,
+          "max": 84311200,
+          "rows": 374,
+          "span": 70
         }
       },
       "published_gap": {
         "W46N8": {
-          "distinct": 220,
-          "min": 84310281,
-          "max": 84310500,
-          "rows": 1867,
-          "span": 220
+          "distinct": 70,
+          "min": 84311131,
+          "max": 84311200,
+          "rows": 876,
+          "span": 70
         },
         "W47N8": {
-          "distinct": 220,
-          "min": 84310281,
-          "max": 84310500,
-          "rows": 3659,
-          "span": 220
+          "distinct": 70,
+          "min": 84311131,
+          "max": 84311200,
+          "rows": 1026,
+          "span": 70
         },
         "W45N8": {
-          "distinct": 220,
-          "min": 84310281,
-          "max": 84310500,
-          "rows": 904,
-          "span": 220
+          "distinct": 70,
+          "min": 84311131,
+          "max": 84311200,
+          "rows": 275,
+          "span": 70
         },
         "W45N7": {
-          "distinct": 220,
-          "min": 84310281,
-          "max": 84310500,
-          "rows": 1234,
-          "span": 220
+          "distinct": 23,
+          "min": 84311131,
+          "max": 84311154,
+          "rows": 29,
+          "span": 70
         },
         "W47N7": {
-          "distinct": 220,
-          "min": 84310281,
-          "max": 84310500,
-          "rows": 643,
-          "span": 220
+          "distinct": 70,
+          "min": 84311131,
+          "max": 84311200,
+          "rows": 374,
+          "span": 70
         }
       },
       "full_rs_gap": {
+        "W46N8": {
+          "distinct": 70,
+          "min": 84311131,
+          "max": 84311200,
+          "rows": 876,
+          "span": 139
+        },
+        "W47N8": {
+          "distinct": 70,
+          "min": 84311131,
+          "max": 84311200,
+          "rows": 1026,
+          "span": 139
+        },
+        "W45N8": {
+          "distinct": 70,
+          "min": 84311131,
+          "max": 84311200,
+          "rows": 275,
+          "span": 139
+        },
+        "W45N7": {
+          "distinct": 23,
+          "min": 84311131,
+          "max": 84311154,
+          "rows": 29,
+          "span": 139
+        },
+        "W47N7": {
+          "distinct": 70,
+          "min": 84311131,
+          "max": 84311200,
+          "rows": 374,
+          "span": 139
+        }
+      },
+      "freeze2_0541_pingpong_rs_gap": {
+        "W46N8": {
+          "distinct": 29,
+          "min": 84311041,
+          "max": 84311069,
+          "rows": 262,
+          "span": 29
+        },
+        "W47N8": {
+          "distinct": 29,
+          "min": 84311041,
+          "max": 84311069,
+          "rows": 355,
+          "span": 29
+        },
+        "W45N8": {
+          "distinct": 29,
+          "min": 84311041,
+          "max": 84311069,
+          "rows": 107,
+          "span": 29
+        },
+        "W45N7": {
+          "distinct": 29,
+          "min": 84311041,
+          "max": 84311069,
+          "rows": 124,
+          "span": 29
+        },
+        "W47N7": {
+          "distinct": 29,
+          "min": 84311041,
+          "max": 84311069,
+          "rows": 254,
+          "span": 29
+        }
+      },
+      "prior_0530_full_rs_gap": {
+        "W46N8": {
+          "distinct": 29,
+          "min": 84310921,
+          "max": 84310949,
+          "rows": 377,
+          "span": 29
+        },
+        "W47N8": {
+          "distinct": 29,
+          "min": 84310921,
+          "max": 84310949,
+          "rows": 465,
+          "span": 29
+        },
+        "W45N8": {
+          "distinct": 29,
+          "min": 84310921,
+          "max": 84310949,
+          "rows": 38,
+          "span": 29
+        },
+        "W45N7": {
+          "distinct": 29,
+          "min": 84310921,
+          "max": 84310949,
+          "rows": 165,
+          "span": 29
+        },
+        "W47N7": {
+          "distinct": 29,
+          "min": 84310921,
+          "max": 84310949,
+          "rows": 168,
+          "span": 29
+        }
+      },
+      "prior_0511_full_rs_gap": {
+        "W46N8": {
+          "distinct": 109,
+          "min": 84310671,
+          "max": 84310779,
+          "rows": 1005,
+          "span": 109
+        },
+        "W47N8": {
+          "distinct": 109,
+          "min": 84310671,
+          "max": 84310779,
+          "rows": 1763,
+          "span": 109
+        },
+        "W45N8": {
+          "distinct": 109,
+          "min": 84310671,
+          "max": 84310779,
+          "rows": 327,
+          "span": 109
+        },
+        "W45N7": {
+          "distinct": 109,
+          "min": 84310671,
+          "max": 84310779,
+          "rows": 604,
+          "span": 109
+        },
+        "W47N7": {
+          "distinct": 109,
+          "min": 84310671,
+          "max": 84310779,
+          "rows": 413,
+          "span": 109
+        }
+      },
+      "prior_0441_full_rs_gap": {
         "W46N8": {
           "distinct": 228,
           "min": 84310281,
@@ -242,32 +449,106 @@
           "span": 249
         },
         "W47N8": {
+          "distinct": 249,
+          "min": 84310281,
+          "max": 84310529,
+          "rows": 4138,
+          "span": 249
+        },
+        "W45N8": {
+          "distinct": 249,
+          "min": 84310281,
+          "max": 84310529,
+          "rows": 987,
+          "span": 249
+        },
+        "W45N7": {
+          "distinct": 249,
+          "min": 84310281,
+          "max": 84310529,
+          "rows": 1383,
+          "span": 249
+        },
+        "W47N7": {
+          "distinct": 249,
+          "min": 84310281,
+          "max": 84310529,
+          "rows": 730,
+          "span": 249
+        }
+      },
+      "prior_0441_pub": {
+        "W46N8": {
+          "distinct": 220,
+          "min": 84310281,
+          "max": 84310500,
+          "rows": 1867,
+          "span": 220
+        },
+        "W47N8": {
           "distinct": 220,
           "min": 84310281,
           "max": 84310500,
           "rows": 3659,
-          "span": 249
+          "span": 220
         },
         "W45N8": {
           "distinct": 220,
           "min": 84310281,
           "max": 84310500,
           "rows": 904,
-          "span": 249
+          "span": 220
         },
         "W45N7": {
           "distinct": 220,
           "min": 84310281,
           "max": 84310500,
           "rows": 1234,
-          "span": 249
+          "span": 220
         },
         "W47N7": {
           "distinct": 220,
           "min": 84310281,
           "max": 84310500,
           "rows": 643,
-          "span": 249
+          "span": 220
+        }
+      },
+      "prior_0441_remainder": {
+        "W46N8": {
+          "distinct": 8,
+          "min": 84310522,
+          "max": 84310529,
+          "rows": 64,
+          "span": 29
+        },
+        "W47N8": {
+          "distinct": 29,
+          "min": 84310501,
+          "max": 84310529,
+          "rows": 479,
+          "span": 29
+        },
+        "W45N8": {
+          "distinct": 29,
+          "min": 84310501,
+          "max": 84310529,
+          "rows": 83,
+          "span": 29
+        },
+        "W45N7": {
+          "distinct": 29,
+          "min": 84310501,
+          "max": 84310529,
+          "rows": 149,
+          "span": 29
+        },
+        "W47N7": {
+          "distinct": 29,
+          "min": 84310501,
+          "max": 84310529,
+          "rows": 87,
+          "span": 29
         }
       },
       "prior_0409_full_rs_gap": {
@@ -531,88 +812,94 @@
       },
       "unpublished_remainder": {
         "W46N8": {
-          "distinct": 8,
-          "min": 84310522,
-          "max": 84310529,
-          "rows": 64,
-          "span": 29
+          "distinct": 0,
+          "min": null,
+          "max": null,
+          "rows": 0,
+          "span": 69
         },
         "W47N8": {
           "distinct": 0,
           "min": null,
           "max": null,
           "rows": 0,
-          "span": 29
+          "span": 69
         },
         "W45N8": {
           "distinct": 0,
           "min": null,
           "max": null,
           "rows": 0,
-          "span": 29
+          "span": 69
         },
         "W45N7": {
           "distinct": 0,
           "min": null,
           "max": null,
           "rows": 0,
-          "span": 29
+          "span": 69
         },
         "W47N7": {
           "distinct": 0,
           "min": null,
           "max": null,
           "rows": 0,
-          "span": 29
+          "span": 69
         }
       }
     },
-    "note": "room_stats has a 249-tick live gap 84310281..84310529 around the new 04:41:28–04:58:52 (~1044s) box freeze (last STATS before freeze 84310280, first after reconnect 84310530). Official history in this window filled the published portion 84310281..84310500 (220/220 distinct on W46N8 / all five rooms; published tip 84310500). The unpublished remainder of that freeze band is 84310501..84310529 (8/29 distinct on W46N8 so far; official chunk 84310500 still unpublished). The earlier 04:09:40–04:23:58 (~846s) freeze room_stats gap 84309881..84310079 is now fully inside this window and official-filled (199/199 distinct on W46N8 / all five rooms). The earlier 03:47:49–03:56:46 (~529s) freeze room_stats gap 84309601..84309729 sits just outside this window and stays official-filled (129/129 distinct on W46N8 / all five rooms). The earlier 03:16:09–03:19:13 (~178s) freeze room_stats gap 84309201..84309249 sits outside this window and stays official-filled (49/49 distinct on W46N8 / all five rooms). No official empty-no-creep ticks in this window (3500 of 3500 official room-ticks have our creeps). The earlier 02:42:48–03:02:01 (~1145s) freeze room_stats gap 84308771..84309029 sits outside this window (already official-filled last runs): W46N8 259/259 distinct; W47N7 still 230/259 because official W47N7@84309000 remains 404 (hole 84309001..84309100, the tail of that band). The earlier 02:14:33–02:17:28 (~170s) freeze room_stats gap 84308421..84308469 sits outside this window and stays official-filled (49/49 distinct for W46N8 / all five rooms). Two earlier websocket ping/pong room_stats gaps also sit outside this window and stay official-filled: 02:08:54 timeout 84308341..84308369 (29/29 distinct) and 02:26:30 timeout 84308561..84308579 (19/19 distinct). The unpublished in-progress chunk 84310500 (84310501..) is being filled live by peacetime rotation: W46N8 84310522..84310532 (11 distinct / 86 rows, runs [[84310522, 84310532, 11]]), then W47N8 84310533..84310641 (109 distinct / 1901 rows, runs [[84310533, 84310641, 109]]). Live after official tip began on W46N8, then W47N8. W45N8, W45N7, W47N7 not live-filled after official tip 84310500. The unpublished chunk has a hole 84310501..84310521 on all five rooms (official 84310500 still unpublished; retry next run when that chunk is published). First live tick in this unpublished band is W46N8 84310522."
+    "note": "room_stats has a 139-tick live gap 84311131..84311269 around the new 05:47:25–05:57:21 (~588s) box freeze (last STATS before freeze 84311130, first after reconnect 84311270). Official history in this window filled the published portion 84311131..84311200 (70/70 distinct on W46N8 / all five rooms); the remainder 84311201..84311269 sits in the unpublished in-progress chunk 84311200 (0/69 distinct on W46N8 so far, live-filled after reconnect). A mid-window websocket ping/pong timeout at 05:41:17 (relaunch 05:41:20) left a 29-tick room_stats gap 84311041..84311069 (last STATS before the gap 84311040, first after 84311070); that gap is fully published in this window and official-filled (29/29 distinct on W46N8 / all five rooms). The earlier 05:30:49–05:32:20 (~78s) freeze room_stats gap 84310921..84310949 is now fully inside this published window and official-filled (29/29 distinct on W46N8 / all five rooms). The earlier 05:11:10–05:18:35 (~436s) freeze room_stats gap 84310671..84310779 stays official-filled (109/109 distinct on W46N8 / all five rooms). The earlier 04:41:28–04:58:52 (~1044s) freeze room_stats gap 84310281..84310529 has its published portion 84310281..84310500 official-filled last run (220/220 distinct on W46N8 / all five rooms); the remainder 84310501..84310529 is official-filled on W47N8/W45N8/W45N7/W47N7, but W46N8 official @84310500 is still 404 (W46N8 remainder 8/29 distinct so far; 11 live-filled 84310522..84310532). The earlier 04:09:40–04:23:58 (~846s) freeze room_stats gap 84309881..84310079 sits just outside this window and stays official-filled (199/199 distinct on W46N8 / all five rooms). The earlier 03:47:49–03:56:46 (~529s) freeze room_stats gap 84309601..84309729 sits outside this window and stays official-filled (129/129 distinct on W46N8 / all five rooms). The earlier 03:16:09–03:19:13 (~178s) freeze room_stats gap 84309201..84309249 sits outside this window and stays official-filled (49/49 distinct on W46N8 / all five rooms). Official empty-no-creep ticks in this window: 47 (W45N7 47 [[84311153, 84311153], [84311155, 84311200]]; ). The earlier 02:42:48–03:02:01 (~1145s) freeze room_stats gap 84308771..84309029 sits outside this window (already official-filled last runs): W46N8 259/259 distinct; W47N7 still 230/259 because official W47N7@84309000 remains 404 (hole 84309001..84309100, the tail of that band). The earlier 02:14:33–02:17:28 (~170s) freeze room_stats gap 84308421..84308469 sits outside this window and stays official-filled (49/49 distinct for W46N8 / all five rooms). Two earlier websocket ping/pong room_stats gaps also sit outside this window and stay official-filled: 02:08:54 timeout 84308341..84308369 (29/29 distinct) and 02:26:30 timeout 84308561..84308579 (19/19 distinct). The unpublished in-progress chunk 84311200 (84311201..) is being filled live by peacetime rotation: W46N8 84311274..84311399 (126 distinct / 1763 rows, runs [[84311274, 84311399, 126]]). Live after official tip began on W46N8. W47N8, W45N8, W45N7, W47N7 not live-filled after official tip 84311200. The unpublished chunk has a hole 84311201..84311273 on all five rooms (official 84311200 still unpublished; retry next run when that chunk is published). First live tick in this unpublished band is W46N8 84311274."
+  },
+  "second_box_freeze": {
+    "from": "2026-11-17 05:41:17",
+    "to": "2026-11-17 05:41:20",
+    "sec": 3,
+    "kind": "ws_pingpong_timeout",
+    "live_room_stats_gap": [
+      84311041,
+      84311069
+    ],
+    "live_room_stats_gap_ticks": 29,
+    "note": "fully published in this window (84311041..84311069); official-filled"
   },
   "db_tips_at_finish": {
     "creep_ticks": {
-      "max_tick": 84310640,
-      "max_ts": "2026-11-17T05:08:31.962680+08:00"
+      "max_tick": 84311399,
+      "max_ts": "2026-11-17T06:08:07.511781+08:00"
     },
     "room_stats": {
-      "max_tick": 84310640,
-      "max_ts": "2026-11-17T05:08:33.453200+08:00"
+      "max_tick": 84311390,
+      "max_ts": "2026-11-17T06:07:26.442259+08:00"
     },
     "creep_cpu": {
-      "max_tick": 84310630,
-      "max_ts": "2026-11-17T05:08:12.423092+08:00"
+      "max_tick": 84311390,
+      "max_ts": "2026-11-17T06:07:51.551238+08:00"
     },
     "path_arrivals": {
-      "max_tick": 84310629,
-      "max_ts": "2026-11-17T05:08:12.423092+08:00"
+      "max_tick": 84311382,
+      "max_ts": "2026-11-17T06:07:51.551238+08:00"
     }
   },
   "live_ticks_after_official_tip": {
     "W46N8": {
-      "distinct": 11,
-      "min": 84310522,
-      "max": 84310532,
-      "rows": 86,
+      "distinct": 126,
+      "min": 84311274,
+      "max": 84311399,
+      "rows": 1763,
       "runs": [
         [
-          84310522,
-          84310532,
-          11
+          84311274,
+          84311399,
+          126
         ]
       ]
     },
     "W47N8": {
-      "distinct": 109,
-      "min": 84310533,
-      "max": 84310641,
-      "rows": 1901,
-      "runs": [
-        [
-          84310533,
-          84310641,
-          109
-        ]
-      ]
+      "distinct": 0,
+      "min": null,
+      "max": null,
+      "rows": 0,
+      "runs": []
     },
     "W45N8": {
       "distinct": 0,
@@ -640,51 +927,51 @@
     "listener_count": 1,
     "run_listener_count": 1,
     "listener_ps": [
-      "3749515 .venv/bin/python tools/listener.py"
+      "3771939 .venv/bin/python tools/listener.py"
     ],
     "run_ps": [
       "4035476 /bin/bash tools/run_listener.sh"
     ],
     "yield_files": "absent",
-    "roomSlot": "W47N8",
+    "roomSlot": "W46N8",
     "rot": {
-      "i": 1,
-      "room": "W47N8",
-      "left": 89.9,
-      "at": "2026-11-17 05:08:30"
+      "i": 0,
+      "room": "W46N8",
+      "left": 9.9,
+      "at": "2026-11-17 06:08:05"
     },
-    "live_updated": "2026-11-17 05:08:27",
-    "live_gameTime": 84310532,
-    "live_stats_t": 84310630,
-    "live_json_mtime_age_s": 5.2,
+    "live_updated": "2026-11-17 06:08:04",
+    "live_gameTime": 84311398,
+    "live_stats_t": 84311390,
+    "live_json_mtime_age_s": 1.2,
     "single_slot": true,
     "did_not_start_second_listener": true,
-    "self_restart_note": "Listener self-reconnected at 04:58:52 Asia/Hong_Kong after the box freeze 2026-11-17 04:41:28–2026-11-17 04:58:52 (~1044s); existing run_listener.sh loop (pidfile 4035476) relaunched tools/listener.py at 04:58:55 (pid 3749515). Prior hibernates 04:09:40–04:23:58, 03:47:49–03:56:46 and 03:16:09–03:19:13 also self-restarted the same loop. This backfill did not start a second listener or change peacetime 5:5:1:1 rotation."
+    "self_restart_note": "Listener self-reconnected at 05:57:21 Asia/Hong_Kong after the box freeze 2026-11-17 05:47:25–2026-11-17 05:57:21 (~588s); existing run_listener.sh loop (pidfile 4035476) relaunched tools/listener.py at 05:57:24 (pid 3771939). Earlier this hour it also self-reconnected at 05:41:20 after a websocket ping/pong timeout at 05:41:17, at 05:32:20 after 05:30:49–05:32:20 (~78s), and at 05:18:35 after 05:11:10–05:18:35 (~436s). Prior hibernates 04:41:28–04:58:52, 04:09:40–04:23:58, 03:47:49–03:56:46 and 03:16:09–03:19:13 also self-restarted the same loop. This backfill did not start a second listener or change peacetime 5:5:1:1 rotation."
   },
   "unique_after_window": {
-    "rows": 25613,
-    "unique_creep_tick_rows": 25613,
+    "rows": 26322,
+    "unique_creep_tick_rows": 26322,
     "distinct_ticks": 700,
-    "distinct_room_ticks": 3500
+    "distinct_room_ticks": 3364
   },
   "segment90_after_reconnect": {
     "creep_cpu": {
-      "min": 84310335,
-      "max": 84310630,
-      "rows": 2210,
-      "min_ts": "2026-11-17T04:59:06.685984+08:00",
-      "max_ts": "2026-11-17T05:08:12.423092+08:00"
+      "min": 84311125,
+      "max": 84311390,
+      "rows": 1961,
+      "min_ts": "2026-11-17T05:57:23.793135+08:00",
+      "max_ts": "2026-11-17T06:07:51.551238+08:00"
     },
     "path_arrivals": {
-      "min": 84310288,
-      "max": 84310629,
-      "rows": 35,
-      "min_ts": "2026-11-17T04:59:06.685984+08:00",
-      "max_ts": "2026-11-17T05:08:12.423092+08:00"
+      "min": 84311124,
+      "max": 84311382,
+      "rows": 43,
+      "min_ts": "2026-11-17T05:57:23.793135+08:00",
+      "max_ts": "2026-11-17T06:07:51.551238+08:00"
     }
   },
-  "confirm_at": "2026-11-17 05:03:09 Asia/Hong_Kong",
-  "confirm_game_time": 84310572,
-  "retry2_at": "2026-11-17 05:06:38 Asia/Hong_Kong",
-  "retry2_game_time": 84310616
+  "confirm_at": "2026-11-17 06:01:39 Asia/Hong_Kong",
+  "confirm_game_time": 84311316,
+  "retry2_at": "2026-11-17 06:07:38 Asia/Hong_Kong",
+  "retry2_game_time": 84311392
 }
