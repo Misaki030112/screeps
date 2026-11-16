@@ -129,7 +129,8 @@ function targets(room, count, backlog, ctlEnergy, sites) {
   const rcl = room.controller.level, P = plan.get(room.name);
   const st = !!room.storage, links = rc.all(room, STRUCTURE_LINK).length;
   const T = {};
-  // With storage, miner B dumps adjacent (38,32→37,31) so only source A needs a hauler: 1×14C7M road hauler (see body note below).
+  // With storage, miner B dumps adjacent (38,32→37,31) so only source A needs a hauler: still one road hauler
+  // (body in homeHaulerBody: 6C3M link-era overflow, 16C8M while KO labs or a terminal mineral park are on).
   // Pre-storage keep 2 so both containers drain. Backlog can still add one extra.
   // RCL7 4th link (32,34) is a stamp filler link, only fed with STATIONARY_FILL on; queen regime: keep the 1 hauler (mineral run 41,24 -> terminal)
   T.hauler = rcl >= 7 && links >= 4 && plan.STATIONARY_FILL ? 0 : (rcl >= 6 && links >= 3 ? 1 : (st ? Math.min(2, 1 + Math.floor(backlog / 1500)) : Math.min(4, 2 + Math.floor(backlog / 1500))));
@@ -371,7 +372,34 @@ function bodyEnergy(role, E, cap, avail, haulerAlive, hasStorage, minerAlive, bu
   // spawned 6W. Storage era ignores starving E (use cap); go() waits until avail >= floor. Pre-storage still uses E.
   if (role === 'builder') return Math.min(hasStorage ? cap : E, Math.max(hasStorage ? Math.floor(0.7 * cap) : 200, avail));
   const fromCap = role === 'upgrader' || (role === 'hauler' && hasStorage) || (role === 'miner' && minerAlive);
+  // 1050 is the energy-only storage hauler (14C7M). homeHaulerBody lifts that to 1200 (16C8M)
+  // when the same creep also runs lab fills or a terminal mineral park.
   return Math.min(fromCap ? cap : E, role === 'hauler' ? (hasStorage ? 1050 : 800) : role === 'queen' ? (cap >= 2300 ? 1200 : 600) : 3000);
+}
+// Link-era overflow stays 6C3M (450e): source A ships by link, and a 14C7M sat waiting_pickup.
+// That one home hauler also runs termPark / labRun / boostHaul. While KO labs are on, or the
+// terminal still needs a mineral park (tight, or surplus above the 3000 buffers), spawn the
+// queen's 16C8M road body (1200e, 800 carry). parkTask is null with labs off, so a full terminal
+// alone does not undo the overflow body. Never asks for more energy than the room can hold.
+const HAUL_LINK_E = 450;
+const HAUL_MINERAL_E = 1200;
+function homeHaulMineral(room) {
+  if (!room || !room.storage || !room.terminal) return false;
+  let L;
+  try { L = require('./labs'); } catch (e) { return false; }
+  try {
+    if (L.cfg && L.cfg(room)) return true;
+    if (!L.parkTask) return false;
+    return !!(L.parkTask(room, { idle: false }) || L.parkTask(room, { idle: true }));
+  } catch (e) { return false; }
+}
+function homeHaulerBody(room, e, rcl, linkN, cap) {
+  if (homeHaulMineral(room)) {
+    const budget = Math.min(typeof cap === 'number' ? cap : HAUL_MINERAL_E, HAUL_MINERAL_E);
+    return B.roadHauler(budget);
+  }
+  const linkEra = (rcl || 0) >= 6 && (linkN || 0) >= 3;
+  return B.roadHauler(linkEra ? Math.min(e, HAUL_LINK_E) : e);
 }
 // Spawn queue order. Base upgrader quota (1 with sites, else 2) jumps ahead of REMOTE so a remote
 // rhauler wave cannot leave the room on a single 12W for hundreds of ticks (patrol 2026-10-16 16:42).
@@ -482,7 +510,7 @@ function spawnGate(spawn, sw) {
   g = room._sg = { t: Game.time, throttled, planned: 0, spawned: 0, passes: 0, who: '', targets: 0, force, canPay };
   return g;
 }
-module.exports = { defLowUpgraders, upExtraTick, extraUpReady, UP_EXTRA_ARM, UP_EXTRA_REARM, UP_EXTRA_EMA, UP_EXTRA_EMA_OFF, UP_EXTRA_T, UP_EXTRA_BODY, setRoleTargets, rhTarget, birthDirs, targets, mineralCapped, rhaulerNeed, remoteNext, retiring, pendingSpawn, notePendingSpawn, B, defenderOrder, planDefender, extrasOk, reserverBody, nearFull, bodyEnergy, spawnOrder, run(spawn) {
+module.exports = { defLowUpgraders, upExtraTick, extraUpReady, UP_EXTRA_ARM, UP_EXTRA_REARM, UP_EXTRA_EMA, UP_EXTRA_EMA_OFF, UP_EXTRA_T, UP_EXTRA_BODY, setRoleTargets, rhTarget, birthDirs, targets, mineralCapped, rhaulerNeed, remoteNext, retiring, pendingSpawn, notePendingSpawn, B, defenderOrder, planDefender, extrasOk, reserverBody, nearFull, bodyEnergy, homeHaulMineral, homeHaulerBody, HAUL_LINK_E, HAUL_MINERAL_E, spawnOrder, run(spawn) {
   // spawn-wait metric (Misaki 10-18 09:30: zero spawn idle due to refill). Memory.stats.sw[room] cumulative ticks:
   //   busy = spawning; wait = a creep was wanted, cost <= cap but energyAvailable < cost (refill wait); idle = nothing wanted.
   //   last = [role, cost, avail] of the latest wait.
@@ -669,15 +697,17 @@ function run1(spawn, onWait) {
     const mem = {};
     if (role === 'filler') { const used = new Set(mine.filter(c => c.memory.role === 'filler').map(c => c.memory.spot.join())); mem.spot = P.pos.fillers.slice(0, 4).find(s => !used.has(s.join())); }
     // Home hauler: 8C8M pre-storage. With storage it hauls source A -> ctl container (27 tiles, measured cycle ~57-66t, not the
-    // model's A->hub rt 28): 10/t x 66 = 660 carry -> one 14C7M road hauler (700, 1050e). 2x6C6M (600 carry) let
+    // model's A->hub rt 28): 10/t x 66 = 660 carry -> one 14C7M road hauler (700, 1050e) before links. 2x6C6M (600 carry) let
     // container A pile up to 1771/2000 (patrol 10-14 07:05) while upgraders sat waiting_feed ~50%.
     const buildMode = role === 'upgrader' && rcl >= 6 && rcl < 8 && require('./walls').phase(room) === 'roads';
     let e = bodyEnergy(role, E, cap, avail, !!alive.hauler, !!room.storage, undefined, buildMode);
     if (role === 'builder' && roadBuilder) e = Math.min(e, 1000); // 5W5C5M: 7.5k of road sites, not an 11W at the floor
-    // v5 link era (RCL6, 3 links): source A ships via link 30,11, the home hauler only clears container overflow / drops.
-    // 14C7M sat waiting_pickup 66% and moved empty 89% (motion audit 02:50) -> 6C3M (450e, 300 carry).
-    const linkEra = role === 'hauler' && rcl >= 6 && rc.all(room, STRUCTURE_LINK).length >= 3;
-    return go(role, role === 'hauler' && room.storage ? B.roadHauler(linkEra ? Math.min(e, 450) : e) : B[role](e, rcl), mem);
+    // Storage-era home hauler. Link era (RCL6+, >=3 links) is 6C3M unless KO labs or a terminal
+    // mineral park need the queen's 16C8M (homeHaulerBody). One role; the body is chosen here.
+    const body = role === 'hauler' && room.storage
+      ? homeHaulerBody(room, e, rcl, rc.all(room, STRUCTURE_LINK).length, cap)
+      : B[role](e, rcl);
+    return go(role, body, mem);
   };
   // Misaki 17:11: rooms develop independently; once W47N8 has its own spawn home spawns NOTHING for it (no cq/quad bodies)
   const indep8 = !!(Game.rooms.W47N8 && Game.rooms.W47N8.find(FIND_MY_SPAWNS).length);

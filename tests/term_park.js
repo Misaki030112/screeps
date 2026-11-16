@@ -147,4 +147,33 @@ function creep(store, mem, cap = 300) {
   assert.deepStrictEqual(c.got, [['w', 't', 'O', 300]]);
   assert.ok(!c.got.some(g => g[2] === 'energy' || g[2] === 'K' || g[2] === 'KO'));
 }
+{
+  const t = term({ O: 126976, K: 172792, KO: 36, energy: 0 }, 0);
+  const s = stor({ energy: 20000 });
+  const c = creep({}, {}, 800);
+  const rm = roomOf(t, s);
+  assert.strictEqual(H.termPark(c, rm, false), true);
+  assert.deepStrictEqual(c.got, [['w', 't', 'O', 800]], '800 carry takes 800 of a 123976 O surplus');
+  assert.ok(c.got.every(g => g[3] <= 800));
+  assert.strictEqual(H.termPark(c, rm, false), true);
+  assert.strictEqual(c.store.O || 0, 0);
+  c.got = [];
+  assert.strictEqual(H.termPark(c, rm, false), true, 'second 800 trip');
+  assert.deepStrictEqual(c.got, [['w', 't', 'O', 800]]);
+  assert.ok(!c.got.some(g => g[2] === 'energy'));
+}
+{
+  const t = term({ O: 3500, K: 3000, KO: 0, energy: 0 }, 0);
+  const s = stor({ energy: 20000 });
+  const c = creep({}, {}, 800);
+  assert.strictEqual(H.termPark(c, roomOf(t, s), false), true);
+  assert.deepStrictEqual(c.got, [['w', 't', 'O', 500]], 'withdraw is min(surplus, free carry, source)');
+}
+{
+  const t = term({ O: 9000, K: 3000, KO: 0, energy: 0 }, 0);
+  const s = stor({ energy: 14000 });
+  const c = creep({}, {}, 800);
+  assert.strictEqual(H.termPark(c, roomOf(t, s), false), false, '800 carry still skips the park under the 15k floor');
+  assert.deepStrictEqual(c.got, []);
+}
 console.log('term park ok');
