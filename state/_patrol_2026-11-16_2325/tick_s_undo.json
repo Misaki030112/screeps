@@ -1,0 +1,40 @@
+{
+  "undone": true,
+  "nrev": 13386,
+  "tick_s_restored": 4.75828,
+  "gt_undo": 84306384,
+  "now_undo": "2026-11-16 23:28:53 Asia/Hong_Kong",
+  "before_vs_first": {
+    "over45": 13386,
+    "over15": 15099,
+    "n": 25803,
+    "mean_off": -39.215692932294694,
+    "min_off": -91.851758,
+    "max_off": 26.915422
+  },
+  "before_vs_later": {
+    "over45": 742,
+    "over15": 8359,
+    "n": 25803,
+    "mean_off": 12.374333844049142,
+    "min_off": -11.10967,
+    "max_off": 47.376889
+  },
+  "after_vs_first": {
+    "over45": 0,
+    "over15": 1713,
+    "n": 25803,
+    "mean_off": -3.1508914862612873,
+    "min_off": -44.73294,
+    "max_off": 26.915422
+  },
+  "after_vs_later": {
+    "over45": 13959,
+    "over15": 21736,
+    "n": 25803,
+    "mean_off": 48.43913529008255,
+    "min_off": -10.842711,
+    "max_off": 94.29669
+  },
+  "reason": "Mistaken later-mean-robust realign of 13262 rows onto 4.87871 was undone. Before that realign, first-interval 4.75828 already had over45=8 mean_off=-3.35 vs the live anchor (essentially inside the 45s gate); later-mean looked bad only because rows were already on 4.758. This matches the known 22:26 failure mode."
+}
