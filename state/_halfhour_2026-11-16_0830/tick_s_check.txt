@@ -1,0 +1,30 @@
+intervals_w46:
+  84294100..84294200 4.25340
+  84294200..84294300 4.33188
+  84294300..84294400 4.21844
+  84294400..84294500 4.36666
+  84294500..84294600 4.14398
+  84294600..84294700 4.29785
+intervals_min_all_rooms:
+  84294100..84294200 4.25340
+  84294200..84294300 4.33188
+  84294300..84294400 4.21844
+  84294400..84294500 4.36666
+  84294500..84294600 4.14398
+  84294600..84294700 4.29785
+first=4.25340 later_mean_raw=4.27176 later_mean_robust=4.27176
+all_mean=4.26870 span_mean=4.26870 script_tick_s=4.25340 prev_later=4.25951
+delta_first_minus_later_raw=-0.01836 s/tick; at tmin vs gt_first ~14.0s
+delta_first_minus_later_robust=-0.01836 s/tick; at tmin vs gt_first ~14.0s
+anchor 2026-11-16 08:33:51 Asia/Hong_Kong game.time=84294874
+vs_first tick_s=4.25340 {'over45': 0, 'over15': 8398, 'n': 28894, 'mean_off': -3.5611748437391846, 'min_off': -19.352525, 'max_off': 12.723455}
+vs_later_raw tick_s=4.27176 {'over45': 0, 'over15': 2448, 'n': 28894, 'mean_off': 4.112804074236866, 'min_off': -8.394783, 'max_off': 16.814791}
+vs_later_robust tick_s=4.27176 {'over45': 0, 'over15': 2448, 'n': 28894, 'mean_off': 4.112804074236866, 'min_off': -8.394783, 'max_off': 16.814791}
+vs_all_mean tick_s=4.26870 {'over45': 0, 'over15': 177, 'n': 28894, 'mean_off': 2.8338075874229944, 'min_off': -9.869864, 'max_off': 15.370643}
+vs_span_mean tick_s=4.26870 {'over45': 0, 'over15': 177, 'n': 28894, 'mean_off': 2.8338075874229944, 'min_off': -9.869864, 'max_off': 15.370643}
+vs_prev_later tick_s=4.25951 {'over45': 0, 'over15': 0, 'n': 28894, 'mean_off': -1.0076397610230499, 'min_off': -14.629495, 'max_off': 13.780485}
+lowest_over45_among_sane=prev_later {'over45': 0, 'over15': 0, 'n': 28894, 'mean_off': -1.0076397610230499, 'min_off': -14.629495, 'max_off': 13.780485}
+corrective_applied=False
+wrote /workspace/screeps/state/_halfhour_2026-11-16_0830/tick_s_realign.json
+corrective_applied=False nfix=0
+reason: first-interval tick_s=4.25340 (printed 4.253) is in the sane 3-6s band; later-mean-robust 4.27176 (raw later-mean 4.27176; delta first-robust -0.01836 s/tick, ~14.0s at tmin); later-mean-robust already inside 45s gate, no corrective realign
