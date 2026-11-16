@@ -1,18 +1,18 @@
-game.time=84300061 published_bases=84299300..84299900 rooms=W46N8,W47N8,W45N8,W45N7,W47N7 dry=False
-  (35 official GETs all 200; see history_backfill.txt)
-tick_s=4.802
-reconstructed ticks=84299301..84300000 (700) creep_rows=28450 missing_chunks=0
-already_in_db=14118 would_insert=14332
-per_room W46N8:700t/2632new W47N8:700t/4956new W45N8:700t/2229new W45N7:700t/1137new W47N7:700t/3378new
-inserted=14332
+game.time=84300825 published_bases=84300100..84300700 rooms=W46N8,W47N8,W45N8,W45N7,W47N7 dry=False
+  (35 of 35 official GETs 200; see history_backfill.txt)
+tick_s=4.800
+reconstructed ticks=84300101..84300800 (700) creep_rows=24769 missing_chunks=0
+already_in_db=12352 would_insert=12417
+per_room W46N8:700t/3110new W47N8:700t/4471new W45N8:700t/2147new W45N7:700t/1335new W47N7:700t/1354new
+inserted=12417
 ts_realigned=0
 db_after
-  W45N7 ticks=84299301..84300000 rows=1637 distinct=700
-  W45N8 ticks=84299301..84300000 rows=3261 distinct=700
-  W46N8 ticks=84299301..84300000 rows=8384 distinct=700
-  W47N7 ticks=84299301..84300000 rows=4602 distinct=700
-  W47N8 ticks=84299301..84300000 rows=10496 distinct=700
-confirm recovered none at 15:02:52 game.time=84300085 inserted=0 ts_realigned=0; no in-window official 404s; leftovers W47N8@84298000 (not live-filled, 0 distinct / 0 rows, hole 84298001..84298100), W47N8@84297200, W47N7@84296500, W45N8@84295900, W45N7@84295800 still 404; retried 35 aged leftover official 404s including W46N8@84292000, all still 404; retry2 at 15:04:46 game.time=84300109 recovered none inserted=0 ts_realigned=0; leftovers W47N8@84298000, W47N8@84297200, W47N7@84296500, W45N8@84295900 and W45N7@84295800 still 404
-ts_realigned_first_pass=0 (tick_s=4.80189 printed 4.802, sane first interval); later-mean-robust 4.79347 already inside the 45s gate at 15:02:45 game.time=84300084 (later over45=0 over15=2807 mean_off=4.73); first over45=0 over15=5307 mean_off=8.43; no corrective realign. first-interval 4.80189 kept.
-inserted_total=14332 unique_after rows=28380 distinct_room_ticks=3500 official_with_creeps=3500 empty_no_creep=0 official_recovered=3500 expected=5*700=3500 in_window_official_404=0 after retry2 (first-pass missing_chunks=0; confirm recovered 0, retry2 recovered 0)
-official empty-no-creep ticks in this window: none. Remaining official 404 in window: none. Leftover just outside window: W47N8 official 404 84298001..84298100 (not live-filled, 0 distinct / 0 rows; retry next run); W47N8 official 404 84297201..84297300 (already live-filled 100 distinct / 1562 rows); W47N7 official 404 84296501..84296600; W45N8 official 404 84295901..84296000; W45N7 official 404 84295801..84295900. All five rooms 700 distinct with creeps.
+  W45N7 ticks=84300101..84300800 rows=2058 distinct=700
+  W45N8 ticks=84300101..84300800 rows=3807 distinct=700
+  W46N8 ticks=84300101..84300800 rows=6753 distinct=700
+  W47N7 ticks=84300101..84300800 rows=2562 distinct=700
+  W47N8 ticks=84300101..84300800 rows=10570 distinct=700
+confirm recovered none at 16:03:25 game.time=84300843 inserted=0 ts_realigned=0; no in-window official 404; leftovers just outside window W45N8@84300000 still 404 (26 live-filled 84300067..84300092 / 159 rows; 74 empty 84300001..84300066 and 84300093..84300100), W47N8@84298000 (not live-filled, 0 distinct / 0 rows, hole 84298001..84298100), W47N8@84297200, W47N7@84296500, W45N8@84295900, W45N7@84295800 still 404; retried 35 aged leftover official 404s including W46N8@84292000, all still 404; retry2 at 16:07:10 game.time=84300889 recovered none inserted=0 ts_realigned=0; leftovers W45N8@84300000, W47N8@84298000, W47N8@84297200, W47N7@84296500, W45N8@84295900 and W45N7@84295800 still 404
+ts_realigned_first_pass=0 (tick_s=4.80031 printed 4.800, sane first interval, new rows already on live anchor); later-mean-robust 4.79459 already inside the 45s gate at 16:03:17 game.time=84300841 (later over45=0 over15=7806 mean_off=-9.27); first over45=0 over15=5651 mean_off=-7.04; no corrective realign. first-interval 4.80031 kept.
+inserted_total=12417 unique_after rows=25750 distinct_room_ticks=3500 official_with_creeps=3500 empty_no_creep=0 official_recovered=3500 expected=5*700=3500 in_window_official_404=0 after retry2 (first-pass missing_chunks=0; confirm recovered 0, retry2 recovered 0)
+official empty-no-creep ticks in this window: none. Remaining official 404 just outside window: W45N8 official 404 84300001..84300100 (26 live-filled 84300067..84300092 / 159 rows; 74 still empty 84300001..84300066 and 84300093..84300100; official 84300000 still 404 after confirm and retry2; retry next run). Leftover just outside window: W47N8 official 404 84298001..84298100 (not live-filled, 0 distinct / 0 rows; retry next run); W47N8 official 404 84297201..84297300 (already live-filled 100 distinct / 1562 rows); W47N7 official 404 84296501..84296600; W45N8 official 404 84295901..84296000; W45N7 official 404 84295801..84295900. All five rooms 700 distinct with creeps.
