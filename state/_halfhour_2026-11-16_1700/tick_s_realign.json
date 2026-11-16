@@ -1,0 +1,146 @@
+{
+  "first_interval": 4.85064,
+  "later_mean_w46": 4.75978,
+  "later_mean_w46_raw": 4.75978,
+  "later_mean_w46_robust": 4.75978,
+  "all_mean_w46": 4.77493,
+  "span_mean": 4.77493,
+  "prev_later_mean": 4.83768,
+  "intervals": [
+    {
+      "from": 84300800,
+      "to": 84300900,
+      "tick_s": 4.85064,
+      "outlier": false
+    },
+    {
+      "from": 84300900,
+      "to": 84301000,
+      "tick_s": 4.81516,
+      "outlier": false
+    },
+    {
+      "from": 84301000,
+      "to": 84301100,
+      "tick_s": 4.87424,
+      "outlier": false
+    },
+    {
+      "from": 84301100,
+      "to": 84301200,
+      "tick_s": 4.62562,
+      "outlier": false
+    },
+    {
+      "from": 84301200,
+      "to": 84301300,
+      "tick_s": 4.76419,
+      "outlier": false
+    },
+    {
+      "from": 84301300,
+      "to": 84301400,
+      "tick_s": 4.71971,
+      "outlier": false
+    }
+  ],
+  "gt_first": 84301585,
+  "gt_check": 84301602,
+  "gt_realign": 84301602,
+  "now_check": "2026-11-16T17:03:53+08:00",
+  "now_realign": "2026-11-16T17:03:53+08:00",
+  "tick_s_used_first_pass": 4.85064,
+  "ts_realigned_first_pass": 12275,
+  "still_over_45s_vs_first": 258,
+  "still_over_15s_vs_first": 1794,
+  "vs_candidates": {
+    "first": {
+      "over45": 258,
+      "over15": 1794,
+      "n": 25484,
+      "mean_off": 4.009194549089625,
+      "min_off": 1.709871,
+      "max_off": 46.581532,
+      "tick_s": 4.85064
+    },
+    "later_raw": {
+      "over45": 10254,
+      "over15": 20792,
+      "n": 25484,
+      "mean_off": -36.98690866830168,
+      "min_off": -71.065785,
+      "max_off": 26.048225,
+      "tick_s": 4.75978
+    },
+    "later_robust": {
+      "over45": 10254,
+      "over15": 20792,
+      "n": 25484,
+      "mean_off": -36.98690866830168,
+      "min_off": -71.065785,
+      "max_off": 26.048225,
+      "tick_s": 4.75978
+    },
+    "all_mean": {
+      "over45": 6549,
+      "over15": 19910,
+      "n": 25484,
+      "mean_off": -30.15422479869722,
+      "min_off": -58.936509,
+      "max_off": 28.955617,
+      "tick_s": 4.77493
+    },
+    "span_mean": {
+      "over45": 6549,
+      "over15": 19910,
+      "n": 25484,
+      "mean_off": -30.15422479869722,
+      "min_off": -58.936509,
+      "max_off": 28.955617,
+      "tick_s": 4.77493
+    },
+    "prev_later": {
+      "over45": 0,
+      "over15": 1794,
+      "n": 25484,
+      "mean_off": -1.8386250522288494,
+      "min_off": -8.671089,
+      "max_off": 41.254972,
+      "tick_s": 4.83768
+    }
+  },
+  "still_over_45s_vs_later_before": 10254,
+  "still_over_15s_vs_later_before": 20792,
+  "still_over_45s_vs_later": 0,
+  "still_over_15s_vs_later": 10481,
+  "corrective_applied": true,
+  "ts_realigned_to_later_mean": 11082,
+  "reason": "first-interval tick_s=4.85064 (printed 4.851) is in the sane 3-6s band; later-mean-robust 4.75978 (raw later-mean 4.75978; delta first-robust 0.09086 s/tick, ~71.2s at tmin); applied corrective later-mean-robust realign of 11082 rows at game.time=84301602; still_over_45s_vs_later=0",
+  "game_time_error": null,
+  "lowest_over45_sane": "prev_later",
+  "vs_first": {
+    "over45": 258,
+    "over15": 1794,
+    "n": 25484,
+    "mean_off": 4.009194549089625,
+    "min_off": 1.709871,
+    "max_off": 46.581532
+  },
+  "vs_later_after": {
+    "over45": 0,
+    "over15": 10481,
+    "n": 25484,
+    "mean_off": -13.244708148289122,
+    "min_off": -44.974252,
+    "max_off": 23.974398
+  },
+  "after_vs_first": {
+    "over45": 10942,
+    "over15": 12876,
+    "n": 25484,
+    "mean_off": 27.75139506910218,
+    "min_off": -0.363956,
+    "max_off": 72.775656
+  },
+  "_restored_from": "tick_s_check.txt after the 17:30 run briefly overwrote this file at 17:34; values taken from the original 17:03 check output. DB was not rewritten."
+}

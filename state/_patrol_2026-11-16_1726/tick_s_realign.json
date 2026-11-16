@@ -1,0 +1,41 @@
+{
+  "ok": true,
+  "window": [
+    84301101,
+    84301800
+  ],
+  "tick_s_first": 4.62562,
+  "tick_s_first_printed": 4.626,
+  "later_mean_raw": 4.76139,
+  "later_mean_robust": 4.76139,
+  "prev_later_mean": 4.75978,
+  "gt_first": 84301893,
+  "anchor": {
+    "hkt": "2026-11-16 17:29:11 Asia/Hong_Kong",
+    "game_time": 84301920
+  },
+  "first_pass_ts_realigned": 14833,
+  "corrective_applied": true,
+  "nfix": 16751,
+  "gt_corrective": 84301921,
+  "tick_s_applied": 4.76139,
+  "after_vs_later": {
+    "over45": 0,
+    "over15": 5962,
+    "n": 25778,
+    "mean_off": 7.207912731243696,
+    "min_off": -5.864496,
+    "max_off": 44.95239
+  },
+  "after_vs_first": {
+    "over45": 16883,
+    "over15": 18942,
+    "n": 25778,
+    "mean_off": -56.55162557467608,
+    "min_off": -111.32812,
+    "max_off": -4.001314
+  },
+  "reverted": false,
+  "note": "first-interval 4.62562 was the early outlier (~107.5s at tmin vs later-mean). Corrective later-mean-robust realign of 16751 rows at game.time=84301921; still_over_45s_vs_later=0. Script then crashed writing JSON (NameError TS_REALIGNED_FIRST); this file was written from the successful realign stdout. Realign itself completed before the crash.",
+  "written_at": "2026-11-16T17:30:47.963336+08:00"
+}
