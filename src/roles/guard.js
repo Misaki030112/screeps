@@ -5,6 +5,7 @@ const move = require('../utils/move'), H = require('../managers/home'), F = requ
 const SAFE = 15;
 module.exports = { run(c) {
   if (require('../utils/cmd').yieldCreep(c)) return; // Memory.cmd off => one check (docs/COMMANDER.md)
+  if (require('../managers/boost').hold(c)) return;
   const room = c.room, home = Game.rooms[c.memory.home];
   if (c.hits < c.hitsMax) c.heal(c);
   if (room.name !== c.memory.home) { const sp = home && home.find(FIND_MY_SPAWNS)[0]; return require('../utils/military').moveTo(c, sp ? sp.pos : new RoomPosition(25, 25, c.memory.home), { range: 2 }); }

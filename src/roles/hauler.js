@@ -162,6 +162,43 @@ function termPark(c, room, idle) {
   if (move.to(c, src.pos.x, src.pos.y, 1)) pull(c, src, t.res, t.amt);
   return true;
 }
+// Waiting kite: move KO (then lab energy) into the boost lab. Storage energy is used only when
+// the withdraw leaves storage at boost.STOR_SAFE (20k) or above.
+function boostHaul(c, room) {
+  if (!c || room.name !== c.memory.home) return false;
+  const B = require('../managers/boost');
+  const heldM = Object.keys(c.store || {}).find(r => r !== RESOURCE_ENERGY && typeof c.store[r] === 'number' && c.store[r] > 0);
+  if (c.memory.bk) {
+    const res = heldM || (c.store && c.store[RESOURCE_ENERGY] > 0 ? RESOURCE_ENERGY : null);
+    if (res) {
+      const dst = Game.getObjectById(c.memory.bkTo);
+      if (dst && move.to(c, dst.pos.x, dst.pos.y, 1)) {
+        c.transfer(dst, res);
+        delete c.memory.bk; delete c.memory.bkFrom; delete c.memory.bkTo; delete c.memory.bkRes; delete c.memory.bkAmt;
+      }
+      return true;
+    }
+    const src = Game.getObjectById(c.memory.bkFrom);
+    if (!src || !src.pos) { delete c.memory.bk; delete c.memory.bkFrom; delete c.memory.bkTo; delete c.memory.bkRes; delete c.memory.bkAmt; return false; }
+    if (c.memory.bkRes === RESOURCE_ENERGY && room.storage && src.id === room.storage.id) {
+      const e = (room.storage.store && (room.storage.store[RESOURCE_ENERGY] || 0)) || 0;
+      if (e < B.STOR_SAFE) { delete c.memory.bk; delete c.memory.bkFrom; delete c.memory.bkTo; delete c.memory.bkRes; delete c.memory.bkAmt; return false; }
+    }
+    if (move.to(c, src.pos.x, src.pos.y, 1)) c.withdraw(src, c.memory.bkRes, c.memory.bkAmt);
+    return true;
+  }
+  if (heldM || (c.store && c.store[RESOURCE_ENERGY] > 0) || c.memory.working || c.memory.tp) return false;
+  const job = B.haulTask(room);
+  if (!job) return false;
+  if (job.res === RESOURCE_ENERGY && room.storage && job.from === room.storage.id) {
+    const e = (room.storage.store && (room.storage.store[RESOURCE_ENERGY] || 0)) || 0;
+    if (e < B.STOR_SAFE || e - job.amt < B.STOR_SAFE) return false;
+  }
+  const src = Game.getObjectById(job.from); if (!src || !src.pos) return false;
+  c.memory.bk = 1; c.memory.bkFrom = job.from; c.memory.bkTo = job.to; c.memory.bkRes = job.res; c.memory.bkAmt = job.amt;
+  if (move.to(c, src.pos.x, src.pos.y, 1)) c.withdraw(src, job.res, job.amt);
+  return true;
+}
 // Build hold (walls.noUpgrade): hub -> controller link is off, so source A's energy (link 30,11) piles up in the hub link and
 // the source-A container next to the link stays near empty. The home hauler's fixed pickup becomes the hub link, waited on
 // from the manager tile (hub + storage both in range 1), so the queen no longer leaves stamp A to drain it
@@ -177,10 +214,11 @@ function linkFed(room, a) {
   return ls.some(l => l && l.pos && Math.max(Math.abs(l.pos.x - a[0]), Math.abs(l.pos.y - a[1])) <= 1);
 }
 function homeHauler(room) { return Object.values(Game.creeps || {}).some(x => x.memory.role === 'hauler' && (x.memory.home || x.room.name) === room.name); }
-module.exports = { pickups, handoff, ctlLow, mineralRun, labRun, termPark, hubPickup, homeHauler, idlePark, run(c) {
+module.exports = { pickups, handoff, ctlLow, mineralRun, labRun, termPark, boostHaul, hubPickup, homeHauler, idlePark, run(c) {
   if (require('../utils/cmd').yieldCreep(c)) return; // Memory.cmd off => one check (docs/COMMANDER.md)
   const room = c.room, P = plan.get(room.name);
   if (mineralRun(c, room, P)) return;
+  if (boostHaul(c, room)) return; // a kite waiting at home, before the terminal is drained
   if (termPark(c, room, false)) return; // tight terminal: park surplus before another lab fill seals it
   if (labRun(c, room)) return;
   if (termPark(c, room, true)) return;  // lab inputs satisfied: keep draining surplus down to the 3000 buffers

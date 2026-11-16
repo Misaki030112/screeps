@@ -2,7 +2,7 @@
 // W46N8 labs 34,22 / 33,21 / 35,21 (plan rcl6) are all within range 2: the output is the lab in range 2 of both others.
 // Reaction only: runReaction when both inputs hold >= 5 of their reagent. task(room) names the next terminal<->lab move;
 // home hauler.labRun executes it (tests/labs_hauler.js). Strategy 14:4x review: propose Memory.ops.labs when labReady.propose=1
-// (first K ≥ PROPOSE_K lands) — never auto-set. Lab energy fill / boostCreep wait KO≥900 (boost.js later).
+// (first K ≥ PROPOSE_K lands) — never auto-set. Kite KO boost is managers/boost.js (KO fill 900, 30 KO + 20 energy per RA part).
 const R = { KO: ['K', 'O'], LO: ['L', 'O'], UH: ['U', 'H'], OH: ['O', 'H'], ZO: ['Z', 'O'], UO: ['U', 'O'] };
 // One input-lab fill / thin-batch size — enough for task() to start loading (≥100) and match SEND_BATCH_THIN.
 const PROPOSE_K = 1000;
@@ -138,5 +138,7 @@ module.exports = { R, cfg, roles, task, parkTask, PROPOSE_K, PROPOSE_O, ACT_HOME
   } }
   if (ro.out.cooldown || amt(a, ra) < 5 || amt(b, rb) < 5) return 0;
   const k = kind(ro.out); if (k && k !== c) return 0;
+  // A spare lab is the boost lab. If the only choice is this output, pause the reaction while a kite waits.
+  try { if (require('./boost').blocksReaction(room)) return 0; } catch (e) { /* boost absent in a partial stub */ }
   return ro.out.runReaction(a, b) === OK ? 1 : 0;
 } };
