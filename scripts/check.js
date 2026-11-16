@@ -52,6 +52,7 @@ execSync('node ' + path.join(__dirname, '..', 'tests', 'roads_plan.js'), { stdio
 execSync('node ' + path.join(__dirname, '..', 'tests', 'build_hold.js'), { stdio: 'pipe' });
 execSync('node ' + path.join(__dirname, '..', 'tests', 'roads_transition.js'), { stdio: 'pipe' });
 execSync('node ' + path.join(__dirname, '..', 'tests', 'spawn_upgraders.js'), { stdio: 'pipe' });
+execSync('node ' + path.join(__dirname, '..', 'tests', 'spawn_hauler_body.js'), { stdio: 'pipe' });
 execSync('node ' + path.join(__dirname, '..', 'tests', 'upgrader_double_spawn.js'), { stdio: 'pipe' });
 execSync('node ' + path.join(__dirname, '..', 'tests', 'spawn_throttle.js'), { stdio: 'pipe' });
 execSync('node ' + path.join(__dirname, '..', 'tests', 'w47n8.js'), { stdio: 'pipe' });

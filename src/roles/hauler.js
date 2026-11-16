@@ -108,7 +108,8 @@ function labRun(c, room) {
   return true;
 }
 // Creep.withdraw(amount) returns ERR_FULL and moves nothing when amount exceeds free capacity.
-// Home haulers carry 300. Pass min(want, free, source) so a 123976 O surplus still moves, one load at a time.
+// Pass min(want, free, source) so a surplus bigger than this creep (300 on a 6C3M, 800 on a 16C8M)
+// still moves, one load at a time. Do not hardcode a carry size.
 function freeCarry(c) {
   const s = c && c.store;
   if (!s || typeof s.getFreeCapacity !== 'function') return 0;
