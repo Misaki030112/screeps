@@ -182,7 +182,8 @@ function boostHaul(c, room) {
     if (!src || !src.pos) { delete c.memory.bk; delete c.memory.bkFrom; delete c.memory.bkTo; delete c.memory.bkRes; delete c.memory.bkAmt; return false; }
     if (c.memory.bkRes === RESOURCE_ENERGY && room.storage && src.id === room.storage.id) {
       const e = (room.storage.store && (room.storage.store[RESOURCE_ENERGY] || 0)) || 0;
-      if (e < B.STOR_SAFE) { delete c.memory.bk; delete c.memory.bkFrom; delete c.memory.bkTo; delete c.memory.bkRes; delete c.memory.bkAmt; return false; }
+      // Same floor as the first dispatch: storage may have fallen while the hauler was walking.
+      if (e < B.STOR_SAFE || e - (c.memory.bkAmt || 0) < B.STOR_SAFE) { delete c.memory.bk; delete c.memory.bkFrom; delete c.memory.bkTo; delete c.memory.bkRes; delete c.memory.bkAmt; return false; }
     }
     if (move.to(c, src.pos.x, src.pos.y, 1)) c.withdraw(src, c.memory.bkRes, c.memory.bkAmt);
     return true;

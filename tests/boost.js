@@ -255,5 +255,16 @@ const H = require(src('roles/hauler.js'));
   delete c.memory.noBoost;
   assert.strictEqual(H.boostHaul(hauler, rm), true);
   assert.deepStrictEqual(hauler.got, [['w', 's', 'energy', 380]]);
+  // Assigned at 21000, storage fell to 20100 before the withdraw. 20100 - 380 is under 20k.
+  const late = {
+    memory: { home: 'W46N8', bk: 1, bkFrom: 's', bkTo: free[0].id, bkRes: 'energy', bkAmt: 380 },
+    store: {}, got: [],
+    withdraw(s, r, amt) { this.got.push(['w', s.id, r, amt]); return 0; },
+    transfer() { return 0; },
+  };
+  rm.storage.store.energy = 20100;
+  assert.strictEqual(H.boostHaul(late, rm), false, 'resume does not finish a withdraw that crosses 20k');
+  assert.deepStrictEqual(late.got, []);
+  assert.ok(!late.memory.bk);
 }
 console.log('boost ok');
