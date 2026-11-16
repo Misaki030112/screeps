@@ -253,8 +253,16 @@ const H = require(src('roles/hauler.js'));
   assert.deepStrictEqual(hauler.got, []);
   rm.storage.store.energy = 21000;
   delete c.memory.noBoost;
-  assert.strictEqual(H.boostHaul(hauler, rm), true);
-  assert.deepStrictEqual(hauler.got, [['w', 's', 'energy', 380]]);
+  const slow = hauler300();
+  assert.strictEqual(H.boostHaul(slow, rm), true);
+  assert.deepStrictEqual(slow.got, [['w', 's', 'energy', 300]], '380 energy is taken 300 at a time');
+  assert.strictEqual(H.boostHaul(slow, rm), true, 'delivers the energy before the next withdraw');
+  assert.strictEqual(slow.store.energy || 0, 0);
+  assert.strictEqual(free[0].store.energy, 300);
+  slow.got = [];
+  assert.strictEqual(H.boostHaul(slow, rm), true, 'second trip finishes the 80');
+  assert.deepStrictEqual(slow.got, [['w', 's', 'energy', 80]]);
+  assert.ok(slow.got.every(g => g[0] !== 'w' || g[3] <= 300));
   // Assigned at 21000, storage fell to 20100 before the withdraw. 20100 - 380 is under 20k.
   const late = {
     memory: { home: 'W46N8', bk: 1, bkFrom: 's', bkTo: free[0].id, bkRes: 'energy', bkAmt: 380 },
@@ -266,5 +274,52 @@ const H = require(src('roles/hauler.js'));
   assert.strictEqual(H.boostHaul(late, rm), false, 'resume does not finish a withdraw that crosses 20k');
   assert.deepStrictEqual(late.got, []);
   assert.ok(!late.memory.bk);
+}
+{
+  for (const l of HOME) { l.store = {}; l.boosts = 0; }
+  free[0].store = { energy: 400 };
+  const c = creep('defender', kiteBody());
+  delete c.memory.boosted; delete c.memory.noBoost; delete c.memory.bl;
+  const rm = arm(c);
+  rm.storage.store = { energy: 21000 };
+  rm.terminal.store = { KO: 900, energy: 0 };
+  const h = hauler300();
+  assert.strictEqual(H.boostHaul(h, rm), true);
+  assert.deepStrictEqual(h.got, [['w', 't', 'KO', 300]], '900 KO is taken 300 at a time');
+  assert.strictEqual(H.boostHaul(h, rm), true);
+  assert.strictEqual(h.store.KO || 0, 0);
+  assert.strictEqual(free[0].store.KO, 300);
+  h.got = [];
+  assert.strictEqual(H.boostHaul(h, rm), true, 'second KO trip');
+  assert.deepStrictEqual(h.got, [['w', 't', 'KO', 300]]);
+  assert.ok(h.got.every(g => g[0] !== 'w' || g[3] <= 300));
+}
+function hauler300(store, mem) {
+  const s = Object.assign({}, store);
+  const cap = 300;
+  s.getCapacity = () => cap;
+  s.getFreeCapacity = () => {
+    let used = 0;
+    for (const k in s) if (typeof s[k] === 'number') used += s[k];
+    return Math.max(0, cap - used);
+  };
+  return {
+    memory: Object.assign({ home: 'W46N8' }, mem), store: s, got: [],
+    withdraw(src, r, amt) {
+      assert.ok(amt > 0 && amt <= s.getFreeCapacity(), 'withdraw ' + amt + ' > free');
+      assert.ok(amt <= ((src.store && src.store[r]) || 0));
+      this.got.push(['w', src.id, r, amt]);
+      s[r] = (s[r] || 0) + amt;
+      if (src.store && typeof src.store[r] === 'number') src.store[r] -= amt;
+      return 0;
+    },
+    transfer(dst, r) {
+      const n = s[r] || 0;
+      this.got.push(['t', dst.id, r, n]);
+      if (dst.store) dst.store[r] = (dst.store[r] || 0) + n;
+      s[r] = 0;
+      return 0;
+    },
+  };
 }
 console.log('boost ok');

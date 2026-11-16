@@ -183,9 +183,13 @@ function boostHaul(c, room) {
     if (c.memory.bkRes === RESOURCE_ENERGY && room.storage && src.id === room.storage.id) {
       const e = (room.storage.store && (room.storage.store[RESOURCE_ENERGY] || 0)) || 0;
       // Same floor as the first dispatch: storage may have fallen while the hauler was walking.
-      if (e < B.STOR_SAFE || e - (c.memory.bkAmt || 0) < B.STOR_SAFE) { delete c.memory.bk; delete c.memory.bkFrom; delete c.memory.bkTo; delete c.memory.bkRes; delete c.memory.bkAmt; return false; }
+      const bill = c.memory.bkAmt || 0;
+      if (e < B.STOR_SAFE || e - bill < B.STOR_SAFE) { delete c.memory.bk; delete c.memory.bkFrom; delete c.memory.bkTo; delete c.memory.bkRes; delete c.memory.bkAmt; return false; }
     }
-    if (move.to(c, src.pos.x, src.pos.y, 1)) c.withdraw(src, c.memory.bkRes, c.memory.bkAmt);
+    if (move.to(c, src.pos.x, src.pos.y, 1) && !pull(c, src, c.memory.bkRes, c.memory.bkAmt)) {
+      const have = (src.store && src.store[c.memory.bkRes]) || 0;
+      if (!(have > 0)) { delete c.memory.bk; delete c.memory.bkFrom; delete c.memory.bkTo; delete c.memory.bkRes; delete c.memory.bkAmt; return false; }
+    }
     return true;
   }
   if (heldM || (c.store && c.store[RESOURCE_ENERGY] > 0) || c.memory.working || c.memory.tp) return false;
@@ -197,7 +201,7 @@ function boostHaul(c, room) {
   }
   const src = Game.getObjectById(job.from); if (!src || !src.pos) return false;
   c.memory.bk = 1; c.memory.bkFrom = job.from; c.memory.bkTo = job.to; c.memory.bkRes = job.res; c.memory.bkAmt = job.amt;
-  if (move.to(c, src.pos.x, src.pos.y, 1)) c.withdraw(src, job.res, job.amt);
+  if (move.to(c, src.pos.x, src.pos.y, 1)) pull(c, src, job.res, job.amt);
   return true;
 }
 // Build hold (walls.noUpgrade): hub -> controller link is off, so source A's energy (link 30,11) piles up in the hub link and
