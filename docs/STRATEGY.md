@@ -33,7 +33,17 @@ Last full refresh: **2026-11-09 17:1x** (autonomous push — docs/canvas scorebo
 - One-line verdict: `waiting on ticks` | `small safe ship` | `phase exit` — capability to stock a kiter ≠ order to fight.
 
 
-## Current state (2026-11-16 ~08:2x Asia/Hong_Kong · 12h review)
+## Current state (2026-11-16 ~20:2x Asia/Hong_Kong · 12h review)
+
+| Room | Notes |
+|------|-------|
+| W46N8 (home) | **RCL7** 67.02% (7.329M/10.935M); +187k/12h ≈ 19.91 e/t → RCL8 ≈ **9.68 days** at this pace (calendar stretched as tick_s 4.31→4.62); stor avg 16.30k max 19787 min 12916, **21.7% under 15k** (was 16.1%); live tip ~15.3–15.6k why=thin_surplus nUp=2 tUp=2 work=28 upExtra=0; labsN=6, factory done, sites=0; **KO ON** (authorized; output lab 410 KO, ko=446 <900; 15k floor / 20k boost skip held); LIVE **85c19c2e** (@84303299 / 19:19 HKT) |
+| W47N8 | **RCL7** 37.76% (4.129M); +172k/12h ≈ **18.35 e/t** → RCL8 ≈ **19.83 days** (was 18.25 / 19.07 d); stor avg 30.14k max **40553** min 20920 (0% <15k, 100% ≥20k, 86.4% ≥25k, 49.4% ≥30k, 1.4% ≥40k); live stor ~31.6–34.3k keep=2 phase=ready siteRem=0 leanBank0 softCap2 **on** (threatSoft leftover, expires ~84304356); two 10W upgraders; **first 40k touch** 40553 / 211 t, latch not armed |
+
+**20:2x scorecard:** Phase0 home floor **wobbled but held** (21.7% of 12h under 15k, was 16.1%; min 12.9k after defender bills, recovered; 20k gate never latched — zero ≥20k samples, max 19787). W47 energy-side is above 25k for 86.4% of samples and above 30k for 49.4%; **first 40k touch** (40553 / 211 t) is progress, not a latch; softCap2 is ON at the tip only from a threatSoft leftover — do not unpark ceil/seal. 40k latch **waiting**. Phase1 blocked (mid leftover / mid 40k wait). Phase2 home is still the lead (~9.68 d, was 9.23 d; 3h 21.87 / tip exact2h 100.3%). W47 pace ~18.35 e/t / ~19.83 d. Phase3 lean KO is **on** (authorized T1 stockpile with energy floors); full industry / XGH2O / market stay deferred (energy 15–34k ≪ 100k). Verdict: `waiting on ticks` (20k gate + W47 40k latch held; 40553 / 211 t is not a phase exit; lean KO runs under standing floors; no new game code this review).
+
+### Previous (2026-11-16 ~08:2x Asia/Hong_Kong · 12h review)
+
 
 | Room | Notes |
 |------|-------|

@@ -13,6 +13,11 @@ Outputs: `metrics/model.json`, `docs/model_routes.png` (terrain + ideal routes +
 ## Actuals (DB, default 6 h)
 upgrade rate (room_stats progress), pickups per source (positive store deltas within 2 tiles of the source, normalised by tick coverage — a lower bound), deliveries (hub vs controller container), per-role idle/repaths/CPU (creep_cpu), planned vs actual path length (path_arrivals), hauler cycle median, share of hauling traffic on ideal-route tiles ± 1.
 
+## 2026-11-16 20:2x — 12h actuals (plan holds)
+
+Window t84294760→84304140 (9380 t, tick_s 4.618, coverage 581/939 ≈ 62%). Home measured upgrade **19.91** e/t (`tools/model.py --hours 12` 19.93; 3h 21.87; tip exact2h 26.07=100.3%); still energy-bound at 2×14W, 20k/300t extra never latched (max stor 19787). W47 measured **18.35** e/t (`tools/model_w8.py --hours 12` 18.34) vs keep=2 designed 20 / ceiling 30.08. CPU 12h room_stats avg 18.23 p95 21.61. See `docs/RCL7.md` / `docs/MODEL_W47N8.md` 20:2x.
+
+
 ## Audit 2026-10-15 (first principles + 6 h data, window 05:38–11:38 after the Invader incident)
 | Component | Verdict | Note / fix |
 |---|---|---|
