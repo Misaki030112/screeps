@@ -1,0 +1,262 @@
+{
+  "ok": true,
+  "routine": "Screeps 半小时轨迹补数",
+  "finished_at": "2026-11-16T21:36:36.305470+08:00",
+  "finished_at_hkt": "2026-11-16 21:36 Asia/Hong_Kong",
+  "shard": "shard3",
+  "rooms": [
+    "W46N8",
+    "W47N8",
+    "W45N8",
+    "W45N7",
+    "W47N7"
+  ],
+  "minutes": 40,
+  "game_time": 84304939,
+  "live_json_gameTime_at_finish": 84304998,
+  "live_json_stats_t_at_finish": 84304990,
+  "live_json_gameTime_note": "Listener self-reconnected just before this run after a box freeze 2026-11-16 21:11:01–21:22:13 Asia/Hong_Kong (~662s, recorded in box_pauses.jsonl). existing run_listener.sh relaunched listener.py at 21:22:16 (pid 3598780 since 21:22:25; previous pid 3594237 from 21:02:35/21:02:44 exited). After reconnect the listener itself pulled recent CPU / path buffers. This 21:30 half-hour backfill did not kill or restart the listener, war_cmd, or pulse, and did not start a second listener. yield_files=absent; peacetime single-slot rotation W46N8:W47N8:W45N8:W45N7=5:5:1:1 unchanged. live.json was fresh at precheck 21:31:32 (age 2.2s, roomSlot W46N8 HOME, gameTime=84304934, stats.t=84304930). room_stats has a 159-tick live gap 84304671..84304829 around the freeze; official 84304600 and 84304800 were 200 for all five rooms, so creep_ticks 84304671..84304700 and 84304801..84304829 are filled. Official 84304700 was 200 for four rooms but 404 for W47N8, so 84304701..84304800 is filled everywhere except W47N8. The unpublished in-progress chunk 84304900 is being filled live on the subscribed room. The earlier 20:42:16–21:02:32 (~1206s) freeze room_stats gap 84304321..84304579 was official-filled through 84304500 in the 21:00 run; official 84304500 was 200 for all five rooms on this run, so creep_ticks 84304501..84304600 is now filled. The 20:19:04–20:23:43 (~271s) freeze room_stats gap 84304031..84304099 was already official-filled in the 20:30 run, the 19:49:05–20:05:10 (~952s) freeze room_stats gap 84303661..84303869 was already official-filled in the 20:00 run, the 19:36 ping/pong room_stats gap 84303491..84303509 was already official-filled in the 19:30 run, and the 18:46:58–18:57:48 (~640s) freeze gap 84302881..84303029 was already official-filled in the 19:00 run. In-window official 404 W47N8@84304700 (hole 84304701..84304800) remains unfilled after confirm and retry2. Leftover official 404 W45N7@84303900 (hole 84303901..84304000) and W45N8@84302200 (hole 84302201..84302300) are just outside this window and remain unfilled. The previous 21:00 half-hour backfill had already official-backfilled the overlap 84304201..84304500 (inserted=12164 then, already_in_db=13081, missing_chunks=1 W45N7@84303900 still 404), so this 21:30 first pass inserted the new 84304501..84304900 ticks plus any live-dark gap the official chunks cover (inserted=2944, already_in_db=20051).",
+  "published_bases": "84304200..84304800",
+  "ticks": {
+    "min": 84304201,
+    "max": 84304900,
+    "count": 700
+  },
+  "tick_s": 4.82789,
+  "tick_s_later_mean": 4.83627,
+  "tick_s_in_use": 4.82789,
+  "tick_s_first_pass_outlier": false,
+  "tick_s_later_mean_applied_then_reverted": false,
+  "tick_s_corrective_applied": false,
+  "missing_chunks": 1,
+  "missing_chunk_list": [
+    "W47N8@84304700"
+  ],
+  "missing_chunk_first_pass": [
+    "W47N8@84304700"
+  ],
+  "missing_chunk_note": "First pass (game.time=84304939) published_bases 84304200..84304800, reconstructed 84304201..84304900 (700). missing_chunks=1 of 35 official GETs (34 of 35 200; W47N8@84304700 404). The previous 21:00 half-hour backfill had already pulled the overlap 84304201..84304500 (inserted=12164 then; W45N7@84303900 already 404 then and still 404 now, and is just outside this window). confirm at 2026-11-16 21:33:01 Asia/Hong_Kong game.time=84304953 recovered none inserted=0 ts_realigned=0. retry2 at 2026-11-16 21:34:10 Asia/Hong_Kong game.time=84304968 recovered none inserted=0 ts_realigned=0. in-window official 404 W47N8@84304700 still 404 after confirm and retry2 (0 rows / 0 distinct, range None..None; hole 84304701..84304800; retry next run); leftover official 404 W45N7@84303900 just outside this window still 404 after confirm and retry2 (0 rows / 0 distinct, range None..None; hole 84303901..84304000; retry next run); leftover official 404 W45N8@84302200 just outside this window still 404 after confirm and retry2 (0 rows / 0 distinct, range None..None; hole 84302201..84302300; retry next run). Leftovers just outside this window: W45N7@84303900 (0 live, hole 84303901..84304000), W45N8@84302200 (0 live, hole 84302201..84302300), W47N8@84300900 (74 live with holes), W45N8@84300900 (7 live 84300994..84301000), W45N8@84300000 (26 live + 74 empty), W47N8@84298000 (still empty), W47N8@84297200 (already live-filled), W47N7@84296500, W45N8@84295900, and W45N7@84295800 still 404; retried 35 aged leftover official 404s including W46N8@84292000, all still 404.",
+  "creep_rows_reconstructed": 22995,
+  "already_in_db": 20051,
+  "inserted": 2944,
+  "inserted_first_pass": 2944,
+  "inserted_retry": 0,
+  "inserted_retry2": 0,
+  "inserted_note": "The previous 21:00 Asia/Hong_Kong half-hour backfill already official-backfilled the overlap 84304201..84304500 (inserted=12164 then, already_in_db=13081, missing_chunks=1 W45N7@84303900, tick_s=4.85904, later-mean-robust 4.81812, no corrective realign, ts_realigned_first=75). A box freeze 21:11:01–21:22:13 (~662s) caused run_listener.sh to relaunch listener.py at 21:22:16. This 40-minute official history pull therefore inserted 2944 new rows (already_in_db=20051 of 22995 reconstructed) across 84304201..84304900; it was idempotent on the overlap 84304200/84304300/84304400 chunks already in the database, and newly filled 84304500/84304600/84304700/84304800 including the earlier-freeze remainder 84304501..84304600 (official 84304500 200 for all five rooms) and the new freeze gap: official 84304600/84304800 filled 84304671..84304700 and 84304801..84304829 for all five rooms, while official 84304700 filled 84304701..84304800 everywhere except W47N8. The unpublished in-progress chunk 84304900 (84304901..) is being filled live. confirm and retry2 inserted 0. Four rooms have 700 official ticks with creeps; W47N8 has 600 with an official 404 hole 84304701..84304800. Official 84304200/84304300/84304400/84304500/84304600/84304700/84304800 were 200 for all five rooms except W47N8@84304700 (34 of 35 official GETs 200).",
+  "ts_realigned": 0,
+  "ts_realigned_corrective_later_mean": 0,
+  "ts_realigned_confirm": 0,
+  "ts_realigned_retry2": 0,
+  "ts_realigned_note": "First pass (tick_s=4.82789 printed 4.828, live anchor game.time=84304939) reported ts_realigned=0. The script's tick_seconds() uses the first interval between published chunk bases (min timestamp across rooms, which was W46N8 on every published base this window, so W46 and MIN_ALL are identical; first-interval tick_s=4.82789). later-mean-robust of the remaining W46N8 intervals is 4.83627 (raw later-mean also 4.83627; delta first-robust -0.00838 s/tick, ~6.2s at tmin vs gt_first). At 21:32:51 Asia/Hong_Kong game.time=84304951, first-interval was already inside the 45s gate versus the later live anchor (over45=0 over15=2022 mean_off=-3.04 max_off=41.37) and later-mean-robust was also inside the 45s gate versus first-interval-timestamped rows (over45=0 over15=907 mean_off=0.42 max_off=43.73). No corrective later-mean-robust realign was applied (later over45=0 and first-interval is in the sane 3-6s band). In-use tick_s remains first-interval 4.82789.",
+  "ssl_first_attempt": "ok first try",
+  "hourly_patrol_prefilled": "No concurrent hourly patrol this run (the 21:22 patrol finished at 21:29). The previous 21:00 Asia/Hong_Kong half-hour backfill had already official-backfilled the overlap 84304201..84304500 (inserted=12164 then, already_in_db=13081, missing_chunks=1 W45N7@84303900, tick_s=4.85904 / later 4.81812, no corrective realign, ts_realigned_first=75). A box freeze 21:11:01–21:22:13 (~662s) caused run_listener.sh to relaunch listener.py at 21:22:16 (pid 3598780 since 21:22:25). Official history in this window covers 84304200..84304800 for all five rooms except W47N8@84304700 (34/35 official GETs 200; missing_chunks=1). This first pass inserted 2944 new rows.",
+  "per_room": {
+    "W46N8": {
+      "ticks": 700,
+      "ticks_official": 700,
+      "new": 1090,
+      "new_first_pass": 1090,
+      "new_confirm": 0,
+      "new_retry2": 0,
+      "distinct": 700,
+      "rows": 6603,
+      "range": [
+        84304201,
+        84304900
+      ],
+      "missing_n": 0,
+      "missing_ranges": [],
+      "official_empty_no_creep": 0,
+      "official_404_missing": 0
+    },
+    "W47N8": {
+      "ticks": 600,
+      "ticks_official": 600,
+      "new": 976,
+      "new_first_pass": 976,
+      "new_confirm": 0,
+      "new_retry2": 0,
+      "distinct": 600,
+      "rows": 7714,
+      "range": [
+        84304201,
+        84304900
+      ],
+      "missing_n": 100,
+      "missing_ranges": [
+        [
+          84304701,
+          84304800
+        ]
+      ],
+      "official_empty_no_creep": 0,
+      "official_404_missing": 100
+    },
+    "W45N8": {
+      "ticks": 700,
+      "ticks_official": 700,
+      "new": 296,
+      "new_first_pass": 296,
+      "new_confirm": 0,
+      "new_retry2": 0,
+      "distinct": 700,
+      "rows": 2911,
+      "range": [
+        84304201,
+        84304900
+      ],
+      "missing_n": 0,
+      "missing_ranges": [],
+      "official_empty_no_creep": 0,
+      "official_404_missing": 0
+    },
+    "W45N7": {
+      "ticks": 700,
+      "ticks_official": 700,
+      "new": 212,
+      "new_first_pass": 212,
+      "new_confirm": 0,
+      "new_retry2": 0,
+      "distinct": 700,
+      "rows": 2434,
+      "range": [
+        84304201,
+        84304900
+      ],
+      "missing_n": 0,
+      "missing_ranges": [],
+      "official_empty_no_creep": 0,
+      "official_404_missing": 0
+    },
+    "W47N7": {
+      "ticks": 700,
+      "ticks_official": 700,
+      "new": 370,
+      "new_first_pass": 370,
+      "new_confirm": 0,
+      "new_retry2": 0,
+      "distinct": 700,
+      "rows": 3330,
+      "range": [
+        84304201,
+        84304900
+      ],
+      "missing_n": 0,
+      "missing_ranges": [],
+      "official_empty_no_creep": 0,
+      "official_404_missing": 0
+    }
+  },
+  "known_official_404s_outside_window": [
+    "W45N7@84303900 (0 rows / 0 distinct, range None..None; just outside this 40m window (previous in-window official 404), still 404 after confirm and retry2; not live-filled at wrapup; hole 84303901..84304000; retry next run)",
+    "W45N8@84302200 (0 rows / 0 distinct, range None..None; just outside this 40m window (previous leftover official 404), still 404 after confirm and retry2; not live-filled at wrapup; hole 84302201..84302300; retry next run)",
+    "W47N8@84300900 (1008 rows / 74 distinct, range 84300901..84300993; just outside this 40m window, still 404, live-filled 74 ticks with holes 84300965..84300983 (19) and 84300994..84301000 (7); 26 official-missing; retry next run)",
+    "W45N8@84300900 (28 rows / 7 distinct, range 84300994..84301000; just outside this 40m window, still 404, live-filled 7 ticks 84300994..84301000 / 28 rows; 93 empty 84300901..84300993; retry next run)",
+    "W45N8@84300000 (159 rows / 26 distinct, range 84300067..84300092; just outside this 40m window, still 404, partially live-filled (26 live 84300067..84300092 / 159 rows; 74 empty); retry next run)",
+    "W47N8@84298000 (0 rows / 0 distinct, range None..None; just outside this 40m window, still 404, not live-filled; retry next run)",
+    "W47N8@84297200 (1562 rows / 100 distinct, range 84297201..84297300; just outside this 40m window, still 404, already live-filled 100 distinct; retry next run)",
+    "W47N7@84296500 (0 rows / 0 distinct, range None..None; just outside this 40m window, still 404, not live-filled; retry next run)",
+    "W45N8@84295900 (0 rows / 0 distinct, range None..None; just outside this 40m window, still 404, not live-filled; retry next run)",
+    "W45N7@84295800 (0 rows / 0 distinct, range None..None; just outside this 40m window, still 404, not live-filled; retry next run)"
+  ],
+  "known_official_404s_in_window": [
+    "W47N8@84304700 (in-window official 404, hole 84304701..84304800, 0 rows / 0 distinct; still 404 after confirm 2026-11-16 21:33:01 Asia/Hong_Kong game.time=84304953 and retry2 2026-11-16 21:34:10 Asia/Hong_Kong game.time=84304968; not live-filled; retry next run)"
+  ],
+  "w45n7_empty_no_creep_in_window": false,
+  "w45n7_empty_no_creep_ranges": [],
+  "empty_no_creep_in_window": false,
+  "empty_no_creep_ranges": {},
+  "empty_no_creep_ticks": 0,
+  "official_room_ticks_fetched": 3400,
+  "official_room_ticks_with_creeps": 3400,
+  "new_box_freeze": {
+    "from": "2026-11-16 21:11:01",
+    "to": "2026-11-16 21:22:13",
+    "sec": 662,
+    "kind": "box freeze (VM hibernated; recorded in box_pauses.jsonl)",
+    "live_room_stats_gap": [
+      84304671,
+      84304829
+    ],
+    "official_fill": "Box froze 21:11:01–21:22:13 (~662s) and run_listener.sh relaunched listener.py at 21:22:16 (pid 3598780 since 21:22:25). room_stats shows a 159-tick gap 84304671..84304829 around the freeze. Official 84304600 and 84304800 were 200 for all five rooms, so creep_ticks 84304671..84304700 and 84304801..84304829 are filled. Official 84304700 was 200 for four rooms but 404 for W47N8, so 84304701..84304800 is filled everywhere except W47N8 (0 live). The unpublished in-progress chunk 84304900 (84304901..) is being filled live on the subscribed room. The earlier 20:42:16–21:02:32 (~1206s) freeze room_stats gap 84304321..84304579 was official-filled through 84304500 in the 21:00 run; official 84304500 was 200 for all five rooms on this run, so creep_ticks 84304501..84304600 is now filled. The 20:19:04–20:23:43 (~271s) freeze room_stats gap 84304031..84304099 was already official-filled in the 20:30 run, the 19:49:05–20:05:10 (~952s) freeze room_stats gap 84303661..84303869 was already official-filled in the 20:00 run, the 19:36 ping/pong room_stats gap 84303491..84303509 was already official-filled in the 19:30 run, and the 18:46:58–18:57:48 (~640s) freeze live room_stats gap 84302881..84303029 was already official-filled in the 19:00 run. In-window official 404 W47N8@84304700 (hole 84304701..84304800) remains unfilled. Leftover official 404 W45N7@84303900 (hole 84303901..84304000) and W45N8@84302200 (hole 84302201..84302300) are earlier than this window and remain unfilled."
+  },
+  "db_tips_at_finish": {
+    "creep_ticks": {
+      "max_tick": 84304998,
+      "max_ts": "2026-11-16T21:36:32.064688+08:00"
+    },
+    "room_stats": {
+      "max_tick": 84304990,
+      "max_ts": "2026-11-16T21:35:55.416952+08:00"
+    },
+    "creep_cpu": {
+      "max_tick": 84304980,
+      "max_ts": "2026-11-16T21:35:45.104893+08:00"
+    },
+    "path_arrivals": {
+      "max_tick": 84304979,
+      "max_ts": "2026-11-16T21:35:45.104893+08:00"
+    }
+  },
+  "live_ticks_after_official_tip": {
+    "W46N8": {
+      "distinct": 80,
+      "min": 84304919,
+      "max": 84304998,
+      "rows": 997
+    },
+    "W47N8": {
+      "distinct": 0,
+      "min": null,
+      "max": null,
+      "rows": 0
+    },
+    "W45N8": {
+      "distinct": 0,
+      "min": null,
+      "max": null,
+      "rows": 0
+    },
+    "W45N7": {
+      "distinct": 18,
+      "min": 84304901,
+      "max": 84304918,
+      "rows": 59
+    },
+    "W47N7": {
+      "distinct": 0,
+      "min": null,
+      "max": null,
+      "rows": 0
+    }
+  },
+  "listener_at_finish": {
+    "listener_count": 1,
+    "run_listener_count": 1,
+    "listener_ps": [
+      "3598780 .venv/bin/python tools/listener.py",
+      "4035476 /bin/bash tools/run_listener.sh"
+    ],
+    "yield_files": "absent",
+    "roomSlot": "W46N8",
+    "rot": {
+      "i": 0,
+      "room": "W46N8",
+      "left": 219.9,
+      "at": "2026-11-16 21:36:31"
+    },
+    "live_updated": "2026-11-16 21:36:33",
+    "live_gameTime": 84304998,
+    "live_stats_t": 84304990,
+    "live_json_mtime_age_s": 2.5,
+    "single_slot": true,
+    "did_not_start_second_listener": true,
+    "self_restart_note": "NEW this period: box freeze 2026-11-16 21:11:01–21:22:13 Asia/Hong_Kong (~662s, recorded in box_pauses.jsonl). existing run_listener.sh relaunched listener.py at 21:22:16 (pid 3598780 since 21:22:25; previous pid 3594237 from 21:02:35/21:02:44 exited after the freeze). After reconnect, the listener itself pulled recent CPU / path buffers (creep_cpu and path_arrivals near the live tip). room_stats has a 159-tick live gap 84304671..84304829 around the freeze; official 84304600 and 84304800 were 200 for all five rooms, so creep_ticks 84304671..84304700 and 84304801..84304829 are filled. Official 84304700 was 200 for four rooms but 404 for W47N8, so creep_ticks 84304701..84304800 is filled everywhere except W47N8 (in-window official 404 hole, 0 live). The unpublished in-progress chunk 84304900 (ticks 84304901..) is being filled live on the subscribed room. The earlier freeze 20:42:16–21:02:32 (~1206s) room_stats gap 84304321..84304579 was official-filled through 84304500 in the 21:00 run; official 84304500 was 200 for all five rooms on this run, so creep_ticks 84304501..84304600 is now filled too. In-window official 404 W47N8@84304700 (hole 84304701..84304800, 0 live) is still 404 after confirm and retry2. Earlier the same evening: freeze 20:42:16–21:02:32 (~1206s) relaunched at 21:02:35 (pid 3594237 since 21:02:44; room_stats gap 84304321..84304579 official-filled through 84304500 in the 21:00 run, remainder this run); freeze 20:19:04–20:23:43 (~271s) relaunched at 20:23:46 (pid 3582186 since 20:23:56; room_stats gap 84304031..84304099 already official-filled in the 20:30 run); freeze 19:49:05–20:05:10 (~952s) relaunched at 20:05:13 (pid 3575402 since 20:05:23; room_stats gap 84303661..84303869 already official-filled in the 20:00 run); listener ws ping/pong timeout at 19:36:16 relaunched at 19:36:19 (room_stats gap 84303491..84303509 already official-filled in the 19:30 run); freeze 18:46:58–18:57:48 (~640s) relaunched at 18:57:51 (room_stats gap 84302881..84303029 already official-filled in the 19:00 run). This backfill did not kill or start a listener."
+  },
+  "unique_after_window": {
+    "rows": 22992,
+    "unique_creep_tick_rows": 22992,
+    "distinct_ticks": 700,
+    "distinct_room_ticks": 3400
+  }
+}

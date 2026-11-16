@@ -1,0 +1,44 @@
+{
+  "tick_s_used_first_pass": 4.89256,
+  "tick_s_printed": "4.893",
+  "later_mean_w46": 4.795532,
+  "later_mean_raw": 4.795532,
+  "all_mean": 4.82903,
+  "span_mean": 4.82903,
+  "gt_first": 84305529,
+  "gt_check": 84305548,
+  "over45_first": 0,
+  "over45_later": 6199,
+  "vs_first": {
+    "over45": 0,
+    "over15": 4571,
+    "n": 24667,
+    "mean_off": 2.4714720940527832,
+    "min_off": -16.825986,
+    "max_off": 27.282216
+  },
+  "vs_later": {
+    "over45": 6199,
+    "over15": 22264,
+    "n": 24667,
+    "mean_off": -36.81373212664694,
+    "min_off": -57.450805,
+    "max_off": 4.156211
+  },
+  "vs_after": {
+    "over45": 719,
+    "over15": 17729,
+    "n": 24667,
+    "mean_off": -27.316869782056997,
+    "min_off": -46.181561,
+    "max_off": 5.424102
+  },
+  "corrective_applied": false,
+  "nfix": 4073,
+  "reason": "first-interval tick_s=4.89256 (printed 4.893) is in the sane 3-6s band; later-mean-robust 4.79553 (raw later-mean 4.79553; delta first-robust 0.20099 s/tick, ~146.3s at tmin)",
+  "ts_realigned_first": 0,
+  "corrective_reverted": true,
+  "nfix_undo": 4073,
+  "tick_s_in_use": 4.89256,
+  "note": "later-mean-robust 4.79553 was over the 45s gate vs already-aligned rows (over45=6199 mean_off=-36.8). first-interval 4.89256 already inside (over45=0). A mistaken later-mean realign (nfix=4073) was applied then undone to first tick_s (after_undo over45=0 mean_off=2.99). in-use tick_s=4.89256."
+}
