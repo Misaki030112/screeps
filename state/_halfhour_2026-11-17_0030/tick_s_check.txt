@@ -1,0 +1,30 @@
+intervals_w46:
+  84306400..84306500 4.91661
+  84306500..84306600 4.89168
+  84306600..84306700 4.85128
+  84306700..84306800 4.91863
+  84306800..84306900 4.85127
+  84306900..84307000 4.88611
+intervals_min_all_rooms:
+  84306400..84306500 4.91661
+  84306500..84306600 4.89168
+  84306600..84306700 4.85128
+  84306700..84306800 4.90993
+  84306800..84306900 4.85997
+  84306900..84307000 4.88611
+first=4.91661 later_mean_raw=4.87979 later_mean_robust=4.87979
+all_mean=4.88593 span_mean=4.88593 script_tick_s=4.91661 prev_later=4.86636
+delta_first_minus_later_raw=0.03682 s/tick; at tmin vs gt_first ~28.9s
+delta_first_minus_later_robust=0.03682 s/tick; at tmin vs gt_first ~28.9s
+anchor 2026-11-17 00:37:43 Asia/Hong_Kong game.time=84307233
+vs_first tick_s=4.91661 {'over45': 7, 'over15': 7670, 'n': 29388, 'mean_off': 12.557552401218185, 'min_off': -4.333132, 'max_off': 47.975246}
+vs_later_raw tick_s=4.87979 {'over45': 0, 'over15': 6983, 'n': 29388, 'mean_off': -5.4905896142983535, 'min_off': -34.595884, 'max_off': 37.99811}
+vs_later_robust tick_s=4.87979 {'over45': 0, 'over15': 6983, 'n': 29388, 'mean_off': -5.4905896142983535, 'min_off': -34.595884, 'max_off': 37.99811}
+vs_all_mean tick_s=4.88593 {'over45': 0, 'over15': 5686, 'n': 29388, 'mean_off': -2.4825659450455966, 'min_off': -29.552092, 'max_off': 39.660966}
+vs_span_mean tick_s=4.88593 {'over45': 0, 'over15': 5686, 'n': 29388, 'mean_off': -2.4825659450455966, 'min_off': -29.552092, 'max_off': 39.660966}
+vs_prev_later tick_s=4.86636 {'over45': 240, 'over15': 10468, 'n': 29388, 'mean_off': -12.076278984041105, 'min_off': -45.638632, 'max_off': 34.357496}
+lowest_over45_among_sane=all_mean {'over45': 0, 'over15': 5686, 'n': 29388, 'mean_off': -2.4825659450455966, 'min_off': -29.552092, 'max_off': 39.660966}
+corrective_applied=False
+wrote /workspace/screeps/state/_halfhour_2026-11-17_0030/tick_s_realign.json
+corrective_applied=False nfix=0
+reason: first-interval tick_s=4.91661 (printed 4.917) is in the sane 3-6s band; later-mean-robust 4.87979 (raw later-mean 4.87979; delta first-robust 0.03682 s/tick, ~28.9s at tmin); later-mean-robust already inside 45s gate, no corrective realign

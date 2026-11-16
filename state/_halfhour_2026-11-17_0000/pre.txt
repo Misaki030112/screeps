@@ -1,0 +1,52 @@
+2026-11-17 00:04:38 HKT check (compact recap after first health pass)
+==== health already confirmed 00:03 HKT ====
+pg 17/main online at /workspace/screeps/var/pg17; grafana :3000 200; dashboard :8787 200
+listener.py count=1 run_listener.sh count=1 yield_files=absent
+pidfile=4035476 listener.py=3650667 
+listener_rot={"i": 1, "room": "W47N8", "left": 488.2, "at": "2026-11-17 00:04:35"}
+box freeze 23:44:34-00:02:50 (~1084s); listener restarted 00:02:53 (did not start a second listener)
+ws error 23:44:24 live.json.tmp rename just before freeze
+==== live.json ====
+gameTime= None roomSlot= W47N8 updated= 2026-11-17 00:04:37
+stats.t= 84306820 cpu= 19.3 b= 10000
+live.json_mtime_age_s= 1.0 2026-11-17 00:04:37 HKT
+cpu= {'cpu': 18, 'memory': 24673}
+==== db (fresh) ====
+db_now 2026-11-17 00:04:38.980577+08:00
+  creep_ticks since 84306101: ticks=84306101..84306825 rows=13318 max_ts=2026-11-17 00:04:36.564123+08:00
+  creep_cpu since 84306101: ticks=84306105..84306810 rows=5148 max_ts=2026-11-17 00:04:06.044593+08:00
+  path_arrivals since 84306101: ticks=84306112..84306809 rows=83 max_ts=2026-11-17 00:04:06.044593+08:00
+  room_stats since 84306101: ticks=84306110..84306820 rows=82 max_ts=2026-11-17 00:04:13.386870+08:00
+creep_ticks since 84306401 by room:
+  ('W45N7', 84306410, 84306434, 116, 25)
+  ('W45N8', 84306401, 84306409, 27, 9)
+  ('W46N8', 84306435, 84306575, 1123, 132)
+  ('W47N8', 84306576, 84306825, 279, 21)
+creep_cpu after 00:02:50 reconnect: (84306615, 84306810, 1520, datetime.datetime(2026, 11, 17, 0, 3, 5, 434397, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), datetime.datetime(2026, 11, 17, 0, 4, 6, 44593, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')))
+path_arrivals after 00:02:50 reconnect: (84306572, 84306809, 39, datetime.datetime(2026, 11, 17, 0, 3, 5, 434397, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), datetime.datetime(2026, 11, 17, 0, 4, 6, 44593, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')))
+room_stats tip (84306820, datetime.datetime(2026, 11, 17, 0, 4, 13, 386870, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')))
+creep_ticks tip (84306825, datetime.datetime(2026, 11, 17, 0, 4, 36, 564123, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')))
+room_stats since 84306400: n=40 min=84306400 max=84306820
+  STATS-cadence 84306401..84306409 (9 ticks)
+  STATS-cadence 84306411..84306419 (9 ticks)
+  STATS-cadence 84306421..84306429 (9 ticks)
+  STATS-cadence 84306431..84306439 (9 ticks)
+  STATS-cadence 84306441..84306449 (9 ticks)
+  STATS-cadence 84306451..84306459 (9 ticks)
+  STATS-cadence 84306461..84306469 (9 ticks)
+  STATS-cadence 84306471..84306479 (9 ticks)
+  STATS-cadence 84306481..84306489 (9 ticks)
+  STATS-cadence 84306491..84306499 (9 ticks)
+  STATS-cadence 84306501..84306509 (9 ticks)
+  STATS-cadence 84306511..84306519 (9 ticks)
+  STATS-cadence 84306521..84306529 (9 ticks)
+  STATS-cadence 84306531..84306539 (9 ticks)
+  STATS-cadence 84306541..84306549 (9 ticks)
+  STATS-cadence 84306551..84306559 (9 ticks)
+  STATS-cadence 84306561..84306569 (9 ticks)
+  LIVE-GAP 84306571..84306809 (239 ticks)
+  STATS-cadence 84306811..84306819 (9 ticks)
+W46N8 live runs since 84306401:
+  [(84306435, 84306557, 123), (84306567, 84306575, 9)]
+W47N8 live runs since 84306401:
+  [(84306576, 84306577, 2), (84306807, 84306825, 19)]
