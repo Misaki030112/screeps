@@ -296,4 +296,36 @@ function pair() {
   assert.strictEqual(Memory.ops.w8day.upgCeil, 2, 'sites gone: threatSoft still caps at 2');
   delete Memory.ops.w8threat;
 }
+
+// Busy spawn: the second census (construction-site find) is skipped once this tick already planned.
+// A hostile still makes both busy spawns walk it. Neither spawn is dropped.
+{
+  Game.time = 600000;
+  boot(18000, 2);
+  room.energyAvailable = 5600;
+  Memory.ops.w8sg = { ne: 0, waitCost: 0 };
+  let sitesFound = 0;
+  const prevFind = room.find;
+  room.find = (t) => {
+    if (t === FIND_MY_CONSTRUCTION_SITES) sitesFound++;
+    return prevFind(t);
+  };
+  const both = pair();
+  both.a.spawning = { name: 'a' };
+  both.b.spawning = { name: 'b' };
+  sitesFound = 0;
+  W.spawnRun(both.a);
+  W.spawnRun(both.b);
+  assert.strictEqual(sitesFound, 1, 'two busy spawns, one construction-site find');
+  assert.strictEqual(both.spawned.length, 0, 'a busy spawn does not spawn');
+
+  Game.time = 600001;
+  hostiles = [{ my: false, body: [{ type: 'attack', hits: 100 }] }];
+  sitesFound = 0;
+  W.spawnRun(both.a);
+  W.spawnRun(both.b);
+  assert.strictEqual(sitesFound, 2, 'hostile bypass: both busy spawns still census');
+  hostiles = [];
+  room.find = prevFind;
+}
 console.log('w47n8 upbank ok');

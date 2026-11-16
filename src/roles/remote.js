@@ -430,6 +430,8 @@ const act = (c, t) => c.body.filter(p => p.type === t && p.hits > 0).length;
 function threatInfo(c) { return { hits: c.hits, ra: act(c, RANGED_ATTACK), heal: act(c, HEAL) }; }
 roles.defender = function (c) {
   if (require('../utils/cmd').yieldCreep(c)) return;
+  // KO boost before the kite leaves W46N8. Core busters are not kites and fall through.
+  if (require('../managers/boost').hold(c)) return;
   // Reads the FSM only (managers/threat.js); the FSM decides when to fight.
   // While engaged in the assigned room, every combat hostile is a target (not only Invader). Patrol shots stay Invader-only.
   // Never operates in W47N9 (defend-only; do not attack that room).

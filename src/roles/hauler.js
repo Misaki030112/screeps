@@ -107,6 +107,103 @@ function labRun(c, room) {
   if (move.to(c, src.pos.x, src.pos.y, 1)) { c.withdraw(src, t.res); delete c.memory.lr; }
   return true;
 }
+// Creep.withdraw(amount) returns ERR_FULL and moves nothing when amount exceeds free capacity.
+// Home haulers carry 300. Pass min(want, free, source) so a 123976 O surplus still moves, one load at a time.
+function freeCarry(c) {
+  const s = c && c.store;
+  if (!s || typeof s.getFreeCapacity !== 'function') return 0;
+  const n = s.getFreeCapacity();
+  return typeof n === 'number' && n > 0 ? n : 0;
+}
+function pull(c, src, res, want) {
+  const have = (src && src.store && typeof src.store[res] === 'number') ? src.store[res] : 0;
+  const w = typeof want === 'number' && want > 0 ? want : have;
+  const n = Math.min(w, freeCarry(c), have);
+  if (!(n > 0)) return 0;
+  c.withdraw(src, res, n);
+  return n;
+}
+// Terminal is full (or too tight for a 1000 KO dump + a 5000 W47 K send): move surplus O, then
+// excess K, then KO into storage, leaving labs ACT_O_BUF / ACT_K_BUF in the terminal.
+// idle=false runs only while tight, ahead of labRun. idle=true drains the rest of the surplus
+// after labRun and refills the terminal buffer from storage once a lab load spent it.
+// Never withdraws energy, so the 15k storage floor is not a mineral-park cost.
+function termPark(c, room, idle) {
+  if (!c || room.name !== c.memory.home || !room.terminal || !room.storage) return false;
+  const L = require('../managers/labs');
+  if (!L.cfg(room)) { delete c.memory.tp; delete c.memory.tpFrom; delete c.memory.tpTo; delete c.memory.tpRes; delete c.memory.tpAmt; return false; }
+  const held = Object.keys(c.store || {}).find(r => r !== RESOURCE_ENERGY && typeof c.store[r] === 'number' && c.store[r] > 0);
+  if (c.memory.tp && !idle) {
+    if (held) {
+      const dst = Game.getObjectById(c.memory.tpTo) || room.storage;
+      if (dst && move.to(c, dst.pos.x, dst.pos.y, 1)) { c.transfer(dst, held); delete c.memory.tp; delete c.memory.tpFrom; delete c.memory.tpTo; delete c.memory.tpRes; delete c.memory.tpAmt; }
+      return true;
+    }
+    if (c.store && c.store[RESOURCE_ENERGY] > 0) return false;
+    const src = Game.getObjectById(c.memory.tpFrom);
+    if (!src || c.memory.tpRes === RESOURCE_ENERGY || c.memory.tpRes === 'energy') {
+      delete c.memory.tp; delete c.memory.tpFrom; delete c.memory.tpTo; delete c.memory.tpRes; delete c.memory.tpAmt; return false;
+    }
+    if (move.to(c, src.pos.x, src.pos.y, 1) && !pull(c, src, c.memory.tpRes, c.memory.tpAmt)) {
+      const have = (src.store && src.store[c.memory.tpRes]) || 0;
+      if (!(have > 0)) { delete c.memory.tp; delete c.memory.tpFrom; delete c.memory.tpTo; delete c.memory.tpRes; delete c.memory.tpAmt; return false; }
+    }
+    return true;
+  }
+  if (held || (c.store && c.store[RESOURCE_ENERGY] > 0) || c.memory.working) return false;
+  // Parking occupies the only home hauler. Under the defence floor it should be banking energy, not minerals.
+  const storE = (room.storage.store && (room.storage.store[RESOURCE_ENERGY] || room.storage.store.energy)) || 0;
+  const floor = (typeof Memory !== 'undefined' && Memory.defense && Memory.defense.reserveE) || 15000;
+  if (storE < floor) return false;
+  const t = L.parkTask(room, { idle: !!idle });
+  if (!t || t.res === RESOURCE_ENERGY || t.res === 'energy') return false;
+  const src = Game.getObjectById(t.from); if (!src || !src.pos) return false;
+  c.memory.tp = 1; c.memory.tpFrom = t.from; c.memory.tpTo = t.to; c.memory.tpRes = t.res; c.memory.tpAmt = t.amt;
+  if (move.to(c, src.pos.x, src.pos.y, 1)) pull(c, src, t.res, t.amt);
+  return true;
+}
+// Waiting kite: move KO (then lab energy) into the boost lab. Storage energy is used only when
+// the withdraw leaves storage at boost.STOR_SAFE (20k) or above.
+function boostHaul(c, room) {
+  if (!c || room.name !== c.memory.home) return false;
+  const B = require('../managers/boost');
+  const heldM = Object.keys(c.store || {}).find(r => r !== RESOURCE_ENERGY && typeof c.store[r] === 'number' && c.store[r] > 0);
+  if (c.memory.bk) {
+    const res = heldM || (c.store && c.store[RESOURCE_ENERGY] > 0 ? RESOURCE_ENERGY : null);
+    if (res) {
+      const dst = Game.getObjectById(c.memory.bkTo);
+      if (dst && move.to(c, dst.pos.x, dst.pos.y, 1)) {
+        c.transfer(dst, res);
+        delete c.memory.bk; delete c.memory.bkFrom; delete c.memory.bkTo; delete c.memory.bkRes; delete c.memory.bkAmt;
+      }
+      return true;
+    }
+    const src = Game.getObjectById(c.memory.bkFrom);
+    if (!src || !src.pos) { delete c.memory.bk; delete c.memory.bkFrom; delete c.memory.bkTo; delete c.memory.bkRes; delete c.memory.bkAmt; return false; }
+    if (c.memory.bkRes === RESOURCE_ENERGY && room.storage && src.id === room.storage.id) {
+      const e = (room.storage.store && (room.storage.store[RESOURCE_ENERGY] || 0)) || 0;
+      // Same floor as the first dispatch: storage may have fallen while the hauler was walking.
+      const bill = c.memory.bkAmt || 0;
+      if (e < B.STOR_SAFE || e - bill < B.STOR_SAFE) { delete c.memory.bk; delete c.memory.bkFrom; delete c.memory.bkTo; delete c.memory.bkRes; delete c.memory.bkAmt; return false; }
+    }
+    if (move.to(c, src.pos.x, src.pos.y, 1) && !pull(c, src, c.memory.bkRes, c.memory.bkAmt)) {
+      const have = (src.store && src.store[c.memory.bkRes]) || 0;
+      if (!(have > 0)) { delete c.memory.bk; delete c.memory.bkFrom; delete c.memory.bkTo; delete c.memory.bkRes; delete c.memory.bkAmt; return false; }
+    }
+    return true;
+  }
+  if (heldM || (c.store && c.store[RESOURCE_ENERGY] > 0) || c.memory.working || c.memory.tp) return false;
+  const job = B.haulTask(room);
+  if (!job) return false;
+  if (job.res === RESOURCE_ENERGY && room.storage && job.from === room.storage.id) {
+    const e = (room.storage.store && (room.storage.store[RESOURCE_ENERGY] || 0)) || 0;
+    if (e < B.STOR_SAFE || e - job.amt < B.STOR_SAFE) return false;
+  }
+  const src = Game.getObjectById(job.from); if (!src || !src.pos) return false;
+  c.memory.bk = 1; c.memory.bkFrom = job.from; c.memory.bkTo = job.to; c.memory.bkRes = job.res; c.memory.bkAmt = job.amt;
+  if (move.to(c, src.pos.x, src.pos.y, 1)) pull(c, src, job.res, job.amt);
+  return true;
+}
 // Build hold (walls.noUpgrade): hub -> controller link is off, so source A's energy (link 30,11) piles up in the hub link and
 // the source-A container next to the link stays near empty. The home hauler's fixed pickup becomes the hub link, waited on
 // from the manager tile (hub + storage both in range 1), so the queen no longer leaves stamp A to drain it
@@ -122,11 +219,14 @@ function linkFed(room, a) {
   return ls.some(l => l && l.pos && Math.max(Math.abs(l.pos.x - a[0]), Math.abs(l.pos.y - a[1])) <= 1);
 }
 function homeHauler(room) { return Object.values(Game.creeps || {}).some(x => x.memory.role === 'hauler' && (x.memory.home || x.room.name) === room.name); }
-module.exports = { pickups, handoff, ctlLow, mineralRun, labRun, hubPickup, homeHauler, idlePark, run(c) {
+module.exports = { pickups, handoff, ctlLow, mineralRun, labRun, termPark, boostHaul, hubPickup, homeHauler, idlePark, run(c) {
   if (require('../utils/cmd').yieldCreep(c)) return; // Memory.cmd off => one check (docs/COMMANDER.md)
   const room = c.room, P = plan.get(room.name);
   if (mineralRun(c, room, P)) return;
+  if (boostHaul(c, room)) return; // a kite waiting at home, before the terminal is drained
+  if (termPark(c, room, false)) return; // tight terminal: park surplus before another lab fill seals it
   if (labRun(c, room)) return;
+  if (termPark(c, room, true)) return;  // lab inputs satisfied: keep draining surplus down to the 3000 buffers
   if (room.name === c.memory.home && salvage.dump(c)) return; // Invader loot (minerals) -> storage first
   if (c.memory.working && c.store[RESOURCE_ENERGY] === 0) { c.memory.working = false; delete c.memory.dst; delete c.memory.fl; }
   if (!c.memory.working && c.store.getFreeCapacity() === 0) c.memory.working = true;

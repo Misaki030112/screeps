@@ -69,6 +69,7 @@ function spawnRun(o) {
   W = { noted: null };
   const spawned = [];
   Game.time = 5000;
+  Memory.stats = {};
   Game.creeps = {};
   for (const [name, role] of Object.entries(o.creeps || { queen1: 'queen', miner1: 'miner' })) {
     Game.creeps[name] = {

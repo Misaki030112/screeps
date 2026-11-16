@@ -487,10 +487,11 @@ const R = {
   // 14:46 (Misaki): border ranged defender. Attacks intruders inside W47N8 only (never leaves: home() + no exit/seal-north tiles),
   // kites melee, self/ally heal when it has HEAL. Spawned only on an invasion move (TH.invasion) or an armed hostile in the base.
   w8defender(c) {
+    if (require('../../managers/boost').hold(c)) return; // KO at W46N8 before home() walks a joint kite out
+    if (!home(c)) return;
     // doctrine (src/rooms/w47n8/defense.js defPlan, docs/DEFENSE_W47N8.md): station right behind the seal nearest the enemy, shoot the
     // towers' focus (healer > ranged > melee), retreat to a tower below 60% hp, back at 90%; quiet: idle, no recycle (18:04).
     // memory.jd 'W46N8' = joint-defence creep sent by home (same role, counted in the joint roster)
-    if (!home(c)) return;
     const D = require('./defense');
     const cb = (rn, m) => { if (rn !== C.ROOM) return false; for (let i = 0; i < 50; i++) { for (let y = 0; y <= 3; y++) m.set(i, y, 255); m.set(0, i, 255); m.set(49, i, 255); m.set(i, 49, 255); } return m; };
     const mv = (pos, r) => CMV.to(c, pos.x, pos.y, r, cb, 3); // creeps ignored, detour only when stuck (utils/combatmove)
@@ -518,6 +519,7 @@ const R = {
   // 10-20 15:25 (Misaki) melee gate guard (defense.guardPlan): stands on gate rampart 29,3, hits what comes adjacent, sallies only at
   // catchable targets near the gate (dismantlers/melee/slow), HP rule 60/90, never leaves W47N8 (exit row blocked)
   w8guard(c) {
+    if (require('../../managers/boost').hold(c)) return;
     if (!home(c)) return;
     const D = require('./defense'), room = c.room, hs = room.find(FIND_HOSTILE_CREEPS).filter(x => !x.my), mem = c.memory;
     const cb = (rn, m) => { if (rn !== C.ROOM) return false; for (let i = 0; i < 50; i++) { m.set(i, 0, 255); m.set(0, i, 255); m.set(49, i, 255); m.set(i, 49, 255); } return m; };

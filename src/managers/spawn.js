@@ -466,6 +466,22 @@ function setRoleTargets(room) {
   room.memory.roleTargets = T;
   return T;
 }
+// One planning snapshot per room per tick (W47 spawnGate / room._sg). The throttle flag is frozen
+// on the first spawn so a sibling still sees this tick's decision after sw.ne is re-armed.
+function spawnGate(spawn, sw) {
+  const room = spawn.room;
+  let g = room._sg;
+  if (g && g.t === Game.time) return g;
+  let cmdOn = false;
+  try { const cmd = require('../utils/cmd'); cmdOn = !!(cmd.armed && cmd.armed()); } catch (e) { /* ok */ }
+  const hostile = typeof FIND_HOSTILE_CREEPS !== 'undefined' && room.find(FIND_HOSTILE_CREEPS).length;
+  const defenseNow = defenseDue(room);
+  const canPay = sw.waitCost > 0 && (room.energyAvailable || 0) >= sw.waitCost;
+  const force = !!(hostile || cmdOn || defenseNow);
+  const throttled = !force && sw.ne > Game.time && !canPay;
+  g = room._sg = { t: Game.time, throttled, planned: 0, spawned: 0, passes: 0, who: '', targets: 0, force, canPay };
+  return g;
+}
 module.exports = { defLowUpgraders, upExtraTick, extraUpReady, UP_EXTRA_ARM, UP_EXTRA_REARM, UP_EXTRA_EMA, UP_EXTRA_EMA_OFF, UP_EXTRA_T, UP_EXTRA_BODY, setRoleTargets, rhTarget, birthDirs, targets, mineralCapped, rhaulerNeed, remoteNext, retiring, pendingSpawn, notePendingSpawn, B, defenderOrder, planDefender, extrasOk, reserverBody, nearFull, bodyEnergy, spawnOrder, run(spawn) {
   // spawn-wait metric (Misaki 10-18 09:30: zero spawn idle due to refill). Memory.stats.sw[room] cumulative ticks:
   //   busy = spawning; wait = a creep was wanted, cost <= cap but energyAvailable < cost (refill wait); idle = nothing wanted.
@@ -473,32 +489,49 @@ module.exports = { defLowUpgraders, upExtraTick, extraUpReady, UP_EXTRA_ARM, UP_
   const SW = ((Memory.stats || (Memory.stats = {})).sw || (Memory.stats.sw = {}));
   const sw = SW[spawn.room.name] || (SW[spawn.room.name] = { since: Game.time, busy: 0, wait: 0, idle: 0 });
   require('../rooms/w47n8/fillmeter').tick(spawn); // 17:5x refill meter (Memory.ops.fm[room]: delivered, ticks below cap, episodes, queen transfers)
-  if (spawn.spawning) { sw.busy++; setRoleTargets(spawn.room); return; }
-  // Commander owns this spawn (idle / recycle / explicit spawn). Do not arm the idle-skip window.
+  // 11-16: two RCL7 spawns each ran a full cascade. A busy spawn called setRoleTargets every tick, and a
+  // successful spawn cleared sw.ne so the idle sibling immediately ran run1. One pass per room; the sibling
+  // returns when that pass did not start a creep. Hostiles, defenseDue (remote threat / holding / energyHold
+  // / home guards), a commander order, and canPay still force a full pass the same tick — including the
+  // first-tick max-spec defender. A creep that did start keeps the skip window armed for later ticks; the
+  // gate for this tick is already open, so the other spawn can still start a second body.
   const cmd = require('../utils/cmd');
-  if (cmd.consumeSpawn(spawn)) { sw.idle++; return; }
-  // CPU (strategy review 2026-10-19): run1 costs ~2.4 ms a call and finds nothing to spawn on ~36% of ticks.
-  // After an idle pass, re-check every IDLE_EVERY ticks. 11-10: also while the room wants a creep but
-  // energyAvailable is still short of that body (the 15k-floor churn kept both RCL7 spawns on run1).
-  // A tick that can pay the queued cost, a hostile, or a live commander order still runs the full pass.
-  // Worst case a replacement starts IDLE_EVERY-1 ticks later.
-  const hostile = typeof FIND_HOSTILE_CREEPS !== 'undefined' && spawn.room.find(FIND_HOSTILE_CREEPS).length;
-  const cmdOn = !!(cmd.armed && cmd.armed());
-  const canPay = sw.waitCost > 0 && (spawn.room.energyAvailable || 0) >= sw.waitCost;
-  // A remote threat is not a hostile in this room. The idle skip used to wait up to IDLE_EVERY-1
-  // ticks before the defender was even considered. A threat runs the spawn the same tick.
-  const defenseNow = defenseDue(spawn.room);
-  if (sw.ne && Game.time < sw.ne && !hostile && !cmdOn && !canPay && !defenseNow) {
-    if (sw.waitCost) sw.wait++; else sw.idle++;
-    sw.skip = (sw.skip || 0) + 1; return;
+  const g = spawnGate(spawn, sw);
+  const sid = spawn.name || spawn.id || '';
+  if (g.throttled) {
+    if (spawn.spawning) sw.busy++;
+    else if (sw.waitCost) sw.wait++;
+    else sw.idle++;
+    sw.skip = (sw.skip || 0) + 1;
+    return;
   }
+  if (spawn.spawning) {
+    sw.busy++;
+    // roleTargets still refresh while every spawn is busy, but only once per room per open tick.
+    if (!g.targets && !g.planned) { setRoleTargets(spawn.room); g.targets = 1; if (!g.force) sw.ne = Game.time + IDLE_EVERY; }
+    return;
+  }
+  // Commander owns this spawn (idle / recycle / explicit spawn). Do not arm the idle-skip window.
+  if (cmd.consumeSpawn(spawn)) { sw.idle++; return; }
+  if (sid && g.planned && !g.spawned && g.who && g.who !== sid) {
+    if (sw.waitCost) sw.wait++; else sw.idle++;
+    sw.skip = (sw.skip || 0) + 1;
+    return;
+  }
+  if (sid) g.who = g.who || sid;
+  g.planned = 1; g.passes++;
   let waited = false, done = false, rv;
   try { rv = run1(spawn, (role, cost, avail) => { if (!waited) { waited = true; sw.wait++; sw.last = [role, cost, avail, Game.time]; } }); done = true; return rv; }
   finally {
     if (!done) { sw.ne = 0; sw.waitCost = 0; }
     else if (waited) { sw.waitCost = sw.last ? sw.last[1] : 0; sw.ne = Game.time + IDLE_EVERY; }
     else if (rv === undefined) { if (!spawn.spawning) sw.idle++; sw.waitCost = 0; sw.ne = Game.time + IDLE_EVERY; }
-    else { if (!spawn.spawning) sw.idle++; sw.waitCost = 0; sw.ne = 0; }
+    else if (rv === 0) {
+      g.spawned++;
+      if (!spawn.spawning) sw.idle++;
+      sw.waitCost = 0;
+      sw.ne = Game.time + IDLE_EVERY;
+    } else { if (!spawn.spawning) sw.idle++; sw.waitCost = 0; sw.ne = 0; }
   }
 } };
 const IDLE_EVERY = 4;
