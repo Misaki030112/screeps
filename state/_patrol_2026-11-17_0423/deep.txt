@@ -1,0 +1,41 @@
+room_stats columns: ['ts', 'tick', 'room', 'rcl', 'progress', 'progress_total', 'energy', 'energy_cap', 'sites', 'hostiles', 'safe_mode', 'cpu', 'bucket', 'trace_cpu', 'gcl_progress', 'creeps', 'commit', 'storage', 'ctl', 'ctl_ema']
+room_stats max: [('W46N8', 84310140, datetime.datetime(2026, 11, 17, 4, 29, 40, 210348, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai'))), ('W47N8', 84310140, datetime.datetime(2026, 11, 17, 4, 29, 40, 210393, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')))]
+HOME tip 84310140 2026-11-17 04:29:40.210348+08:00
+storage under15k runs since 84309280 (n_runs=4 max_span=111 tip_consec_under=0):
+  84309400..84309510 span=111 minstor=12696 2026-11-17 03:31:27.755205+08:00 -> 2026-11-17 03:40:04.565398+08:00
+  84309530..84309560 span=31 minstor=14366 2026-11-17 03:41:37.110302+08:00 -> 2026-11-17 03:43:57.469592+08:00
+  84309810..84309810 span=1 minstor=14908 2026-11-17 04:03:30.171656+08:00 -> 2026-11-17 04:03:30.171656+08:00
+  84309840..84309850 span=11 minstor=14408 2026-11-17 04:05:52.797920+08:00 -> 2026-11-17 04:06:41.408714+08:00
+20k/3h maxstor=20053 best_span=0 run=None
+20k/6h maxstor=20753 best_span=50 run=[84307800, 84307850, datetime.datetime(2026, 11, 17, 1, 23, 16, 119598, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), datetime.datetime(2026, 11, 17, 1, 27, 24, 301438, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 20753, 50]
+cpu 1h-ish room_stats: (50, 14.48, 28.25, 17.599799976348876, 9999, 10000, 84309340, 84310140)
+cpu 2h-ish room_stats: (100, 13.69, 28.25, 17.2625, 9999, 10000)
+room_stats gaps >=30t since last-20:
+  84309600..84309730 dtick=130 wall_s=612 2026-11-17 03:47:00.993236+08:00 -> 2026-11-17 03:57:13.114442+08:00
+  84309880..84310080 dtick=200 wall_s=949 2026-11-17 04:09:07.489116+08:00 -> 2026-11-17 04:24:56.415862+08:00
+nUp samples 51 from 84309330..84310140:
+  84309330 2026-11-17 03:26:00.589786+08:00 stor=16616 nUp=1 w8=2
+  84309460 2026-11-17 03:36:09.766063+08:00 stor=12816 nUp=1 w8=3
+  84309470 2026-11-17 03:36:57.344530+08:00 stor=12796 nUp=1 w8=4
+  84309520 2026-11-17 03:40:50.736152+08:00 stor=15066 nUp=1 w8=3
+  84309570 2026-11-17 03:44:42.625786+08:00 stor=15166 nUp=1 w8=2
+  TIP 84310140 2026-11-17 04:29:40.210348+08:00 stor=15506 nUp=1 w8=2
+Traceback (most recent call last):
+  File "/workspace/screeps/state/_patrol_2026-11-17_0423/deep.py", line 263, in <module>
+    main()
+    ~~~~^^
+  File "/workspace/screeps/state/_patrol_2026-11-17_0423/deep.py", line 145, in main
+    c.execute("""
+    ~~~~~~~~~^^^^
+      SELECT name, min(tick), max(tick), min(x) filter (where x is not null), max(x),
+      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<6 lines>...
+      GROUP BY name ORDER BY min(tick)
+      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    """, (last, tip))
+    ^^^^^^^^^^^^^^^^^
+  File "/workspace/screeps/.venv/lib/python3.13/site-packages/psycopg/cursor.py", line 117, in execute
+    raise ex.with_traceback(None)
+psycopg.errors.UndefinedColumn: column "name" does not exist
+LINE 2:       SELECT name, min(tick), max(tick), min(x) filter (wher...
+                     ^

@@ -8,13 +8,12 @@ import sys
 sys.path.insert(0, "/workspace/screeps/tools")
 import db
 
-TMIN, TMAX = 84308301, 84309000
+TMIN, TMAX = 84308701, 84309400
 ROOMS = ("W46N8", "W47N8", "W45N8", "W45N7", "W47N7")
-DIR = "/workspace/screeps/state/_halfhour_2026-11-17_0300"
-# First-pass official 404 inside this reconstructed window: none
-# (35 of 35 official GETs 200). Leftovers such as W45N8@84306500
-# are outside TMIN and retried as leftovers.
-IN_WINDOW_404 = set()
+DIR = "/workspace/screeps/state/_halfhour_2026-11-17_0330"
+# First-pass official 404 inside this reconstructed window (still 404 after confirm/retry2):
+# W47N7@84309000, W45N8@84309100 (33 of 35 official GETs 200).
+IN_WINDOW_404 = {("W47N7", 84309000), ("W45N8", 84309100)}
 OUT = sys.argv[1] if len(sys.argv) > 1 else f"{DIR}/coverage_final.json"
 
 def chunk_base(tick):
