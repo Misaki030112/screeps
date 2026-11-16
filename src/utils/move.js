@@ -47,7 +47,7 @@ function matrix(roomName, avoidCreeps) {
     for (let i = 0; i < 50; i++) for (const [x, y] of [[0, i], [49, i], [i, 0], [i, 49]]) if (m.get(x, y) < 50) m.set(x, y, 50);
     // Dead-end walkables (patrol 2026-10-29 20:25): roads/containers enclosed by 255 neighbours
     // (e.g. W46N8 31,33 and 31,35 after RCL7 stamp). PathFinder otherwise routes onto them and the
-    // creep can never leave; queen freeTrapped then suicides in a spawn loop. Block the tile itself.
+    // creep can never leave; freeTrapped recycles whatever role is standing there. Block the tile itself.
     const N8m = [[-1,-1],[0,-1],[1,-1],[-1,0],[1,0],[-1,1],[0,1],[1,1]];
     const T = room.getTerrain();
     const esc = (x, y) => N8m.some(([dx, dy]) => {

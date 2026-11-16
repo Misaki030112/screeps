@@ -8,9 +8,11 @@ const rep = (n, p) => Array(Math.max(0, n)).fill(p);
 // queen/fillers inside (any stamp tile counts as inside). All 8 directions stay in the list, so a blocked side falls back to the engine default.
 const DXY = { 1: [0, -1], 2: [1, -1], 3: [1, 0], 4: [1, 1], 5: [0, 1], 6: [-1, 1], 7: [-1, 0], 8: [-1, -1] };
 // Birth tile with no walkable neighbour (stamp B filler tiles 31,33 / 31,35 are boxed in by extensions + Spawn3 30,34): the
-// creep can never leave, so queen.freeTrapped recycles it on its first live tick. Patrol 2026-11-11: 15 queens in 24h, e.g.
-// queen84199179 / queen84199252 born on 31,33 at 84199250 / 84199323 and recycled the same tick (72 t of spawn time each).
-// Such a direction is never offered (fallback to the full list only if every side were trapped).
+// creep can never leave. queen.freeTrapped (main.js, every role) recycles one already standing there. Patrol 2026-11-11:
+// 15 queens in 24h, e.g. queen84199179 / queen84199252 born on 31,33 and recycled the same tick (72 t of spawn time each).
+// hauler84302303 was born from Spawn3 onto 31,33 at 84302303 and sat empty until 84302840. birthDirs
+// does not run for a creep already on the tile (console spawn, omitted directions, fallback).
+// Such a direction is still never offered (fallback to the full list only if every side were trapped).
 const N8 = [[-1, -1], [0, -1], [1, -1], [-1, 0], [1, 0], [-1, 1], [0, 1], [1, 1]];
 function trappedTile(room, x, y) {
   if (!room || typeof room.getTerrain !== 'function') return false;

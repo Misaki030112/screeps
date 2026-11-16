@@ -296,20 +296,36 @@ function parkOrDump(c, room, P, st) {
 }
 
 function canEscape(c) {
-  const at = rc.get(c.room).at;
-  const walkable = (x, y) => { const e = at[x * 50 + y]; return !e || Object.keys(e).every(t => t === 'road' || t === 'container' || t === 'rampart'); };
+  // A neighbour we can step onto: on the map, not a terrain wall, and no structure other than road/container/rampart.
+  // Same boxes as spawn.trappedTile. A creep with no real tile (test double) is treated as free.
+  if (!c || !c.pos || !c.room || !Number.isFinite(c.pos.x) || !Number.isFinite(c.pos.y)) return true;
+  const at = (rc.get(c.room) || {}).at || {};
+  const T = typeof c.room.getTerrain === 'function' ? c.room.getTerrain() : null;
+  const WALL = typeof TERRAIN_MASK_WALL !== 'undefined' ? TERRAIN_MASK_WALL : 1;
+  const walkable = (x, y) => {
+    if (x < 0 || x > 49 || y < 0 || y > 49) return false;
+    if (T && T.get(x, y) === WALL) return false;
+    const e = at[x * 50 + y];
+    return !e || Object.keys(e).every(t => t === 'road' || t === 'container' || t === 'rampart');
+  };
   return N8.some(([dx, dy]) => walkable(c.pos.x + dx, c.pos.y + dy));
 }
 function freeTrapped(c) {
-  // Walled in (patrol 2026-10-29 escape hatch; 2026-10-30: also when carrying): recycle at adjacent spawn
-  // (store energy returns to spawn). Previously only empty queens recycled — a loaded queen aging out on
-  // enclosed filler 31,33 left an unreachable ~1k drop that the home hauler then oscillated on forever.
-  // Patrol 2026-11-01 11:0x: ~1.3k still stranded on 31,33 (all 8 neighbours blocked; salvage.reachable skips it).
-  // Spawn3 can still birth onto that tile (inside preferred). Pickup the pile and transfer into adjacent
-  // spawn/extension BEFORE recycle, so the next trapped birth recovers the energy instead of leaving it to decay.
+  // Walled in (patrol 2026-10-29 escape hatch; 2026-10-30: also when carrying). main.js runs this for every
+  // role before the role script. Only queens used to: hauler84302303 was born from Spawn3 onto 31,33 at
+  // 84302303 and sat empty until 84302840. A bare PathFinder walks through the extensions; move.to costs them
+  // at 255 and finds no path. birthDirs still refuses the tile; this is the creep already standing on it
+  // (console spawn, directions omitted, fallback).
+  // An adjacent spawn that is not spawning recycles this tick once carried energy is banked (empty: same tick).
+  // Otherwise the hatch: pick up a stranded pile and transfer energy into an adjacent spawn/extension BEFORE
+  // recycle or suicide. A loaded exit drops the load where nobody can walk (enclosed filler 31,33 left ~1k,
+  // still ~1.3k on 2026-11-01). A spawn that is spawning cannot recycle (ERR_BUSY) — wait for the TTL refund.
+  // No spawn in range: suicide.
+  if (!c || c.spawning) return false;
   if (canEscape(c)) return false;
   if (c.store.getFreeCapacity() > 0) {
-    const drop = c.pos.lookFor(LOOK_RESOURCES).find(r => r.resourceType === RESOURCE_ENERGY)
+    const here = typeof c.pos.lookFor === 'function' ? c.pos.lookFor(LOOK_RESOURCES) : [];
+    const drop = here.find(r => r.resourceType === RESOURCE_ENERGY)
       || c.pos.findInRange(FIND_DROPPED_RESOURCES, 1).find(r => r.resourceType === RESOURCE_ENERGY);
     if (drop) { c.pickup(drop); return true; }
   }
@@ -319,8 +335,10 @@ function freeTrapped(c) {
     })[0];
     if (t) { c.transfer(t, RESOURCE_ENERGY); return true; }
   }
-  const sp = c.pos.findInRange(FIND_MY_SPAWNS, 1)[0];
+  const sps = c.pos.findInRange(FIND_MY_SPAWNS, 1);
+  const sp = sps.find(s => !s.spawning);
   if (sp) { sp.recycleCreep(c); return true; }
+  if (sps.length) return true;
   c.suicide(); return true;
 }
 // True while this room should top towers as well as extensions: a remote defender is owed,
@@ -335,7 +353,7 @@ function defenseFill(room) {
   const t8 = room.memory && room.memory.threat8;
   return !!(t8 && typeof Game !== 'undefined' && Game.time - (t8.t || 0) < 10);
 }
-module.exports = { fillRoute, defenseFill, storageFloor, buildZones, zoneDeficit, myStops, canEscape, run(c) {
+module.exports = { fillRoute, defenseFill, storageFloor, buildZones, zoneDeficit, myStops, canEscape, freeTrapped, run(c) {
   if (c.room && c.room.memory) c.room.memory.queenAlive = Game.time; // haulers still see her while she is ordered
   if (require('../utils/cmd').yieldCreep(c)) return;
   const room = c.room, P = plan.get(room.name);
