@@ -6,6 +6,8 @@ import FlowDiagram from './components/FlowDiagram.vue'
 import RoadmapDiagram from './components/RoadmapDiagram.vue'
 import SpawnQueue from './components/SpawnQueue.vue'
 import UpgradeFloors from './components/UpgradeFloors.vue'
+import HaulOrder from './components/HaulOrder.vue'
+import HaulReads from './components/HaulReads.vue'
 import ColonyStrip from './components/ColonyStrip.vue'
 
 export default {
@@ -17,6 +19,8 @@ export default {
     app.component('RoadmapDiagram', RoadmapDiagram)
     app.component('SpawnQueue', SpawnQueue)
     app.component('UpgradeFloors', UpgradeFloors)
+    app.component('HaulOrder', HaulOrder)
+    app.component('HaulReads', HaulReads)
     app.component('ColonyStrip', ColonyStrip)
   },
 }
