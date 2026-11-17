@@ -1,71 +1,27 @@
-# Screeps bot — Misaki @ shard3 / W46N8
+# 殖民地手册
 
-First spawn `Spawn1` at W46N8 (35,28), placed 2026-10-12. Novice protection until ~2026-10-28 03:33 (UTC+8).
+Misaki 在 Screeps shard3 上的殖民地。家是 **W46N8**，第二间房是 **W47N8**，外矿是 **W45N8**、**W45N7** 和 **W47N7**。
 
-## Attack alerts (no automatic safe mode — user decision)
-- In-game `src/managers/alerts.js`: hostile creeps by owner (ATTACK/RANGED_ATTACK/CLAIM/HEAL = medium; WORK-only neighbour
-  harvesters = low unless structures lose hits), structure hit loss (natural decay ignored), event-log attackers (= high).
-  Episodes per owner end after 50 quiet ticks. Written to `Memory.stats.alerts` and logged as `ALERT {json}`.
-- The websocket listener appends new/escalated/ended episodes to `metrics/alerts.jsonl` and keeps `metrics/alerts_state.json`.
-- **Check pending:** `python3 /workspace/screeps/alerts.py` (exit 0 none, 1 only low, 2 medium/high; `--json`, `--ack ID|all`, `--all`).
+给人读的说明在公开手册里，源码在 [`docs-site/`](docs-site/)。手册从当前的 `src/` 写起：能量地板、孵化、搬运、升级、防御、实验室、矿物和部署。它不收录巡逻日志，也不包含令牌或内网地址。
 
-## Iterations (state/)
-- `state/next_iteration.json` – `{"next_at": "<ISO time, +08:00>", "reason": "..."}`: when the next improvement iteration is worthwhile.
-  A scheduler/check should run an iteration only when now >= next_at (or when `alerts.py` exits 2).
-- `state/iterations.log` – one line per iteration: `<time UTC+8> | <what changed> | next_at=<ISO>`.
-- Each iteration: analyse (status.py, metrics.jsonl, alerts.py, **`.venv/bin/python tools/creep_audit.py --patrol`** — rolling 1h/6h/24h windows + before/after last deploy; exit 1 = findings, 2 = regression after deploy → investigate/rollback first), fix + next ROADMAP step, `node upload.js`, commit, verify, update state/.
-  No safe-mode activation and no major decisions (claims, attacks, spending) without user approval.
+生产站点还没有写进这份说明。导入 Vercel 并得到地址之后，把那个 URL 放在这里。
 
-## Layout
-- `src/main.js` – loop: memory cleanup → spawns → construction → creeps → stats (every step wrapped by `utils/errors`).
-- `src/roles/` – harvester, upgrader, builder (+ `index.js` registry).
-- `src/managers/` – `spawn`, `layout` (sites from plan per RCL), `tower`, `stats`; `src/layouts/` – generated plans; `src/utils/report.js` – STATS console line.
-- `src/utils/` – `energy` (gather/toggle), `errors` (try/catch + error buffer).
-- `scripts/build.js` – flattens `src/` to `dist/` (`roles/harvester.js` → `roles.harvester`), rewriting requires.
-- `scripts/check.js` – build + `node --check` + one-tick smoke test with a mocked Game.
-- `upload.js` – runs check, then POSTs `dist/` to `/api/user/code` (branch `default`, active on shard3).
-- `collect.py` → appends Memory.stats to `metrics/metrics.jsonl`; `status.py [--live]` prints a summary.
-- `tools/` – room scouting scripts used to choose the start room; `data/` – scan results.
+## 仓库里有什么
 
-## Observability
-- **Websocket listener** (`tools/listener.py`, kept alive by `tools/run_listener.sh`): subscribes to
-  `user:<id>/console`, `user:<id>/cpu`, and **one** room slot. Peacetime rotates that slot
-  W46N8 : W47N8 : W45N8 : W45N7 = 5 : 5 : 1 : 1 wall-clock (600s / 600s / 120s / 120s, `tools/room_rot.py`).
-  The second official room slot stays free. Writes `metrics/console.log`, `metrics/errors.log`,
-  `metrics/metrics.jsonl` (STATS line the bot logs every 10 ticks ≈ 40 s), `metrics/live.json`
-  (W46N8 objects only while home holds the slot; `roomSlot` says which room is on).
-  Wartime: `touch metrics/listener_yield_rooms` drops the room subscription within ~5s so the
-  Screeps指挥官 bot can subscribe the battle rooms (both slots if needed). `rm` that file after handback.
-  Start: `nohup tools/run_listener.sh >/dev/null 2>&1 &`  Stop: `kill $(cat metrics/listener.pid); pkill -f "[l]istener.py"`
-- **Dashboard**: `nohup tools/run_dashboard.sh > metrics/dashboard.out 2>&1 &` → http://127.0.0.1:8787/tools/dashboard.html (box browser; refreshes every 2 s: room map, stats, errors, console).
-- `python3 status.py` (summary incl. websocket data) · `.venv/bin/python status.py --map` → `metrics/room_live.png`.
-- `collect.py` (REST Memory.stats, rate-limited 1440/day) remains as a fallback.
-- Python deps live in `.venv/` (websocket-client, pillow).
+- `src/` 是游戏代码。W47N8 走自己的房间模块，其余出生点走家的孵化。
+- `docs-site/` 是手册网站。
+- `docs/` 和根目录上的短文只保留仍然成立的要点，并指向手册。十二小时记录不再放在这里。
+- `node scripts/check.js` 构建、做语法检查、跑模拟和单元测试。
+- `node upload.js` 在检查通过之后上传。令牌只放在本机、已被 git 忽略的 `.env` 里。
 
-## Layout
-`tools/plan_layout.py W46N8 35 28` regenerates `data/layout_W46N8.json`, `src/layouts/W46N8.js`, `docs/layout_W46N8.png`. See docs/LAYOUT.md, docs/STRATEGY.md.
+## 本地看手册
 
-## Layout v2 (live)
-`data/layout_W46N8_v2.json` → `src/layouts/W46N8.js` (via `tools/plan_v2.py`, `tools/export_v2.py`, `tools/patch_v2_live.py`).
-Checks: `node scripts/check.js` = build + syntax + `scripts/sim.js` (600-tick simulation on `data/sim_snapshot.json`;
-refresh the snapshot from the live room before big changes).
-Deploy lock: while a deploy runs, `state/deploy.lock` exists; the patrol routine must not upload or change layout/spawn logic then.
-
-## Usage
-```
-node scripts/check.js      # build + checks only
-node upload.js             # check then upload
-python3 status.py --live   # collect + summary
+```bash
+cd docs-site
+npm ci
+npm run dev
 ```
 
-## W47N9 wartime raid
-`src/roles/raid9.js` streams a field (d4 m6 r6 h10) at the east seal. Knobs live in `Memory.ops.w47n9` and per-creep `raidOrder` — see `docs/RAID_W47N9.md`. While the assault is on, both rooms recycle upgraders and builders; miners, fillers, haulers, and remotes stay first in the spawn queue. The bot does not activate safe mode. Arm only after deploy, by hand: `python3 tools/raid9.py arm` (not from a cloud agent).
-Token lives in `.env` (`SCREEPS_TOKEN=...`, chmod 600, gitignored).
-- Remote mining status: `python3 tools/remote_status.py`; W45N8 activity log `metrics/w45n8_activity.jsonl` (docs/REMOTE_W45N8.md).
+## 建议的 GitHub 简介
 
-## Data platform / creep telemetry → see docs/DATA.md
-- TimescaleDB (PostgreSQL 17) + Grafana (http://127.0.0.1:3000), started-if-down by `tools/services.sh` (patrol runs it each iteration; no systemd on the box).
-- The listener ingests every creep's position every tick, plus room stats, alerts, errors, STUCK/LAYOUT lines and segment-90 CPU windows. JSON files are retired, except `metrics/live.json` and `metrics/creep_audit.json`, which remain as dashboard caches.
-- Deploy only with `.venv/bin/python scripts/deploy.py "note"`, which records the commit for before/after comparisons.
-- Patrol: `tools/services.sh && python3 alerts.py && .venv/bin/python tools/creep_audit.py --patrol` (exit 2 = regression after deploy).
-- Movement (src/utils/move.js): cached serialized path per creep+target with a stuck fallback ladder (2: repath around creeps, 4: swap, 8: step aside, 30: STUCK report); paths invalidated only when room structures change.
+Misaki 的 Screeps shard3 殖民地手册（W46N8 / W47N8）：机制、现状，以及通向三级风筝兵的规划。
