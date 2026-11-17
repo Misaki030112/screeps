@@ -251,7 +251,9 @@ function run(c) {
 }
 // Raise the filler's idle road so a search takes 33,31 → 32,32 → 33,33 instead of stepping on
 // the post. Leave a blocked tile (255) alone, and leave the post walkable for the filler itself.
-function yieldPost(costs) {
+// moveTo and military.costMatrix call (roomName, matrix); move.matrix and direct tests call (matrix).
+function yieldPost(a, b) {
+  const costs = (b && typeof b.get === 'function') ? b : a;
   if (!costs || typeof costs.get !== 'function') return costs;
   if (costs.get(POST[0], POST[1]) < 255) costs.set(POST[0], POST[1], POST_COST);
   return costs;

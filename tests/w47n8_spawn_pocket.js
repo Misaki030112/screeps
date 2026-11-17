@@ -22,6 +22,9 @@ assert.strictEqual(fake.get(34, 32), 4, 'open post is yielded');
 fake.set(34, 32, 255);
 F.yieldPost(fake);
 assert.strictEqual(fake.get(34, 32), 255, 'a blocked post stays blocked');
+fake.set(34, 32, 1);
+assert.strictEqual(F.yieldPost('W47N8', fake), fake);
+assert.strictEqual(fake.get(34, 32), 4, 'moveTo-style (roomName, matrix) also yields the post');
 
 const block = new Set();
 function mark(list) { for (const [x, y] of list) block.add(x + ',' + y); }
