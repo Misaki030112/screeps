@@ -50,6 +50,8 @@ export default defineConfig({
   title: '殖民地手册',
   description: 'Misaki 在 Screeps shard3 上的殖民地：W46N8、W47N8，以及现在真正在跑的机制。',
   lang: 'zh-CN',
+  // Editor notes stay in the repo. They are not a page.
+  srcExclude: ['**/EDITORIAL_BACKLOG.md'],
   cleanUrls: true,
   lastUpdated: false,
   appearance: true,
