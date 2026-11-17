@@ -1,0 +1,16 @@
+window 84315101..84315800 (700)
+W46N8 distinct=700 rows=6615 range=[84315101, 84315800] missing_n=0 [] empty_no_creep=0 [] official_404=0 []
+W47N8 distinct=700 rows=11945 range=[84315101, 84315800] missing_n=0 [] empty_no_creep=0 [] official_404=0 []
+W45N8 distinct=700 rows=4062 range=[84315101, 84315800] missing_n=0 [] empty_no_creep=0 [] official_404=0 []
+W45N7 distinct=540 rows=1473 range=[84315190, 84315800] missing_n=160 [[84315101, 84315189], [84315206, 84315229], [84315300, 84315346]] empty_no_creep=160 [[84315101, 84315189], [84315206, 84315229], [84315300, 84315346]] official_404=0 []
+W47N7 distinct=600 rows=3077 range=[84315201, 84315800] missing_n=100 [[84315101, 84315200]] empty_no_creep=0 [] official_404=100 [[84315101, 84315200]]
+unique_after {'rows': 27172, 'unique_creep_tick_rows': 27172, 'distinct_ticks': 700, 'distinct_room_ticks': 3240}
+official_with_creeps=3240 empty_no_creep=160 official_404_missing=100 official_recovered=3400 expected=3500 in_window_404=['W47N7@84315100']
+live_ticks_after_official_tip {"W46N8": {"distinct": 116, "min": 84315801, "max": 84315916, "rows": 1158, "runs": [[84315801, 84315916, 116]]}, "W47N8": {"distinct": 36, "min": 84315917, "max": 84315952, "rows": 568, "runs": [[84315917, 84315952, 36]]}, "W45N8": {"distinct": 0, "min": null, "max": null, "rows": 0, "runs": []}, "W45N7": {"distinct": 0, "min": null, "max": null, "rows": 0, "runs": []}, "W47N7": {"distinct": 0, "min": null, "max": null, "rows": 0, "runs": []}}
+db_tips {"creep_ticks": {"max_tick": 84315951, "max_ts": "2026-11-17T12:04:18.157189+08:00"}, "room_stats": {"max_tick": 84315950, "max_ts": "2026-11-17T12:04:13.968069+08:00"}, "creep_cpu": {"max_tick": 84315940, "max_ts": "2026-11-17T12:03:37.260127+08:00"}, "path_arrivals": {"max_tick": 84315938, "max_ts": "2026-11-17T12:03:37.260127+08:00"}}
+New 11:48 freeze 84315741..84315789 official-filled 49/49/49/49/49 of 49. Prior 11:11 freeze 84315261..84315469 official-filled 209/209/209/162/209 of 209. Prior 10:54 freeze 84315041..84315119 still missing W47N7 84315101..84315119 due to official 404 @84315100. Prior 10:44 / 10:11 / 09:43 / 09:17 / 07:43 freeze bands unchanged and now at or before this window start.
+previously unpublished 84315501..84315800 official-filled except W45N7 official empty-no-creep if present in that band; includes 11:48 freeze 84315741..84315789. Overlap 84315101..84315500 official-filled except in-window 404 W47N7@84315100 (0 live / 100 empty) and W45N7 official empty-no-creep ranges.
+tick_s first=4.75334 printed 4.753; later-mean-robust 4.67987 applied nfix=4234; first-pass realign committed 8025; in-use 4.67987; later over45=0.
+confirm/retry2 recovered none; in-window official 404 W47N7@84315100 still 404 (0 live / 100 empty); leftover official 404 W45N8@84314900 still outside window (0 live / 100 empty); leftover official 404 W45N7@84314500 still outside window (0 live / 100 empty); leftover official 404 W47N8@84314000 still outside window (49 live / 51 empty); leftover official 404 W46N8@84313200 still outside window (96 live / 4 empty); older leftovers unchanged.
+listener single_slot=True roomSlot=W47N8 rot={'i': 1, 'room': 'W47N8', 'left': 435.0, 'at': '2026-11-17 12:04:21'} yield=absent; no second listener started; no war_cmd/pulse restart.
+This run did not restart the listener.

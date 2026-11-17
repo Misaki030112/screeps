@@ -1,0 +1,175 @@
+{
+  "first_interval": 4.66586,
+  "later_mean_w46": 4.668134,
+  "later_mean_w46_raw": 4.668134,
+  "later_mean_w46_robust": 4.668134,
+  "all_mean_w46": 4.6677550000000005,
+  "span_mean": 4.667755,
+  "prev_later_mean": 4.67987,
+  "prev_in_use_0312": 4.67987,
+  "prev_1h_patrol": 4.66898,
+  "intervals": [
+    {
+      "from": 84315500,
+      "to": 84315600,
+      "tick_s": 4.66586,
+      "outlier": false
+    },
+    {
+      "from": 84315600,
+      "to": 84315700,
+      "tick_s": 4.67164,
+      "outlier": false
+    },
+    {
+      "from": 84315700,
+      "to": 84315800,
+      "tick_s": 4.54105,
+      "outlier": false
+    },
+    {
+      "from": 84315800,
+      "to": 84315900,
+      "tick_s": 4.73147,
+      "outlier": false
+    },
+    {
+      "from": 84315900,
+      "to": 84316000,
+      "tick_s": 4.72092,
+      "outlier": false
+    },
+    {
+      "from": 84316000,
+      "to": 84316100,
+      "tick_s": 4.675590000000001,
+      "outlier": false
+    }
+  ],
+  "gt_first": 84316232,
+  "gt_check": 84316277,
+  "gt_realign": 84316278,
+  "now_check": "2026-11-17T12:30:02.483442+08:00",
+  "now_realign": "2026-11-17T12:30:02.483402+08:00",
+  "tick_s_used_first_pass": 4.66586,
+  "ts_realigned_first_pass": 0,
+  "still_over_45s_vs_first": 120,
+  "still_over_15s_vs_first": 12616,
+  "vs_candidates": {
+    "first": {
+      "over45": 120,
+      "over15": 12616,
+      "n": 26495,
+      "mean_off": -15.109166293678053,
+      "min_off": -45.306338,
+      "max_off": -1.977627,
+      "tick_s": 4.66586
+    },
+    "later_raw": {
+      "over45": 0,
+      "over15": 11826,
+      "n": 26495,
+      "mean_off": -14.136862857180601,
+      "min_off": -43.541714,
+      "max_off": -0.895203,
+      "tick_s": 4.668134
+    },
+    "later_robust": {
+      "over45": 0,
+      "over15": 11826,
+      "n": 26495,
+      "mean_off": -14.136862857180601,
+      "min_off": -43.541714,
+      "max_off": -0.895203,
+      "tick_s": 4.668134
+    },
+    "all_mean": {
+      "over45": 0,
+      "over15": 12043,
+      "n": 26495,
+      "mean_off": -14.298913429930176,
+      "min_off": -43.835818,
+      "max_off": -1.075607,
+      "tick_s": 4.6677550000000005
+    },
+    "span_mean": {
+      "over45": 0,
+      "over15": 12043,
+      "n": 26495,
+      "mean_off": -14.298913429930176,
+      "min_off": -43.835818,
+      "max_off": -1.075607,
+      "tick_s": 4.667755
+    },
+    "prev_later": {
+      "over45": 0,
+      "over15": 7608,
+      "n": 26495,
+      "mean_off": -9.118853564861295,
+      "min_off": -34.434578,
+      "max_off": 4.691133,
+      "tick_s": 4.67987
+    },
+    "prev_in_use": {
+      "over45": 0,
+      "over15": 7608,
+      "n": 26495,
+      "mean_off": -9.118853564861295,
+      "min_off": -34.434578,
+      "max_off": 4.691133,
+      "tick_s": 4.67987
+    },
+    "prev_1h_patrol": {
+      "over45": 0,
+      "over15": 11441,
+      "n": 26495,
+      "mean_off": -13.775135193470467,
+      "min_off": -42.885218,
+      "max_off": -0.492507,
+      "tick_s": 4.66898
+    }
+  },
+  "still_over_45s_vs_later_before": 0,
+  "still_over_15s_vs_later_before": 11826,
+  "still_over_45s_vs_later": 0,
+  "still_over_15s_vs_later": 11951,
+  "corrective_applied": true,
+  "reverted": false,
+  "ts_realigned_to_target": 0,
+  "in_use_tick_s": 4.67987,
+  "reason": "first-interval tick_s=4.66586 (printed 4.666) is in the sane 3-6s band; later-mean-robust 4.66813 (raw later-mean 4.66813; delta first-robust -0.00227 s/tick, ~1.7s at tmin); 12:00 half-hour in-use 4.67987 (later-mean-robust already inside 45s gate, not applied); last 1h patrol in-use was 4.66898; first is over the 45s gate (over45=120) and prev_later is clearly better; applied corrective realign of 0 rows at game.time=84316278 to tick_s=4.67987 (prev_later); still_over_45s_vs_target=0",
+  "game_time_error": null,
+  "lowest_over45_sane": "prev_later",
+  "vs_first": {
+    "over45": 120,
+    "over15": 12616,
+    "n": 26495,
+    "mean_off": -15.109166293678053,
+    "min_off": -45.306338,
+    "max_off": -1.977627
+  },
+  "vs_later_after": {
+    "over45": 0,
+    "over15": 11951,
+    "n": 26495,
+    "mean_off": -14.2338238571806,
+    "min_off": -43.638675,
+    "max_off": -0.992164
+  },
+  "after_target": {
+    "over45": 0,
+    "over15": 7646,
+    "n": 26495,
+    "mean_off": -9.204078564861295,
+    "min_off": -34.519803,
+    "max_off": 4.605908
+  },
+  "after_first": {
+    "over45": 150,
+    "over15": 12649,
+    "n": 26495,
+    "mean_off": -15.208401293678053,
+    "min_off": -45.405573,
+    "max_off": -2.076862
+  }
+}
