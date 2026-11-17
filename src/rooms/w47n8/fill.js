@@ -9,6 +9,10 @@
 // energy and every hub structure is already full.
 const C = require('./config'), L = require('./layout');
 const E = 'energy', K = (x, y) => x * 50 + y, POST = [34, 32], TOWER_R = 8;
+// Path cost of the idle post. A one-plain step via 32,32 (still open beside link 32,33; extension
+// 32,34 is not on that diagonal) is +1. The north walk around the hub wall is ~+10. 4 diverts
+// traffic off the post without making the post itself worse than that north walk.
+const POST_COST = 4;
 const cheb = (a, b) => Math.max(Math.abs(a[0] - b[0]), Math.abs(a[1] - b[1]));
 const TEMP = new Set(L.TEMP_EXT.map(([x, y]) => K(x, y)));
 const isS2 = s => s.structureType === STRUCTURE_SPAWN && s.pos.x === C.SPAWN[0] && s.pos.y === C.SPAWN[1];
@@ -245,4 +249,11 @@ function run(c) {
   if (c.store.getFreeCapacity(E) > 0 && !src && source(room).length) return go(c, POST[0], POST[1], 0);
   if (c.pos.x !== POST[0] || c.pos.y !== POST[1]) go(c, POST[0], POST[1], 0);
 }
-module.exports = { run, want, body, active, alive, stock, reserve, duty, ROUTES, POST, ENTRY: () => ENTRY, isDuty: (room, s) => s.structureType !== STRUCTURE_TOWER && duty(room).byKey[K(s.pos.x, s.pos.y)] === s.id };
+// Raise the filler's idle road so a search takes 33,31 → 32,32 → 33,33 instead of stepping on
+// the post. Leave a blocked tile (255) alone, and leave the post walkable for the filler itself.
+function yieldPost(costs) {
+  if (!costs || typeof costs.get !== 'function') return costs;
+  if (costs.get(POST[0], POST[1]) < 255) costs.set(POST[0], POST[1], POST_COST);
+  return costs;
+}
+module.exports = { run, want, body, active, alive, stock, reserve, duty, ROUTES, POST, POST_COST, yieldPost, ENTRY: () => ENTRY, isDuty: (room, s) => s.structureType !== STRUCTURE_TOWER && duty(room).byKey[K(s.pos.x, s.pos.y)] === s.id };
