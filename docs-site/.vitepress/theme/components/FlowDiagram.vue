@@ -7,7 +7,7 @@
       <div class="node now"><strong>汇到存储</strong><span>容器接手，link 把一部分直接送到控制器旁。存储是家里的水库。</span></div>
       <p class="arrow">↓</p>
       <div class="flow-split">
-        <div class="node done"><strong>升级</strong><span>过了防御地板才进控制器。喂不饱就不加升级工。</span></div>
+        <div class="node done"><strong>升级</strong><span>家在防御地板以下时，存储排在控制器容器前面。加不加升级工另算。</span></div>
         <div class="node"><strong>孵化与塔</strong><span>女王把存储补进延伸和塔。塔先保证能开枪。</span></div>
         <div class="node"><strong>矿物</strong><span>K 送到家。实验室做 KO。Boost 还要存储留得住 20000。</span></div>
       </div>
