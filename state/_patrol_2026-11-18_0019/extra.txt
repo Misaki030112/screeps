@@ -1,0 +1,68 @@
+TIP 84325320 2026-11-18 00:21:41.434547+08:00 LAST_TIP 84324560 DEPLOY 84324673 8daf0494
+=== W47 40k/500t ===
+12h n=680 max=(84317760, datetime.datetime(2026, 11, 17, 14, 26, 26, 732017, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 42880) last=(84325320, datetime.datetime(2026, 11, 18, 0, 21, 41, 434583, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 25082) samples>=40k=36 best_span=270 n_spans=2
+  span (84317680, 84317950, 270, '2026-11-17 14:20:09.963205+08:00', '2026-11-17 14:41:19.395070+08:00', 40457)
+  span (84322110, 84322200, 90, '2026-11-17 20:08:03.740737+08:00', '2026-11-17 20:15:21.839232+08:00', 40063)
+since_last n=55 min=(84325270, datetime.datetime(2026, 11, 18, 0, 17, 46, 152264, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 24645) max=(84324560, datetime.datetime(2026, 11, 17, 23, 21, 53, 319747, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 32590) last=(84325320, datetime.datetime(2026, 11, 18, 0, 21, 41, 434583, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 25082)
+=== home storage since_last / 6h 20k ===
+W46N8 since_last n 55 min (84324650, datetime.datetime(2026, 11, 17, 23, 29, 1, 692483, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 13298) max (84325030, datetime.datetime(2026, 11, 17, 23, 58, 52, 186332, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 16532) under15000=18/55=32.7% last (84325320, datetime.datetime(2026, 11, 18, 0, 21, 41, 434547, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 15560)
+W46N8 6h max (84321540, datetime.datetime(2026, 11, 17, 19, 23, 9, 5378, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 19253) best>=20k span 0
+=== W47 upgrader trajectories since LAST_TIP-200 ===
+-- w8upgrader84323446 spawn#=884323446 first=84324375 2026-11-17 23:07:18.639215+08:00 (14,26) e=None last=84324984 2026-11-17 23:55:22.696908+08:00 (12,14) e=None n=610
+   first_seat (84324375, datetime.datetime(2026, 11, 17, 23, 7, 18, 639215, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 14, 26, None, 1300) last_seat (84324947, datetime.datetime(2026, 11, 17, 23, 52, 29, 479188, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 12, 26, None, 1300) walk_from_first_to_seat 0
+   path_to_seat {'n': 1, 'south_bypass': 0, 'south_first': None, 'north_repath': 0, 'north_first': None, 'pocket': 0, 'filler_post_34_32': 0, 'pocket_bounce_events': 0} post_deploy_subset {'n': 0, 'south_bypass': 0, 'south_first': None, 'north_repath': 0, 'north_first': None, 'pocket': 0, 'filler_post_34_32': 0, 'pocket_bounce_events': 0}
+   approach 84324375:14,26
+-- w8upgrader84323984 spawn#=884323984 first=84324375 2026-11-17 23:07:18.639215+08:00 (14,27) e=None last=84325329 2026-11-18 00:22:22.763017+08:00 (14,27) e=None n=942
+   first_seat (84324375, datetime.datetime(2026, 11, 17, 23, 7, 18, 639215, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 14, 27, None, 1300) last_seat (84325329, datetime.datetime(2026, 11, 18, 0, 22, 22, 763017, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 14, 27, None, 1300) walk_from_first_to_seat 0
+   path_to_seat {'n': 1, 'south_bypass': 0, 'south_first': None, 'north_repath': 0, 'north_first': None, 'pocket': 0, 'filler_post_34_32': 0, 'pocket_bounce_events': 0} post_deploy_subset {'n': 0, 'south_bypass': 0, 'south_first': None, 'north_repath': 0, 'north_first': None, 'pocket': 0, 'filler_post_34_32': 0, 'pocket_bounce_events': 0}
+   approach 84324375:14,27
+-- w8upgrader84324885 spawn#=884324885 first=84324887 2026-11-17 23:47:48.585588+08:00 (33,30) e=None last=84325329 2026-11-18 00:22:22.763017+08:00 (12,25) e=None n=430
+   first_seat (84325010, datetime.datetime(2026, 11, 17, 23, 57, 21, 60942, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 13, 27, None, 1300) last_seat (84325329, datetime.datetime(2026, 11, 18, 0, 22, 22, 763017, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 12, 25, None, 1300) walk_from_first_to_seat 123
+   path_to_seat {'n': 124, 'south_bypass': 5, 'south_first': (84324932, 32, 32), 'north_repath': 1, 'north_first': (84324924, 33, 29), 'pocket': 66, 'filler_post_34_32': 0, 'pocket_bounce_events': 0} post_deploy_subset {'n': 124, 'south_bypass': 5, 'south_first': (84324932, 32, 32), 'north_repath': 1, 'north_first': (84324924, 33, 29), 'pocket': 66, 'filler_post_34_32': 0, 'pocket_bounce_events': 0}
+   approach 84324887:33,30 84324888:33,30 84324889:33,30 84324890:33,30 84324891:33,30 84324892:33,30 84324893:33,30 84324894:33,30 84324895:33,30 84324896:33,30 84324897:33,30 84324898:33,30 84324899:33,30 84324900:33,30 84324901:33,30 84324902:33,30 84324903:33,30 84324904:33,30 84324905:33,30 84324906:33,30 ... 84324991:17,33 84324992:16,33 84324993:16,33 84324994:16,33 84324995:15,32 84324996:15,32 84324997:15,32 84324998:15,31 84324999:15,31 84325000:15,31 84325001:14,30 84325002:14,30 84325003:14,30 84325004:13,29 84325005:13,29 84325006:13,29 84325007:14,28 84325008:14,28 84325009:14,28 84325010:13,27
+=== handoff events (seat occupancy) ===
+  occ 84324375 n 2 ('w8upgrader84323446', 'w8upgrader84323984') [('w8upgrader84323446', 14, 26, None), ('w8upgrader84323984', 14, 27, None)]
+  occ 84324948 n 1 ('w8upgrader84323984',) [('w8upgrader84323984', 14, 27, None)]
+  occ 84325010 n 2 ('w8upgrader84323984', 'w8upgrader84324885') [('w8upgrader84323984', 14, 27, None), ('w8upgrader84324885', 13, 27, None)]
+  occ 84325201 n 0 () None
+  occ 84325214 n 2 ('w8upgrader84323984', 'w8upgrader84324885') [('w8upgrader84323984', 14, 27, None), ('w8upgrader84324885', 12, 25, None)]
+=== w8filler at/near 34,32 since LAST_TIP ===
+rows_near 0 at_34_32 0
+=== official coverage holes last 2h (TIP-1600..TIP published) ===
+W46N8 distinct 1581 want 1601 missing_n 20 spans [(84325301, 84325320, 20)]
+W47N8 distinct 1514 want 1601 missing_n 87 spans [(84324301, 84324374, 74), (84325201, 84325213, 13)]
+W45N8 distinct 1481 want 1601 missing_n 120 spans [(84325201, 84325320, 120)]
+W45N7 distinct 1481 want 1601 missing_n 120 spans [(84324901, 84325000, 100), (84325301, 84325320, 20)]
+W47N7 distinct 1481 want 1601 missing_n 120 spans [(84325201, 84325320, 120)]
+=== box pauses last 3h ===
+ pause {'from': '2026-11-17 14:12:36', 'to': '2026-11-17 14:19:51', 'sec': 435}
+ pause {'from': '2026-11-17 14:49:29', 'to': '2026-11-17 15:03:38', 'sec': 848}
+ pause {'from': '2026-11-17 15:16:17', 'to': '2026-11-17 15:20:45', 'sec': 257}
+ pause {'from': '2026-11-17 15:44:05', 'to': '2026-11-17 16:01:24', 'sec': 1039}
+ pause {'from': '2026-11-17 16:19:45', 'to': '2026-11-17 16:24:50', 'sec': 296}
+ pause {'from': '2026-11-17 16:48:24', 'to': '2026-11-17 17:01:37', 'sec': 782}
+ pause {'from': '2026-11-17 17:14:55', 'to': '2026-11-17 17:23:14', 'sec': 488}
+ pause {'from': '2026-11-17 17:46:45', 'to': '2026-11-17 17:55:32', 'sec': 527}
+ pause {'from': '2026-11-17 18:46:06', 'to': '2026-11-17 18:57:57', 'sec': 703}
+ pause {'from': '2026-11-17 19:16:21', 'to': '2026-11-17 19:21:06', 'sec': 285}
+ pause {'from': '2026-11-17 19:38:40', 'to': '2026-11-17 20:05:16', 'sec': 1590}
+ pause {'from': '2026-11-17 20:17:55', 'to': '2026-11-17 20:21:35', 'sec': 220}
+ pause {'from': '2026-11-17 20:45:14', 'to': '2026-11-17 21:02:28', 'sec': 1022}
+ pause {'from': '2026-11-17 21:30:17', 'to': '2026-11-17 21:33:44', 'sec': 194}
+ pause {'from': '2026-11-17 21:46:18', 'to': '2026-11-17 22:01:35', 'sec': 904}
+ pause {'from': '2026-11-17 22:14:08', 'to': '2026-11-17 22:23:18', 'sec': 549}
+ pause {'from': '2026-11-17 22:49:11', 'to': '2026-11-17 23:01:18', 'sec': 727}
+ pause {'from': '2026-11-17 23:15:58', 'to': '2026-11-17 23:18:18', 'sec': 130}
+ pause {'from': '2026-11-17 23:42:43', 'to': '2026-11-17 23:53:44', 'sec': 661}
+ pause {'from': '2026-11-18 00:10:06', 'to': '2026-11-18 00:12:20', 'sec': 127}
+=== room_stats gaps W46N8 since last (>=30t) ===
+ gap 84324730 84324760 dt 30 wall_s 142.356633 2026-11-17 23:35:22.536832+08:00 2026-11-17 23:37:44.893465+08:00
+ gap 84324820 84324970 dt 150 wall_s 701.032628 2026-11-17 23:42:30.175510+08:00 2026-11-17 23:54:11.208138+08:00
+ gap 84325050 84325090 dt 40 wall_s 185.548102 2026-11-18 00:00:25.205235+08:00 2026-11-18 00:03:30.753337+08:00
+ gap 84325170 84325210 dt 40 wall_s 192.114498 2026-11-18 00:09:51.677484+08:00 2026-11-18 00:13:03.791982+08:00
+=== tick_s later-mean-robust (room_stats ts vs tick, last 40m) ===
+n_pairs=58 median=4.71760 kept=58 mean_robust=4.73116 over45=0 min=4.52465 max=5.19176
+=== tip room_stats both rooms ===
+W46N8 (84325320, datetime.datetime(2026, 11, 18, 0, 21, 41, 434547, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 7, 7740317, 15560, 5500, 5600, 18.49, 10000, '8daf0494', 1786, 1414, 0, 0, {'miner': 2, 'queen': 2, 'hauler': 1, 'rminer': 2, 'builder': 1, 'rhauler': 7, 'w8miner': 2, 'reserve7': 1, 'reserver': 1, 'upgrader': 1, 'w8filler': 2, 'w8hauler': 4, 'w8rminer': 3, 'w8builder': 1, 'w8rhauler': 6, 'w8upgrader': 2})
+W47N8 (84325320, datetime.datetime(2026, 11, 18, 0, 21, 41, 434583, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 7, 4529783, 25082, 5600, 5600, 18.49, 10000, '8daf0494', 1760, None, 0, 0, {'miner': 2, 'queen': 2, 'hauler': 1, 'rminer': 2, 'builder': 1, 'rhauler': 7, 'w8miner': 2, 'reserve7': 1, 'reserver': 1, 'upgrader': 1, 'w8filler': 2, 'w8hauler': 4, 'w8rminer': 3, 'w8builder': 1, 'w8rhauler': 6, 'w8upgrader': 2})
+DONE

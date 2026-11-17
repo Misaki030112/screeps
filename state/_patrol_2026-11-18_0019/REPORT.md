@@ -1,0 +1,28 @@
+# Patrol 2026-11-18 00:19–00:28 Asia/Hong_Kong (1h peacetime)
+
+## Verdict
+FORMAL W47 upgrade alert CLEARS (short-window no longer soft; exact2h still 67.9%). Home (a) does not fire (exact2h 74.9%). (b) does not fire (analysis tip 15460 ABOVE). (c)(d)(e)(f) not formal. No new code, no deploy. 8daf0494 first post-deploy replacement walk verified (no bounce).
+
+## Alerts
+- W47 exact2h 20.44/30.08=67.9% (prev 19.31=64.2%) is still under 70%, BUT short is NOT soft (last20 21.50=71.5%; last70–300 23.60–24.98=78.5–83.0%; last500 21.12=70.2%; 1h 21.99=73.1%). Dual-condition fails; formal alert CLEARS after 11 consecutive holds since 13:36. Root remains designed keep=2 (~20 e/t=66.5% of ideal). This hour's handoff was cleaner (solo 62t, walk 86t after hatch, no pocket bounce). Do not change keep/softCap; no standing third. 40k/500t unlocked (since_last max is the segment start 32590, min 24645@00:17, live 25082; no 40k touch; 12h best still 270t peak 42880 plus 90t@20:08). threatSoft window expired (~84325127); live softCap2=0 threatSoft=0 bankWhy=ready why=done keep=2 phase=ready feedOk=1 upLatched=0 upArm=40000 sealPark=1 sealMinE=25000 (stor just above). w8guard from the threat window is gone.
+- Home exact2h 19.47/26=74.9% (prev 21.49=82.7%) ABOVE 70%, so formal (a) does not fire. 1h 15.01=57.7% and last20–300 all 14.00=53.8% are the designed upBank floor hysteresis: nUp dropped to 1 at 84324620 23:26 stor 14210; leave threshold is reserve+2550=17550; live stor ~16.3–16.9k has not released yet (uf why=floor_bank tUp=1 work=14). Do not change the 15k floor or the hysteresis.
+- Home storage: analysis tip 15460 ABOVE (prev 15310 ABOVE). Formal (b) does not fire. Intra-hour three dips under 15k (min 13298@23:29, under15k 18/54=33.3%; crosses 23:22, 23:42, 00:03). Later/live 16356–16856 still under the 17.55k release. 20k/300t still unlocked (3h max 18170, 6h max still 19253@19:23).
+
+## 8daf0494 walk verification (no new patch)
+First post-deploy replacement: w8upgrader84324885 spawned 84324887 at 33,30, hatched 84324923, path 33,29→32,30→33,31→32,32 (84324932–36)→33,33 (84324937–39)→33,34 then southwest to first_seat 13,27@84325010 and 12,25@84325016. 33,33 was free at entry (a filler had left 33,33@84324930); 34,32 was occupied by fillers, so the short hub path was correct. pocket_bounce_events=0, filler_post_34_32=0, walk after hatch ~86t (123t including spawn). Predecessor w8upgrader84323446 last_seat 12,26@84324947, solo gap 62t (partner 23984 stayed 14,27). Better than last hour's 159t solo / 233t walk with 5 bounces. Next: 23984 ttl~130 at 14,27 — the occupied-hub (yieldHub) branch is still to be seen on a later walk.
+
+## Energy / rooms
+- Home RCL7 70.78% p=7740177 later 7741577 stor 16356. W47 41.42% p=4529523 later 4531724 stor 25082.
+- Model 1h HOME upgrade 14.79 spawn_util 0.828 income A 9.84 B 9.91 R 5.43; exact 1h 15.01. W47 model 2h upgrade 20.37/30.03 stor_delta -4.77, 1h 22.02; src_A still link-accounting bias.
+- Remotes all vis SAFE reserved cores0 host0 (W45N8 res~2118, W45N7 res~2120 why=killed leftover, W47N7 res~2616 r7.on until 84328003 by Misaki).
+- reserve7 zero_run 410t 84324640–84325050 23:28–00:00 then reserve784325076 seated 39,27 ttl~290. Not formal (c): home critical miner/queen/rminer/reserver/w8filler zero_runs=[].
+- Memory.cmd.on=1 at=84224348 stale c={} s={} v=1 not touched; war_cmd/pulse stay stopped aborted_by_misaki; labs mode=KO why=active actOk=1 (homeStor back above floor) Memory.ops.labs held, ko stor=10836 lab=225 term=0; sma=6/smaW=6 ttd=150000 both never activated; sites=0; mineral home O 126800–129800 K 188855–191855 term 3000/3000, W47 stor 25082 K 64 term E 1480.
+- CPU since_last mean 18.67 max 24.70@84324580 23:23 bucket min 9930; 1h mean 18.65 max 24.70; 2h mean 18.24 max 24.70; later/live ~17–18 bucket 10000.
+- creep_audit --patrol exit 2: REGRESSION [deploy] vs 8daf0494 is the same known metric family (hauler/queen/builder cpu, rminer/wrminer idle, work_per_cpu) — not formal (d).
+- creep_motion --patrol 1h/2h exit 1: known waiting_pickup/target_full/waiting_feed/queue_blocked/parked_threat (w8guard84323623, now gone after the window)/no_task, not new stuck/oscillation after last deploy. defender84322461 still in 2h queue_blocked leftover.
+
+## Infra
+- Listener single-slot 5:5:1:1 (at 00:15 W47N8 left 480s; 00:20 W47N8 left 190s; 00:25 W45N7 i=3 left 95s; 00:28 W46N8 i=0 left 525s). No yield file; commander not holding slots. This patrol did not restart the listener. Prior relaunches this hour: 23:37, 23:53:47 after box freeze 23:42:43–23:53:44 (~661s), 00:02:41 after ping/pong, 00:12:23 after box pause 00:10:06–00:12:20 (~127s).
+- DB writers fresh (room_stats tip 84325410 00:28:46, creep_ticks 84325411, creep_cpu 84325390). Grafana/postgres/dashboard ok.
+- History backfill official shard3 5 rooms ticks 84324601..84325300 (700, published through 84325200 at first-pass game.time~84325300; first pass 31 of 35 official GETs 200, missing_chunks=4 W45N7@84324900 W47N8/W45N8/W47N7@84325200; tick_s first=4.67282 printed 4.673, later-mean-robust ~4.704, room_stats later-mean-robust 4.73116 over45=0, no corrective, in-use 4.673; inserted=4659 already_in_db=18646). Confirm/retry 00:25:32 game.time=84325369 recovered W47N8/W45N8/W47N7@84325200 inserted=1162; still_404 W45N7@84324900 and leftovers W47N8@84324300 / W47N8@84323200 / W45N7@84321600 / W47N8@84322100. This-window coverage 700/700 except W45N7 600/700 (100t official 404 84324901–84325000, 0 live). Prev-window leftover W47N8 74t official 404 84324301–84324374. Box-pause gaps official-filled except that W45N7 404 inside the 23:42 freeze.
+- No src change, no deploy (LIVE 8daf0494 held since 23:30:51 @84324673).
