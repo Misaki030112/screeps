@@ -1,0 +1,42 @@
+intervals_w46:
+  84312300..84312400 4.72976
+  84312400..84312500 4.68748
+  84312500..84312600 4.59073
+  84312600..84312700 4.65462
+  84312700..84312800 4.63252
+  84312800..84312900 4.79312
+intervals_min_all_rooms:
+  84312300..84312400 4.72976
+  84312400..84312500 4.68748
+  84312500..84312600 4.59073
+  84312600..84312700 4.65462
+  84312700..84312800 4.63252
+  84312800..84312900 4.79312
+first=4.72976 later_mean_raw=4.67169 later_mean_robust=4.67169
+all_mean=4.68137 span_mean=4.68137 script_tick_s=4.72976 prev_later=4.65902
+delta_first_minus_later_raw=0.05807 s/tick; at tmin vs gt_first ~43.7s
+delta_first_minus_later_robust=0.05807 s/tick; at tmin vs gt_first ~43.7s
+anchor 2026-11-17 08:19:32 Asia/Hong_Kong game.time=84313078
+vs_first tick_s=4.72976 {'over45': 0, 'over15': 5874, 'n': 26111, 'mean_off': 1.6421422826395007, 'min_off': -12.593417, 'max_off': 35.212216}
+vs_later_raw tick_s=4.67169 {'over45': 0, 'over15': 22154, 'n': 26111, 'mean_off': -23.443528324307763, 'min_off': -39.608898, 'max_off': -8.278847}
+vs_later_robust tick_s=4.67169 {'over45': 0, 'over15': 22154, 'n': 26111, 'mean_off': -23.443528324307763, 'min_off': -39.608898, 'max_off': -8.278847}
+vs_all_mean tick_s=4.68137 {'over45': 0, 'over15': 16013, 'n': 26111, 'mean_off': -19.26258322316265, 'min_off': -33.057118, 'max_off': -2.385519}
+vs_span_mean tick_s=4.68137 {'over45': 0, 'over15': 16013, 'n': 26111, 'mean_off': -19.26258322316265, 'min_off': -33.057118, 'max_off': -2.385519}
+vs_prev_later tick_s=4.65902 {'over45': 1823, 'over15': 23247, 'n': 26111, 'mean_off': -28.91894921213282, 'min_off': -48.189196, 'max_off': -9.267419}
+vs_prev_in_use tick_s=4.70966 {'over45': 0, 'over15': 369, 'n': 26111, 'mean_off': -7.041458778216078, 'min_off': -16.251617, 'max_off': 19.594516}
+vs_prev_1h_patrol tick_s=4.65900 {'over45': 1846, 'over15': 23277, 'n': 26111, 'mean_off': -28.927589611198346, 'min_off': -48.202736, 'max_off': -9.268979}
+subwindow_overlap_to_84310500:
+  first tick_s=4.72976 {'over45': 0, 'over15': 0, 'n': 0, 'mean_off': 0.0, 'min_off': 0.0, 'max_off': 0.0}
+  later_robust tick_s=4.67169 {'over45': 0, 'over15': 0, 'n': 0, 'mean_off': 0.0, 'min_off': 0.0, 'max_off': 0.0}
+  prev_in_use tick_s=4.70966 {'over45': 0, 'over15': 0, 'n': 0, 'mean_off': 0.0, 'min_off': 0.0, 'max_off': 0.0}
+subwindow_new_tail_84310501:
+  first tick_s=4.72976 {'over45': 43035, 'over15': 72986, 'n': 93223, 'mean_off': 43.273070821363824, 'min_off': -12.593417, 'max_off': 158.865836}
+  later_robust tick_s=4.67169 {'over45': 24857, 'over15': 79615, 'n': 93223, 'mean_off': -33.407269435911736, 'min_off': -81.213062, 'max_off': 26.649554}
+  prev_in_use tick_s=4.70966 {'over45': 5711, 'over15': 50933, 'n': 93223, 'mean_off': 16.729571369511817, 'min_off': -16.59493, 'max_off': 113.098136}
+lowest_over45_among_sane=first {'over45': 0, 'over15': 5874, 'n': 26111, 'mean_off': 1.6421422826395007, 'min_off': -12.593417, 'max_off': 35.212216}
+corrective_applied=False
+in-use tick_s=4.72976 (applied=False reverted=False best=first)
+wrote /workspace/screeps/state/_patrol_2026-11-17_0816/tick_s_realign.json
+corrective_applied=False nfix=0 reverted=False
+reason: first-interval tick_s=4.72976 (printed 4.660) is in the sane 3-6s band; later-mean-robust 4.67169 (raw later-mean 4.67169; delta first-robust 0.05807 s/tick, ~43.7s at tmin); 05:00 half-hour in-use 4.70966 (later-mean-robust already inside 45s gate, not applied); last 1h patrol in-use was 4.65900; best sane is first tick_s=4.72976 over45=0 mean_off=1.642; first over45=0 mean_off=1.642; later_robust over45=0 mean_off=-23.444. No corrective realign (best already inside 45s gate or first is already the best / inside).
+EXIT:0
