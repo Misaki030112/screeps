@@ -1,0 +1,777 @@
+{
+  "ok": true,
+  "routine": "Screeps \u534a\u5c0f\u65f6\u8f68\u8ff9\u8865\u6570",
+  "finished_at": "2026-11-18T04:39:25.804648+08:00",
+  "finished_at_hkt": "2026-11-18 04:39 Asia/Hong_Kong",
+  "shard": "shard3",
+  "rooms": [
+    "W46N8",
+    "W47N8",
+    "W45N8",
+    "W45N7",
+    "W47N7"
+  ],
+  "minutes": 40,
+  "game_time": 84328503,
+  "live_json_gameTime_at_finish": 84328467,
+  "live_json_stats_t_at_finish": 84328580,
+  "live_json_gameTime_note": "New box freeze 04:11:18\u201304:20:01 (~522s). Listener logged the freeze and run_listener restarted at 04:20:04, listener.py up at 04:20:13 (pid 131257). This run did not restart the listener, war_cmd, or pulse. live.json was fresh after reconnect (stats.t live, roomSlot=W47N8; gameTime/objects empty is expected because live.json is the home map only and the peacetime slot is currently not W46N8). Segment 90 buffers pulled after the 04:20 reconnect (creep_cpu and path_arrivals fresh through the tip). The 04:20 hourly patrol had already official-backfilled 84327601..84328300 except W45N8@84328100 (still official 404). room_stats gap 84328221..84328349 is the new 04:11 freeze: published part 84328221..84328300 (80) sits in published base 84328200 and is official-filled on all five rooms; former unpublished tail 84328301..84328349 (49) is now in published base 84328300 and official-filled except W45N7@84328300 which remains official 404 (0 live / 100 empty 84328301..84328400). Listener resumed writing room_stats/creep_ticks at 84328350. The prior 03:38 freeze 84327811..84328069 is now fully in this window; former unpublished tail 84328001..84328069 is official-filled. The 200-tick overlap 84327801..84328000 with the 04:00 window was already in the DB (04:00 backfill + 04:20 hourly patrol).",
+  "published_bases": "84327800..84328400",
+  "ticks": {
+    "min": 84327801,
+    "max": 84328500,
+    "count": 700
+  },
+  "tick_s": 4.717,
+  "tick_s_later_mean": 4.830422,
+  "tick_s_in_use": 4.830422,
+  "tick_s_first_pass_outlier": false,
+  "tick_s_later_mean_applied_then_reverted": false,
+  "tick_s_corrective_applied": true,
+  "missing_chunks": 2,
+  "missing_chunk_list": [
+    "W45N8@84328100",
+    "W45N7@84328300"
+  ],
+  "missing_chunk_first_pass": [
+    "W45N8@84328100",
+    "W45N7@84328300",
+    "W47N8@84328400",
+    "W45N8@84328400",
+    "W47N7@84328400"
+  ],
+  "missing_chunk_note": "First pass (game.time=84328503) published_bases 84327800..84328400, reconstructed 84327801..84328500 (700). 30 of 35 official GETs 200; missing_chunks=5 (W45N8@84328100, W45N7@84328300, W47N8@84328400, W45N8@84328400, W47N7@84328400). Confirm at 2026-11-18 04:35:08 Asia/Hong_Kong game.time=84328527 recovered the three 84328400 rooms, inserted=2055; leftover outside-window 404s still 404. retry2 at 2026-11-18 04:37:21 Asia/Hong_Kong game.time=84328555 still 404 on W45N8@84328100 and W45N7@84328300, inserted=0.",
+  "creep_rows_reconstructed": 23413,
+  "already_in_db": 19117,
+  "inserted": 6351,
+  "inserted_first_pass": 4296,
+  "inserted_retry": 2055,
+  "inserted_retry2": 0,
+  "inserted_retry2_unique_net": 0,
+  "inserted_note": "This 04:30 first pass inserted 4296 new rows (already_in_db=19117, reconstructed=23413). The 200-tick overlap 84327801..84328000 with the 04:00 window, and most of 84328001..84328300 prefilled by the 04:20 hourly patrol, were already present. Newly published ticks include base 84328300 (and W46N8/W45N7 of 84328400 on the first pass). Confirm at 04:35:08 game.time=84328527 recovered the three lagged 84328400 rooms (W47N8, W45N8, W47N7) and inserted 2055. retry2 at 04:37:21 game.time=84328555 still 404 on W45N8@84328100 and W45N7@84328300, inserted=0. Coverage official_recovered=3316/3500 including 0 official empty-no-creep ticks; 184 in-window official-404 ticks remain (W45N8@84328100 84 empty, W45N7@84328300 100 empty).",
+  "ts_realigned": 14583,
+  "ts_realigned_corrective_later_mean": 11951,
+  "ts_realigned_confirm": 0,
+  "ts_realigned_retry2": 0,
+  "ts_realigned_note": "First pass (tick_s=4.717 printed 4.717, live anchor game.time=84328503) ts_realigned=14583. later-mean-robust 4.83042 was over the 45s gate (delta first-robust -0.11342 s/tick, ~79.6s at tmin; vs_later over45 before=13080). Automatic corrective later-mean-robust realign applied and kept, nfix=11951; still_over_45s_vs_later after=0. in-use 4.83042.",
+  "ssl_first_attempt": false,
+  "hourly_patrol_prefilled": true,
+  "per_room": {
+    "W46N8": {
+      "official_ticks": 700,
+      "new_rows_first_pass": 1131,
+      "db_rows": 7771,
+      "db_distinct": 700,
+      "db_min": 84327801,
+      "db_max": 84328500,
+      "missing_n": 0,
+      "missing_ranges": [],
+      "official_empty_no_creep": 0,
+      "official_empty_no_creep_ranges": [],
+      "official_404_missing": 0
+    },
+    "W47N8": {
+      "official_ticks": 700,
+      "new_rows_first_pass": 1451,
+      "db_rows": 11805,
+      "db_distinct": 700,
+      "db_min": 84327801,
+      "db_max": 84328500,
+      "missing_n": 0,
+      "missing_ranges": [],
+      "official_empty_no_creep": 0,
+      "official_empty_no_creep_ranges": [],
+      "official_404_missing": 0
+    },
+    "W45N8": {
+      "official_ticks": 600,
+      "new_rows_first_pass": 675,
+      "db_rows": 2735,
+      "db_distinct": 616,
+      "db_min": 84327801,
+      "db_max": 84328500,
+      "missing_n": 84,
+      "missing_ranges": [
+        [
+          84328101,
+          84328184
+        ]
+      ],
+      "official_empty_no_creep": 0,
+      "official_empty_no_creep_ranges": [],
+      "official_404_missing": 84
+    },
+    "W45N7": {
+      "official_ticks": 600,
+      "new_rows_first_pass": 543,
+      "db_rows": 2149,
+      "db_distinct": 600,
+      "db_min": 84327801,
+      "db_max": 84328500,
+      "missing_n": 100,
+      "missing_ranges": [
+        [
+          84328301,
+          84328400
+        ]
+      ],
+      "official_empty_no_creep": 0,
+      "official_empty_no_creep_ranges": [],
+      "official_404_missing": 100
+    },
+    "W47N7": {
+      "official_ticks": 700,
+      "new_rows_first_pass": 496,
+      "db_rows": 2672,
+      "db_distinct": 700,
+      "db_min": 84327801,
+      "db_max": 84328500,
+      "missing_n": 0,
+      "missing_ranges": [],
+      "official_empty_no_creep": 0,
+      "official_empty_no_creep_ranges": [],
+      "official_404_missing": 0
+    }
+  },
+  "known_official_404s_outside_window": [
+    "W45N8@84326300",
+    "W45N8@84326500",
+    "W45N8@84326100",
+    "W45N7@84324900",
+    "W47N8@84324300",
+    "W47N8@84323200",
+    "W47N8@84322100",
+    "W45N7@84321600",
+    "W47N8@84321300",
+    "W47N8@84319900",
+    "W47N8@84319000",
+    "W46N8@84318500",
+    "W45N8@84318000",
+    "W47N7@84315100",
+    "W45N8@84314900",
+    "W45N7@84314500",
+    "W47N8@84314000",
+    "W46N8@84313200",
+    "W46N8@84310500",
+    "W47N7@84309000",
+    "W45N8@84309100",
+    "W45N8@84306500",
+    "W45N7@84305100",
+    "W47N8@84304700",
+    "W45N7@84303900",
+    "W45N8@84302200",
+    "W47N8@84300900",
+    "W45N8@84300900",
+    "W45N8@84300000",
+    "W47N8@84298000",
+    "W47N8@84297200",
+    "W47N7@84296500",
+    "W45N8@84295900",
+    "W45N7@84295800"
+  ],
+  "known_official_404s_in_window": [
+    "W45N8@84328100",
+    "W45N7@84328300"
+  ],
+  "w45n7_empty_no_creep_in_window": false,
+  "w45n7_empty_no_creep_ranges": [],
+  "empty_no_creep_in_window": false,
+  "empty_no_creep_ranges": {
+    "W46N8": [],
+    "W47N8": [],
+    "W45N8": [],
+    "W45N7": [],
+    "W47N7": []
+  },
+  "empty_no_creep_ticks": 0,
+  "official_room_ticks_fetched": 3316,
+  "official_room_ticks_with_creeps": 3316,
+  "official_recovered": 3316,
+  "official_expected": 3500,
+  "new_box_freeze": {
+    "from": "2026-11-18 04:11:18",
+    "to": "2026-11-18 04:20:01",
+    "sec": 522,
+    "kind": "box_hibernate",
+    "live_room_stats_gap": [
+      84328221,
+      84328349
+    ],
+    "live_room_stats_gap_ticks": 129,
+    "official_fill_full_gap": {
+      "W46N8": {
+        "distinct": 129,
+        "min": 84328221,
+        "max": 84328349,
+        "rows": 1465,
+        "span": 129
+      },
+      "W47N8": {
+        "distinct": 129,
+        "min": 84328221,
+        "max": 84328349,
+        "rows": 2080,
+        "span": 129
+      },
+      "W45N8": {
+        "distinct": 129,
+        "min": 84328221,
+        "max": 84328349,
+        "rows": 657,
+        "span": 129
+      },
+      "W45N7": {
+        "distinct": 80,
+        "min": 84328221,
+        "max": 84328300,
+        "rows": 222,
+        "span": 129
+      },
+      "W47N7": {
+        "distinct": 129,
+        "min": 84328221,
+        "max": 84328349,
+        "rows": 608,
+        "span": 129
+      }
+    },
+    "official_fill_published_part": {
+      "W46N8": {
+        "distinct": 80,
+        "min": 84328221,
+        "max": 84328300,
+        "rows": 922,
+        "span": 80
+      },
+      "W47N8": {
+        "distinct": 80,
+        "min": 84328221,
+        "max": 84328300,
+        "rows": 1394,
+        "span": 80
+      },
+      "W45N8": {
+        "distinct": 80,
+        "min": 84328221,
+        "max": 84328300,
+        "rows": 397,
+        "span": 80
+      },
+      "W45N7": {
+        "distinct": 80,
+        "min": 84328221,
+        "max": 84328300,
+        "rows": 222,
+        "span": 80
+      },
+      "W47N7": {
+        "distinct": 80,
+        "min": 84328221,
+        "max": 84328300,
+        "rows": 438,
+        "span": 80
+      }
+    },
+    "official_fill_unpublished_tail": {
+      "W46N8": {
+        "distinct": 49,
+        "min": 84328301,
+        "max": 84328349,
+        "rows": 543,
+        "span": 49
+      },
+      "W47N8": {
+        "distinct": 49,
+        "min": 84328301,
+        "max": 84328349,
+        "rows": 686,
+        "span": 49
+      },
+      "W45N8": {
+        "distinct": 49,
+        "min": 84328301,
+        "max": 84328349,
+        "rows": 260,
+        "span": 49
+      },
+      "W45N7": {
+        "distinct": 0,
+        "min": null,
+        "max": null,
+        "rows": 0,
+        "span": 49
+      },
+      "W47N7": {
+        "distinct": 49,
+        "min": 84328301,
+        "max": 84328349,
+        "rows": 170,
+        "span": 49
+      }
+    },
+    "published_part": [
+      84328221,
+      84328300
+    ],
+    "unpublished_tail": [
+      84328301,
+      84328349
+    ],
+    "note": "new this run; room_stats gap 84328221..84328349 (129). Official published through 84328400, so published part 84328221..84328300 (80) sits in base 84328200. Published-part official-filled 80/80/80/80/80 of 80 of 80 on all five rooms. Former unpublished tail 84328301..84328349 official+live 49/49/49/0/49 of 49 of 49 (W45N7 still 0 on leftover official 404 @84328300; other rooms official-filled). Full-gap official+live 129/129/129/80/129 of 129 of 129."
+  },
+  "prior_0338_box_freeze": {
+    "from": "2026-11-18 03:38:35",
+    "to": "2026-11-18 03:58:00",
+    "sec": 1156,
+    "kind": "box_hibernate",
+    "live_room_stats_gap": [
+      84327811,
+      84328069
+    ],
+    "live_room_stats_gap_ticks": 259,
+    "official_fill_full_gap": {
+      "W46N8": {
+        "distinct": 259,
+        "min": 84327811,
+        "max": 84328069,
+        "rows": 2725,
+        "span": 259
+      },
+      "W47N8": {
+        "distinct": 259,
+        "min": 84327811,
+        "max": 84328069,
+        "rows": 4459,
+        "span": 259
+      },
+      "W45N8": {
+        "distinct": 259,
+        "min": 84327811,
+        "max": 84328069,
+        "rows": 1044,
+        "span": 259
+      },
+      "W45N7": {
+        "distinct": 259,
+        "min": 84327811,
+        "max": 84328069,
+        "rows": 930,
+        "span": 259
+      },
+      "W47N7": {
+        "distinct": 259,
+        "min": 84327811,
+        "max": 84328069,
+        "rows": 917,
+        "span": 259
+      }
+    },
+    "official_fill_published_part": {
+      "W46N8": {
+        "distinct": 190,
+        "min": 84327811,
+        "max": 84328000,
+        "rows": 2035,
+        "span": 190
+      },
+      "W47N8": {
+        "distinct": 190,
+        "min": 84327811,
+        "max": 84328000,
+        "rows": 3148,
+        "span": 190
+      },
+      "W45N8": {
+        "distinct": 190,
+        "min": 84327811,
+        "max": 84328000,
+        "rows": 768,
+        "span": 190
+      },
+      "W45N7": {
+        "distinct": 190,
+        "min": 84327811,
+        "max": 84328000,
+        "rows": 654,
+        "span": 190
+      },
+      "W47N7": {
+        "distinct": 190,
+        "min": 84327811,
+        "max": 84328000,
+        "rows": 642,
+        "span": 190
+      }
+    },
+    "official_fill_unpublished_tail": {
+      "W46N8": {
+        "distinct": 69,
+        "min": 84328001,
+        "max": 84328069,
+        "rows": 690,
+        "span": 69
+      },
+      "W47N8": {
+        "distinct": 69,
+        "min": 84328001,
+        "max": 84328069,
+        "rows": 1311,
+        "span": 69
+      },
+      "W45N8": {
+        "distinct": 69,
+        "min": 84328001,
+        "max": 84328069,
+        "rows": 276,
+        "span": 69
+      },
+      "W45N7": {
+        "distinct": 69,
+        "min": 84328001,
+        "max": 84328069,
+        "rows": 276,
+        "span": 69
+      },
+      "W47N7": {
+        "distinct": 69,
+        "min": 84328001,
+        "max": 84328069,
+        "rows": 275,
+        "span": 69
+      }
+    },
+    "published_part": [
+      84327811,
+      84328000
+    ],
+    "unpublished_tail": [
+      84328001,
+      84328069
+    ],
+    "note": "not new this run; now fully in this window (window starts 84327801). Former unpublished tail 84328001..84328069 is now in published base 84328000. Published-part official-filled 190/190/190/190/190 of 190 of 190 on all five rooms. Former unpublished tail official-filled 69/69/69/69/69 of 69 of 69. Full-gap official-filled 259/259/259/259/259 of 259 of 259."
+  },
+  "prior_0315_box_freeze": {
+    "from": "2026-11-18 03:15:10",
+    "to": "2026-11-18 03:21:01",
+    "sec": 350,
+    "kind": "box_hibernate",
+    "live_room_stats_gap": [
+      84327511,
+      84327599
+    ],
+    "live_room_stats_gap_ticks": 89,
+    "official_fill_full_gap": {
+      "W46N8": {
+        "distinct": 89,
+        "min": 84327511,
+        "max": 84327599,
+        "rows": 951,
+        "span": 89
+      },
+      "W47N8": {
+        "distinct": 89,
+        "min": 84327511,
+        "max": 84327599,
+        "rows": 1288,
+        "span": 89
+      },
+      "W45N8": {
+        "distinct": 89,
+        "min": 84327511,
+        "max": 84327599,
+        "rows": 568,
+        "span": 89
+      },
+      "W45N7": {
+        "distinct": 89,
+        "min": 84327511,
+        "max": 84327599,
+        "rows": 282,
+        "span": 89
+      },
+      "W47N7": {
+        "distinct": 89,
+        "min": 84327511,
+        "max": 84327599,
+        "rows": 483,
+        "span": 89
+      }
+    },
+    "note": "not new this run; now before this window (window starts 84327801). Full-gap official-filled 89/89/89/89/89 of 89 of 89 on all five rooms; no unpublished tail."
+  },
+  "prior_0241_box_freeze": {
+    "from": "2026-11-18 02:41:09",
+    "to": "2026-11-18 03:02:43",
+    "sec": 1293,
+    "kind": "box_hibernate",
+    "live_room_stats_gap": [
+      84327081,
+      84327369
+    ],
+    "live_room_stats_gap_ticks": 289,
+    "official_fill_full_gap": {
+      "W46N8": {
+        "distinct": 289,
+        "min": 84327081,
+        "max": 84327369,
+        "rows": 2619,
+        "span": 289
+      },
+      "W47N8": {
+        "distinct": 289,
+        "min": 84327081,
+        "max": 84327369,
+        "rows": 4365,
+        "span": 289
+      },
+      "W45N8": {
+        "distinct": 289,
+        "min": 84327081,
+        "max": 84327369,
+        "rows": 1026,
+        "span": 289
+      },
+      "W45N7": {
+        "distinct": 289,
+        "min": 84327081,
+        "max": 84327369,
+        "rows": 1154,
+        "span": 289
+      },
+      "W47N7": {
+        "distinct": 289,
+        "min": 84327081,
+        "max": 84327369,
+        "rows": 1320,
+        "span": 289
+      }
+    },
+    "official_fill_published_part": {
+      "W46N8": {
+        "distinct": 220,
+        "min": 84327081,
+        "max": 84327300,
+        "rows": 1949,
+        "span": 220
+      },
+      "W47N8": {
+        "distinct": 220,
+        "min": 84327081,
+        "max": 84327300,
+        "rows": 3301,
+        "span": 220
+      },
+      "W45N8": {
+        "distinct": 220,
+        "min": 84327081,
+        "max": 84327300,
+        "rows": 816,
+        "span": 220
+      },
+      "W45N7": {
+        "distinct": 220,
+        "min": 84327081,
+        "max": 84327300,
+        "rows": 974,
+        "span": 220
+      },
+      "W47N7": {
+        "distinct": 220,
+        "min": 84327081,
+        "max": 84327300,
+        "rows": 1004,
+        "span": 220
+      }
+    },
+    "official_fill_unpublished_tail": {
+      "W46N8": {
+        "distinct": 69,
+        "min": 84327301,
+        "max": 84327369,
+        "rows": 670,
+        "span": 69
+      },
+      "W47N8": {
+        "distinct": 69,
+        "min": 84327301,
+        "max": 84327369,
+        "rows": 1064,
+        "span": 69
+      },
+      "W45N8": {
+        "distinct": 69,
+        "min": 84327301,
+        "max": 84327369,
+        "rows": 210,
+        "span": 69
+      },
+      "W45N7": {
+        "distinct": 69,
+        "min": 84327301,
+        "max": 84327369,
+        "rows": 180,
+        "span": 69
+      },
+      "W47N7": {
+        "distinct": 69,
+        "min": 84327301,
+        "max": 84327369,
+        "rows": 316,
+        "span": 69
+      }
+    },
+    "note": "not new this run; now before this window. official+live 289/289/289/289/289 of 289 of 289."
+  },
+  "remainder_overlap_84327801_84328000": {
+    "W46N8": {
+      "distinct": 200,
+      "min": 84327801,
+      "max": 84328000,
+      "rows": 2135,
+      "span": 200
+    },
+    "W47N8": {
+      "distinct": 200,
+      "min": 84327801,
+      "max": 84328000,
+      "rows": 3302,
+      "span": 200
+    },
+    "W45N8": {
+      "distinct": 200,
+      "min": 84327801,
+      "max": 84328000,
+      "rows": 808,
+      "span": 200
+    },
+    "W45N7": {
+      "distinct": 200,
+      "min": 84327801,
+      "max": 84328000,
+      "rows": 694,
+      "span": 200
+    },
+    "W47N7": {
+      "distinct": 200,
+      "min": 84327801,
+      "max": 84328000,
+      "rows": 666,
+      "span": 200
+    }
+  },
+  "remainder_new_84328001_84328500": {
+    "W46N8": {
+      "distinct": 500,
+      "min": 84328001,
+      "max": 84328500,
+      "rows": 5636,
+      "span": 500
+    },
+    "W47N8": {
+      "distinct": 500,
+      "min": 84328001,
+      "max": 84328500,
+      "rows": 8503,
+      "span": 500
+    },
+    "W45N8": {
+      "distinct": 416,
+      "min": 84328001,
+      "max": 84328500,
+      "rows": 1927,
+      "span": 500
+    },
+    "W45N7": {
+      "distinct": 400,
+      "min": 84328001,
+      "max": 84328500,
+      "rows": 1455,
+      "span": 500
+    },
+    "W47N7": {
+      "distinct": 500,
+      "min": 84328001,
+      "max": 84328500,
+      "rows": 2006,
+      "span": 500
+    }
+  },
+  "unique_after": {
+    "rows": 27132,
+    "unique_creep_tick_rows": 27132,
+    "distinct_ticks": 700,
+    "distinct_room_ticks": 3316
+  },
+  "db_tips": {
+    "creep_ticks": {
+      "max_tick": 84328581,
+      "max_ts": "2026-11-18T04:39:22.368904+08:00"
+    },
+    "room_stats": {
+      "max_tick": 84328580,
+      "max_ts": "2026-11-18T04:39:18.756918+08:00"
+    },
+    "creep_cpu": {
+      "max_tick": 84328570,
+      "max_ts": "2026-11-18T04:38:35.025972+08:00"
+    },
+    "path_arrivals": {
+      "max_tick": 84328562,
+      "max_ts": "2026-11-18T04:38:35.025972+08:00"
+    }
+  },
+  "db_after": {
+    "W46N8": {
+      "min": 84327801,
+      "max": 84328500,
+      "rows": 7771,
+      "distinct": 700
+    },
+    "W47N8": {
+      "min": 84327801,
+      "max": 84328500,
+      "rows": 11805,
+      "distinct": 700
+    },
+    "W45N8": {
+      "min": 84327801,
+      "max": 84328500,
+      "rows": 2735,
+      "distinct": 616
+    },
+    "W45N7": {
+      "min": 84327801,
+      "max": 84328500,
+      "rows": 2149,
+      "distinct": 600
+    },
+    "W47N7": {
+      "min": 84327801,
+      "max": 84328500,
+      "rows": 2672,
+      "distinct": 700
+    }
+  },
+  "listener": {
+    "single_slot": true,
+    "listener_pids": [
+      "131257 .venv/bin/python tools/listener.py"
+    ],
+    "run_listener": [
+      "4035476 /bin/bash tools/run_listener.sh"
+    ],
+    "roomSlot": "W47N8",
+    "rot": {
+      "i": 1,
+      "room": "W47N8",
+      "left": 49.9,
+      "at": "2026-11-18 04:39:25"
+    },
+    "yield": false
+  },
+  "confirm_at": "2026-11-18 04:35:08 Asia/Hong_Kong",
+  "confirm_game_time": 84328527,
+  "retry2_at": "2026-11-18 04:37:21 Asia/Hong_Kong",
+  "retry2_game_time": 84328555,
+  "ok_quiet": true
+}

@@ -141,7 +141,10 @@ try:
     # Use the timestamp from the last restart line, not a hardcoded earlier run.
     ts = last_restart.split(" restart")[0].strip() if last_restart else ""
     if ts:
-        err = sh("awk -v ts='%s' 'index($0, ts " restart"){p=1} p && /error|Error|ERROR|Traceback|429|frozen|box /' /workspace/screeps/metrics/listener.out | tail -20 || true" % ts).rstrip()
+        pat = ts + " restart"
+        err = sh(
+            "awk -v pat=" + repr(pat) + r""" 'index($0, pat){p=1} p && /error|Error|ERROR|Traceback|429|frozen|box /' /workspace/screeps/metrics/listener.out | tail -20 || true"""
+        ).rstrip()
     else:
         err = ""
     out("errors/pauses after last restart:")
