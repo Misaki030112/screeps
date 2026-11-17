@@ -13,6 +13,10 @@ Outputs: `metrics/model.json`, `docs/model_routes.png` (terrain + ideal routes +
 ## Actuals (DB, default 6 h)
 upgrade rate (room_stats progress), pickups per source (positive store deltas within 2 tiles of the source, normalised by tick coverage — a lower bound), deliveries (hub vs controller container), per-role idle/repaths/CPU (creep_cpu), planned vs actual path length (path_arrivals), hauler cycle median, share of hauling traffic on ideal-route tiles ± 1.
 
+## 2026-11-17 20:2x — 12h actuals (plan holds)
+
+Window t84313190→84322300 (9110 t, tick_s 4.710, coverage 639/912 ≈ 70.1%). Home measured upgrade **20.62** e/t (3h 22.14, 6h 22.35); still energy-bound at 2×14W, 20k/300t extra never latched (this window max stor 20244 / only 20 t). W47 measured **18.83** e/t vs keep=2 designed 20 / ceiling 30.08 (3h 20.58). CPU 12h room_stats avg 18.13 p95 21.98. See `docs/RCL7.md` / `docs/MODEL_W47N8.md` 20:2x.
+
 ## 2026-11-17 08:2x — 12h actuals (plan holds)
 
 Window t84304140→84313190 (9050 t, tick_s 4.778, coverage 512/906 ≈ 56.5%). Home measured upgrade **18.73** e/t (3h 19.93); still energy-bound at 2×14W, 20k/300t extra never latched (first 20k touch max stor 20753 / only 51 t). W47 measured **18.75** e/t vs keep=2 designed 20 / ceiling 30.08. CPU 12h room_stats avg 17.78 p95 21.35. See `docs/RCL7.md` / `docs/MODEL_W47N8.md` 08:2x.
