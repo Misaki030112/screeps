@@ -1,0 +1,85 @@
+2026-11-18 01:29:51 HKT check
+==== processes (screeps/pg/grafana/listener) ====
+   7854 Fri Nov  6 23:54:54 2026 /usr/lib/postgresql/17/bin/postgres -D /workspace/screeps/var/pg17 -c config_file=/etc/postgresql/17/main/postgresql.conf
+   8030 Fri Nov  6 23:55:03 2026 /usr/share/grafana/bin/grafana server --homepath /usr/share/grafana --config grafana/grafana.ini
+   8041 Fri Nov  6 23:55:03 2026 .venv/bin/python -m http.server 8787 --bind 127.0.0.1
+  73909 Wed Nov 18 01:26:39 2026 .venv/bin/python tools/listener.py
+4035476 Thu Nov 12 07:12:22 2026 /bin/bash tools/run_listener.sh
+==== other python in screeps ====
+7854 /usr/lib/postgresql/17/bin/postgres -D /workspace/screeps/var/pg17 -c config_file=/etc/postgresql/17/main/postgresql.conf
+73961 postgres: 17/main: screeps screeps 127.0.0.1(55498) idle
+75222 .venv/bin/python /workspace/screeps/state/_patrol_2026-11-18_0126/q_live.py
+==== pg_lsclusters ====
+Ver Cluster Port Status Owner    Data directory              Log file
+17  main    5432 online postgres /workspace/screeps/var/pg17 /var/log/postgresql/postgresql-17-main.log
+==== listener pids / locks ====
+listener.py count=1
+run_listener.sh count=1
+yield_files=absent
+listener.lock mtime=2026-11-18 01:26
+pidfile=4035476 (run_listener.sh)
+==== listener_rot ====
+{"i": 0, "room": "W46N8", "left": 126.1, "at": "2026-11-18 01:29:20"}
+==== live.json summary ====
+  gameTime= 84326177
+  uid= 6010ee96cbca26e9512da6f0
+  roomSlot= W46N8
+  updated= 2026-11-18 01:29:23
+  cpu= {'cpu': 15, 'memory': 24747}
+  stats.t= 84326170 cpu= 16.4 b= 10000
+  objects_n= 264
+  live.json_mtime_age_s= 0.0
+  live.json_mtime= 2026-11-18 01:29:23 HKT
+==== HTTP ====
+grafana :3000 -> 200
+dashboard 127.0.0.1:8787 -> 200
+==== listener restarts / errors ====
+2026-11-17 23:53:47 restart
+2026-11-18 00:02:41 restart
+2026-11-18 00:12:23 restart
+2026-11-18 00:23:40 restart
+2026-11-18 00:58:20 restart
+2026-11-18 01:26:29 restart
+==== box_pauses.jsonl last ====
+{"from": "2026-11-17 23:42:43", "to": "2026-11-17 23:53:44", "sec": 661}
+{"from": "2026-11-18 00:10:06", "to": "2026-11-18 00:12:20", "sec": 127}
+{"from": "2026-11-18 00:44:18", "to": "2026-11-18 00:58:17", "sec": 830}
+{"from": "2026-11-18 01:10:45", "to": "2026-11-18 01:26:26", "sec": 934}
+==== concurrent processes of note ====
+75222 .venv/bin/python /workspace/screeps/state/_patrol_2026-11-18_0126/q_live.py
+==== db health + recent ingest ====
+db_now 2026-11-18 01:29:51.824548+08:00
+tip_room_stats=84326180
+  creep_ticks: last2h-ish ticks=84324700..84326182 rows=53458
+  creep_cpu: last2h-ish ticks=84324700..84326180 rows=10868
+  path_arrivals: last2h-ish ticks=84324707..84326171 rows=240
+  room_stats: last2h-ish ticks=84324700..84326180 rows=176
+creep_ticks since tick 84325801 (after prev 01:00 reconstructed end 84325800):
+  W46N8 84325801..84326182 rows=3676 distinct=340
+  W47N8 84325801..84326100 rows=4949 distinct=300
+  W45N8 84325801..84326100 rows=1091 distinct=300
+  W45N7 84325801..84326100 rows=1101 distinct=300
+  W47N7 84325801..84326100 rows=581 distinct=183
+creep_cpu after 01:26:29 reconnect (incl. segment pull across freeze): ticks via query below
+creep_cpu tick>=84325800: ticks=84325800..84326180 rows=2564
+path_arrivals tick>=84325800: ticks=84325825..84326171 rows=51
+room_stats after reconnect >=84326150: ticks=84326150..84326180 rows=8
+room_stats significant gaps since 84325000 (ignoring normal 9-tick STATS cadence):
+  84325051..84325089 (39)
+  84325171..84325209 (39)
+  84325601..84325789 (189)
+  84325931..84326149 (219)
+creep_ticks in new freeze gap 84325931..84326149:
+  W46N8 84325931..84326149 rows=1978 distinct=177 missing 84326101..84326142 (42; unpublished official tail + live resume ~84326150)
+  W47N8 84325931..84326100 rows=2550 distinct=170 missing 84326101..84326149 (49)
+  W45N8 84325931..84326100 rows=619 distinct=170 missing 84326101..84326149 (49)
+  W45N7 84325931..84326100 rows=666 distinct=170 missing 84326101..84326149 (49)
+  W47N7 84325947..84326100 rows=552 distinct=154 missing 84325931..84325946 (16) and 84326101..84326149 (49)
+  W47N7 also has earlier no-creep bands 84325828..84325866 / 84325868..84325906 / 84325908..84325946 (39t each) in the post-prev-window range.
+creep_cpu in freeze gap: distinct=37 of 219 (normal ~5-tick sample cadence; start hole 84325931..84325964 = 34t, then regular samples through 84326145).
+path_arrivals in freeze gap: distinct=30 of 219 (sparse by nature).
+New box freeze 01:10:45–01:26:26 (~934s); listener logged freeze then run_listener restarted at 01:26:29, listener.py up at 01:26:39 (pid 73909). No 502/SSL error after this reconnect in errors.log.
+Segment buffers pulled (creep_cpu/path_arrivals cover the freeze band at normal sample cadence after a 34t start hole); room_stats gap 84325931..84326149 (219) is expected (STATS not in official history).
+single_slot; yield absent.
+This run will NOT restart the listener, war_cmd, or pulse.
+Concurrent 1h patrol q_live.py in _patrol_2026-11-18_0126 is left alone.
