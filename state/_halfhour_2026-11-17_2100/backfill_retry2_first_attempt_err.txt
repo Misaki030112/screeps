@@ -1,0 +1,127 @@
+retry2 GET start 2026-11-17 21:08:23 Asia/Hong_Kong game.time=84322862 tick_s=4.801952 targets=29
+  pre  W47N8@84322100 distinct=93 rows=1153 range=84322101..84322193
+  still_404 W47N8@84322100 at 21:08:24 game.time=84322862
+  pre  W47N7@84322700 distinct=100 rows=371 range=84322701..84322800
+  recovered_or_ok W47N7@84322700 ticks=100 ts=1794920718606 at 21:08:25 inserted=37
+  pre  W45N7@84321600 distinct=2 rows=8 range=84321601..84321602
+  still_404 W45N7@84321600 at 21:08:28 game.time=84322862
+  pre  W47N8@84321300 distinct=39 rows=524 range=84321362..84321400
+  still_404 W47N8@84321300 at 21:08:29 game.time=84322862
+  pre  W47N8@84319900 distinct=0 rows=0 range=None..None
+  still_404 W47N8@84319900 at 21:08:30 game.time=84322862
+  pre  W47N8@84319000 distinct=48 rows=855 range=84319001..84319048
+  still_404 W47N8@84319000 at 21:08:32 game.time=84322862
+  pre  W46N8@84318500 distinct=32 rows=319 range=84318569..84318600
+  still_404 W46N8@84318500 at 21:08:33 game.time=84322862
+  pre  W45N8@84318000 distinct=0 rows=0 range=None..None
+  still_404 W45N8@84318000 at 21:08:35 game.time=84322862
+  pre  W47N7@84315100 distinct=0 rows=0 range=None..None
+  still_404 W47N7@84315100 at 21:08:36 game.time=84322862
+  pre  W45N8@84314900 distinct=0 rows=0 range=None..None
+  still_404 W45N8@84314900 at 21:08:37 game.time=84322862
+  pre  W45N7@84314500 distinct=0 rows=0 range=None..None
+  still_404 W45N7@84314500 at 21:08:38 game.time=84322862
+  pre  W47N8@84314000 distinct=49 rows=788 range=84314052..84314100
+  still_404 W47N8@84314000 at 21:08:39 game.time=84322862
+  pre  W46N8@84313200 distinct=96 rows=1056 range=84313205..84313300
+  still_404 W46N8@84313200 at 21:08:41 game.time=84322862
+  pre  W46N8@84310500 distinct=11 rows=86 range=84310522..84310532
+  still_404 W46N8@84310500 at 21:08:42 game.time=84322862
+  pre  W47N7@84309000 distinct=0 rows=0 range=None..None
+  still_404 W47N7@84309000 at 21:08:44 game.time=84322862
+  pre  W45N8@84309100 distinct=25 rows=47 range=84309174..84309198
+  still_404 W45N8@84309100 at 21:08:45 game.time=84322862
+  pre  W45N8@84306500 distinct=0 rows=0 range=None..None
+  still_404 W45N8@84306500 at 21:08:46 game.time=84322862
+  pre  W45N7@84305100 distinct=0 rows=0 range=None..None
+  still_404 W45N7@84305100 at 21:08:47 game.time=84322862
+  pre  W47N8@84304700 distinct=0 rows=0 range=None..None
+  still_404 W47N8@84304700 at 21:08:49 game.time=84322862
+  pre  W45N7@84303900 distinct=0 rows=0 range=None..None
+  still_404 W45N7@84303900 at 21:08:50 game.time=84322862
+  pre  W45N8@84302200 distinct=0 rows=0 range=None..None
+  still_404 W45N8@84302200 at 21:08:51 game.time=84322862
+  pre  W47N8@84300900 distinct=74 rows=1008 range=84300901..84300993
+  still_404 W47N8@84300900 at 21:08:52 game.time=84322862
+  pre  W45N8@84300900 distinct=7 rows=28 range=84300994..84301000
+  still_404 W45N8@84300900 at 21:08:54 game.time=84322862
+  pre  W45N8@84300000 distinct=26 rows=159 range=84300067..84300092
+  still_404 W45N8@84300000 at 21:08:55 game.time=84322862
+  pre  W47N8@84298000 distinct=0 rows=0 range=None..None
+  still_404 W47N8@84298000 at 21:08:56 game.time=84322862
+  pre  W47N8@84297200 distinct=100 rows=1562 range=84297201..84297300
+Traceback (most recent call last):
+  File "/usr/lib/python3.13/urllib/request.py", line 1319, in do_open
+    h.request(req.get_method(), req.selector, req.data, headers,
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+              encode_chunked=req.has_header('Transfer-encoding'))
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.13/http/client.py", line 1367, in request
+    self._send_request(method, url, body, headers, encode_chunked)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.13/http/client.py", line 1413, in _send_request
+    self.endheaders(body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.13/http/client.py", line 1362, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.13/http/client.py", line 1122, in _send_output
+    self.send(msg)
+    ~~~~~~~~~^^^^^
+  File "/usr/lib/python3.13/http/client.py", line 1066, in send
+    self.connect()
+    ~~~~~~~~~~~~^^
+  File "/usr/lib/python3.13/http/client.py", line 1508, in connect
+    self.sock = self._context.wrap_socket(self.sock,
+                ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^
+                                          server_hostname=server_hostname)
+                                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.13/ssl.py", line 455, in wrap_socket
+    return self.sslsocket_class._create(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        sock=sock,
+        ^^^^^^^^^^
+    ...<5 lines>...
+        session=session
+        ^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/usr/lib/python3.13/ssl.py", line 1076, in _create
+    self.do_handshake()
+    ~~~~~~~~~~~~~~~~~^^
+  File "/usr/lib/python3.13/ssl.py", line 1372, in do_handshake
+    self._sslobj.do_handshake()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^
+ssl.SSLEOFError: [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1029)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/workspace/screeps/state/_halfhour_2026-11-17_2100/backfill_confirm.py", line 284, in <module>
+    main()
+    ~~~~^^
+  File "/workspace/screeps/state/_halfhour_2026-11-17_2100/backfill_confirm.py", line 239, in main
+    res = retry_one(room, base, our, now_ts, gt, tick_s=TICK_S, cm=cm)
+  File "/workspace/screeps/state/_halfhour_2026-11-17_2100/backfill_confirm.py", line 166, in retry_one
+    j = hb.history_get(room, base)
+  File "/workspace/screeps/tools/history_backfill.py", line 56, in history_get
+    with urllib.request.urlopen(req, timeout=30) as r:
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.13/urllib/request.py", line 189, in urlopen
+    return opener.open(url, data, timeout)
+           ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.13/urllib/request.py", line 489, in open
+    response = self._open(req, data)
+  File "/usr/lib/python3.13/urllib/request.py", line 506, in _open
+    result = self._call_chain(self.handle_open, protocol, protocol +
+                              '_open', req)
+  File "/usr/lib/python3.13/urllib/request.py", line 466, in _call_chain
+    result = func(*args)
+  File "/usr/lib/python3.13/urllib/request.py", line 1367, in https_open
+    return self.do_open(http.client.HTTPSConnection, req,
+           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                        context=self._context)
+                        ^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.13/urllib/request.py", line 1322, in do_open
+    raise URLError(err)
+urllib.error.URLError: <urlopen error [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1029)>

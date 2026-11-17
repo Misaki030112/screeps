@@ -1,0 +1,16 @@
+computed official window t84313190→84322300
+ticks=9110 wall_s=42905.383974 wall_h=11.918162214999999 tick_s=4.709701863227222
+expected_10t_slots=912 n_samples/room=639 coverage_pct=70.06578947368422
+home first=7498040 last=7685887 delta=187847 e_per_t=20.6198682766190999 pct=70.28703246456333 remaining=3249113 eta_days=8.59
+w47  first=4298294 last=4469811 delta=171517 e_per_t=18.8273326015367728 pct=40.87618655692730 remaining=6465189 eta_days=18.72
+last morning tick_s was 4.7782; this window tick_s 4.7097 (shard slightly faster — calendar ETA tightened from both pace and tick_s)
+home 3h 22.14 e/t (84320020-84322300); 6h 22.35 e/t
+w47 3h 20.58 e/t
+home 20k: this window max 20244 @84317140 / 13:37; longest contiguous >=20k only 20 t (84317140-84317160, 3 samples 20044-20244). Latch 300t NOT armed. (Morning was first touch 20753 / 51 t.)
+home under15: 16.12% (was 25.2%); min 12164 @09:05; longest stretch 191 t (08:40-08:54, min 13354) plus 151 t (09:00-09:12) during the 08:30 W45N7 core.
+w47 40k: closest clean camp yet — contiguous 470 t (84313160-84313630 / 08:25:59-09:02:47, min 40074 peak 43041), 30 t short of the 500 t latch, no box-freeze merge needed. Other islands 260 t (14:20-14:41, peak 42880) and 80 t (20:08-20:15, peak 41413). Window max 43041 is below this morning's high 44416. Latch 500t NOT armed (upLatched=0). Never <22k ARM (min 23932).
+w47 >=25k 99.2%; >=30k 70.1%; >=40k 12.7% (was 8.2%).
+softCap2 leftover from morning expired; tip softCap2=0 threatSoft=0 sealPark=0 keep=2.
+KO total 9516 = 8836 stor + 680 lab (was 4981 this morning). 20k boost skip held.
+LIVE c6d43491 @84321282 / 19:02:43 (already-live, not this review). First post-deploy w8upgrader84322007 spawned 34,30@84322009 20:00, seated 14,27@84322136 walk=127 t including spawn; south_bypass 32,32 x5, filler_post 34,32 x0.
+Ledger: no snap between 16th 08:27 (t84294791) and this review, so no clean 12h ledger; 36h window home net sp:upgrader 1.61 (still under the 5 e/t waste gate); W47 up 18.64 matches room_stats.

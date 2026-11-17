@@ -12,12 +12,11 @@ TMIN, TMAX = 84320901, 84321600
 ROOMS = ("W46N8", "W47N8", "W45N8", "W45N7", "W47N7")
 DIR = "/workspace/screeps/state/_halfhour_2026-11-17_1930"
 # First pass missing_chunks=4 (31 of 35 official GETs 200).
-# In-window official 404s below; update after confirm/retry2 if any recover.
+# Confirm recovered W47N8@84321500, W45N8@84321500, W47N7@84321500.
+# Retry2 still 404 W47N8@84321300 (confirm 19:29:59 game.time=84321626 and
+# retry2 19:32:27 game.time=84321658).
 IN_WINDOW_404 = {
     ("W47N8", 84321300),
-    ("W47N8", 84321500),
-    ("W45N8", 84321500),
-    ("W47N7", 84321500),
 }
 OUT = sys.argv[1] if len(sys.argv) > 1 else f"{DIR}/coverage_final.json"
 
