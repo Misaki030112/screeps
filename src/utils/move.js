@@ -61,6 +61,8 @@ function matrix(roomName, avoidCreeps) {
       const { x, y } = s.pos;
       if (m.get(x, y) < 255 && !esc(x, y)) m.set(x, y, 255);
     }
+    // W47N8: same post the in-room moveTo callback yields (fill.yieldPost). Lazy require — fill.js loads move.js.
+    if (roomName === 'W47N8') require('../rooms/w47n8/fill').yieldPost(m);
     e = CM[roomName] = { v, m };
   }
   if (!avoidCreeps) return e.m;

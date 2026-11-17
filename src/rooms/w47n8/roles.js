@@ -2,15 +2,17 @@
 const C = require('./config');
 const CMV = require('../../utils/combatmove');
 const CREP = require('./contrep');
+const F = require('./fill');
 // 11-11 patrol (w8builder84200485): vanilla moveTo searched with creeps as walls; with creeps on the 1-wide x=38 / 31,2x trunks the
 // search to container 37,44 went INCOMPLETE (3 steps to the south-edge dead end 33,48 instead of the real 84) and the builder shuttled
 // 31,48 <-> 17,33 / 8,23 for ~300 t carrying 66 energy. In W47N8 the search ignores creeps; one creep-aware search only when stuck
 // (utils/combatmove, same rule as the w8 combat roles since #35).
-const go = (c, x, y, r = 1) => (c.room.name === C.ROOM ? CMV.to(c, x, y, r, undefined, 10)
+// yieldPost: the filler sits on 34,32, the road step off both hub spawns. A 10W2M move through that
+// tile dances in 32,30/33,31 and the stuck repath takes the north walk. 32,32 still reaches 33,33.
+const go = (c, x, y, r = 1) => (c.room.name === C.ROOM ? CMV.to(c, x, y, r, F.yieldPost, 10)
   : c.moveTo(new RoomPosition(x, y, C.ROOM), { range: r, reusePath: 10, maxRooms: 1 }));
 const E = 'energy';
 const FM = require('./fillmeter');
-const F = require('./fill');
 const isFill = s => s && (s.structureType === STRUCTURE_EXTENSION || s.structureType === STRUCTURE_SPAWN);
 const fillXfer = (c, s) => { const a = Math.min(c.store[E], s.store.getFreeCapacity(E)); if (c.transfer(s, E) === 0) FM.xfer(c, a); };
 const isHub = s => s.pos.x === C.HUB_CONT[0] && s.pos.y === C.HUB_CONT[1];
