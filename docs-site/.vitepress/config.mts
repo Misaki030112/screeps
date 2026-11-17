@@ -122,6 +122,7 @@ export default defineConfig({
         miniSearch: {
           options: { tokenize },
           searchOptions: {
+            tokenize,
             combineWith: 'AND',
             prefix: true,
             fuzzy: false,
