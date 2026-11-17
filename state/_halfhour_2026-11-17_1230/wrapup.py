@@ -7,26 +7,27 @@ from zoneinfo import ZoneInfo
 from pathlib import Path
 
 ROOT = Path("/workspace/screeps")
-DIR = ROOT / "state" / "_halfhour_2026-11-17_1200"
+DIR = ROOT / "state" / "_halfhour_2026-11-17_1230"
 os.chdir(ROOT)
 sys.path.insert(0, "tools")
 import db
 
 TZ = ZoneInfo("Asia/Hong_Kong")
 ROOMS = ("W46N8", "W47N8", "W45N8", "W45N7", "W47N7")
-TMIN, TMAX = 84315101, 84315800
-GT_FIRST = 84315882
-PUB_BASES = "84315100..84315700"
-TICK_S_FIRST = 4.75334
-TICK_S_PRINTED = "4.753"
-NEW_ROWS = {"W46N8": 1849, "W47N8": 2931, "W45N8": 1874, "W45N7": 1102, "W47N7": 1435}
-OFFICIAL_TICKS = {"W46N8": 700, "W47N8": 700, "W45N8": 700, "W45N7": 700, "W47N7": 600}
-INSERTED_FIRST = 9191
-ALREADY = 16956
-RECON_ROWS = 26147
-TS_REALIGNED_FIRST = 8025
-IN_WINDOW_404 = [("W47N7", 84315100)]
+TMIN, TMAX = 84315601, 84316300
+GT_FIRST = 84316346
+PUB_BASES = "84315600..84316200"
+TICK_S_FIRST = 4.66777
+TICK_S_PRINTED = "4.668"
+NEW_ROWS = {"W46N8": 713, "W47N8": 414, "W45N8": 506, "W45N7": 318, "W47N7": 505}
+OFFICIAL_TICKS = {"W46N8": 700, "W47N8": 700, "W45N8": 700, "W45N7": 700, "W47N7": 700}
+INSERTED_FIRST = 2456
+ALREADY = 21456
+RECON_ROWS = 23912
+TS_REALIGNED_FIRST = 0
+IN_WINDOW_404 = []
 OUTSIDE_404 = [
+    ("W47N7", 84315100),
     ("W45N8", 84314900),
     ("W45N7", 84314500),
     ("W47N8", 84314000),
@@ -181,8 +182,8 @@ def main():
         freeze_1054 = fill(c, 84315041, 84315119)
         freeze_1111 = fill(c, 84315261, 84315469)
         freeze_1148 = fill(c, 84315741, 84315789)
-        rem_overlap = fill(c, 84315101, 84315500)
-        rem_new = fill(c, 84315501, 84315800)
+        rem_overlap = fill(c, 84315601, 84315800)
+        rem_new = fill(c, 84315801, 84316300)
         hole_w47_15100 = hole_text(c, "W47N7", 84315100)
         hole_w45_14900 = hole_text(c, "W45N8", 84314900)
         hole_w45_14500 = hole_text(c, "W45N7", 84314500)
@@ -240,61 +241,61 @@ def main():
         f"min-all-rooms first interval {TICK_S_FIRST}; "
         f"delta first-robust {TICK_S_FIRST-later:.5f} s/tick, "
         f"~{(GT_FIRST-TMIN)*abs(TICK_S_FIRST-later):.1f}s at tmin) "
-        f"was over the 45s gate before corrective "
+        f"already inside the 45s gate "
         f"(still_over_45s_vs_later_before={tsr.get('still_over_45s_vs_later_before')}, "
-        f"vs_first over45={vs_first['over45']}). "
-        f"Applied corrective later-mean-robust realign of {nfix_corr} rows at game.time={tsr.get('gt_realign')}; "
-        f"later over45 after={vs_later['over45']} over15={vs_later['over15']} "
-        f"mean_off={vs_later['mean_off']:.2f} max_off={vs_later['max_off']:.2f} "
-        f"at {tsr.get('now_realign')}; skipped_cross_chunk={tsr.get('skipped_cross_chunk') or 0}. "
-        f"In-use tick_s={tick_s_in_use:.5f} (later-mean-robust)."
+        f"vs_first over45={vs_first['over45']}, vs_later over45={vs_later['over45']}, "
+        f"over15={vs_later['over15']} mean_off={vs_later['mean_off']:.2f} max_off={vs_later['max_off']:.2f}). "
+        f"No corrective later-mean-robust realign (nfix={nfix_corr}, skipped_cross_chunk={tsr.get('skipped_cross_chunk') or 0}). "
+        f"In-use tick_s={tick_s_in_use:.5f} (first-pass)."
     )
     missing_note = (
         f"First pass (game.time={GT_FIRST}) published_bases {PUB_BASES}, reconstructed {TMIN}..{TMAX} (700). "
-        f"missing_chunks=1 of 35 official GETs (34 of 35 200, 404 W47N7@84315100). "
-        f"The previous 11:30 half-hour run official-backfilled 84314801..84315500 (inserted=4307 already_in_db=24720 "
-        f"at game.time=84315570, published_bases 84314800..84315400, missing_chunks=2, 33 of 35 official GETs 200, "
-        f"404 W45N8@84314900 and W47N7@84315100, tick_s=4.72384 printed 4.724, ts_realigned_first=3397, "
-        f"later-mean-robust 4.68015 already inside 45s gate, in-use first-pass 4.72384). "
-        f"This run overlapped 84315101..84315500 (still official-filled except W47N7@84315100 and W45N7 official empty-no-creep ranges) "
-        f"and newly covered the previously unpublished remainder 84315501..84315800, including the new box-freeze "
-        f"room_stats gap 11:48:38–11:51:05 (~137s) 84315741..84315789. "
-        f"W47N7@84315100 remains an in-window official 404 (0 live, 100 empty 84315101..84315200). "
-        f"W45N8@84314900 is now outside this window (0 live, 100 empty 84314901..84315000). "
-        f"W45N7 official empty-no-creep 160 ticks {w45n7_empty}. "
+        f"missing_chunks=0 of 35 official GETs (35 of 35 200, no in-window official 404). "
+        f"The previous 12:00 half-hour run official-backfilled 84315101..84315800 (inserted=9191 already_in_db=16956 "
+        f"at game.time=84315882, published_bases 84315100..84315700, missing_chunks=1, 34 of 35 official GETs 200, "
+        f"404 W47N7@84315100, tick_s=4.75334 printed 4.753, ts_realigned_first=8025, "
+        f"later-mean-robust 4.67987 applied nfix=4234, in-use 4.67987). "
+        f"The 12:25 hourly patrol then official-backfilled 84315501..84316200 (inserted=11100 already_in_db=15803 "
+        f"at game.time=84316232, published_bases 84315500..84316100, missing_chunks=0, 35 of 35 official GETs 200, "
+        f"tick_s=4.666, ts_realigned=0). "
+        f"This run overlapped 84315601..84315800 (still official-filled on all five rooms) "
+        f"and newly covered the previously unpublished remainder 84315801..84316300, including the just-published 84316200 chunk. "
+        f"No in-window official 404. W47N7@84315100 is now outside this window (0 live, 100 empty 84315101..84315200). "
+        f"W45N8@84314900 is outside this window (0 live, 100 empty 84314901..84315000). "
+        f"W45N7 official empty-no-creep {empty_n} ticks {w45n7_empty}. "
         f"Confirm at {confirm_at} game.time={confirm_gt} recovered none inserted=0; "
         f"retry2 at {retry2_at} game.time={retry2_gt} recovered none inserted=0."
     )
     inserted_note = (
-        f"This 12:00 first pass inserted {INSERTED_FIRST} new rows (already_in_db={ALREADY}, reconstructed={RECON_ROWS}) "
-        f"because the overlap 84315101..84315500 was already official-backfilled by the 11:30 run "
-        f"(except W47N7@84315100 and W45N7 empty-no-creep), and the new remainder 84315501..84315800 includes the "
-        f"newly published 84315500..84315700 chunks and the 11:48 freeze gap. "
+        f"This 12:30 first pass inserted {INSERTED_FIRST} new rows (already_in_db={ALREADY}, reconstructed={RECON_ROWS}) "
+        f"because the overlap 84315601..84316200 was already official-backfilled by the 12:00 half-hour run and the 12:25 hourly patrol, "
+        f"and the new remainder 84316201..84316300 is the just-published 84316200 chunk (plus any live-gap fill in 84315801..84316200). "
         f"Confirm recovered none inserted=0; retry2 recovered none inserted=0. inserted_total={INSERTED_FIRST}. "
         f"First-pass realign committed ts_realigned_first={TS_REALIGNED_FIRST} (tick_s={TICK_S_FIRST} printed {TICK_S_PRINTED}). "
-        f"later-mean-robust {later:.5f} applied corrective nfix={nfix_corr} (after over45={vs_later['over45']} "
-        f"over15={vs_later['over15']} mean_off={vs_later['mean_off']:.2f} max_off={vs_later['max_off']:.2f}). "
-        f"In-use tick_s={tick_s_in_use:.5f}."
+        f"later-mean-robust {later:.5f} already inside 45s gate, no corrective (nfix={nfix_corr}; "
+        f"over45={vs_later['over45']} over15={vs_later['over15']} mean_off={vs_later['mean_off']:.2f} max_off={vs_later['max_off']:.2f}). "
+        f"In-use tick_s={tick_s_in_use:.5f} (first-pass)."
     )
     live_note = (
-        f"New box freeze since the 11:30 run: 2026-11-17 11:48:38–2026-11-17 11:51:05 Asia/Hong_Kong (~137s), "
-        f"room_stats gap 84315741..84315789 (49 ticks; the regular 9-tick room_stats cadence is every-10 sampling, not a freeze). "
-        f"Listener self-reconnected at 11:51:05 (relaunch 11:51:08, current tools/listener.py pid 3914383; pidfile 4035476). "
+        f"No new box freeze since the 11:48:38–11:51:05 Asia/Hong_Kong (~137s) hibernate "
+        f"(room_stats gap 84315741..84315789, 49 ticks; still inside this official window and official-filled). "
+        f"Listener has stayed up since the 11:51:05 self-reconnect (relaunch 11:51:08, current tools/listener.py pid 3914383; pidfile 4035476). "
         f"This run did not restart the listener. After the 11:51:05 reconnect the listener itself has kept pulling recent CPU / path buffers "
         f"(creep_cpu {cpu[0]}..{cpu[1]}, {cpu[2]} rows, first ts {iso(cpu[3])}; "
         f"path_arrivals {path[0]}..{path[1]}, {path[2]} rows, first ts {iso(path[3])}). "
         f"Peacetime single-slot rotation holds (roomSlot={live.get('roomSlot')}, rot={rot}, yield_files={'present' if yield_present else 'absent'}). "
         f"This run did not start a second listener or change the 5:5:1:1 poll. Official history HTTP does not use a room slot. "
-        f"No concurrent hourly patrol during this backfill."
+        f"The 12:25 hourly patrol had already official-backfilled 84315501..84316200 before this run; no concurrent history_backfill process."
     )
     hourly_note = (
-        f"The previous 11:30 half-hour run official-backfilled 84314801..84315500 (inserted=4307 already_in_db=24720 "
-        f"at game.time=84315570, published_bases 84314800..84315400, missing_chunks=2, 33 of 35 official GETs 200, "
-        f"404 W45N8@84314900 and W47N7@84315100, tick_s=4.72384 printed 4.724, ts_realigned_first=3397, "
-        f"later-mean-robust 4.68015 already inside 45s gate, in-use first-pass 4.72384). "
+        f"The previous 12:00 half-hour run official-backfilled 84315101..84315800 (inserted=9191 already_in_db=16956 "
+        f"at game.time=84315882, published_bases 84315100..84315700, missing_chunks=1, 34 of 35 official GETs 200, "
+        f"404 W47N7@84315100, tick_s=4.75334 printed 4.753, ts_realigned_first=8025, "
+        f"later-mean-robust 4.67987 applied nfix=4234, in-use 4.67987). "
+        f"The 12:25 hourly patrol official-backfilled 84315501..84316200 (inserted=11100 already_in_db=15803 "
+        f"at game.time=84316232, published_bases 84315500..84316100, missing_chunks=0, tick_s=4.666, ts_realigned=0). "
         f"This half-hour backfill is the official-history catch-up for {TMIN}..{TMAX} "
-        f"(inserted={INSERTED_FIRST} first pass, missing_chunks=1, 34 of 35 official GETs 200, "
-        f"in-window leftover 404 W47N7@84315100)."
+        f"(inserted={INSERTED_FIRST} first pass, missing_chunks=0, 35 of 35 official GETs 200, no in-window official 404)."
     )
 
     payload = {
@@ -317,9 +318,9 @@ def main():
         "tick_s_first_pass_outlier": False,
         "tick_s_later_mean_applied_then_reverted": False,
         "tick_s_corrective_applied": corrective,
-        "missing_chunks": 1,
-        "missing_chunk_list": ["W47N7@84315100"],
-        "missing_chunk_first_pass": ["W47N7@84315100"],
+        "missing_chunks": 0,
+        "missing_chunk_list": [],
+        "missing_chunk_first_pass": [],
         "missing_chunk_note": missing_note,
         "creep_rows_reconstructed": RECON_ROWS,
         "already_in_db": ALREADY,
@@ -335,19 +336,19 @@ def main():
         "ts_realigned_note": tick_s_note,
         "ssl_first_attempt": (
             f"ok first try; first-pass realign committed ts_realigned={TS_REALIGNED_FIRST}; "
-            f"later-mean-robust {later:.5f} applied nfix={nfix_corr}, after over45={vs_later['over45']}; "
-            f"in-use later-mean-robust {tick_s_in_use:.5f}"
+            f"later-mean-robust {later:.5f} already inside 45s gate, no corrective nfix={nfix_corr}, after over45={vs_later['over45']}; "
+            f"in-use first-pass {tick_s_in_use:.5f}"
         ),
         "hourly_patrol_prefilled": hourly_note,
         "per_room": per_room,
         "known_official_404s_outside_window": holes,
-        "known_official_404s_in_window": [hole_w47_15100],
+        "known_official_404s_in_window": [],
         "w45n7_empty_no_creep_in_window": bool(w45n7_empty),
         "w45n7_empty_no_creep_ranges": w45n7_empty,
         "empty_no_creep_in_window": bool(empty_n),
         "empty_no_creep_ranges": {"W45N7": w45n7_empty},
         "empty_no_creep_ticks": empty_n,
-        "official_room_ticks_fetched": 3400,
+        "official_room_ticks_fetched": 3500,
         "official_room_ticks_with_creeps": cov.get("official_with_creeps"),
         "official_recovered": recovered,
         "official_expected": expected,
@@ -359,7 +360,7 @@ def main():
             "live_room_stats_gap": [84315741, 84315789],
             "live_room_stats_gap_ticks": 49,
             "official_fill_full_gap": freeze_1148,
-            "note": "new this run; fully inside official window 84315101..84315800; official-filled on all five rooms unless a room had no creeps",
+            "note": "not new this run; still inside official window 84315601..84316300; official-filled on all five rooms",
         },
         "prior_1111_box_freeze": {
             "from": "2026-11-17 11:11:00",
@@ -368,7 +369,7 @@ def main():
             "room_stats_gap": [84315261, 84315469],
             "span": 209,
             "official_fill_full_gap": freeze_1111,
-            "note": "not new this run; still inside this official window (overlap); four rooms 209/209, W45N7 empty-no-creep in parts",
+            "note": "not new this run; now fully before this window start (window starts 84315601); four rooms 209/209, W45N7 empty-no-creep in parts",
         },
         "prior_1054_freeze": {
             "from": "2026-11-17 10:54:19",
@@ -376,7 +377,7 @@ def main():
             "sec": 262,
             "live_room_stats_gap": [84315041, 84315119],
             "official_fill_full_gap": freeze_1054,
-            "note": "prior 10:54 freeze; still straddles window start. W47N7 missing 84315101..84315119 due to official 404 @84315100; W45N7 official empty-no-creep in the in-window tail",
+            "note": "prior 10:54 freeze; now fully before this window start. W47N7 missing 84315101..84315119 due to official 404 @84315100; W45N7 official empty-no-creep in that band",
         },
         "prior_1044_freeze_outside_or_edge": {
             "from": "2026-11-17 10:44:25",
@@ -384,7 +385,7 @@ def main():
             "sec": 100,
             "live_room_stats_gap": [84314921, 84314959],
             "official_fill_full_gap": freeze_1044,
-            "note": "now fully before this window start (window starts 84315101). W45N8 still missing due to official 404 @84314900; W45N7 official empty-no-creep",
+            "note": "fully before this window start (window starts 84315601). W45N8 still missing due to official 404 @84314900; W45N7 official empty-no-creep",
         },
         "prior_1011_freeze_outside_window": {
             "from": "2026-11-17 10:11:26",
@@ -424,8 +425,8 @@ def main():
             "official_fill": freeze_0713,
             "note": "already official-filled 179/179; fully before this window",
         },
-        "remainder_overlap_84315101_84315500": rem_overlap,
-        "remainder_new_84315501_84315800": rem_new,
+        "remainder_overlap_84315601_84315800": rem_overlap,
+        "remainder_new_84315801_84316300": rem_new,
         "unique_after": cov.get("unique_after"),
         "db_tips": tips,
         "db_after": db_after,
@@ -459,8 +460,8 @@ def main():
         for room in ROOMS
     )
     freeze_1148_txt = (
-        f"New box freeze 11:48:38–11:51:05 (~137s) room_stats gap 84315741..84315789; "
-        f"official-filled {frac(freeze_1148, 49)}."
+        f"Prior box freeze 11:48:38–11:51:05 (~137s) room_stats gap 84315741..84315789; "
+        f"official-filled {frac(freeze_1148, 49)} (still in this window)."
     )
     freeze_1111_txt = (
         f"Prior box freeze 11:11:00–11:25:57 (~888s) room_stats gap 84315261..84315469 still official-filled "
@@ -469,24 +470,24 @@ def main():
     now_text = (
         f"{now.strftime('%Y-%m-%d %H:%M:%S')} Asia/Hong_Kong half-hour backfill OK (quiet)\n"
         f"game.time={GT_FIRST} published_bases={PUB_BASES} rooms={','.join(ROOMS)} dry=False\n"
-        f"  (34 of 35 official GETs 200, missing_chunks=1, 404 W47N7@84315100; see history_backfill.txt)\n"
-        f"tick_s={TICK_S_PRINTED} (script {TICK_S_FIRST}; later-mean-robust {later:.5f} applied nfix={nfix_corr} "
+        f"  (35 of 35 official GETs 200, missing_chunks=0; see history_backfill.txt)\n"
+        f"tick_s={TICK_S_PRINTED} (script {TICK_S_FIRST}; later-mean-robust {later:.5f} already inside 45s gate, no corrective nfix={nfix_corr} "
         f"(after over45={vs_later['over45']}), in-use {tick_s_in_use:.5f})\n"
-        f"reconstructed ticks={TMIN}..{TMAX} (700) creep_rows={RECON_ROWS} missing_chunks=1\n"
+        f"reconstructed ticks={TMIN}..{TMAX} (700) creep_rows={RECON_ROWS} missing_chunks=0\n"
         f"already_in_db={ALREADY} would_insert={INSERTED_FIRST}\n"
         f"per_room {per_txt}\n"
         f"inserted={INSERTED_FIRST}\n"
         f"ts_realigned_first={TS_REALIGNED_FIRST}; ts_realigned_corrective={nfix_corr} "
-        f"(later-mean-robust {later:.5f} applied, after over45={vs_later['over45']})\n"
+        f"(later-mean-robust {later:.5f} already inside 45s gate, no corrective, after over45={vs_later['over45']})\n"
         f"db_after\n{db_after_txt}\n"
         f"coverage official_recovered={recovered}/{expected} unique_after={cov.get('unique_after')} "
         f"empty_no_creep={empty_n} official_404_in_window={official_404_n}\n"
-        f"tick_s_check later-mean-robust {later:.5f} applied nfix={nfix_corr} "
+        f"tick_s_check later-mean-robust {later:.5f} already inside 45s gate, no corrective nfix={nfix_corr} "
         f"(later over45={vs_later['over45']} over15={vs_later['over15']} "
         f"mean_off={vs_later['mean_off']:.2f} max_off={vs_later['max_off']:.2f}); "
         f"in-use tick_s={tick_s_in_use:.5f}\n"
         f"confirm recovered=none inserted=0; retry2 recovered=none inserted=0; "
-        f"in-window official 404 W47N7@84315100 still 404 (0 live, 100 empty 84315101..84315200); "
+        f"no in-window official 404; leftover official 404 W47N7@84315100 now outside this window (0 live, 100 empty 84315101..84315200); "
         f"W45N7 official empty-no-creep {empty_n} ticks {w45n7_empty}; "
         f"leftover official 404 W45N8@84314900 still outside this window (0 live, 100 empty 84314901..84315000); "
         f"leftover official 404 W45N7@84314500 still outside this window (0 live, 100 empty 84314501..84314600); "
@@ -498,16 +499,16 @@ def main():
         f"Prior 10:44 freeze gap 84314921..84314959 now fully before this window; W45N8 missing due to official 404 @84314900. "
         f"Prior 10:11 freeze gap 84314501..84314639 still official-filled 139/139 on four rooms, W45N7 missing 84314501..84314600 due to official 404 @84314500 (still before window). "
         f"Prior 09:43 / 09:17 / 07:43 freeze gaps still official-filled (199/199, 119/119, 279/279) and still before this window. "
-        f"Previously unpublished 84315501..84315800 official-filled except W45N7 empty-no-creep if any in that band. "
-        f"Overlap 84315101..84315500 stays official-filled except W47N7@84315100 and W45N7 empty-no-creep ranges.\n"
+        f"Previously unpublished 84315801..84316300 official-filled on all five rooms (includes just-published 84316200). "
+        f"Overlap 84315601..84315800 stays official-filled on all five rooms.\n"
         f"listener single_slot={len(lis)<=1 and not yield_present} roomSlot={live.get('roomSlot')} rot={rot} yield={'present' if yield_present else 'absent'}\n"
         f"confirm recovered=none retry2 recovered=none\n"
-        f"ok=true (quiet); first-pass missing_chunks=1 (34 of 35 official GETs 200, 404 W47N7@84315100 still after confirm/retry2, 0 live / 100 empty); "
-        f"later-mean-robust {later:.5f} applied nfix={nfix_corr}, tick_s_in_use={tick_s_in_use:.5f} "
+        f"ok=true (quiet); first-pass missing_chunks=0 (35 of 35 official GETs 200); "
+        f"later-mean-robust {later:.5f} already inside 45s gate, no corrective nfix={nfix_corr}, tick_s_in_use={tick_s_in_use:.5f} "
         f"(first-pass realign {TICK_S_FIRST} committed {TS_REALIGNED_FIRST}); "
-        f"new 11:48 freeze gap 84315741..84315789 official-filled {frac(freeze_1148, 49)}; "
-        f"prior 11:11 freeze gap 84315261..84315469 still official-filled {frac(freeze_1111, 209)}; "
-        f"leftover official 404 W47N7@84315100 still in window; leftover official 404 W45N8@84314900 now outside window; "
+        f"prior 11:48 freeze gap 84315741..84315789 still official-filled {frac(freeze_1148, 49)} and still in this window; "
+        f"prior 11:11 freeze gap 84315261..84315469 still official-filled {frac(freeze_1111, 209)}, now before this window; "
+        f"leftover official 404 W47N7@84315100 now outside window; leftover official 404 W45N8@84314900 still outside window; "
         f"other leftover official 404s unchanged.\n"
     )
     (DIR / "history_backfill_now.txt").write_text(now_text)
@@ -533,22 +534,22 @@ def main():
     verify.append(f"live_ticks_after_official_tip {json.dumps(live_after, default=str)}")
     verify.append(f"db_tips {json.dumps(tips, default=str)}")
     verify.append(
-        f"New 11:48 freeze 84315741..84315789 official-filled {frac(freeze_1148, 49)}. "
-        f"Prior 11:11 freeze 84315261..84315469 official-filled {frac(freeze_1111, 209)}. "
-        f"Prior 10:54 freeze 84315041..84315119 still missing W47N7 84315101..84315119 due to official 404 @84315100. "
-        f"Prior 10:44 / 10:11 / 09:43 / 09:17 / 07:43 freeze bands unchanged and now at or before this window start."
+        f"Prior 11:48 freeze 84315741..84315789 official-filled {frac(freeze_1148, 49)} and still in this window. "
+        f"Prior 11:11 freeze 84315261..84315469 official-filled {frac(freeze_1111, 209)}, now before this window. "
+        f"Prior 10:54 freeze 84315041..84315119 still missing W47N7 84315101..84315119 due to official 404 @84315100, now before this window. "
+        f"Prior 10:44 / 10:11 / 09:43 / 09:17 / 07:43 freeze bands unchanged and still before this window start."
     )
     verify.append(
-        f"previously unpublished 84315501..84315800 official-filled except W45N7 official empty-no-creep if present in that band; "
-        f"includes 11:48 freeze 84315741..84315789. Overlap 84315101..84315500 official-filled except in-window 404 "
-        f"W47N7@84315100 (0 live / 100 empty) and W45N7 official empty-no-creep ranges."
+        f"previously unpublished 84315801..84316300 official-filled on all five rooms; "
+        f"includes just-published 84316200. Overlap 84315601..84315800 official-filled on all five rooms. "
+        f"11:48 freeze 84315741..84315789 remains official-filled and still in this window."
     )
     verify.append(
-        f"tick_s first={TICK_S_FIRST} printed {TICK_S_PRINTED}; later-mean-robust {later:.5f} applied nfix={nfix_corr}; "
+        f"tick_s first={TICK_S_FIRST} printed {TICK_S_PRINTED}; later-mean-robust {later:.5f} already inside 45s gate, no corrective nfix={nfix_corr}; "
         f"first-pass realign committed {TS_REALIGNED_FIRST}; in-use {tick_s_in_use:.5f}; later over45={vs_later['over45']}."
     )
     verify.append(
-        f"confirm/retry2 recovered none; in-window official 404 W47N7@84315100 still 404 (0 live / 100 empty); "
+        f"confirm/retry2 recovered none; no in-window official 404; leftover official 404 W47N7@84315100 now outside window (0 live / 100 empty); "
         f"leftover official 404 W45N8@84314900 still outside window (0 live / 100 empty); "
         f"leftover official 404 W45N7@84314500 still outside window (0 live / 100 empty); "
         f"leftover official 404 W47N8@84314000 still outside window (49 live / 51 empty); "
@@ -565,12 +566,12 @@ def main():
 
     summary = (
         f"{now.strftime('%Y-%m-%d %H:%M:%S')} HKT wrapup ok quiet\n"
-        f"window {TMIN}..{TMAX} inserted={INSERTED_FIRST} missing_chunks=1 tick_s_in_use={tick_s_in_use:.5f} corrective_nfix={nfix_corr}\n"
+        f"window {TMIN}..{TMAX} inserted={INSERTED_FIRST} missing_chunks=0 tick_s_in_use={tick_s_in_use:.5f} corrective_nfix={nfix_corr}\n"
         f"wrote history_backfill.json history_backfill_now.txt verify.txt\n"
     )
     (DIR / "wrapup_run.txt").write_text(summary)
     print(summary, end="")
-    print("in-window official 404 W47N7@84315100:", hole_w47_15100)
+    print("outside official 404 W47N7@84315100:", hole_w47_15100)
     print("outside official 404 W45N8@84314900:", hole_w45_14900)
     print("outside official 404 W45N7@84314500:", hole_w45_14500)
     print("outside official 404 W47N8@84314000:", hole_w47_14000)
