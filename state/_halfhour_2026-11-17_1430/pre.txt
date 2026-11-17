@@ -1,0 +1,327 @@
+2026-11-17 14:37:37 HKT check
+==== processes (screeps/pg/grafana/listener) ====
+   7854 Fri Nov  6 20:14:08 2026 /usr/lib/postgresql/17/bin/postgres -D /workspace/screeps/var/pg17 -c config_file=/etc/postgresql/17/main/postgresql.conf
+   7855 Fri Nov  6 20:14:08 2026 postgres: 17/main: checkpointer 
+   7856 Fri Nov  6 20:14:08 2026 postgres: 17/main: background writer 
+   7858 Fri Nov  6 20:14:08 2026 postgres: 17/main: walwriter 
+   7859 Fri Nov  6 20:14:08 2026 postgres: 17/main: autovacuum launcher 
+   7860 Fri Nov  6 20:14:08 2026 postgres: 17/main: TimescaleDB Background Worker Launcher 
+   7861 Fri Nov  6 20:14:08 2026 postgres: 17/main: logical replication launcher 
+   8028 Fri Nov  6 20:14:17 2026 postgres: 17/main: TimescaleDB Background Worker Scheduler for database 16385 
+   8030 Fri Nov  6 20:14:17 2026 /usr/share/grafana/bin/grafana server --homepath /usr/share/grafana --config grafana/grafana.ini
+   8041 Fri Nov  6 20:14:17 2026 .venv/bin/python -m http.server 8787 --bind 127.0.0.1
+3987635 Tue Nov 17 14:20:03 2026 .venv/bin/python tools/listener.py
+3987665 Tue Nov 17 14:20:06 2026 postgres: 17/main: screeps screeps 127.0.0.1(50990) idle
+3988117 Tue Nov 17 14:20:48 2026 postgres: 17/main: screeps screeps 127.0.0.1(34388) idle
+4035476 Thu Nov 12 03:31:36 2026 /bin/bash tools/run_listener.sh
+==== pg_lsclusters ====
+Ver Cluster Port Status Owner    Data directory              Log file
+17  main    5432 online postgres /workspace/screeps/var/pg17 /var/log/postgresql/postgresql-17-main.log
+==== listener pids / locks ====
+3987635 .venv/bin/python tools/listener.py
+4035476 /bin/bash tools/run_listener.sh
+listener.py count=1
+run_listener.sh count=1
+yield_files=absent
+==== listener locks/pids ====
+-rw-r--r-- 1 box box 0 Nov 17 14:20 metrics/listener.lock
+-rw-r--r-- 1 box box 0 Nov  5 15:06 metrics/listener.loop.lock
+-rw-r--r-- 1 box box 8 Nov  5 15:06 metrics/listener.pid
+pidfile=4035476
+
+==== listener_rot ====
+{"i": 1, "room": "W47N8", "left": 310.0, "at": "2026-11-17 14:37:32"}
+==== live.json summary ====
+keys ['uid', 'stats', 'cpu', 'objects', 'gameTime', 'roomSlot', 'console_tail', 'errors_tail', 'updated']
+  gameTime= 84317839
+  uid= 6010ee96cbca26e9512da6f0
+  roomSlot= W47N8
+  updated= 2026-11-17 14:37:37
+  cpu= {'cpu': 16, 'memory': 24597}
+  stats.t= 84317900 cpu= 19.66 b= 10000
+  live.json_mtime_age_s= 0.3
+  live.json_mtime= 2026-11-17 14:37:37 HKT
+  objects= 0
+  note: live.json objects/gameTime only filled while slot is on HOME W46N8
+==== recent listener log (last 40 lines) ====
+2026-11-16 21:22:16 restart
+2026-11-16 21:56:38 restart
+2026-11-16 22:19:05 restart
+2026-11-16 22:34:46 restart
+2026-11-16 23:03:44 restart
+2026-11-16 23:25:19 restart
+2026-11-17 00:02:53 restart
+2026-11-17 00:24:17 restart
+2026-11-17 01:01:22 restart
+2026-11-17 01:22:25 restart
+2026-11-17 02:00:31 restart
+2026-11-17 02:08:57 restart
+2026-11-17 02:17:31 restart
+2026-11-17 02:26:33 restart
+2026-11-17 02:39:13 restart
+2026-11-17 03:02:04 restart
+2026-11-17 03:19:16 restart
+2026-11-17 03:56:49 restart
+2026-11-17 04:24:01 restart
+2026-11-17 04:58:55 restart
+2026-11-17 05:18:38 restart
+2026-11-17 05:32:23 restart
+2026-11-17 05:41:20 restart
+2026-11-17 05:57:24 restart
+2026-11-17 06:17:11 restart
+2026-11-17 06:59:57 restart
+2026-11-17 07:26:09 restart
+2026-11-17 08:04:20 restart
+2026-11-17 09:25:40 restart
+2026-11-17 09:58:15 restart
+2026-11-17 10:21:59 restart
+2026-11-17 10:46:21 restart
+2026-11-17 10:58:44 restart
+2026-11-17 11:26:00 restart
+2026-11-17 11:51:08 restart
+2026-11-17 12:54:47 restart
+2026-11-17 13:00:32 restart
+2026-11-17 13:26:07 restart
+2026-11-17 13:59:20 restart
+2026-11-17 14:19:54 restart
+==== recent errors / box pauses ====
+---- box_pauses last ----
+-rw-r--r-- 1 box box   23534 Nov 17 14:19 metrics/box_pauses.jsonl
+-rw-r--r-- 1 box box 1054239 Nov 17 14:19 metrics/errors.log
+-rw-r--r-- 1 box box      43 Nov  5 17:30 metrics/war_cmd_pause
+metrics/errors.log
+---- errors.log last listener lines ----
+2026-11-17 10:21:56 [listener] box frozen ~624s since 2026-11-17 10:11:26 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-17 10:40:17 [listener] [ingest] cannot adapt type 'dict' using placeholder '%s' (format: AUTO)
+2026-11-17 10:40:17 [listener] [ingest] dropped 1 incidents rows: cannot adapt type 'dict' using placeholder '%s' (format: AUTO)
+2026-11-17 10:46:18 [listener] box frozen ~100s since 2026-11-17 10:44:25 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-17 10:58:41 [listener] box frozen ~262s since 2026-11-17 10:54:19 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-17 11:25:57 [listener] box frozen ~888s since 2026-11-17 11:11:00 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-17 11:51:05 [listener] box frozen ~137s since 2026-11-17 11:48:38 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-17 12:54:44 [listener] box frozen ~110s since 2026-11-17 12:52:46 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-17 12:54:44 [listener] ws error ping/pong timed out
+2026-11-17 13:00:29 [listener] box frozen ~190s since 2026-11-17 12:57:07 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-17 13:26:03 [listener] box frozen ~436s since 2026-11-17 13:18:38 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-17 13:59:17 [listener] box frozen ~623s since 2026-11-17 13:48:54 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-17 14:00:24 [listener] [ingest] invalid input syntax for type integer: "{}"
+2026-11-17 14:00:24 [listener] [ingest] dropped 1 incidents rows: invalid input syntax for type integer: "{}"
+2026-11-17 14:19:51 [listener] box frozen ~435s since 2026-11-17 14:12:36 (VM hibernated; wall jumped, monotonic did not), reconnecting
+==== HTTP ====
+grafana :3000 -> 200
+dashboard 127.0.0.1:8787 -> 200
+---- box_pauses.jsonl last ----
+{"from": "2026-11-17 04:41:28", "to": "2026-11-17 04:58:52", "sec": 1044}
+{"from": "2026-11-17 05:11:10", "to": "2026-11-17 05:18:35", "sec": 436}
+{"from": "2026-11-17 05:30:49", "to": "2026-11-17 05:32:20", "sec": 78}
+{"from": "2026-11-17 05:47:25", "to": "2026-11-17 05:57:21", "sec": 588}
+{"from": "2026-11-17 06:10:55", "to": "2026-11-17 06:17:08", "sec": 361}
+{"from": "2026-11-17 06:44:57", "to": "2026-11-17 06:59:53", "sec": 885}
+{"from": "2026-11-17 07:13:02", "to": "2026-11-17 07:26:06", "sec": 776}
+{"from": "2026-11-17 07:43:34", "to": "2026-11-17 08:04:17", "sec": 1232}
+{"from": "2026-11-17 09:17:21", "to": "2026-11-17 09:25:37", "sec": 489}
+{"from": "2026-11-17 09:43:21", "to": "2026-11-17 09:58:12", "sec": 883}
+{"from": "2026-11-17 10:11:26", "to": "2026-11-17 10:21:56", "sec": 624}
+{"from": "2026-11-17 10:44:25", "to": "2026-11-17 10:46:18", "sec": 100}
+{"from": "2026-11-17 10:54:19", "to": "2026-11-17 10:58:41", "sec": 262}
+{"from": "2026-11-17 11:11:00", "to": "2026-11-17 11:25:57", "sec": 888}
+{"from": "2026-11-17 11:48:38", "to": "2026-11-17 11:51:05", "sec": 137}
+{"from": "2026-11-17 12:52:46", "to": "2026-11-17 12:54:44", "sec": 110}
+{"from": "2026-11-17 12:57:07", "to": "2026-11-17 13:00:29", "sec": 190}
+{"from": "2026-11-17 13:18:38", "to": "2026-11-17 13:26:04", "sec": 436}
+{"from": "2026-11-17 13:48:54", "to": "2026-11-17 13:59:17", "sec": 623}
+{"from": "2026-11-17 14:12:36", "to": "2026-11-17 14:19:51", "sec": 435}
+==== concurrent processes of note ====
+==== db health + recent ingest ====
+db_now 2026-11-17 14:37:37.727355+08:00
+tip_room_stats=84317900 window_from=84316200
+  creep_ticks: last2h ticks=84316200..84317902 rows=57572 max_tick=84317902 max_ts=2026-11-17 14:37:35.676817+08:00
+  creep_cpu: last2h ticks=84316200..84317890 rows=12566 max_tick=84317890 max_ts=2026-11-17 14:37:25.227176+08:00
+  path_arrivals: last2h ticks=84316204..84317874 rows=217 max_tick=84317874 max_ts=2026-11-17 14:36:24.655145+08:00
+  room_stats: last2h ticks=84316200..84317900 rows=260 max_tick=84317900 max_ts=2026-11-17 14:37:27.606079+08:00
+creep_ticks since tick 84316701 (prev 14:00 official window start):
+  ('W45N7', 84316701, 84317713, 2478, 926)
+  ('W45N8', 84316701, 84317687, 4744, 908)
+  ('W46N8', 84316701, 84317839, 10196, 1026)
+  ('W47N7', 84316701, 84317600, 3940, 900)
+  ('W47N8', 84316701, 84317902, 16451, 963)
+creep_ticks since tick 84317401 (after prev 14:00 reconstructed end):
+  ('W45N7', 84317401, 84317713, 724, 226)
+  ('W45N8', 84317401, 84317687, 786, 208)
+  ('W46N8', 84317401, 84317839, 3244, 326)
+  ('W47N7', 84317401, 84317600, 997, 200)
+  ('W47N8', 84317401, 84317902, 3767, 263)
+creep_cpu since tick 84316701: (84317890, datetime.datetime(2026, 11, 17, 14, 37, 25, 227176, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 8684)
+creep_cpu last200ticks: (84317690, 84317890, 1517)
+creep_cpu ingested after 14:19:51 reconnect (post 14:12:36-14:19:51 freeze): (84317575, 84317890, 2342, datetime.datetime(2026, 11, 17, 14, 20, 5, 533793, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), datetime.datetime(2026, 11, 17, 14, 37, 25, 227176, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')))
+creep_cpu ingested after 13:59:17 reconnect (post 13:48:54-13:59:17 freeze): (84317415, 84317890, 3497, datetime.datetime(2026, 11, 17, 14, 0, 32, 295977, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), datetime.datetime(2026, 11, 17, 14, 37, 25, 227176, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')))
+creep_cpu ingested after 13:26:04 reconnect (post 13:18:38-13:26:04 freeze): (84316895, 84317890, 7311, datetime.datetime(2026, 11, 17, 13, 26, 18, 526545, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), datetime.datetime(2026, 11, 17, 14, 37, 25, 227176, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')))
+creep_cpu ingested after 13:00:29 reconnect (post 12:57:07-13:00:29 freeze): (84316625, 84317890, 9306, datetime.datetime(2026, 11, 17, 13, 0, 43, 600558, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), datetime.datetime(2026, 11, 17, 14, 37, 25, 227176, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')))
+creep_cpu ingested after 12:54:44 reconnect (post 12:52:46-12:54:44 freeze): (84316555, 84317890, 9860, datetime.datetime(2026, 11, 17, 12, 54, 58, 550614, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), datetime.datetime(2026, 11, 17, 14, 37, 25, 227176, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')))
+path_arrivals since tick 84316701: (84317874, datetime.datetime(2026, 11, 17, 14, 36, 24, 655145, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 136)
+path_arrivals last200ticks: (84317680, 84317874, 20)
+path_arrivals ingested after 14:19:51 reconnect (post 14:12:36-14:19:51 freeze): (84317580, 84317874, 29, datetime.datetime(2026, 11, 17, 14, 20, 5, 533793, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), datetime.datetime(2026, 11, 17, 14, 36, 24, 655145, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')))
+path_arrivals ingested after 13:59:17 reconnect (post 13:48:54-13:59:17 freeze): (84317424, 84317874, 43, datetime.datetime(2026, 11, 17, 14, 0, 32, 295977, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), datetime.datetime(2026, 11, 17, 14, 36, 24, 655145, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')))
+path_arrivals ingested after 13:26:04 reconnect (post 13:18:38-13:26:04 freeze): (84316901, 84317874, 108, datetime.datetime(2026, 11, 17, 13, 26, 18, 526545, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), datetime.datetime(2026, 11, 17, 14, 36, 24, 655145, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')))
+path_arrivals ingested after 13:00:29 reconnect (post 12:57:07-13:00:29 freeze): (84316623, 84317874, 149, datetime.datetime(2026, 11, 17, 13, 0, 43, 600558, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), datetime.datetime(2026, 11, 17, 14, 36, 24, 655145, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')))
+path_arrivals ingested after 12:54:44 reconnect (post 12:52:46-12:54:44 freeze): (84316557, 84317874, 157, datetime.datetime(2026, 11, 17, 12, 54, 58, 550614, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), datetime.datetime(2026, 11, 17, 14, 36, 24, 655145, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')))
+room_stats tip: (84317900, datetime.datetime(2026, 11, 17, 14, 37, 27, 606079, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')))
+creep_ticks tip: (84317902, datetime.datetime(2026, 11, 17, 14, 37, 35, 676817, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')))
+room_stats recent tick gaps since 84305000 (known freezes + new-gap hunt):
+  room_stats since 84305000: n=1638 min=84305000 max=84317900
+  room_stats gap 84317551..84317559 (9 ticks)
+  room_stats gap 84317561..84317569 (9 ticks)
+  room_stats gap 84317571..84317679 (109 ticks)
+  room_stats gap 84317681..84317689 (9 ticks)
+  room_stats gap 84317691..84317699 (9 ticks)
+  room_stats gap 84317701..84317709 (9 ticks)
+  room_stats gap 84317711..84317719 (9 ticks)
+  room_stats gap 84317721..84317729 (9 ticks)
+  room_stats gap 84317731..84317739 (9 ticks)
+  room_stats gap 84317741..84317749 (9 ticks)
+  room_stats gap 84317751..84317759 (9 ticks)
+  room_stats gap 84317761..84317769 (9 ticks)
+  room_stats gap 84317771..84317779 (9 ticks)
+  room_stats gap 84317781..84317789 (9 ticks)
+  room_stats gap 84317791..84317799 (9 ticks)
+  room_stats gap 84317801..84317809 (9 ticks)
+  room_stats gap 84317811..84317819 (9 ticks)
+  room_stats gap 84317821..84317829 (9 ticks)
+  room_stats gap 84317831..84317839 (9 ticks)
+  room_stats gap 84317841..84317849 (9 ticks)
+  room_stats gap 84317851..84317859 (9 ticks)
+  room_stats gap 84317861..84317869 (9 ticks)
+  room_stats gap 84317871..84317879 (9 ticks)
+  room_stats gap 84317881..84317889 (9 ticks)
+  room_stats gap 84317891..84317899 (9 ticks)
+  ... 793 older gaps omitted, total_gaps=818
+room_stats / live ingest since last wrapup tip 84317400 (hunt NEW freeze after 14:00):
+  room_stats since 84317400: n=78 min=84317420 max=84317900 first_ts=2026-11-17 13:59:42.968566+08:00 last_ts=2026-11-17 14:37:27.606079+08:00
+  NEW room_stats gap 84317421..84317429 (9 ticks)
+  NEW room_stats gap 84317431..84317439 (9 ticks)
+  NEW room_stats gap 84317441..84317449 (9 ticks)
+  NEW room_stats gap 84317451..84317459 (9 ticks)
+  NEW room_stats gap 84317461..84317469 (9 ticks)
+  NEW room_stats gap 84317471..84317479 (9 ticks)
+  NEW room_stats gap 84317481..84317489 (9 ticks)
+  NEW room_stats gap 84317491..84317499 (9 ticks)
+  NEW room_stats gap 84317501..84317509 (9 ticks)
+  NEW room_stats gap 84317511..84317519 (9 ticks)
+  NEW room_stats gap 84317521..84317529 (9 ticks)
+  NEW room_stats gap 84317531..84317539 (9 ticks)
+  NEW room_stats gap 84317541..84317549 (9 ticks)
+  NEW room_stats gap 84317551..84317559 (9 ticks)
+  NEW room_stats gap 84317561..84317569 (9 ticks)
+  NEW room_stats gap 84317571..84317679 (109 ticks)
+  NEW room_stats gap 84317681..84317689 (9 ticks)
+  NEW room_stats gap 84317691..84317699 (9 ticks)
+  NEW room_stats gap 84317701..84317709 (9 ticks)
+  NEW room_stats gap 84317711..84317719 (9 ticks)
+  NEW room_stats gap 84317721..84317729 (9 ticks)
+  NEW room_stats gap 84317731..84317739 (9 ticks)
+  NEW room_stats gap 84317741..84317749 (9 ticks)
+  NEW room_stats gap 84317751..84317759 (9 ticks)
+  NEW room_stats gap 84317761..84317769 (9 ticks)
+  NEW room_stats gap 84317771..84317779 (9 ticks)
+  NEW room_stats gap 84317781..84317789 (9 ticks)
+  NEW room_stats gap 84317791..84317799 (9 ticks)
+  NEW room_stats gap 84317801..84317809 (9 ticks)
+  NEW room_stats gap 84317811..84317819 (9 ticks)
+  NEW room_stats gap 84317821..84317829 (9 ticks)
+  NEW room_stats gap 84317831..84317839 (9 ticks)
+  NEW room_stats gap 84317841..84317849 (9 ticks)
+  NEW room_stats gap 84317851..84317859 (9 ticks)
+  NEW room_stats gap 84317861..84317869 (9 ticks)
+  NEW room_stats gap 84317871..84317879 (9 ticks)
+  NEW room_stats gap 84317881..84317889 (9 ticks)
+  NEW room_stats gap 84317891..84317899 (9 ticks)
+creep_ticks coverage around expected new freeze and prior bands:
+  W46N8 post-14:00 wrapup tip band 84317400..84317900: (327, 84317400, 84317839, 3254)
+  W47N8 post-14:00 wrapup tip band 84317400..84317900: (262, 84317400, 84317900, 3756)
+  W45N8 post-14:00 wrapup tip band 84317400..84317900: (209, 84317400, 84317687, 789)
+  W45N7 post-14:00 wrapup tip band 84317400..84317900: (227, 84317400, 84317713, 727)
+  W47N7 post-14:00 wrapup tip band 84317400..84317900: (201, 84317400, 84317600, 1003)
+  room_stats post-14:00 wrapup tip band 84317400..84317900: (39, 84317420, 84317900, 78)
+  W46N8 prior 13:48 freeze band 84317271..84317419: (149, 84317271, 84317419, 1512)
+  W47N8 prior 13:48 freeze band 84317271..84317419: (149, 84317271, 84317419, 2553)
+  W45N8 prior 13:48 freeze band 84317271..84317419: (149, 84317271, 84317419, 512)
+  W45N7 prior 13:48 freeze band 84317271..84317419: (149, 84317271, 84317419, 520)
+  W47N7 prior 13:48 freeze band 84317271..84317419: (149, 84317271, 84317419, 850)
+  room_stats prior 13:48 freeze band 84317271..84317419: (0, None, None, 0)
+  W46N8 prior 13:18 freeze band 84316901..84316999: (99, 84316901, 84316999, 1020)
+  W47N8 prior 13:18 freeze band 84316901..84316999: (99, 84316901, 84316999, 1742)
+  W45N8 prior 13:18 freeze band 84316901..84316999: (99, 84316901, 84316999, 687)
+  W45N7 prior 13:18 freeze band 84316901..84316999: (99, 84316901, 84316999, 150)
+  W47N7 prior 13:18 freeze band 84316901..84316999: (99, 84316901, 84316999, 458)
+  room_stats prior 13:18 freeze band 84316901..84316999: (0, None, None, 0)
+  W46N8 prior 12:52 freeze band 84316561..84316599: (39, 84316561, 84316599, 455)
+  W47N8 prior 12:52 freeze band 84316561..84316599: (39, 84316561, 84316599, 657)
+  W45N8 prior 12:52 freeze band 84316561..84316599: (39, 84316561, 84316599, 233)
+  W45N7 prior 12:52 freeze band 84316561..84316599: (39, 84316561, 84316599, 80)
+  W47N7 prior 12:52 freeze band 84316561..84316599: (39, 84316561, 84316599, 157)
+  room_stats prior 12:52 freeze band 84316561..84316599: (0, None, None, 0)
+  W46N8 prior 12:57 freeze band 84316621..84316679: (59, 84316621, 84316679, 633)
+  W47N8 prior 12:57 freeze band 84316621..84316679: (59, 84316621, 84316679, 1056)
+  W45N8 prior 12:57 freeze band 84316621..84316679: (59, 84316621, 84316679, 367)
+  W45N7 prior 12:57 freeze band 84316621..84316679: (59, 84316621, 84316679, 226)
+  W47N7 prior 12:57 freeze band 84316621..84316679: (59, 84316621, 84316679, 190)
+  room_stats prior 12:57 freeze band 84316621..84316679: (0, None, None, 0)
+  W46N8 prior 11:48 freeze band 84315741..84315789: (49, 84315741, 84315789, 443)
+  W47N8 prior 11:48 freeze band 84315741..84315789: (49, 84315741, 84315789, 756)
+  W45N8 prior 11:48 freeze band 84315741..84315789: (49, 84315741, 84315789, 282)
+  W45N7 prior 11:48 freeze band 84315741..84315789: (49, 84315741, 84315789, 161)
+  W47N7 prior 11:48 freeze band 84315741..84315789: (49, 84315741, 84315789, 235)
+  room_stats prior 11:48 freeze band 84315741..84315789: (0, None, None, 0)
+  W46N8 prior 11:11 freeze band 84315261..84315469: (209, 84315261, 84315469, 1909)
+  W47N8 prior 11:11 freeze band 84315261..84315469: (209, 84315261, 84315469, 3908)
+  W45N8 prior 11:11 freeze band 84315261..84315469: (209, 84315261, 84315469, 1313)
+  W45N7 prior 11:11 freeze band 84315261..84315469: (162, 84315261, 84315469, 320)
+  W47N7 prior 11:11 freeze band 84315261..84315469: (209, 84315261, 84315469, 1131)
+  room_stats prior 11:11 freeze band 84315261..84315469: (0, None, None, 0)
+  W46N8 prior 10:54 freeze band 84315041..84315119: (79, 84315041, 84315119, 1275)
+  W47N8 prior 10:54 freeze band 84315041..84315119: (79, 84315041, 84315119, 1311)
+  W45N8 prior 10:54 freeze band 84315041..84315119: (79, 84315041, 84315119, 142)
+  W45N7 prior 10:54 freeze band 84315041..84315119: (0, None, None, 0)
+  W47N7 prior 10:54 freeze band 84315041..84315119: (60, 84315041, 84315100, 226)
+  room_stats prior 10:54 freeze band 84315041..84315119: (0, None, None, 0)
+  W46N8 prior 10:44 freeze band 84314921..84314959: (39, 84314921, 84314959, 484)
+  W47N8 prior 10:44 freeze band 84314921..84314959: (39, 84314921, 84314959, 741)
+  W45N8 prior 10:44 freeze band 84314921..84314959: (0, None, None, 0)
+  W45N7 prior 10:44 freeze band 84314921..84314959: (0, None, None, 0)
+  W47N7 prior 10:44 freeze band 84314921..84314959: (39, 84314921, 84314959, 135)
+  room_stats prior 10:44 freeze band 84314921..84314959: (0, None, None, 0)
+  W46N8 prior 10:11 freeze band 84314501..84314639: (139, 84314501, 84314639, 1361)
+  W47N8 prior 10:11 freeze band 84314501..84314639: (139, 84314501, 84314639, 2312)
+  W45N8 prior 10:11 freeze band 84314501..84314639: (139, 84314501, 84314639, 704)
+  W45N7 prior 10:11 freeze band 84314501..84314639: (39, 84314601, 84314639, 182)
+  W47N7 prior 10:11 freeze band 84314501..84314639: (139, 84314501, 84314639, 531)
+  room_stats prior 10:11 freeze band 84314501..84314639: (0, None, None, 0)
+creep_ticks coverage in last ~200 room_stats ticks (live dark-gap hunt):
+  W46N8 84317700..84317900: (126, 84317714, 84317839, 1287)
+  W47N8 84317700..84317900: (61, 84317840, 84317900, 894)
+  W45N8 84317700..84317900: (0, None, None, 0)
+  W45N7 84317700..84317900: (14, 84317700, 84317713, 56)
+  W47N7 84317700..84317900: (0, None, None, 0)
+  room_stats 84317700..84317900: (21, 84317700, 84317900, 42)
+leftover official-404 hole status:
+  W47N7 hole 84315101..84315200 (official 404 @84315100): (0, None, None, 0)
+  W45N8 hole 84314901..84315000 (official 404 @84314900): (0, None, None, 0)
+  W45N7 hole 84314501..84314600 (official 404 @84314500): (0, None, None, 0)
+  W47N8 hole 84314001..84314100 (official 404 @84314000, 49 live / 51 empty): (49, 84314052, 84314100, 788)
+  W46N8 hole 84313201..84313300 (official 404 @84313200, 96 live / 4 empty): (96, 84313205, 84313300, 1056)
+  W46N8 hole 84310501..84310600 (official 404 @84310500, 11 live): (11, 84310522, 84310532, 86)
+  W47N7 hole 84309001..84309100 (official 404 @84309000): (0, None, None, 0)
+  W45N8 hole 84309101..84309200 (official 404 @84309100): (25, 84309174, 84309198, 47)
+  W45N8 hole 84306501..84306600 (official 404 @84306500): (0, None, None, 0)
+  W45N7 hole 84305101..84305200 (official 404 @84305100): (0, None, None, 0)
+  W47N8 hole 84304701..84304800 (official 404 @84304700): (0, None, None, 0)
+  W45N7 hole 84303901..84304000 (official 404 @84303900): (0, None, None, 0)
+  W45N8 hole 84302201..84302300 (official 404 @84302200): (0, None, None, 0)
+  W47N8 leftover 84300901..84301000: (74, 84300901, 84300993, 1008)
+  W45N8 leftover 84300901..84301000: (7, 84300994, 84301000, 28)
+  W45N8 leftover 84300001..84300100: (26, 84300067, 84300092, 159)
+  W47N8 leftover 84298001..84298100: (0, None, None, 0)
+  W47N8 leftover 84297201..84297300: (100, 84297201, 84297300, 1562)
+  W47N7 leftover 84296501..84296600: (0, None, None, 0)
+  W45N8 leftover 84295901..84296000: (0, None, None, 0)
+  W45N7 leftover 84295801..84295900: (0, None, None, 0)
+  W46N8 aged leftover 84292001..84292100: (0, None, None, 0)
