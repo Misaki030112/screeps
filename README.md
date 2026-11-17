@@ -2,9 +2,7 @@
 
 Misaki 在 Screeps shard3 上的殖民地。家是 **W46N8**，第二间房是 **W47N8**，外矿是 **W45N8**、**W45N7** 和 **W47N7**。
 
-给人读的说明在公开手册里，源码在 [`docs-site/`](docs-site/)。手册从当前的 `src/` 写起：能量地板、孵化、搬运、升级、防御、实验室、矿物和部署。它不收录巡逻日志，也不包含令牌或内网地址。
-
-生产站点还没有写进这份说明。导入 Vercel 并得到地址之后，把那个 URL 放在这里。
+给人读的说明在公开手册里：[殖民地手册](https://screeps-handbook-nolove-world.vercel.app)。源码在 [`docs-site/`](docs-site/)。手册从当前的 `src/` 写起：能量地板、孵化、搬运、升级、防御、实验室、矿物和部署。它不收录巡逻日志，也不包含令牌或内网地址。
 
 ## 仓库里有什么
 
@@ -21,7 +19,3 @@ cd docs-site
 npm ci
 npm run dev
 ```
-
-## 建议的 GitHub 简介
-
-Misaki 的 Screeps shard3 殖民地手册（W46N8 / W47N8）：机制、现状，以及通向三级风筝兵的规划。
