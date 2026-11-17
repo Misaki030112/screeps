@@ -1,0 +1,69 @@
+2026-11-18 01:59:01 HKT check
+==== processes (screeps/pg/grafana/listener) ====
+   7854 Sat Nov  7 00:14:07 2026 /usr/lib/postgresql/17/bin/postgres -D /workspace/screeps/var/pg17 -c config_file=/etc/postgresql/17/main/postgresql.conf
+   7855 Sat Nov  7 00:14:07 2026 postgres: 17/main: checkpointer 
+   7856 Sat Nov  7 00:14:07 2026 postgres: 17/main: background writer 
+   7858 Sat Nov  7 00:14:07 2026 postgres: 17/main: walwriter 
+   7859 Sat Nov  7 00:14:07 2026 postgres: 17/main: autovacuum launcher 
+   7860 Sat Nov  7 00:14:07 2026 postgres: 17/main: TimescaleDB Background Worker Launcher 
+   7861 Sat Nov  7 00:14:07 2026 postgres: 17/main: logical replication launcher 
+   8028 Sat Nov  7 00:14:16 2026 postgres: 17/main: TimescaleDB Background Worker Scheduler for database 16385 
+   8030 Sat Nov  7 00:14:16 2026 /usr/share/grafana/bin/grafana server --homepath /usr/share/grafana --config grafana/grafana.ini
+   8041 Sat Nov  7 00:14:16 2026 .venv/bin/python -m http.server 8787 --bind 127.0.0.1
+   8078 Sat Nov  7 00:14:16 2026 /usr/share/grafana/data/plugins-bundled/elasticsearch/gpx_grafana_elasticsearch_datasource_linux_amd64
+  83167 Wed Nov 18 01:58:40 2026 .venv/bin/python tools/listener.py
+  83196 Wed Nov 18 01:58:42 2026 postgres: 17/main: screeps screeps 127.0.0.1(39358) idle
+4035476 Thu Nov 12 07:31:35 2026 /bin/bash tools/run_listener.sh
+==== other python in screeps ====
+==== pg_lsclusters ====
+Ver Cluster Port Status Owner    Data directory              Log file
+17  main    5432 online postgres /workspace/screeps/var/pg17 /var/log/postgresql/postgresql-17-main.log
+==== listener pids / locks ====
+listener.py count=1
+run_listener.sh count=1
+yield_files=absent
+listener.lock mtime=2026-11-18 01:58
+pidfile=4035476
+
+==== listener_rot ====
+{"i": 1, "room": "W47N8", "left": 117.5, "at": "2026-11-18 01:58:56"}==== live.json summary ====
+  gameTime= None
+  uid= 6010ee96cbca26e9512da6f0
+  roomSlot= W47N8
+  updated= 2026-11-18 01:58:57
+  cpu= {'cpu': 17, 'memory': 24679}
+  stats.t= 84326550 cpu= 17.6 b= 10000
+  objects_n= 0
+  live.json_mtime_age_s= 3.5
+  live.json_mtime= 2026-11-18 01:58:57 HKT
+==== HTTP ====
+grafana :3000 -> 200
+dashboard 127.0.0.1:8787 -> 200
+==== listener restarts / errors ====
+2026-11-17 21:02:31 restart
+2026-11-17 21:33:47 restart
+2026-11-17 22:01:38 restart
+2026-11-17 22:23:21 restart
+2026-11-17 22:36:58 restart
+2026-11-17 23:01:21 restart
+2026-11-17 23:18:22 restart
+2026-11-17 23:37:13 restart
+2026-11-17 23:53:47 restart
+2026-11-18 00:02:41 restart
+2026-11-18 00:12:23 restart
+2026-11-18 00:23:40 restart
+2026-11-18 00:58:20 restart
+2026-11-18 01:26:29 restart
+2026-11-18 01:58:30 restart
+==== recent listener errors / freeze ====
+==== box_pauses.jsonl last ====
+{"from": "2026-11-17 22:14:08", "to": "2026-11-17 22:23:18", "sec": 549}
+{"from": "2026-11-17 22:49:11", "to": "2026-11-17 23:01:18", "sec": 727}
+{"from": "2026-11-17 23:15:58", "to": "2026-11-17 23:18:18", "sec": 130}
+{"from": "2026-11-17 23:42:43", "to": "2026-11-17 23:53:44", "sec": 661}
+{"from": "2026-11-18 00:10:06", "to": "2026-11-18 00:12:20", "sec": 127}
+{"from": "2026-11-18 00:44:18", "to": "2026-11-18 00:58:17", "sec": 830}
+{"from": "2026-11-18 01:10:45", "to": "2026-11-18 01:26:26", "sec": 934}
+{"from": "2026-11-18 01:39:14", "to": "2026-11-18 01:58:27", "sec": 1153}
+==== concurrent processes of note ====
+none

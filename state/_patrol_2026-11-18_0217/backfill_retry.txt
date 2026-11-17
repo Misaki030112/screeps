@@ -1,0 +1,25 @@
+retry start 2026-11-18 02:22:36 Asia/Hong_Kong game.time=84326854 tick_s=4.71718
+  pre  W45N8@84326100 distinct=0 rows=0 range=None..None
+  still_404 W45N8@84326100
+  pre  W45N8@84326300 distinct=0 rows=0 range=None..None
+  still_404 W45N8@84326300
+  pre  W45N8@84326500 distinct=22 rows=92 range=84326579..84326600
+  still_404 W45N8@84326500
+  pre  W47N7@84326700 distinct=0 rows=0 range=None..None
+  recovered W47N7@84326700 hist_ticks=100 inserted=475 nfix=0
+  pre  W45N7@84324900 distinct=0 rows=0 range=None..None
+  still_404 W45N7@84324900
+recovered=['W47N7@84326700'] still_404=['W45N8@84326100', 'W45N8@84326300', 'W45N8@84326500', 'W45N7@84324900'] inserted=475 ts_realigned=0
+--- coverage this_window 84326101..84326800 ---
+W46N8 distinct 700 range 84326101 84326800 rows 7513 holes []
+W47N8 distinct 700 range 84326101 84326800 rows 10418 holes []
+W45N8 distinct 422 range 84326201 84326800 rows 2368 holes [(84326101, 84326200, 100), (84326301, 84326400, 100), (84326501, 84326578, 78)]
+W45N7 distinct 700 range 84326101 84326800 rows 2256 holes []
+W47N7 distinct 700 range 84326101 84326800 rows 3593 holes []
+--- coverage prev_hour_window 84325401..84326100 ---
+W46N8 distinct 700 range 84325401 84326100 rows 7523 holes []
+W47N8 distinct 700 range 84325401 84326100 rows 11575 holes []
+W45N8 distinct 700 range 84325401 84326100 rows 3184 holes []
+W45N7 distinct 700 range 84325401 84326100 rows 2435 holes []
+W47N7 distinct 583 range 84325401 84326100 rows 2190 holes [(84325828, 84325866, 39), (84325868, 84325906, 39), (84325908, 84325946, 39)]
+done

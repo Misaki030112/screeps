@@ -1,20 +1,20 @@
-2026-11-18 01:06:17 Asia/Hong_Kong half-hour backfill OK (quiet)
-game.time=84325803 published_bases=84325100..84325700 rooms=W46N8,W47N8,W45N8,W45N7,W47N7 dry=False
-  (first pass 32 of 35 official GETs 200, missing_chunks=3 W47N8/W45N8/W47N7@84325700; confirm recovered all three inserted=2060; retry2 reported inserted=40 unique net +0; no in-window official 404 remains; leftover official 404s otherwise unchanged; see history_backfill.txt)
-tick_s=4.670 (script 4.67017; later-mean-robust 4.74869 automatic corrective applied then reverted, nfix kept 0 (after-revert first over45=0), in-use 4.67017)
-reconstructed ticks=84325101..84325800 (700) creep_rows=24241 missing_chunks=3 (first pass)
-already_in_db=12670 would_insert=11571
-per_room W46N8:700t/3058new W47N8:600t/3826new W45N8:600t/1743new W45N7:700t/1395new W47N7:600t/1549new
-inserted=11571 (confirm +2060, retry2 +40 reported / unique net +0, total 13631)
-ts_realigned_first=764; ts_realigned_corrective=0 (later-mean-robust 4.74869 applied then reverted, in-use 4.67017)
+2026-11-18 02:06:52 Asia/Hong_Kong half-hour backfill OK (quiet)
+game.time=84326567 published_bases=84325800..84326400 rooms=W46N8,W47N8,W45N8,W45N7,W47N7 dry=False
+  (first pass 33 of 35 official GETs 200, missing_chunks=2 W45N8@84326100 / W45N8@84326300; confirm inserted=0 leftover outside-window 404s unchanged and the two in-window 404s still 404; retry2 inserted=0 both in-window 404s still 404; see history_backfill.txt)
+tick_s=4.803 (script 4.80256; later-mean-robust 4.72966 automatic corrective applied and kept, nfix=1269 (after vs_later over45=0), in-use 4.72966)
+reconstructed ticks=84325801..84326500 (700) creep_rows=25935 missing_chunks=2
+already_in_db=13019 would_insert=12916
+per_room W46N8:700t/3619new W47N8:700t/4556new W45N8:500t/980new W45N7:700t/1570new W47N7:700t/2191new
+inserted=12916 (confirm +0, retry2 +0, total 12916)
+ts_realigned_first=1269; ts_realigned_corrective=1269 (later-mean-robust 4.72966 applied and kept, in-use 4.72966)
 db_after
-  W46N8 ticks=84325101..84325800 rows=7456 distinct=700
-  W47N8 ticks=84325101..84325800 rows=11602 distinct=700
-  W45N8 ticks=84325101..84325800 rows=3393 distinct=700
-  W45N7 ticks=84325101..84325800 rows=2281 distinct=700
-  W47N7 ticks=84325101..84325800 rows=2674 distinct=700
-coverage official_recovered=3500/3500 unique_after={'rows': 27406, 'unique_creep_tick_rows': 27406, 'distinct_ticks': 700, 'distinct_room_ticks': 3500} empty_no_creep=0 official_404_in_window=0
-tick_s first=4.67017 printed 4.670; later-mean-robust 4.74869 corrective applied then reverted nfix=0; first-pass realign committed 764; in-use 4.67017; later over45=776 after revert.
-confirm recovered W47N8/W45N8/W47N7@84325700 inserted=2060; retry2 reported inserted=40 unique net +0; no in-window official 404 remains (W47N8/W45N8/W47N7@84325700 recovered on confirm); W45N8 official empty-no-creep 0 ranges []; W45N7 official empty-no-creep 0 ranges []; leftover official 404 W45N7@84324900 (0 live / 100 empty) still outside window; leftover official 404 W47N8@84324300 (26 live / 74 empty) still outside window; leftover official 404 W47N8@84323200 (19 live / 81 empty) still outside window; leftover official 404 W47N8@84322100 (93 live / 7 empty) still outside window; leftover official 404 W47N8@84321300 (39 live / 61 empty) still outside window; leftover official 404 W45N7@84321600 (2 live / 98 empty) still outside window; leftover official 404 W47N8@84319900 (0 live / 100 empty) still outside window; leftover official 404 W47N8@84319000 (48 live / 52 empty) still outside window; leftover official 404 W46N8@84318500 (32 live / 68 empty) still outside window; leftover official 404 W45N8@84318000 (0 live / 100 empty) still outside window; leftover official 404 W47N7@84315100 (0 live / 100 empty) still outside window; leftover official 404 W45N8@84314900 (0 live / 100 empty) still outside window; leftover official 404 W45N7@84314500 (0 live / 100 empty) still outside window; leftover official 404 W47N8@84314000 (49 live / 51 empty) still outside window; leftover official 404 W46N8@84313200 (96 live / 4 empty) still outside window; older leftovers unchanged.
-listener single_slot=True roomSlot=W46N8 rot={'i': 0, 'room': 'W46N8', 'left': 560.0, 'at': '2026-11-18 01:06:17'} yield=absent; no second listener started; no war_cmd/pulse restart.
+  W46N8 ticks=84325801..84326500 rows=7494 distinct=700
+  W47N8 ticks=84325801..84326500 rows=10681 distinct=700
+  W45N8 ticks=84325801..84326500 rows=1895 distinct=500
+  W45N7 ticks=84325801..84326500 rows=2492 distinct=700
+  W47N7 ticks=84325801..84326500 rows=2503 distinct=583
+coverage official_recovered=3300/3500 unique_after={'rows': 25065, 'unique_creep_tick_rows': 25065, 'distinct_ticks': 700, 'distinct_room_ticks': 3183} empty_no_creep=117 official_404_in_window=200
+tick_s first=4.80256 printed 4.803; later-mean-robust 4.72966 corrective applied and kept nfix=1269; first-pass realign committed 1269; in-use 4.72966; later over45=0 after corrective.
+confirm inserted=0 leftover official 404s unchanged; retry2 inserted=0; in-window official 404 remains W45N8@84326100 (0 live / 100 empty) and W45N8@84326300 (0 live / 100 empty) after confirm and retry2; W45N8 official empty-no-creep 0 ranges []; W45N7 official empty-no-creep 0 ranges []; W47N7 official empty-no-creep 117 ranges [[84325828, 84325866], [84325868, 84325906], [84325908, 84325946]]; leftover official 404 W45N7@84324900 (0 live / 100 empty) still outside window; leftover official 404 W47N8@84324300 (26 live / 74 empty) still outside window; leftover official 404 W47N8@84323200 (19 live / 81 empty) still outside window; leftover official 404 W47N8@84322100 (93 live / 7 empty) still outside window; leftover official 404 W47N8@84321300 (39 live / 61 empty) still outside window; leftover official 404 W45N7@84321600 (2 live / 98 empty) still outside window; leftover official 404 W47N8@84319900 (0 live / 100 empty) still outside window; leftover official 404 W47N8@84319000 (48 live / 52 empty) still outside window; leftover official 404 W46N8@84318500 (32 live / 68 empty) still outside window; leftover official 404 W45N8@84318000 (0 live / 100 empty) still outside window; leftover official 404 W47N7@84315100 (0 live / 100 empty) still outside window; leftover official 404 W45N8@84314900 (0 live / 100 empty) still outside window; leftover official 404 W45N7@84314500 (0 live / 100 empty) still outside window; leftover official 404 W47N8@84314000 (49 live / 51 empty) still outside window; leftover official 404 W46N8@84313200 (96 live / 4 empty) still outside window; older leftovers unchanged.
+listener single_slot=True roomSlot=W46N8 rot={'i': 0, 'room': 'W46N8', 'left': 485.0, 'at': '2026-11-18 02:06:49'} yield=absent; no second listener started; no war_cmd/pulse restart.
 This run did not restart the listener.
