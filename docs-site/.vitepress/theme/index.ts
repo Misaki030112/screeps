@@ -10,6 +10,7 @@ import HaulOrder from './components/HaulOrder.vue'
 import HaulReads from './components/HaulReads.vue'
 import ThreatFsm from './components/ThreatFsm.vue'
 import DefenseEnergy from './components/DefenseEnergy.vue'
+import LabGates from './components/LabGates.vue'
 import ColonyStrip from './components/ColonyStrip.vue'
 
 export default {
@@ -25,6 +26,7 @@ export default {
     app.component('HaulReads', HaulReads)
     app.component('ThreatFsm', ThreatFsm)
     app.component('DefenseEnergy', DefenseEnergy)
+    app.component('LabGates', LabGates)
     app.component('ColonyStrip', ColonyStrip)
   },
 }
