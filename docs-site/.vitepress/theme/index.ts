@@ -5,6 +5,7 @@ import ArchDiagram from './components/ArchDiagram.vue'
 import FlowDiagram from './components/FlowDiagram.vue'
 import RoadmapDiagram from './components/RoadmapDiagram.vue'
 import SpawnQueue from './components/SpawnQueue.vue'
+import UpgradeFloors from './components/UpgradeFloors.vue'
 import ColonyStrip from './components/ColonyStrip.vue'
 
 export default {
@@ -15,6 +16,7 @@ export default {
     app.component('FlowDiagram', FlowDiagram)
     app.component('RoadmapDiagram', RoadmapDiagram)
     app.component('SpawnQueue', SpawnQueue)
+    app.component('UpgradeFloors', UpgradeFloors)
     app.component('ColonyStrip', ColonyStrip)
   },
 }

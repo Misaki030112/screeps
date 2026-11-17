@@ -467,6 +467,66 @@ body {
   background: var(--copper-soft);
 }
 
+.doors {
+  display: grid;
+  gap: 1.1rem 1.6rem;
+}
+
+.door-name {
+  margin: 0 0 0.35rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.14em;
+  font-weight: 700;
+  color: var(--copper);
+}
+
+.vp-doc ul.stick {
+  margin: 0.1rem 0;
+  padding: 0.1rem 0;
+  list-style: none;
+  border-left: 2px solid var(--rule);
+}
+
+.vp-doc .stick li {
+  position: relative;
+  margin: 0;
+  padding: 0.42rem 0.15rem 0.5rem 0.95rem;
+}
+
+.stick li::before {
+  content: "";
+  position: absolute;
+  left: -2px;
+  top: 0.72rem;
+  width: 0.48rem;
+  height: 2px;
+  background: var(--copper);
+}
+
+.stick strong {
+  display: block;
+  font-size: 0.92rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+
+.stick span {
+  display: block;
+  margin-top: 0.1rem;
+  color: var(--muted);
+  font-size: 0.78rem;
+  line-height: 1.45;
+}
+
+@media (min-width: 760px) {
+  .doors {
+    grid-template-columns: 1fr 1fr;
+    align-items: start;
+  }
+}
+
 .flow-split {
   display: grid;
   gap: 0.5rem;
