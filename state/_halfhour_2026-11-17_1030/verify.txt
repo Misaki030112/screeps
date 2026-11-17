@@ -1,0 +1,16 @@
+window 84314101..84314800 (700)
+W46N8 distinct=700 rows=7106 range=[84314101, 84314800] missing_n=0 [] empty_no_creep=0 [] official_404=0 []
+W47N8 distinct=700 rows=12396 range=[84314101, 84314800] missing_n=0 [] empty_no_creep=0 [] official_404=0 []
+W45N8 distinct=700 rows=2652 range=[84314101, 84314800] missing_n=0 [] empty_no_creep=0 [] official_404=0 []
+W45N7 distinct=600 rows=2269 range=[84314101, 84314800] missing_n=100 [[84314501, 84314600]] empty_no_creep=0 [] official_404=100 [[84314501, 84314600]]
+W47N7 distinct=700 rows=2670 range=[84314101, 84314800] missing_n=0 [] empty_no_creep=0 [] official_404=0 []
+unique_after {'rows': 27093, 'unique_creep_tick_rows': 27093, 'distinct_ticks': 700, 'distinct_room_ticks': 3400}
+official_with_creeps=3400 empty_no_creep=0 official_404_missing=100 official_recovered=3400 expected=3500 in_window_404=['W45N7@84314500']
+live_ticks_after_official_tip {"W46N8": {"distinct": 21, "min": 84314863, "max": 84314883, "rows": 185, "runs": [[84314863, 84314883, 21]]}, "W47N8": {"distinct": 10, "min": 84314801, "max": 84314810, "rows": 180, "runs": [[84314801, 84314810, 10]]}, "W45N8": {"distinct": 26, "min": 84314811, "max": 84314836, "rows": 104, "runs": [[84314811, 84314836, 26]]}, "W45N7": {"distinct": 26, "min": 84314837, "max": 84314862, "rows": 91, "runs": [[84314837, 84314862, 26]]}, "W47N7": {"distinct": 0, "min": null, "max": null, "rows": 0, "runs": []}}
+db_tips {"creep_ticks": {"max_tick": 84314883, "max_ts": "2026-11-17T10:41:05.577768+08:00"}, "room_stats": {"max_tick": 84314880, "max_ts": "2026-11-17T10:40:53.200690+08:00"}, "creep_cpu": {"max_tick": 84314870, "max_ts": "2026-11-17T10:40:30.859911+08:00"}, "path_arrivals": {"max_tick": 84314869, "max_ts": "2026-11-17T10:40:30.859911+08:00"}}
+07:43 freeze 84312611..84312889 official-filled 279/279 all five rooms (not new this run, still fully before this window). 09:17 freeze 84313811..84313929 official-filled 119/119 (now fully before this window). 09:43 freeze 84314141..84314339 official-filled 199/199 (now fully in window).
+previously unpublished 84314301..84314800 official-filled except in-window 404 W45N7@84314500 (0 live / 100 empty 84314501..84314600); includes 10:11 freeze 84314501..84314639 (four rooms 139/139; W45N7 only 84314601..84314639).
+tick_s first=4.67176 printed 4.672; later-mean-robust 4.68593 already inside 45s gate, no corrective; first-pass realign committed 12386; in-use first-pass 4.67176; later over45=0.
+confirm/retry2 recovered none; in-window official 404 W45N7@84314500 still 404 (0 live / 100 empty); leftover official 404 W47N8@84314000 still just outside window (49 live / 51 empty); leftover official 404 W46N8@84313200 still outside window (96 live / 4 empty); older leftovers unchanged.
+listener single_slot=True roomSlot=W46N8 rot={'i': 0, 'room': 'W46N8', 'left': 500.0, 'at': '2026-11-17 10:41:08'} yield=absent; no second listener started; no war_cmd/pulse restart.
+This run did not restart the listener.

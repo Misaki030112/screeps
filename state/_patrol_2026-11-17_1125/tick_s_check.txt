@@ -1,0 +1,44 @@
+intervals_w46:
+  84314700..84314800 4.61864
+  84314800..84314900 4.72384
+  84314900..84315000 4.62097
+  84315000..84315100 4.65923
+  84315100..84315200 4.75334
+  84315200..84315300 4.63788
+intervals_min_all_rooms:
+  84314700..84314800 4.63620
+  84314800..84314900 4.72384
+  84314900..84315000 4.61752
+  84315000..84315100 4.66268
+  84315100..84315200 4.75334
+  84315200..84315300 4.63788
+first=4.63620 later_mean_raw=4.67905 later_mean_robust=4.67905
+all_mean=4.66898 span_mean=4.67191 script_tick_s=4.63620 prev_later=4.65297
+delta_first_minus_later_raw=-0.04285 s/tick; at tmin vs gt_first ~33.1s
+delta_first_minus_later_robust=-0.04285 s/tick; at tmin vs gt_first ~33.1s
+anchor 2026-11-17 11:28:59 Asia/Hong_Kong game.time=84315498
+vs_first tick_s=4.63620 {'over45': 88, 'over15': 12485, 'n': 26326, 'mean_off': -11.852661134885665, 'min_off': -45.597175, 'max_off': -0.693771}
+vs_later_raw tick_s=4.67905 {'over45': 0, 'over15': 5498, 'n': 26326, 'mean_off': 6.990396557281775, 'min_off': -22.371391, 'max_off': 27.202881}
+vs_later_robust tick_s=4.67905 {'over45': 0, 'over15': 5498, 'n': 26326, 'mean_off': 6.990396557281775, 'min_off': -22.371391, 'max_off': 27.202881}
+vs_all_mean tick_s=4.66898 {'over45': 0, 'over15': 5547, 'n': 26326, 'mean_off': 2.5629610383651142, 'min_off': -27.828608, 'max_off': 20.648179}
+vs_span_mean tick_s=4.67191 {'over45': 0, 'over15': 5334, 'n': 26326, 'mean_off': 3.8498869419205346, 'min_off': -26.242355, 'max_off': 22.553439}
+vs_prev_later tick_s=4.65297 {'over45': 0, 'over15': 4027, 'n': 26326, 'mean_off': -4.478487759135455, 'min_off': -36.507835, 'max_off': 10.223499}
+vs_prev_in_use tick_s=4.65297 {'over45': 0, 'over15': 4027, 'n': 26326, 'mean_off': -4.478487759135455, 'min_off': -36.507835, 'max_off': 10.223499}
+vs_prev_1h_patrol tick_s=4.86719 {'over45': 22111, 'over15': 26326, 'n': 26326, 'mean_off': 89.71921173717998, 'min_off': 21.943249, 'max_off': 162.722601}
+subwindow_overlap_to_84315100:
+  first tick_s=4.63620 {'over45': 88, 'over15': 11377, 'n': 14791, 'mean_off': -18.932157530119667, 'min_off': -45.597175, 'max_off': -0.693771}
+  later_robust tick_s=4.67905 {'over45': 0, 'over15': 4745, 'n': 14791, 'mean_off': 6.571382216753431, 'min_off': -22.371391, 'max_off': 27.202881}
+  prev_in_use tick_s=4.65297 {'over45': 0, 'over15': 4027, 'n': 14791, 'mean_off': -8.951424739233317, 'min_off': -36.507835, 'max_off': 10.223499}
+subwindow_new_tail_84315101:
+  first tick_s=4.63620 {'over45': 0, 'over15': 1108, 'n': 11535, 'mean_off': -2.7748257485045515, 'min_off': -18.064778, 'max_off': -0.693771}
+  later_robust tick_s=4.67905 {'over45': 0, 'over15': 753, 'n': 11535, 'mean_off': 7.527686640572171, 'min_off': -2.252487, 'max_off': 16.318473}
+  prev_in_use tick_s=4.65297 {'over45': 0, 'over15': 0, 'n': 11535, 'mean_off': 1.2570311721716514, 'min_off': -11.658638, 'max_off': 5.963919}
+lowest_over45_among_sane=all_mean {'over45': 0, 'over15': 5547, 'n': 26326, 'mean_off': 2.5629610383651142, 'min_off': -27.828608, 'max_off': 20.648179}
+realign target tick_s=4.66898 (best=all_mean, later_robust=4.67905)
+corrective realign applied nfix=0 at game.time=84315499 tick_s=4.66898
+after vs_target {'over45': 0, 'over15': 5488, 'n': 26326, 'mean_off': 2.9331223710780217, 'min_off': -27.458447, 'max_off': 21.01834}
+after vs_first {'over45': 44, 'over15': 12296, 'n': 26326, 'mean_off': -11.515283134885664, 'min_off': -45.259797, 'max_off': -0.356393}
+in-use tick_s=4.66898 (applied=True reverted=False best=all_mean)
+wrote /workspace/screeps/state/_patrol_2026-11-17_1125/tick_s_realign.json
+corrective_applied=True nfix=0 reverted=False
+reason: first-interval tick_s=4.63620 (printed 4.636) is in the sane 3-6s band; later-mean-robust 4.67905 (raw later-mean 4.67905; delta first-robust -0.04285 s/tick, ~33.1s at tmin); 11:06 half-hour in-use 4.65297 (later-mean-robust already inside 45s gate, not applied); last 1h patrol in-use was 4.86719; first is over the 45s gate (over45=88) and all_mean is clearly better; applied corrective realign of 0 rows at game.time=84315499 to tick_s=4.66898 (all_mean); still_over_45s_vs_target=0

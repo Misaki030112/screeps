@@ -1,22 +1,22 @@
-2026-11-17 10:04:49 Asia/Hong_Kong half-hour backfill OK (quiet)
-game.time=84314352 published_bases=84313600..84314200 rooms=W46N8,W47N8,W45N8,W45N7,W47N7 dry=False
-  (34 of 35 official GETs 200, missing_chunks=1, 404 W47N8@84314000; see history_backfill.txt)
-tick_s=4.635 (script 4.63492; later-mean-robust 4.73046 in use after corrective)
-reconstructed ticks=84313601..84314300 (700) creep_rows=23773 missing_chunks=1
-already_in_db=15017 would_insert=8756
-per_room W46N8:700t/2490new W47N8:600t/2673new W45N8:700t/1010new W45N7:700t/1173new W47N7:700t/1410new
-inserted=8756
-ts_realigned_first=11643; ts_realigned_corrective=10620 (later-mean-robust 4.73046)
+2026-11-17 11:06:24 Asia/Hong_Kong half-hour backfill OK (quiet)
+game.time=84315135 published_bases=84314400..84315000 rooms=W46N8,W47N8,W45N8,W45N7,W47N7 dry=False
+  (33 of 35 official GETs 200, missing_chunks=2, 404 W45N7@84314500 and W45N8@84314900; see history_backfill.txt)
+tick_s=4.804 (script 4.80407; later-mean-robust 4.65297 applied nfix=16777, after over45=0; in-use later-mean-robust 4.65297)
+reconstructed ticks=84314401..84315100 (700) creep_rows=25274 missing_chunks=2
+already_in_db=15077 would_insert=10197
+per_room W46N8:700t/2292new W47N8:700t/4911new W45N8:600t/1062new W45N7:600t/286new W47N7:700t/1646new
+inserted=10197
+ts_realigned_first=15307; ts_realigned_corrective=16777 (later-mean-robust 4.65297 applied, after over45=0)
 db_after
-  W46N8 ticks=84313601..84314300 rows=6277 distinct=700
-  W47N8 ticks=84313601..84314300 rows=10376 distinct=649
-  W45N8 ticks=84313601..84314300 rows=3378 distinct=700
-  W45N7 ticks=84313601..84314300 rows=2436 distinct=678
-  W47N7 ticks=84313601..84314300 rows=2730 distinct=700
-coverage official_recovered=3449/3500 unique_after={'rows': 25197, 'unique_creep_tick_rows': 25197, 'distinct_ticks': 700, 'distinct_room_ticks': 3427} empty_no_creep=22 official_404_in_window=51
-tick_s_check later-mean-robust 4.73046 after corrective inside 45s gate (later over45=0 over15=5825 mean_off=7.89 max_off=44.97); in-use tick_s=4.73046
-confirm recovered=none inserted=0; retry2 recovered=none inserted=0; in-window official 404 W47N8@84314000 still 404 (49 live 84314052..84314100, 51 empty 84314001..84314051); leftover official 404 W46N8@84313200 still outside this window (96 live 84313205..84313300, 4 empty 84313201..84313204); older leftovers unchanged (W46N8@84310500 11 live, W47N7@84309000 empty, W45N8@84309100 25 live, and older leftovers still 404).
-New box freeze 09:43:21–09:58:12 (~883s) room_stats gap 84314141..84314339; in-window 84314141..84314300 official-filled on all five rooms, tail 84314301..84314339 past published tip. Prior 09:17:21–09:25:37 (~489s) gap 84313811..84313929 still official-filled 119/119 all five rooms (in overlap). Prior 07:43:34–08:04:17 (~1232s) gap 84312611..84312889 still official-filled 279/279 all five rooms (now fully before this window start). Previously unpublished 84314001..84314300 official-filled except W47N8@84314000. Overlap 84313601..84314000 stays official-filled. Prior 07:13 gap 84312221..84312399 stays official-filled 179/179 outside window.
-listener single_slot=True roomSlot=W45N7 rot={'i': 3, 'room': 'W45N7', 'left': 5.0, 'at': '2026-11-17 10:04:44'} yield=absent
+  W46N8 ticks=84314401..84315100 rows=7586 distinct=700
+  W47N8 ticks=84314401..84315100 rows=12758 distinct=700
+  W45N8 ticks=84314401..84315100 rows=2231 distinct=600
+  W45N7 ticks=84314401..84314915 rows=1501 distinct=415
+  W47N7 ticks=84314401..84315100 rows=2315 distinct=700
+coverage official_recovered=3300/3500 unique_after={'rows': 26391, 'unique_creep_tick_rows': 26391, 'distinct_ticks': 700, 'distinct_room_ticks': 3115} empty_no_creep=185 official_404_in_window=200
+tick_s_check later-mean-robust 4.65297 applied nfix=16777 (later over45=0 over15=5422 mean_off=-7.52 max_off=2.61); in-use tick_s=4.65297
+confirm recovered=none inserted=0; retry2 recovered=none inserted=0; in-window official 404 W45N8@84314900 still 404 (0 live, 100 empty 84314901..84315000); in-window official 404 W45N7@84314500 still 404 (0 live, 100 empty 84314501..84314600); W45N7 official empty-no-creep 185 ticks 84314916..84315100; leftover official 404 W47N8@84314000 still outside this window (49 live 84314052..84314100, 51 empty 84314001..84314051); leftover official 404 W46N8@84313200 still outside this window (96 live 84313205..84313300, 4 empty 84313201..84313204); older leftovers unchanged (W46N8@84310500 11 live, W47N7@84309000 empty, W45N8@84309100 25 live, and older leftovers still 404).
+New box freeze 10:44:25–10:46:18 (~100s) room_stats gap 84314921..84314959; W46N8/W47N8/W47N7 official-filled 39/39; W45N8 0/39 due to official 404 @84314900; W45N7 0/39 (official empty-no-creep from 84314916). New box freeze 10:54:19–10:58:41 (~262s) room_stats gap 84315041..84315119; published part 84315041..84315100 official-filled 60/60 on W46N8/W45N8/W47N7, W47N8 67/79 including 7 live ticks after reconnect, W45N7 0 (empty-no-creep); unpublished tail 84315101..84315119 not in this official window. Prior 10:11:26–10:21:56 (~624s) gap 84314501..84314639 still official-filled 139/139 on four rooms, W45N7 missing 84314501..84314600 due to official 404 @84314500 (now fully in window). Prior 09:43:21–09:58:12 (~883s) gap 84314141..84314339 still official-filled 199/199 all five rooms (now fully before this window start). Prior 09:17:21–09:25:37 (~489s) gap 84313811..84313929 still official-filled 119/119 all five rooms (still before this window). Prior 07:43:34–08:04:17 (~1232s) gap 84312611..84312889 still official-filled 279/279 all five rooms (still before this window start). Previously unpublished 84314801..84315100 official-filled except W45N8@84314900 and W45N7 empty-no-creep after 84314915. Overlap 84314401..84314800 stays official-filled except W45N7@84314500. Prior 07:13 gap 84312221..84312399 stays official-filled 179/179 outside window.
+listener single_slot=True roomSlot=W45N8 rot={'i': 2, 'room': 'W45N8', 'left': 100.0, 'at': '2026-11-17 11:06:20'} yield=absent
 confirm recovered=none retry2 recovered=none
-ok=true (quiet); first-pass missing_chunks=1 (34 of 35 official GETs 200, 404 W47N8@84314000 still after confirm/retry2, 49 live / 51 empty); corrective later-mean-robust realign nfix=10620, tick_s_in_use=4.73046 (first-pass realign 4.63492 committed 11643 then corrected); new 09:43 freeze gap 84314141..84314339 in-window 84314141..84314300 official-filled all five rooms; prior 09:17 freeze gap 84313811..84313929 still official-filled (119/119 all five rooms); prior 07:43 freeze gap 84312611..84312889 still official-filled (279/279 all five rooms); prior unpublished remainder 84314001..84314300 official-filled except W47N8@84314000; W45N7 official empty-no-creep 22 ticks [[84313644, 84313665]]; leftover official 404 W46N8@84313200 still outside window; other leftover official 404s unchanged.
+ok=true (quiet); first-pass missing_chunks=2 (33 of 35 official GETs 200, 404 W45N7@84314500 and W45N8@84314900 still after confirm/retry2, both 0 live / 100 empty); corrective later-mean-robust realign nfix=16777, tick_s_in_use=4.65297 (first-pass realign 4.80407 committed 15307; later-mean-robust 4.65297 applied); new 10:44 freeze gap 84314921..84314959 official-filled 39/39 on three rooms, W45N8 missing due to official 404 @84314900, W45N7 empty-no-creep; new 10:54 freeze gap 84315041..84315119 official-filled 60/60 published part on four rooms except W45N7 empty-no-creep, W47N8 +7 live in unpublished tail; prior 10:11 freeze gap 84314501..84314639 still official-filled 139/139 on four rooms, W45N7 missing 84314501..84314600 due to official 404 @84314500 (now fully in window); prior 09:43 freeze gap 84314141..84314339 still official-filled (199/199 all five rooms, now fully before window); prior 09:17 freeze gap 84313811..84313929 still official-filled (119/119 all five rooms); prior 07:43 freeze gap 84312611..84312889 still official-filled (279/279 all five rooms); prior unpublished remainder 84314801..84315100 official-filled except W45N8@84314900 and W45N7 empty-no-creep after 84314915; leftover official 404 W47N8@84314000 still outside window; leftover official 404 W46N8@84313200 still outside window; other leftover official 404s unchanged.
