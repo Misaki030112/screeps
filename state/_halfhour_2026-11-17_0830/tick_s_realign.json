@@ -1,0 +1,139 @@
+{
+  "first_interval": 4.59073,
+  "later_mean_w46": 4.721126,
+  "later_mean_w46_raw": 4.721126,
+  "later_mean_w46_robust": 4.721126,
+  "all_mean_w46": 4.699393333333333,
+  "span_mean": 4.699393333333333,
+  "prev_later_mean": 4.65902,
+  "intervals": [
+    {
+      "from": 84312500,
+      "to": 84312600,
+      "tick_s": 4.59073,
+      "outlier": false
+    },
+    {
+      "from": 84312600,
+      "to": 84312700,
+      "tick_s": 4.6546199999999995,
+      "outlier": false
+    },
+    {
+      "from": 84312700,
+      "to": 84312800,
+      "tick_s": 4.63252,
+      "outlier": false
+    },
+    {
+      "from": 84312800,
+      "to": 84312900,
+      "tick_s": 4.79312,
+      "outlier": false
+    },
+    {
+      "from": 84312900,
+      "to": 84313000,
+      "tick_s": 4.80491,
+      "outlier": false
+    },
+    {
+      "from": 84313000,
+      "to": 84313100,
+      "tick_s": 4.72046,
+      "outlier": false
+    }
+  ],
+  "gt_first": 84313225,
+  "gt_check": 84313251,
+  "gt_realign": 84313251,
+  "now_check": "2026-11-17T08:33:10.739092+08:00",
+  "now_realign": "2026-11-17T08:33:10.739031+08:00",
+  "tick_s_used_first_pass": 4.57801,
+  "ts_realigned_first_pass": 0,
+  "ts_realigned_first_pass_error": "First-pass realign with tick_s=4.57801 (printed 4.578) raised psycopg.errors.CheckViolation on _hyper_6_74_chunk constraint_74 (new ts 2026-11-17 08:00:00.563845+08 for W46N8 queen84311260 tick 84312817) and rolled back, so ts_realigned_first=0. Insert of 6603 rows had already committed.",
+  "still_over_45s_vs_first": 16922,
+  "still_over_15s_vs_first": 20157,
+  "vs_candidates": {
+    "first": {
+      "over45": 16922,
+      "over15": 20157,
+      "n": 26237,
+      "mean_off": -56.58630322254831,
+      "min_off": -114.480551,
+      "max_off": -1.266245,
+      "tick_s": 4.57801
+    },
+    "later_raw": {
+      "over45": 0,
+      "over15": 3466,
+      "n": 26237,
+      "mean_off": -1.1270067932309333,
+      "min_off": -14.018322,
+      "max_off": 34.512755,
+      "tick_s": 4.721126
+    },
+    "later_robust": {
+      "over45": 0,
+      "over15": 3466,
+      "n": 26237,
+      "mean_off": -1.1270067932309333,
+      "min_off": -14.018322,
+      "max_off": 34.512755,
+      "tick_s": 4.721126
+    },
+    "all_mean": {
+      "over45": 0,
+      "over15": 16327,
+      "n": 26237,
+      "mean_off": -9.548695513473339,
+      "min_off": -23.443051,
+      "max_off": 29.079588,
+      "tick_s": 4.699393333333333
+    },
+    "span_mean": {
+      "over45": 0,
+      "over15": 16327,
+      "n": 26237,
+      "mean_off": -9.548695513473339,
+      "min_off": -23.443051,
+      "max_off": 29.079588,
+      "tick_s": 4.699393333333333
+    },
+    "prev_later": {
+      "over45": 4772,
+      "over15": 20249,
+      "n": 26237,
+      "mean_off": -25.19388306170675,
+      "min_off": -53.723051,
+      "max_off": 18.986255,
+      "tick_s": 4.65902
+    }
+  },
+  "still_over_45s_vs_later_before": 0,
+  "still_over_15s_vs_later_before": 3466,
+  "still_over_45s_vs_later": 0,
+  "still_over_15s_vs_later": 3466,
+  "corrective_applied": false,
+  "ts_realigned_to_later_mean": 0,
+  "skipped_cross_chunk": 0,
+  "reason": "first-interval tick_s=4.57801 (printed 4.578, min-all-rooms first two bases) is in the sane 3-6s band; later-mean-robust 4.72113 (raw later-mean 4.72113; delta first-robust -0.13040 s/tick, ~94.4s at tmin). First-pass realign with tick_s=4.57801 (printed 4.578) raised psycopg.errors.CheckViolation on _hyper_6_74_chunk constraint_74 (new ts 2026-11-17 08:00:00.563845+08 for W46N8 queen84311260 tick 84312817) and rolled back, so ts_realigned_first=0. Insert of 6603 rows had already committed.; later-mean-robust already inside 45s gate, no corrective realign",
+  "game_time_error": null,
+  "lowest_over45_sane": "later_raw",
+  "vs_first": {
+    "over45": 16922,
+    "over15": 20157,
+    "n": 26237,
+    "mean_off": -56.58630322254831,
+    "min_off": -114.480551,
+    "max_off": -1.266245
+  },
+  "vs_later_after": {
+    "over45": 0,
+    "over15": 3466,
+    "n": 26237,
+    "mean_off": -1.1270067932309333,
+    "min_off": -14.018322,
+    "max_off": 34.512755
+  }
+}

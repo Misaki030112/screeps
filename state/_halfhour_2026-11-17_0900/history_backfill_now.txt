@@ -1,0 +1,22 @@
+2026-11-17 09:10:57 Asia/Hong_Kong half-hour backfill OK (quiet)
+game.time=84313682 published_bases=84312900..84313500 rooms=W46N8,W47N8,W45N8,W45N7,W47N7 dry=False
+  (34 of 35 official GETs 200, missing_chunks=1 404 W46N8@84313200; see history_backfill.txt)
+tick_s=4.805 (script 4.80491; later-mean-robust 4.69066 in use after corrective)
+reconstructed ticks=84312901..84313600 (700) creep_rows=26707 missing_chunks=1
+already_in_db=15357 would_insert=11350
+per_room W46N8:600t/3136new W47N8:700t/4558new W45N8:700t/1191new W45N7:700t/534new W47N7:700t/1931new
+inserted=11350
+ts_realigned_first=13000; ts_realigned_corrective=16092 (later-mean-robust 4.69066)
+db_after
+  W46N8 ticks=84312901..84313600 rows=9348 distinct=696
+  W47N8 ticks=84312901..84313600 rows=11331 distinct=700
+  W45N8 ticks=84312901..84313600 rows=2211 distinct=700
+  W45N7 ticks=84312901..84313600 rows=1657 distinct=545
+  W47N7 ticks=84312901..84313600 rows=3099 distinct=700
+coverage official_recovered=3496/3500 unique_after={'rows': 27646, 'unique_creep_tick_rows': 27646, 'distinct_ticks': 700, 'distinct_room_ticks': 3341} empty_no_creep=155 official_404_in_window=4 (W46N8@84313200 ticks 84313201..84313204)
+tick_s_check later-mean-robust 4.69066 after corrective inside 45s gate (later over45=0 over15=7418 mean_off=-8.64 max_off=0.00); in-use tick_s=4.69066
+confirm recovered=none inserted=0; retry2 recovered=none inserted=0; in-window leftover official 404 W46N8@84313200 (96 live 84313205..84313300, 4 empty 84313201..84313204); older leftovers unchanged (W46N8@84310500 11 live, W47N7@84309000 empty, W45N8@84309100 25 live, and older leftovers still 404).
+No new box freeze. Prior 07:43:34–08:04:17 (~1232s) gap 84312611..84312889 still official-filled 279/279 all five rooms (now partly before this window start). Previously unpublished 84313201..84313600 official-filled except W46N8 84313201..84313204. Overlap 84312901..84313200 stays official-filled. Prior 07:13 gap 84312221..84312399 stays official-filled 179/179 outside window.
+listener single_slot=True roomSlot=W47N8 rot={'i': 1, 'room': 'W47N8', 'left': 154.9, 'at': '2026-11-17 09:10:54'} yield=absent
+confirm recovered=none retry2 recovered=none
+ok=true (quiet); first-pass missing_chunks=1 (34 of 35 official GETs 200, 404 W46N8@84313200 still after confirm/retry2, 96 live / 4 empty); corrective later-mean-robust realign nfix=16092, tick_s_in_use=4.69066 (first-pass realign 4.80491 committed 13000 then corrected); prior 07:43 freeze gap 84312611..84312889 still official-filled (279/279 all five rooms); prior unpublished remainder 84313201..84313600 official-filled except W46N8 84313201..84313204; W45N7 official empty-no-creep 155 ticks 84313257..84313411; leftover official 404s otherwise unchanged.

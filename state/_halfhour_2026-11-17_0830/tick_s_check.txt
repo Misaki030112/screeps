@@ -1,0 +1,30 @@
+intervals_w46:
+  84312500..84312600 4.59073
+  84312600..84312700 4.65462
+  84312700..84312800 4.63252
+  84312800..84312900 4.79312
+  84312900..84313000 4.80491
+  84313000..84313100 4.72046
+intervals_min_all_rooms:
+  84312500..84312600 4.57801
+  84312600..84312700 4.66734
+  84312700..84312800 4.63252
+  84312800..84312900 4.79312
+  84312900..84313000 4.80491
+  84313000..84313100 4.72046
+first=4.59073 later_mean_raw=4.72113 later_mean_robust=4.72113
+all_mean=4.69939 span_mean=4.69939 script_tick_s=4.57801 prev_later=4.65902
+delta_first_minus_later_raw=-0.13040 s/tick; at tmin vs gt_first ~94.4s
+delta_first_minus_later_robust=-0.13040 s/tick; at tmin vs gt_first ~94.4s
+anchor 2026-11-17 08:33:08 Asia/Hong_Kong game.time=84313251
+vs_first tick_s=4.57801 {'over45': 16922, 'over15': 20157, 'n': 26237, 'mean_off': -56.58630322254831, 'min_off': -114.480551, 'max_off': -1.266245}
+vs_later_raw tick_s=4.72113 {'over45': 0, 'over15': 3466, 'n': 26237, 'mean_off': -1.1270067932309333, 'min_off': -14.018322, 'max_off': 34.512755}
+vs_later_robust tick_s=4.72113 {'over45': 0, 'over15': 3466, 'n': 26237, 'mean_off': -1.1270067932309333, 'min_off': -14.018322, 'max_off': 34.512755}
+vs_all_mean tick_s=4.69939 {'over45': 0, 'over15': 16327, 'n': 26237, 'mean_off': -9.548695513473339, 'min_off': -23.443051, 'max_off': 29.079588}
+vs_span_mean tick_s=4.69939 {'over45': 0, 'over15': 16327, 'n': 26237, 'mean_off': -9.548695513473339, 'min_off': -23.443051, 'max_off': 29.079588}
+vs_prev_later tick_s=4.65902 {'over45': 4772, 'over15': 20249, 'n': 26237, 'mean_off': -25.19388306170675, 'min_off': -53.723051, 'max_off': 18.986255}
+lowest_over45_among_sane=later_raw {'over45': 0, 'over15': 3466, 'n': 26237, 'mean_off': -1.1270067932309333, 'min_off': -14.018322, 'max_off': 34.512755}
+corrective_applied=False
+wrote /workspace/screeps/state/_halfhour_2026-11-17_0830/tick_s_realign.json
+corrective_applied=False nfix=0 skipped_cross_chunk=0
+reason: first-interval tick_s=4.57801 (printed 4.578, min-all-rooms first two bases) is in the sane 3-6s band; later-mean-robust 4.72113 (raw later-mean 4.72113; delta first-robust -0.13040 s/tick, ~94.4s at tmin). First-pass realign with tick_s=4.57801 (printed 4.578) raised psycopg.errors.CheckViolation on _hyper_6_74_chunk constraint_74 (new ts 2026-11-17 08:00:00.563845+08 for W46N8 queen84311260 tick 84312817) and rolled back, so ts_realigned_first=0. Insert of 6603 rows had already committed.; later-mean-robust already inside 45s gate, no corrective realign

@@ -1,0 +1,16 @@
+Traceback (most recent call last):
+  File "/workspace/screeps/tools/history_backfill.py", line 297, in <module>
+    sys.exit(main())
+             ~~~~^^
+  File "/workspace/screeps/tools/history_backfill.py", line 283, in main
+    nfix = realign_ts(c, tmin, tmax, rooms, now_ts, gt, tick_s)
+  File "/workspace/screeps/tools/history_backfill.py", line 155, in realign_ts
+    cur = c.execute(
+        """UPDATE creep_ticks
+    ...<2 lines>...
+              AND abs(extract(epoch from (ts - (%(now)s + (tick - %(gt)s) * interval '1 second' * %(tick_s)s)))) > 45""",
+        {'now': now_ts, 'gt': gt, 'tick_s': tick_s, 't0': tmin, 't1': tmax, 'rooms': list(rooms)})
+  File "/workspace/screeps/.venv/lib/python3.13/site-packages/psycopg/connection.py", line 304, in execute
+    raise ex.with_traceback(None)
+psycopg.errors.CheckViolation: new row for relation "_hyper_6_74_chunk" violates check constraint "constraint_74"
+DETAIL:  Failing row contains (2026-11-17 08:00:00.563845+08, 84312817, W46N8, queen84311260, queen, 29, 30, 2400, 800, loaded, 85c19c2e).

@@ -1,0 +1,9 @@
+computed official window t84304140→84313190
+ticks=9050 wall_s=43242.767742 wall_h=12.011879928333334 tick_s=4.7782063803314925
+expected_10t_slots=906 n_samples/room=512 coverage_pct=56.5121412803532
+home first=7328541 last=7498040 delta=169499 e_per_t=18.729171270718233 pct=68.56918152720621 remaining=3436960 eta_days=10.149
+w47  first=4128637 last=4298294 delta=169657 e_per_t=18.746629834254144 pct=39.30767261088249 remaining=6636706 eta_days=19.579
+last evening tick_s was 4.6176; this window tick_s 4.7782 (shard slower — calendar ETA stretched)
+home 20k: first touch max 20753 @84307840 / 01:26; longest contiguous >=20k 51 t (84307800-84307850, 6 samples 20353-20753) plus a 1-tick re-touch 20053 @84307880; fell to 19853 immediately after and 17853 before the 01:34 freeze. Latch 300t NOT armed.
+w47 40k: new high 44416; islands 84311410-84311430 (21 t, 40178-43167) then box freeze 06:10:55-06:17:08 both sides >=40k (43167->44416) then 84311520-84311860 (341 t, 41516-44416). Generous merge 84311410-84311860 = 451 t still under 500. After 06:44 freeze next sample 07:00 is 35516. Tip new touch 40188 @08:25-08:28 (31 t) / live ~41432 still upLatched=0. Latch 500t NOT armed.
+w47 <22k ARM: 3 samples 21448-21948 @23:42-23:44.

@@ -1,0 +1,22 @@
+2026-11-17 08:35:53 Asia/Hong_Kong half-hour backfill OK (quiet)
+game.time=84313225 published_bases=84312500..84313100 rooms=W46N8,W47N8,W45N8,W45N7,W47N7 dry=False
+  (35 of 35 official GETs 200, missing_chunks=0; see history_backfill.txt)
+tick_s=4.578 (script 4.57801; later-mean-robust 4.72113 in use)
+reconstructed ticks=84312501..84313200 (700) creep_rows=27932 missing_chunks=0
+already_in_db=21329 would_insert=6603
+per_room W46N8:700t/2121new W47N8:700t/1349new W45N8:700t/645new W45N7:700t/1471new W47N7:700t/1017new
+inserted=6603
+ts_realigned=0 (first-pass realign CheckViolation rolled back; no corrective)
+db_after
+  W46N8 ticks=84312501..84313200 rows=7883 distinct=700
+  W47N8 ticks=84312501..84313200 rows=10068 distinct=700
+  W45N8 ticks=84312501..84313200 rows=3115 distinct=700
+  W45N7 ticks=84312501..84313200 rows=2444 distinct=700
+  W47N7 ticks=84312501..84313200 rows=2727 distinct=700
+coverage official_recovered=3500/3500 unique_after={'rows': 26237, 'unique_creep_tick_rows': 26237, 'distinct_ticks': 700, 'distinct_room_ticks': 3500} empty_no_creep=0 official_404_in_window=0
+tick_s_check later-mean-robust 4.72113 already inside 45s gate (later over45=0 over15=3466 mean_off=-1.13 max_off=34.51); in-use tick_s=4.72113
+confirm recovered=none inserted=0; retry2 recovered=none inserted=0; leftover official 404s unchanged (W46N8@84310500 11 live, W47N7@84309000 empty, W45N8@84309100 25 live, and older leftovers still 404).
+No new box freeze. Prior 07:43:34–08:04:17 (~1232s) gap 84312611..84312889 still official-filled 279/279 all five rooms. Previously unpublished 84312901..84313200 official-filled 300/300 all five rooms. Prior 07:13 gap 84312221..84312399 stays official-filled 179/179 outside window start.
+listener single_slot=True roomSlot=W46N8 rot={'i': 0, 'room': 'W46N8', 'left': 219.9, 'at': '2026-11-17 08:35:49'} yield=absent
+confirm recovered=none retry2 recovered=none
+ok=true (quiet); first-pass missing_chunks=0 (35 of 35 official GETs 200, no in-window official 404); no corrective realign, tick_s_in_use=4.72113 (later-mean-robust already inside the 45s gate; first-pass realign with 4.57801 rolled back on Timescale daily-chunk boundary); prior 07:43 freeze gap 84312611..84312889 still official-filled (279/279 all five rooms); prior unpublished remainder 84312901..84313200 official-filled (300/300 all five rooms); no unpublished remainder inside the window; leftover official 404s remain outside the window.
