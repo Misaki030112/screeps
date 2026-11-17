@@ -527,9 +527,14 @@ body {
   }
 }
 
-.flow-split {
+.flow-split,
+.states {
   display: grid;
   gap: 0.5rem;
+}
+
+.states {
+  margin-bottom: 0.85rem;
 }
 
 .arrow {
@@ -612,6 +617,10 @@ body {
 
   .flow-split {
     grid-template-columns: 1fr 1fr 1fr;
+  }
+
+  .states {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
 

@@ -8,6 +8,8 @@ import SpawnQueue from './components/SpawnQueue.vue'
 import UpgradeFloors from './components/UpgradeFloors.vue'
 import HaulOrder from './components/HaulOrder.vue'
 import HaulReads from './components/HaulReads.vue'
+import ThreatFsm from './components/ThreatFsm.vue'
+import DefenseEnergy from './components/DefenseEnergy.vue'
 import ColonyStrip from './components/ColonyStrip.vue'
 
 export default {
@@ -21,6 +23,8 @@ export default {
     app.component('UpgradeFloors', UpgradeFloors)
     app.component('HaulOrder', HaulOrder)
     app.component('HaulReads', HaulReads)
+    app.component('ThreatFsm', ThreatFsm)
+    app.component('DefenseEnergy', DefenseEnergy)
     app.component('ColonyStrip', ColonyStrip)
   },
 }
