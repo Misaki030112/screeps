@@ -1,0 +1,44 @@
+intervals_w46:
+  84316900..84317000 4.74248
+  84317000..84317100 4.80000
+  84317100..84317200 4.67505
+  84317200..84317300 4.52934
+  84317300..84317400 4.80270
+  84317400..84317500 4.61804
+intervals_min_all_rooms:
+  84316900..84317000 4.74248
+  84317000..84317100 4.80000
+  84317100..84317200 4.67505
+  84317200..84317300 4.52934
+  84317300..84317400 4.80270
+  84317400..84317500 4.61804
+first=4.74225 later_mean_raw=4.68503 later_mean_robust=4.68503
+all_mean=4.69460 span_mean=4.69460 script_tick_s=4.74225 prev_later=4.729674
+delta_first_minus_later_raw=0.05722 s/tick; at tmin vs gt_first ~40.1s
+delta_first_minus_later_robust=0.05722 s/tick; at tmin vs gt_first ~40.1s
+anchor 2026-11-17 14:25:05 Asia/Hong_Kong game.time=84317743
+vs_first tick_s=4.74225 {'over45': 460, 'over15': 15033, 'n': 27582, 'mean_off': 17.93607286451309, 'min_off': 4.043158, 'max_off': 48.012154}
+vs_later_raw tick_s=4.68503 {'over45': 0, 'over15': 3891, 'n': 27582, 'mean_off': -10.82819753422522, 'min_off': -22.111989, 'max_off': 32.339967}
+vs_later_robust tick_s=4.68503 {'over45': 0, 'over15': 3891, 'n': 27582, 'mean_off': -10.82819753422522, 'min_off': -22.111989, 'max_off': 32.339967}
+vs_all_mean tick_s=4.69460 {'over45': 0, 'over15': 20, 'n': 27582, 'mean_off': -6.014715565296208, 'min_off': -14.958966, 'max_off': 33.986982}
+vs_span_mean tick_s=4.69460 {'over45': 0, 'over15': 20, 'n': 27582, 'mean_off': -6.014715565296208, 'min_off': -14.958966, 'max_off': 33.986982}
+vs_prev_later tick_s=4.72967 {'over45': 0, 'over15': 9679, 'n': 27582, 'mean_off': 11.615393126060475, 'min_off': -0.240943, 'max_off': 40.019423}
+vs_prev_in_use tick_s=4.72967 {'over45': 0, 'over15': 9679, 'n': 27582, 'mean_off': 11.615393126060475, 'min_off': -0.240943, 'max_off': 40.019423}
+vs_prev_1h_patrol tick_s=4.58527 {'over45': 20696, 'over15': 27558, 'n': 27582, 'mean_off': -60.97339619726633, 'min_off': -103.0624, 'max_off': 15.181935}
+subwindow_overlap_to_84317400:
+  first tick_s=4.74225 {'over45': 460, 'over15': 15009, 'n': 20429, 'mean_off': 22.58084295158843, 'min_off': 11.037552, 'max_off': 48.012154}
+  later_robust tick_s=4.68503 {'over45': 0, 'over15': 3550, 'n': 20429, 'mean_off': -11.396958262176318, 'min_off': -22.111989, 'max_off': -0.16877}
+  prev_in_use tick_s=4.72967 {'over45': 0, 'over15': 9655, 'n': 20429, 'mean_off': 15.114538515150032, 'min_off': 6.72467, 'max_off': 37.424846}
+subwindow_new_tail_84317401:
+  first tick_s=4.74225 {'over45': 0, 'over15': 24, 'n': 7153, 'mean_off': 4.670588716762198, 'min_off': 4.043158, 'max_off': 42.182151}
+  later_robust tick_s=4.68503 {'over45': 0, 'over15': 341, 'n': 7153, 'mean_off': -9.203814350761919, 'min_off': -15.510559, 'max_off': 32.339967}
+  prev_in_use tick_s=4.72967 {'over45': 0, 'over15': 24, 'n': 7153, 'mean_off': 1.6218182408779533, 'min_off': -0.240943, 'max_off': 40.019423}
+lowest_over45_among_sane=all_mean {'over45': 0, 'over15': 20, 'n': 27582, 'mean_off': -6.014715565296208, 'min_off': -14.958966, 'max_off': 33.986982}
+realign target tick_s=4.69460 (best=all_mean, later_robust=4.68503)
+corrective realign applied nfix=0 at game.time=84317744 tick_s=4.69460
+after vs_target {'over45': 0, 'over15': 20, 'n': 27582, 'mean_off': -5.925892898339497, 'min_off': -14.870143, 'max_off': 34.075804}
+after vs_first {'over45': 483, 'over15': 15153, 'n': 27582, 'mean_off': 18.072541864513088, 'min_off': 4.179627, 'max_off': 48.148623}
+in-use tick_s=4.69460 (applied=True reverted=False best=all_mean)
+wrote /workspace/screeps/state/_patrol_2026-11-17_1420/tick_s_realign.json
+corrective_applied=True nfix=0 reverted=False
+reason: first-interval tick_s=4.74225 (printed 4.742) is in the sane 3-6s band; later-mean-robust 4.68503 (raw later-mean 4.68503; delta first-robust 0.05722 s/tick, ~40.1s at tmin); 14:08 half-hour in-use 4.72967 (later-mean-robust already inside 45s gate, nfix=0); last 1h patrol in-use was 4.58527; first is over the 45s gate (over45=460) and all_mean is clearly better; applied corrective realign of 0 rows at game.time=84317744 to tick_s=4.69460 (all_mean); still_over_45s_vs_target=0

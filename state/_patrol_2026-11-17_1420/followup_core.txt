@@ -1,0 +1,44 @@
+=== events cols ===
+['ts', 'tick', 'kind', 'room', 'severity', 'episode', 'msg', 'data']
+=== events (non-watch) since LAST_TIP or 2h ===
+2026-11-17 13:00:29 None box_pause None None None box frozen ~190s since 2026-11-17 12:57:07 {'sec': 190, 'from': '2026-11-17 12:57:07'}
+2026-11-17 12:54:44 84316530 box_pause None None None box frozen ~110s since 2026-11-17 12:52:46 {'sec': 110, 'from': '2026-11-17 12:52:46'}
+2026-11-17 13:26:04 84316900 box_pause None None None box frozen ~436s since 2026-11-17 13:18:38 {'sec': 436, 'from': '2026-11-17 13:18:38'}
+2026-11-17 13:59:17 84317277 box_pause None None None box frozen ~623s since 2026-11-17 13:48:54 {'sec': 623, 'from': '2026-11-17 13:48:54'}
+2026-11-17 14:00:22 84317428 alert_new W47N7 medium remote-W47N7-84317428 Invader {'why': 'core', 'room': 'W47N7', 'tick': 84317428, 'owner': 'Invader', 'state': 'THREAT', 'action': 'defender requested', 'creeps': 0, 'remote': 'W47N7', 'episode': 'remote-W47N7-84317428', 'invOnly': True, 'severity': 'medium', 'positions': []}
+2026-11-17 14:19:51 84317439 box_pause None None None box frozen ~435s since 2026-11-17 14:12:36 {'sec': 435, 'from': '2026-11-17 14:12:36'}
+
+=== incidents table ===
+cols ['ts', 'tick', 'remote', 'inc', 'ev', 'from_state', 'state', 'why', 'inv', 'inv_ttl', 'def', 'dur', 'data']
+(datetime.datetime(2026, 11, 17, 14, 12, 12, 765915, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84317579, 'W47N7', 84317428, 'defend', 'THREAT', 'DEFEND', 'dispatched', 0, 0, 'out', 151, {'ev': 'defend', 'def': 'out', 'dur': 151, 'inc': 84317428, 'inv': 0, 'why': 'dispatched', 'from': 'THREAT', 'tick': 84317579, 'state': 'DEFEND', 'invTtl': 0, 'remote': 'W47N7', 'delivered': 0})
+(datetime.datetime(2026, 11, 17, 14, 0, 25, 419639, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84317429, 'W47N7', 84317428, 'spawn_start', None, 'THREAT', None, None, None, 'rdef84317429', None, {'n': 1, 'ev': 'spawn_start', 'def': 'rdef84317429', 'inc': 84317428, 'tick': 84317429, 'state': 'THREAT', 'remote': 'W47N7', 'waited': 1})
+(datetime.datetime(2026, 11, 17, 11, 44, 26, 393433, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84315696, 'W47N7', 84315320, 'cleared', 'DEFEND', 'SAFE', 'killed', 0, 0, 'out', 376, {'ev': 'cleared', 'def': 'out', 'dur': 376, 'inc': 84315320, 'inv': 0, 'why': 'killed', 'from': 'DEFEND', 'tick': 84315696, 'state': 'SAFE', 'invTtl': 0, 'remote': 'W47N7', 'delivered': 0})
+(datetime.datetime(2026, 11, 17, 11, 29, 48, 867543, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84315509, 'W47N7', 84315320, 'arrive', None, 'DEFEND', None, 0, 0, 'out', None, {'ev': 'arrive', 'def': 'out', 'inc': 84315320, 'inv': 0, 'tick': 84315509, 'state': 'DEFEND', 'invTtl': 0, 'remote': 'W47N7', 'travel': 38, 'delivered': 0})
+(datetime.datetime(2026, 11, 17, 11, 26, 52, 815763, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84315471, 'W47N7', 84315320, 'defend', 'THREAT', 'DEFEND', 'dispatched', 0, 0, 'out', 151, {'ev': 'defend', 'def': 'out', 'dur': 151, 'inc': 84315320, 'inv': 0, 'why': 'dispatched', 'from': 'THREAT', 'tick': 84315471, 'state': 'DEFEND', 'invTtl': 0, 'remote': 'W47N7', 'delivered': 0})
+(datetime.datetime(2026, 11, 17, 11, 6, 5, 573771, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84315204, 'W45N7', 84314872, 'cleared', 'DEFEND', 'SAFE', 'killed', 0, 0, 'out', 332, {'ev': 'cleared', 'def': 'out', 'dur': 332, 'inc': 84314872, 'inv': 0, 'why': 'killed', 'from': 'DEFEND', 'tick': 84315204, 'state': 'SAFE', 'invTtl': 0, 'remote': 'W45N7', 'delivered': 3229699})
+(datetime.datetime(2026, 11, 17, 11, 4, 54, 56267, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84315189, 'W45N7', 84314872, 'arrive', None, 'DEFEND', None, 1, 1182, 'out', None, {'ev': 'arrive', 'def': 'out', 'inc': 84314872, 'inv': 1, 'tick': 84315189, 'state': 'DEFEND', 'invTtl': 1182, 'remote': 'W45N7', 'travel': 63, 'delivered': 3229299})
+(datetime.datetime(2026, 11, 17, 10, 59, 59, 398903, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84315126, 'W45N7', 84314872, 'defend', 'THREAT', 'DEFEND', 'dispatched', 0, 0, 'out', 254, {'ev': 'defend', 'def': 'out', 'dur': 254, 'inc': 84314872, 'inv': 0, 'why': 'dispatched', 'from': 'THREAT', 'tick': 84315126, 'state': 'DEFEND', 'invTtl': 0, 'remote': 'W45N7', 'delivered': 3229299})
+(datetime.datetime(2026, 11, 17, 10, 48, 49, 161930, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84314982, 'W45N7', 84314872, 'spawn_start', None, 'THREAT', None, None, None, 'defender84314982', None, {'n': 1, 'ev': 'spawn_start', 'def': 'defender84314982', 'inc': 84314872, 'tick': 84314982, 'state': 'THREAT', 'remote': 'W45N7', 'waited': 110})
+(datetime.datetime(2026, 11, 17, 9, 0, 36, 30034, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84313602, 'W45N7', 84313213, 'cleared', 'DEFEND', 'SAFE', 'killed', 0, 0, 'out', 389, {'ev': 'cleared', 'def': 'out', 'dur': 389, 'inc': 84313213, 'inv': 0, 'why': 'killed', 'from': 'DEFEND', 'tick': 84313602, 'state': 'SAFE', 'invTtl': 0, 'remote': 'W45N7', 'delivered': 3220499})
+
+=== rdef/defender creeps since 84317000 ===
+count 1
+('rdef84317429', 'rdef', 84317431, 84317600, 170, 'W47N8', 33, 30, 'W47N8', 17, 33, 'empty')
+
+=== unique creeps in W47N7 since 84317300 ===
+('w8rhauler84316831', 'wrhauler', 84317300, 84317481, 113, 21, 6, 19, 1)
+('w8rminer84317021', 'wrminer', 84317300, 84317600, 301, 18, 17, 18, 17)
+('w8rhauler84315867', 'wrhauler', 84317300, 84317370, 71, 20, 5, 18, 0)
+('w8rminer84316107', 'wrminer', 84317300, 84317600, 301, 31, 34, 31, 34)
+('reserve784317122', 'reserve', 84317300, 84317600, 301, 39, 27, 39, 27)
+('w8rhauler84316470', 'wrhauler', 84317309, 84317600, 141, 18, 1, 21, 6)
+('w8rhauler84316565', 'wrhauler', 84317341, 84317567, 145, 18, 1, 18, 0)
+('w8rhauler84316967', 'wrhauler', 84317348, 84317419, 72, 18, 1, 18, 0)
+('w8rhauler84315924', 'wrhauler', 84317374, 84317417, 44, 18, 1, 18, 0)
+('w8rminer84317407', 'wrminer', 84317484, 84317600, 117, 18, 1, 31, 35)
+('reserve784317554', 'reserve', 84317600, 84317600, 1, 27, 1, 27, 1)
+
+=== w8upgraders all this hour ===
+('w8upgrader84315293', 84317000, 84317400, 401, 'W47N8', 8, 21, 0, 'empty')
+('w8upgrader84316232', 84317000, 84317600, 601, 'W47N8', 12, 25, 30, 'loaded')
+('w8upgrader84316732', 84317000, 84317600, 601, 'W47N8', 14, 26, 20, 'loaded')
