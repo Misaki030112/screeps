@@ -1,1 +1,14 @@
-retry2 skipped 2026-11-16 09:38 Asia/Hong_Kong: first pass had missing_chunks=0 at game.time=84295748 (all 35 official GETs 200); confirm at 09:37:21 game.time=84295767 had no in-window official 404s and retried 35 aged leftover official 404s including W46N8@84292000, all still 404 (aged inserted=0). No remaining in-window official 404s to retry.
+retry2 GET start 2026-11-18 09:38:59 Asia/Hong_Kong game.time=84332362 tick_s=4.726267999999999 targets=5
+  pre  W45N8@84332200 distinct=0 rows=0 range=None..None
+  still_404 W45N8@84332200 at 09:39:00 game.time=84332362
+  pre  W47N7@84331000 distinct=0 rows=0 range=None..None
+  still_404 W47N7@84331000 at 09:39:02 game.time=84332362
+  pre  W47N7@84330300 distinct=0 rows=0 range=None..None
+  still_404 W47N7@84330300 at 09:39:03 game.time=84332362
+  pre  W45N8@84328100 distinct=16 rows=81 range=84328185..84328200
+  still_404 W45N8@84328100 at 09:39:04 game.time=84332362
+  pre  W45N7@84328300 distinct=0 rows=0 range=None..None
+  still_404 W45N7@84328300 at 09:39:05 game.time=84332362
+recovered=[] still_404=['W45N8@84332200', 'W47N7@84331000', 'W47N7@84330300', 'W45N8@84328100', 'W45N7@84328300'] inserted=0 ts_realigned=0
+gets_written 5 /workspace/screeps/state/_halfhour_2026-11-18_0930/backfill_confirm_gets.json
+finished
