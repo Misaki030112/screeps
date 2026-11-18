@@ -8,8 +8,10 @@ const F = require('./fill');
 // 31,48 <-> 17,33 / 8,23 for ~300 t carrying 66 energy. In W47N8 the search ignores creeps; one creep-aware search only when stuck
 // (utils/combatmove, same rule as the w8 combat roles since #35).
 // yieldPost: the filler sits on 34,32, the road step off both hub spawns. A 10W2M move through that
-// tile dances in 32,30/33,31 and the stuck repath takes the north walk. 32,32 still reaches 33,33.
-const go = (c, x, y, r = 1) => (c.room.name === C.ROOM ? CMV.to(c, x, y, r, F.yieldPost, 10)
+// tile dances in 32,30/33,31 and the stuck repath takes the north walk. 32,32 still reaches 33,33
+// when the container is free. yieldHub also raises 32,32 and 33,33 when 33,33 is occupied so a
+// 1-MOVE upgrader takes the post instead of bouncing in the 32,32 cul-de-sac (23:18 patrol).
+const go = (c, x, y, r = 1) => (c.room.name === C.ROOM ? CMV.to(c, x, y, r, F.yieldHub, 10)
   : c.moveTo(new RoomPosition(x, y, C.ROOM), { range: r, reusePath: 10, maxRooms: 1 }));
 const E = 'energy';
 const FM = require('./fillmeter');

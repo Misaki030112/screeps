@@ -60,7 +60,7 @@ cases.push(['moving or fatigued creeps never switch to the creep-aware search', 
 cases.push(['in range: no move, no search', () => { const c = creep(29, 6); Game.time = 4000; assert.strictEqual(CMV.to(c, 29, 5, 1, null, 2), 0); assert.strictEqual(c.calls.length, 0); }]);
 cases.push(['14:3x w8builder84200485: W47N8 roles.js go() uses combatmove in-room (creeps ignored), vanilla moveTo only cross-room', () => {
   const t = require('fs').readFileSync(src('rooms/w47n8/roles.js'), 'utf8');
-  assert.ok(/const go = \(c, x, y, r = 1\) => \(c\.room\.name === C\.ROOM \? CMV\.to\(c, x, y, r, F\.yieldPost, 10\)/.test(t));
+  assert.ok(/const go = \(c, x, y, r = 1\) => \(c\.room\.name === C\.ROOM \? CMV\.to\(c, x, y, r, F\.yieldHub, 10\)/.test(t));
 }]);
 let fail = 0; for (const [n, f] of cases) { try { f(); console.log('ok  ', n); } catch (e) { fail++; console.log('FAIL', n, e.message); } }
 console.log(`creep audit 11-11: ${cases.length - fail}/${cases.length}`); process.exit(fail ? 1 : 0);

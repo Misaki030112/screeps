@@ -13,6 +13,12 @@ const E = 'energy', K = (x, y) => x * 50 + y, POST = [34, 32], TOWER_R = 8;
 // 32,34 is not on that diagonal) is +1. The north walk around the hub wall is ~+10. 4 diverts
 // traffic off the post without making the post itself worse than that north walk.
 const POST_COST = 4;
+// 32,32 is a 2-exit cul-de-sac once link 32,33, terminal 33,32 and ext 32,31 stand
+// (exits: hub container 33,33 and 33,31). CMV.to ignores creeps until STUCK=3, so a
+// 1-MOVE upgrader that steps into 32,32 while 33,33 is occupied bounces 32,32 ↔ 33,31
+// (23:18 patrol: w8upgrader84323984, 233t walk, 5 pocket bounces). Cost 8 is above
+// POST_COST so the search takes the already-yielded post 34,32 → 34,33 → 33,34.
+const POCKET = [32, 32], HUB = C.HUB_CONT, POCKET_COST = 8;
 const cheb = (a, b) => Math.max(Math.abs(a[0] - b[0]), Math.abs(a[1] - b[1]));
 const TEMP = new Set(L.TEMP_EXT.map(([x, y]) => K(x, y)));
 const isS2 = s => s.structureType === STRUCTURE_SPAWN && s.pos.x === C.SPAWN[0] && s.pos.y === C.SPAWN[1];
@@ -262,10 +268,31 @@ function run(c) {
 // Raise the filler's idle road so a search takes 33,31 → 32,32 → 33,33 instead of stepping on
 // the post. Leave a blocked tile (255) alone, and leave the post walkable for the filler itself.
 // moveTo and military.costMatrix call (roomName, matrix); move.matrix and direct tests call (matrix).
+// Occupancy must NOT be painted here: move.matrix is cached across ticks until the structure
+// set changes, so a stale 32,32 cost would stick long after 33,33 cleared (or never appear).
+function roomW8() { return (typeof Game !== 'undefined' && Game.rooms && Game.rooms[C.ROOM]) || null; }
+function occupied(room, x, y) {
+  if (!room || typeof room.lookForAt !== 'function') return false;
+  const t = typeof LOOK_CREEPS !== 'undefined' ? LOOK_CREEPS : 'creep';
+  const at = room.lookForAt(t, x, y);
+  return !!(at && at.length);
+}
 function yieldPost(a, b) {
   const costs = (b && typeof b.get === 'function') ? b : a;
   if (!costs || typeof costs.get !== 'function') return costs;
   if (costs.get(POST[0], POST[1]) < 255) costs.set(POST[0], POST[1], POST_COST);
   return costs;
 }
-module.exports = { run, want, body, active, alive, stock, reserve, duty, ROUTES, POST, POST_COST, yieldPost, ENTRY: () => ENTRY, isDuty: (room, s) => s.structureType !== STRUCTURE_TOWER && duty(room).byKey[K(s.pos.x, s.pos.y)] === s.id };
+// In-room go() costCallback (runs on every moveTo search, not the cached matrix). When 33,33
+// is occupied, raise 32,32 and 33,33 above POST_COST so a 1-MOVE upgrader takes the post
+// (or leaves the cul-de-sac via 33,31) instead of bouncing 32,32 ↔ 33,31. Haulers that must
+// stand on the container still use yieldPost via move.matrix.
+function yieldHub(a, b) {
+  const costs = yieldPost(a, b);
+  if (!costs || typeof costs.get !== 'function') return costs;
+  if (!occupied(roomW8(), HUB[0], HUB[1])) return costs;
+  if (costs.get(POCKET[0], POCKET[1]) < 255) costs.set(POCKET[0], POCKET[1], POCKET_COST);
+  if (costs.get(HUB[0], HUB[1]) < 255) costs.set(HUB[0], HUB[1], POCKET_COST);
+  return costs;
+}
+module.exports = { run, want, body, active, alive, stock, reserve, duty, ROUTES, POST, POST_COST, POCKET, POCKET_COST, yieldPost, yieldHub, ENTRY: () => ENTRY, isDuty: (room, s) => s.structureType !== STRUCTURE_TOWER && duty(room).byKey[K(s.pos.x, s.pos.y)] === s.id };
