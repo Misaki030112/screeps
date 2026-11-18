@@ -1,0 +1,42 @@
+AUTO TIP 84343710
+room_stats (84343710, datetime.timedelta(seconds=21, microseconds=609557))
+creep_ticks (84343714, datetime.timedelta(seconds=4, microseconds=496240))
+creep_cpu (84343700, datetime.timedelta(seconds=43, microseconds=485850))
+12h W46N8 max (84340530, datetime.datetime(2026, 11, 18, 20, 14, 12, 750355, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 19772) n>=40k 0 n>=20k 0
+12h W47N8 max (84343500, datetime.datetime(2026, 11, 19, 0, 6, 32, 745419, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 36249) n>=40k 0 n>=20k 573
+13h W46N8 max (84340530, datetime.datetime(2026, 11, 18, 20, 14, 12, 750355, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 19772) n>=40k 0 n>=20k 0
+13h W47N8 max (84343500, datetime.datetime(2026, 11, 19, 0, 6, 32, 745419, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 36249) n>=40k 0 n>=20k 646
+=== room_stats gaps >=30t since last ===
+ gap 84343250 2026-11-18 23:47:02.515987+08:00 -> 84343460 2026-11-19 00:03:24.939920+08:00 dt 210
+ gap 84343610 2026-11-19 00:15:27.040445+08:00 -> 84343670 2026-11-19 00:19:52.213611+08:00 dt 60
+samples 54 first (84342930, datetime.datetime(2026, 11, 18, 23, 22, 0, 989360, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai'))) last (84343710, datetime.datetime(2026, 11, 19, 0, 23, 3, 602152, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')))
+=== critical role last/zero_runs since last ===
+  miner: last=2 last_nz=(84343710, datetime.datetime(2026, 11, 19, 0, 23, 3, 602152, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 2) zero_runs=[]
+  queen: last=2 last_nz=(84343710, datetime.datetime(2026, 11, 19, 0, 23, 3, 602152, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 2) zero_runs=[]
+  rminer: last=2 last_nz=(84343710, datetime.datetime(2026, 11, 19, 0, 23, 3, 602152, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 2) zero_runs=[]
+  reserver: last=2 last_nz=(84343710, datetime.datetime(2026, 11, 19, 0, 23, 3, 602152, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 2) zero_runs=[(84343010, 84343170, 160, '2026-11-18 23:28:19.735948+08:00', '2026-11-18 23:40:52.075825+08:00')]
+  reserve7: last=0 last_nz=(84343480, datetime.datetime(2026, 11, 19, 0, 4, 59, 308869, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 1) zero_runs=[(84343490, 84343710, 220, '2026-11-19 00:05:46.128684+08:00', '2026-11-19 00:23:03.602152+08:00')]
+  upgrader: last=1 last_nz=(84343710, datetime.datetime(2026, 11, 19, 0, 23, 3, 602152, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 1) zero_runs=[]
+  w8filler: last=2 last_nz=(84343710, datetime.datetime(2026, 11, 19, 0, 23, 3, 602152, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 2) zero_runs=[]
+  w8miner: last=4 last_nz=(84343710, datetime.datetime(2026, 11, 19, 0, 23, 3, 602152, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 4) zero_runs=[]
+  w8rminer: last=3 last_nz=(84343710, datetime.datetime(2026, 11, 19, 0, 23, 3, 602152, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 3) zero_runs=[]
+  w8upgrader: last=3 last_nz=(84343710, datetime.datetime(2026, 11, 19, 0, 23, 3, 602152, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 3) zero_runs=[]
+  hauler: last=1 last_nz=(84343710, datetime.datetime(2026, 11, 19, 0, 23, 3, 602152, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 1) zero_runs=[]
+  builder: last=1 last_nz=(84343710, datetime.datetime(2026, 11, 19, 0, 23, 3, 602152, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 1) zero_runs=[(84342930, 84343550, 620, '2026-11-18 23:22:00.989360+08:00', '2026-11-19 00:10:29.422542+08:00')]
+=== upgrader/reserver/guard trajectories ===
+Traceback (most recent call last):
+  File "/workspace/screeps/state/_patrol_2026-11-19_0019/traj.py", line 98, in <module>
+    creeps = c.execute(
+             ~~~~~~~~~^
+        """SELECT DISTINCT name, role FROM creep_ticks
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<2 lines>...
+        (LAST, TIP + 200),
+        ^^^^^^^^^^^^^^^^^^
+    ).fetchall()
+    ^
+  File "/workspace/screeps/.venv/lib/python3.13/site-packages/psycopg/connection.py", line 304, in execute
+    raise ex.with_traceback(None)
+psycopg.errors.UndefinedColumn: column "name" does not exist
+LINE 1: SELECT DISTINCT name, role FROM creep_ticks
+                        ^
