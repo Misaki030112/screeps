@@ -1,0 +1,32 @@
+intervals_w46:
+  84333900..84334000 4.61655
+  84334000..84334100 4.67624
+  84334100..84334200 4.86725
+  84334200..84334300 4.68694
+  84334300..84334400 4.66392
+  84334400..84334500 4.68022
+intervals_min_all_rooms:
+  84333900..84334000 4.61655
+  84334000..84334100 4.67624
+  84334100..84334200 4.86725
+  84334200..84334300 4.68694
+  84334300..84334400 4.66392
+  84334400..84334500 4.68022
+first=4.61655 later_mean_raw=4.71491 later_mean_robust=4.71491
+all_mean=4.69852 span_mean=4.69852 script_tick_s=4.61655 prev_later=4.65958
+delta_first_minus_later_raw=-0.09836 s/tick; at tmin vs gt_first ~72.1s
+delta_first_minus_later_robust=-0.09836 s/tick; at tmin vs gt_first ~72.1s
+anchor 2026-11-18 12:36:34 Asia/Hong_Kong game.time=84334653
+vs_first tick_s=4.61655 {'over45': 0, 'over15': 8204, 'n': 26997, 'mean_off': -8.020635956995221, 'min_off': -35.946625, 'max_off': 9.739575}
+vs_later_raw tick_s=4.71491 {'over45': 2155, 'over15': 24078, 'n': 26997, 'mean_off': 31.307019726969664, 'min_off': 6.621277, 'max_off': 83.709303}
+vs_later_robust tick_s=4.71491 {'over45': 2155, 'over15': 24078, 'n': 26997, 'mean_off': 31.307019726969664, 'min_off': 6.621277, 'max_off': 83.709303}
+vs_all_mean tick_s=4.69852 {'over45': 1011, 'over15': 21268, 'n': 26997, 'mean_off': 24.75241044630885, 'min_off': 5.736001, 'max_off': 71.381015}
+vs_span_mean tick_s=4.69852 {'over45': 1011, 'over15': 21268, 'n': 26997, 'mean_off': 24.75241044630885, 'min_off': 5.736001, 'max_off': 71.381015}
+vs_prev_later tick_s=4.65958 {'over45': 0, 'over15': 5904, 'n': 26997, 'mean_off': 9.183514180057044, 'min_off': -10.948543, 'max_off': 42.098135}
+lowest_over45_among_sane=first {'over45': 0, 'over15': 8204, 'n': 26997, 'mean_off': -8.020635956995221, 'min_off': -35.946625, 'max_off': 9.739575}
+corrective realign applied nfix=1679 at game.time=84334653 tick_s=4.71491
+after vs_later_mean_robust {'over45': 0, 'over15': 21234, 'n': 26997, 'mean_off': 25.149912197355263, 'min_off': 0.0, 'max_off': 44.992328}
+after vs_first {'over45': 1072, 'over15': 9927, 'n': 26997, 'mean_off': -14.177743486609623, 'min_off': -73.969728, 'max_off': 2.973764}
+wrote /workspace/screeps/state/_halfhour_2026-11-18_1230/tick_s_realign.json
+corrective_applied=True nfix=1679 skipped_cross_chunk=0
+reason: first-interval tick_s=4.61655 (printed 4.617, min-all-rooms first two bases) is in the sane 3-6s band; later-mean-robust 4.71491 (raw later-mean 4.71491; delta first-robust -0.09836 s/tick, ~72.1s at tmin). First-pass realign with tick_s=4.61655 (printed 4.617) moved 0 rows (ts_realigned_first=0, inserted=6141); rows already inside 45s gate.; applied corrective later-mean-robust realign of 1679 rows at game.time=84334653; still_over_45s_vs_later=0; skipped_cross_chunk=0
