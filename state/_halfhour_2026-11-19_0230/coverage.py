@@ -8,11 +8,11 @@ import sys
 sys.path.insert(0, "/workspace/screeps/tools")
 import db
 
-TMIN, TMAX = 84344201, 84344900
+TMIN, TMAX = 84344601, 84345300
 ROOMS = ("W46N8", "W47N8", "W45N8", "W45N7", "W47N7")
-DIR = "/workspace/screeps/state/_halfhour_2026-11-19_0200"
+DIR = "/workspace/screeps/state/_halfhour_2026-11-19_0230"
 # First pass 34 of 35 official GETs 200, missing_chunks=1 W45N8@84344700.
-# published_bases 84344200..84344800; reconstructed 84344201..84344900 (700).
+# published_bases 84344600..84345200; reconstructed 84344601..84345300 (700).
 # In-window official 404: W45N8@84344700 (neighbors @84344600/@84344800 both 200).
 IN_WINDOW_404 = {("W45N8", 84344700)}
 OUT = sys.argv[1] if len(sys.argv) > 1 else f"{DIR}/coverage_final.json"

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Fetch just-published official history base 84344900 once game.time is safely past 84345000."""
+"""Fetch just-published official history base 84345300 once game.time is safely past 84345400."""
 from __future__ import annotations
 import sys, time
 from collections import defaultdict
@@ -11,9 +11,9 @@ import history_backfill as hb
 import db, api
 
 ROOMS = ("W46N8", "W47N8", "W45N8", "W45N7", "W47N7")
-JUST_BASE = 84344900
-RETRY_404 = [("W45N8", 84344700)]  # first-pass official 404, still 404 after confirm 02:01:40 gt=84344957; neighbors @84344600/@84344800 both 200
-TICK_S = 4.76498  # later-mean-robust; corrective applied nfix=653 at gt=84344955; first-interval 4.76286 printed 4.763; after over45 later=0
+JUST_BASE = 84345300
+RETRY_404 = [("W45N8", 84344700)]  # first-pass official 404; confirm/retry2 will note times; neighbors @84344600/@84344800 both 200
+TICK_S = 4.78116  # first-interval (printed 4.781); later-mean-robust 4.75167 already inside 45s gate, no corrective; prev in-use 4.76498 also over45=0
 
 LIVE = "/workspace/screeps/metrics/live.json"
 WAIT_UNTIL_GT = JUST_BASE + 140  # last window first try at +102 was still 404; recovered at +141
@@ -196,9 +196,9 @@ def main():
             for room in ROOMS:
                 mn, mx, n, d = db_span(c, room, JUST_BASE + 1, JUST_BASE + 100)
                 print(f"    {room} {mn}..{mx} rows={n} distinct={d}/100", flush=True)
-            print("  this-window official published 84344201..84344900:", flush=True)
+            print("  this-window official published 84344601..84345300:", flush=True)
             for room in ROOMS:
-                mn, mx, n, d = db_span(c, room, 84344201, 84344900)
+                mn, mx, n, d = db_span(c, room, 84344601, 84345300)
                 print(f"    {room} {mn}..{mx} rows={n} distinct={d}/700", flush=True)
         print("finished", flush=True)
         return

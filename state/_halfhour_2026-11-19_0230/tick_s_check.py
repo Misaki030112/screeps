@@ -7,7 +7,7 @@ from zoneinfo import ZoneInfo
 from pathlib import Path
 
 ROOT = Path("/workspace/screeps")
-DIR = ROOT / "state" / "_halfhour_2026-11-19_0200"
+DIR = ROOT / "state" / "_halfhour_2026-11-19_0230"
 os.chdir(ROOT)
 sys.path.insert(0, "tools")
 sys.path.insert(0, "scripts")
@@ -16,36 +16,37 @@ import history_backfill as hb
 
 # Official chunk timestamps printed by history_backfill.py
 # First pass 34 of 35 official GETs 200, missing_chunks=1 W45N8@84344700.
-# published_bases 84344200..84344800; reconstructed 84344201..84344900 (700).
+# published_bases 84344600..84345200; reconstructed 84344601..84345300 (700).
 # First-pass tick_s used min-of-all-rooms on the first two bases,
-# computed 4.76286, script printed 4.763. First-pass realign moved 39 (ts_realigned=39, inserted=6990; already_in_db=20614).
+# computed 4.78116, script printed 4.781. First-pass realign moved 0 (ts_realigned=0, inserted=3631; already_in_db=25118).
 # In-window official 404: W45N8@84344700 (neighbors @84344600/@84344800 both 200).
-# 01:30 half-hour official already through 84344500 / reconstructed through 84344600 (overlap)
-# and just-published 84344600 (5/5 rooms) through 84344700.
+# 02:00 half-hour official already through 84344800 / reconstructed through 84344900 (overlap)
+# and just-published 84344900 (5/5 rooms) through 84345000.
+# 02:17 hourly patrol already wrote official 84345000 and 84345100 (84345001..84345200).
 W46 = {
-    84344200: 1795021796399,
-    84344300: 1795022272685,
-    84344400: 1795022762338,
-    84344500: 1795023244632,
     84344600: 1795023720345,
     84344700: 1795024198461,
     84344800: 1795024655177,
+    84344900: 1795025138527,
+    84345000: 1795025621566,
+    84345100: 1795026097901,
+    84345200: 1795026574295,
 }
 MIN_ALL = {
-    84344200: 1795021796399,  # W46N8 (W45N7 1795021798194 later)
-    84344300: 1795022272685,  # W46N8 (W45N7 1795022274945 later)
-    84344400: 1795022761715,  # W45N7 (W46N8 1795022762338 later)
-    84344500: 1795023244632,  # W46N8 (W45N7 1795023246015 later)
     84344600: 1795023720345,  # W46N8 (W45N7 1795023723007 later)
     84344700: 1795024198461,  # W46N8 (W45N7 1795024199318 later; W45N8 official 404)
     84344800: 1795024655177,  # W46N8 (W45N7 1795024655931 later)
+    84344900: 1795025138527,  # W46N8 (W45N7 1795025142256 later)
+    84345000: 1795025620960,  # W45N7 (W46N8 1795025621566 later)
+    84345100: 1795026097901,  # W46N8 (W45N7 1795026098258 later)
+    84345200: 1795026574295,  # W46N8 (W45N7 1795026576057 later)
 }
-TMIN, TMAX = 84344201, 84344900
+TMIN, TMAX = 84344601, 84345300
 ROOMS = ("W46N8", "W47N8", "W45N8", "W45N7", "W47N7")
-TICK_S_FIRST = (MIN_ALL[84344300] - MIN_ALL[84344200]) / 1000.0 / 100  # 4.76286; script printed 4.763
-GT_FIRST = 84344934
-TS_REALIGNED_FIRST = 39  # first-pass realign moved 39 (inserted=6990, already_in_db=20614)
-PREV_LATER_MEAN = 4.79049  # 01:30 half-hour in-use later-mean-robust
+TICK_S_FIRST = (MIN_ALL[84344700] - MIN_ALL[84344600]) / 1000.0 / 100  # 4.78116; script printed 4.781
+GT_FIRST = 84345343
+TS_REALIGNED_FIRST = 0  # first-pass realign moved 0 (inserted=3631, already_in_db=25118)
+PREV_LATER_MEAN = 4.76498  # 02:00 half-hour in-use later-mean-robust
 
 def intervals(d):
     bases = sorted(d)
@@ -181,11 +182,11 @@ def main():
     skipped_chunk = 0
     first_outlier = not (3.0 <= TICK_S_FIRST <= 6.0)
     first_pass_realign_error = (
-        f"First-pass realign with tick_s={TICK_S_FIRST:.5f} (printed 4.763) moved {TS_REALIGNED_FIRST} rows "
-        f"(ts_realigned_first={TS_REALIGNED_FIRST}, inserted=6990)."
+        f"First-pass realign with tick_s={TICK_S_FIRST:.5f} (printed 4.781) moved {TS_REALIGNED_FIRST} rows "
+        f"(ts_realigned_first={TS_REALIGNED_FIRST}, inserted=3631)."
     )
     reason = (
-        f"first-interval tick_s={TICK_S_FIRST:.5f} (printed 4.763, min-all-rooms first two bases) "
+        f"first-interval tick_s={TICK_S_FIRST:.5f} (printed 4.781, min-all-rooms first two bases) "
         f"{'is an OUTLIER' if first_outlier else 'is in the sane 3-6s band'}; "
         f"later-mean-robust {later_mean_robust:.5f} (raw later-mean {later_mean_raw:.5f}; "
         f"delta first-robust {first-later_mean_robust:.5f} s/tick, "

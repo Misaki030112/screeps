@@ -12,8 +12,8 @@ import db
 
 HK = ZoneInfo("Asia/Hong_Kong")
 ROOT = Path("/workspace/screeps")
-DIR = ROOT / "state" / "_halfhour_2026-11-19_0200"
-PREV_END = 84344700  # 01:30 half-hour official already through 84344500 / reconstructed through 84344600; just-published 84344600 (84344601..84344700) for all 5 rooms at 01:44:40 (gt 84344740). Leftover official 404 W47N8@84343800 already aged out of that 40-min window. New room_stats gap expected from box freeze 01:48:36-01:58:05 (564s), listener auto-restart 01:58:08 (pid 662251; this run did not restart it).
+DIR = ROOT / "state" / "_halfhour_2026-11-19_0230"
+PREV_END = 84345000  # 02:00 half-hour official already through 84344800 / reconstructed through 84344900; just-published 84344900 (84344901..84345000) for all 5 rooms at 02:08:26 (gt 84345042). Leftover official 404 W45N8@84344700 still in this 40-min window. 02:17 hourly patrol later wrote official 84345000 and 84345100 (84345001..84345200) for all 5 rooms and retried W45N8@84344700 still 404. New room_stats gap expected from box freeze 02:16:19-02:17:47 (79s), listener auto-restart 02:17:50 (pid 671018; this run did not restart it).
 ROOMS = ("W46N8", "W47N8", "W45N8", "W45N7", "W47N7")
 PREV_GAPS = [
     # last run documented freeze gaps; will also detect new ones from room_stats
@@ -188,7 +188,7 @@ with db.connect() as conn:
         out(f"  {table}: last2h-ish ticks={mn}..{mx} rows={n}")
 
     start_after = PREV_END + 1
-    out(f"creep_ticks since tick {start_after} (after 01:30 half-hour official through 84344500 / reconstructed through 84344600 and just-published 84344600 -> 84344700 for all 5 rooms; leftover official 404 W47N8@84343800 already aged out):")
+    out(f"creep_ticks since tick {start_after} (after 02:00 half-hour official through 84344800 / reconstructed through 84344900 and just-published 84344900 -> 84345000 for all 5 rooms; leftover official 404 W45N8@84344700 still in window; 02:17 patrol already wrote 84345001..84345200):")
     for room in ROOMS:
         c.execute(
             "select min(tick), max(tick), count(*), count(distinct tick) from creep_ticks where room=%s and tick>=%s",

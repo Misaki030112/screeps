@@ -9,21 +9,21 @@ import history_backfill as hb
 import db, api
 
 ROOMS = ("W46N8", "W47N8", "W45N8", "W45N7", "W47N7")
-# First pass at game.time=84344934; published_bases 84344200..84344800,
-# reconstructed 84344201..84344900 (700). inserted=6990, already_in_db=20614, reconstructed=27604,
-# ts_realigned_first_pass=39 (first-interval tick_s=4.76286 script printed 4.763).
+# First pass at game.time=84345343; published_bases 84344600..84345200,
+# reconstructed 84344601..84345300 (700). inserted=3631, already_in_db=25118, reconstructed=28749,
+# ts_realigned_first_pass=0 (first-interval tick_s=4.78116 script printed 4.781).
 # In-window official 404: W45N8@84344700 (neighbors @84344600/@84344800 both 200; 34 of 35 official GETs 200).
 # Aged leftover official 404s (W47N8@84343800 and older) are outside this 40-min window and were not retried this pass.
-# 01:30 half-hour official already through 84344500 / reconstructed through 84344600
-# and just-published 84344600 (5/5 rooms) through 84344700.
+# 02:00 half-hour official already through 84344800 / reconstructed through 84344900
+# and just-published 84344900 (5/5 rooms) through 84345000. 02:17 patrol already wrote 84345001..84345200.
 IN_WINDOW = [
     ("W45N8", 84344700),  # first-pass official 404; neighbors @84344600/@84344800 both 200
 ]
 AGED = []
-TICK_S = 4.76286  # overwritten from tick_s_realign.json if present
+TICK_S = 4.78116  # overwritten from tick_s_realign.json if present
 PASS = sys.argv[1] if len(sys.argv) > 1 else "confirm"
-OUT = "/workspace/screeps/state/_halfhour_2026-11-19_0200/backfill_confirm_gets.json"
-TICK_S_FILE = "/workspace/screeps/state/_halfhour_2026-11-19_0200/tick_s_realign.json"
+OUT = "/workspace/screeps/state/_halfhour_2026-11-19_0230/backfill_confirm_gets.json"
+TICK_S_FILE = "/workspace/screeps/state/_halfhour_2026-11-19_0230/tick_s_realign.json"
 
 def load_tick_s():
     global TICK_S
