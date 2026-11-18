@@ -1,0 +1,21 @@
+computed official window t84331400→84340690
+ticks=9290 wall_s=43409.922596 wall_h=12.058311832222222 tick_s=4.6727580835306775
+expected_10t_slots=930 n_samples/room=674 coverage_pct=72.47311827956989
+home first=7873927 last=8074344 delta=200417 e_per_t=21.5734122712594187 pct=73.83945130315501 remaining=2860656 eta_days=7.17
+w47  first=4651772 last=4831392 delta=179620 e_per_t=19.3347685683530678 pct=44.18282578875171 remaining=6103608 eta_days=17.07
+last morning tick_s was 4.7455; this window tick_s 4.6728 (shard slightly faster — calendar ETA tightened on both pace and tick_s)
+home 3h 20.23 e/t (84338390-84340690, n=146); 6h 20.68 e/t (84336080-84340690, n=310); 1h 21.56; exact2h 19.28/26=74.1%
+w47 3h 19.22 e/t; 6h 19.18 e/t; 1h 18.40/30.08=61.2%; exact2h 18.52/30.08=61.6%
+home 20k: this window max 19772 @84340530-84340640 / 20:14:12-20:22:50; 0 samples ≥20k, no contiguous ≥20k stretch. Latch 300t NOT armed. (Last evening max 20244 / only 20 t; this morning max 19077.)
+home under15: 15.73% (was 19.25%); min 11500 @14:13:34 / 84335910; longest stretch 401 t (14:05:46-14:36:49, min 11500) after the 13:48-14:05 W45N7 Invader, plus 191 t (11:33-11:48, min 12319). 17 stretches, 106/674 samples. Do not change the 15k floor.
+w47 40k: no ≥40k samples this window (0%). Window max 34155 @84337080 / 15:44:53; longest ≥30k 211 t (16:03:29-16:19:56, 30505-32355) and 181 t (15:36-15:50, peak 34155). Latch 500t NOT armed (upLatched=0). All-time high remains 11-17 morning 44416 / 341 t; closest clean camp remains 11-17 evening 470 t / peak 43041.
+w47 <22k ARM: morning leftover closed; then after the 16:48-17:10 W47N7 Invader: 210 t (16:58-17:14, min 16878), 300 t (17:19-17:42, min 15078), 210 t (17:57-18:14), 210 t (18:21-18:37), 150 t (18:59-19:11), 330 t (19:18-19:44, min 18621). Recovered to ≥25k by 20:00 (20:00-20:14 stor 25007; live 25271).
+w47 ≥20k 80.71% (was 99.25%); ≥25k 62.17% (was 88.79%); ≥30k 7.72% (was 35.51%); ≥40k 0% (was 0%).
+tip softCap2=0 threatSoft=0 sealPark=1 bankWhy=ready softLeft=0 keep=2 upLatched=0 leanBank=0 siteRem=0 phase=ready why=done storE=25271 sealMinE=25000 upgCeil=2 hubLink=1 (live q @84340702-704). Morning leftover EXPIRED and banked back above 25k.
+KO total 18716 = 18036 stor + 680 lab + 0 term (was 14071 this morning). 15k reaction floor NOT pausing at the tip (actOk=1 why=active homeStor≈18972). 20k boost skip held (0 samples ≥20k; no boost event in the window).
+LIVE 289a7f06 @84334122 / 11:55:12 (already-live this window, not this review; "W47 filler parks on 34,32 when full; occupied-hub bypass kept"). Prior 8daf0494 held from window open until that deploy (room_stats 8daf0494 n=196 through 84334130; 289a7f06 n=477 from 84334140). One empty-commit sample at 84337620 / 16:26. Memory.stats.commit is null at the live tip (same as recent reviews). deploy.lock absent. Live filler 84339665 was on 34,32 with 1200e at the tip.
+box pauses: 19, 11280 s (~3.13 h). Coverage 72.5% is better than this morning's 58.7% (27 pauses / 16809 s) after official history backfill.
+CPU 12h avg 17.24 p95 20.54 max 33.16 @18:37 bucket min 9947 n_cpu≥40=0 (was 17.82 / 21.36 / 25.99).
+Ledger: clean snap existed at t84331436 (2026-11-18 08:26); new snap t84340747. Window 9311 t / 12.08 h. Home up 18.44, net spawn 14.41, net sp:upgrader 1.66 (2.33-0.67) under the 5 e/t waste gate. W47 up 19.34 matches room_stats 19.335.
+Formal W47: 19:20 patrol FIRED (second consecutive dual: exact2h 19.66=65.4%, short last20-500 designed 20 e/t=66.5% soft). At the 20:21 tip exact2h 18.52=61.6% still under 70%; last20-200 20.00=66.5% and last300 20.57=68.4% are soft, but last500 22.10=73.5% is not soft. The 20:17 hourly patrol will settle hold vs non-confirm; strategy is unchanged either way (designed keep=2 20 e/t = 66.5% of 30.08).
+Home formal: exact2h 19.28/26=74.1% ABOVE; last20-300 28.00=107.7%.

@@ -1,0 +1,155 @@
+{
+  "ok_quiet": true,
+  "finished_hkt": "2026-11-18 19:44 Asia/Hong_Kong",
+  "game_time_first": 84340027,
+  "published_bases": "84339300..84339900",
+  "rooms": [
+    "W46N8",
+    "W47N8",
+    "W45N8",
+    "W45N7",
+    "W47N7"
+  ],
+  "tmin": 84339301,
+  "tmax": 84340000,
+  "tick_s_first": 4.65225,
+  "tick_s_printed": "4.652",
+  "tick_s_in_use": 4.75473,
+  "ts_realigned_first": 1374,
+  "ts_realigned_corrective": 12476,
+  "gt_corrective": 84340049,
+  "reconstructed_rows": 26837,
+  "already_in_db": 20707,
+  "inserted_first": 6130,
+  "inserted_confirm": 0,
+  "inserted_retry2": 0,
+  "inserted_just_published": 2416,
+  "inserted_window": 6130,
+  "inserted_total": 8546,
+  "missing_chunks": 0,
+  "first_pass": "first pass 35 of 35 official GETs 200, missing_chunks=0; hourly_patrol_prefilled=true from 19:17 patrol official already through 84339800 (overlap of this window); 19:05 half-hour already wrote through 84339600 and just-published 84339500 (84339501..84339600) for all five rooms (this pass already_in_db=20707 / inserted=6130)",
+  "per_room": "W46N8:700t/810new W47N8:700t/2757new W45N8:700t/745new W45N7:700t/708new W47N7:700t/1110new",
+  "coverage": {
+    "coverage": {
+      "W46N8": {
+        "distinct": 700,
+        "missing_n": 0,
+        "missing_ranges": [],
+        "official_empty_no_creep": 0,
+        "official_empty_no_creep_ranges": [],
+        "official_404_missing": 0,
+        "official_404_ranges": []
+      },
+      "W47N8": {
+        "distinct": 700,
+        "missing_n": 0,
+        "missing_ranges": [],
+        "official_empty_no_creep": 0,
+        "official_empty_no_creep_ranges": [],
+        "official_404_missing": 0,
+        "official_404_ranges": []
+      },
+      "W45N8": {
+        "distinct": 700,
+        "missing_n": 0,
+        "missing_ranges": [],
+        "official_empty_no_creep": 0,
+        "official_empty_no_creep_ranges": [],
+        "official_404_missing": 0,
+        "official_404_ranges": []
+      },
+      "W45N7": {
+        "distinct": 700,
+        "missing_n": 0,
+        "missing_ranges": [],
+        "official_empty_no_creep": 0,
+        "official_empty_no_creep_ranges": [],
+        "official_404_missing": 0,
+        "official_404_ranges": []
+      },
+      "W47N7": {
+        "distinct": 700,
+        "missing_n": 0,
+        "missing_ranges": [],
+        "official_empty_no_creep": 0,
+        "official_empty_no_creep_ranges": [],
+        "official_404_missing": 0,
+        "official_404_ranges": []
+      }
+    },
+    "official_recovered": 3500,
+    "expected": 3500,
+    "empty_no_creep": 0,
+    "official_404_missing": 0,
+    "unique_after": {
+      "rows": 26840,
+      "unique_creep_tick_rows": 26840,
+      "distinct_ticks": 700,
+      "distinct_room_ticks": 3500
+    },
+    "at": "2026-11-18T19:43:39.587426+08:00"
+  },
+  "tick_s_realign": {
+    "corrective_applied": true,
+    "later_mean_w46": 4.75473,
+    "still_over_45s_vs_later": 0,
+    "reason": "first-interval tick_s=4.65225 (printed 4.652, min-all-rooms first two bases) is in the sane 3-6s band; later-mean-robust 4.75473 (raw later-mean 4.75473; delta first-robust -0.10248 s/tick, ~74.4s at tmin). First-pass realign with tick_s=4.65225 (printed 4.652) moved 1374 rows (ts_realigned_first=1374, inserted=6130).; applied corrective later-mean-robust realign of 12476 rows at game.time=84340049; still_over_45s_vs_later=0; skipped_cross_chunk=0"
+  },
+  "just_published": {
+    "base": 84340000,
+    "oom_killed_at": [],
+    "oom_note": null,
+    "recovered_at": "19:42:55",
+    "recovered_game_time": 84340126,
+    "inserted": 2416,
+    "inserted_first_two": null,
+    "inserted_remaining_three": null,
+    "first_try_all_404": true,
+    "first_try_at": "19:41:01",
+    "first_try_game_time": 84340102,
+    "retry_at": "19:42:55",
+    "retry_game_time": 84340126,
+    "retry_inserted": 2416,
+    "already_in_db": 1453,
+    "ticks": "84340001..84340100",
+    "all_five_distinct": 100
+  },
+  "confirm": {
+    "at": "19:38:01",
+    "game_time": 84340063,
+    "inserted": 0,
+    "ssl_abort_first": null,
+    "targets": 49,
+    "note": "confirm already included 14 leftover + 35 aged; all still 404; no separate retry2"
+  },
+  "retry2": {
+    "at": null,
+    "game_time": null,
+    "inserted": 0,
+    "skipped": true,
+    "reason": "confirm already included AGED; all still 404"
+  },
+  "in_window_404": {},
+  "listener": {
+    "single_slot": true,
+    "roomSlot": "W45N7",
+    "rot": {
+      "i": 3,
+      "room": "W45N7",
+      "left": 120.0,
+      "at": "2026-11-18 19:44:08"
+    },
+    "yield": "absent",
+    "pid": 505651,
+    "restart_at": "19:18:10",
+    "this_run_restarted": false
+  },
+  "box_freeze": {
+    "from": "2026-11-18 19:11:47",
+    "to": "2026-11-18 19:18:07",
+    "sec": 377,
+    "room_stats_gap": "84339731..84339819",
+    "official_filled": "89/89 all five (including previously unpublished 84339801..84339819 recovered this first pass)"
+  },
+  "ok_line": "ok_quiet=True coverage=3500/3500 inserted_window=6130 inserted_total=8546 tick_s_in_use=4.75473 listener single_slot=True; no second listener; no war_cmd/pulse restart."
+}
