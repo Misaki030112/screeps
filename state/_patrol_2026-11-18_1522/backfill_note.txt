@@ -1,0 +1,6 @@
+2026-11-18 15:22 patrol history backfill
+first pass official shard3 5 rooms ticks 84336101..84336800 (700, published_bases 84336100..84336700 at game.time=84336808; tick_s=4.726; inserted=6075 already_in_db=17351 ts_realigned=0; missing_chunks=2, 33 of 35 official GETs 200: W46N8@84336400 404 and W47N7@84336700 404).
+Retry --minutes 15 ~15:31 at later game time recovered W47N7@84336700 (reconstructed 84336501..84336800 missing_chunks=0 inserted=492). W46N8@84336400 still official 404 (100t, 0 live rows).
+Hour-window from LAST_TIP 84336020 also covered by 15:00 half-hour through 84336500 plus this backfill. Unpublished tail 84336801+ expected (~30t to analysis TIP 84336830; later live 84336910).
+Leftover official 404s: in-window W46N8@84336400 (0/100t); outside window unchanged W47N8@84334600 (29 live, residual 71t), W47N7@84334700 (0 live / 100t), plus older known holes.
+Listener single-slot 5:5:1:1 preserved (restarted 15:04:12 after the 14:43:46–15:04:38 ~1252s box freeze; services.sh 15:23 already-running, no yield, commander not holding). Official history recovered mid-freeze trajectories through 84336800 except W46N8@84336400.
