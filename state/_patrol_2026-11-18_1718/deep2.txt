@@ -1,0 +1,143 @@
+======= events non-watch or not W45N8 =======
+total events 37
+by kind,room {('watch', 'W45N8'): 33, ('alert_new', 'W47N7'): 1, ('box_pause', None): 2, ('alert_ended', 'W47N7'): 1}
+  2026-11-18 16:48:15.192838+08:00 84337894 alert_new W47N7 medium remote-W47N7-84337894 Invader {'why': 'solo', 'room': 'W47N7', 'tick': 84337894, 'owner': 'Invader', 'state': 'THREAT', 'action': 'defender requested', 'creeps': 1, 'remote': 'W47N7', 'episode': 'remote-W47N7-84337894', 'invOnly': True, 'severity': 'medium', 'positions': [[26, 48]]}
+  2026-11-18 16:57:10.234749+08:00 84337910 box_pause None None None box frozen ~447s since 2026-11-18 16:49:42 {'sec': 447, 'from': '2026-11-18 16:49:42'}
+  2026-11-18 17:18:39.428393+08:00 84338093 box_pause None None None box frozen ~244s since 2026-11-18 17:14:33 {'sec': 244, 'from': '2026-11-18 17:14:33'}
+  2026-11-18 17:10:05.119955+08:00 84338175 alert_ended W47N7 low remote-W47N7-84337894 None {'room': 'W47N7', 'tick': 84338175, 'ended': True, 'action': 'remote resumed', 'remote': 'W47N7', 'episode': 'remote-W47N7-84337894', 'severity': 'low'}
+======= events kind!=watch (all rooms) =======
+  2026-11-18 16:48:15.192838+08:00 84337894 alert_new W47N7 medium remote-W47N7-84337894 Invader {'why': 'solo', 'room': 'W47N7', 'tick': 84337894, 'owner': 'Invader', 'state': 'THREAT', 'action': 'defender requested', 'creeps': 1, 'remote': 'W47N7', 'episode': 'remote-W47N7-84337894', 'invOnly': True, 'severity': 'medium', 'positions': [[26, 48]]}
+  2026-11-18 16:57:10.234749+08:00 84337910 box_pause None None None box frozen ~447s since 2026-11-18 16:49:42 {'sec': 447, 'from': '2026-11-18 16:49:42'}
+  2026-11-18 17:18:39.428393+08:00 84338093 box_pause None None None box frozen ~244s since 2026-11-18 17:14:33 {'sec': 244, 'from': '2026-11-18 17:14:33'}
+  2026-11-18 17:10:05.119955+08:00 84338175 alert_ended W47N7 low remote-W47N7-84337894 None {'room': 'W47N7', 'tick': 84338175, 'ended': True, 'action': 'remote resumed', 'remote': 'W47N7', 'episode': 'remote-W47N7-84337894', 'severity': 'low'}
+======= incidents since last =======
+cols ['ts', 'tick', 'remote', 'inc', 'ev', 'from_state', 'state', 'why', 'inv', 'inv_ttl', 'def', 'dur', 'data']
+  {'ts': datetime.datetime(2026, 11, 18, 17, 10, 5, 105508, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 'tick': 84338175, 'remote': 'W47N7', 'inc': 84337894, 'ev': 'cleared', 'from_state': 'DEFEND', 'state': 'SAFE', 'why': 'killed', 'inv': 0, 'inv_ttl': 0, 'def': 'out', 'dur': 281, 'data': {'ev': 'cleared', 'def': 'out', 'dur': 281, 'inc': 84337894, 'inv': 0, 'why': 'killed', 'from': 'DEFEND', 'tick': 84338175, 'state': 'SAFE', 'invTtl': 0, 'remote': 'W47N7', 'delivered': 0}}
+  {'ts': datetime.datetime(2026, 11, 18, 17, 4, 9, 220284, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 'tick': 84338099, 'remote': 'W47N7', 'inc': 84337894, 'ev': 'arrive', 'from_state': None, 'state': 'DEFEND', 'why': None, 'inv': 1, 'inv_ttl': 1294, 'def': 'out', 'dur': None, 'data': {'ev': 'arrive', 'def': 'out', 'inc': 84337894, 'inv': 1, 'tick': 84338099, 'state': 'DEFEND', 'invTtl': 1294, 'remote': 'W47N7', 'travel': 38, 'delivered': 0}}
+  {'ts': datetime.datetime(2026, 11, 18, 17, 1, 12, 719397, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 'tick': 84338061, 'remote': 'W47N7', 'inc': 84337894, 'ev': 'defend', 'from_state': 'THREAT', 'state': 'DEFEND', 'why': 'dispatched', 'inv': 1, 'inv_ttl': 1332, 'def': 'out', 'dur': 167, 'data': {'ev': 'defend', 'def': 'out', 'dur': 167, 'inc': 84337894, 'inv': 1, 'why': 'dispatched', 'from': 'THREAT', 'tick': 84338061, 'state': 'DEFEND', 'invTtl': 1332, 'remote': 'W47N7', 'delivered': 0}}
+  {'ts': datetime.datetime(2026, 11, 18, 14, 5, 38, 479750, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 'tick': 84335808, 'remote': 'W45N7', 'inc': 84335583, 'ev': 'cleared', 'from_state': 'DEFEND', 'state': 'SAFE', 'why': 'killed', 'inv': 0, 'inv_ttl': 0, 'def': 'out', 'dur': 225, 'data': {'ev': 'cleared', 'def': 'out', 'dur': 225, 'inc': 84335583, 'inv': 0, 'why': 'killed', 'from': 'DEFEND', 'tick': 84335808, 'state': 'SAFE', 'invTtl': 0, 'remote': 'W45N7', 'delivered': 3418375}}
+  {'ts': datetime.datetime(2026, 11, 18, 13, 48, 21, 355578, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 'tick': 84335584, 'remote': 'W45N7', 'inc': 84335583, 'ev': 'spawn_start', 'from_state': None, 'state': 'THREAT', 'why': None, 'inv': None, 'inv_ttl': None, 'def': 'defender84335584', 'dur': None, 'data': {'n': 1, 'ev': 'spawn_start', 'def': 'defender84335584', 'inc': 84335583, 'tick': 84335584, 'state': 'THREAT', 'remote': 'W45N7', 'waited': 1}}
+  {'ts': datetime.datetime(2026, 11, 18, 8, 16, 59, 952152, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 'tick': 84331326, 'remote': 'W47N7', 'inc': 84331122, 'ev': 'cleared', 'from_state': 'DEFEND', 'state': 'SAFE', 'why': 'killed', 'inv': 0, 'inv_ttl': 0, 'def': 'out', 'dur': 204, 'data': {'ev': 'cleared', 'def': 'out', 'dur': 204, 'inc': 84331122, 'inv': 0, 'why': 'killed', 'from': 'DEFEND', 'tick': 84331326, 'state': 'SAFE', 'invTtl': 0, 'remote': 'W47N7', 'delivered': 0}}
+  {'ts': datetime.datetime(2026, 11, 18, 8, 12, 43, 102010, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 'tick': 84331273, 'remote': 'W47N7', 'inc': 84331122, 'ev': 'defend', 'from_state': 'THREAT', 'state': 'DEFEND', 'why': 'dispatched', 'inv': 0, 'inv_ttl': 0, 'def': 'out', 'dur': 151, 'data': {'ev': 'defend', 'def': 'out', 'dur': 151, 'inc': 84331122, 'inv': 0, 'why': 'dispatched', 'from': 'THREAT', 'tick': 84331273, 'state': 'DEFEND', 'invTtl': 0, 'remote': 'W47N7', 'delivered': 0}}
+  {'ts': datetime.datetime(2026, 11, 18, 8, 0, 39, 640278, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 'tick': 84331123, 'remote': 'W47N7', 'inc': 84331122, 'ev': 'spawn_start', 'from_state': None, 'state': 'THREAT', 'why': None, 'inv': None, 'inv_ttl': None, 'def': 'rdef84331123', 'dur': None, 'data': {'n': 1, 'ev': 'spawn_start', 'def': 'rdef84331123', 'inc': 84331122, 'tick': 84331123, 'state': 'THREAT', 'remote': 'W47N7', 'waited': 1}}
+======= W47 stor path =======
+84337700 2026-11-18 16:33:07.565618+08:00 stor 29305 p 4773892 w8up 2 def 0 fill 2
+84337710 2026-11-18 16:33:53.882104+08:00 stor 29305 p 4774092 w8up 2 def 0 fill 2
+84337720 2026-11-18 16:34:41.002324+08:00 stor 28905 p 4774292 w8up 2 def 0 fill 2
+84337730 2026-11-18 16:35:28.997446+08:00 stor 27755 p 4774492 w8up 2 def 0 fill 2
+84337740 2026-11-18 16:36:15.035951+08:00 stor 27755 p 4774692 w8up 2 def 0 fill 2
+84337750 2026-11-18 16:37:01.873733+08:00 stor 27755 p 4774892 w8up 2 def 0 fill 2
+84337760 2026-11-18 16:37:49.116061+08:00 stor 27405 p 4775092 w8up 2 def 0 fill 2
+84337770 2026-11-18 16:38:36.137115+08:00 stor 27405 p 4775316 w8up 2 def 0 fill 2
+84337780 2026-11-18 16:39:23.280883+08:00 stor 27055 p 4775576 w8up 2 def 0 fill 2
+84337790 2026-11-18 16:40:10.133866+08:00 stor 26555 p 4775784 w8up 2 def 0 fill 2
+84337800 2026-11-18 16:40:55.659771+08:00 stor 26555 p 4775984 w8up 2 def 0 fill 2
+84337810 2026-11-18 16:41:42.767762+08:00 stor 26205 p 4776184 w8up 2 def 0 fill 2
+84337820 2026-11-18 16:42:29.038101+08:00 stor 25705 p 4776384 w8up 2 def 0 fill 2
+84337830 2026-11-18 16:43:18.825437+08:00 stor 25205 p 4776584 w8up 2 def 0 fill 2
+84337840 2026-11-18 16:44:05.474768+08:00 stor 25205 p 4776784 w8up 2 def 0 fill 2
+84337850 2026-11-18 16:44:51.790899+08:00 stor 24855 p 4776984 w8up 2 def 0 fill 2
+84337860 2026-11-18 16:45:38.513913+08:00 stor 24855 p 4777184 w8up 2 def 0 fill 2
+84337870 2026-11-18 16:46:24.762966+08:00 stor 25003 p 4777384 w8up 2 def 0 fill 2
+84337880 2026-11-18 16:47:11.211425+08:00 stor 24653 p 4777584 w8up 3 def 0 fill 2
+84337890 2026-11-18 16:47:57.140684+08:00 stor 24653 p 4777784 w8up 3 def 0 fill 2
+84337900 2026-11-18 16:48:43.075349+08:00 stor 24509 p 4777984 w8up 3 def 0 fill 2
+84338020 2026-11-18 16:58:02.810580+08:00 stor 20190 p 4780125 w8up 2 def 1 fill 2
+84338030 2026-11-18 16:58:49.390071+08:00 stor 20190 p 4780379 w8up 2 def 1 fill 2
+84338040 2026-11-18 16:59:34.974668+08:00 stor 20190 p 4780633 w8up 2 def 1 fill 2
+84338050 2026-11-18 17:00:22.101897+08:00 stor 20190 p 4780883 w8up 2 def 1 fill 2
+84338060 2026-11-18 17:01:09.142049+08:00 stor 19880 p 4781043 w8up 2 def 1 fill 2
+84338070 2026-11-18 17:01:54.170904+08:00 stor 19880 p 4781203 w8up 2 def 1 fill 2
+84338080 2026-11-18 17:02:41.082934+08:00 stor 19880 p 4781363 w8up 2 def 1 fill 2
+84338090 2026-11-18 17:03:27.057929+08:00 stor 19880 p 4781469 w8up 2 def 1 fill 2
+84338100 2026-11-18 17:04:14.263757+08:00 stor 19880 p 4781569 w8up 2 def 1 fill 2
+84338110 2026-11-18 17:05:01.445560+08:00 stor 19480 p 4781669 w8up 2 def 1 fill 2
+84338120 2026-11-18 17:05:48.416027+08:00 stor 19180 p 4781769 w8up 2 def 1 fill 2
+84338130 2026-11-18 17:06:35.235584+08:00 stor 18870 p 4781869 w8up 2 def 1 fill 2
+84338140 2026-11-18 17:07:20.939926+08:00 stor 18870 p 4781969 w8up 2 def 1 fill 2
+84338150 2026-11-18 17:08:07.977035+08:00 stor 18870 p 4782069 w8up 2 def 1 fill 2
+84338160 2026-11-18 17:08:55.370523+08:00 stor 18870 p 4782209 w8up 2 def 1 fill 2
+84338170 2026-11-18 17:09:42.705883+08:00 stor 18078 p 4782409 w8up 2 def 1 fill 2
+84338180 2026-11-18 17:10:30.156930+08:00 stor 18078 p 4782609 w8up 2 def 1 fill 2
+84338190 2026-11-18 17:11:16.205720+08:00 stor 18078 p 4782809 w8up 2 def 1 fill 2
+84338200 2026-11-18 17:12:03.289679+08:00 stor 18078 p 4783009 w8up 2 def 1 fill 2
+84338210 2026-11-18 17:12:50.775200+08:00 stor 18078 p 4783209 w8up 2 def 1 fill 3
+84338220 2026-11-18 17:13:38.518798+08:00 stor 17878 p 4783409 w8up 2 def 1 fill 3
+84338230 2026-11-18 17:14:26.990379+08:00 stor 16878 p 4783609 w8up 2 def 1 fill 3
+84338290 2026-11-18 17:19:06.892809+08:00 stor 16278 p 4785055 w8up 2 def 1 fill 3
+84338300 2026-11-18 17:19:53.350502+08:00 stor 16278 p 4785315 w8up 2 def 1 fill 3
+84338310 2026-11-18 17:20:41.418835+08:00 stor 16278 p 4785575 w8up 2 def 1 fill 3
+84338320 2026-11-18 17:21:27.565559+08:00 stor 16278 p 4785787 w8up 2 def 1 fill 3
+84338330 2026-11-18 17:22:14.917761+08:00 stor 15078 p 4785987 w8up 2 def 1 fill 3
+84338340 2026-11-18 17:23:02.189698+08:00 stor 15078 p 4786187 w8up 2 def 1 fill 3
+84338350 2026-11-18 17:23:49.863408+08:00 stor 16278 p 4786387 w8up 2 def 1 fill 3
+======= home stor path =======
+84337700 2026-11-18 16:33:07.565569+08:00 stor 17036 p 8014204 nUp 2
+84337710 2026-11-18 16:33:53.882053+08:00 stor 17136 p 8014414 nUp 2
+84337720 2026-11-18 16:34:41.002272+08:00 stor 17236 p 8014674 nUp 2
+84337730 2026-11-18 16:35:28.997393+08:00 stor 17036 p 8014954 nUp 2
+84337740 2026-11-18 16:36:15.035901+08:00 stor 17136 p 8015234 nUp 2
+84337750 2026-11-18 16:37:01.873675+08:00 stor 16926 p 8015514 nUp 2
+84337760 2026-11-18 16:37:49.116015+08:00 stor 17026 p 8015794 nUp 2
+84337770 2026-11-18 16:38:36.137069+08:00 stor 17126 p 8016074 nUp 2
+84337780 2026-11-18 16:39:23.280835+08:00 stor 17226 p 8016354 nUp 2
+84337790 2026-11-18 16:40:10.133805+08:00 stor 16916 p 8016634 nUp 2
+84337800 2026-11-18 16:40:55.659711+08:00 stor 17016 p 8016914 nUp 2
+84337810 2026-11-18 16:41:42.767705+08:00 stor 17116 p 8017194 nUp 2
+84337820 2026-11-18 16:42:29.038049+08:00 stor 17216 p 8017382 nUp 2
+84337830 2026-11-18 16:43:18.825388+08:00 stor 17316 p 8017578 nUp 2
+84337840 2026-11-18 16:44:05.474719+08:00 stor 17416 p 8017838 nUp 2
+84337850 2026-11-18 16:44:51.790852+08:00 stor 16716 p 8018118 nUp 2
+84337860 2026-11-18 16:45:38.513862+08:00 stor 16816 p 8018398 nUp 2
+84337870 2026-11-18 16:46:24.762912+08:00 stor 16916 p 8018678 nUp 2
+84337880 2026-11-18 16:47:11.211376+08:00 stor 17016 p 8018958 nUp 2
+84337890 2026-11-18 16:47:57.140645+08:00 stor 16316 p 8019238 nUp 2
+84337900 2026-11-18 16:48:43.075317+08:00 stor 16416 p 8019358 nUp 2
+84338020 2026-11-18 16:58:02.810506+08:00 stor 16016 p 8022586 nUp 2
+84338030 2026-11-18 16:58:49.390015+08:00 stor 15316 p 8022866 nUp 2
+84338040 2026-11-18 16:59:34.974597+08:00 stor 15416 p 8023146 nUp 2
+84338050 2026-11-18 17:00:22.101843+08:00 stor 15516 p 8023426 nUp 2
+84338060 2026-11-18 17:01:09.142001+08:00 stor 14716 p 8023610 nUp 2
+84338070 2026-11-18 17:01:54.170864+08:00 stor 14816 p 8023806 nUp 2
+84338080 2026-11-18 17:02:41.082888+08:00 stor 14116 p 8024024 nUp 2
+84338090 2026-11-18 17:03:27.057883+08:00 stor 14216 p 8024164 nUp 2
+84338100 2026-11-18 17:04:14.263721+08:00 stor 14716 p 8024360 nUp 2
+84338110 2026-11-18 17:05:01.445511+08:00 stor 14816 p 8024538 nUp 2
+84338120 2026-11-18 17:05:48.415981+08:00 stor 14916 p 8024784 nUp 2
+84338130 2026-11-18 17:06:35.235542+08:00 stor 15416 p 8024786 nUp 2
+84338140 2026-11-18 17:07:20.939887+08:00 stor 15516 p 8024786 nUp 2
+84338150 2026-11-18 17:08:07.977007+08:00 stor 14816 p 8024954 nUp 2
+84338160 2026-11-18 17:08:55.370475+08:00 stor 14916 p 8025174 nUp 2
+84338170 2026-11-18 17:09:42.705833+08:00 stor 15016 p 8025174 nUp 1
+84338180 2026-11-18 17:10:30.156880+08:00 stor 14766 p 8025174 nUp 1
+84338190 2026-11-18 17:11:16.205668+08:00 stor 14866 p 8025188 nUp 1
+84338200 2026-11-18 17:12:03.289612+08:00 stor 15023 p 8025328 nUp 1
+84338210 2026-11-18 17:12:50.775130+08:00 stor 15643 p 8025468 nUp 1
+84338220 2026-11-18 17:13:38.518751+08:00 stor 15483 p 8025562 nUp 1
+84338230 2026-11-18 17:14:26.990336+08:00 stor 15583 p 8025590 nUp 1
+84338290 2026-11-18 17:19:06.892762+08:00 stor 16063 p 8026412 nUp 1
+84338300 2026-11-18 17:19:53.350440+08:00 stor 16163 p 8026552 nUp 1
+84338310 2026-11-18 17:20:41.418769+08:00 stor 16263 p 8026692 nUp 1
+84338320 2026-11-18 17:21:27.565506+08:00 stor 16415 p 8026832 nUp 1
+84338330 2026-11-18 17:22:14.917703+08:00 stor 16515 p 8026972 nUp 1
+84338340 2026-11-18 17:23:02.189636+08:00 stor 16615 p 8027112 nUp 1
+84338350 2026-11-18 17:23:49.863351+08:00 stor 17115 p 8027252 nUp 1
+======= creep names of interest in creep_ticks =======
+creep_ticks cols ['ts', 'tick', 'room', 'creep', 'role', 'x', 'y', 'hits', 'store', 'state', 'commit']
+Traceback (most recent call last):
+  File "/workspace/screeps/state/_patrol_2026-11-18_1718/deep2.py", line 83, in <module>
+    rows = c.execute(
+           ~~~~~~~~~^
+        "SELECT tick, ts, room, x, y, role, hits, store_energy, spawning, intent, idle_reason FROM creep_ticks WHERE name=%s AND tick>=%s ORDER BY tick"
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<2 lines>...
+        (name, LAST),
+        ^^^^^^^^^^^^^
+    ).fetchall()
+    ^
+  File "/workspace/screeps/.venv/lib/python3.13/site-packages/psycopg/connection.py", line 304, in execute
+    raise ex.with_traceback(None)
+psycopg.errors.UndefinedColumn: column "name" does not exist
+LINE 1: SELECT * FROM creep_ticks WHERE name=$1 AND tick>=$2 ORDER B...
+                                        ^
+EXIT:1

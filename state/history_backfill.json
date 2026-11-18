@@ -1,8 +1,8 @@
 {
   "ok_quiet": true,
-  "finished_hkt": "2026-11-18 16:14 Asia/Hong_Kong",
-  "game_time_first": 84337328,
-  "published_bases": "84336600..84337200",
+  "finished_hkt": "2026-11-18 17:12 Asia/Hong_Kong",
+  "game_time_first": 84338038,
+  "published_bases": "84337300..84337900",
   "rooms": [
     "W46N8",
     "W47N8",
@@ -10,25 +10,25 @@
     "W45N7",
     "W47N7"
   ],
-  "tmin": 84336601,
-  "tmax": 84337300,
-  "tick_s_first": 4.61262,
-  "tick_s_printed": "4.613",
-  "tick_s_in_use": 4.69892,
-  "ts_realigned_first": 6072,
-  "ts_realigned_corrective": 5066,
-  "gt_corrective": 84337351,
-  "reconstructed_rows": 25548,
-  "already_in_db": 15704,
-  "inserted_first": 9844,
+  "tmin": 84337301,
+  "tmax": 84338000,
+  "tick_s_first": 4.68475,
+  "tick_s_printed": "4.685",
+  "tick_s_in_use": 4.66119,
+  "ts_realigned_first": 0,
+  "ts_realigned_corrective": 60,
+  "gt_corrective": 84338062,
+  "reconstructed_rows": 23593,
+  "already_in_db": 13586,
+  "inserted_first": 10007,
   "inserted_confirm": 0,
   "inserted_retry2": 0,
-  "inserted_just_published": 2067,
-  "inserted_window": 9844,
-  "inserted_total": 11911,
-  "missing_chunks": 0,
-  "first_pass": "first pass 35 of 35 official GETs 200, missing_chunks=0; hourly_patrol_prefilled=true from 15:22 patrol official already through 84336800 (overlap); 15:30 backfill already wrote through 84336900 and just-published 84336900 (84336901..84337000) for all five rooms",
-  "per_room": "W46N8:700t/1824new W47N8:700t/3773new W45N8:700t/1922new W45N7:700t/994new W47N7:700t/1331new",
+  "inserted_just_published": 3094,
+  "inserted_window": 10007,
+  "inserted_total": 13101,
+  "missing_chunks": 1,
+  "first_pass": "first pass 34 of 35 official GETs 200, missing_chunks=1 W47N8@84337400; hourly_patrol_prefilled=true from 16:26 patrol official already through 84337600 (overlap of this window; also missing W47N8@84337400; inserted=4844); 16:30 backfill already wrote through 84337600 and just-published 84337600 (84337601..84337700) for all five rooms",
+  "per_room": "W46N8:700t/2860new W47N8:600t/3744new W45N8:700t/1114new W45N7:700t/1127new W47N7:700t/1162new",
   "coverage": {
     "coverage": {
       "W46N8": {
@@ -41,13 +41,23 @@
         "official_404_ranges": []
       },
       "W47N8": {
-        "distinct": 700,
-        "missing_n": 0,
-        "missing_ranges": [],
+        "distinct": 625,
+        "missing_n": 75,
+        "missing_ranges": [
+          [
+            84337426,
+            84337500
+          ]
+        ],
         "official_empty_no_creep": 0,
         "official_empty_no_creep_ranges": [],
-        "official_404_missing": 0,
-        "official_404_ranges": []
+        "official_404_missing": 75,
+        "official_404_ranges": [
+          [
+            84337426,
+            84337500
+          ]
+        ]
       },
       "W45N8": {
         "distinct": 700,
@@ -77,66 +87,73 @@
         "official_404_ranges": []
       }
     },
-    "official_recovered": 3500,
+    "official_recovered": 3425,
     "expected": 3500,
     "empty_no_creep": 0,
-    "official_404_missing": 0,
+    "official_404_missing": 75,
     "unique_after": {
-      "rows": 26517,
-      "unique_creep_tick_rows": 26517,
+      "rows": 24449,
+      "unique_creep_tick_rows": 24449,
       "distinct_ticks": 700,
-      "distinct_room_ticks": 3500
+      "distinct_room_ticks": 3425
     },
-    "at": "2026-11-18T16:13:56.577186+08:00"
+    "at": "2026-11-18T17:09:35.288814+08:00"
   },
   "tick_s_realign": {
     "corrective_applied": true,
-    "later_mean_w46": 4.698918,
+    "later_mean_w46": 4.661186,
     "still_over_45s_vs_later": 0,
-    "reason": "first-interval tick_s=4.61262 (printed 4.613, min-all-rooms first two bases) is in the sane 3-6s band; later-mean-robust 4.69892 (raw later-mean 4.69892; delta first-robust -0.09940 s/tick, ~72.3s at tmin). First-pass realign with tick_s=4.61262 (printed 4.613) moved 6072 rows (ts_realigned_first=6072, inserted=9844).; applied corrective later-mean-robust realign of 5066 rows at game.time=84337351; still_over_45s_vs_later=0; skipped_cross_chunk=0"
+    "reason": "first-interval tick_s=4.68475 (printed 4.685, min-all-rooms first two bases) is in the sane 3-6s band; later-mean-robust 4.66119 (raw later-mean 4.66119; delta first-robust 0.02356 s/tick, ~17.4s at tmin). First-pass realign with tick_s=4.68475 (printed 4.685) moved 0 rows (ts_realigned_first=0, inserted=0).; applied corrective later-mean-robust realign of 60 rows at game.time=84338062; still_over_45s_vs_later=0; skipped_cross_chunk=0"
   },
   "just_published": {
-    "base": 84337300,
-    "early_404_at": "16:08:32",
-    "early_game_time": 84337384,
-    "ssl_abort_at": "16:11:29",
-    "ssl_abort_game_time": 84337421,
-    "recovered_at": "16:12:59",
-    "recovered_game_time": 84337441,
-    "inserted": 2067,
-    "ticks": "84337301..84337400",
+    "base": 84338000,
+    "oom_killed_at": [],
+    "oom_note": null,
+    "recovered_at": "17:08:59",
+    "recovered_game_time": 84338161,
+    "inserted": 3094,
+    "ticks": "84338001..84338100",
     "all_five_distinct": 100
   },
   "confirm": {
-    "at": "16:06:12",
-    "game_time": 84337355,
-    "inserted": 0
+    "at": "17:01:33",
+    "game_time": 84338065,
+    "inserted": 0,
+    "ssl_abort_first": null
   },
   "retry2": {
-    "at": "16:07:37",
-    "game_time": 84337373,
+    "at": "17:02:49",
+    "game_time": 84338082,
     "inserted": 0
+  },
+  "in_window_404": {
+    "W47N8@84337400": {
+      "live_distinct": 25,
+      "empty": 75,
+      "empty_range": "84337426..84337500",
+      "still_404_after_retry": true
+    }
   },
   "listener": {
     "single_slot": true,
-    "roomSlot": "W45N7",
+    "roomSlot": "W47N8",
     "rot": {
-      "i": 3,
-      "room": "W45N7",
-      "left": 60.0,
-      "at": "2026-11-18 16:14:48"
+      "i": 1,
+      "room": "W47N8",
+      "left": 89.9,
+      "at": "2026-11-18 17:12:11"
     },
     "yield": "absent",
-    "pid": 431060,
-    "restart_at": "16:02:35",
+    "pid": 454066,
+    "restart_at": "16:57:13",
     "this_run_restarted": false
   },
   "box_freeze": {
-    "from": "2026-11-18 15:50:56",
-    "to": "2026-11-18 16:02:32",
-    "sec": 689,
-    "room_stats_gap": "84337151..84337319",
-    "official_filled": "169/169 all five"
+    "from": "2026-11-18 16:49:42",
+    "to": "2026-11-18 16:57:10",
+    "sec": 447,
+    "room_stats_gap": "84337901..84338019",
+    "official_filled": "119/119 all five"
   },
-  "ok_line": "ok_quiet=True coverage=3500/3500 inserted_window=9844 inserted_total=11911 tick_s_in_use=4.69892 listener single_slot=True; no second listener; no war_cmd/pulse restart."
+  "ok_line": "ok_quiet=True coverage=3425/3500 inserted_window=10007 inserted_total=13101 tick_s_in_use=4.66119 listener single_slot=True; no second listener; no war_cmd/pulse restart."
 }
