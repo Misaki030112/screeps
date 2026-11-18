@@ -41,7 +41,7 @@ const mechanisms = [
   { text: '防御与威胁', link: '/mechanisms/defense' },
   { text: '实验室与 boost', link: '/mechanisms/labs' },
   { text: '矿物与终端', link: '/mechanisms/minerals' },
-  { text: 'Link', link: '/mechanisms/links' },
+  { text: 'Link 与枢纽', link: '/mechanisms/links' },
   { text: '外矿与预定', link: '/mechanisms/remotes' },
   { text: '部署', link: '/mechanisms/deploy' },
 ]
