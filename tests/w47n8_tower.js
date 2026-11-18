@@ -35,6 +35,16 @@ TH.mark(R([{ owner: { username: 'BustJetter' }, pos: { y: 1 }, body: body({ heal
 assert.strictEqual(TH.on(), true, 'healer group -> threat'); assert.strictEqual(TH.wallTarget(10000), 100000); assert.strictEqual(TH.flee(), false, 'unarmed tanks do not trigger flee');
 TH.mark(R([{ owner: { username: 'BustJetter' }, pos: { y: 5 }, body: body({ attack: 10, move: 10 }) }])); assert.strictEqual(TH.flee(), true, 'armed in north -> flee');
 Game.time += 21; assert.strictEqual(TH.flee(), false, 'flee clears after 20 quiet ticks');
+// 2026-11-19 02:17 patrol: FLEE_QUIET expiry is not "clear" if W47N7 FSM is still open (lost vision).
+Memory.remote = { W47N7: { th: { st: 'THREAT' } } };
+assert.strictEqual(TH.flee(), true, 'W47N7 THREAT holds flee after visual quiet');
+Memory.remote.W47N7.th.st = 'DEFEND';
+assert.strictEqual(TH.flee(), true, 'W47N7 DEFEND holds flee after visual quiet');
+Memory.remote.W47N7.th.st = 'WAIT';
+assert.strictEqual(TH.flee(), true, 'W47N7 WAIT holds flee after visual quiet');
+Memory.remote.W47N7.th.st = 'SAFE';
+assert.strictEqual(TH.flee(), false, 'W47N7 SAFE + visual quiet: resume');
+Memory.remote = {};
 Game.time += 1500; assert.strictEqual(TH.on(), false, 'threat reverts after 1500 quiet ticks');
 // own creeps never count, even if a find() result includes them (14:27)
 Memory.ops = {}; TH.mark(R([{ my: true, owner: { username: 'Misaki' }, pos: { y: 5 }, body: body({ attack: 10, ranged_attack: 5, work: 5, heal: 5, tough: 10, move: 10 }) }]));

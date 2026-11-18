@@ -3,7 +3,12 @@
 //           -> Memory.ops.w8threat = tick. Armed hostiles in W47N7 or W47N8 north (y<=10) -> Memory.ops.w8flee = tick.
 //   tools/north_watch.py also sets Memory.ops.w8threatN when W47N9 holds an armed/drain group or W48N9 (BustJetter army room) >=2 armed (no in-game vision there).
 //   on(): any of those within the last 1500 ticks -> seal walls to >=100k (10-20) ahead of upgrading (ramparts excluded 17:15) (auto-reverts when quiet).
-//   flee(): armed hostiles seen in the last 20 ticks -> W47N7 remote creeps hold inside the W47N8 base.
+//   flee(): armed hostiles seen in the last 20 ticks, OR W47N7's remote threat FSM still open
+//           (THREAT/DEFEND/WAIT) -> W47N7 remote creeps hold inside the W47N8 base.
+//           The 20-tick visual window alone is not enough: once civilians leave W47N7 they lose
+//           vision, w8flee stops refreshing, and they walked back in after 20t (2026-11-19 02:17
+//           patrol: w8rminer84343674 bounced W47N8 18,48 <-> W47N7 18,0 and dropped to 640 hits
+//           while the Invader was still in the room).
 const WINDOW = 1500, FLEE_QUIET = 20, FLOOR = 100000; // 10-20 14:0x Misaki: threat floor 50k -> 100k (W47N8 only)
 const has = (c, ts) => c.body.some(p => ts.includes(p.type) && p.hits > 0);
 const M = () => (Memory.ops = Memory.ops || {});
@@ -24,7 +29,11 @@ function on() { const o = M(), t = Math.max(o.w8threat || 0, o.w8threatN || 0); 
 function localOn() { const t = M().w8threat || 0; return t > 0 && Game.time - t < WINDOW; }
 // invasion(): armed hostiles in W47N8 within 50 ticks, or north_watch saw >=2 armed in W47N9 (border room) within 300 ticks
 function invasion() { const o = M(); return (o.w8inv > 0 && Game.time - o.w8inv < 50) || (o.w8invN > 0 && Game.time - o.w8invN < 300); }
-function flee() { const t = M().w8flee || 0; return t > 0 && Game.time - t < FLEE_QUIET; }
+function remoteThreatOpen() {
+  const st = ((((typeof Memory !== 'undefined' && Memory.remote) || {})['W47N7'] || {}).th || {}).st;
+  return st === 'THREAT' || st === 'DEFEND' || st === 'WAIT';
+}
+function flee() { const t = M().w8flee || 0; return (t > 0 && Game.time - t < FLEE_QUIET) || remoteThreatOpen(); }
 // effective seal wall target: plan target, raised to the 100k floor while threatened
 function wallTarget(base) { return on() ? Math.max(base, FLOOR) : base; }
 // 10-20 06:3x strategy review: the part of the seal-wall raise that goes AHEAD of upgrading and construction sites. Only the threat
