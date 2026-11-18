@@ -1,0 +1,17 @@
+computed official window t84322300→84331400
+ticks=9100 wall_s=43184.102927 wall_h=11.99558414638889 tick_s=4.745505816153846
+expected_10t_slots=911 n_samples/room=535 coverage_pct=58.72667398463227
+home first=7685887 last=7873927 delta=188040 e_per_t=20.6637362637362637 pct=72.00664837677183 remaining=3061073 eta_days=8.14
+w47  first=4469811 last=4651772 delta=181961 e_per_t=19.9957142857142857 pct=42.54021033379058 remaining=6283228 eta_days=17.26
+last evening tick_s was 4.7097; this window tick_s 4.7455 (shard slightly slower — calendar ETA stretched a little vs last window's pace)
+home 3h 18.07 e/t (84329180-84331400, n=135); 6h 21.84 e/t (84326850-84331400, n=255)
+w47 3h 19.45 e/t; 6h 19.82 e/t
+home 20k: this window max 19077 @84327410 / 03:06:13; 0 samples ≥20k, no contiguous ≥20k stretch. Latch 300t NOT armed. (Last evening max 20244 / only 20 t.)
+home under15: 19.25% (was 16.1%); min 13298 @23:29; longest stretch 131 t (23:22:41-23:33:00, min 13298) plus 121 t (21:03-21:12, min 13663) and 121 t (02:00-02:09, min 14254). 16 stretches, 103/535 samples.
+w47 40k: no ≥40k samples this window (0%). Window max 38563 @84322300-84322340 / 20:23:27-20:26:40 (the open of the window); never a 40k camp, no box-freeze merge question. All-time high remains morning 11-17: 44416 / 341 t. Latch 500t NOT armed (upLatched=0). First <22k ARM of these reviews: 60 t (84331210-84331270 / 08:07:35-08:12:27, min 20184) and 70 t (84331330-84331400 / 08:17:20-08:23:11, min 17514, still open at official tip). Window min 17514 @08:20:44-08:21:34.
+w47 ≥20k 99.25%; ≥25k 88.79% (was 99.2%); ≥30k 35.51% (was 70.1%); ≥40k 0% (was 12.7%).
+tip softCap2=1 threatSoft=1 sealPark=1 bankWhy=soft softLeft=4786 (to bankSoft 25000) keep=2 upLatched=0 leanBank=0 siteRem=0 phase=ready storE=20214 (live q @84331413-84331415).
+KO total 14071 = 13236 stor + 835 lab + 0 term (was 9516 last evening). 15k reaction floor NOT pausing at the tip (actOk=1 why=active homeStor=19011). 20k boost skip held (0 samples ≥20k; no boost event in the window).
+LIVE 8daf0494 @84324673 / 23:30:52 (already-live this window, not this review; room_stats commit 8daf0494 from 84324690). Prior c6d43491 held from window open until that deploy. Memory.stats.commit is null at the live tip (same as last evening's live q). deploy.lock absent.
+W47 walks: 14 replacement walks in/near the window. Post-c6d43491 pre-8daf0494: 22007/22545/23446 used 32,32 south bypass (5 t) and never stepped on 34,32; 23984 lingered 75 t on 32,32 (walk 233 t, 5 pocket_bounce) and still never stepped on 34,32 — this is the cul-de-sac that 8daf0494 shipped to fix. Post-8daf0494: most still used 32,32 (24885, 26324, 26862, 27763, 29202, 31179); 29740 stepped on filler post 34,32 x2 (33,33 occupied by builder/filler/hauler/rhauler, self not on 33,33) and 30641 stepped on 34,32 x5 (33,33 occupied, no 32,32) — the 8daf0494 branch showed up on those two walks. 25423 and 28301 first appear mid-path after coverage holes (walk_incl_spawn still 125/128 t).
+Ledger: clean snap existed at t84322337 (2026-11-17 20:26:28); new snap t84331436. Window 9099 t / 11.99 h. Home up 17.65, net spawn 14.55, net sp:upgrader 1.72 (2.21-0.49) under the 5 e/t waste gate. W47 up 20.00 matches room_stats 19.996.

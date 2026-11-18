@@ -1,0 +1,112 @@
+=== events kinds / non-watch ===
+[('watch', 45), ('box_pause', 4), ('alert_ended', 1), ('alert_new', 1)]
+(84330733, datetime.datetime(2026, 11, 18, 7, 34, 0, 691606, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 'box_pause', None, 'box frozen ~94s since 2026-11-18 07:32:23', {'sec': 94, 'from': '2026-11-18 07:32:23'})
+(84330984, datetime.datetime(2026, 11, 18, 7, 57, 23, 691538, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 'box_pause', None, 'box frozen ~459s since 2026-11-18 07:49:40', {'sec': 459, 'from': '2026-11-18 07:49:40'})
+(84331122, datetime.datetime(2026, 11, 18, 8, 0, 35, 431084, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 'alert_new', 'W47N7', 'Invader', {'why': 'solo', 'room': 'W47N7', 'tick': 84331122, 'owner': 'Invader', 'state': 'THREAT', 'action': 'defender requested', 'creeps': 1, 'remote': 'W47N7', 'episode': 'remote-W47N7-84331122', 'invOnly': True, 'severity': 'medium', 'positions': [[43, 48]]})
+(84331174, datetime.datetime(2026, 11, 18, 8, 6, 29, 560737, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 'box_pause', None, 'box frozen ~103s since 2026-11-18 08:04:42', {'sec': 103, 'from': '2026-11-18 08:04:42'})
+(84331201, datetime.datetime(2026, 11, 18, 8, 16, 17, 71150, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 'box_pause', None, 'box frozen ~204s since 2026-11-18 08:12:49', {'sec': 204, 'from': '2026-11-18 08:12:49'})
+(84331326, datetime.datetime(2026, 11, 18, 8, 16, 59, 981129, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 'alert_ended', 'W47N7', None, {'room': 'W47N7', 'tick': 84331326, 'ended': True, 'action': 'remote resumed', 'remote': 'W47N7', 'episode': 'remote-W47N7-84331122', 'severity': 'low'})
+
+=== W47 storage with notable drops ===
+  84330650 2026-11-18 07:23:09.968492+08:00 stor=29513 d=+0/0t (+0.0e/t) ea=5200 ctl=2000 w8up=3 r7=1 w8rh=4 w8f=2 w8rm=4 def=None w8b=1
+  84330660 2026-11-18 07:23:57.840464+08:00 stor=29511 d=-2/10t (-0.2e/t) ea=5600 ctl=2000 w8up=3 r7=1 w8rh=4 w8f=2 w8rm=4 def=None w8b=1
+  84330670 2026-11-18 07:24:45.736007+08:00 stor=30259 d=+748/10t (+74.8e/t) ea=5600 ctl=2000 w8up=3 r7=1 w8rh=4 w8f=2 w8rm=4 def=None w8b=1
+  84330680 2026-11-18 07:25:34.269726+08:00 stor=30259 d=+0/10t (+0.0e/t) ea=5600 ctl=2000 w8up=3 r7=1 w8rh=4 w8f=2 w8rm=4 def=None w8b=1
+  84330690 2026-11-18 07:26:21.675583+08:00 stor=29909 d=-350/10t (-35.0e/t) ea=4800 ctl=2000 w8up=3 r7=1 w8rh=5 w8f=2 w8rm=4 def=None w8b=1
+  84330700 2026-11-18 07:27:07.806513+08:00 stor=29909 d=+0/10t (+0.0e/t) ea=4450 ctl=1720 w8up=3 r7=1 w8rh=6 w8f=2 w8rm=4 def=None w8b=1
+  84330710 2026-11-18 07:27:54.794614+08:00 stor=29909 d=+0/10t (+0.0e/t) ea=4950 ctl=1720 w8up=3 r7=1 w8rh=6 w8f=2 w8rm=4 def=None w8b=1
+  84330720 2026-11-18 07:28:44.344477+08:00 stor=28559 d=-1350/10t (-135.0e/t) ea=5600 ctl=1720 w8up=3 r7=1 w8rh=6 w8f=2 w8rm=4 def=None w8b=1 **
+  84330730 2026-11-18 07:29:33.109319+08:00 stor=28559 d=+0/10t (+0.0e/t) ea=5600 ctl=1720 w8up=3 r7=1 w8rh=6 w8f=2 w8rm=4 def=None w8b=1
+  84330740 2026-11-18 07:30:20.599895+08:00 stor=28559 d=+0/10t (+0.0e/t) ea=5600 ctl=1720 w8up=2 r7=1 w8rh=6 w8f=2 w8rm=3 def=None w8b=1
+  84330750 2026-11-18 07:31:08.821978+08:00 stor=28559 d=+0/10t (+0.0e/t) ea=5600 ctl=1720 w8up=2 r7=1 w8rh=6 w8f=2 w8rm=3 def=None w8b=1
+  84330760 2026-11-18 07:31:55.018521+08:00 stor=28559 d=+0/10t (+0.0e/t) ea=5600 ctl=2000 w8up=2 r7=1 w8rh=5 w8f=2 w8rm=3 def=None w8b=1
+  84330790 2026-11-18 07:34:17.700953+08:00 stor=28841 d=+282/30t (+9.4e/t) ea=5600 ctl=1950 w8up=2 r7=1 w8rh=5 w8f=2 w8rm=2 def=None w8b=1
+  84330800 2026-11-18 07:35:05.186728+08:00 stor=28841 d=+0/10t (+0.0e/t) ea=5600 ctl=1960 w8up=2 r7=1 w8rh=5 w8f=2 w8rm=2 def=None w8b=1
+  84330810 2026-11-18 07:35:53.028168+08:00 stor=28841 d=+0/10t (+0.0e/t) ea=5600 ctl=2000 w8up=2 r7=1 w8rh=5 w8f=2 w8rm=2 def=None w8b=1
+  84330820 2026-11-18 07:36:40.030144+08:00 stor=28841 d=+0/10t (+0.0e/t) ea=5600 ctl=1825 w8up=2 r7=1 w8rh=4 w8f=2 w8rm=2 def=None w8b=1
+  84330830 2026-11-18 07:37:26.815272+08:00 stor=28841 d=+0/10t (+0.0e/t) ea=5600 ctl=1960 w8up=2 r7=1 w8rh=4 w8f=2 w8rm=2 def=None w8b=1
+  84330840 2026-11-18 07:38:13.927792+08:00 stor=28841 d=+0/10t (+0.0e/t) ea=5100 ctl=1960 w8up=2 r7=1 w8rh=4 w8f=2 w8rm=2 def=None w8b=1
+  84330850 2026-11-18 07:38:59.907147+08:00 stor=28541 d=-300/10t (-30.0e/t) ea=4950 ctl=1880 w8up=2 r7=1 w8rh=4 w8f=2 w8rm=2 def=None w8b=1
+  84330860 2026-11-18 07:39:47.669116+08:00 stor=28541 d=+0/10t (+0.0e/t) ea=5600 ctl=1760 w8up=2 r7=1 w8rh=4 w8f=2 w8rm=2 def=None w8b=1
+  84330870 2026-11-18 07:40:36.390527+08:00 stor=28191 d=-350/10t (-35.0e/t) ea=5600 ctl=1680 w8up=2 r7=1 w8rh=4 w8f=2 w8rm=2 def=None w8b=1
+  84330880 2026-11-18 07:41:23.151958+08:00 stor=28191 d=+0/10t (+0.0e/t) ea=5600 ctl=1960 w8up=2 r7=1 w8rh=4 w8f=2 w8rm=2 def=None w8b=1
+  84330910 2026-11-18 07:43:45.045948+08:00 stor=28191 d=+0/30t (+0.0e/t) ea=5600 ctl=1680 w8up=2 r7=None w8rh=4 w8f=2 w8rm=2 def=None w8b=1 **
+  84330920 2026-11-18 07:44:32.378900+08:00 stor=27891 d=-300/10t (-30.0e/t) ea=4800 ctl=1960 w8up=2 r7=None w8rh=4 w8f=3 w8rm=2 def=None w8b=1
+  84330930 2026-11-18 07:45:20.594878+08:00 stor=27891 d=+0/10t (+0.0e/t) ea=5600 ctl=1880 w8up=2 r7=None w8rh=4 w8f=3 w8rm=2 def=None w8b=1
+  84330940 2026-11-18 07:46:06.277333+08:00 stor=27291 d=-600/10t (-60.0e/t) ea=5600 ctl=1960 w8up=2 r7=None w8rh=4 w8f=3 w8rm=2 def=None w8b=1 **
+  84330950 2026-11-18 07:46:53.429742+08:00 stor=27291 d=+0/10t (+0.0e/t) ea=5600 ctl=2000 w8up=2 r7=None w8rh=4 w8f=3 w8rm=2 def=None w8b=1
+  84330960 2026-11-18 07:47:43.574646+08:00 stor=27291 d=+0/10t (+0.0e/t) ea=5600 ctl=1960 w8up=2 r7=None w8rh=4 w8f=3 w8rm=2 def=None w8b=1
+  84330970 2026-11-18 07:48:31.378411+08:00 stor=27291 d=+0/10t (+0.0e/t) ea=5600 ctl=2000 w8up=2 r7=None w8rh=4 w8f=3 w8rm=2 def=None w8b=1
+  84330980 2026-11-18 07:49:18.581561+08:00 stor=27291 d=+0/10t (+0.0e/t) ea=5600 ctl=1960 w8up=2 r7=None w8rh=4 w8f=3 w8rm=2 def=None w8b=1
+  84331090 2026-11-18 07:58:00.560189+08:00 stor=26091 d=-1200/110t (-10.9e/t) ea=5600 ctl=2000 w8up=2 r7=None w8rh=4 w8f=2 w8rm=2 def=None w8b=None **
+  84331100 2026-11-18 07:58:48.296807+08:00 stor=26091 d=+0/10t (+0.0e/t) ea=5600 ctl=1960 w8up=2 r7=None w8rh=4 w8f=2 w8rm=2 def=None w8b=None
+  84331110 2026-11-18 07:59:35.966109+08:00 stor=26441 d=+350/10t (+35.0e/t) ea=5300 ctl=2000 w8up=2 r7=None w8rh=4 w8f=2 w8rm=2 def=None w8b=None
+  84331120 2026-11-18 08:00:24.014417+08:00 stor=26141 d=-300/10t (-30.0e/t) ea=5600 ctl=1960 w8up=2 r7=None w8rh=4 w8f=2 w8rm=2 def=None w8b=None
+  84331130 2026-11-18 08:01:11.395066+08:00 stor=26141 d=+0/10t (+0.0e/t) ea=580 ctl=2000 w8up=2 r7=None w8rh=4 w8f=2 w8rm=2 def=1 w8b=None
+  84331140 2026-11-18 08:01:59.260109+08:00 stor=26141 d=+0/10t (+0.0e/t) ea=1754 ctl=1880 w8up=2 r7=None w8rh=4 w8f=2 w8rm=2 def=1 w8b=None
+  84331150 2026-11-18 08:02:47.103389+08:00 stor=24941 d=-1200/10t (-120.0e/t) ea=2804 ctl=1800 w8up=2 r7=None w8rh=4 w8f=2 w8rm=2 def=1 w8b=None **
+  84331160 2026-11-18 08:03:33.750431+08:00 stor=25015 d=+74/10t (+7.4e/t) ea=3900 ctl=1680 w8up=2 r7=None w8rh=4 w8f=2 w8rm=2 def=1 w8b=None
+  84331170 2026-11-18 08:04:20.878137+08:00 stor=25015 d=+0/10t (+0.0e/t) ea=4654 ctl=1600 w8up=2 r7=None w8rh=4 w8f=2 w8rm=2 def=1 w8b=None
+  84331200 2026-11-18 08:06:46.340204+08:00 stor=22659 d=-2356/30t (-78.5e/t) ea=5600 ctl=1720 w8up=3 r7=None w8rh=4 w8f=2 w8rm=2 def=1 w8b=None **
+  84331210 2026-11-18 08:07:35.078234+08:00 stor=21880 d=-779/10t (-77.9e/t) ea=5600 ctl=1640 w8up=3 r7=None w8rh=4 w8f=2 w8rm=2 def=1 w8b=None **
+  84331220 2026-11-18 08:08:24.326685+08:00 stor=21384 d=-496/10t (-49.6e/t) ea=5600 ctl=1520 w8up=3 r7=None w8rh=4 w8f=2 w8rm=2 def=1 w8b=None
+  84331230 2026-11-18 08:09:13.832095+08:00 stor=21384 d=+0/10t (+0.0e/t) ea=5600 ctl=1470 w8up=3 r7=None w8rh=4 w8f=2 w8rm=2 def=1 w8b=None
+  84331240 2026-11-18 08:10:01.343268+08:00 stor=21384 d=+0/10t (+0.0e/t) ea=5600 ctl=1350 w8up=3 r7=None w8rh=4 w8f=2 w8rm=2 def=1 w8b=None
+  84331250 2026-11-18 08:10:49.378347+08:00 stor=20784 d=-600/10t (-60.0e/t) ea=4600 ctl=1270 w8up=3 r7=None w8rh=4 w8f=3 w8rm=2 def=1 w8b=None **
+  84331260 2026-11-18 08:11:38.112820+08:00 stor=20784 d=+0/10t (+0.0e/t) ea=5500 ctl=1150 w8up=3 r7=None w8rh=4 w8f=3 w8rm=2 def=1 w8b=None
+  84331270 2026-11-18 08:12:27.993478+08:00 stor=20184 d=-600/10t (-60.0e/t) ea=5600 ctl=1570 w8up=3 r7=None w8rh=4 w8f=3 w8rm=2 def=1 w8b=None **
+  84331330 2026-11-18 08:17:20.960231+08:00 stor=20314 d=+130/60t (+2.2e/t) ea=5600 ctl=970 w8up=2 r7=None w8rh=4 w8f=3 w8rm=2 def=1 w8b=1
+  84331340 2026-11-18 08:18:12.326519+08:00 stor=20014 d=-300/10t (-30.0e/t) ea=5600 ctl=1350 w8up=2 r7=None w8rh=4 w8f=3 w8rm=2 def=1 w8b=1 **
+  84331350 2026-11-18 08:19:05.857219+08:00 stor=20014 d=+0/10t (+0.0e/t) ea=4900 ctl=1270 w8up=2 r7=1 w8rh=4 w8f=3 w8rm=2 def=1 w8b=1
+  84331360 2026-11-18 08:19:54.692566+08:00 stor=18014 d=-2000/10t (-200.0e/t) ea=5600 ctl=1150 w8up=2 r7=1 w8rh=4 w8f=3 w8rm=2 def=1 w8b=1 **
+  84331370 2026-11-18 08:20:44.673466+08:00 stor=17514 d=-500/10t (-50.0e/t) ea=5600 ctl=1070 w8up=2 r7=1 w8rh=4 w8f=3 w8rm=2 def=1 w8b=1 **
+  84331380 2026-11-18 08:21:34.039040+08:00 stor=17514 d=+0/10t (+0.0e/t) ea=5600 ctl=1450 w8up=2 r7=1 w8rh=4 w8f=3 w8rm=2 def=1 w8b=1
+  84331390 2026-11-18 08:22:22.263679+08:00 stor=18714 d=+1200/10t (+120.0e/t) ea=5600 ctl=1370 w8up=2 r7=1 w8rh=4 w8f=2 w8rm=2 def=1 w8b=1
+  84331400 2026-11-18 08:23:11.334199+08:00 stor=20214 d=+1500/10t (+150.0e/t) ea=5600 ctl=1250 w8up=2 r7=1 w8rh=4 w8f=2 w8rm=2 def=1 w8b=1
+  84331410 2026-11-18 08:23:59.660172+08:00 stor=20214 d=+0/10t (+0.0e/t) ea=5600 ctl=1170 w8up=2 r7=1 w8rh=4 w8f=2 w8rm=2 def=1 w8b=1
+  84331420 2026-11-18 08:24:47.249651+08:00 stor=20214 d=+0/10t (+0.0e/t) ea=5600 ctl=1050 w8up=2 r7=1 w8rh=4 w8f=2 w8rm=2 def=1 w8b=1
+
+=== creeps whose name tick is in window (spawns) ===
+  rhauler84330678 rhauler born=84330678 first_seen=84330679 last=84331439 room0=W45N7 life=760
+  hauler84330751 hauler born=84330751 first_seen=84330753 last=84331478 room0=W46N8 life=725
+  rhauler84330781 rhauler born=84330781 first_seen=84330783 last=84331478 room0=W45N8 life=695
+  miner84330875 miner born=84330875 first_seen=84330877 last=84331478 room0=W46N8 life=601
+  upgrader84330981 upgrader born=84330981 first_seen=84330982 last=84331478 room0=W46N8 life=496
+  rhauler84330985 rhauler born=84330985 first_seen=84330987 last=84331478 room0=W45N7 life=491
+  rdef84331123 rdef born=84331123 first_seen=84331125 last=84331300 room0=W47N8 life=175
+  upgrader84331159 upgrader born=84331159 first_seen=84331160 last=84331478 room0=W46N8 life=318
+  rhauler84331225 rhauler born=84331225 first_seen=84331227 last=84331478 room0=W45N7 life=251
+  reserver84331319 reserver born=84331319 first_seen=84331321 last=84331416 room0=W45N7 life=95
+
+=== reserve7 positions ===
+
+=== reserver positions ===
+reserver84330385 n=610 rooms=['W45N7', 'W45N8', 'W46N8'] first=84330387 W46N8 30,34 last=84330996 W45N7 6,39 st=empty
+reserver84330511 n=610 rooms=['W45N8', 'W46N8'] first=84330513 W46N8 30,34 last=84331122 W45N8 7,37 st=empty
+reserver84331319 n=78 rooms=['W45N7', 'W45N8', 'W46N8'] first=84331321 W46N8 35,28 last=84331416 W45N7 10,16 st=empty
+
+=== w8upgrader / upgrader first-last + seat changes ===
+upgrader84329690 upgrader n=641 first=84330600 W46N8 30,30 e=8 st=loaded last=84331240 W46N8 30,30 e=8 st=loaded
+   first_seat (84330600, 'W46N8', 30, 30, 8, 'loaded') last_seat (84331240, 'W46N8', 30, 30, 8, 'loaded') nseat 641
+upgrader84330981 upgrader n=480 first=84330982 W46N8 35,28 e=0 st=spawning last=84331478 W46N8 31,30 e=22 st=loaded
+   first_seat (84331053, 'W46N8', 31, 30, 0, 'empty') last_seat (84331478, 'W46N8', 31, 30, 22, 'loaded') nseat 409
+   walk_to_seat (84330982, 'W46N8', 35, 28, 'spawning') -> (84331053, 'W46N8', 31, 30, 'empty') steps 72 span 71
+upgrader84331159 upgrader n=302 first=84331160 W46N8 35,28 e=0 st=spawning last=84331478 W46N8 29,30 e=36 st=loaded
+   first_seat (84331235, 'W46N8', 29, 30, 0, 'empty') last_seat (84331478, 'W46N8', 29, 30, 36, 'loaded') nseat 227
+   walk_to_seat (84331160, 'W46N8', 35, 28, 'spawning') -> (84331235, 'W46N8', 29, 30, 'empty') steps 76 span 75
+
+=== defender / rdef / guard paths ===
+rdef84331123 rdef n=176 first=84331125 W47N8 33,30 hits=5000 st=spawning last=84331300 W47N8 13,38 hits=5000 st=empty
+   room_changes [(84331125, 'W47N8', 33, 30)]
+
+=== W47N7 creep presence by 50t bins ===
+  (84330650, 50, 9, ['reserve', 'wrhauler', 'wrminer'])
+  (84330700, 50, 8, ['reserve', 'wrhauler', 'wrminer'])
+  (84330750, 50, 6, ['reserve', 'wrhauler', 'wrminer'])
+  (84330800, 50, 6, ['reserve', 'wrhauler', 'wrminer'])
+  (84330850, 50, 5, ['reserve', 'wrhauler', 'wrminer'])
+  (84330900, 50, 5, ['reserve', 'wrhauler', 'wrminer'])
+  (84330950, 50, 4, ['wrhauler', 'wrminer'])
+  (84331000, 1, 4, ['wrhauler', 'wrminer'])
+  (84331100, 49, 2, ['wrminer'])
+  (84331150, 44, 2, ['wrminer'])
