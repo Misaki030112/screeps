@@ -1,0 +1,24 @@
+=== 6h/12h storage W47 and home ===
+W46N8 6h n=380 min=11500@84335910 14:13:34 max=19561@84331480 08:29:33 n>=30k=0 n>=40k=0 best>=40k_span=0
+W46N8 12h n=643 min=11500@84335910 14:13:34 max=19561@84331480 08:29:33 n>=30k=0 n>=40k=0 best>=40k_span=0
+W46N8 13h n=686 min=11500@84335910 14:13:34 max=19561@84331480 08:29:33 n>=30k=0 n>=40k=0 best>=40k_span=0
+W47N8 6h n=380 min=17514@84331370 08:20:44 max=30104@84334760 12:44:47 n>=30k=4 n>=40k=0 best>=40k_span=0
+W47N8 12h n=643 min=17514@84331370 08:20:44 max=30626@84330440 07:06:34 n>=30k=13 n>=40k=0 best>=40k_span=0
+W47N8 13h n=686 min=17514@84331370 08:20:44 max=33224@84325820 01:01:12 n>=30k=28 n>=40k=0 best>=40k_span=0
+=== W47 upgrader trajectories since LAST_TIP (and a bit before) ===
+Traceback (most recent call last):
+  File "/workspace/screeps/state/_patrol_2026-11-18_1417/deep.py", line 52, in <module>
+    rows = c.execute(
+           ~~~~~~~~~^
+        """
+        ^^^
+    ...<6 lines>...
+        (LAST_TIP - 200, TIP),
+        ^^^^^^^^^^^^^^^^^^^^^^
+    ).fetchall()
+    ^
+  File "/workspace/screeps/.venv/lib/python3.13/site-packages/psycopg/connection.py", line 304, in execute
+    raise ex.with_traceback(None)
+psycopg.errors.UndefinedColumn: column "name" does not exist
+LINE 2:     SELECT tick, ts, name, x, y, energy, ttl, spawning, say,...
+                             ^
