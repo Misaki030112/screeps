@@ -33,7 +33,17 @@ Last full refresh: **2026-11-09 17:1x** (autonomous push — docs/canvas scorebo
 - One-line verdict: `waiting on ticks` | `small safe ship` | `phase exit` — capability to stock a kiter ≠ order to fight.
 
 
-## Current state (2026-11-18 ~08:2x Asia/Hong_Kong · 12h review)
+## Current state (2026-11-18 ~20:2x Asia/Hong_Kong · 12h review)
+
+| Room | Notes |
+|------|-------|
+| W46N8 (home) | **RCL7** 73.84% (8.074M/10.935M); +200k/12h ≈ 21.57 e/t → RCL8 ≈ **7.17 days** at this pace (was 20.66 / 8.14 d; tick_s 4.746→4.673 slightly faster); stor avg 16.54k max **19772** min 11500, **15.73% under 15k** (was 19.25%); live tip ~18.9–19.0k why=ok nUp=2 work=28; labsN=6, factory done, sites=0; **KO ON** (authorized; stockpile **18716** already ≥900 — 18036 stor + 680 lab; 15k reaction floor not pausing / 20k boost skip held); LIVE **289a7f06** (@84334122 / 11:55:12 HKT, already-live filler-park fix) |
+| W47N8 | **RCL7** 44.18% (4.831M); +180k/12h ≈ **19.33 e/t** → RCL8 ≈ **17.07 days** (was 20.00 / 17.26 d); stor avg 24.75k max **34155** min 15078 (0% <15k, 80.7% ≥20k, 62.2% ≥25k, 7.7% ≥30k, 0% ≥40k); live stor 25271 keep=2 phase=ready siteRem=0 leanBank0 softCap2 **off** (morning leftover expired; banked back above 25k); two 10W upgraders; **no 40k camp this window**, latch not armed |
+
+**20:2x scorecard:** Phase0 home floor **improved** (15.73% of 12h under 15k, was 19.25%; a deeper post-Invader dip min 11.5k / 401 t recovered to ~19k at the tip with nUp=2; 20k gate never latched — **zero ≥20k samples**, max 19772). W47 leftover **expired** and the room banked back to 25k (live 25271, softCap2 off, bankWhy=ready); energy-side is above 25k for 62.2% of samples and above 30k for 7.7% (was 88.8% / 35.5%); **no 40k camp** (0% ≥40k, max 34155 @15:44) is a mid-wait band, not a latch; the all-time high remains yesterday morning's 44416; live 25271, upLatched=0 — do not unpark ceil/seal. 40k latch **waiting**. Phase1 blocked (mid 40k wait). Phase2 home is still the lead and has crossed 73.8% (~7.17 d, was 8.14 d; 3h 20.23). W47 pace ~19.33 e/t / ~17.07 d. Phase3 lean KO is **on** and the stockpile has grown **14071→18716**; boost still waits for stor ≥20k; full industry / XGH2O / market stay deferred (energy 19k / 25k live, window max 20k / 34k ≪ 100k). Verdict: `waiting on ticks` (20k gate + W47 40k latch held; a 20k miss and a leftover expiry back to 25k are not phase exits; KO 18716 is stockpile growth, not a boost/industry turn-on; already-live 289a7f06 tip filler was parked on 34,32; no new game code this review).
+
+### Previous (2026-11-18 ~08:2x Asia/Hong_Kong · 12h review)
+
 
 | Room | Notes |
 |------|-------|

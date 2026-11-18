@@ -13,6 +13,10 @@ Outputs: `metrics/model.json`, `docs/model_routes.png` (terrain + ideal routes +
 ## Actuals (DB, default 6 h)
 upgrade rate (room_stats progress), pickups per source (positive store deltas within 2 tiles of the source, normalised by tick coverage — a lower bound), deliveries (hub vs controller container), per-role idle/repaths/CPU (creep_cpu), planned vs actual path length (path_arrivals), hauler cycle median, share of hauling traffic on ideal-route tiles ± 1.
 
+## 2026-11-18 20:2x — 12h actuals (plan holds)
+
+12h window t84331400→84340690: home upgrade **21.57** e/t (72.01%→73.84%, +200k; RCL8 ≈ **7.17 d**, was 8.14 d). 2×14W remain energy-bound (live why=ok, exact2h 19.28/26=74.1% ABOVE, 3h 20.23 / 6h 20.68). Stor avg 16.54k max **19772** min **11500**; **15.73% under 15k** (was 19.25%); **0 samples ≥20k**, 20k/300t gate held. Longest under-15k 401 t after the 13:48 W45N7 Invader — do not change the 15k floor. Ledger net sp:upgrader **1.66**, under the 5 e/t waste gate. See `docs/RCL7.md` 20:2x.
+
 ## 2026-11-18 08:2x — 12h actuals (plan holds)
 
 Window t84322300→84331400 (9100 t, tick_s 4.746, coverage 535/911 ≈ 58.7%). Home measured upgrade **20.66** e/t (3h 18.07, 6h 21.84); still energy-bound at 2×14W, 20k/300t extra never latched (this window max stor 19077, **zero ≥20k samples**). W47 measured **20.00** e/t vs keep=2 designed 20 / ceiling 30.08 (3h 19.45, 6h 19.82). CPU 12h room_stats avg 17.82 p95 21.36. Ledger home net sp:upgrader 1.72 (under the 5 e/t waste gate). See `docs/RCL7.md` / `docs/MODEL_W47N8.md` 08:2x.
