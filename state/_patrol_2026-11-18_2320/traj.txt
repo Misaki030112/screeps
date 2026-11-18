@@ -1,0 +1,41 @@
+AUTO TIP 84342940
+room_stats (84342940, datetime.timedelta(seconds=30, microseconds=172311))
+creep_ticks (84342946, datetime.timedelta(seconds=3, microseconds=246616))
+creep_cpu (84342940, datetime.timedelta(seconds=17, microseconds=7415))
+12h W46N8 max (84340530, datetime.datetime(2026, 11, 18, 20, 14, 12, 750355, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 19772) n>=40k 0 n>=20k 0
+12h W47N8 max (84337080, datetime.datetime(2026, 11, 18, 15, 44, 53, 469870, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 34155) n>=40k 0 n>=20k 589
+13h W46N8 max (84340530, datetime.datetime(2026, 11, 18, 20, 14, 12, 750355, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 19772) n>=40k 0 n>=20k 0
+13h W47N8 max (84337080, datetime.datetime(2026, 11, 18, 15, 44, 53, 469870, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 34155) n>=40k 0 n>=20k 645
+=== room_stats gaps >=30t since last ===
+ gap 84342560 2026-11-18 22:52:28.798085+08:00 -> 84342720 2026-11-18 23:05:10.945327+08:00 dt 160
+samples 56 first (84342240, datetime.datetime(2026, 11, 18, 22, 27, 13, 796290, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai'))) last (84342940, datetime.datetime(2026, 11, 18, 23, 22, 49, 308172, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')))
+=== critical role last/zero_runs since last ===
+  miner: last=2 last_nz=(84342940, datetime.datetime(2026, 11, 18, 23, 22, 49, 308172, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 2) zero_runs=[]
+  queen: last=2 last_nz=(84342940, datetime.datetime(2026, 11, 18, 23, 22, 49, 308172, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 2) zero_runs=[]
+  rminer: last=2 last_nz=(84342940, datetime.datetime(2026, 11, 18, 23, 22, 49, 308172, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 2) zero_runs=[]
+  reserver: last=1 last_nz=(84342940, datetime.datetime(2026, 11, 18, 23, 22, 49, 308172, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 1) zero_runs=[]
+  reserve7: last=1 last_nz=(84342940, datetime.datetime(2026, 11, 18, 23, 22, 49, 308172, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 1) zero_runs=[(84342440, 84342870, 430, '2026-11-18 22:43:05.813213+08:00', '2026-11-18 23:17:20.608752+08:00')]
+  upgrader: last=3 last_nz=(84342940, datetime.datetime(2026, 11, 18, 23, 22, 49, 308172, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 3) zero_runs=[]
+  w8filler: last=3 last_nz=(84342940, datetime.datetime(2026, 11, 18, 23, 22, 49, 308172, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 3) zero_runs=[]
+  w8miner: last=2 last_nz=(84342940, datetime.datetime(2026, 11, 18, 23, 22, 49, 308172, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 2) zero_runs=[]
+  w8rminer: last=2 last_nz=(84342940, datetime.datetime(2026, 11, 18, 23, 22, 49, 308172, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 2) zero_runs=[]
+  w8upgrader: last=2 last_nz=(84342940, datetime.datetime(2026, 11, 18, 23, 22, 49, 308172, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 2) zero_runs=[]
+  hauler: last=1 last_nz=(84342940, datetime.datetime(2026, 11, 18, 23, 22, 49, 308172, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 1) zero_runs=[]
+  builder: last=0 last_nz=None zero_runs=[(84342240, 84342940, 700, '2026-11-18 22:27:13.796290+08:00', '2026-11-18 23:22:49.308172+08:00')]
+=== upgrader/reserver/guard trajectories ===
+Traceback (most recent call last):
+  File "/workspace/screeps/state/_patrol_2026-11-18_2320/traj.py", line 98, in <module>
+    creeps = c.execute(
+             ~~~~~~~~~^
+        """SELECT DISTINCT name, role FROM creep_ticks
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<2 lines>...
+        (LAST, TIP + 200),
+        ^^^^^^^^^^^^^^^^^^
+    ).fetchall()
+    ^
+  File "/workspace/screeps/.venv/lib/python3.13/site-packages/psycopg/connection.py", line 304, in execute
+    raise ex.with_traceback(None)
+psycopg.errors.UndefinedColumn: column "name" does not exist
+LINE 1: SELECT DISTINCT name, role FROM creep_ticks
+                        ^
