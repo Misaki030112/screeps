@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Fetch just-published official history base 84340700 and retry leftover W47N8@84337400 hole."""
+"""Fetch just-published official history base 84341500 and retry leftover W45N8@84341100 hole."""
 from __future__ import annotations
 import sys, time
 from collections import defaultdict
@@ -11,9 +11,9 @@ import history_backfill as hb
 import db, api
 
 ROOMS = ("W46N8", "W47N8", "W45N8", "W45N7", "W47N7")
-JUST_BASE = 84341200
+JUST_BASE = 84341500
 RETRY_404 = [("W45N8", 84341100)]  # remaining in-window official 404
-TICK_S = 4.66417  # first-interval (lowest over45; no corrective); script printed 4.664
+TICK_S = 4.68880  # later-mean-robust after corrective; first-interval was 4.59211 printed 4.592
 
 def history_get_retry(room, base, attempts=3):
     last = None
@@ -151,9 +151,9 @@ def main():
         for room in ROOMS:
             mn, mx, n, d = db_span(c, room, JUST_BASE + 1, JUST_BASE + 100)
             print(f"    {room} {mn}..{mx} rows={n} distinct={d}/100", flush=True)
-        print("  this-window official published 84340501..84341200:", flush=True)
+        print("  this-window official published 84340801..84341500:", flush=True)
         for room in ROOMS:
-            mn, mx, n, d = db_span(c, room, 84340501, 84341200)
+            mn, mx, n, d = db_span(c, room, 84340801, 84341500)
             print(f"    {room} {mn}..{mx} rows={n} distinct={d}/700", flush=True)
     print("finished", flush=True)
 

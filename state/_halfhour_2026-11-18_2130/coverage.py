@@ -8,14 +8,14 @@ import sys
 sys.path.insert(0, "/workspace/screeps/tools")
 import db
 
-TMIN, TMAX = 84340501, 84341200
+TMIN, TMAX = 84340801, 84341500
 ROOMS = ("W46N8", "W47N8", "W45N8", "W45N7", "W47N7")
-DIR = "/workspace/screeps/state/_halfhour_2026-11-18_2100"
-# First pass 32 of 35 official GETs 200, missing_chunks=3 (W47N8@84341100, W45N8@84341100, W47N7@84341100).
-# published_bases 84340500..84341100; reconstructed 84340501..84341200 (700).
-# In-window official 404: W47N8@84341100, W45N8@84341100, W47N7@84341100 (confirm will retry).
+DIR = "/workspace/screeps/state/_halfhour_2026-11-18_2130"
+# First pass 34 of 35 official GETs 200, missing_chunks=1 (W45N8@84341100).
+# published_bases 84340800..84341400; reconstructed 84340801..84341500 (700).
+# In-window official 404: W45N8@84341100 (confirm will retry).
 # Leftover official 404s remain outside this window.
-IN_WINDOW_404 = {("W47N8", 84341100), ("W45N8", 84341100), ("W47N7", 84341100)}
+IN_WINDOW_404 = {("W45N8", 84341100)}
 OUT = sys.argv[1] if len(sys.argv) > 1 else f"{DIR}/coverage_final.json"
 
 def chunk_base(tick):

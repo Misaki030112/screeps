@@ -9,18 +9,16 @@ import history_backfill as hb
 import db, api
 
 ROOMS = ("W46N8", "W47N8", "W45N8", "W45N7", "W47N7")
-# First pass at game.time=84341202; published_bases 84340500..84341100,
-# reconstructed 84340501..84341200 (700). inserted=10549, already_in_db=10874, reconstructed=21423,
-# ts_realigned_first_pass=47 (first-interval tick_s=4.66417 script printed 4.664).
-# In-window official 404: W47N8@84341100, W45N8@84341100, W47N7@84341100 (32 of 35 official GETs 200).
+# First pass at game.time=84341527; published_bases 84340800..84341400,
+# reconstructed 84340801..84341500 (700). inserted=3182, already_in_db=23830, reconstructed=27012,
+# ts_realigned_first_pass=8869 (first-interval tick_s=4.59211 script printed 4.592).
+# In-window official 404: W45N8@84341100 (34 of 35 official GETs 200).
 # Leftover official 404s remain outside this window but are still retried as IN_WINDOW.
 # Aged leftover outside-window 404s carried from prior runs (unchanged unless a later GET returns 200).
-# 20:17 patrol official already through 84340500; 20:30 half-hour wrote through 84340700
-# and just-published 84340700 (84340701..84340800) for all five rooms.
+# 21:24 patrol official already through 84341300; 21:00 half-hour wrote through 84341200
+# and just-published 84341200 (84341201..84341300) for all five rooms.
 IN_WINDOW = [
-    ("W47N8", 84341100),  # in-window official 404 (W46N8/W45N7 already 200)
     ("W45N8", 84341100),  # in-window official 404
-    ("W47N7", 84341100),  # in-window official 404
     ("W47N8", 84337400),  # leftover official hole, now outside this window (25 live / 75 empty 84337426..84337500)
     ("W46N8", 84336400),  # leftover official hole, now outside this window
     ("W47N7", 84334700),  # leftover official hole, still retried; later chunk 84334800 already 200
@@ -73,10 +71,10 @@ AGED = [
     ("W45N7", 84259200),
     ("W45N7", 84257900),
 ]
-TICK_S = 4.66417  # overwritten from tick_s_realign.json if present (later-mean after corrective)
+TICK_S = 4.59211  # overwritten from tick_s_realign.json if present (later-mean after corrective)
 PASS = sys.argv[1] if len(sys.argv) > 1 else "confirm"
-OUT = "/workspace/screeps/state/_halfhour_2026-11-18_2100/backfill_confirm_gets.json"
-TICK_S_FILE = "/workspace/screeps/state/_halfhour_2026-11-18_2100/tick_s_realign.json"
+OUT = "/workspace/screeps/state/_halfhour_2026-11-18_2130/backfill_confirm_gets.json"
+TICK_S_FILE = "/workspace/screeps/state/_halfhour_2026-11-18_2130/tick_s_realign.json"
 
 def load_tick_s():
     global TICK_S

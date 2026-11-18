@@ -7,7 +7,7 @@ from zoneinfo import ZoneInfo
 from pathlib import Path
 
 ROOT = Path("/workspace/screeps")
-DIR = ROOT / "state" / "_halfhour_2026-11-18_2100"
+DIR = ROOT / "state" / "_halfhour_2026-11-18_2130"
 os.chdir(ROOT)
 sys.path.insert(0, "tools")
 sys.path.insert(0, "scripts")
@@ -15,38 +15,38 @@ import db, api
 import history_backfill as hb
 
 # Official chunk timestamps printed by history_backfill.py
-# First pass 32 of 35 official GETs 200, missing_chunks=3 (W47N8@84341100, W45N8@84341100, W47N7@84341100).
-# published_bases 84340500..84341100; reconstructed 84340501..84341200 (700).
+# First pass 34 of 35 official GETs 200, missing_chunks=1 (W45N8@84341100).
+# published_bases 84340800..84341400; reconstructed 84340801..84341500 (700).
 # First-pass tick_s used min-of-all-rooms on the first two bases,
-# computed 4.66417, script printed 4.664. First-pass realign moved 47 (ts_realigned=47, inserted=10549; already_in_db=10874).
-# W46N8 is earliest on every published base this window (including 84341100 vs W45N7).
-# In-window official 404: W47N8@84341100, W45N8@84341100, W47N7@84341100.
-# 20:17 hourly patrol official already through 84340500 (overlap of this window);
-# 20:30 half-hour already wrote through 84340700 and just-published 84340700 (84340701..84340800) for all five rooms.
+# computed 4.59211, script printed 4.592. First-pass realign moved 8869 (ts_realigned=8869, inserted=3182; already_in_db=23830).
+# W46N8 is earliest on every published base this window except 84341300 (W45N7 1795008141343 earlier than W46N8 1795008142853).
+# In-window official 404: W45N8@84341100.
+# 21:24 hourly patrol official already through 84341300 (overlap of this window);
+# 21:00 half-hour already wrote through 84341200 and just-published 84341200 (84341201..84341300) for all five rooms.
 W46 = {
-    84340500: 1795004418384,
-    84340600: 1795004884801,
-    84340700: 1795005341791,
     84340800: 1795005803720,
     84340900: 1795006262931,
     84341000: 1795006733316,
     84341100: 1795007201979,
+    84341200: 1795007670269,
+    84341300: 1795008142853,
+    84341400: 1795008607332,
 }
 MIN_ALL = {
-    84340500: 1795004418384,  # W46N8 (W45N7 1795004419685 later)
-    84340600: 1795004884801,  # W46N8 (W45N7 1795004885362 later)
-    84340700: 1795005341791,  # W46N8 (W45N7 1795005343012 later)
     84340800: 1795005803720,  # W46N8 (W45N7 1795005806003 later)
     84340900: 1795006262931,  # W46N8 (W45N7 1795006263996 later)
     84341000: 1795006733316,  # W46N8 (W45N7 1795006734076 later)
     84341100: 1795007201979,  # W46N8 (W45N7 1795007202181 later)
+    84341200: 1795007670269,  # W46N8 (W45N7 1795007670886 later)
+    84341300: 1795008141343,  # W45N7 (W46N8 1795008142853 later)
+    84341400: 1795008607332,  # W46N8 (W45N7 1795008608272 later)
 }
-TMIN, TMAX = 84340501, 84341200
+TMIN, TMAX = 84340801, 84341500
 ROOMS = ("W46N8", "W47N8", "W45N8", "W45N7", "W47N7")
-TICK_S_FIRST = (MIN_ALL[84340600] - MIN_ALL[84340500]) / 1000.0 / 100  # 4.66417; script printed 4.664
-GT_FIRST = 84341202
-TS_REALIGNED_FIRST = 47  # first-pass realign moved 47 (inserted=10549, already_in_db=10874)
-PREV_LATER_MEAN = 4.64517  # 20:30 later-mean-robust (in-use)
+TICK_S_FIRST = (MIN_ALL[84340900] - MIN_ALL[84340800]) / 1000.0 / 100  # 4.59211; script printed 4.592
+GT_FIRST = 84341527
+TS_REALIGNED_FIRST = 8869  # first-pass realign moved 8869 (inserted=3182, already_in_db=23830)
+PREV_LATER_MEAN = 4.66417  # 21:00 first-interval in-use (later-mean-robust was 4.63436)
 
 def intervals(d):
     bases = sorted(d)
@@ -182,11 +182,11 @@ def main():
     skipped_chunk = 0
     first_outlier = not (3.0 <= TICK_S_FIRST <= 6.0)
     first_pass_realign_error = (
-        f"First-pass realign with tick_s={TICK_S_FIRST:.5f} (printed 4.664) moved {TS_REALIGNED_FIRST} rows "
-        f"(ts_realigned_first={TS_REALIGNED_FIRST}, inserted=10549)."
+        f"First-pass realign with tick_s={TICK_S_FIRST:.5f} (printed 4.592) moved {TS_REALIGNED_FIRST} rows "
+        f"(ts_realigned_first={TS_REALIGNED_FIRST}, inserted=3182)."
     )
     reason = (
-        f"first-interval tick_s={TICK_S_FIRST:.5f} (printed 4.664, min-all-rooms first two bases) "
+        f"first-interval tick_s={TICK_S_FIRST:.5f} (printed 4.592, min-all-rooms first two bases) "
         f"{'is an OUTLIER' if first_outlier else 'is in the sane 3-6s band'}; "
         f"later-mean-robust {later_mean_robust:.5f} (raw later-mean {later_mean_raw:.5f}; "
         f"delta first-robust {first-later_mean_robust:.5f} s/tick, "
