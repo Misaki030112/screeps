@@ -443,6 +443,11 @@ body {
 .rooms .w47 { grid-area: east; }
 .rooms .south { grid-area: south; }
 
+.rmap {
+  display: grid;
+  gap: 0.55rem;
+}
+
 .arch-col {
   display: grid;
   gap: 0.45rem;
@@ -525,6 +530,21 @@ body {
     grid-template-columns: 1fr 1fr;
     align-items: start;
   }
+
+  .rmap {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-areas:
+      "c8 home a8"
+      "c7 walk a7";
+    align-items: stretch;
+  }
+
+  .rmap .c8 { grid-area: c8; }
+  .rmap .home { grid-area: home; }
+  .rmap .a8 { grid-area: a8; }
+  .rmap .c7 { grid-area: c7; }
+  .rmap .walk { grid-area: walk; }
+  .rmap .a7 { grid-area: a7; }
 }
 
 .flow-split,
