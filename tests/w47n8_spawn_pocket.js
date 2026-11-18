@@ -133,6 +133,57 @@ assert.ok(fromPocket.includes('33,31') && fromPocket.includes('34,32'), 'leave p
 assert.ok(!fromPocket.includes('33,33'), 'leave pocket does not step onto the occupied container: ' + fromPocket.slice(0, 8).join(' '));
 assert.ok(!fromPocket.includes('32,29'), 'leave pocket does not take the north walk');
 
+
+// Second-filler post and occupied south-rail exit (20:17 patrol).
+assert.deepStrictEqual(F.POST2, [35, 31], 'POST2 is the road north of storage');
+assert.deepStrictEqual(F.EXIT, [33, 34]);
+assert.deepStrictEqual(F.EXIT_APPROACH, [34, 33]);
+assert.strictEqual(F.EXIT_COST, 12);
+assert.ok(F.EXIT_COST >= 10, 'exit cost must beat the post path (threshold 10) and take the north walk');
+
+global.FIND_MY_CREEPS = global.FIND_MY_CREEPS || 103;
+function fakeFillers(creeps) {
+  return { find: (t, opts) => creeps.filter(c => !opts || !opts.filter || opts.filter(c)) };
+}
+const fA = { id: 'a', name: 'w8filler84338537', pos: { x: 33, y: 34 }, memory: { role: 'w8filler' } };
+const fB = { id: 'b', name: 'w8filler84339665', pos: { x: 34, y: 32 }, memory: { role: 'w8filler' } };
+assert.deepStrictEqual(F.idlePost(fA, fakeFillers([fA])), F.POST, 'lone filler uses POST');
+assert.deepStrictEqual(F.idlePost(fA, fakeFillers([fA, fB])), F.POST2, 'other already on POST -> POST2');
+assert.deepStrictEqual(F.idlePost(fB, fakeFillers([fA, fB])), F.POST, 'already on POST stays');
+const fC = { id: 'c', name: 'w8filler1', pos: { x: 33, y: 31 }, memory: { role: 'w8filler' } };
+const fD = { id: 'd', name: 'w8filler2', pos: { x: 33, y: 31 }, memory: { role: 'w8filler' } };
+assert.deepStrictEqual(F.idlePost(fC, fakeFillers([fC, fD])), F.POST, 'name-senior takes POST when neither is on it');
+assert.deepStrictEqual(F.idlePost(fD, fakeFillers([fC, fD])), F.POST2, 'name-junior takes POST2 when neither is on it');
+
+function stubAt(tiles) {
+  global.Game = global.Game || { time: 1, creeps: {}, rooms: {} };
+  Game.rooms.W47N8 = { name: 'W47N8', lookForAt: (t, x, y) => (tiles.has(x + ',' + y) ? [{ name: 'blocker' }] : []) };
+}
+stubAt(new Set(['33,34']));
+occ = fresh();
+F.yieldHub(occ);
+assert.strictEqual(occ.get(33, 34), F.EXIT_COST, 'yieldHub raises occupied 33,34');
+assert.strictEqual(occ.get(32, 32), 0, 'empty container does not raise pocket just because the exit is occupied');
+stubAt(new Set(['33,33', '34,33']));
+occ = fresh();
+F.yieldHub(occ);
+assert.strictEqual(occ.get(32, 32), F.POCKET_COST, 'occupied hub still raises the pocket');
+assert.strictEqual(occ.get(34, 33), F.EXIT_COST, 'occupied hub+34,33 raises the approach so the search takes the north walk');
+stubAt(new Set(['34,33']));
+occ = fresh();
+F.yieldHub(occ);
+assert.strictEqual(occ.get(34, 33) || 0, 0, '34,33 alone is not raised if the container approach is open');
+stubHub(false);
+
+// Occupied 33,34: search takes the north walk 32,29, not the blocked south exit.
+for (const start of [[33, 30], [34, 30], [32, 32], [33, 31]]) {
+  const blockedExit = new Map([['32,32', F.POCKET_COST], ['33,33', F.POCKET_COST], ['33,34', F.EXIT_COST]]);
+  const path = route(start[0], start[1], 12, 25, 0, null, blockedExit);
+  assert.ok(path, start.join(',') + ' blocked-exit has a path');
+  assert.ok(path.includes('32,29'), start.join(',') + ' blocked-exit takes the north walk: ' + path.slice(0, 10).join(' '));
+  assert.ok(!path.includes('33,34'), start.join(',') + ' blocked-exit skips 33,34: ' + path.slice(0, 10).join(' '));
+}
+
 // move.to's cached matrix paints the same cost (rhaulers, reserve7, hauler delivery).
 global.TERRAIN_MASK_WALL = 1;
 global.TERRAIN_MASK_SWAMP = 2;

@@ -1,6 +1,7 @@
 // W47N8 spawn-energy filler (Misaki 17:3x: "补能要贴合地形、智能补能、优先操作 ... 不要让 spawn 陷入能量等待").
-// One w8filler (two once the hub holds > 2500) owns every hub-side spawn-energy structure. It idles FULL on POST (road 34,32,
-// beside storage 35,32 and hub container 33,33), so a refill starts the tick the spawn draws energy.
+// One w8filler (two once the hub holds > 2500) owns every hub-side spawn-energy structure. The first idles FULL on POST
+// (road 34,32, beside storage 35,32 and hub container 33,33); the second idles on POST2 (road 35,31, also beside storage),
+// never on the south-rail exit 33,34. A refill starts the tick the spawn draws energy.
 // v3b strips are 3 wide (ext | road | ext): the filler walks the strip road from its hub-side end, one tile per tick, and
 // transfers every tick to an adjacent needy extension. Each road tile touches up to 6 extensions (rows y-1..y+1 on both sides);
 // it only stops while an extension it would leave behind (last road tile that touches it) still needs energy, and it turns
@@ -9,10 +10,18 @@
 // energy and every hub structure is already full.
 const C = require('./config'), L = require('./layout');
 const E = 'energy', K = (x, y) => x * 50 + y, POST = [34, 32], TOWER_R = 8;
+// Second filler idle (when duty cap > 2500 wants 2). Road 35,31 is adjacent to storage
+// 35,32 and is not on the only south-rail exit 34,32 → 34,33 → 33,34. Two fillers both
+// targeting POST used to park the loser on 33,34 (20:17 patrol: w8upgrader84339813
+// bounced 160t in the 32,32 pocket until filler 38537 expired off the exit).
+const POST2 = [35, 31];
 // Path cost of the idle post. A one-plain step via 32,32 (still open beside link 32,33; extension
 // 32,34 is not on that diagonal) is +1. The north walk around the hub wall is ~+10. 4 diverts
 // traffic off the post without making the post itself worse than that north walk.
 const POST_COST = 4;
+// 33,34 occupancy cost in yieldHub (live costCallback, not the cached matrix). 10 is the
+// threshold that beats the post path and takes the north walk 32,29 → 31,28 (~+11).
+const EXIT = [33, 34], EXIT_APPROACH = [34, 33], EXIT_COST = 12;
 // 32,32 is a 2-exit cul-de-sac once link 32,33, terminal 33,32 and ext 32,31 stand
 // (exits: hub container 33,33 and 33,31). CMV.to ignores creeps until STUCK=3, so a
 // 1-MOVE upgrader that steps into 32,32 while 33,33 is occupied bounces 32,32 ↔ 33,31
@@ -76,6 +85,17 @@ function source(room) {
   return [st, hc].filter(s => s && s.store[E] > 0); // 10-20 17:0x (Misaki): storage first, hub container only as fallback
 }
 const fillers = room => room.find(FIND_MY_CREEPS, { filter: c => c.memory.role === 'w8filler' });
+// Prefer POST; the other filler idles at POST2 so it cannot sit on the south-rail exit.
+// Occupancy first (whoever already stands on POST stays), else stable name order.
+function idlePost(c, room) {
+  const others = fillers(room).filter(o => o.id !== c.id && !o.spawning);
+  if (!others.length) return POST;
+  const onPost = o => o.pos && o.pos.x === POST[0] && o.pos.y === POST[1];
+  if (others.some(onPost)) return POST2;
+  if (onPost(c)) return POST;
+  const senior = [c, ...others].sort((a, b) => (a.name || '').localeCompare(b.name || ''))[0];
+  return senior.id === c.id ? POST : POST2;
+}
 // filler can do its job: alive (not spawning) and holding energy or with energy to draw (else haulers keep filling the hub)
 let actT = -1, actV = false;
 function active(room) {
@@ -106,6 +126,11 @@ function want(room, cs) {
 // ignored, swap/shove our own blocker from stuck 2), like the W47N8 haulers.
 const MV = require('../../utils/move'), ND = { noDetour: true };
 const go = (c, x, y, r) => (c.room.name === C.ROOM ? MV.to(c, x, y, r, ND) : c.moveTo(new RoomPosition(x, y, C.ROOM), { range: r, reusePath: 15, maxRooms: 1 }));
+function goIdle(c, room) {
+  const p = idlePost(c, room);
+  if (c.pos.x === p[0] && c.pos.y === p[1]) return;
+  return go(c, p[0], p[1], 0);
+}
 function threatFill(room) {
   if (!room) return false;
   const t8 = room.memory && room.memory.threat8;
@@ -178,7 +203,7 @@ function run(c) {
         .sort((a, b) => b.store[E] - a.store[E])[0];
       if (k) { if (c.pos.isNearTo(k)) c.withdraw(k, E); else go(c, k.pos.x, k.pos.y, 1); return; }
     }
-    return c.pos.x === POST[0] && c.pos.y === POST[1] ? undefined : go(c, POST[0], POST[1], 0);
+    return goIdle(c, room);
   }
   const jobs = [];
   ROUTES.forEach((R, i) => { if (taken.has(i)) return; const n = objs(D.strip[i]).filter(s => left(s) > 0); if (!n.length) return;
@@ -247,13 +272,13 @@ function run(c) {
         if (room.storage && c.pos.isNearTo(room.storage) && c.store.getFreeCapacity(E) > 0) {
           c.withdraw(room.storage, E); return;
         }
-        if (c.pos.x !== POST[0] || c.pos.y !== POST[1]) return go(c, POST[0], POST[1], 0);
+        return goIdle(c, room);
       }
     }
   }
-  // idle: refill to full at POST
-  if (c.store.getFreeCapacity(E) > 0 && !src && source(room).length) return go(c, POST[0], POST[1], 0);
-  if (c.pos.x !== POST[0] || c.pos.y !== POST[1]) go(c, POST[0], POST[1], 0);
+  // idle: refill to full at this filler's post (POST or POST2)
+  if (c.store.getFreeCapacity(E) > 0 && !src && source(room).length) return goIdle(c, room);
+  goIdle(c, room);
 }
 // Raise the filler's idle road so a search takes 33,31 → 32,32 → 33,33 instead of stepping on
 // the post. Leave a blocked tile (255) alone, and leave the post walkable for the filler itself.
@@ -280,9 +305,21 @@ function yieldPost(a, b) {
 function yieldHub(a, b) {
   const costs = yieldPost(a, b);
   if (!costs || typeof costs.get !== 'function') return costs;
-  if (!occupied(roomW8(), HUB[0], HUB[1])) return costs;
-  if (costs.get(POCKET[0], POCKET[1]) < 255) costs.set(POCKET[0], POCKET[1], POCKET_COST);
-  if (costs.get(HUB[0], HUB[1]) < 255) costs.set(HUB[0], HUB[1], POCKET_COST);
+  const room = roomW8();
+  if (occupied(room, HUB[0], HUB[1])) {
+    if (costs.get(POCKET[0], POCKET[1]) < 255) costs.set(POCKET[0], POCKET[1], POCKET_COST);
+    if (costs.get(HUB[0], HUB[1]) < 255) costs.set(HUB[0], HUB[1], POCKET_COST);
+    // 34,33 is the only other approach to 33,34 besides the container. When both
+    // are occupied the south rail is unreachable from the hub — force the north walk.
+    if (occupied(room, EXIT_APPROACH[0], EXIT_APPROACH[1]) && costs.get(EXIT_APPROACH[0], EXIT_APPROACH[1]) < 255)
+      costs.set(EXIT_APPROACH[0], EXIT_APPROACH[1], EXIT_COST);
+  }
+  // 20:17 patrol: 33,34 is the only south-rail exit from the hub. A parked second
+  // filler on that tile left ignoreCreeps planning 34,32→34,33→33,34; the 1-MOVE
+  // upgrader then oscillated in the 32,32 pocket (micro-moves reset STUCK). Cost 12
+  // beats walking the exit (threshold 10) so the search takes 32,29 → 31,28 (~+11).
+  if (occupied(room, EXIT[0], EXIT[1]) && costs.get(EXIT[0], EXIT[1]) < 255)
+    costs.set(EXIT[0], EXIT[1], EXIT_COST);
   return costs;
 }
-module.exports = { run, want, body, active, alive, stock, reserve, duty, ROUTES, POST, POST_COST, POCKET, POCKET_COST, yieldPost, yieldHub, ENTRY: () => ENTRY, isDuty: (room, s) => s.structureType !== STRUCTURE_TOWER && duty(room).byKey[K(s.pos.x, s.pos.y)] === s.id };
+module.exports = { run, want, body, active, alive, stock, reserve, duty, ROUTES, POST, POST2, POST_COST, POCKET, POCKET_COST, EXIT, EXIT_APPROACH, EXIT_COST, idlePost, yieldPost, yieldHub, ENTRY: () => ENTRY, isDuty: (room, s) => s.structureType !== STRUCTURE_TOWER && duty(room).byKey[K(s.pos.x, s.pos.y)] === s.id };
