@@ -70,6 +70,7 @@ execSync('node ' + path.join(__dirname, '..', 'tests', 'spawn_remote_gate.js'), 
 execSync('node ' + path.join(__dirname, '..', 'tests', 'rcl5_gate.js'), { stdio: 'pipe' });
 execSync('node ' + path.join(__dirname, '..', 'tests', 'rcl6_gate.js'), { stdio: 'pipe' });
 execSync('node ' + path.join(__dirname, '..', 'tests', 'move_detour.js'), { stdio: 'pipe' });
+execSync('node ' + path.join(__dirname, '..', 'tests', 'w47n8_filler_park.js'), { stdio: 'pipe' });
 execSync('node ' + path.join(__dirname, '..', 'tests', 'w45n7.js'), { stdio: 'pipe' });
 execSync('node ' + path.join(__dirname, '..', 'tests', 'reserver_invader.js'), { stdio: 'pipe' });
 execSync('node ' + path.join(__dirname, '..', 'tests', 'trace_attack_controller.js'), { stdio: 'pipe' });

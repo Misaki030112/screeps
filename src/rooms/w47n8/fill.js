@@ -100,6 +100,15 @@ function want(room, cs) {
 // ignored, swap/shove our own blocker from stuck 2), like the W47N8 haulers.
 const MV = require('../../utils/move'), ND = { noDetour: true };
 const go = (c, x, y, r) => (c.room.name === C.ROOM ? MV.to(c, x, y, r, ND) : c.moveTo(new RoomPosition(x, y, C.ROOM), { range: r, reusePath: 15, maxRooms: 1 }));
+// Idle and full: stand on POST and drop the path. Two full fillers both move.to(POST) swapped every
+// tick — the one that arrived stopped calling move.to, so _m.l stayed on the approach tile and the
+// stuck counter never reset (34,32↔33,31 / 33,33 / 34,33 / 35,31, ~11t, then stuck-8, for hours).
+function park(c) {
+  if (c.pos.x === POST[0] && c.pos.y === POST[1]) { delete c.memory._m; return; }
+  const at = c.room.lookForAt && c.room.lookForAt(LOOK_CREEPS, POST[0], POST[1]);
+  if (at && at.some(o => o !== c && o.my && o.memory && o.memory.role === 'w8filler')) { delete c.memory._m; return; }
+  go(c, POST[0], POST[1], 0);
+}
 function threatFill(room) {
   if (!room) return false;
   const t8 = room.memory && room.memory.threat8;
@@ -245,8 +254,9 @@ function run(c) {
       }
     }
   }
-  // idle: refill to full at POST
+  // idle: walk to POST to refill. Once full (or there is nothing to draw), stand there.
   if (c.store.getFreeCapacity(E) > 0 && !src && source(room).length) return go(c, POST[0], POST[1], 0);
+  if (c.store.getFreeCapacity(E) === 0 || !source(room).length) return park(c);
   if (c.pos.x !== POST[0] || c.pos.y !== POST[1]) go(c, POST[0], POST[1], 0);
 }
 // Raise the filler's idle road so a search takes 33,31 → 32,32 → 33,33 instead of stepping on
