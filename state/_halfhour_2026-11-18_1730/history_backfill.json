@@ -1,0 +1,145 @@
+{
+  "ok_quiet": true,
+  "finished_hkt": "2026-11-18 17:38 Asia/Hong_Kong",
+  "game_time_first": 84338446,
+  "published_bases": "84337700..84338300",
+  "rooms": [
+    "W46N8",
+    "W47N8",
+    "W45N8",
+    "W45N7",
+    "W47N7"
+  ],
+  "tmin": 84337701,
+  "tmax": 84338400,
+  "tick_s_first": 4.62514,
+  "tick_s_printed": "4.625",
+  "tick_s_in_use": 4.68108,
+  "ts_realigned_first": 36,
+  "ts_realigned_corrective": 0,
+  "gt_corrective": null,
+  "reconstructed_rows": 30689,
+  "already_in_db": 26416,
+  "inserted_first": 4273,
+  "inserted_confirm": 0,
+  "inserted_retry2": 0,
+  "inserted_just_published": 2749,
+  "inserted_window": 4273,
+  "inserted_total": 7022,
+  "missing_chunks": 0,
+  "first_pass": "first pass 35 of 35 official GETs 200, missing_chunks=0; hourly_patrol_prefilled=true from 17:18 patrol official already through 84338300 (overlap of this window; first 84338200 404 then retry recovered all five, retry inserted=3523); 17:00 backfill already wrote through 84338000 and just-published 84338000 (84338001..84338100) for all five rooms",
+  "per_room": "W46N8:700t/438new W47N8:700t/2424new W45N8:700t/581new W45N7:700t/373new W47N7:700t/457new",
+  "coverage": {
+    "coverage": {
+      "W46N8": {
+        "distinct": 700,
+        "missing_n": 0,
+        "missing_ranges": [],
+        "official_empty_no_creep": 0,
+        "official_empty_no_creep_ranges": [],
+        "official_404_missing": 0,
+        "official_404_ranges": []
+      },
+      "W47N8": {
+        "distinct": 700,
+        "missing_n": 0,
+        "missing_ranges": [],
+        "official_empty_no_creep": 0,
+        "official_empty_no_creep_ranges": [],
+        "official_404_missing": 0,
+        "official_404_ranges": []
+      },
+      "W45N8": {
+        "distinct": 700,
+        "missing_n": 0,
+        "missing_ranges": [],
+        "official_empty_no_creep": 0,
+        "official_empty_no_creep_ranges": [],
+        "official_404_missing": 0,
+        "official_404_ranges": []
+      },
+      "W45N7": {
+        "distinct": 700,
+        "missing_n": 0,
+        "missing_ranges": [],
+        "official_empty_no_creep": 0,
+        "official_empty_no_creep_ranges": [],
+        "official_404_missing": 0,
+        "official_404_ranges": []
+      },
+      "W47N7": {
+        "distinct": 700,
+        "missing_n": 0,
+        "missing_ranges": [],
+        "official_empty_no_creep": 0,
+        "official_empty_no_creep_ranges": [],
+        "official_404_missing": 0,
+        "official_404_ranges": []
+      }
+    },
+    "official_recovered": 3500,
+    "expected": 3500,
+    "empty_no_creep": 0,
+    "official_404_missing": 0,
+    "unique_after": {
+      "rows": 29832,
+      "unique_creep_tick_rows": 29832,
+      "distinct_ticks": 700,
+      "distinct_room_ticks": 3500
+    },
+    "at": "2026-11-18T17:36:41.830275+08:00"
+  },
+  "tick_s_realign": {
+    "corrective_applied": false,
+    "later_mean_w46": 4.681082,
+    "still_over_45s_vs_later": 0,
+    "reason": "first-interval tick_s=4.62514 (printed 4.625, min-all-rooms first two bases) is in the sane 3-6s band; later-mean-robust 4.68108 (raw later-mean 4.68108; delta first-robust -0.05594 s/tick, ~41.7s at tmin). First-pass realign with tick_s=4.62514 (printed 4.625) moved 36 rows (ts_realigned_first=36, inserted=0).; later-mean-robust already inside 45s gate, no corrective realign"
+  },
+  "just_published": {
+    "base": 84338400,
+    "oom_killed_at": [],
+    "oom_note": null,
+    "recovered_at": "17:37:38",
+    "recovered_game_time": 84338529,
+    "inserted": 2749,
+    "inserted_first_four": 2196,
+    "inserted_w47n7_retry": 553,
+    "w47n7_first_404": true,
+    "ticks": "84338401..84338500",
+    "all_five_distinct": 100
+  },
+  "confirm": {
+    "at": "17:33:27",
+    "game_time": 84338475,
+    "inserted": 0,
+    "ssl_abort_first": null
+  },
+  "retry2": {
+    "at": "17:34:42",
+    "game_time": 84338491,
+    "inserted": 0
+  },
+  "in_window_404": {},
+  "listener": {
+    "single_slot": true,
+    "roomSlot": "W47N8",
+    "rot": {
+      "i": 1,
+      "room": "W47N8",
+      "left": 205.0,
+      "at": "2026-11-18 17:38:33"
+    },
+    "yield": "absent",
+    "pid": 463150,
+    "restart_at": "17:18:42",
+    "this_run_restarted": false
+  },
+  "box_freeze": {
+    "from": "2026-11-18 17:14:33",
+    "to": "2026-11-18 17:18:39",
+    "sec": 244,
+    "room_stats_gap": "84338231..84338289",
+    "official_filled": "59/59 all five"
+  },
+  "ok_line": "ok_quiet=True coverage=3500/3500 inserted_window=4273 inserted_total=7022 tick_s_in_use=4.68108 listener single_slot=True; no second listener; no war_cmd/pulse restart."
+}

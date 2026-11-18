@@ -1,0 +1,30 @@
+intervals_w46:
+  84337700..84337800 4.62514
+  84337800..84337900 4.67260
+  84337900..84338000 4.59038
+  84338000..84338100 4.78237
+  84338100..84338200 4.70286
+  84338200..84338300 4.65720
+intervals_min_all_rooms:
+  84337700..84337800 4.62514
+  84337800..84337900 4.67260
+  84337900..84338000 4.59038
+  84338000..84338100 4.78237
+  84338100..84338200 4.70286
+  84338200..84338300 4.65720
+first=4.62514 later_mean_raw=4.68108 later_mean_robust=4.68108
+all_mean=4.67176 span_mean=4.67176 script_tick_s=4.62514 prev_later=4.66119
+delta_first_minus_later_raw=-0.05594 s/tick; at tmin vs gt_first ~41.7s
+delta_first_minus_later_robust=-0.05594 s/tick; at tmin vs gt_first ~41.7s
+anchor 2026-11-18 17:32:52 Asia/Hong_Kong game.time=84338467
+vs_first tick_s=4.62514 {'over45': 0, 'over15': 21370, 'n': 29832, 'mean_off': -22.29932107847278, 'min_off': -44.605479, 'max_off': -2.377004}
+vs_later_raw tick_s=4.68108 {'over45': 0, 'over15': 36, 'n': 29832, 'mean_off': 0.47971862862027354, 'min_off': -14.95902, 'max_off': 23.341913}
+vs_later_robust tick_s=4.68108 {'over45': 0, 'over15': 36, 'n': 29832, 'mean_off': 0.47971862862027354, 'min_off': -14.95902, 'max_off': 23.341913}
+vs_all_mean tick_s=4.67176 {'over45': 0, 'over15': 547, 'n': 29832, 'mean_off': -3.3167879896755164, 'min_off': -17.439115, 'max_off': 18.997084}
+vs_span_mean tick_s=4.67176 {'over45': 0, 'over15': 547, 'n': 29832, 'mean_off': -3.3167879896755164, 'min_off': -17.439115, 'max_off': 18.997084}
+vs_prev_later tick_s=4.66119 {'over45': 0, 'over15': 3112, 'n': 29832, 'mean_off': -7.620110799242425, 'min_off': -20.250292, 'max_off': 14.072241}
+lowest_over45_among_sane=later_raw {'over45': 0, 'over15': 36, 'n': 29832, 'mean_off': 0.47971862862027354, 'min_off': -14.95902, 'max_off': 23.341913}
+corrective_applied=False
+wrote /workspace/screeps/state/_halfhour_2026-11-18_1730/tick_s_realign.json
+corrective_applied=False nfix=0 skipped_cross_chunk=0
+reason: first-interval tick_s=4.62514 (printed 4.625, min-all-rooms first two bases) is in the sane 3-6s band; later-mean-robust 4.68108 (raw later-mean 4.68108; delta first-robust -0.05594 s/tick, ~41.7s at tmin). First-pass realign with tick_s=4.62514 (printed 4.625) moved 36 rows (ts_realigned_first=36, inserted=0).; later-mean-robust already inside 45s gate, no corrective realign
