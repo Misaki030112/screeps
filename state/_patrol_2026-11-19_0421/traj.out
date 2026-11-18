@@ -1,0 +1,41 @@
+AUTO TIP 84346770
+room_stats (84346770, datetime.timedelta(seconds=45, microseconds=269509))
+creep_ticks (84346779, datetime.timedelta(seconds=4, microseconds=505261))
+creep_cpu (84346760, datetime.timedelta(seconds=55, microseconds=800369))
+12h W46N8 max (84340530, datetime.datetime(2026, 11, 18, 20, 14, 12, 750355, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 19772) n>=40k 0 n>=20k 0
+12h W47N8 max (84343500, datetime.datetime(2026, 11, 19, 0, 6, 32, 745419, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 36249) n>=40k 0 n>=20k 504
+13h W46N8 max (84340530, datetime.datetime(2026, 11, 18, 20, 14, 12, 750355, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 19772) n>=40k 0 n>=20k 0
+13h W47N8 max (84343500, datetime.datetime(2026, 11, 19, 0, 6, 32, 745419, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 36249) n>=40k 0 n>=20k 559
+=== room_stats gaps >=30t since last ===
+ gap 84346260 2026-11-19 03:44:53.251465+08:00 -> 84346530 2026-11-19 04:06:17.130457+08:00 dt 270
+samples 58 first (84345940, datetime.datetime(2026, 11, 19, 3, 19, 47, 407226, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai'))) last (84346770, datetime.datetime(2026, 11, 19, 4, 25, 38, 595202, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')))
+=== critical role last/zero_runs since last ===
+  miner: last=2 last_nz=(84346770, datetime.datetime(2026, 11, 19, 4, 25, 38, 595202, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 2) zero_runs=[]
+  queen: last=2 last_nz=(84346770, datetime.datetime(2026, 11, 19, 4, 25, 38, 595202, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 2) zero_runs=[]
+  rminer: last=2 last_nz=(84346770, datetime.datetime(2026, 11, 19, 4, 25, 38, 595202, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 2) zero_runs=[]
+  reserver: last=1 last_nz=(84346770, datetime.datetime(2026, 11, 19, 4, 25, 38, 595202, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 1) zero_runs=[(84345940, 84345990, 50, '2026-11-19 03:19:47.407226+08:00', '2026-11-19 03:23:44.884234+08:00')]
+  reserve7: last=0 last_nz=(84346640, datetime.datetime(2026, 11, 19, 4, 15, 11, 237133, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 1) zero_runs=[(84345940, 84346030, 90, '2026-11-19 03:19:47.407226+08:00', '2026-11-19 03:26:56.719310+08:00'), (84346650, 84346770, 120, '2026-11-19 04:15:58.899243+08:00', '2026-11-19 04:25:38.595202+08:00')]
+  upgrader: last=2 last_nz=(84346770, datetime.datetime(2026, 11, 19, 4, 25, 38, 595202, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 2) zero_runs=[]
+  w8filler: last=2 last_nz=(84346770, datetime.datetime(2026, 11, 19, 4, 25, 38, 595202, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 2) zero_runs=[]
+  w8miner: last=2 last_nz=(84346770, datetime.datetime(2026, 11, 19, 4, 25, 38, 595202, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 2) zero_runs=[]
+  w8rminer: last=2 last_nz=(84346770, datetime.datetime(2026, 11, 19, 4, 25, 38, 595202, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 2) zero_runs=[]
+  w8upgrader: last=2 last_nz=(84346770, datetime.datetime(2026, 11, 19, 4, 25, 38, 595202, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 2) zero_runs=[]
+  hauler: last=1 last_nz=(84346770, datetime.datetime(2026, 11, 19, 4, 25, 38, 595202, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 1) zero_runs=[]
+  builder: last=0 last_nz=None zero_runs=[(84345940, 84346770, 830, '2026-11-19 03:19:47.407226+08:00', '2026-11-19 04:25:38.595202+08:00')]
+=== upgrader/reserver/guard trajectories ===
+Traceback (most recent call last):
+  File "/workspace/screeps/state/_patrol_2026-11-19_0421/traj.py", line 98, in <module>
+    creeps = c.execute(
+             ~~~~~~~~~^
+        """SELECT DISTINCT name, role FROM creep_ticks
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<2 lines>...
+        (LAST, TIP + 200),
+        ^^^^^^^^^^^^^^^^^^
+    ).fetchall()
+    ^
+  File "/workspace/screeps/.venv/lib/python3.13/site-packages/psycopg/connection.py", line 304, in execute
+    raise ex.with_traceback(None)
+psycopg.errors.UndefinedColumn: column "name" does not exist
+LINE 1: SELECT DISTINCT name, role FROM creep_ticks
+                        ^
