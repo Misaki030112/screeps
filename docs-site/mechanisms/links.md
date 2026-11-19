@@ -20,7 +20,7 @@ W47 不走这个函数。`main.js` 进了 W47 就只跑布局和 `towerRun`，�
 
 ## 家
 
-`STATIONARY_FILL` 现在是 false。link 的格子不跟 v2 布局稿走，只跟 `plan.LINK_PLAN`。稿子里 RCL5 还有一座 35,26；关着这面旗时，那一格要到 RCL8 才进计划。
+`STATIONARY_FILL` 现在是 false。link 的格子不跟 v2 布局稿走，只跟 `plan.LINK_PLAN`。稿子里 RCL5 还有一座 35,26；关着这面旗时，那一格要到 RCL8 才进计划。印章上的 L，以及 W47 枢纽其余的格子，见 [布局](/mechanisms/layout)。
 
 | 名字 | 坐标 | 计划中的 RCL |
 | --- | --- | --- |

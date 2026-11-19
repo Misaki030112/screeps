@@ -665,8 +665,88 @@ body {
 .hub .c3234 { grid-area: y34x32; }
 .hub .c3334 { grid-area: y34x33; }
 
+.stamps {
+  display: grid;
+  gap: 1rem;
+}
+
+.stamp {
+  display: grid;
+  grid-template-columns: 1.35rem repeat(5, minmax(0, 1fr));
+  gap: 0.28rem;
+  align-items: stretch;
+}
+
+.stamp .xh,
+.stamp .yl {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+  font-size: 0.62rem;
+  letter-spacing: 0;
+  line-height: 1;
+}
+
+.stamp .yl {
+  justify-content: flex-end;
+  padding-right: 0.15rem;
+}
+
+.stamp .node {
+  padding: 0.22rem 0.12rem 0.28rem;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.stamp .node strong {
+  font-size: 0.8rem;
+  letter-spacing: 0;
+}
+
+.stamp .node span {
+  font-size: 0.62rem;
+  letter-spacing: 0;
+  line-height: 1.3;
+}
+
+.core {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-areas:
+    "y31x32 y31x33 y31x34 y31x35"
+    "y32x32 y32x33 y32x34 y32x35"
+    "y33x32 y33x33 y33x34 ."
+    "y34x32 y34x33 . ."
+    ". y35x33 . .";
+  gap: 0.45rem;
+}
+
+.core .c3231 { grid-area: y31x32; }
+.core .c3331 { grid-area: y31x33; }
+.core .c3431 { grid-area: y31x34; }
+.core .c3531 { grid-area: y31x35; }
+.core .c3232 { grid-area: y32x32; }
+.core .c3332 { grid-area: y32x33; }
+.core .c3432 { grid-area: y32x34; }
+.core .c3532 { grid-area: y32x35; }
+.core .c3233 { grid-area: y33x32; }
+.core .c3333 { grid-area: y33x33; }
+.core .c3433 { grid-area: y33x34; }
+.core .c3234 { grid-area: y34x32; }
+.core .c3334 { grid-area: y34x33; }
+.core .c3335 { grid-area: y35x33; }
+
+@media (min-width: 960px) {
+  .stamps {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.7rem;
+  }
+}
+
 @media (max-width: 720px) {
-  .hub {
+  .hub,
+  .core {
     gap: 0.3rem;
   }
 
@@ -674,8 +754,14 @@ body {
     padding: 0.4rem 0.35rem 0.45rem;
   }
 
-  .hub .node strong {
+  .hub .node strong,
+  .core .node strong {
     font-size: 0.78rem;
+  }
+
+  .core .node span,
+  .stamp .node span {
+    font-size: 0.68rem;
   }
 }
 
