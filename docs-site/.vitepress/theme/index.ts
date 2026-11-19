@@ -2,6 +2,7 @@ import DefaultTheme from 'vitepress/theme'
 import Layout from './Layout.vue'
 import './custom.css'
 import ArchDiagram from './components/ArchDiagram.vue'
+import CpuOrder from './components/CpuOrder.vue'
 import FlowDiagram from './components/FlowDiagram.vue'
 import RoadmapDiagram from './components/RoadmapDiagram.vue'
 import SpawnQueue from './components/SpawnQueue.vue'
@@ -20,6 +21,7 @@ export default {
   Layout,
   enhanceApp({ app }) {
     app.component('ArchDiagram', ArchDiagram)
+    app.component('CpuOrder', CpuOrder)
     app.component('FlowDiagram', FlowDiagram)
     app.component('RoadmapDiagram', RoadmapDiagram)
     app.component('SpawnQueue', SpawnQueue)

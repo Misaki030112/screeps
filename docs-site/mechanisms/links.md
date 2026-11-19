@@ -16,7 +16,7 @@ Link 把一段方向固定的路换成一次传送。冷却取两座 link 横差
 
 `main.js` 对家每拍都调用 `managers/links.js` 的 `run`。函数开头是 `Game.time % 3`：余数不是 0 就立刻返回。所以真正看 link 的是时间能被 3 整除的那一拍。link 自己的冷却仍按距离算。冷却在两次查看之间结束，最多再等 2 拍，脚本才会把它送出去。房间里的 link 不到两座，这一拍也不送。
 
-W47 不走这个函数。`main.js` 进了 W47 就只跑布局和 `towerRun`，然后 `continue`。`linkRun` 写在 `towerRun` 的第一行，塔还没找到就先看 link，所以没有塔的那一拍也送。它每拍都看，不等 3 拍。
+W47 不走这个函数。`main.js` 进了 W47 就只跑布局和 `towerRun`，然后 `continue`。`linkRun` 写在 `towerRun` 的第一行，塔还没找到就先看 link，所以没有塔的那一拍也送。它每拍都看，不等 3 拍。这一拍为什么把 W47 从家的 link 和实验室名单里拿开，见 [主循环](/mechanisms/loop)。
 
 ## 家
 
