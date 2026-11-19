@@ -14,6 +14,16 @@ SQL = {
  'events': 'INSERT INTO events (ts,tick,kind,room,severity,episode,msg,data) VALUES (%s,%s,%s,%s,%s,%s,%s,%s)',
 }
 state = {'commit': None, 'commit_at': 0, 'rows': 0, 'last_flush': None, 'err': None}
+def inv_count(inv):
+    """incidents.inv is INTEGER (hostile count). Threat events send a list/dict of invader details; keep those in data."""
+    if inv is None:
+        return None
+    if isinstance(inv, (list, tuple)):
+        return len(inv)
+    if isinstance(inv, dict):
+        return 1
+    return inv
+
 now = lambda: datetime.now(timezone.utc)
 def put(table, row): Q.put((table, row))
 def commit():

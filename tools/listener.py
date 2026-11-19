@@ -92,7 +92,7 @@ def on_message(ws, msg):
                 try:
                     a = json.loads(l[9:])
                     ingest.put('incidents', (utcnow(), a.get('tick'), a.get('remote'), a.get('inc'), a.get('ev'), a.get('from'), a.get('state'), a.get('why'),
-                        a.get('inv'), a.get('invTtl'), a.get('def'), a.get('dur'), json.dumps(a)))
+                        ingest.inv_count(a.get('inv')), a.get('invTtl'), a.get('def'), a.get('dur'), json.dumps(a)))
                 except Exception as ex: append('errors.log', f'{stamp()} [listener] bad INCIDENT {ex}: {l[:200]}')
                 append('console.log', f'{stamp()} {l}'); continue
             if l.startswith('CS '):
