@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/workspace/screeps/tools/db.py", line 15, in <module>
+    cur = c.execute(sys.argv[1])
+  File "/workspace/screeps/.venv/lib/python3.13/site-packages/psycopg/connection.py", line 304, in execute
+    raise ex.with_traceback(None)
+psycopg.errors.UndefinedColumn: column "hits_max" does not exist
+LINE 2: SELECT tick, room, x, y, hits, hits_max, energy, intent, fat...
+                                       ^
