@@ -7,7 +7,7 @@ from zoneinfo import ZoneInfo
 from pathlib import Path
 
 ROOT = Path("/workspace/screeps")
-DIR = ROOT / "state" / "_halfhour_2026-11-19_2000"
+DIR = ROOT / "state" / "_halfhour_2026-11-19_2030"
 os.chdir(ROOT)
 sys.path.insert(0, "tools")
 sys.path.insert(0, "scripts")
@@ -15,40 +15,40 @@ import db, api
 import history_backfill as hb
 
 # Official chunk timestamps printed by history_backfill.py
-# First pass 34 of 35 official GETs 200, missing_chunks=1 (W45N7@84358500).
-# published_bases 84357900..84358500; reconstructed 84357901..84358600 (700).
+# First pass 33 of 35 official GETs 200, missing_chunks=2 (W45N7@84358500, W47N8@84358700).
+# published_bases 84358300..84358900; reconstructed 84358301..84359000 (700).
 # First-pass tick_s used min-of-all-rooms on the first two bases,
-# computed 4.35054, script printed 4.351. First-pass realign moved 12076 (ts_realigned=12076, inserted=13031; already_in_db=13380).
-# 19:30 half-hour official already through 84358100 / reconstructed through 84358200
-# (just-published 84358200 was not attempted then and is included in this first pass, 200 in all 5 rooms).
-# This first pass also newly wrote published 84358300..84358500 (W45N7@84358500 first-pass 404), filling official-covered part of new freeze gap 84358381..84358609 (220 of 229; tail 84358601..84358609 still in-progress) and the unpublished tail of 19:32:54 reconnect gap 84358201..84358209 once 84358200 published.
-# In-window official 404 W45N7@84358500 will be confirmed/retried. Leftover official 404s aged out of this 40-min window and were not retried.
-# just-published 84358600 not attempted (gt=84358649 still in-progress).
-# New box freeze 19:45:09-19:59:19 (843s); listener auto-restart 19:59:23 (listener.py pid 938306 started 19:59:32; not this run). New room_stats gap 84358381..84358609 (229).
+# computed 4.07094, script printed 4.071. First-pass realign moved 0 (ts_realigned=0, inserted=3510; already_in_db=19545).
+# 20:00 half-hour official already through 84358500 / reconstructed through 84358600
+# (just-published 84358600 was not attempted then; the 20:23 patrol already official-filled 84358201..84358900 except the two 404 holes, inserted=7574 at gt=84358980, tick_s=4.047).
+# This first pass newly wrote previously unpublished 84358900 for all 5 rooms (just-published for the patrol, now published at gt=84359052).
+# In-window official 404 W45N7@84358500 and W47N8@84358700 will be confirmed/retried. Leftover official 404s aged out of this 40-min window and were not retried.
+# just-published 84359000 not attempted (gt=84359052 still in-progress; typically publishable around game.time>=84359140).
+# New box freeze 20:12:27-20:23:40 (673s); listener auto-restarts 20:09:23 and 20:23:43 (listener.py pid 945090 started 20:23:52; not this run). New room_stats gaps 84358741..84358759 (19, around 20:09:23) and 84358791..84358969 (179, from 20:12:27-20:23:40 freeze).
 W46 = {
-    84357900: 1795087131577,
-    84358000: 1795087566631,
-    84358100: 1795087984026,
-    84358200: 1795088389933,
     84358300: 1795088794592,
     84358400: 1795089201686,
     84358500: 1795089589841,
+    84358600: 1795089990080,
+    84358700: 1795090403581,
+    84358800: 1795090810435,
+    84358900: 1795091222686,
 }
 MIN_ALL = {
-    84357900: 1795087131577,  # W46N8 (W45N7 1795087133452 later)
-    84358000: 1795087566631,  # W46N8 (W45N7 1795087568291 later)
-    84358100: 1795087984026,  # W46N8 (W45N7 1795087984948 later)
-    84358200: 1795088389933,  # W46N8 (W45N7 1795088390520 later)
     84358300: 1795088794592,  # W46N8 (W45N7 1795088795810 later)
     84358400: 1795089201686,  # W46N8 (W45N7 1795089204120 later)
     84358500: 1795089589841,  # W46N8 (W45N7 first-pass 404; W45N8 1795089630191 later)
+    84358600: 1795089990080,  # W46N8 (W45N7 1795089990746 later)
+    84358700: 1795090403581,  # W46N8 (W47N8 first-pass 404; W45N7 1795090404122 later)
+    84358800: 1795090810435,  # W46N8 (W45N7 1795090812437 later)
+    84358900: 1795091222461,  # W45N7 (W46N8 1795091222686 later)
 }
-TMIN, TMAX = 84357901, 84358600
+TMIN, TMAX = 84358301, 84359000
 ROOMS = ("W46N8", "W47N8", "W45N8", "W45N7", "W47N7")
-TICK_S_FIRST = (MIN_ALL[84358000] - MIN_ALL[84357900]) / 1000.0 / 100  # 4.35054; script printed 4.351
-GT_FIRST = 84358649
-TS_REALIGNED_FIRST = 12076  # first-pass realign moved 12076 (inserted=13031, already_in_db=13380)
-PREV_LATER_MEAN = 4.59739  # 19:30 half-hour later-mean-robust / in-use
+TICK_S_FIRST = (MIN_ALL[84358400] - MIN_ALL[84358300]) / 1000.0 / 100  # 4.07094; script printed 4.071
+GT_FIRST = 84359052
+TS_REALIGNED_FIRST = 0  # first-pass realign moved 0 (inserted=3510, already_in_db=19545)
+PREV_LATER_MEAN = 4.04642  # 20:00 half-hour later-mean-robust / in-use
 
 def intervals(d):
     bases = sorted(d)
@@ -184,11 +184,11 @@ def main():
     skipped_chunk = 0
     first_outlier = not (3.0 <= TICK_S_FIRST <= 6.0)
     first_pass_realign_error = (
-        f"First-pass realign with tick_s={TICK_S_FIRST:.5f} (printed 4.351) moved {TS_REALIGNED_FIRST} rows "
-        f"(ts_realigned_first={TS_REALIGNED_FIRST}, inserted=13031, already_in_db=13380, missing_chunks=1 W45N7@84358500)."
+        f"First-pass realign with tick_s={TICK_S_FIRST:.5f} (printed 4.071) moved {TS_REALIGNED_FIRST} rows "
+        f"(ts_realigned_first={TS_REALIGNED_FIRST}, inserted=3510, already_in_db=19545, missing_chunks=2 W45N7@84358500 and W47N8@84358700)."
     )
     reason = (
-        f"first-interval tick_s={TICK_S_FIRST:.5f} (printed 4.351, min-all-rooms first two bases) "
+        f"first-interval tick_s={TICK_S_FIRST:.5f} (printed 4.071, min-all-rooms first two bases) "
         f"{'is an OUTLIER' if first_outlier else 'is in the sane 3-6s band'}; "
         f"later-mean-robust {later_mean_robust:.5f} (raw later-mean {later_mean_raw:.5f}; "
         f"delta first-robust {first-later_mean_robust:.5f} s/tick, "

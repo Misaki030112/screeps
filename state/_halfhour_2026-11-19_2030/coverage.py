@@ -8,14 +8,14 @@ import sys
 sys.path.insert(0, "/workspace/screeps/tools")
 import db
 
-TMIN, TMAX = 84357901, 84358600
+TMIN, TMAX = 84358301, 84359000
 ROOMS = ("W46N8", "W47N8", "W45N8", "W45N7", "W47N7")
-DIR = "/workspace/screeps/state/_halfhour_2026-11-19_2000"
+DIR = "/workspace/screeps/state/_halfhour_2026-11-19_2030"
 # First pass 34 of 35 official GETs 200, missing_chunks=1 (W45N7@84358500).
 # published_bases 84357900..84358500; reconstructed 84357901..84358600 (700).
 # 19:30 half-hour already official-filled through 84358200 (published_bases 84357500..84358100 at gt=84358230, inserted=7252 writing 84357700 plus 84357800..84358100); just-published 84358200 was not attempted then (gt=84358230 in-progress) and is included in this first pass (200 in all 5 rooms). This pass also wrote 84358300..84358400 and the 200 rooms of 84358500 (W45N7 404 pending confirm).
 # New box freeze 19:45:09-19:59:19 (843s) with listener auto-restart 19:59:23 (run_listener.sh auto-restart, not this run); new room_stats gap 84358381..84358609 (229): official-covered 84358381..84358600 sits inside this window; live tail 84358601..84358609 sits in the still in-progress 84358600 chunk. Prior 19:11:05-19:19:02 gap 84357911..84358009 remains official-filled 99/99 and still sits inside this window start 84357901. Prior 19:32:54 reconnect gap tail 84358201..84358209 should be filled once 84358200 published. Leftover official 404s aged out of this window. In-window official 404 W45N7@84358500 to be confirmed. just-published 84358600 not attempted (gt=84358649 still in-progress).
-IN_WINDOW_404 = {("W45N7", 84358500)}  # first pass 34/35 official 200, missing_chunks=1; leftover official 404s aged out of this window
+IN_WINDOW_404 = {("W45N7", 84358500), ("W47N8", 84358700)}  # first pass 33/35 official 200, missing_chunks=2; leftover official 404s aged out of this window
 OUT = sys.argv[1] if len(sys.argv) > 1 else f"{DIR}/coverage_final.json"
 
 def chunk_base(tick):

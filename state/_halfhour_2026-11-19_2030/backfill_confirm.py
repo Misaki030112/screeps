@@ -20,12 +20,13 @@ ROOMS = ("W46N8", "W47N8", "W45N8", "W45N7", "W47N7")
 # (just-published 84358200 was not attempted then and is included in this overlap, 200 in all 5 rooms).
 IN_WINDOW = [
     ("W45N7", 84358500),  # first-pass 404; other rooms W46N8/W47N8/W45N8/W47N7 @84358500 200
+    ("W47N8", 84358700),  # first-pass 404; other rooms W46N8/W45N8/W45N7/W47N7 @84358700 200
 ]
 AGED = []
-TICK_S = 4.35054  # overwritten from tick_s_realign.json if present; first-pass printed 4.351
+TICK_S = 4.07094  # overwritten from tick_s_realign.json if present; first-pass printed 4.071
 PASS = sys.argv[1] if len(sys.argv) > 1 else "confirm"
-OUT = "/workspace/screeps/state/_halfhour_2026-11-19_2000/backfill_confirm_gets.json"
-TICK_S_FILE = "/workspace/screeps/state/_halfhour_2026-11-19_2000/tick_s_realign.json"
+OUT = "/workspace/screeps/state/_halfhour_2026-11-19_2030/backfill_confirm_gets.json"
+TICK_S_FILE = "/workspace/screeps/state/_halfhour_2026-11-19_2030/tick_s_realign.json"
 
 def load_tick_s():
 

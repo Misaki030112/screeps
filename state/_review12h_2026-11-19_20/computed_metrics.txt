@@ -1,0 +1,24 @@
+computed official window t84350530→84359020 (first/last samples)
+estimated 08:20 start tick 84349700 (morning review failed; box hole 05:33–09:23 / 84347620→84350530, 2910 t, 13822 s)
+ticks_sampled=8490 wall_s=39848.93 wall_h=11.069 tick_s=4.6936
+expected_10t_slots=850 n_samples/room=447 coverage_pct=52.6
+(Do not use wall_s/(END-START=9320)=4.276 — that understates tick_s because START is before the first sample.)
+home first=8265654 last=8449133 delta=183479 e_per_t=21.6112 pct=77.2669 remaining=2485867 eta_days=6.25
+w47  first=5022152 last=5187407 delta=165255 e_per_t=19.4647 pct=47.4386 remaining=5747593 eta_days=16.04
+last evening tick_s was 4.6728; this window tick_s 4.6936 (shard slightly slower — calendar still tightened on the faster pace and higher %)
+home 3h 22.57 e/t (2300 t, n=125); 6h 20.96 e/t (4600 t, n=250); 1h 20.75; exact2h 24.07/26=92.6% ABOVE (patrol tip 84359010)
+w47 3h 19.75 e/t; 6h 19.68 e/t; 1h 18.83/30.08=62.6%; exact2h 19.96/30.08=66.3% UNDER
+home 20k: this window max 20829 @84352100 / 11:28:08; ONE stretch 150 t (11:21:02–11:32:51, 20029–20829, n=16). Latch 300t NOT armed. (Last evening 0 samples, max 19772; previous touch 20244 / 20 t.)
+home under15: 12.75% (was 15.73%); min 12757 @13:32:25 / 84353670; longest stretch 130 t (16:27–16:37, min 14077) after the 16:08–16:26 W45N7 Invader; also 100 t (13:26–13:34, min 12757) and 80 t (17:34–17:40, min 12980) after the 17:32 W47N7 Invader. 57/447 samples. Do not change the 15k floor.
+w47 40k: no ≥40k samples this window (0%). Window max 35585 @84356440 / 17:13:44; longest ≥30k 840 t (16:33:59–17:40:49, 30485–35585) then the 17:32 fight. Latch 500t NOT armed (upLatched=0). 24h max since last evening is 36249 @00:06–00:09 (84343500–540); all-time high remains 11-17 morning 44416 / 341 t; closest clean camp remains 11-17 evening 470 t / peak 43041.
+w47 <22k: 200 t (10:23–10:39, min 18926); brief 10 t (18:20:07–18:20:55, min 21320) after the 17:32 W47N7 Invader. Live 22025, softCap2 off, softLeft=2975 (hysteresis after the <22k dip, not a cap-on), sealPark=1 because stor <25k (threat window expired ~19:51).
+w47 ≥20k 98.43% (was 80.71%); ≥25k 63.98% (was 62.17%); ≥30k 14.09% (was 7.72%); ≥40k 0% (was 0%).
+tip softCap2=0 threatSoft=0 sealPark=1 bankWhy=ready softLeft=2975 keep=2 upLatched=0 leanBank=0 siteRem=0 phase=ready why=done storE=22025 sealMinE=25000 upgCeil=2 hubLink=1 contMinPct=52 roadCrit=0 (live q @84359042–044). Threat leftover expired; sealPark is the ≥25k rule, not threatSoft.
+KO total 27886 = 27236 stor + 650 lab + 0 term (was 18716 last evening, 24h). 15k reaction floor NOT pausing at the tip (actOk=1 why=active homeStor=15630). 20k boost skip held (only 150 t ≥20k; no boost event this review).
+LIVE 2b5398f7 @84345299 / 02:28:52 (already-live this window, not this review; "hold W47N7 civilians while the remote threat FSM is open"). Also already-live this window: 6d153087 @84340798 / 20:35 last evening (POST2 35,31 + yield occupied south-rail exit 33,34), deployed after the last 12h review. All 12h room_stats samples are 2b5398f7 (445; plus 2 empty-commit samples). Memory.stats.commit is null at the live tip. deploy.lock absent. Live fillers: 84357548 on 34,32 with 1200e (ttl 110); 84358639 on POST2 35,31 with 1200e; 84359007 spawning — park fixes visible; replacement overlap, not a new routing pass.
+box pauses in sampled window: 21, 17513 s (~4.86 h). Coverage 52.6% is worse than last evening's 72.5%. Plus the pre-window 05:33–09:23 hole (2910 t / 3.84 h) that failed the morning 12h review.
+CPU 12h avg 17.87 p95 21.36 max 28.94 @combat bucket min 9920 n_cpu≥40=0 (was 17.24 / 20.54 / 33.16).
+Ledger: no morning snap (morning review failed). 24h snap t84340747→84359069 (18322 t / 24.00 h). Home up 17.42 (undercounts ~13%), net spawn 15.05, net sp:upgrader 1.63 (2.45-0.82) under the 5 e/t waste gate. W47 up 19.42 matches 24h room_stats 19.42.
+24h since last successful review t84340690→84359020 (18330 t): home +374789 ≈ 20.45 e/t (overnight to first post-hole sample 19.44; overnight until the hole 20.06, max 19462, under15 24.89%, min 11481). W47 +356015 ≈ 19.42 e/t (overnight 19.39; max 36249 @00:06, 0% ≥40k).
+Formal W47: 19:22 patrol CLEARED after 21 consecutive duals (short was 26 e/t from an idle builder helping, not a standing third). At the 20:27 tip exact2h 19.96=66.3% is under 70% again; last20–300 designed 20.00=66.5% IS soft. The concurrent 20:23 hourly patrol will settle first dual vs hold; strategy is unchanged either way (designed keep=2 20 e/t = 66.5% of 30.08).
+Home formal: exact2h 24.07/26=92.6% ABOVE; last20–300 28.00–24.71=107.7–95.0% not soft.
