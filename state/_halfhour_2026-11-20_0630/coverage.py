@@ -8,17 +8,17 @@ import sys
 sys.path.insert(0, "/workspace/screeps/tools")
 import db
 
-TMIN, TMAX = 84366701, 84367400
+TMIN, TMAX = 84367101, 84367800
 ROOMS = ("W46N8", "W47N8", "W45N8", "W45N7", "W47N7")
-DIR = "/workspace/screeps/state/_halfhour_2026-11-20_0600"
+DIR = "/workspace/screeps/state/_halfhour_2026-11-20_0630"
 # First pass 35 of 35 official GETs 200, missing_chunks=0.
-# published_bases 84366700..84367300 at game.time=84367466; reconstructed 84366701..84367400 (700).
-# 05:30 half-hour already official-filled through 84366900 / reconstructed through 84367000 (just-published 84367000 written for all 5, ticks 84367001..84367100).
-# Concurrent 1h patrol was delivered ~05:23 (next ~06:17).
-# This first pass already_in_db=17648 / inserted=11537 (W46N8 1333, W47N8 5401, W45N8 1617, W45N7 1150, W47N7 2036); overlap from 05:30 half-hour official fill + just-published 84367000 + live rotation.
-# New box freeze 05:53:08-05:56:59 STATS 84367301..84367369 (69) is inside this reconstructed window (to be official-filled this pass; not yet told, for next 1h patrol). just-published 84367400 will cover 05:59:54-06:01:32 STATS 84367401..84367429 after game.time>=84367540.
-# Prior freezes 04:42:44-05:00:03 and 05:18:07-05:19:42 already told; 05:18 gap 84366781..84366819 is fully inside this window.
-# No in-window official 404. Leftover W47N7@84366500 (hole 84366501..84366600, already told by the 05:23 1h patrol) and older aged out of this window start 84366701 and were not retried.
+# published_bases 84367100..84367700 at game.time=84367837; reconstructed 84367101..84367800 (700).
+# 06:00 half-hour already official-filled through 84367300 / reconstructed through 84367400 (just-published 84367400 written for all 5, ticks 84367401..84367500).
+# Concurrent 1h patrol started 06:19 (still running) already official-filled 84366901..84367600 and just-published 84367500+84367600 (ticks 84367501..84367700).
+# This first pass already_in_db=24753 / inserted=2459 (W46N8 102, W47N8 1436, W45N8 257, W45N7 0, W47N7 664); overlap from 06:00 half-hour + patrol fill + live rotation.
+# New box freeze 06:14:32-06:19:42 STATS 84367611..84367699 (89) is inside this reconstructed window. Prior untold freezes 05:53:08-05:56:59 and 05:59:54-06:01:32 also overlap this window (05:59 gap already official-filled last run).
+# No in-window official 404. Leftover official 404s aged out of this window start 84367101 and were not retried this pass (the 06:19 patrol retried them, still 404).
+# W45N7 db tip 84367664 / 0 new this pass: likely official empty_no_creep after 84367664 (this script classifies).
 IN_WINDOW_404 = set()  # first pass 35/35 official 200, missing_chunks=0
 OUT = sys.argv[1] if len(sys.argv) > 1 else f"{DIR}/coverage_final.json"
 

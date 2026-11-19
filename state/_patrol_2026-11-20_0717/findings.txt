@@ -1,0 +1,65 @@
+2026-11-20 ~07:17/07:29 Asia/Shanghai 1h peacetime patrol findings
+Window: last 84367730..84368630 07:24:28 Asia/Shanghai / later 84368690 07:28:35 stor 17253/22687
+Tip 84368630 stor 17513/23735 then later 17613@84368640, 17523@84368650, 17073@84368660, 17173@84368670, 17253/22687@84368690
+room_stats tip 84368630; later to 84368690. shard_s/t exact2h 4.116, 1h 4.128.
+
+LIVE SHA: 2b5398f7 (room_stats commit at tip; deploy@84345299 02:28). Repo HEAD 08e1bd55 is routine state 06:29, not a game deploy. No src/ change, no deploy this run. No deploy.lock.
+
+W45N7 Invader CORE outcome (CLEARED; do not lead as active ALERT):
+- Last patrol: inc 84367621 during 06:14-06:19 freeze, corePos [7,38], defender84367622 25A25M 5000 hits walking W45N8 19,40 at 06:28, arrive ev at 84367835 06:29:42, DEFEND, civilians withdrawn.
+- This hour traces: hatch 84367772 W46N8 35,29; enter W45N7 84367836; adjacent 6,37 from 84367872..84368006 (135t, hits stayed 5000); first leave 84368007 6,36; exit to W45N8 84368044; back W46N8 84368083; last 84368110 W46N8 35,29 empty 5000 then gone (recycled; remaining TTL would have been ~1100, not natural death).
+- 25A*30=750 dmg/t vs typical 100k core ≈133t, matches the stand. Wall-time from arrive 06:29:42 tick_s=4.116: adjacent ~06:32:14, leave/kill ~06:41:26, recycle ~06:48:34.
+- No incidents 'cleared' row: box freeze started mid-fight (last STATS 84367950 06:37:36) so the clear event was not ingested. Reconstruction is from official history creep_ticks.
+- Live 84368642: W45N8 SAFE vis res 2255 by Misaki cores 0 host 0; W45N7 SAFE vis res 1533 by Misaki cores 0 host 0 (res dropped during evac ~84367665-84368266, ~600t unreserved, 2124-style prior -> 1533; reserver84368466 in W45N7 7,41 ttl=436); W47N7 SAFE vis res 2552 by Misaki cores 0 host 0. sites=0.
+- Live defender84367622 gone; no rdef/w8guard/w8defender live (w8guard last 84368557 W47N8 29,5 parked_threat; w8defender last 84368585 W47N8 28,5; rdef84366822 last 84368471 W47N7 26,20, natural TTL after leftover queue_blocked).
+- Civilians resumed: rhauler in W45N7 from 84368072; reserver/rminer from 84368266; live rminer84368024 in W45N7. upgFeed rem="W45N8:SAFE,W45N7:SAFE" why=ok.
+- No Safe Mode, Memory.cmd stale on@84224348 by cmd not taken over, war_cmd/pulse not running, first defender was full-budget not capped.
+
+HOME upgrade FORMAL STAYS FIRED (home rule: exact2h still <70% after last hour FIRED; do not require short soft):
+- exact2h 16.06/26.00=61.8% (prev 18.17=69.9%) UNDER 70%
+- 1h INTERP 16.47/26=63.3%
+- short: last20-140 28.00 e/t=107.7% HARD; last200 24.76=95.2% NOT soft; last300 21.42=82.4% (span 290t post-freeze); last800 16.69=64.2%; last1500 16.24=62.5%
+- model 2h measured upgrade 15.99 stor_delta +0.74; 1h 16.50 stor_delta +1.55; ideal 26.00
+- nUp=1 from 84367730 06:22 stor 15782 why=remote_pause (W45N7:DEFEND) until 84368410 07:09:12 stor 18613 nUp=2; live nUp=2 work=28 upBank=0 why=ok surplus=2563 rem SAFE/SAFE idealAdj=26
+- Live upgraders: upgrader84367394 30,30 ttl=304 e=36; upgrader84368410 31,30 ttl=1320 e=22
+- Do not change 15k floor, do not add a third. 20k/300t still unlocked (this-hour/3h max 18613@84368410 07:09, best>=20k span=0)
+
+W47 upgrade formal does NOT fire (last hour CLEARED; this is the FIRST dual after clearance):
+- exact2h 20.90/30.08=69.5% (prev 21.57=71.7%) UNDER 70% — first under after clearance
+- 1h INTERP 21.05/30.08=70.0%
+- short last20-300 all designed keep=2 20.00 e/t=66.5% (last200 span 200t post-freeze is valid, IS soft at keep=2); last800 21.15=70.3%; last1500 20.99=69.8%
+- model_w8 2h alloc upgrade 20.9 vs ideal 30.03 stor_delta -1.52; 1h 21.07 stor_delta +5.29; upgrader_work 20
+- Root remains designed keep=2 (20 e/t=66.5%). Do not change keep/softCap, no standing third, do not unseal 40k.
+- 40k/500t still unlocked (this-hour max 24100@84368600 07:22, n>=40k=0; 3h max still 29383@84366820 05:20)
+- Live 84368638/84368645: keep=2 upgCeil=2 bankWhy=soft thS=0 softCap2=1 softLeft=1153..1265 sealPark=1 sealMinE=25000 storE=23847..23735 feedOk=1 hubLink=1 hubReady=1 phase=ready why=done leanBank=0 upArm=40000 upLatched=0. w8soft.sealPark=1 why=ok (energy seal, stor under 25k). thUntil=84368536 expired (w8threat=84367036 +1500; live t 84368645).
+- Seated w8upgrader84367210 14,27 ttl=108 e=10 @84368640 and w8upgrader84367982 12,25 ttl=880 e=30. Replacement w8upgrader84368649 hatched ~84368649; w8up=3 from 84368650 is handoff overlap, not a standing third. Later stor 22585@84368670, 22687@84368690.
+
+Storage formal does NOT fire: tip 17513 ABOVE (prev tip 15782 later 16682 ABOVE); later 17253 ABOVE; under15k this hour to tip 3/51=5.9% (min 14182@84367940 06:36, also 14970@84367920; recovered 16429@84368340 after freeze). Floor cycling + earlier spend, not two-patrol tip-under. Do not change 15k floor.
+
+Energy / harvest / gaps:
+- Home biggest gap is upgrade under nUp=1 remote_pause for most of the 2h/1h window; short has recovered with nUp=2.
+- W47 src_A 1h 0.38 / 2h 0.18 is the same known link-accounting artifact (miner seated 26,11). src_B 9.75/9.69; R1 8.51/6.09; R2 8.77/4.74 — 1h R1/R2 recovered after last hour's evac; 2h still includes that downtime. Biggest W47 gap remains designed keep=2 upgrade vs 30.08.
+- Home RCL7 8631902/10935000=78.94% later 8633524; W47 5375773/10935000=49.16% later 5376973.
+- ticksToDowngrade 150000 both, safeModeAvailable 6/6 both, never activated.
+
+Critical roles: miner/queen/rminer/w8filler/w8miner never zero. reserver zero 84367730-84367830 100t (designed: reservations were still above RES_SPAWN=2000 at evac start); then 2 reservers at tip, live reserver in W45N7 because res 1533 < 2000. reserve7 zero 84368340-84368410 70t then back (reserve784368417 in W47N7 39,27 ttl=387). builder zero 84367730-84367850 120t then builder84367855 appeared (no construction sites; motion no_task 190/482=37.5%, some repair; not a new stuck). No formal missing-role alert. Labs KO still on (Memory.ops.labs.W46N8=KO, never unset); labReady why=active actOk=1 actGaps=. Minerals home stor K 236956 O 105600 KO 32036 term K/O 3000/3000 koLab 645. r7 on endTime=84371188 by Misaki (pre-existing, not changed).
+
+Motion: creep_motion --patrol exit 1; known waiting_pickup / target_full / parked_threat / queue_blocked / waiting_feed / no_task. No new stuck/osc. audit --patrol exit 2 is the standing stale deploy-window regression vs 2b5398f7@02:28, not new stuck. 1h regressions include defender.cpu (the buster fight) and rminer/rhauler idle after evac/resume. rdef84366822 queue_blocked leftover post W47N7 mission (already told, expired). w8guard/w8defender parked_threat until threat window ended, then gone. No formal motion alert. No src fix (no shippable new pathing/assignment/stuck bug this hour).
+
+CPU 1h (min 14.84 max 22.05 avg 17.93 p95 21.3 bucket 10000 n=48); 2h min 14.12 max 22.63 avg 17.41 p95 20.41 n=117; bucket never drained; no formal CPU alert. n=48 is thinner because of the new freeze.
+
+Infra: postgres accepting; grafana_check all OK; dashboard python -m http.server 8787 alive; listener peacetime single_slot 5:5:1:1 (pid 1184861 from 07:19:00 after services.sh restart 07:18:51; at 07:19:07 i=1 W47N8 left~565, 07:22:22 left 370, 07:25:07 left 205, 07:27:52 left 40, then i=2 W45N8 left 105 at 07:28:47). Did not restart the listener again. DB writers fresh (room_stats/creep_ticks/creep_cpu within seconds). q.py replies fresh. Commander not holding slots.
+
+40m official backfill (already running, waited, did not start a second copy): first pass at gt=84368554 published_bases 84367800..84368400 reconstructed 84367801..84368500 (700) 34/35 official GETs 200 missing_chunks=1 W45N8@84368100; already_in_db=22080 inserted=3089 tick_s=4.108 ts_realigned=0.
+Coverage 84367801..84368500: official_recovered=3217/3500 empty_no_creep=183 official_404=100
+  W46N8 700/0/0; W47N8 700/0/0; W45N8 600 missing 100 hole 84368101..84368200; W45N7 517 empty 183 ranges 84367801-84367835 (pre-arrive/evac), 84368044-84368071 (defender left), 84368205-84368265, 84368401-84368458, 84368494; W47N7 700/0/0.
+Just-published 84368500 ticks 84368501..84368600 all 5 rooms 200 at 07:28:22 Asia/Hong_Kong gt=84368687 inserted 2758 ts_realigned=88; post distinct 100/100 all 5. Residual unpublished tail after 84368600 expected (listener was on W47N8 then W45N8).
+
+NEW official 404 (not yet told): W45N8@84368100 hole 84368101..84368200 db 0/100. First seen in 07:13 half-hour confirm+retry2 still 404; this 40m first pass 404; this patrol retry still 404. Neighbors at that base were 200. Sits inside the new freeze window.
+Leftover official 404s still unfilled (retried all, still 404): W47N8@84366200 0/100; W47N7@84366500 0/100; W45N7@84365200 0/100; W47N8@84363900 live-only 50/100; W46N8@84362700 0/100; W47N8@84361700 45/100; W46N8@84360600 26/100; W45N7@84360200 0/100; W47N8@84359900 6/100; plus older W47N8@84359500 / W45N7@84358500 / W47N8@84358700 / W46N8@84354300 / W47N7@84354300 / W47N8@84352400.
+
+NEW box freeze for this 1h log: 06:37:36-07:03:47 (STATS gap 84367950..84368340 390t wall 1604.1s from 06:37:36; first STATS after 07:04:20; listener auto-restart 07:03:47; official-filled 84367951..84368339 except NEW 404 W45N8@84368100; core kill ~84368006 sits in this freeze). The 07:03:47 restart WAS this freeze (not a benign auto-restart). 07:18:51 listener restart is this patrol services.sh, not a new box freeze (STATS skipped 84368540-84368550, wall consistent with tick rate; plus a short 10t hitch 84368510 07:16:09-84368520 07:17:41 wall 92.7s). Prior 06:14:32-06:19:42 / 05:53:08-05:56:59 / 05:59:54-06:01:32 / 04:42:44-05:00:03 / 05:18:07-05:19:42 / 03:46:06-04:06:15 remain already told. Listener auto-restarts are not additional box freezes unless a STATS/wall gap shows a real freeze.
+
+Hostiles in owned-room room_stats 0 through later; 84366940 W47N8 hostiles=1 flicker is last hour's already-told sample.
+
+No src change, no tests, no deploy. Append iterations.log + commit_state only.

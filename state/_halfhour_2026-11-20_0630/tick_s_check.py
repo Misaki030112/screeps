@@ -7,7 +7,7 @@ from zoneinfo import ZoneInfo
 from pathlib import Path
 
 ROOT = Path("/workspace/screeps")
-DIR = ROOT / "state" / "_halfhour_2026-11-20_0600"
+DIR = ROOT / "state" / "_halfhour_2026-11-20_0630"
 os.chdir(ROOT)
 sys.path.insert(0, "tools")
 sys.path.insert(0, "scripts")
@@ -18,7 +18,7 @@ import history_backfill as hb
 # First pass 35 of 35 official GETs 200, missing_chunks=0.
 # published_bases 84366700..84367300 at game.time=84367466; reconstructed 84366701..84367400 (700).
 # First-pass tick_s used min-of-all-rooms on the first two bases,
-# computed (MIN 84366800-84366700)/1000/100, script printed 4.082. First-pass realign moved 50 (inserted=11537; already_in_db=17648).
+# computed (MIN 84366800-84366700)/1000/100, script printed 4.026. First-pass realign moved 50 (inserted=11537; already_in_db=17648).
 # 05:30 half-hour already wrote through 84366900 / reconstructed through 84367000 and just-published 84367000 for all 5 (ticks 84367001..84367100).
 # Concurrent 1h patrol was delivered ~05:23 (next ~06:17).
 # This first pass inserted 11537 additional rows (W46N8 1333 / W47N8 5401 / W45N8 1617 / W45N7 1150 / W47N7 2036).
@@ -27,29 +27,29 @@ import history_backfill as hb
 # New box freezes 05:53:08-05:56:59 (STATS 84367301..84367369, 69t) and 05:59:54-06:01:32 (STATS 84367401..84367429, 29t) are not yet told (record for next 1h patrol). First freeze sits in this reconstructed window; second sits in just-published 84367400.
 # Listener auto-restarts 05:57:02 and 06:01:35 (pid 1159748); this run must not restart it.
 W46 = {
-    84366700: 1795123170336,
-    84366800: 1795123578574,
-    84366900: 1795123987151,
-    84367000: 1795124403913,
     84367100: 1795124805922,
     84367200: 1795125208820,
     84367300: 1795125623441,
+    84367400: 1795126031864,
+    84367500: 1795126447858,
+    84367600: 1795126875240,
+    84367700: 1795127278169,
 }
 MIN_ALL = {
-    84366700: 1795123170336,  # W46N8 (W45N7 1795123172064 later)
-    84366800: 1795123578574,  # W46N8 (W45N7 1795123579717 later)
-    84366900: 1795123987151,  # W46N8 (W45N7 1795123988665 later)
-    84367000: 1795124403913,  # W46N8 (W45N7 1795124405812 later)
     84367100: 1795124805922,  # W46N8 (W45N7 1795124806888 later)
     84367200: 1795125208531,  # W45N7 (W46N8 1795125208820 later)
     84367300: 1795125623441,  # W46N8 (W45N7 1795125624485 later)
+    84367400: 1795126031864,  # W46N8 (W45N7 1795126037228 later)
+    84367500: 1795126447858,  # W46N8 (W45N7 1795126449927 later)
+    84367600: 1795126875240,  # W46N8 (W45N7 1795126876577 later)
+    84367700: 1795127278169,  # W46N8 (W45N7 1795127279853 later)
 }
-TMIN, TMAX = 84366701, 84367400
+TMIN, TMAX = 84367101, 84367800
 ROOMS = ("W46N8", "W47N8", "W45N8", "W45N7", "W47N7")
-TICK_S_FIRST = (MIN_ALL[84366800] - MIN_ALL[84366700]) / 1000.0 / 100  # script printed 4.082
-GT_FIRST = 84367466
-TS_REALIGNED_FIRST = 50  # first-pass realign moved 50 (inserted=11537, already_in_db=17648, missing_chunks=0)
-PREV_LATER_MEAN = 4.11311  # 05:30 half-hour in-use (prev_later)
+TICK_S_FIRST = (MIN_ALL[84367200] - MIN_ALL[84367100]) / 1000.0 / 100  # script printed 4.026
+GT_FIRST = 84367837
+TS_REALIGNED_FIRST = 12384  # first-pass realign moved 12384 (inserted=2459, already_in_db=24753, missing_chunks=0)
+PREV_LATER_MEAN = 4.08973  # 06:00 half-hour later-mean-robust (in-use was first 4.08238)
 
 def intervals(d):
     bases = sorted(d)
@@ -185,11 +185,11 @@ def main():
     skipped_chunk = 0
     first_outlier = not (3.0 <= TICK_S_FIRST <= 6.0)
     first_pass_realign_error = (
-        f"First-pass realign with tick_s={TICK_S_FIRST:.5f} (printed 4.082) moved {TS_REALIGNED_FIRST} rows "
-        f"(ts_realigned_first={TS_REALIGNED_FIRST}, inserted=11537, already_in_db=17648, missing_chunks=0)."
+        f"First-pass realign with tick_s={TICK_S_FIRST:.5f} (printed 4.026) moved {TS_REALIGNED_FIRST} rows "
+        f"(ts_realigned_first={TS_REALIGNED_FIRST}, inserted=2459, already_in_db=24753, missing_chunks=0)."
     )
     reason = (
-        f"first-interval tick_s={TICK_S_FIRST:.5f} (printed 4.082, min-all-rooms first two bases) "
+        f"first-interval tick_s={TICK_S_FIRST:.5f} (printed 4.026, min-all-rooms first two bases) "
         f"{'is an OUTLIER' if first_outlier else 'is in the sane 3-6s band'}; "
         f"later-mean-robust {later_mean_robust:.5f} (raw later-mean {later_mean_raw:.5f}; "
         f"delta first-robust {first-later_mean_robust:.5f} s/tick, "
