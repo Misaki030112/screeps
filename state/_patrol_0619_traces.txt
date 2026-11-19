@@ -1,0 +1,43 @@
+=== reserver / reserve7 traces ===
+reserve784366317 n=601 rooms=['W47N7'] first 84366800 W47N7 39,27 hits=400 last 84367400 W47N7 39,27 hits=400 state_last=empty
+reserve784367367 n=233 rooms=['W47N8'] first 84367368 W47N8 33,30 hits=400 last 84367600 W47N8 26,40 hits=400 state_last=empty
+reserver84366262 n=74 rooms=['W45N7'] first 84366800 W45N7 6,39 hits=400 last 84366873 W45N7 6,39 hits=400 state_last=empty
+reserver84366703 n=515 rooms=['W45N7', 'W45N8'] first 84366800 W45N8 22,48 hits=400 last 84367314 W45N7 7,41 hits=400 state_last=empty
+reserver84366753 n=565 rooms=['W45N8'] first 84366800 W45N8 2,21 hits=400 last 84367364 W45N8 7,37 hits=400 state_last=empty
+
+=== defenders / rdef / w8defender / w8guard ===
+
+defender84367622 role=defender n=79 rooms=['W46N8']
+  first 84367693 W46N8 35,28 hits=5000 last 84367771 W46N8 35,28 hits=5000 state_last=spawning
+  84367693-84367771 (79t) W46N8 35,28 hits 5000->5000 st=spawning
+
+rdef84366822 role=rdef n=777 rooms=['W47N7', 'W47N8']
+  first 84366824 W47N8 34,30 hits=5000 last 84367600 W47N8 13,37 hits=5000 state_last=empty
+  84366824-84366971 (148t) W47N8 34,30 hits 5000->5000 st=spawning
+  84367008-84367400 (393t) W47N8 13,37 hits 5000->5000 st=empty
+  84367401-84367409 (9t) W47N7 29,24 hits 5000->5000 st=empty
+  84367410-84367427 (18t) W47N7 28,24 hits 5000->5000 st=empty
+  84367432-84367449 (18t) W47N7 30,19 hits 5000->5000 st=empty
+  84367476-84367491 (16t) W47N7 29,13 hits 5000->5000 st=empty
+  84367501-84367600 (100t) W47N8 13,37 hits 5000->5000 st=empty
+
+w8defender84366937 role=wdefender n=663 rooms=['W46N8', 'W47N8']
+  first 84366938 W46N8 30,34 hits=5000 last 84367600 W47N8 28,5 hits=5000 state_last=empty
+  84366938-84367086 (149t) W46N8 30,34 hits 5000->5000 st=spawning
+  84367117-84367117 (1t) W47N8 48,23 hits 5000->5000 st=empty
+  84367159-84367600 (442t) W47N8 28,5 hits 5000->5000 st=empty
+
+w8guard84366936 role=wguard n=663 rooms=['W47N8']
+  first 84366938 W47N8 33,30 hits=4100 last 84367600 W47N8 29,5 hits=4100 state_last=empty
+  84366938-84367058 (121t) W47N8 33,30 hits 4100->4100 st=spawning
+  84367097-84367600 (504t) W47N8 29,5 hits 4100->4100 st=empty
+
+=== W47 upgrader handoff this hour ===
+w8upgrader84365771 n=510 first 84366800 W47N8 12,25 store=40 last 84367309 W47N8 16,10 store=0 state=empty
+  first_seat 84366800 12,25 last_seat 84367261 12,25
+w8upgrader84366543 n=801 first 84366800 W47N8 14,26 store=10 last 84367600 W47N8 14,26 store=10 state=loaded
+  first_seat 84366800 14,26 last_seat 84367600 14,26
+w8upgrader84367210 n=389 first 84367212 W47N8 33,30 store=0 last 84367600 W47N8 14,27 store=10 state=loaded
+  first_seat 84367336 14,28 last_seat 84367600 14,27
+  hatch-ish 84367212 33,30 -> first_seat 84367336 14,28 dt=124
+DONE traces
