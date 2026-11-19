@@ -1,8 +1,1 @@
-retry2 GET start 2026-11-18 23:33:42 Asia/Hong_Kong game.time=84343078 tick_s=4.72049 targets=2
-  pre  W45N7@84342300 distinct=0 rows=0 range=None..None
-  still_404 W45N7@84342300 at 23:33:43 game.time=84343078
-  pre  W47N7@84342500 distinct=0 rows=0 range=None..None
-  still_404 W47N7@84342500 at 23:33:44 game.time=84343078
-recovered=[] still_404=['W45N7@84342300', 'W47N7@84342500'] inserted=0 ts_realigned=0
-gets_written 2 /workspace/screeps/state/_halfhour_2026-11-18_2330/backfill_confirm_gets.json
-finished
+retry2 skipped: no in-window official 404 after first pass (35/35 official GETs 200, missing_chunks=0). W46N8@84360600 aged out of this window start 84361001 and was not retried. just-published W47N8@84361700 still official 404 after first try 23:40:24 game.time=84361843 and retry 23:41:43 game.time=84361864 (hole 84361701..84361800 db 45/100 live-only 84361756..84361800); sits just after this reconstructed window.
