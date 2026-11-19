@@ -1,0 +1,136 @@
+{
+  "first_interval": 4.1537,
+  "later_mean_w46": 4.06516,
+  "later_mean_w46_raw": 4.06516,
+  "later_mean_w46_robust": 4.06516,
+  "all_mean_w46": 4.0828679999999995,
+  "span_mean": 4.086075,
+  "prev_later_mean": 4.02142,
+  "intervals": [
+    {
+      "from": 84362300,
+      "to": 84362400,
+      "tick_s": 4.1537,
+      "outlier": false
+    },
+    {
+      "from": 84362400,
+      "to": 84362500,
+      "tick_s": 4.090129999999999,
+      "outlier": false
+    },
+    {
+      "from": 84362500,
+      "to": 84362600,
+      "tick_s": 4.08679,
+      "outlier": false
+    },
+    {
+      "from": 84362600,
+      "to": 84362800,
+      "tick_s": 4.10211,
+      "outlier": false
+    },
+    {
+      "from": 84362800,
+      "to": 84362900,
+      "tick_s": 3.98161,
+      "outlier": false
+    }
+  ],
+  "gt_first": 84363073,
+  "gt_check": 84363096,
+  "gt_realign": 84363096,
+  "now_check": "2026-11-20T01:05:22.243765+08:00",
+  "now_realign": "2026-11-20T01:05:22.243725+08:00",
+  "tick_s_used_first_pass": 4.1537,
+  "ts_realigned_first_pass": 13574,
+  "ts_realigned_first_pass_error": "First-pass realign with tick_s=4.15370 (printed 4.021) moved 13574 rows (ts_realigned_first=13574, inserted=6481, already_in_db=21223, missing_chunks=0).",
+  "still_over_45s_vs_first": 0,
+  "still_over_15s_vs_first": 3383,
+  "vs_candidates": {
+    "first": {
+      "over45": 0,
+      "over15": 3383,
+      "n": 27151,
+      "mean_off": 3.5989789200029465,
+      "min_off": -1.060857,
+      "max_off": 43.832071,
+      "tick_s": 4.1537
+    },
+    "later_raw": {
+      "over45": 11292,
+      "over15": 21163,
+      "n": 27151,
+      "mean_off": -35.64698670630916,
+      "min_off": -71.450157,
+      "max_off": 6.377311,
+      "tick_s": 4.06516
+    },
+    "later_robust": {
+      "over45": 11292,
+      "over15": 21163,
+      "n": 27151,
+      "mean_off": -35.64698670630916,
+      "min_off": -71.450157,
+      "max_off": 6.377311,
+      "tick_s": 4.06516
+    },
+    "all_mean": {
+      "over45": 6877,
+      "over15": 19557,
+      "n": 27151,
+      "mean_off": -27.79779358104674,
+      "min_off": -57.372297,
+      "max_off": 13.867795,
+      "tick_s": 4.0828679999999995
+    },
+    "span_mean": {
+      "over45": 5742,
+      "over15": 19229,
+      "n": 27151,
+      "mean_off": -26.37626871360171,
+      "min_off": -54.822732,
+      "max_off": 15.224356,
+      "tick_s": 4.086075
+    },
+    "prev_later": {
+      "over45": 14745,
+      "over15": 24875,
+      "n": 27151,
+      "mean_off": -55.035043364259145,
+      "min_off": -106.223457,
+      "max_off": -12.124709,
+      "tick_s": 4.02142
+    }
+  },
+  "still_over_45s_vs_later_before": 11292,
+  "still_over_15s_vs_later_before": 21163,
+  "still_over_45s_vs_later": 11292,
+  "still_over_15s_vs_later": 21163,
+  "corrective_applied": false,
+  "ts_realigned_to_later_mean": 0,
+  "skipped_cross_chunk": 0,
+  "reason": "first-interval tick_s=4.15370 (printed 4.021, min-all-rooms first two bases) is in the sane 3-6s band; later-mean-robust 4.06516 (raw later-mean 4.06516; delta first-robust 0.08854 s/tick, ~68.4s at tmin). First-pass realign with tick_s=4.15370 (printed 4.021) moved 13574 rows (ts_realigned_first=13574, inserted=6481, already_in_db=21223, missing_chunks=0).; later-mean-robust 4.06516 is worse than live-anchor-best first 4.15370 (later over45=11292 mean_off=-35.6 vs best over45=0 mean_off=3.6); will not blindly apply later; live-anchor-best first 4.15370 already inside 45s gate (over45=0), no corrective realign",
+  "game_time_error": null,
+  "lowest_over45_sane": "first",
+  "vs_first": {
+    "over45": 0,
+    "over15": 3383,
+    "n": 27151,
+    "mean_off": 3.5989789200029465,
+    "min_off": -1.060857,
+    "max_off": 43.832071
+  },
+  "vs_later_after": {
+    "over45": 11292,
+    "over15": 21163,
+    "n": 27151,
+    "mean_off": -35.64698670630916,
+    "min_off": -71.450157,
+    "max_off": 6.377311
+  },
+  "tick_s_in_use": 4.1537,
+  "tick_s_in_use_name": "first",
+  "later_is_worse_than_best": true
+}

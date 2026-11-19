@@ -1,0 +1,20 @@
+retry_start game.time=84363336 at 2026-11-20 01:21:50 HKT
+  confirm W46N8@84362700 404
+  confirm W47N8@84363200 ok ticks=100
+  confirm W45N8@84363200 ok ticks=100
+  confirm W47N7@84363200 ok ticks=100
+confirm still_404=1 recovered=3
+sleep 25s before retry2
+retry2 game.time=84363343
+  retry2 W46N8@84362700 404
+retry2 still_404=1 recovered_total=3
+just_published try 84363300 game.time=84363343
+  just_pub W46N8@84363300 404
+  just_pub W47N8@84363300 404
+  just_pub W45N8@84363300 404
+  just_pub W45N7@84363300 404
+  just_pub W47N7@84363300 404
+just_pub recovered=0
+uid 6010ee96cbca26e9512da6f0
+Will insert recovered via applying reconstruct for those chunks only.
+DEFER_INSERT_TO_NARROW_BACKFILL recovered_pairs [('W47N8', 84363200), ('W45N8', 84363200), ('W47N7', 84363200)] still [('W46N8', 84362700)]
