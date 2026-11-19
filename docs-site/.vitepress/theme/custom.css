@@ -635,6 +635,50 @@ body {
 .legend .lg-later { background: transparent; border-style: dashed; }
 .legend .lg-stop { background: transparent; }
 
+.arch-col.ladder .step {
+  grid-template-columns: 2.4rem 1fr;
+}
+
+.arch-col.ladder .num {
+  width: 2.4rem;
+}
+
+.hub {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-areas:
+    "y31x32 y31x33 ."
+    "y32x32 y32x33 y32x34"
+    "y33x32 y33x33 y33x34"
+    "y34x32 y34x33 .";
+  gap: 0.45rem;
+}
+
+.hub .c3231 { grid-area: y31x32; }
+.hub .c3331 { grid-area: y31x33; }
+.hub .c3232 { grid-area: y32x32; }
+.hub .c3332 { grid-area: y32x33; }
+.hub .c3432 { grid-area: y32x34; }
+.hub .c3233 { grid-area: y33x32; }
+.hub .c3333 { grid-area: y33x33; }
+.hub .c3433 { grid-area: y33x34; }
+.hub .c3234 { grid-area: y34x32; }
+.hub .c3334 { grid-area: y34x33; }
+
+@media (max-width: 720px) {
+  .hub {
+    gap: 0.3rem;
+  }
+
+  .hub .node {
+    padding: 0.4rem 0.35rem 0.45rem;
+  }
+
+  .hub .node strong {
+    font-size: 0.78rem;
+  }
+}
+
 @media (min-width: 760px) {
   .arch {
     grid-template-columns: 1fr 1fr;

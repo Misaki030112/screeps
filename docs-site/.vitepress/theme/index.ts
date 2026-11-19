@@ -12,6 +12,8 @@ import HaulReads from './components/HaulReads.vue'
 import ThreatFsm from './components/ThreatFsm.vue'
 import DefenseEnergy from './components/DefenseEnergy.vue'
 import DeployPath from './components/DeployPath.vue'
+import UnstuckLadder from './components/UnstuckLadder.vue'
+import HubYield from './components/HubYield.vue'
 import LabGates from './components/LabGates.vue'
 import LinkFlow from './components/LinkFlow.vue'
 import ColonyStrip from './components/ColonyStrip.vue'
@@ -32,6 +34,8 @@ export default {
     app.component('ThreatFsm', ThreatFsm)
     app.component('DefenseEnergy', DefenseEnergy)
     app.component('DeployPath', DeployPath)
+    app.component('UnstuckLadder', UnstuckLadder)
+    app.component('HubYield', HubYield)
     app.component('LabGates', LabGates)
     app.component('LinkFlow', LinkFlow)
     app.component('ColonyStrip', ColonyStrip)

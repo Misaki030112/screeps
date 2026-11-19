@@ -37,6 +37,7 @@ const mechanisms = [
   { text: '主循环与 CPU', link: '/mechanisms/loop' },
   { text: '孵化与身体', link: '/mechanisms/spawn' },
   { text: '搬运与能量', link: '/mechanisms/haul' },
+  { text: '移动与寻路', link: '/mechanisms/move' },
   { text: '升级、地板与 softCap', link: '/mechanisms/upgrade' },
   { text: '防御与威胁', link: '/mechanisms/defense' },
   { text: '实验室与 boost', link: '/mechanisms/labs' },
