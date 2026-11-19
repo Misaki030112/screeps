@@ -1,0 +1,227 @@
+{
+  "ok_quiet": true,
+  "finished_hkt": "2026-11-19 15:16 Asia/Hong_Kong",
+  "game_time_first": 84354879,
+  "published_bases": "84354100..84354700",
+  "rooms": [
+    "W46N8",
+    "W47N8",
+    "W45N8",
+    "W45N7",
+    "W47N7"
+  ],
+  "tmin": 84354101,
+  "tmax": 84354800,
+  "tick_s_first": 4.9781,
+  "tick_s_printed": "4.978",
+  "tick_s_in_use": 4.75397,
+  "ts_realigned_first": 12957,
+  "ts_realigned_corrective": 21890,
+  "gt_corrective": 84354894,
+  "reconstructed_rows": 25687,
+  "already_in_db": 11666,
+  "inserted_first": 14021,
+  "inserted_confirm": 0,
+  "inserted_retry2": 0,
+  "inserted_just_published": 0,
+  "inserted_window": 14021,
+  "inserted_total": 14021,
+  "missing_chunks": 2,
+  "first_pass": "first pass 33 of 35 official GETs 200, missing_chunks=2 (W46N8@84354300, W47N7@84354300); 14:30 half-hour already wrote through 84354400 (just-published 84354400 was not attempted then and is included in this overlap, 200 in all 5 rooms); concurrent 14:26 hourly patrol had already official-filled 84353601..84354300; (this pass already_in_db=11666 / inserted=14021; overlap 84354100..84354300 already present from the 14:30 half-hour / 14:26 patrol except the two leftover official 404s; this pass newly wrote previously unpublished 84354400 for all 5 rooms plus 84354500..84354700, filling the 14:46:22-15:05:49 freeze-gap 84354591..84354800 in all 5 rooms); leftover official 404 W47N8@84352400, W47N7@84350700, W46N8@84346200, W47N8@84346200, W45N7@84347000, W45N8@84347100, W47N8@84347800 already aged out of this 40-min window and were not retried; in-window official 404 W46N8@84354300 and W47N7@84354300 remained after confirm 15:11:18 (gt=84354906) and retry2 15:14:35 (gt=84354946); just-published 84354800 not attempted (first-pass game.time=84354879 still inside the in-progress chunk)",
+  "per_room": "W46N8:600t/4349new W47N8:700t/4387new W45N8:700t/1774new W45N7:700t/1645new W47N7:600t/1866new",
+  "coverage": {
+    "coverage": {
+      "W46N8": {
+        "distinct": 649,
+        "missing_n": 51,
+        "missing_ranges": [
+          [
+            84354301,
+            84354351
+          ]
+        ],
+        "official_empty_no_creep": 0,
+        "official_empty_no_creep_ranges": [],
+        "official_404_missing": 51,
+        "official_404_ranges": [
+          [
+            84354301,
+            84354351
+          ]
+        ]
+      },
+      "W47N8": {
+        "distinct": 700,
+        "missing_n": 0,
+        "missing_ranges": [],
+        "official_empty_no_creep": 0,
+        "official_empty_no_creep_ranges": [],
+        "official_404_missing": 0,
+        "official_404_ranges": []
+      },
+      "W45N8": {
+        "distinct": 700,
+        "missing_n": 0,
+        "missing_ranges": [],
+        "official_empty_no_creep": 0,
+        "official_empty_no_creep_ranges": [],
+        "official_404_missing": 0,
+        "official_404_ranges": []
+      },
+      "W45N7": {
+        "distinct": 700,
+        "missing_n": 0,
+        "missing_ranges": [],
+        "official_empty_no_creep": 0,
+        "official_empty_no_creep_ranges": [],
+        "official_404_missing": 0,
+        "official_404_ranges": []
+      },
+      "W47N7": {
+        "distinct": 600,
+        "missing_n": 100,
+        "missing_ranges": [
+          [
+            84354301,
+            84354400
+          ]
+        ],
+        "official_empty_no_creep": 0,
+        "official_empty_no_creep_ranges": [],
+        "official_404_missing": 100,
+        "official_404_ranges": [
+          [
+            84354301,
+            84354400
+          ]
+        ]
+      }
+    },
+    "official_recovered": 3349,
+    "expected": 3500,
+    "empty_no_creep": 0,
+    "official_404_missing": 151,
+    "unique_after": {
+      "rows": 26159,
+      "unique_creep_tick_rows": 26159,
+      "distinct_ticks": 700,
+      "distinct_room_ticks": 3349
+    },
+    "at": "2026-11-19T15:15:08.952315+08:00"
+  },
+  "tick_s_realign": {
+    "corrective_applied": true,
+    "later_mean_w46": 4.75397375,
+    "still_over_45s_vs_later": 0,
+    "reason": "first-interval tick_s=4.97810 (printed 4.978, min-all-rooms first two bases) is in the sane 3-6s band; later-mean-robust 4.75397 (raw later-mean 4.75397; delta first-robust 0.22413 s/tick, ~174.4s at tmin). First-pass realign with tick_s=4.97810 (printed 4.978) moved 12957 rows (ts_realigned_first=12957, inserted=14021, already_in_db=11666).; applied corrective later-mean-robust realign of 21890 rows at game.time=84354894; still_over_45s_vs_later=0; skipped_cross_chunk=0",
+    "prev_later_over45_before_corrective": 15155,
+    "prev_later_mean": 4.85282,
+    "note": "first-interval 4.97810 printed 4.978 was sane but a local high; first-pass realign moved 12957 rows onto 4.97810; later-mean-robust 4.75397 was over the 45s gate versus those rows (over45 later=21437 vs first=0, delta 0.22413 s/tick ~174.4s at tmin); span_mean 4.80267 over45=19204 and prev_later 4.85282 over45=15155 (lowest_over45 among sane was first, because rows already sat on first); applied corrective later-mean-robust realign of 21890 rows at game.time=84354894; in-use later-mean-robust 4.75397; still_over_45s_vs_later=0"
+  },
+  "just_published": {
+    "base": 84354800,
+    "oom_killed_at": [],
+    "oom_note": null,
+    "recovered_at": null,
+    "recovered_game_time": null,
+    "inserted": 0,
+    "note": "not attempted; first-pass game.time=84354879 was still inside the in-progress 84354800 chunk (typically publishable around game.time>=84354940). This --minutes 40 pass wrote previously unpublished 84354400 for all 5 rooms plus 84354500..84354700 (W46N8 and W47N7 still official 404 on 84354300 after confirm/retry2). Next half-hour 10-min overlap will catch 84354800 and can retry W46N8@84354300 / W47N7@84354300.",
+    "first_try_all_404": null,
+    "first_try_at": null,
+    "first_try_game_time": null,
+    "first_try_recovered": [],
+    "first_try_still_404": [],
+    "retry_at": null,
+    "retry_game_time": null,
+    "retry_inserted": 0,
+    "ticks": null,
+    "all_five_official_200": null,
+    "still_404": [],
+    "in_window_still_404": [
+      "W46N8@84354300",
+      "W47N7@84354300"
+    ],
+    "w45n7_empty_no_creep": [],
+    "w47n7_empty_no_creep": [],
+    "distinct": null,
+    "skipped": true
+  },
+  "confirm": {
+    "at": "2026-11-19 15:11:18 Asia/Hong_Kong",
+    "game_time": 84354906,
+    "inserted": 0,
+    "ssl_abort_first": null,
+    "targets": 2,
+    "recovered": [],
+    "still_404": [
+      "W46N8@84354300",
+      "W47N7@84354300"
+    ],
+    "skipped": false,
+    "note": "retried first-pass official 404s W46N8@84354300 and W47N7@84354300 (already leftover from the 14:30 run); both still 404 at game.time=84354906 (neighbors W47N8/W45N8/W45N7 @84354300 were already 200 on first pass, and @84354400 was 200 in all 5 rooms)"
+  },
+  "retry2": {
+    "at": "2026-11-19 15:14:35 Asia/Hong_Kong",
+    "game_time": 84354946,
+    "inserted": 0,
+    "skipped": false,
+    "still_404": [
+      "W46N8@84354300",
+      "W47N7@84354300"
+    ],
+    "note": "retry2 still 404 on W46N8@84354300 and W47N7@84354300 at game.time=84354946; W46N8 live already covers 84354352..84354400 (hole 84354301..84354351); W47N7 hole 84354301..84354400"
+  },
+  "in_window_404": {
+    "W46N8@84354300": {
+      "hole": "84354301..84354351",
+      "missing": 51,
+      "live_tail": "84354352..84354400"
+    },
+    "W47N7@84354300": {
+      "hole": "84354301..84354400",
+      "missing": 100
+    }
+  },
+  "listener": {
+    "single_slot": true,
+    "roomSlot": "W46N8",
+    "rot": {
+      "i": 0,
+      "room": "W46N8",
+      "left": 297.8,
+      "at": "2026-11-19 15:16:36"
+    },
+    "yield": "absent",
+    "pid": 850757,
+    "pid_at_precheck": 846656,
+    "loop_pid": 4035476,
+    "restart_at": "15:05:52",
+    "listener_started": "15:06:02",
+    "wrapup_ws_timeout": "15:15:01",
+    "wrapup_autorestart": "15:15:04",
+    "wrapup_listener_started": "15:15:14",
+    "this_run_restarted": false,
+    "waited_for_reconnect": true,
+    "live_objects_empty_after_reconnect": true,
+    "pre_cpu_path_after_wait": "creep_cpu through 84354860 / path_arrivals through 84354854 at pre-check 15:08:37; listener.py pid 846656 started 15:06:02 after run_listener.sh auto-restart 15:05:52 (following box freeze 14:46:22-15:05:49 1161s; prior auto-restart 14:26:39 after 14:08:48-14:26:36 freeze). This run waited after that reconnect until stats.t and CPU/path buffers were flowing (live.json fresh, age ~0.9s, stats.t=84354870) but gameTime was still None and objects_n=0 on the W45N8 weight-1 slot at pre-check; W45N8 live near tip already had 25 distinct ticks 84354850..84354874 and W45N7 had 2. During wrapup a ws ping/pong timeout at 15:15:01 caused run_listener.sh to auto-restart at 15:15:04 (new listener.py pid 850757 started 15:15:14); live.json was fresh again by 15:15:19 with gameTime advancing and W46N8 objects flowing. This run did not itself restart the listener."
+  },
+  "box_freeze": {
+    "from": "2026-11-19 14:46:22",
+    "to": "2026-11-19 15:05:49",
+    "sec": 1161,
+    "restart_at": "15:05:52",
+    "room_stats_gap": "84354591..84354849",
+    "official_filled": "84354591..84354800 official-filled 210/210 in all 5 rooms (this pass); tail 84354801..84354849 is the in-progress 84354800 chunk (not yet published at first-pass game.time=84354879; next overlap will catch it; live already had a few W47N8 ticks in that tail)",
+    "earlier_freeze": {
+      "from": "2026-11-19 14:08:48",
+      "to": "2026-11-19 14:26:36",
+      "sec": 1067,
+      "restart_at": "14:26:39",
+      "room_stats_gap": "84354121..84354349",
+      "official_filled": "84354121..84354300 official-filled 180/180 in all 5 rooms (14:26 patrol / 14:30 half-hour); tail 84354301..84354349 official-filled 49/49 in W47N8, W45N8, W45N7 but still missing 49/49 in W46N8 and W47N7 (official 404 on 84354300 after this confirm/retry2); gap still sits inside this 40-min window"
+    },
+    "new_freeze_this_run": true,
+    "missed_halfhours": null
+  },
+  "ok_line": "ok_quiet=True coverage=3349/3500 inserted_window=14021 inserted_total=14021 tick_s_in_use=4.75397 listener single_slot=True; no second listener; no war_cmd/pulse restart."
+}
