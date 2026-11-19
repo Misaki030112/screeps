@@ -2,38 +2,33 @@
 
 给下一轮写公开手册的人。此文件不在网站导航里。`docs-site/.vitepress/config.mts` 的 `srcExclude` 也不会把它编成页面。
 
-日期：2026-11-19（Asia/Hong_Kong）。这是部署页 #69（`807854fc`）之后的晚间文档轮。手册现在对照的游戏代码仍是 `289a7f06`（`fix(w47n8): take the filler post when hub container 33,33 is occupied`）。`git log -- src/` 的最新一笔就是它。不要在页面上写成更新的 LIVE。这一轮没有改 `src/`。`now.md` 里的百分比仍是 2026-11-17、对照 `85c19c2e` 的快照，没有重算，这一轮也没有改 `now.md`。
+日期：2026-11-20（Asia/Hong_Kong）。上一篇是移动页 #70，squash 提交 `9a2db9f9`，已经在 master 上。手册现在对照的游戏代码仍是 `289a7f06`（`fix(w47n8): take the filler post when hub container 33,33 is occupied`）。`git log -- src/` 的最新一笔就是它。不要在页面上写成更新的 LIVE。这一轮没有改 `src/`。`now.md` 里的百分比仍是 2026-11-17、对照 `85c19c2e` 的快照，没有重算，这一轮也没有改 `now.md`。
 
 公开手册只写 `src/` 里现在生效的规则。不要写入令牌、密码、内网地址，也不要写监听、数据库或仪表盘。卡住 30 的那一行只是控制台的一行字，不要写成有人在仓库外盯着。
 
 ## 这一轮做了什么
 
-新开了 `docs-site/mechanisms/move.md`，地址 `/mechanisms/move`。导航标题是「移动与寻路」，放在「搬运与能量」后面。导读的机制名单在「搬运」后面加了「移动」。主循环页「路径怎么缓存，不在这一页。」后面加了指向这一页的一句。搬运页满载停在 34,32 的那段末尾加了一句让路的交叉链接，没有重讲停驻。
+新开了 `docs-site/mechanisms/layout.md`，地址 `/mechanisms/layout`。导航标题是「布局与印章」，放在「移动与寻路」后面、「升级、地板与 softCap」前面。导读的机制名单在「移动」后面加了「布局」。导读「两套出生点」、搬运、移动、link、孵化、规划、房间表各加了一句交叉链接，没有重讲能量、填充或寻路。
 
-两张图：`UnstuckLadder.vue`（卡住 2 / 4 / 8 / 30），`HubYield.vue`（枢纽这一角，代价 4 和 8，以及 32,34 不在对角上）。`theme/index.ts` 注册了这两个组件。样式加在 `custom.css`，沿用 `plate`、`node`、`legend`。编辑备忘仍被 `srcExclude` 排除。
+两张图：`HomeStamps.vue`（印章 A/B/C；F 标成预留，没有画成已经上岗），`HubCore.vue`（核心这一角：32,32 平地，32,33 link，33,32 终端，33,33 容器，34,32 岗位，33,34 旧 link 的路，34,33 核心，35,32 存储，出生点仍在 15,18）。`theme/index.ts` 注册了这两个组件。样式加在 `custom.css`，沿用 `plate`、`node`、`legend`。编辑备忘仍被 `srcExclude` 排除。
 
-对照这些文件写的。游戏代码没有改。
+对照这些文件写的。游戏代码没有改。坐标和旗标用脚本对过 `plan.get('W46N8')` 合并之后的结果，不单看印章字母。
 
-- `src/utils/move.js`：`_m` 一格一个字符。失效看建筑数 × 1000 + 工地数，外加 `invalidate` 的两次调用（`src/managers/layout.js` 这一拍有日志时，`src/roles/builder.js` 工地这一拍就要建完时）。没有按时间过期。`PathFinder` 是平地 2、沼泽 10、`maxRooms` 1、`maxOps` 2000。矩阵：路 1；容器和自己的或公共城墙不挡；其余建筑 255；别人的工地 255；自己的非路、非容器、非城墙工地 255；计划站位 20；四边 50；走不出去的路和容器 255。房间是 W47N8 时才调用 `yieldPost`。堆缓存只给 `avoid=false`，行为不变。卡住不计疲劳：2 绕一次，贵过 `DETOUR` 12 或没搜完就留旧路；4 到 8 之前和自己的非固定、无疲劳阻挡换位；8 按 `Game.time % 8` 迈一个方向并重算，这一拍不走新路；30 打一行 `STUCK`，同时重算，之后每 30 拍再重算，不回收。差一步且是新目标才直走，边上的格子不走捷径。距离 0、旁边是固定 creep 就等着。固定是计划站位上的 `miner` / `filler` / `manager` / `upgrader` / `rminer`，或配置站上的 `w8miner` / `w8rminer`。`w8filler` 不在里面。
-- `noDetour` 的调用：`src/rooms/w47n8/fill.js` 的 filler；`src/rooms/w47n8/roles.js` 的 `rmove`（送货、外矿搬运、外矿矿工，以及人不在目标房时的回程出口）；`src/roles/reserve7.js` 的固定出口。W47 房里的 `w8miner` / `w8mminer` 走向站位不带这个选项。`src/roles/raid9.js` 也传了 `noDetour`，但 `raid9` 在 `src/utils/military.js` 的名单里，`move.to` 先走 `military.step`，平民阶梯看不到这个选项。页面没有把袭击写成窄路换位。
-- `src/utils/military.js`、`src/utils/combatmove.js`、`src/utils/cpuorder.js`：不读 `_m` 的角色和优先级 0 是同一张名单。`combatmove` 的 `STUCK` 是 3，只属于 `go` 这条引擎 `moveTo`，不是 `move.js` 的 2 / 4 / 8 / 30。`fill.js` 开头注释里的 `STUCK=3` 和 `CMV.to` 指的是这一条，页面按 `combatmove.js` 写，没有把它并进共享阶梯。
-- `src/rooms/w47n8/fill.js` 的 `yieldPost` / `yieldHub`，`src/rooms/w47n8/roles.js` 的 `go`，`src/rooms/w47n8/config.js` 的 `HUB_CONT` **33,33**、`SPAWN` **15,18**。`yieldHub` 只有 `go` 这一处生产调用。人在 W47N8 时，`reusePath` 10。升级工、建造工、本地搬运工空手去堆走它。送货走 `go8` → `move.to`。防御、守卫、治疗的 `CMV.to` 用自己的出口回调，不调用 `yieldHub`。岗位 4 在缓存矩阵里。容器被占时的 8 只在当次回调里，而且格子已是 255 则不动。
-- `src/rooms/w47n8/layout.js`、`src/rooms/w47n8/roads.js`、`data/terrain_W47N8.txt`：图上的格子都核对过。32,32 是平地，不是路。32,33 是 link。33,32 是终端。33,33、34,32、34,33、33,34、33,31 在路表里。32,31 和 32,34 是延伸。32,34 不在 32,32 → 33,33 的对角上。link、终端、延伸 32,31 立起来之后，32,32 的出口是 33,33 和 33,31。
-- 北面大约多 10，是 `fill.js` 里为代价 4 写的那个量。用 `tests/w47n8_spawn_pocket.js` 同一套计划阻挡，从 33,30 到控制器方向，绕北比走一格路的岗位大约多 10。别的终点可以更多。页面写「大约多 10」，没有列成一张路程表，也没有写成每一趟都正好多 10。
-- `src/rooms/w47n8/layout.js` 开头仍有一句把 32,33 说成空口袋。那是 2026-11-13 把 link 从 33,34 挪到 32,33 的理由。现行坐标以 `config.js` 的枢纽 link **32,33** 和 `fill.js` 的平地 **32,32** 为准。移动页按现行写。布局那一页不要把这句旧注释写成「32,33 现在还空着」。
-- `C.SPAWN` 仍是 **15,18**。`ORDER.spawn` 里的 34,30、33,30、39,30 是布局顺序，移动页没有写成出生点已经搬过去。
+- `src/layouts/W46N8.js`：`version` 2，`generatedBy` 是 `tools/plan_v2.py + tools/export_v2.py`。印章 A 的 S 是 **35,28**，K 是 **35,24**，L 是 **35,26**。印章 B 的 S 是 **30,34**，K 是 **34,34**，L 是 **32,34**。印章 C 的字母 S 在 **30,23**，字母 K 在 **30,27**。`rcl` 里 RCL1 出生点 **35,28**，RCL7 **30,34**，RCL8 **35,29**。30,23 在 RCL8 是延伸。30,27 在合并后的计划里是 RCL6 的路，容器名单里没有它。存储 **37,31**，终端 **35,31**，提取器 **40,24**。`remove`：容器 38,32 从 RCL4，容器 31,12 从 RCL6。`routes` 和 `positions.queenRoute` 没有被寻路或女王读到。
+- `src/utils/plan.js`：`STATIONARY_FILL` 仍是 false。关着时先删掉 `rcl` 里全部 link，再写入 `LINK_PLAN`：枢纽 37,29 RCL5，控制器 30,31 RCL5，源 A 30,11 RCL6，32,34 RCL7，30,25 RCL8，35,26 RCL8。稿子里 RCL5 的 35,26 因此不在 5 级放下。`RCL6_MINERALS` 是 true，RCL6 实验室 34,22 / 35,21 / 33,21 留着。`RCL7_INDUSTRY` 是 false，工厂和 RCL7 起的实验室从会放的名单里删掉。powerSpawn **36,33**、nuker **38,23**、observer **33,31** 仍在 RCL8 名单里。站位集合二十格（十二个 F、manager 36,30、五格升级工、两格矿工），代价 20。矿物矿工 41,24 不在里面。filler 和 manager 的孵化目标是 0。
+- `src/managers/layout.js`：每 25 拍，或等级变了，或拆过东西留下 `layoutKick`。最多五个工地。有日志就 `move.invalidate`。计划外工地拿掉；人放下的实验室和工厂工地留下。
+- `src/rooms/w47n8/layout.js` 与 `config.js`：`CORE` **34,33**，存储 **35,32**，`ORDER.link` **32,33**，终端 **33,32**，`C.HUB_CONT` **33,33**，`RETIRED_HUB_LINK` **33,34**。`hubLinkPos()` 返回 32,33。文件头把 32,33 说成空口袋的那句是旧理由，页面按现行 link 写。`ORDER.container` 只有 **13,26**。`ORDER.spawn` 是 **34,30**、**33,30**、**39,30**，放置顺序。`C.SPAWN` 仍是 **15,18**。`moveRun` 在没有 `Memory.ops.w8move` 时直接返回。`RCL6_LABS` 和 `RCL7_INDUSTRY` 都是 false。`RCL6_MINERALS` 和 `HUB_LINK` 是 true。`layoutRun` 拆 33,34 上的 link 工地；link 建筑还在，或工地还在，就不放 32,33。W47 这一圈不调用 `move.invalidate`。
+- `src/rooms/w47n8/roads.js`、`src/layouts/w8link.js`：32,32 不在路表。33,33、33,34、34,32、34,33、33,31、35,31 在路表。家这一侧的 w8link 跳过 34,34，因为计划里那一格是容器。
 
 ## 下一轮
 
-**布局 v2**。写现在活着的布局，不要把旧的棋盘格笔记当成现行规则。家的印章和站位以 `src/layouts/W46N8.js` 为准（`version` 2，印章 A、B、C，`positions` 里的 filler、manager、升级工、矿工）。W47 的枢纽以 `src/rooms/w47n8/layout.js` 为准：`CORE` **34,33**，存储 **35,32**，枢纽 link **32,33**，终端 **33,32**，容器在 `config.js` 的 **33,33**，`RETIRED_HUB_LINK` 是 **33,34**，不是 link。再对 `src/utils/plan.js`：`STATIONARY_FILL` 仍是 false，link 坐标跟 `LINK_PLAN`，不跟 v2 稿里被删掉的那份。出生点锚点仍看 `config.js` 的 **15,18**，不要靠布局文件头的旧搬迁注释把 Spawn2 写成已经站在 34,30。
-
-这一页还没有独立地址。写进机制名单时放在读者会去找地图的地方，不要另编一个公开 URL。已有页面里的坐标（搬运的 34,32，link 的 32,33，孵化的印章）只链过去，不重写。
+**指挥官接管**（`Memory.cmd`）。实验室、矿物、link、主循环只各自提到被让开的那一个点：反应让开、终端被占用时这一拍不送、`consumeLink` 让自动传送让开、武装时谁先被看、以及 `consumeCreep` 会压过逃跑和角色。还没有一篇把指挥官写成一件事。`Memory.cmd` 没武装时，什么都不接管。
 
 ## 再往后
 
 按读者会先问的顺序。已有的页面缺的是为什么和边界。不要再开一篇日志。
 
-1. **指挥官接管**。`Memory.cmd` 没武装时什么都不接管。实验室页只写了 `react` / `idle` / `hold` 怎么让自动反应让开，矿物页只写了终端被占用时这一拍不送，link 页只写了 `consumeLink` 让自动传送让开，主循环只写了武装时谁先被看、以及 `consumeCreep` 会压过逃跑和角色。还没有一篇把指挥官写成一件事。
-2. **站点打磨**。排版、标题层级、交叉链接、图。公开地址已经在用：https://screeps-handbook-nolove-world.vercel.app 。它写在 README 和 GitHub 仓库简介里。不要另编一个地址，也不要删掉已有的链接。
-3. **日期日志不要进给人读的入口**。`STRATEGY`、`docs/REMOTE_*.md`、`docs/CPU.md`、路线、RCL7 这类记录留在仓库里。公开导航已经是新站点。不要把那些英文变更记录引进网站。`docs/CPU.md` 里仍有一句房间视觉在桶低于 2000 时不画，和现在的主循环页不一致。那个文件留在仓库里，不要为了把它改对就搬进导航。
-4. **不要把文档写成代码变更**。不要在手册里修改 15000 的地板，也不要把 W47 的 keep=2 写成已经松开。那道闩要存储连续 500 tick 不低于 40000 才到 3。没有常设的第三只升级工。只描述当前代码。
+1. **站点打磨**。排版、标题层级、交叉链接、图。公开地址已经在用：https://screeps-handbook-nolove-world.vercel.app 。它写在 README 和 GitHub 仓库简介里。不要另编一个地址，也不要删掉已有的链接。
+2. **日期日志不要进给人读的入口**。`STRATEGY`、`docs/REMOTE_*.md`、`docs/CPU.md`、路线、RCL7 这类记录留在仓库里。公开导航已经是新站点。不要把那些英文变更记录引进网站。`docs/CPU.md` 里仍有一句房间视觉在桶低于 2000 时不画，和现在的主循环页不一致。那个文件留在仓库里，不要为了把它改对就搬进导航。
+3. **不要把文档写成代码变更**。不要在手册里修改 15000 的地板，也不要把 W47 的 keep=2 写成已经松开。那道闩要存储连续 500 tick 不低于 40000 才到 3。没有常设的第三只升级工。只描述当前代码。
+4. **可选，这一轮不做。** 建造、修理和城墙落在哪；或者给 `now.md` 做一次注明日期的重算。两件都留到以后，不要塞进布局这一页。
