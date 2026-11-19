@@ -13,6 +13,10 @@ Outputs: `metrics/model.json`, `docs/model_routes.png` (terrain + ideal routes +
 ## Actuals (DB, default 6 h)
 upgrade rate (room_stats progress), pickups per source (positive store deltas within 2 tiles of the source, normalised by tick coverage — a lower bound), deliveries (hub vs controller container), per-role idle/repaths/CPU (creep_cpu), planned vs actual path length (path_arrivals), hauler cycle median, share of hauling traffic on ideal-route tiles ± 1.
 
+## 2026-11-19 20:2x — 12h actuals (plan holds)
+
+Sampled 12h window t84350530→84359020 (8490 t, tick_s 4.694, coverage 447/850 ≈ 52.6%; morning 08:2x review failed during a 05:33–09:23 box hole): home upgrade **21.61** e/t (73.84% last evening → 77.27%, +183k in this sampled window; RCL8 ≈ **6.25 d**, was 7.17 d). 2×14W remain energy-bound (live why=ok, exact2h 24.07/26=92.6% ABOVE, 3h 22.57 / 6h 20.96). Stor avg 16.34k max **20829** min **12757**; **12.75% under 15k** (was 15.73%); **one 150 t ≥20k stretch**, 20k/300t gate held. Longest under-15k 130 t after the 16:08 W45N7 Invader — do not change the 15k floor. 24h ledger net sp:upgrader **1.63**, under the 5 e/t waste gate. See `docs/RCL7.md` 20:2x.
+
 ## 2026-11-18 20:2x — 12h actuals (plan holds)
 
 12h window t84331400→84340690: home upgrade **21.57** e/t (72.01%→73.84%, +200k; RCL8 ≈ **7.17 d**, was 8.14 d). 2×14W remain energy-bound (live why=ok, exact2h 19.28/26=74.1% ABOVE, 3h 20.23 / 6h 20.68). Stor avg 16.54k max **19772** min **11500**; **15.73% under 15k** (was 19.25%); **0 samples ≥20k**, 20k/300t gate held. Longest under-15k 401 t after the 13:48 W45N7 Invader — do not change the 15k floor. Ledger net sp:upgrader **1.66**, under the 5 e/t waste gate. See `docs/RCL7.md` 20:2x.
