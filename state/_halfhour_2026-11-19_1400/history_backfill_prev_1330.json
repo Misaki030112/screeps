@@ -1,0 +1,184 @@
+{
+  "ok_quiet": true,
+  "finished_hkt": "2026-11-19 13:32 Asia/Hong_Kong",
+  "game_time_first": 84353642,
+  "published_bases": "84352900..84353500",
+  "rooms": [
+    "W46N8",
+    "W47N8",
+    "W45N8",
+    "W45N7",
+    "W47N7"
+  ],
+  "tmin": 84352901,
+  "tmax": 84353600,
+  "tick_s_first": 4.86031,
+  "tick_s_printed": "4.860",
+  "tick_s_in_use": 4.75346,
+  "ts_realigned_first": 16319,
+  "ts_realigned_corrective": 12201,
+  "gt_corrective": 84353659,
+  "reconstructed_rows": 24799,
+  "already_in_db": 24796,
+  "inserted_first": 3,
+  "inserted_confirm": 0,
+  "inserted_retry2": 0,
+  "inserted_just_published": 0,
+  "inserted_window": 3,
+  "inserted_total": 3,
+  "missing_chunks": 0,
+  "first_pass": "first pass 35 of 35 official GETs 200, missing_chunks=0; 13:00 half-hour already wrote through 84353300 (just-published 84353300 was not attempted then and is included in this overlap); concurrent 13:22 hourly patrol had already official-filled through 84353600 including previously unpublished 84353300 plus 84353400..84353500; (this pass already_in_db=24796 / inserted=3, only 3 new W45N7 rows; overlap 84352900..84353200 already present from the 13:00 half-hour, and 84353300..84353500 from the 13:22 patrol); leftover official 404 W47N8@84352400, W47N7@84350700, W46N8@84346200, W47N8@84346200, W45N7@84347000, W45N8@84347100, W47N8@84347800 already aged out of this 40-min window and were not retried; no in-window official 404s, so confirm/retry2 were skipped; just-published 84353600 not attempted (first-pass game.time=84353642 still inside the in-progress chunk)",
+  "per_room": "W46N8:700t/0new W47N8:700t/0new W45N8:700t/0new W45N7:700t/3new W47N7:700t/0new",
+  "coverage": {
+    "coverage": {
+      "W46N8": {
+        "distinct": 700,
+        "missing_n": 0,
+        "missing_ranges": [],
+        "official_empty_no_creep": 0,
+        "official_empty_no_creep_ranges": [],
+        "official_404_missing": 0,
+        "official_404_ranges": []
+      },
+      "W47N8": {
+        "distinct": 700,
+        "missing_n": 0,
+        "missing_ranges": [],
+        "official_empty_no_creep": 0,
+        "official_empty_no_creep_ranges": [],
+        "official_404_missing": 0,
+        "official_404_ranges": []
+      },
+      "W45N8": {
+        "distinct": 700,
+        "missing_n": 0,
+        "missing_ranges": [],
+        "official_empty_no_creep": 0,
+        "official_empty_no_creep_ranges": [],
+        "official_404_missing": 0,
+        "official_404_ranges": []
+      },
+      "W45N7": {
+        "distinct": 700,
+        "missing_n": 0,
+        "missing_ranges": [],
+        "official_empty_no_creep": 0,
+        "official_empty_no_creep_ranges": [],
+        "official_404_missing": 0,
+        "official_404_ranges": []
+      },
+      "W47N7": {
+        "distinct": 700,
+        "missing_n": 0,
+        "missing_ranges": [],
+        "official_empty_no_creep": 0,
+        "official_empty_no_creep_ranges": [],
+        "official_404_missing": 0,
+        "official_404_ranges": []
+      }
+    },
+    "official_recovered": 3500,
+    "expected": 3500,
+    "empty_no_creep": 0,
+    "official_404_missing": 0,
+    "unique_after": {
+      "rows": 26233,
+      "unique_creep_tick_rows": 26233,
+      "distinct_ticks": 700,
+      "distinct_room_ticks": 3500
+    },
+    "at": "2026-11-19T13:31:29.793186+08:00"
+  },
+  "tick_s_realign": {
+    "corrective_applied": true,
+    "later_mean_w46": 4.75346,
+    "still_over_45s_vs_later": 0,
+    "reason": "first-interval tick_s=4.86031 (printed 4.860, min-all-rooms first two bases) is in the sane 3-6s band; later-mean-robust 4.75346 (raw later-mean 4.75346; delta first-robust 0.10685 s/tick, ~79.2s at tmin). First-pass realign with tick_s=4.86031 (printed 4.860) moved 16319 rows (ts_realigned_first=16319, inserted=3, already_in_db=24796).; applied corrective later-mean-robust realign of 12201 rows at game.time=84353659; still_over_45s_vs_later=0; skipped_cross_chunk=0",
+    "prev_later_over45_before_corrective": 9680,
+    "prev_later_mean": 4.77222,
+    "note": "first-interval 4.86031 printed 4.860 was sane; first-pass realign moved 16319 rows with first-interval; later-mean-robust 4.75346 was over the 45s gate versus those current rows (over45 later=13037 vs first=0, delta 0.10685 s/tick ~79.2s at tmin); span_mean 4.77127 over45=9909 and prev_later 4.77222 over45=9680 (lowest_over45 among sane was first); applied corrective later-mean-robust realign of 12201 rows at game.time=84353659; in-use later-mean-robust 4.75346; still_over_45s_vs_later=0"
+  },
+  "just_published": {
+    "base": 84353600,
+    "oom_killed_at": [],
+    "oom_note": null,
+    "recovered_at": null,
+    "recovered_game_time": null,
+    "inserted": 0,
+    "note": "not attempted; first-pass game.time=84353642 was still inside the in-progress 84353600 chunk (typically publishable around game.time>=84353740). This --minutes 40 pass confirmed published 84353300 (left unattempted last 13:00 run) plus 84353400..84353500 already written by the concurrent 13:22 hourly patrol. Next half-hour 10-min overlap will catch 84353600.",
+    "first_try_all_404": null,
+    "first_try_at": null,
+    "first_try_game_time": null,
+    "first_try_recovered": [],
+    "first_try_still_404": [],
+    "retry_at": null,
+    "retry_game_time": null,
+    "retry_inserted": 0,
+    "ticks": null,
+    "all_five_official_200": null,
+    "still_404": [],
+    "in_window_still_404": [],
+    "w45n7_empty_no_creep": [],
+    "w47n7_empty_no_creep": [],
+    "distinct": null,
+    "skipped": true
+  },
+  "confirm": {
+    "at": null,
+    "game_time": null,
+    "inserted": 0,
+    "ssl_abort_first": null,
+    "targets": 0,
+    "recovered": [],
+    "still_404": [],
+    "skipped": true,
+    "note": "skipped; no in-window official 404s after first pass 35/35 official GETs 200"
+  },
+  "retry2": {
+    "at": null,
+    "game_time": null,
+    "inserted": 0,
+    "skipped": true,
+    "still_404": [],
+    "note": "skipped; no in-window official 404s"
+  },
+  "in_window_404": {},
+  "listener": {
+    "single_slot": true,
+    "roomSlot": "W46N8",
+    "rot": {
+      "i": 0,
+      "room": "W46N8",
+      "left": 410.0,
+      "at": "2026-11-19 13:32:53"
+    },
+    "yield": "absent",
+    "pid": 818590,
+    "loop_pid": 4035476,
+    "restart_at": "13:22:44",
+    "listener_started": "13:22:53",
+    "this_run_restarted": false,
+    "waited_for_reconnect": false,
+    "live_objects_empty_after_reconnect": false,
+    "pre_cpu_path_after_wait": "creep_cpu through 84353620 / path_arrivals through 84353619 at pre-check 13:29:52; listener.py pid 818590 started 13:22:53 after run_listener.sh auto-restart 13:22:44 (following box freeze 13:17:39-13:22:41 296s; prior auto-restarts 13:04:56 after 12:40:05-13:04:53 freeze, 12:22:04 after 12:15:21-12:22:01 freeze, 12:02:12 after ws ping/pong timeout 12:02:09, and 11:58:58 after the 11:36:36-11:58:55 freeze); this run did not wait \u2014 live.json was already fresh at pre-check (age ~1.4s, stats.t=84353630 advancing, single_slot 5:5:1:1 rotating, objects_n=264, gameTime=84353638) and buffers flowing"
+  },
+  "box_freeze": {
+    "from": "2026-11-19 13:17:39",
+    "to": "2026-11-19 13:22:41",
+    "sec": 296,
+    "restart_at": "13:22:44",
+    "room_stats_gap": "84353481..84353559",
+    "official_filled": "in-window gap 84353481..84353559 official-filled 79/79 in all 5 rooms (already written by the concurrent 13:22 hourly patrol)",
+    "earlier_freeze": {
+      "from": "2026-11-19 12:40:05",
+      "to": "2026-11-19 13:04:53",
+      "sec": 1487,
+      "restart_at": "13:04:56",
+      "room_stats_gap": "84353001..84353329",
+      "official_filled": "already official-filled 329/329 in all 5 rooms (13:00 half-hour through 84353300; 13:22 patrol filled 84353301..84353329); gap still sits inside this 40-min window"
+    },
+    "new_freeze_this_run": true,
+    "missed_halfhours": null
+  },
+  "ok_line": "ok_quiet=True coverage=3500/3500 inserted_window=3 inserted_total=3 tick_s_in_use=4.75346 listener single_slot=True; no second listener; no war_cmd/pulse restart."
+}
