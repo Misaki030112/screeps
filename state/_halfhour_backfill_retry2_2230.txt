@@ -1,1 +1,14 @@
-retry2 skipped 2026-11-18 22:34:52 Asia/Hong_Kong: in-window official 404 W47N7@84342200 recovered on confirm (inserted=548 at 22:34:40 Asia/Hong_Kong, game.time=84342333). No remaining in-window 404.
+retry2 GET start 2026-11-19 22:43:39 Asia/Hong_Kong game.time=84361014 tick_s=4.1184674999999995 targets=5
+  pre  W45N7@84360200 distinct=0 rows=0 range=None..None
+  still_404 W45N7@84360200 at 22:43:40 game.time=84361014
+  pre  W46N8@84360600 distinct=26 rows=260 range=84360601..84360626
+  still_404 W46N8@84360600 at 22:43:42 game.time=84361014
+  pre  W47N8@84360800 distinct=100 rows=1442 range=84360801..84360900
+  recovered_or_ok W47N8@84360800 ticks=100 ts=1795099047736 at 22:43:44 inserted=0
+  pre  W45N8@84360800 distinct=100 rows=418 range=84360801..84360900
+  recovered_or_ok W45N8@84360800 ticks=100 ts=1795099042498 at 22:43:48 inserted=1
+  pre  W47N7@84360800 distinct=100 rows=223 range=84360801..84360900
+  recovered_or_ok W47N7@84360800 ticks=100 ts=1795099085576 at 22:43:51 inserted=220
+recovered=['W45N8@84360800', 'W47N7@84360800'] still_404=['W45N7@84360200', 'W46N8@84360600'] inserted=221 ts_realigned=0
+gets_written 5 /workspace/screeps/state/_halfhour_2026-11-19_2230/backfill_confirm_gets.json
+finished
