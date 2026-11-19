@@ -1,0 +1,142 @@
+{
+  "first_interval": 4.19915,
+  "later_mean_w46": 4.0697980000000005,
+  "later_mean_w46_raw": 4.0697980000000005,
+  "later_mean_w46_robust": 4.0697980000000005,
+  "all_mean_w46": 4.091356666666667,
+  "span_mean": 4.091356666666666,
+  "prev_later_mean": 3.9841,
+  "intervals": [
+    {
+      "from": 84363200,
+      "to": 84363300,
+      "tick_s": 4.19915,
+      "outlier": false
+    },
+    {
+      "from": 84363300,
+      "to": 84363400,
+      "tick_s": 3.95801,
+      "outlier": false
+    },
+    {
+      "from": 84363400,
+      "to": 84363500,
+      "tick_s": 4.05701,
+      "outlier": false
+    },
+    {
+      "from": 84363500,
+      "to": 84363600,
+      "tick_s": 4.17658,
+      "outlier": false
+    },
+    {
+      "from": 84363600,
+      "to": 84363700,
+      "tick_s": 4.0856900000000005,
+      "outlier": false
+    },
+    {
+      "from": 84363700,
+      "to": 84363800,
+      "tick_s": 4.0717,
+      "outlier": false
+    }
+  ],
+  "gt_first": 84363968,
+  "gt_check": 84363990,
+  "gt_realign": 84363990,
+  "now_check": "2026-11-20T02:06:28.609090+08:00",
+  "now_realign": "2026-11-20T02:06:28.609048+08:00",
+  "tick_s_used_first_pass": 4.196960000000001,
+  "ts_realigned_first_pass": 14372,
+  "ts_realigned_first_pass_error": "First-pass realign with tick_s=4.19696 (printed 4.197) moved 14372 rows (ts_realigned_first=14372, inserted=10018, already_in_db=16228, missing_chunks=0).",
+  "still_over_45s_vs_first": 0,
+  "still_over_15s_vs_first": 2031,
+  "vs_candidates": {
+    "first": {
+      "over45": 0,
+      "over15": 2031,
+      "n": 26039,
+      "mean_off": 1.9656080685894235,
+      "min_off": -0.865702,
+      "max_off": 43.99002,
+      "tick_s": 4.196960000000001
+    },
+    "later_raw": {
+      "over45": 15307,
+      "over15": 23650,
+      "n": 26039,
+      "mean_off": -54.96144335343139,
+      "min_off": -101.19652,
+      "max_off": 4.022556,
+      "tick_s": 4.0697980000000005
+    },
+    "later_robust": {
+      "over45": 15307,
+      "over15": 23650,
+      "n": 26039,
+      "mean_off": -54.96144335343139,
+      "min_off": -101.19652,
+      "max_off": 4.022556,
+      "tick_s": 4.0697980000000005
+    },
+    "all_mean": {
+      "over45": 14101,
+      "over15": 22492,
+      "n": 26039,
+      "mean_off": -45.31020064007834,
+      "min_off": -84.186732,
+      "max_off": 10.317687,
+      "tick_s": 4.091356666666667
+    },
+    "span_mean": {
+      "over45": 14101,
+      "over15": 22492,
+      "n": 26039,
+      "mean_off": -45.31020064007834,
+      "min_off": -84.186732,
+      "max_off": 10.317687,
+      "tick_s": 4.091356666666666
+    },
+    "prev_later": {
+      "over45": 20645,
+      "over15": 26039,
+      "n": 26039,
+      "mean_off": -93.32616278820231,
+      "min_off": -168.812242,
+      "max_off": -20.023102,
+      "tick_s": 3.9841
+    }
+  },
+  "still_over_45s_vs_later_before": 15307,
+  "still_over_15s_vs_later_before": 23650,
+  "still_over_45s_vs_later": 15307,
+  "still_over_15s_vs_later": 23650,
+  "corrective_applied": false,
+  "ts_realigned_to_later_mean": 0,
+  "skipped_cross_chunk": 0,
+  "reason": "first-interval tick_s=4.19696 (printed 4.197, min-all-rooms first two bases) is in the sane 3-6s band; later-mean-robust 4.06980 (raw later-mean 4.06980; delta first-robust 0.12935 s/tick, ~99.2s at tmin). First-pass realign with tick_s=4.19696 (printed 4.197) moved 14372 rows (ts_realigned_first=14372, inserted=10018, already_in_db=16228, missing_chunks=0).; later-mean-robust 4.06980 is worse than live-anchor-best first 4.19696 (later over45=15307 mean_off=-55.0 vs best over45=0 mean_off=2.0); will not blindly apply later; live-anchor-best first 4.19696 already inside 45s gate (over45=0), no corrective realign",
+  "game_time_error": null,
+  "lowest_over45_sane": "first",
+  "vs_first": {
+    "over45": 0,
+    "over15": 2031,
+    "n": 26039,
+    "mean_off": 1.9656080685894235,
+    "min_off": -0.865702,
+    "max_off": 43.99002
+  },
+  "vs_later_after": {
+    "over45": 15307,
+    "over15": 23650,
+    "n": 26039,
+    "mean_off": -54.96144335343139,
+    "min_off": -101.19652,
+    "max_off": 4.022556
+  },
+  "tick_s_in_use": 4.196960000000001,
+  "tick_s_in_use_name": "first",
+  "later_is_worse_than_best": true
+}
