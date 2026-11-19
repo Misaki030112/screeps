@@ -1,0 +1,101 @@
+=== freshness ===
+  creep_ticks W46N8 max_tick=84355700 max_ts=2026-11-19 16:14:43.721196+08:00
+  creep_ticks W47N8 max_tick=84355845 max_ts=2026-11-19 16:26:21.605859+08:00
+  creep_ticks W45N8 max_tick=84355700 max_ts=2026-11-19 16:14:43.721196+08:00
+  creep_ticks W45N7 max_tick=84355665 max_ts=2026-11-19 16:11:54.820296+08:00
+  creep_ticks W47N7 max_tick=84355700 max_ts=2026-11-19 16:14:43.721196+08:00
+  room_stats W46N8 max_tick=84355840 max_ts=2026-11-19 16:25:58.447450+08:00
+  room_stats W47N8 max_tick=84355840 max_ts=2026-11-19 16:25:58.447507+08:00
+  room_stats W45N8 max_tick=None max_ts=None
+  room_stats W45N7 max_tick=None max_ts=None
+  room_stats W47N7 max_tick=None max_ts=None
+  room_stats global (84355840, datetime.datetime(2026, 11, 19, 16, 25, 58, 447507, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 64202)
+=== hour coverage LAST_TIP+1..TIP 84355125 84355783 span 659 ===
+  W46N8 576/659 min=84355125 max=84355700 missing=83
+    gaps>=5 n=1 [(84355701, 84355783, 83)] small_gaps=0
+  W47N8 600/659 min=84355125 max=84355783 missing=59
+    gaps>=5 n=1 [(84355701, 84355759, 59)] small_gaps=0
+  W45N8 576/659 min=84355125 max=84355700 missing=83
+    gaps>=5 n=1 [(84355701, 84355783, 83)] small_gaps=0
+  W45N7 540/659 min=84355125 max=84355665 missing=119
+    gaps>=5 n=1 [(84355666, 84355783, 118)] small_gaps=1
+  W47N7 576/659 min=84355125 max=84355700 missing=83
+    gaps>=5 n=1 [(84355701, 84355783, 83)] small_gaps=0
+=== leftover official 404 windows (may be outside hour) ===
+  W46N8 84354301..84354351 distinct=0 expect=51
+  W47N7 84354301..84354400 distinct=0 expect=100
+  W47N8 84352400..84352499 distinct=6 expect=100
+=== W45N7 84355001..84355700 coverage ===
+  distinct=664 min=84355001 max=84355665
+  missing n=36 first_last=([84355664, 84355666, 84355667, 84355668, 84355669, 84355670, 84355671, 84355672], [84355693, 84355694, 84355695, 84355696, 84355697, 84355698, 84355699, 84355700])
+=== role presence LAST_TIP+1..TIP ===
+  miner: ticks_present=576/659 n min/max=2/3 absent_spans>=20 [(84355701, 84355783, 83)] absent_total=83
+  rminer: ticks_present=576/659 n min/max=2/3 absent_spans>=20 [(84355701, 84355783, 83)] absent_total=83
+  reserver: ticks_present=576/659 n min/max=1/2 absent_spans>=20 [(84355701, 84355783, 83)] absent_total=83
+  queen: ticks_present=576/659 n min/max=2/3 absent_spans>=20 [(84355701, 84355783, 83)] absent_total=83
+  w8filler: ticks_present=0/659 n min/max=0/0 absent_spans>=20 [(84355125, 84355783, 659)] absent_total=659
+  w8miner: ticks_present=0/659 n min/max=0/0 absent_spans>=20 [(84355125, 84355783, 659)] absent_total=659
+  w8rminer: ticks_present=0/659 n min/max=0/0 absent_spans>=20 [(84355125, 84355783, 659)] absent_total=659
+  reserve7: ticks_present=0/659 n min/max=0/0 absent_spans>=20 [(84355125, 84355783, 659)] absent_total=659
+  defender: ticks_present=80/659 n min/max=1/1 absent_spans>=20 [(84355125, 84355620, 496), (84355701, 84355783, 83)] absent_total=579
+  upgrader: ticks_present=576/659 n min/max=1/2 absent_spans>=20 [(84355701, 84355783, 83)] absent_total=83
+  w8upgrader: ticks_present=0/659 n min/max=0/0 absent_spans>=20 [(84355125, 84355783, 659)] absent_total=659
+  rhauler: ticks_present=576/659 n min/max=4/8 absent_spans>=20 [(84355701, 84355783, 83)] absent_total=83
+  hauler: ticks_present=576/659 n min/max=1/1 absent_spans>=20 [(84355701, 84355783, 83)] absent_total=83
+=== home upgraders ===
+  upgrader84354475 life 84354924..84355700 first=(84354924, 'W46N8', 30, 30, 22) last=(84355700, 'W46N8', 30, 30, 36) seated=(84354924, 84355700, 777)
+  upgrader84354489 life 84354924..84355204 first=(84354924, 'W46N8', 29, 30, 22) last=(84355204, 'W46N8', 34, 29, 0) seated=(84354924, 84355199, 276)
+  upgrader84355467 life 84355469..84355700 first=(84355469, 'W46N8', 35, 28, 0) last=(84355700, 'W46N8', 34, 30, 0) seated=(84355527, 84355695, 169)
+=== W47 upgraders ===
+=== nUp counts ===
+  home hist_n={2: 312, 1: 264} long_spans={2: [(84355125, 84355204, 80), (84355469, 84355700, 232)], 1: [(84355205, 84355468, 264)]}
+  W47 hist_n={} long_spans={}
+=== reservers / reserve7 ===
+  reserver n=6
+    ('reserver84354135', 'W45N7', 84354724, 84354746, 6, 6, 39, 39) last=(84354746, 'W45N7', 6, 39)
+    ('reserver84354985', 'W46N8', 84354986, 84355020, 34, 49, 14, 32) last=(84355596, 'W45N8', 7, 37)
+    ('reserver84354985', 'W45N8', 84355021, 84355596, 1, 12, 14, 39) last=(84355596, 'W45N8', 7, 37)
+    ('reserver84355109', 'W46N8', 84355111, 84355193, 17, 49, 17, 35) last=(84355700, 'W45N8', 10, 34)
+    ('reserver84355109', 'W45N8', 84355194, 84355700, 1, 26, 21, 49) last=(84355700, 'W45N8', 10, 34)
+    ('reserver84355109', 'W45N7', 84355233, 84355665, 5, 21, 0, 39) last=(84355700, 'W45N8', 10, 34)
+  reserve7 n=0
+  reserve n=3
+    ('reserve784354420', 'W47N7', 84354724, 84355031, 39, 39, 27, 27) last=(84355031, 'W47N7', 39, 27)
+    ('reserve784355472', 'W47N8', 84355474, 84355513, 23, 34, 29, 49) last=(84355700, 'W47N7', 39, 27)
+    ('reserve784355472', 'W47N7', 84355514, 84355700, 21, 39, 1, 29) last=(84355700, 'W47N7', 39, 27)
+=== defender84355620 path ===
+  n=80 first=(84355621, 'W46N8', 35, 28) last=(84355700, 'W46N8', 35, 28)
+    enter W46N8 at 84355621 35,28
+    last (84355700, 'W46N8', 35, 28)
+=== miners seated ===
+  miner ('miner84353753', 84355074, 84355279, 'W46N8:31,12')
+  miner ('miner84354685', 84355074, 84355700, 'W46N8:38,32')
+  miner ('miner84355182', 84355184, 84355700, 'W46N8:31,12')
+  rminer ('rminer84353566', 84355074, 84355095, 'W45N8:13,11')
+  rminer ('rminer84353786', 84355074, 84355315, 'W45N7:21,15')
+  rminer ('rminer84354947', 84355074, 84355700, 'W45N8:13,11')
+  rminer ('rminer84355079', 84355081, 84355700, 'W45N8:22,37')
+=== room_stats CPU W46N8 since LAST_TIP ===
+  n=36 min_tick=84355130 max_tick=84355840
+  cpu n=36 min=15.36 max=23.98@84355620 mean=18.92 bkt min=10000 max=10000
+  gaps>=30 [(84355231, 84355489, 259), (84355651, 84355759, 109)]
+  stor min=(84355230, 14067) max=(84355620, 16971) under15k=5/36 last=(84355840, 16077)
+=== room_stats W47N8 storage since LAST_TIP ===
+  n=36 min=(84355170, 24177) max=(84355840, 26576) last=(84355840, 26576)
+=== W47 12h/24h stor from room_stats ===
+  12h lo=84346783 (18926, 31066, 84354120, 0, 321)
+  24h lo=84337783 (15078, 36249, 84343530, 0, 924)
+=== home 12h/24h stor from room_stats ===
+  12h lo=84346783 (12757, 20829, 84352100, 16, 25, 321)
+  24h lo=84337783 (11481, 20829, 84352100, 16, 170, 924)
+=== W45N7 creeps around 84355600..TIP ===
+  rows=255 creeps=5
+    reserver84355109 reserver n=85 84355580 6,39 .. 84355665 21,0
+    rhauler84354344 rhauler n=7 84355580 21,6 .. 84355586 21,0
+    rhauler84355151 rhauler n=54 84355580 21,7 .. 84355633 21,0
+    rminer84355079 rminer n=83 84355580 21,15 .. 84355662 21,0
+    rhauler84354671 rhauler n=26 84355607 21,1 .. 84355632 21,0
+=== listener ingest recency ===
+  creep_ticks max (84355848, datetime.datetime(2026, 11, 19, 16, 26, 36, 325088, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai'))) now 2026-11-19 16:26:28.022362+08:00
+  room_stats max (84355840, datetime.datetime(2026, 11, 19, 16, 25, 58, 447507, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')))
+WROTE /workspace/screeps/state/_patrol_2026-11-19_1619/db_analysis.txt
