@@ -1,0 +1,56 @@
+game.time=84381251 published_bases=84380500..84381100 rooms=W46N8,W47N8,W45N8,W45N7,W47N7 dry=False
+  ok  W46N8@84380500 ticks=100 ts=1795180653943
+  ok  W47N8@84380500 ticks=100 ts=1795180688658
+  ok  W45N8@84380500 ticks=100 ts=1795180685202
+  ok  W45N7@84380500 ticks=100 ts=1795180652095
+  ok  W47N7@84380500 ticks=100 ts=1795180718731
+  ok  W46N8@84380600 ticks=100 ts=1795181069321
+  ok  W47N8@84380600 ticks=100 ts=1795181109881
+  ok  W45N8@84380600 ticks=100 ts=1795181107940
+  ok  W45N7@84380600 ticks=100 ts=1795181071287
+  ok  W47N7@84380600 ticks=100 ts=1795181140999
+  ok  W46N8@84380700 ticks=100 ts=1795181494025
+  ok  W47N8@84380700 ticks=100 ts=1795181540907
+  ok  W45N8@84380700 ticks=100 ts=1795181537539
+  ok  W45N7@84380700 ticks=100 ts=1795181494343
+  ok  W47N7@84380700 ticks=100 ts=1795181568659
+  ok  W46N8@84380800 ticks=100 ts=1795181916462
+  ok  W47N8@84380800 ticks=100 ts=1795181958781
+  ok  W45N8@84380800 ticks=100 ts=1795181955102
+  ok  W45N7@84380800 ticks=100 ts=1795181918572
+  ok  W47N7@84380800 ticks=100 ts=1795181985297
+  ok  W46N8@84380900 ticks=100 ts=1795182334032
+  ok  W47N8@84380900 ticks=100 ts=1795182374806
+  ok  W45N8@84380900 ticks=100 ts=1795182371469
+  ok  W45N7@84380900 ticks=100 ts=1795182334843
+  404 W47N7@84380900
+  ok  W46N8@84381000 ticks=100 ts=1795182744017
+  ok  W47N8@84381000 ticks=100 ts=1795182781979
+  ok  W45N8@84381000 ticks=100 ts=1795182778513
+  ok  W45N7@84381000 ticks=100 ts=1795182745536
+  ok  W47N7@84381000 ticks=100 ts=1795182817757
+  ok  W46N8@84381100 ticks=100 ts=1795183171903
+  ok  W47N8@84381100 ticks=100 ts=1795183210477
+  ok  W45N8@84381100 ticks=100 ts=1795183208577
+  ok  W45N7@84381100 ticks=100 ts=1795183173325
+  ok  W47N7@84381100 ticks=100 ts=1795183242537
+tick_s=4.172
+reconstructed ticks=84380501..84381200 (700) creep_rows=24831 missing_chunks=1
+already_in_db=9865 would_insert=14966
+per_room W46N8:700t/3296new W47N8:700t/5824new W45N8:700t/2257new W45N7:700t/1264new W47N7:600t/2325new
+inserted=14966
+ts_realigned=0
+db_after
+  W45N7 ticks=84380501..84381200 rows=2178 distinct=700
+  W45N8 ticks=84380501..84381200 rows=3520 distinct=700
+  W46N8 ticks=84380501..84381200 rows=7399 distinct=700
+  W47N7 ticks=84380501..84381200 rows=2659 distinct=600
+  W47N8 ticks=84380501..84381200 rows=10955 distinct=700
+
+---- wrap 2026-11-20 22:10:45 Asia/Hong_Kong ----
+confirm still_404 W47N7@84380900 at 22:05:11 gt=84381287; retry2 still_404 at 22:06:55 gt=84381311. Now classified as leftover official 404 (later chunks 84381000..84381200 published). Already-told leftover W47N8@84380300 (hole 84380301..84380400) and older leftovers W47N8@84379500, W45N8@84378900, W47N7@84378000, W46N8@84377600, W47N8@84377100, W45N7@84376800, W46N8@84376100, W45N8@84375300, W45N7@84373700, W47N8@84373800, W45N7@84373300, W47N7@84373200, W46N8@84371600 aged out of window start 84380501 and were not retried here.
+tick_s_first=4.17226 printed=4.172 in_use=4.20516 (later_raw) ts_realigned_first=0 corrective=0
+coverage official_recovered=3400/3500 empty_no_creep=0 official_404=100
+just-published 84381200 at 2026-11-20 22:09:01 Asia/Hong_Kong game.time=84381341 all_five_200=True actual_inserted=1977 ticks 84381201..84381300 (all five 100/100); script inserted=2110; W45N7 script 401 vs actual 268.
+inserted_window=14966 inserted_total=16943 (first 14966 + confirm 0 + retry2 0 + just 84381200 actual 1977)
+NEW box freeze 21:38:41-21:59:40 (1251s; already healed; listener auto-restart 21:59:44; python 1513434 started 21:59:53). STATS 84380901..84381219 (319t; last STATS 84380900 at 21:38:31, next 84381220 at 22:00:29). Official-filled four rooms 319/319; W47N7 219/319 missing 84380901..84381000 because leftover official 404 W47N7@84380900 still 404 (first pass plus just-published 84381200 covers the freeze tail 84381201..84381219). Left to the next 1h patrol. Already-told freeze 21:17:12-21:19:59 remains in window: official-filled all five 59/59. Already-told freeze 20:54:36-20:58:44 aged out of window start 84380501. This run did not restart the listener or war_cmd/pulse. Peacetime single-slot 5:5:1:1, no yield file, no concurrent 1h patrol.
