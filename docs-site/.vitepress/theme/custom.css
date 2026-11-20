@@ -180,6 +180,9 @@ body {
   line-height: 1.9;
   letter-spacing: 0.01em;
   color: var(--ink);
+  line-break: strict;
+  text-spacing-trim: trim-start;
+  text-autospace: no-autospace;
 }
 
 .vp-doc h1,
@@ -242,6 +245,28 @@ body {
 .vp-doc p,
 .vp-doc li {
   margin: 0.85em 0;
+  hanging-punctuation: allow-end;
+}
+
+/* About 35 characters. The markdown root is one wrapper div.
+   Plates, tables, and code stay on the wider column. */
+.vp-doc > div > p,
+.vp-doc > div > ul,
+.vp-doc > div > ol,
+.vp-doc > div > blockquote,
+.vp-doc > div > h1,
+.vp-doc > div > h2,
+.vp-doc > div > h3,
+.vp-doc > div > h4,
+.vp-doc > div > .custom-block {
+  max-width: 38rem;
+}
+
+.vp-doc :not(pre) > code,
+.vp-doc pre {
+  line-break: auto;
+  text-spacing-trim: normal;
+  hanging-punctuation: none;
 }
 
 .vp-doc a {
@@ -283,7 +308,10 @@ body {
   border-spacing: 0;
   border: 1px solid var(--rule);
   border-radius: 14px;
+  font-family: "Noto Sans SC", "PingFang SC", "Hiragino Sans GB", "Noto Sans CJK SC", sans-serif;
   font-size: 0.92rem;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
   line-height: 1.55;
 }
 
@@ -298,6 +326,7 @@ body {
   border: 0;
   border-bottom: 1px solid var(--rule);
   padding: 0.62rem 0.8rem;
+  font-variant-numeric: tabular-nums;
 }
 
 .vp-doc tr:last-child td {
@@ -365,9 +394,12 @@ body {
 .plate figcaption {
   margin: 0.85rem 0.15rem 0.1rem;
   color: var(--muted);
-  font-size: 0.82rem;
-  line-height: 1.55;
-  letter-spacing: 0.02em;
+  font-family: "Noto Sans SC", "PingFang SC", "Hiragino Sans GB", "Noto Sans CJK SC", sans-serif;
+  font-size: 0.84rem;
+  font-weight: 500;
+  line-height: 1.65;
+  letter-spacing: 0.01em;
+  text-wrap: pretty;
 }
 
 .kicker,
@@ -377,6 +409,7 @@ body {
   letter-spacing: 0.12em;
   color: var(--copper);
   font-weight: 700;
+  hanging-punctuation: none;
 }
 
 .plate .fork-label {
@@ -835,7 +868,16 @@ body {
     padding-top: 0 !important;
   }
 
-  .vp-doc {
+  .vp-doc,
+  .vp-doc > div > p,
+  .vp-doc > div > ul,
+  .vp-doc > div > ol,
+  .vp-doc > div > blockquote,
+  .vp-doc > div > h1,
+  .vp-doc > div > h2,
+  .vp-doc > div > h3,
+  .vp-doc > div > h4,
+  .vp-doc > div > .custom-block {
     max-width: none;
   }
 }

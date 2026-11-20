@@ -20,7 +20,7 @@
       </div>
     </div>
     <figcaption>
-      整理终端时，家搬运工另读一道同为 15000 的地板。那道门在搬运页，读的是 <code>reserveE</code>，键不在时按 15000。它和 <code>ACT_HOME_STOR</code> 是两个地方。
+      整理终端时，家搬运工另读一道同为 15000 的地板。那道门在<a href="/mechanisms/haul">搬运页</a>，读的是 <code>reserveE</code>，键不在时按 15000。它和 <code>ACT_HOME_STOR</code> 是两个地方。
     </figcaption>
   </figure>
 </template>

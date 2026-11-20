@@ -16,7 +16,7 @@
       </li>
     </ul>
     <figcaption>
-      殖民地把 <code>Memory.defense.reserveE</code> 设在 15000 时，三道会在同一条水位上一起动。键不在，或写成 0，它们就散开：女王的地板落到 base，整理终端仍守 15000，矿物新趟和「先存银行」都不因此让路。升级工怎么用女王的地板，见升级页。
+      殖民地把 <code>Memory.defense.reserveE</code> 设在 15000 时，三道会在同一条水位上一起动。键不在，或写成 0，它们就散开：女王的地板落到 base，整理终端仍守 15000，矿物新趟和「先存银行」都不因此让路。升级工怎么用女王的地板，见<a href="/mechanisms/upgrade">升级页</a>。
     </figcaption>
   </figure>
 </template>

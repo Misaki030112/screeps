@@ -2,33 +2,53 @@
 
 给下一轮写公开手册的人。此文件不在网站导航里。`docs-site/.vitepress/config.mts` 的 `srcExclude` 也不会把它编成页面。
 
-日期：2026-11-20（Asia/Hong_Kong）。上一篇是布局页，squash 提交 `ba7b2bb1`，已经在 master 上。这一轮新开「指挥官接管」。手册现在对照的游戏代码仍是 `289a7f06`（`fix(w47n8): take the filler post when hub container 33,33 is occupied`）。`git log -- src/` 的最新一笔就是它。不要在页面上写成更新的 LIVE。这一轮没有改 `src/`。`now.md` 里的百分比仍是 2026-11-17、对照 `85c19c2e` 的快照，没有重算，这一轮也没有改 `now.md`。
+日期：2026-11-20（Asia/Hong_Kong）。上一轮是指挥官接管，squash 提交 `26ba0f6a`，已经在 master 上。这一轮是站点打磨，没有新开机制页。手册现在对照的游戏代码仍是 `289a7f06`（`fix(w47n8): take the filler post when hub container 33,33 is occupied`）。`git log -- src/` 的最新一笔就是它。不要在页面上写成更新的 LIVE。这一轮没有改 `src/`。`now.md` 里的百分比仍是 2026-11-17、对照 `85c19c2e` 的快照，没有重算，正文里的数字也没有改。
 
 公开手册只写 `src/` 里现在生效的规则。不要写入令牌、密码、内网地址，也不要写监听、数据库或仪表盘。卡住 30 的那一行只是控制台的一行字，不要写成有人在仓库外盯着。
 
 ## 这一轮做了什么
 
-新开了 `docs-site/mechanisms/commander.md`，地址 `/mechanisms/commander`。导航标题是「指挥官接管」，放在「主循环与 CPU」后面、「孵化与身体」前面。导读的机制名单在「主循环」后面加了「指挥官」。主循环、实验室、矿物、link、房间表、部署各加了一句交叉链接，没有重讲能量、反应、传送门槛或六步发送。`docs/COMMANDER.md` 改成指向这一页，没有进导航。
+排版在 `docs-site/.vitepress/theme/custom.css`。颜色、阴影、圆角和两套 Noto 都没换。
 
-一张图：`CmdTick.vue`（没武装是一次假值判断；武装后只问点了名的 creep 和建筑；接不住就交还）。`theme/index.ts` 注册了这个组件。样式沿用已有的 `plate`、`node`、`phases`、`legend`，没有新的视觉语言。编辑备忘仍被 `srcExclude` 排除。
+- 正文、列表和标题收在 38rem，大约三十五个字。内容栏仍是 46rem。`.plate`、表格和代码块用这一栏的宽度，图没有被挤窄。
+- 表格改用 Noto Sans SC，数字用 `tabular-nums`。底色、圆角和线没动。
+- 中文用 `text-spacing-trim: trim-start` 和 `line-break: strict`。句末标点的悬挂只加在段落和列表上，不加在带铜条的二级标题上，页眉短句也不挂。`text-autospace: no-autospace`，不在汉字和英文标识之间另插空格。行内代码仍按原样。
+- 图注仍是缩小的无衬线、偏灰。行距略松开，字距收回一点。
+- 印刷样式还在。窄屏上印章、枢纽、核心和房间条的原有规则没拆。
 
-对照这些文件写的。游戏代码没有改。
+交叉链接只补了读者会跟着走的几处，没有在每页末尾加「相关机制」。
 
-- `src/utils/cmd.js`：`armed` 是 `Memory.cmd` 在且 `on` 为真。缺省 TTL 200。`sticky` 不设 `until`。过期删。单条 `on: 0` 留着；`arm` 只把整层设回 1，不改单条的 `on`。`once` 在返回 0 时放开。`hold` / `move` 已经站进距离也算完成。`fallback` 让这一拍交还，指令还在。`consumeCreep` 有 `act` 才接住，压过 `home.flee` 和角色。`yieldCreep` 先问 consume，再问 `intent.obey`。`suppressed` 在活的 `act` 或 `duty` 上为真。`blocks` 对任何活的建筑指令为真，不调用 `terminal.send`。`runHeldStructures` 只在武装时看观察者、核弹、工厂、Power Spawn、实验室。工厂和 Power Spawn 占住这一拍、什么也不调用，不调用 `processPower`。核弹 `launch` 要 `allow` 和写明的 `pos`。出生点 `spawn` 要 `allow` 和非空 `body`。实验室 `react` 要 `in1` 和 `in2`，不写 `Memory.ops.labs`。link 冷却仍占住并且不送。这一层不写 `Memory.ops`、`raidOrder`、softCap、角色目标，不编战斗身体，不 claim，不开安全模式。
-- `src/utils/intent.js`：`obey` 只在理由是 `cmd`、且没有 `act` 时做 `idle` / `hold` / `kite` / `flee` / `fillSpawn` / `fillTower` / `bank`。身上没有能量时，填充和 `bank` 交还角色。`focus` / `haul` / `repair` / `lab` / `upgrade` 是建议，返回假。`steer` 只盖建议，不执行。
-- `src/main.js`：`runHeldStructures` 在 creep 之前，且只在武装时调用。`consumeCreep` 在 `home.flee` 之前。解脱和停一拍更早。
-- 钩子：`managers/tower.js`、`links.js`、`labs.js`、`spawn.js`，`rooms/w47n8/index.js` 的出生点、终端 `blocks`、link、塔。角色脚本开头的 `yieldCreep`，以及 `raid9` 的 `suppressed`。整层武装时，家和 W47 的孵化闸会打开空闲跳过；没有点名到这座出生点时，自动队列仍排。
+- 房间表里的「见搬运」链到搬运。图注里的「见升级页」「见搬运页」「见移动那一页」改成了图内链接。防御能量图里「写在那两页」改成搬运和升级。
+- 防御页指向外矿。外矿页里原先只写了「防御页」「孵化页」、没有链上的，补上了。升级的五格座位指向布局。布局页原本已经指回升级的只数。
+- 孵化指向主循环（删掉死亡名字之后、扫房间之前）和外矿（三条线各归哪座出生点）。移动页说明点名后的 `hold` / `move` 不读 `_m`，指令在指挥官。主循环的换位指向移动的代价。指挥官、搬运、主循环里几处「见某页」也改成了链接。
+
+标题层级没有改。导读的导航仍是「导读」，正文标题仍是「殖民地手册」。大纲仍是二级和三级。正文里汉字后面直接跟半角 `,.;!?` 的地方扫过一遍，没有落在正文里的。代码、算式和标识表里的不算。
+
+公开地址仍是 https://screeps-handbook-nolove-world.vercel.app 。README 里的这个链接没有改。
 
 ## 下一轮
 
-**站点打磨**。排版、标题层级、交叉链接、图。公开地址已经在用：https://screeps-handbook-nolove-world.vercel.app 。它写在 README 和 GitHub 仓库简介里。不要另编一个地址，也不要删掉已有的链接。
+**建造、修理和城墙。** 写成新的机制页。这一轮不要开写。
 
-为什么是下一轮：现在活着的殖民地，机制页已经齐了。下一轮要的是读起来一致、好找，而不是再新开一篇机制。
+为什么是下一轮：打磨之后，活着的殖民地里还缺一篇从头讲清的机制，就是工地、修理和城墙落在哪。代码至少在这两处：
+
+- `src/managers/walls.js`：阶段是 `off`、`bank`、`roads`、`build`。`noUpgrade` 在修路阶段为真，终端、实验室或萃取器还有工地时也为真。城墙阶段里，圈还没合上，或者最低一截有效命中还没到 `HOLD_TO`（100000），同样停升级。升级页已经列了这些阶段，新页不要改那句话。`defReserve` 读 `Memory.defense.reserveE`，键不在时是 0。`placeSites` 放城门和城墙，圈合上之后才放那一段路。`repairJob` 和 `wantBuilder` 决定要不要为城墙再留一只建造工。
+- `src/managers/roads.js`：阶段是 `core`、`haul`、`W45N8`、`econ`、`home`、`swamp7`、`done`。城墙要等 `roads.done()`，紧急开工除外。
+
+写的时候还要读这些交互，不要只抄上面两个文件：
+
+- `src/managers/spawn.js`：工地有多少，决定建造工只数。`noUpgrade` 时升级工目标写成 0，建造工可以加。注释里那句不能取到 `threat.reserve` 以下，指的是建造工从存储取能量。
+- `src/roles/builder.js`：`storeFloor` 用 `threat.reserve(房间)`。外矿处于武装时这个数是 1300，否则是 0。RCL6 起还和 `walls.FLOOR`（5000）取较大的。`defLow` 时建造工不从存储取，围城和 `fundSpend` 除外。
+- `src/managers/threat.js`：`reserve` 在任一外矿 `armed` 时返回 `DEF.reserve`（1300），否则 0。这和 `Memory.defense.reserveE` 的 15000 不是同一个数。
+- `src/managers/tower.js`：存储低于 `threat.reserve` 时，塔把城门修到 `RAMPART_FLOOR`（5000）为止。计划里的城门即使存储够，也停在 5000，再往上是建造的活。防御页已经写了家里这一段，新页不要另起一套数字。
+- `src/rooms/w47n8/index.js`：W47 自己的建造工队列（工地、封墙、路和容器的修理）不走家的 `walls.js`。升级页已经写了工地把 W47 收到一只。不要把那道闩改写成已经松开。
+
+布局页已经有家的工地顺序和 W47 铺建筑的节拍。新页讲建造和修理怎么花钱、怎么让升级让路，可以链过去，不必把印章再讲一遍。
 
 ## 再往后
 
-按读者会先问的顺序。已有的页面缺的是一致和边界。不要再开一篇日志。
+按读者会先问的顺序。
 
 1. **日期日志不要进给人读的入口**。`STRATEGY`、`docs/REMOTE_*.md`、`docs/CPU.md`、路线、RCL7 这类记录留在仓库里。公开导航已经是新站点。不要把那些英文变更记录引进网站。`docs/CPU.md` 里仍有一句房间视觉在桶低于 2000 时不画，和现在的主循环页不一致。那个文件留在仓库里，不要为了把它改对就搬进导航。
 2. **不要把文档写成代码变更**。不要在手册里修改 15000 的地板，也不要把 W47 的 keep=2 写成已经松开。那道闩要存储连续 500 tick 不低于 40000 才到 3。没有常设的第三只升级工。只描述当前代码。
-3. **可选，这一轮不做。** 建造、修理和城墙落在哪；或者给 `now.md` 做一次注明日期的重算。两件都留到以后，不要塞进打磨里当新机制来写。
+3. **可选，更往后。** 给 `now.md` 做一次注明日期的重算。不是建造页的替代，也不是这一轮该做的。

@@ -66,7 +66,7 @@
       <li><i class="lg-stop"></i>建筑，走不过</li>
     </ul>
     <figcaption>
-      现在的出生点是 15,18，在西边。34,30 是以后放置顺序的第一格。33,34 是路。过路的代价见移动那一页。
+      现在的出生点是 15,18，在西边。34,30 是以后放置顺序的第一格。33,34 是路。过路的代价见<a href="/mechanisms/move">移动</a>。
     </figcaption>
   </figure>
 </template>
