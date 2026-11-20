@@ -1,0 +1,273 @@
+{
+  "at": "2026-11-21 00:45:59 Asia/Hong_Kong",
+  "ok_quiet": true,
+  "game_time_first": 84383459,
+  "published_bases": "84382700..84383300",
+  "reconstructed": [
+    84382701,
+    84383400
+  ],
+  "ticks": 700,
+  "creep_rows": 26239,
+  "missing_chunks": 2,
+  "already_in_db": 18759,
+  "inserted_first": 7480,
+  "inserted_confirm": 0,
+  "inserted_retry2": 0,
+  "inserted_just_script": 2510,
+  "inserted_just_actual": 2400,
+  "inserted_window": 7480,
+  "inserted_total": 9880,
+  "first_pass_by": "this run tools/history_backfill.py --minutes 40 (game.time=84383459, published_bases 84382700..84383300, reconstructed 84382701..84383400 missing_chunks=2 W45N7@84382700, W46N8@84382900 inserted=7480 already_in_db=18759); 33/35 official GETs 200. Concurrent 1h patrol _patrol_2026-11-21_0022 had already finished at 00:33:34 before this wrap (official retries ~00:29). First pass included published bases through 84383300, so it official-filled the remaining 49 ticks 84383201..84383249 of already-told STATS hole 84383131..84383249 (00:14 no-STATS + box freeze 00:19:22-00:22:38); all five rooms are now 119/119. Leftover official 404s W45N7@84382700 (0/100) and W46N8@84382900 (67/100, missing 84382901..84382933) stayed 404 after confirm/retry2. Already-told leftover W45N8@84382600 aged out of window start 84382701 and was not retried.",
+  "tick_s_printed": 3.984,
+  "tick_s_first": 3.98435,
+  "tick_s_in_use": 3.98435,
+  "tick_s_in_use_name": "first",
+  "ts_realigned_first": 17947,
+  "corrective": 0,
+  "corrective_applied": true,
+  "coverage_official_recovered": 3367,
+  "coverage_expected": 3500,
+  "empty_no_creep": 0,
+  "official_404": 133,
+  "per_room_new_first": {
+    "W46N8": {
+      "ticks": 600,
+      "new": 2224
+    },
+    "W47N8": {
+      "ticks": 700,
+      "new": 2620
+    },
+    "W45N8": {
+      "ticks": 700,
+      "new": 699
+    },
+    "W45N7": {
+      "ticks": 600,
+      "new": 806
+    },
+    "W47N7": {
+      "ticks": 700,
+      "new": 1131
+    }
+  },
+  "per_room_new_window": {
+    "W46N8": {
+      "distinct": 667,
+      "rows": 9104
+    },
+    "W47N8": {
+      "distinct": 700,
+      "rows": 8728
+    },
+    "W45N8": {
+      "distinct": 700,
+      "rows": 2481
+    },
+    "W45N7": {
+      "distinct": 600,
+      "rows": 1666
+    },
+    "W47N7": {
+      "distinct": 700,
+      "rows": 3673
+    }
+  },
+  "in_window_404_after_retry2": [
+    "W45N7@84382700",
+    "W46N8@84382900"
+  ],
+  "first_pass_404_recovered_before_confirm": [],
+  "first_pass_404_recovered_on_confirm": [],
+  "just_published_base": 84383400,
+  "just_published_at": "2026-11-21 00:43:12 Asia/Hong_Kong",
+  "just_published_gt": 84383541,
+  "just_published_all_five_200": true,
+  "just_published_script_by_room": {
+    "W46N8": 208,
+    "W47N8": 1005,
+    "W45N8": 377,
+    "W45N7": 514,
+    "W47N7": 406
+  },
+  "just_published_actual_by_room": {
+    "W46N8": 208,
+    "W47N8": 1005,
+    "W45N8": 375,
+    "W45N7": 433,
+    "W47N7": 379
+  },
+  "just_published_still_404": [],
+  "just_published_retries": [],
+  "just_published_actual_note": "script inserted=2510 (W46N8 +208, W47N8 +1005, W45N8 +377, W45N7 +514, W47N7 +406). post-counts actual_sum=2400: W46N8/W47N8 match script 208/1005; W45N8 script 377 vs actual 375; W45N7 script 514 vs actual 433; W47N7 script 406 vs actual 379. All five ended distinct=100/100 for ticks 84383401..84383500, so the row diffs are not missing ticks.",
+  "new_box_freeze": null,
+  "new_short_listener_gap": null,
+  "already_told_box_freeze_in_window": {
+    "from": "2026-11-21 00:19:22",
+    "to": "2026-11-21 00:22:38",
+    "sec": 195,
+    "why": "box frozen ~195s since 2026-11-21 00:19:22 (VM hibernated; wall jumped, monotonic did not)",
+    "listener_restart": "00:22:41",
+    "listener_pid": 1568924,
+    "listener_started": "00:22:50",
+    "stats": "84383131..84383249",
+    "span": 119,
+    "stats_note": "The 119-tick STATS hole is continuous and also includes the preceding no-STATS period after 00:14:38 (listener 'no STATS for 258s' reconnect 00:18:56). last STATS 84383130 at 00:14:38, next STATS 84383250 at 00:23:00.",
+    "last_stats": "84383130 at 00:14:38",
+    "next_stats": "84383250 at 00:23:00",
+    "official_fill": {
+      "W46N8": "119/119",
+      "W47N8": "119/119",
+      "W45N8": "119/119",
+      "W45N7": "119/119",
+      "W47N7": "119/119"
+    },
+    "official_fill_missing": {},
+    "filled_by": "1h patrol _patrol_2026-11-21_0022 saw first 70 ticks 84383131..84383200 already filled all five and last 49 ticks 84383201..84383249 still unpublished. This 30-min backfill first pass pulled official 84383200 for all five; now 119/119 all five.",
+    "told": true,
+    "told_by": "1h patrol ~00:32 亚洲/香港 (_patrol_2026-11-21_0022, finished_at 00:33:34, message already includes this freeze)",
+    "first_recorded_by": "1h patrol _patrol_2026-11-21_0022 / visible in box_pauses.jsonl and errors.log after listener auto-restart 00:22:41",
+    "note": "Already healed and already included in the 00:32 patrol message. Fold only newer freezes than 00:19:22-00:22:38."
+  },
+  "already_told_short_listener_gap_in_window": {
+    "from": "2026-11-21 00:14:38",
+    "to": "2026-11-21 00:19:22",
+    "sec": 258,
+    "why": "listener 'no STATS for 258s' reconnect 00:18:56 after last STATS 84383130 at 00:14:38; box freeze began 00:19:22 before a healthy STATS stream resumed.",
+    "listener_restart": "00:18:56 (no STATS for 258s); 00:22:41 (box freeze)",
+    "stats": "84383131..84383249",
+    "span": 119,
+    "stats_note": "Combined with already-told box freeze 00:19:22-00:22:38 into one continuous STATS hole; cannot split ticks exactly from room_stats alone.",
+    "last_stats": "84383130 at 00:14:38",
+    "next_stats": "84383250 at 00:23:00",
+    "official_fill": {
+      "W46N8": "119/119",
+      "W47N8": "119/119",
+      "W45N8": "119/119",
+      "W45N7": "119/119",
+      "W47N7": "119/119"
+    },
+    "told": true,
+    "told_by": "1h patrol ~00:32 亚洲/香港 (_patrol_2026-11-21_0022)",
+    "first_recorded_by": "1h patrol _patrol_2026-11-21_0022",
+    "note": "Not a box freeze (no box_pauses row between 00:14:38 and 00:19:22). Already included in the 00:32 patrol message together with the 00:19 freeze. Fold only newer short gaps than this 00:14:38-00:19:22 no-STATS period."
+  },
+  "already_told_older_box_freeze_in_window": {
+    "from": "2026-11-20 23:50:34",
+    "to": "2026-11-20 23:57:00",
+    "sec": 385,
+    "why": "box frozen ~385s since 2026-11-20 23:50:34 (VM hibernated; wall jumped, monotonic did not)",
+    "listener_restart": "23:57:03",
+    "stats": "84382641..84382889",
+    "span": 249,
+    "stats_note": "Combined with already-told no-STATS after 23:40:44 (ws error 23:40:15 / restart 23:40:16, last STATS 84382640 at 23:40:44, 'no STATS for 560s' reconnect 23:50:04). last STATS 84382640 at 23:40:44, next STATS 84382890 at 23:57:53.",
+    "last_stats": "84382640 at 23:40:44",
+    "next_stats": "84382890 at 23:57:53",
+    "official_fill": {
+      "W46N8": "249/249",
+      "W47N8": "249/249",
+      "W45N8": "189/249",
+      "W45N7": "149/249",
+      "W47N7": "249/249"
+    },
+    "official_fill_missing": {
+      "W45N8": "60 ticks 84382641..84382700 = official 404 W45N8@84382600 (0/100, trajectory hole; ages out of window start 84382701)",
+      "W45N7": "100 ticks 84382701..84382800 = official 404 W45N7@84382700 (0/100, trajectory hole; still in window)"
+    },
+    "filled_by": "Previous 00:00 backfill official-filled W46N8/W47N8/W47N7 249/249; W45N8 189/249 and W45N7 149/249 unchanged this run (official 404s still 404).",
+    "told": true,
+    "told_by": "1h patrol ~00:32 亚洲/香港 (_patrol_2026-11-21_0022); first recorded by 30-min backfill _halfhour_2026-11-21_0000",
+    "note": "Already healed and already included in the 00:32 patrol message, together with the preceding 23:40 no-STATS gap. Partial overlap with this window start 84382701."
+  },
+  "already_recorded_untold_box_freeze_in_window": null,
+  "already_recorded_untold_short_listener_gap_in_window": null,
+  "aged_out_already_told_short_listener_gap": null,
+  "new_official_404": [],
+  "already_told_in_window_404": [
+    {
+      "chunk": "W45N7@84382700",
+      "hole": "84382701..84382800",
+      "db": "0/100",
+      "trajectory_hole": true,
+      "confirm": "still 404 at 2026-11-21 00:39:03 Asia/Hong_Kong gt=84383481",
+      "retry2": "still 404 at 2026-11-21 00:41:02 Asia/Hong_Kong gt=84383510",
+      "told": true,
+      "told_by": "1h patrol ~00:32 亚洲/香港 (_patrol_2026-11-21_0022); first recorded by 30-min backfill _halfhour_2026-11-21_0000"
+    },
+    {
+      "chunk": "W46N8@84382900",
+      "hole": "84382901..84382933",
+      "db": "67/100 from live listener (84382934..84383000)",
+      "trajectory_hole": true,
+      "confirm": "still 404 at 2026-11-21 00:39:03 Asia/Hong_Kong gt=84383481",
+      "retry2": "still 404 at 2026-11-21 00:41:02 Asia/Hong_Kong gt=84383510",
+      "told": true,
+      "told_by": "1h patrol ~00:32 亚洲/香港 (_patrol_2026-11-21_0022); first recorded as just-published leftover by 30-min backfill _halfhour_2026-11-21_0000"
+    }
+  ],
+  "already_recorded_untold_in_window_404": [],
+  "already_recorded_untold_just_published_404": [],
+  "aged_out_already_told_404_not_retried": [
+    "W45N8@84382600",
+    "W47N8@84382100",
+    "W47N7@84380900",
+    "W47N8@84380300",
+    "W47N8@84379500",
+    "W45N8@84378900"
+  ],
+  "aged_out_404_note": "Leftover official 404 W45N8@84382600 (hole 84382601..84382700, DB 0/100, trajectory hole) aged out of window start 84382701 and was not retried here (already told by 1h patrol _patrol_2026-11-21_0022). Already-told leftover W47N8@84382100 (hole 84382101..84382200, DB already 100/100, not a trajectory hole) and older leftovers W47N7@84380900, W47N8@84380300, W47N8@84379500, W45N8@84378900 also aged out and were not retried here.",
+  "prior_told_box_freeze_aged_out": [
+    {
+      "from": "2026-11-20 23:11:55",
+      "to": "2026-11-20 23:20:53",
+      "sec": 537,
+      "stats": "84382221..84382359",
+      "span": 139,
+      "official_fill": {
+        "W46N8": "139/139",
+        "W47N8": "139/139",
+        "W45N8": "139/139",
+        "W45N7": "139/139",
+        "W47N7": "139/139"
+      },
+      "told": true,
+      "told_by": "1h patrol _patrol_2026-11-20_2320",
+      "note": "Ages out of window start 84382701; still 139/139 all five."
+    }
+  ],
+  "listener": {
+    "rot": {
+      "i": 1,
+      "room": "W47N8",
+      "left": 159.9,
+      "at": "2026-11-21 00:45:56"
+    },
+    "pid": 1568924,
+    "started": "00:22:50",
+    "parent": 4035476,
+    "yield": false,
+    "restarted_this_run": false,
+    "auto_restart": "00:22:41 after box freeze 00:19:22-00:22:38; also 00:18:56 (no STATS for 258s) earlier; listener.py started 00:22:50",
+    "live_gameTime": 84383474,
+    "live_stats_t": 84383580,
+    "live_objects_n": 0,
+    "note": "Listener auto-restarted on box wake at 00:22:41 and reconnected on its own (live.json fresh, creep_cpu/path_arrivals ingesting, single peacetime slot 5:5:1:1, no yield file). This run did not restart the listener or war_cmd/pulse. live.json gameTime=84383474 was lagging live stats.t=84383580 at wrap; rot/updated and DB tips were current."
+  },
+  "war_cmd_pulse_restarted": false,
+  "concurrent_1h_patrol": {
+    "id": "_patrol_2026-11-21_0022",
+    "finished_at": "2026-11-21 00:33:34 HKT",
+    "note": "Patrol wrote finished_at and patrol_message_zh.txt before this backfill wrap. Its 00:32 message already told the 23:40 no-STATS gap, 23:50 freeze, 00:14 no-STATS + 00:19 freeze, and official 404 holes W45N8@84382600, W45N7@84382700, W46N8@84382900. This backfill did not restart anything and used only official HTTP history."
+  },
+  "cpu_tip": 84383570,
+  "path_tip": 84383559,
+  "room_stats_tip": 84383580,
+  "tick_s_reason": "first-interval tick_s=3.98435 (printed 3.984, min-all-rooms first two bases) is in the sane 3-6s band; later-mean-robust 4.17580 (raw later-mean 4.17580; delta first-robust -0.19145 s/tick, ~145.1s at tmin). First-pass realign with tick_s=3.98435 (printed 3.984) moved 17947 rows (ts_realigned_first=17947, inserted=7480, already_in_db=18759, missing_chunks=2 W45N7@84382700, W46N8@84382900).; later-mean-robust 4.17580 is worse than live-anchor-best first 3.98435 (later over45=18479 mean_off=73.2 vs best over45=110 mean_off=-6.5); will not blindly apply later; applied corrective first realign of 0 rows at game.time=84383478 tick_s=3.98435; still_over_45s_vs_target=0; skipped_cross_chunk=0",
+  "post_counts_tips_at": "2026-11-21 00:44:21 Asia/Hong_Kong",
+  "post_counts_tips": {
+    "room_stats": 84383550,
+    "creep_cpu": 84383540,
+    "path_arrivals": 84383526
+  }
+}

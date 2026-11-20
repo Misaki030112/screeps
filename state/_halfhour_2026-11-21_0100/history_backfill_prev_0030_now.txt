@@ -1,0 +1,56 @@
+game.time=84383459 published_bases=84382700..84383300 rooms=W46N8,W47N8,W45N8,W45N7,W47N7 dry=False
+  ok  W46N8@84382700 ticks=100 ts=1795189948546
+  ok  W47N8@84382700 ticks=100 ts=1795190005986
+  ok  W45N8@84382700 ticks=100 ts=1795190001699
+  404 W45N7@84382700
+  ok  W47N7@84382700 ticks=100 ts=1795190037770
+  ok  W46N8@84382800 ticks=100 ts=1795190346981
+  ok  W47N8@84382800 ticks=100 ts=1795190394678
+  ok  W45N8@84382800 ticks=100 ts=1795190391276
+  ok  W45N7@84382800 ticks=100 ts=1795190348035
+  ok  W47N7@84382800 ticks=100 ts=1795190433503
+  404 W46N8@84382900
+  ok  W47N8@84382900 ticks=100 ts=1795190804958
+  ok  W45N8@84382900 ticks=100 ts=1795190803297
+  ok  W45N7@84382900 ticks=100 ts=1795190764130
+  ok  W47N7@84382900 ticks=100 ts=1795190839854
+  ok  W46N8@84383000 ticks=100 ts=1795191182178
+  ok  W47N8@84383000 ticks=100 ts=1795191217536
+  ok  W45N8@84383000 ticks=100 ts=1795191214371
+  ok  W45N7@84383000 ticks=100 ts=1795191182696
+  ok  W47N7@84383000 ticks=100 ts=1795191249640
+  ok  W46N8@84383100 ticks=100 ts=1795191599036
+  ok  W47N8@84383100 ticks=100 ts=1795191637545
+  ok  W45N8@84383100 ticks=100 ts=1795191634527
+  ok  W45N7@84383100 ticks=100 ts=1795191600929
+  ok  W47N7@84383100 ticks=100 ts=1795191668097
+  ok  W46N8@84383200 ticks=100 ts=1795192023143
+  ok  W47N8@84383200 ticks=100 ts=1795192069824
+  ok  W45N8@84383200 ticks=100 ts=1795192065594
+  ok  W45N7@84383200 ticks=100 ts=1795192023798
+  ok  W47N7@84383200 ticks=100 ts=1795192101846
+  ok  W46N8@84383300 ticks=100 ts=1795192434900
+  ok  W47N8@84383300 ticks=100 ts=1795192483988
+  ok  W45N8@84383300 ticks=100 ts=1795192479356
+  ok  W45N7@84383300 ticks=100 ts=1795192437194
+  ok  W47N7@84383300 ticks=100 ts=1795192522204
+tick_s=3.984
+reconstructed ticks=84382701..84383400 (700) creep_rows=26239 missing_chunks=2
+already_in_db=18759 would_insert=7480
+per_room W46N8:600t/2224new W47N8:700t/2620new W45N8:700t/699new W45N7:600t/806new W47N7:700t/1131new
+inserted=7480
+ts_realigned=17947
+db_after
+  W45N7 ticks=84382801..84383400 rows=1666 distinct=600
+  W45N8 ticks=84382701..84383400 rows=2481 distinct=700
+  W46N8 ticks=84382701..84383400 rows=9104 distinct=667
+  W47N7 ticks=84382701..84383400 rows=3673 distinct=700
+  W47N8 ticks=84382701..84383400 rows=8728 distinct=700
+
+---- wrap 2026-11-21 00:45:59 Asia/Hong_Kong ----
+confirm 2026-11-21 00:39:03 Asia/Hong_Kong gt=84383481 and retry2 2026-11-21 00:41:02 Asia/Hong_Kong gt=84383510 still official 404 W45N7@84382700 and W46N8@84382900 (first pass 33/35 official GETs 200, missing_chunks=2). W45N7 is empty in DB (0/100) so it is a trajectory hole 84382701..84382800. W46N8 is 67/100 from the live listener (84382934..84383000), missing 84382901..84382933 (33 ticks), also a trajectory hole. Coverage official_404=133. Already-told leftover W45N8@84382600 (hole 84382601..84382700, 0/100) and older leftovers W47N8@84382100 (DB 100/100, not a trajectory hole), W47N7@84380900, W47N8@84380300, W47N8@84379500, W45N8@84378900 aged out of window start 84382701 and were not retried here.
+tick_s_first=3.98435 printed=3.984 in_use=3.98435 (first) ts_realigned_first=17947 corrective=0
+coverage official_recovered=3367/3500 empty_no_creep=0 official_404=133
+just-published 84383400 at 2026-11-21 00:43:12 Asia/Hong_Kong game.time=84383541 all_five_200=True actual_inserted=2400 ticks 84383401..84383500; script inserted=2510; W45N8 script 377 vs actual 375; W45N7 script 514 vs actual 433; W47N7 script 406 vs actual 379. All five ended 100/100.
+inserted_window=7480 inserted_total=9880 (first 7480 + confirm 0 + retry2 0 + just 84383400 actual 2400)
+Already-told box freeze 00:19:22-00:22:38 (195s; already healed; listener auto-restart 00:22:41; python 1568924 started 00:22:50) plus preceding no-STATS after 00:14:38 (258s, reconnect 00:18:56) made STATS hole 84383131..84383249 (119t; last STATS 84383130 at 00:14:38, next STATS 84383250 at 00:23:00). The 00:32 1h patrol already told this and saw the last 49 ticks still unpublished; this run official-filled 84383200 and all five are now 119/119. Already-told 23:40 no-STATS + 23:50:34-23:57:00 freeze (STATS 84382641..84382889, 249t) remains partly in window: W46N8/W47N8/W47N7 249/249, W45N8 189/249 missing 84382641..84382700 (official 404, ages out of window start 84382701), W45N7 149/249 missing 84382701..84382800 (official 404, still in window). Already-told freeze 23:11:55-23:20:53 (139/139 all five) aged out of window start 84382701. Already-told in-window official 404s W45N7@84382700 and W46N8@84382900 still 404 after confirm/retry2. Concurrent 1h patrol _patrol_2026-11-21_0022 finished 00:33:34 and already told the above gaps and 404s in its 00:32 message; fold those if that patrol was delivered. This run did not restart the listener or war_cmd/pulse. Peacetime single-slot 5:5:1:1, no yield file.
