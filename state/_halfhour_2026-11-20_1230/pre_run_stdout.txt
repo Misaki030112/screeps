@@ -1,0 +1,116 @@
+2026-11-20 12:37:40 HKT check
+==== processes (screeps/pg/grafana/listener) ====
+   7854 Sat Nov  7 22:46:11 2026 /usr/lib/postgresql/17/bin/postgres -D /workspace/screeps/var/pg17 -c config_file=/etc/postgresql/17/main/postgresql.conf
+   8030 Sat Nov  7 22:46:20 2026 /usr/share/grafana/bin/grafana server --homepath /usr/share/grafana --config grafana/grafana.ini
+   8041 Sat Nov  7 22:46:20 2026 .venv/bin/python -m http.server 8787 --bind 127.0.0.1
+1299376 Fri Nov 20 12:19:50 2026 .venv/bin/python tools/listener.py
+4035476 Fri Nov 13 06:03:39 2026 /bin/bash tools/run_listener.sh
+==== pg_lsclusters ====
+17 main 5432 online postgres /workspace/screeps/var/pg17 /var/log/postgresql/postgresql-17-main.log
+==== listener pids / locks ====
+listener.py count=1
+run_listener.sh count=1
+yield_files=absent
+listener.lock mtime=2026-11-20 12:19
+pidfile=4035476 (run_listener.sh)
+==== listener_rot ====
+{"i": 1, "room": "W47N8", "left": 420.0, "at": "2026-11-20 12:37:35"}
+listener_rot.json age_s=4.9
+==== live.json summary ====
+  gameTime= 84373097
+  uid= 6010ee96cbca26e9512da6f0
+  roomSlot= W47N8
+  updated= 2026-11-20 12:37:37
+  cpu= {'cpu': 17, 'memory': 24984}
+  stats.t= 84373140 cpu= 17.81 b= 10000
+  objects_n= 0 (W47N8 slot)
+  live.json_mtime_age_s= 3.1
+  live.json_mtime= 2026-11-20 12:37:37 HKT
+==== HTTP ====
+grafana :3000 -> 200
+dashboard 127.0.0.1:8787 -> 200
+==== listener restarts / errors ====
+2026-11-20 11:11:56 restart
+2026-11-20 11:18:38 restart
+2026-11-20 11:36:21 restart
+2026-11-20 11:44:14 restart
+2026-11-20 11:46:19 restart
+2026-11-20 11:59:07 restart
+2026-11-20 12:01:48 restart
+2026-11-20 12:19:41 restart
+last_restart_line=2026-11-20 12:19:41 restart
+errors/pauses after last restart:
+(none)
+==== box_pauses.jsonl last ====
+{"from": "2026-11-20 09:09:35", "to": "2026-11-20 09:20:53", "sec": 672}
+{"from": "2026-11-20 09:44:17", "to": "2026-11-20 10:03:04", "sec": 1127}
+{"from": "2026-11-20 10:15:38", "to": "2026-11-20 10:25:57", "sec": 611}
+{"from": "2026-11-20 10:49:41", "to": "2026-11-20 10:58:24", "sec": 516}
+{"from": "2026-11-20 11:48:50", "to": "2026-11-20 11:59:04", "sec": 609}
+{"from": "2026-11-20 12:13:48", "to": "2026-11-20 12:19:38", "sec": 342}
+==== concurrent processes of note ====
+none
+==== db health + recent ingest ====
+db_now 2026-11-20 12:37:40.372405+08:00
+tip_room_stats=84373140
+  creep_ticks: last2h-ish ticks=84371140..84373141 rows=68772
+  creep_cpu: last2h-ish ticks=84371140..84373130 rows=14765
+  path_arrivals: last2h-ish ticks=84371172..84373112 rows=212
+  room_stats: last2h-ish ticks=84371260..84373140 rows=288
+creep_ticks since tick 84372901 (after 12:25 1h patrol official reconstructed through 84372900 / 12:00 half-hour just-published through 84372700; leftover 404 W46N8@84371600 should have aged out of this 40-min window; older leftover 404s aged out; prior 1h patrol _patrol_2026-11-20_1220 already delivered ~12:25 and told freezes/gaps through 12:13 and leftover 404s; listener auto-restart 12:19:41 (current listener.py from 12:19); this run must not restart the listener):
+  W46N8 84372954..84373097 rows=2163 distinct=144
+  W47N8 84373098..84373142 rows=634 distinct=45
+  W45N8 84372901..84372924 rows=92 distinct=24
+  W45N7 (none)
+  W47N7 (none)
+creep_cpu tick>=84372900: ticks=84372900..84373130 rows=1856
+path_arrivals tick>=84372900: ticks=84372902..84373112 rows=13
+room_stats significant gaps since 84371800 (ignoring normal ~9-tick STATS cadence):
+  84371891..84371919 (29)
+creep_ticks in room_stats gap 84371891..84371919:
+  W46N8 84371891..84371919 rows=306 distinct=29
+  W47N8 84371891..84371919 rows=382 distinct=29
+  W45N8 84371891..84371919 rows=159 distinct=29
+  W45N7 84371891..84371919 rows=86 distinct=29
+  W47N7 84371891..84371919 rows=121 distinct=29
+  84371991..84372019 (29)
+creep_ticks in room_stats gap 84371991..84372019:
+  W46N8 84371991..84372019 rows=257 distinct=29
+  W47N8 84371991..84372019 rows=382 distinct=29
+  W45N8 84371991..84372019 rows=214 distinct=29
+  W45N7 84371991..84372019 rows=90 distinct=29
+  W47N7 84371991..84372019 rows=116 distinct=29
+  84372251..84372269 (19)
+creep_ticks in room_stats gap 84372251..84372269:
+  W46N8 84372251..84372269 rows=194 distinct=19
+  W47N8 84372251..84372269 rows=298 distinct=19
+  W45N8 84372251..84372269 rows=130 distinct=19
+  W45N7 84372251..84372269 rows=76 distinct=19
+  W47N7 84372251..84372269 rows=44 distinct=19
+  84372431..84372599 (169)
+creep_ticks in room_stats gap 84372431..84372599:
+  W46N8 84372431..84372599 rows=1583 distinct=169
+  W47N8 84372431..84372599 rows=3056 distinct=169
+  W45N8 84372431..84372599 rows=1296 distinct=169
+  W45N7 84372431..84372599 rows=630 distinct=169
+  W47N7 84372431..84372599 rows=331 distinct=169
+  84372611..84372639 (29)
+creep_ticks in room_stats gap 84372611..84372639:
+  W46N8 84372611..84372639 rows=206 distinct=29
+  W47N8 84372611..84372639 rows=663 distinct=29
+  W45N8 84372611..84372639 rows=200 distinct=29
+  W45N7 84372611..84372639 rows=116 distinct=29
+  W47N7 84372611..84372639 rows=11 distinct=11 missing 84372623, 84372620, 84372631, 84372619, 84372625, 84372630, 84372635, 84372634, 84372621, 84372627, 84372622, 84372626, 84372628, 84372633, 84372636, 84372629, 84372632, 84372624 (18)
+  84372791..84372889 (99)
+creep_ticks in room_stats gap 84372791..84372889:
+  W46N8 84372791..84372889 rows=1267 distinct=99
+  W47N8 84372791..84372889 rows=2012 distinct=99
+  W45N8 84372791..84372889 rows=413 distinct=99
+  W45N7 84372791..84372889 rows=272 distinct=99
+  W47N7 84372791..84372889 rows=242 distinct=99
+room_stats recent tip window: ticks=84373120..84373140 rows=6
+W47N8 live near tip >= 84373120: ticks=84373120..84373144 rows=356 distinct=25
+==== health verdict ====
+ok=True
+infra healthy: single listener, postgres/grafana/dashboard up, live.json fresh, no yield file
+wrote /workspace/screeps/state/_halfhour_2026-11-20_1230/pre.txt

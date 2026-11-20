@@ -1,0 +1,73 @@
+=== W47 storage 40k lock / 3h-24h max ===
+  3 h max (84371540, datetime.datetime(2026, 11, 20, 10, 46, 4, 384766, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 36384) agg (36384, 16388, 0, 192)
+  6 h max (84371540, datetime.datetime(2026, 11, 20, 10, 46, 4, 384766, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 36384) agg (36384, 16388, 0, 353)
+  8 h max (84371540, datetime.datetime(2026, 11, 20, 10, 46, 4, 384766, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 36384) agg (36384, 15645, 0, 467)
+  12 h max (84371540, datetime.datetime(2026, 11, 20, 10, 46, 4, 384766, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 36384) agg (36384, 15645, 0, 691)
+  24 h max (84371540, datetime.datetime(2026, 11, 20, 10, 46, 4, 384766, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 36384) agg (36384, 11556, 0, 1292)
+=== w8miners last 800t ===
+('w8miner84371385', 'wminer', 'W47N8', 84372900, 84372908, 9, 11, 11, 43, 43, 800, 800)
+('w8miner84372338', 'wminer', 'W47N8', 84372900, 84373760, 861, 26, 26, 11, 11, 800, 800)
+('w8miner84372771', 'wminer', 'W47N8', 84372900, 84373760, 861, 11, 13, 43, 44, 800, 800)
+=== w8miner compact states ===
+w8miner84371385 n 9
+ first (84372900, 'W47N8', 11, 43, 800, 50, 'loaded') last (84372908, 'W47N8', 11, 43, 800, 50, 'loaded')
+ changes 1 states Counter({'loaded': 9})
+   (84372900, 'W47N8', 11, 43, 800, 50, 'loaded')
+   (84372900, 'W47N8', 11, 43, 800, 50, 'loaded')
+w8miner84372338 n 861
+ first (84372900, 'W47N8', 26, 11, 800, 12, 'loaded') last (84373760, 'W47N8', 26, 11, 800, 36, 'loaded')
+ changes 1 states Counter({'loaded': 861})
+   (84372900, 'W47N8', 26, 11, 800, 12, 'loaded')
+   (84372900, 'W47N8', 26, 11, 800, 12, 'loaded')
+w8miner84372771 n 861
+ first (84372900, 'W47N8', 13, 43, 800, 0, 'empty') last (84373760, 'W47N8', 11, 43, 800, 50, 'loaded')
+ changes 4 states Counter({'loaded': 859, 'empty': 2})
+   (84372900, 'W47N8', 13, 43, 800, 0, 'empty')
+   (84372901, 'W47N8', 12, 44, 800, 0, 'empty')
+   (84372902, 'W47N8', 12, 44, 800, 12, 'loaded')
+   (84372909, 'W47N8', 11, 43, 800, 50, 'loaded')
+   (84372900, 'W47N8', 13, 43, 800, 0, 'empty')
+   (84372901, 'W47N8', 12, 44, 800, 0, 'empty')
+   (84372902, 'W47N8', 12, 44, 800, 12, 'loaded')
+   (84372909, 'W47N8', 11, 43, 800, 50, 'loaded')
+=== defender84372817 room enters ===
+n 484 first (84372819, 'W46N8', 30, 34, 'spawning') last (84373302, 'W46N8', 35, 29, 'empty')
+ ENTER (84372819, 'W46N8', 30, 34, 'spawning')
+ ENTER (84372998, 'W45N8', 1, 22, 'empty')
+ ENTER (84373101, 'W45N7', 3, 34, 'empty')
+ ENTER (84373201, 'W45N8', 3, 24, 'empty')
+ ENTER (84373276, 'W46N8', 48, 21, 'empty')
+W45N7 ticks 100 first (84373101, 'W45N7', 3, 34, 'empty') last (84373200, 'W45N7', 3, 34, 'empty')
+W45N7 pos Counter({(3, 34): 100})
+W45N7 states Counter({'empty': 100})
+defender max/count (84373302, 484)
+defenders [('defender84371269', 84372800, 84372912, 113), ('defender84372817', 84372819, 84373302, 484)]
+=== W47N7 rminers this hour ===
+('rminer84371869', 'rminer', 'W46N8', 84372970, 84373238, 269)
+('rminer84372704', 'rminer', 'W45N8', 84372970, 84373780, 751)
+('rminer84373204', 'rminer', 'W46N8', 84373206, 84373263, 58)
+('rminer84371869', 'rminer', 'W45N8', 84373239, 84373398, 160)
+('rminer84373204', 'rminer', 'W45N8', 84373264, 84373369, 106)
+('rminer84373204', 'rminer', 'W45N7', 84373401, 84373700, 300)
+W47N7 roles [('rdef', 1, 84372970, 84373700, 631), ('reserve', 2, 84372970, 84373700, 327), ('wrhauler', 7, 84372970, 84373700, 416), ('wrminer', 3, 84372970, 84373700, 631)]
+=== rminer84372704 where ===
+[('W45N8', 84372900, 84373789, 830, 13, 13, 11, 11)]
+n 830 first (84372900, 'W45N8', 13, 11, 'loaded', 50) last (84373789, 'W45N8', 13, 11, 'loaded', 50)
+  (84372900, 'W45N8', 13, 11, 'loaded', 50)
+  (84372900, 'W45N8', 13, 11, 'loaded', 50)
+=== w8upgrader names ===
+('w8upgrader84371527', 84372900, 84373400, 501)
+('w8upgrader84372299', 84372900, 84373760, 861)
+('w8upgrader84372966', 84372968, 84373760, 793)
+('w8upgrader84373738', 84373739, 84373760, 22)
+=== incidents tables ===
+tables [('alert_state',), ('events',), ('incident_summary',), ('incidents',)]
+=== rhauler84372786 rooms ===
+[('W45N7', 84373281, 84373801, 332, 21, 21, 0, 14), ('W45N8', 84373240, 84373280, 40, 0, 26, 21, 48), ('W46N8', 84372900, 84373241, 341, 34, 49, 16, 32)]
+=== listener rot / freeze official fill ===
+freeze fill W46N8 (189, 84373281, 84373469) want 189
+freeze fill W47N8 (189, 84373281, 84373469) want 189
+freeze fill W45N8 (189, 84373281, 84373469) want 189
+freeze fill W45N7 (89, 84373281, 84373469) want 189
+freeze fill W47N7 (169, 84373301, 84373469) want 189
+done
