@@ -38,6 +38,7 @@ const mechanisms = [
   { text: '指挥官接管', link: '/mechanisms/commander' },
   { text: '孵化与身体', link: '/mechanisms/spawn' },
   { text: '搬运与能量', link: '/mechanisms/haul' },
+  { text: '掉落、墓碑和废墟', link: '/mechanisms/salvage' },
   { text: '移动与寻路', link: '/mechanisms/move' },
   { text: '布局与印章', link: '/mechanisms/layout' },
   { text: '建造、修理和城墙', link: '/mechanisms/build' },

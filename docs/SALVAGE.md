@@ -1,5 +1,7 @@
-# 捡拾
+# 掉落、墓碑和废墟
 
-家的搬运工在去固定容器之前，会顺路捡值得绕的掉落、墓碑和废墟，一种堆一个人。手里的矿物战利品先送进存储。
+公开说明在手册的「掉落、墓碑和废墟」：
 
-这是为了不把能量留在地上衰减，不是一种进攻。逻辑在 `src/utils/salvage.js`，由搬运工调用。
+https://screeps-handbook-nolove-world.vercel.app/mechanisms/salvage
+
+源稿是 `docs-site/mechanisms/salvage.md`。打分、认领和回收在 `src/utils/salvage.js`。
