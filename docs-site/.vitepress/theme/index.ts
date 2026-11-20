@@ -18,6 +18,7 @@ import HomeStamps from './components/HomeStamps.vue'
 import HubCore from './components/HubCore.vue'
 import LabGates from './components/LabGates.vue'
 import LinkFlow from './components/LinkFlow.vue'
+import BuildYield from './components/BuildYield.vue'
 import ColonyStrip from './components/ColonyStrip.vue'
 import CmdTick from './components/CmdTick.vue'
 import RemoteLines from './components/RemoteLines.vue'
@@ -43,6 +44,7 @@ export default {
     app.component('HubCore', HubCore)
     app.component('LabGates', LabGates)
     app.component('LinkFlow', LinkFlow)
+    app.component('BuildYield', BuildYield)
     app.component('ColonyStrip', ColonyStrip)
     app.component('CmdTick', CmdTick)
     app.component('RemoteLines', RemoteLines)
