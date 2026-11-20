@@ -1,3 +1,8 @@
-retry2 skipped 2026-11-20 04:33 Asia/Hong_Kong
-first pass 35/35 official GETs 200, missing_chunks=0; no in-window official 404 to confirm or retry.
-Leftover W45N7@84365200 aged out of window start 84365401 (hole 84365201..84365300 still unfilled; already told by the 04:21 1h patrol) and was not retried.
+retry2 GET start 2026-11-21 04:34:42 Asia/Hong_Kong game.time=84386858 tick_s=4.196435 targets=2
+  pre  W46N8@84386400 distinct=6 rows=72 range=84386401..84386406
+  still_404 W46N8@84386400 at 04:34:43 game.time=84386858
+  pre  W45N8@84386600 distinct=27 rows=63 range=84386657..84386683
+  still_404 W45N8@84386600 at 04:34:45 game.time=84386858
+recovered=[] still_404=['W46N8@84386400', 'W45N8@84386600'] inserted=0 ts_realigned=0
+gets_written 2 /workspace/screeps/state/_halfhour_2026-11-21_0430/backfill_confirm_gets.json
+finished

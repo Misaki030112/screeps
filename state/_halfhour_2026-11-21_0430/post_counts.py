@@ -11,14 +11,15 @@ import db
 
 DIR = Path("/workspace/screeps/state/_halfhour_2026-11-21_0430")
 ROOMS = ("W46N8", "W47N8", "W45N8", "W45N7", "W47N7")
-JUST_BASE = 84386300
+JUST_BASE = 84386700
 T0, T1 = JUST_BASE + 1, JUST_BASE + 100
-WIN_TMIN, WIN_TMAX = 84385601, 84386300
+WIN_TMIN, WIN_TMAX = 84386001, 84386700
 GAPS = [
-    ("gap_0354_0357", 84386281, 84386339),  # NEW short box pause 03:54:27-03:57:32 (178s / VM hibernated); listener auto-restart 03:57:35; last_stats 84386280 at 03:54:10, next_stats 84386340 at 03:58:19; 59t; official first-pass window 84385601..84386300 covers through 84386300, remainder belongs to just-published 84386300
-    ("gap_0245_0305", 84385301, 84385599),  # already-told by 03:17 backfill / 03:30 1h patrol (box freeze 02:45:59-03:05:48, ~1189s); 299t; ages out of window start 84385601; official 404 W47N8@84385300 leaves W47N8 missing 84385301..84385400
-    ("gap_0220_0222", 84384941, 84384959),  # already-told by 02:28/02:30 1h patrol (short listener gap 02:20:54-02:22:17, ~83s); 19t; ages out of window start 84385601
-    ("gap_0147_0202", 84384461, 84384689),  # already-told by 02:28/02:30 1h patrol (box freeze 01:47:58-02:02:50, 884s); 229t; ages out of window start 84385601
+    ("gap_0410_0418", 84386511, 84386629),  # already-told by 04:18/04:29 1h patrol (box freeze 04:10:40-04:18:06, 439s); 119t; last_stats 84386510 at 04:10:30, next 84386630 at 04:18:40; listener auto-restart 04:18:09, python 1665264 started 04:18:18; in window start 84386001; official 404 W45N8@84386600 may leave W45N8 missing 84386601..84386700
+    ("gap_0354_0357", 84386281, 84386339),  # already-told by 04:18/04:29 1h patrol (short box freeze 03:54:27-03:57:32, 178s; recorded earlier by 04:00/04:07 backfill); 59t; last_stats 84386280 at 03:54:10, next 84386340 at 03:58:19; official-filled all five 59/59; in window start 84386001
+    ("gap_0245_0305", 84385301, 84385599),  # already-told by 03:17 backfill / 03:30 1h patrol (box freeze 02:45:59-03:05:48, ~1189s); 299t; official 404 W47N8@84385300 leaves W47N8 missing 84385301..84385400; ages out of window start 84386001
+    ("gap_0220_0222", 84384941, 84384959),  # already-told short listener gap 02:20:54-02:22:17; 19t; ages out of window start 84386001
+    ("gap_0147_0202", 84384461, 84384689),  # already-told box freeze 01:47:58-02:02:50; 229t; ages out of window start 84386001
 ]
 HK = ZoneInfo("Asia/Hong_Kong")
 

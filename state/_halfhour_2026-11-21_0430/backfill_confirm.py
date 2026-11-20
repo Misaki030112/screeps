@@ -19,9 +19,9 @@ ROOMS = ("W46N8", "W47N8", "W45N8", "W45N7", "W47N7")
 # (just-published 84375200 was written then at 15:10:58 gt=84375341).
 # Concurrent 1h patrol _patrol_2026-11-20_1526 is running; do not write its folder.
 # NEW box freeze 15:15:12-15:26:38 STATS 84375391..84375569 sits inside this window.
-IN_WINDOW = [("W47N8", 84385900)]  # first pass 34/35 official GETs 200, missing_chunks=1. Already-told leftover official 404s W45N7@84383500, W45N7@84383900, W45N8@84382600, W45N7@84382700, W46N8@84382900, and W47N8@84385300 age out of window start 84385601 and are not retried here. Already-told official 404 W47N8@84385900 remains in window and is retried if still missing.
+IN_WINDOW = [("W46N8", 84386400), ("W45N8", 84386600)]  # first pass 33/35 official GETs 200, missing_chunks=2. Already-told leftover official 404s W45N7@84383500, W45N7@84383900, W45N8@84382600, W45N7@84382700, W46N8@84382900, W47N8@84385300, and W47N8@84385900 (first told by the 04:18/04:29 1h patrol) age out of window start 84386001 and are not retried here. In-window already-told official 404s W46N8@84386400 and W45N8@84386600 (first told by the 04:18/04:29 1h patrol) are retried if still missing.
 AGED = []
-TICK_S = 4.27192
+TICK_S = 4.17708
 PASS = sys.argv[1] if len(sys.argv) > 1 else "confirm"
 OUT = "/workspace/screeps/state/_halfhour_2026-11-21_0430/backfill_confirm_gets.json"
 TICK_S_FILE = "/workspace/screeps/state/_halfhour_2026-11-21_0430/tick_s_realign.json"

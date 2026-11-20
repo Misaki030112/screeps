@@ -8,7 +8,7 @@ import sys
 sys.path.insert(0, "/workspace/screeps/tools")
 import db
 
-TMIN, TMAX = 84385601, 84386300
+TMIN, TMAX = 84386001, 84386700
 ROOMS = ("W46N8", "W47N8", "W45N8", "W45N7", "W47N7")
 DIR = "/workspace/screeps/state/_halfhour_2026-11-21_0430"
 # First pass 34 of 35 official GETs 200, missing_chunks=1 W45N8@84375300.
@@ -20,7 +20,7 @@ DIR = "/workspace/screeps/state/_halfhour_2026-11-21_0430"
 # Prior short listener gaps 15:02:26 STATS 84374991..84375229 and 14:34:16 STATS 84374801..84374819 sit in/age around this window and were already official-filled (told=false, left to 1h patrol).
 # NEW box freeze 15:15:12-15:26:38 STATS 84375391..84375569 (179t) sits inside this window; first-pass official covers through 84375600 except the W45N8@84375300 hole. This run must not restart the listener.
 # Concurrent 1h patrol _patrol_2026-11-20_1526 is running; do not write its folder.
-IN_WINDOW_404 = {("W47N8", 84385900)}  # first pass 34/35 official GETs 200, missing_chunks=1 W47N8@84385900. Already-told leftover official 404s W45N7@84383500, W45N7@84383900, W45N8@84382600, W45N7@84382700, W46N8@84382900, and W47N8@84385300 age out of window start 84385601 and are not retried here. Already-told official 404 W47N8@84385900 remains in window and is retried if still missing.
+IN_WINDOW_404 = {("W46N8", 84386400), ("W45N8", 84386600)}  # first pass 33/35 official GETs 200, missing_chunks=2 W46N8@84386400, W45N8@84386600. Already-told leftover official 404s W45N7@84383500, W45N7@84383900, W45N8@84382600, W45N7@84382700, W46N8@84382900, W47N8@84385300, and W47N8@84385900 (first told by the 04:18/04:29 1h patrol) age out of window start 84386001 and are not retried here. In-window already-told official 404s W46N8@84386400 and W45N8@84386600 (first told by the 04:18/04:29 1h patrol) are retried if still missing.
 OUT = sys.argv[1] if len(sys.argv) > 1 else f"{DIR}/coverage_final.json"
 
 def chunk_base(tick):

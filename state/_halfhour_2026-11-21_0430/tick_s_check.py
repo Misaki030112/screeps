@@ -26,29 +26,28 @@ import history_backfill as hb
 # Official 404 leftover W45N8@84375300 (hole 84375301..84375400, told=false) ages out of this window start 84375401 and was not retried.
 # MIN_ALL uses W45N7 on 84375500 (slightly earlier than W46N8); every other base uses W46N8 (earliest timestamp).
 W46 = {
-    84385600: 1795202046614,
-    84385700: 1795202473806,
-    84385800: 1795202895833,
-    84385900: 1795203320861,
     84386000: 1795203738057,
     84386100: 1795204155765,
     84386200: 1795204565045,
+    84386300: 1795204971894,
+    84386500: 1795205833731,
+    84386600: 1795206255918,
 }
 MIN_ALL = {
-    84385600: 1795202046614,  # W46N8
-    84385700: 1795202473806,  # W46N8
-    84385800: 1795202895833,  # W46N8
-    84385900: 1795203320861,  # W46N8
     84386000: 1795203738057,  # W46N8
     84386100: 1795204155765,  # W46N8
     84386200: 1795204565045,  # W46N8
+    84386300: 1795204971894,  # W46N8
+    84386400: 1795205411085,  # W45N7
+    84386500: 1795205833731,  # W46N8
+    84386600: 1795206255918,  # W46N8
 }
-TMIN, TMAX = 84385601, 84386300
+TMIN, TMAX = 84386001, 84386700
 ROOMS = ("W46N8", "W47N8", "W45N8", "W45N7", "W47N7")
-TICK_S_FIRST = (MIN_ALL[84385700] - MIN_ALL[84385600]) / 1000.0 / 100  # script printed 4.272, exact 4.27192
-GT_FIRST = 84386364
-TS_REALIGNED_FIRST = 12049  # first-pass realign moved 12049 (inserted=6498, already_in_db=18223, missing_chunks=1)
-PREV_LATER_MEAN = 4.20166  # 03:30 half-hour tick_s_in_use (all_mean)
+TICK_S_FIRST = (MIN_ALL[84386100] - MIN_ALL[84386000]) / 1000.0 / 100  # script printed 4.177, exact 4.17708
+GT_FIRST = 84386793
+TS_REALIGNED_FIRST = 936  # first-pass realign moved 936 (inserted=300, already_in_db=26303, missing_chunks=2)
+PREV_LATER_MEAN = 4.16991  # 03:00 half-hour tick_s_in_use (all_mean)
 
 
 def intervals(d):
