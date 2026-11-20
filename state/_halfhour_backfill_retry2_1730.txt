@@ -1,3 +1,14 @@
-2026-11-19 17:32 Asia/Hong_Kong retry2 skipped
-first pass already 35/35 official GETs 200, missing_chunks=0, no in-window official 404, still_404=[]
-confirm skipped; just-published 84356600 not attempted
+retry2 GET start 2026-11-20 17:35:49 Asia/Hong_Kong game.time=84377422 tick_s=4.25984 targets=5
+  pre  W45N7@84376800 distinct=0 rows=0 range=None..None
+  still_404 W45N7@84376800 at 17:35:50 game.time=84377422
+  pre  W47N8@84377100 distinct=0 rows=0 range=None..None
+  still_404 W47N8@84377100 at 17:35:51 game.time=84377422
+  pre  W47N8@84377200 distinct=100 rows=1523 range=84377201..84377300
+  recovered_or_ok W47N8@84377200 ticks=100 ts=1795166892572 at 17:35:53 inserted=0
+  pre  W45N8@84377200 distinct=100 rows=381 range=84377201..84377300
+  recovered_or_ok W45N8@84377200 ticks=100 ts=1795166888809 at 17:35:57 inserted=0
+  pre  W47N7@84377200 distinct=100 rows=323 range=84377201..84377300
+  recovered_or_ok W47N7@84377200 ticks=100 ts=1795166924152 at 17:36:00 inserted=0
+recovered=[] still_404=['W45N7@84376800', 'W47N8@84377100'] inserted=0 ts_realigned=0
+gets_written 5 /workspace/screeps/state/_halfhour_2026-11-20_1730/backfill_confirm_gets.json
+finished
