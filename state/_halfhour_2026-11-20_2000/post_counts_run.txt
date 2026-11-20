@@ -1,0 +1,50 @@
+post {
+  "W46N8": {
+    "distinct": 100,
+    "rows": 983,
+    "min": 84379501,
+    "max": 84379600
+  },
+  "W47N8": {
+    "distinct": 0,
+    "rows": 0,
+    "min": null,
+    "max": null
+  },
+  "W45N8": {
+    "distinct": 100,
+    "rows": 465,
+    "min": 84379501,
+    "max": 84379600
+  },
+  "W45N7": {
+    "distinct": 100,
+    "rows": 250,
+    "min": 84379501,
+    "max": 84379600
+  },
+  "W47N7": {
+    "distinct": 100,
+    "rows": 388,
+    "min": 84379501,
+    "max": 84379600
+  }
+}
+actual_by_room {'W46N8': 408, 'W47N8': 0, 'W45N8': 440, 'W45N7': 185, 'W47N7': 388} sum 1421
+script_by {'W46N8': 408, 'W47N8': 0, 'W45N8': 498, 'W45N7': 185, 'W47N7': 388} sum 1479
+gap freeze_1942 84379221..84379509
+  W46N8 289/289 rows=3001 range=84379221..84379509 missing_n=0 missing_range=None
+  W47N8 280/289 rows=4018 range=84379221..84379500 missing_n=9 missing_range=84379501..84379509
+  W45N8 289/289 rows=1583 range=84379221..84379509 missing_n=0 missing_range=None
+  W45N7 289/289 rows=668 range=84379221..84379509 missing_n=0 missing_range=None
+  W47N7 289/289 rows=1791 range=84379221..84379509 missing_n=0 missing_range=None
+gap freeze_1916 84378861..84378969
+  W46N8 109/109 rows=1272 range=84378861..84378969 missing_n=0 missing_range=None
+  W47N8 109/109 rows=1305 range=84378861..84378969 missing_n=0 missing_range=None
+  W45N8 40/109 rows=87 range=84378861..84378900 missing_n=69 missing_range=84378901..84378969
+  W45N7 109/109 rows=304 range=84378861..84378969 missing_n=0 missing_range=None
+  W47N7 109/109 rows=587 range=84378861..84378969 missing_n=0 missing_range=None
+holes {'W47N8@84379500': {'distinct': 0, 'rows': 0, 'min': None, 'max': None}, 'W45N8@84378900': {'distinct': 0, 'rows': 0, 'min': None, 'max': None}, 'W47N7@84378000': {'distinct': 0, 'rows': 0, 'min': None, 'max': None}, 'W46N8@84377600': {'distinct': 0, 'rows': 0, 'min': None, 'max': None}}
+tips {'room_stats': 84379700, 'creep_cpu': 84379690, 'path_arrivals': 84379688}
+live near tip {'W46N8': {'distinct': 22, 'rows': 237, 'min': 84379660, 'max': 84379681}, 'W47N8': {'distinct': 25, 'rows': 341, 'min': 84379682, 'max': 84379706}, 'W45N8': {'distinct': 0, 'rows': 0, 'min': None, 'max': None}, 'W45N7': {'distinct': 0, 'rows': 0, 'min': None, 'max': None}, 'W47N7': {'distinct': 0, 'rows': 0, 'min': None, 'max': None}}
+wrote post_counts and summary
