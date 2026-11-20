@@ -1,0 +1,49 @@
+=== freeze_0845 84369801..84369979 expected 179 ===
+  W46N8 distinct=179/179 range=84369801..84369979 rows=1883 missing=0
+  W47N8 distinct=179/179 range=84369801..84369979 rows=2801 missing=0
+  W45N8 distinct=179/179 range=84369801..84369979 rows=490 missing=0
+  W45N7 distinct=179/179 range=84369801..84369979 rows=533 missing=0
+  W47N7 distinct=179/179 range=84369801..84369979 rows=785 missing=0
+
+=== freeze_0909_published 84370151..84370300 expected 150 ===
+  W46N8 distinct=150/150 range=84370151..84370300 rows=1568 missing=0
+  W47N8 distinct=150/150 range=84370151..84370300 rows=2275 missing=0
+  W45N8 distinct=150/150 range=84370151..84370300 rows=751 missing=0
+  W45N7 distinct=150/150 range=84370151..84370300 rows=580 missing=0
+  W47N7 distinct=150/150 range=84370151..84370300 rows=371 missing=0
+
+=== freeze_0909_full 84370151..84370319 expected 169 ===
+  W46N8 distinct=150/169 range=84370151..84370300 rows=1568 missing=19
+  W47N8 distinct=154/169 range=84370151..84370319 rows=2325 missing=15
+  W45N8 distinct=150/169 range=84370151..84370300 rows=751 missing=19
+  W45N7 distinct=150/169 range=84370151..84370300 rows=580 missing=19
+  W47N7 distinct=150/169 range=84370151..84370300 rows=371 missing=19
+
+first STATS >= 84369980 [(84369980, datetime.datetime(2026, 11, 20, 8, 57, 29, 511122, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 17808), (84369990, datetime.datetime(2026, 11, 20, 8, 58, 11, 125729, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 17908), (84370000, datetime.datetime(2026, 11, 20, 8, 58, 51, 280992, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 17608)]
+first STATS >= 84370320 [(84370320, datetime.datetime(2026, 11, 20, 9, 21, 31, 426149, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 15392), (84370330, datetime.datetime(2026, 11, 20, 9, 22, 12, 724745, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 15492), (84370340, datetime.datetime(2026, 11, 20, 9, 22, 54, 301854, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 15592)]
+
+=== home storage this window ===
+n 44 under15k 2 4.5%
+under samples:
+  (84370150, datetime.datetime(2026, 11, 20, 9, 9, 26, 86802, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 14868, 8669198)
+  (84370350, datetime.datetime(2026, 11, 20, 9, 23, 36, 343624, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 14892, 8673372)
+min (84370150, datetime.datetime(2026, 11, 20, 9, 9, 26, 86802, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 14868, 8669198) max (84369800, datetime.datetime(2026, 11, 20, 8, 45, 9, 538975, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 18788, 8659360)
+tip-ish last 8:
+  (84370120, datetime.datetime(2026, 11, 20, 9, 7, 16, 117802, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 15368, 8668358)
+  (84370130, datetime.datetime(2026, 11, 20, 9, 7, 58, 400488, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 15468, 8668638)
+  (84370140, datetime.datetime(2026, 11, 20, 9, 8, 43, 361866, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 15568, 8668918)
+  (84370150, datetime.datetime(2026, 11, 20, 9, 9, 26, 86802, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 14868, 8669198)
+  (84370320, datetime.datetime(2026, 11, 20, 9, 21, 31, 426149, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 15392, 8672952)
+  (84370330, datetime.datetime(2026, 11, 20, 9, 22, 12, 724745, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 15492, 8673092)
+  (84370340, datetime.datetime(2026, 11, 20, 9, 22, 54, 301854, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 15592, 8673232)
+  (84370350, datetime.datetime(2026, 11, 20, 9, 23, 36, 343624, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 14892, 8673372)
+
+=== W47 storage this window ===
+n 44 over25k 42 ge40k 0
+min (84370350, datetime.datetime(2026, 11, 20, 9, 23, 36, 343638, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 24127, 5409524) max (84370070, datetime.datetime(2026, 11, 20, 9, 3, 45, 701328, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 25276, 5404824)
+last 5:
+  (84370150, datetime.datetime(2026, 11, 20, 9, 9, 26, 86865, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 25135, 5406324)
+  (84370320, datetime.datetime(2026, 11, 20, 9, 21, 31, 426235, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 25077, 5408924)
+  (84370330, datetime.datetime(2026, 11, 20, 9, 22, 12, 724802, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 25077, 5409124)
+  (84370340, datetime.datetime(2026, 11, 20, 9, 22, 54, 301896, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 24477, 5409324)
+  (84370350, datetime.datetime(2026, 11, 20, 9, 23, 36, 343638, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 24127, 5409524)
