@@ -20,7 +20,7 @@ outline: [2, 3]
 
 快照里 `Memory.ops.labs` 让家做 KO，所以这只按 **1200** 来长，是 16 CARRY、8 MOVE，携带 800。实验室没给这间房配上会做的反应时，link 时期仍是 **450** 的 6 CARRY、3 MOVE。终端满着、旗标却没配上，身体仍是这具 450 的。`parkTask` 自己也要旗标已经配上。配方在 [孵化](/mechanisms/spawn)。
 
-`roles/filler.js` 和 `roles/manager.js` 还在仓库里。`STATIONARY_FILL` 关着，两者的目标都是 0。延伸仍由女王补。原因也在孵化那一页。
+`roles/filler.js` 和 `roles/manager.js` 还在仓库里。`STATIONARY_FILL` 关着，两者的目标都是 0。延伸仍由女王补。原因也在 [孵化](/mechanisms/spawn)。
 
 ### 捡能量
 

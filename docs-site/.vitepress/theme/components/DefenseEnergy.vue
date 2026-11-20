@@ -8,7 +8,7 @@
       </div>
       <div class="node">
         <strong>15000 · 殖民地地板</strong>
-        <span><code>Memory.defense.reserveE</code>。墙模块在键不在时当成 0。女王、升级、搬运怎么读，写在那两页。防御身体的第一只不改这道地板。</span>
+        <span><code>Memory.defense.reserveE</code>。墙模块在键不在时当成 0。女王和搬运怎么读，写在<a href="/mechanisms/haul">搬运</a>；升级工怎么用这道地板，写在<a href="/mechanisms/upgrade">升级</a>。防御身体的第一只不改这道地板。</span>
       </div>
       <div class="node now">
         <strong>15000 / 25000 · 再加一只</strong>
