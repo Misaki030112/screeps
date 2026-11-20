@@ -1,0 +1,56 @@
+post {
+  "W46N8": {
+    "distinct": 100,
+    "rows": 948,
+    "min": 84377801,
+    "max": 84377900
+  },
+  "W47N8": {
+    "distinct": 100,
+    "rows": 1394,
+    "min": 84377801,
+    "max": 84377900
+  },
+  "W45N8": {
+    "distinct": 100,
+    "rows": 494,
+    "min": 84377801,
+    "max": 84377900
+  },
+  "W45N7": {
+    "distinct": 100,
+    "rows": 408,
+    "min": 84377801,
+    "max": 84377900
+  },
+  "W47N7": {
+    "distinct": 100,
+    "rows": 527,
+    "min": 84377801,
+    "max": 84377900
+  }
+}
+actual_by_room {'W46N8': 948, 'W47N8': 398, 'W45N8': 419, 'W45N7': 408, 'W47N7': 527} sum 2700
+script_by {'W46N8': 948, 'W47N8': 398, 'W45N8': 419, 'W45N7': 408, 'W47N7': 528} sum 2701
+gap freeze_1743 84377521..84377819
+  W46N8 199/299 rows=2396 range=84377521..84377819 missing_n=100 missing_range=84377601..84377700
+  W47N8 299/299 rows=5587 range=84377521..84377819 missing_n=0 missing_range=None
+  W45N8 299/299 rows=1520 range=84377521..84377819 missing_n=0 missing_range=None
+  W45N7 299/299 rows=597 range=84377521..84377819 missing_n=0 missing_range=None
+  W47N7 299/299 rows=684 range=84377521..84377819 missing_n=0 missing_range=None
+gap freeze_1709 84377041..84377289
+  W46N8 249/249 rows=2374 range=84377041..84377289 missing_n=0 missing_range=None
+  W47N8 149/249 rows=2221 range=84377041..84377289 missing_n=100 missing_range=84377101..84377200
+  W45N8 249/249 rows=1108 range=84377041..84377289 missing_n=0 missing_range=None
+  W45N7 249/249 rows=1205 range=84377041..84377289 missing_n=0 missing_range=None
+  W47N7 249/249 rows=970 range=84377041..84377289 missing_n=0 missing_range=None
+gap freeze_1645 84376701..84376869
+  W46N8 169/169 rows=1594 range=84376701..84376869 missing_n=0 missing_range=None
+  W47N8 169/169 rows=2508 range=84376701..84376869 missing_n=0 missing_range=None
+  W45N8 169/169 rows=798 range=84376701..84376869 missing_n=0 missing_range=None
+  W45N7 100/169 rows=242 range=84376701..84376800 missing_n=69 missing_range=84376801..84376869
+  W47N7 169/169 rows=1120 range=84376701..84376869 missing_n=0 missing_range=None
+holes {'W47N8@84377100': {'distinct': 0, 'rows': 0, 'min': None, 'max': None}, 'W46N8@84377600': {'distinct': 0, 'rows': 0, 'min': None, 'max': None}}
+tips {'room_stats': 84377950, 'creep_cpu': 84377940, 'path_arrivals': 84377933}
+live near tip {'W46N8': {'distinct': 10, 'rows': 96, 'min': 84377942, 'max': 84377951}, 'W47N8': {'distinct': 0, 'rows': 0, 'min': None, 'max': None}, 'W45N8': {'distinct': 4, 'rows': 16, 'min': 84377910, 'max': 84377913}, 'W45N7': {'distinct': 28, 'rows': 112, 'min': 84377914, 'max': 84377941}, 'W47N7': {'distinct': 0, 'rows': 0, 'min': None, 'max': None}}
+wrote post_counts and summary
