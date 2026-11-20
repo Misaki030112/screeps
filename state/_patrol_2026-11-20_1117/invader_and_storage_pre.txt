@@ -1,0 +1,284 @@
+=== incidents since last tip ===
+retry incidents with schema
+incidents cols ['ts', 'tick', 'remote', 'inc', 'ev', 'from_state', 'state', 'why', 'inv', 'inv_ttl', 'def', 'dur', 'data']
+n 7
+(datetime.datetime(2026, 11, 20, 9, 25, 41, 305351, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84370379, 'W45N7', 84370228, 'defend', 'THREAT', 'DEFEND', 'dispatched', 0, 0, 'out', 151, {'ev': 'defend', 'def': 'out', 'dur': 151, 'inc': 84370228, 'inv': 0, 'why': 'dispatched', 'from': 'THREAT', 'tick': 84370379, 'state': 'DEFEND', 'invTtl': 0, 'remote': 'W45N7', 'delivered': 3702293})
+(datetime.datetime(2026, 11, 20, 9, 30, 28, 179499, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84370447, 'W45N7', 84370228, 'arrive', None, 'DEFEND', None, 0, 0, 'out', None, {'ev': 'arrive', 'def': 'out', 'inc': 84370228, 'inv': 0, 'tick': 84370447, 'state': 'DEFEND', 'invTtl': 0, 'remote': 'W45N7', 'travel': 68, 'delivered': 3702293})
+(datetime.datetime(2026, 11, 20, 9, 42, 38, 211782, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84370623, 'W45N7', 84370228, 'cleared', 'DEFEND', 'SAFE', 'killed', 0, 0, 'out', 395, {'ev': 'cleared', 'def': 'out', 'dur': 395, 'inc': 84370228, 'inv': 0, 'why': 'killed', 'from': 'DEFEND', 'tick': 84370623, 'state': 'SAFE', 'invTtl': 0, 'remote': 'W45N7', 'delivered': 3702293})
+(datetime.datetime(2026, 11, 20, 10, 27, 17, 244594, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84371269, 'W45N7', 84371225, 'spawn_start', None, 'THREAT', None, None, None, 'defender84371269', None, {'n': 1, 'ev': 'spawn_start', 'def': 'defender84371269', 'inc': 84371225, 'tick': 84371269, 'state': 'THREAT', 'remote': 'W45N7', 'waited': 44})
+(datetime.datetime(2026, 11, 20, 10, 37, 15, 483550, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84371413, 'W45N7', 84371225, 'defend', 'THREAT', 'DEFEND', 'dispatched', 0, 0, 'out', 188, {'ev': 'defend', 'def': 'out', 'dur': 188, 'inc': 84371225, 'inv': 0, 'why': 'dispatched', 'from': 'THREAT', 'tick': 84371413, 'state': 'DEFEND', 'invTtl': 0, 'remote': 'W45N7', 'delivered': 3705493})
+(datetime.datetime(2026, 11, 20, 10, 41, 41, 39634, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84371477, 'W45N7', 84371225, 'arrive', None, 'DEFEND', None, 1, 1248, 'out', None, {'ev': 'arrive', 'def': 'out', 'inc': 84371225, 'inv': 1, 'tick': 84371477, 'state': 'DEFEND', 'invTtl': 1248, 'remote': 'W45N7', 'travel': 64, 'delivered': 3705493})
+(datetime.datetime(2026, 11, 20, 10, 43, 8, 231753, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84371498, 'W45N7', 84371225, 'cleared', 'DEFEND', 'SAFE', 'killed', 0, 0, 'out', 273, {'ev': 'cleared', 'def': 'out', 'dur': 273, 'inc': 84371225, 'inv': 0, 'why': 'killed', 'from': 'DEFEND', 'tick': 84371498, 'state': 'SAFE', 'invTtl': 0, 'remote': 'W45N7', 'delivered': 3705893})
+
+=== events tables ===
+tables [('alert_state',), ('events',), ('incident_summary',), ('incidents',)]
+
+=== defender84371269 trajectory (all rooms) ===
+n rows 560 first (84371270, 'W46N8', 35, 28, 4800, 0, 'spawning', 'defender') last (84371976, 'W45N8', 14, 38, 4800, 0, 'empty', 'defender')
+  84371270 W46N8 35,28 hits=4800 state=spawning store=0
+  84371300 W46N8 35,28 hits=4800 state=spawning store=0
+  84371350 W46N8 35,28 hits=4800 state=spawning store=0
+  84371400 W46N8 35,28 hits=4800 state=spawning store=0
+  84371413 W46N8 35,29 hits=4800 state=empty store=0
+  84371414 W46N8 34,30 hits=4800 state=empty store=0
+  84371415 W46N8 34,31 hits=4800 state=empty store=0
+  84371416 W46N8 35,32 hits=4800 state=empty store=0
+  84371417 W46N8 36,32 hits=4800 state=empty store=0
+  84371418 W46N8 37,32 hits=4800 state=empty store=0
+  84371419 W46N8 38,31 hits=4800 state=empty store=0
+  84371421 W46N8 38,30 hits=4800 state=empty store=0
+  84371422 W46N8 38,29 hits=4800 state=empty store=0
+  84371423 W46N8 38,28 hits=4800 state=empty store=0
+  84371424 W46N8 38,27 hits=4800 state=empty store=0
+  84371425 W46N8 38,26 hits=4800 state=empty store=0
+  84371426 W46N8 38,25 hits=4800 state=empty store=0
+  84371427 W46N8 39,24 hits=4800 state=empty store=0
+  84371428 W46N8 40,23 hits=4800 state=empty store=0
+  84371429 W46N8 41,22 hits=4800 state=empty store=0
+  84371430 W46N8 42,21 hits=4800 state=empty store=0
+  84371431 W46N8 43,20 hits=4800 state=empty store=0
+  84371432 W46N8 44,19 hits=4800 state=empty store=0
+  84371433 W46N8 45,18 hits=4800 state=empty store=0
+  84371434 W46N8 46,17 hits=4800 state=empty store=0
+  84371435 W46N8 47,17 hits=4800 state=empty store=0
+  84371436 W46N8 48,18 hits=4800 state=empty store=0
+  84371437 W46N8 48,19 hits=4800 state=empty store=0
+  84371438 W46N8 48,20 hits=4800 state=empty store=0
+  84371439 W46N8 49,21 hits=4800 state=empty store=0
+  84371440 W45N8 1,22 hits=4800 state=empty store=0
+  84371441 W45N8 2,23 hits=4800 state=empty store=0
+  84371442 W45N8 3,24 hits=4800 state=empty store=0
+  84371443 W45N8 4,25 hits=4800 state=empty store=0
+  84371444 W45N8 5,26 hits=4800 state=empty store=0
+  84371445 W45N8 6,27 hits=4800 state=empty store=0
+  84371446 W45N8 7,28 hits=4800 state=empty store=0
+  84371447 W45N8 8,29 hits=4800 state=empty store=0
+  84371448 W45N8 9,30 hits=4800 state=empty store=0
+  84371449 W45N8 10,31 hits=4800 state=empty store=0
+  84371450 W45N8 10,32 hits=4800 state=empty store=0
+  84371451 W45N8 10,33 hits=4800 state=empty store=0
+  84371452 W45N8 11,34 hits=4800 state=empty store=0
+  84371453 W45N8 12,35 hits=4800 state=empty store=0
+  84371454 W45N8 13,36 hits=4800 state=empty store=0
+  84371455 W45N8 14,37 hits=4800 state=empty store=0
+  84371456 W45N8 14,38 hits=4800 state=empty store=0
+  84371457 W45N8 15,39 hits=4800 state=empty store=0
+  84371458 W45N8 16,40 hits=4800 state=empty store=0
+  84371459 W45N8 17,41 hits=4800 state=empty store=0
+  84371460 W45N8 18,41 hits=4800 state=empty store=0
+  84371461 W45N8 19,40 hits=4800 state=empty store=0
+  84371462 W45N8 20,39 hits=4800 state=empty store=0
+  84371463 W45N8 21,38 hits=4800 state=empty store=0
+  84371464 W45N8 22,37 hits=4800 state=empty store=0
+  84371465 W45N8 23,37 hits=4800 state=empty store=0
+  84371466 W45N8 24,38 hits=4800 state=empty store=0
+  84371467 W45N8 25,39 hits=4800 state=empty store=0
+  84371468 W45N8 26,40 hits=4800 state=empty store=0
+  84371469 W45N8 25,41 hits=4800 state=empty store=0
+  84371470 W45N8 25,42 hits=4800 state=empty store=0
+  84371471 W45N8 25,43 hits=4800 state=empty store=0
+  84371472 W45N8 25,44 hits=4800 state=empty store=0
+  84371473 W45N8 25,45 hits=4800 state=empty store=0
+  84371474 W45N8 24,46 hits=4800 state=empty store=0
+  84371475 W45N8 23,47 hits=4800 state=empty store=0
+  84371476 W45N8 22,48 hits=4800 state=empty store=0
+  84371477 W45N8 21,49 hits=4800 state=empty store=0
+  84371478 W45N7 21,1 hits=4800 state=empty store=0
+  84371479 W45N7 22,2 hits=4800 state=empty store=0
+  84371483 W45N7 22,1 hits=4800 state=empty store=0
+  84371486 W45N7 22,1 hits=4792 state=empty store=0
+  84371487 W45N7 22,1 hits=4784 state=empty store=0
+  84371488 W45N7 22,1 hits=4796 state=empty store=0
+  84371489 W45N7 22,1 hits=4800 state=empty store=0
+  84371490 W45N7 22,2 hits=4800 state=empty store=0
+  84371499 W45N7 21,1 hits=4800 state=empty store=0
+  84371500 W45N7 21,0 hits=4800 state=empty store=0
+  84371501 W45N8 21,48 hits=4800 state=empty store=0
+  84371502 W45N8 22,48 hits=4800 state=empty store=0
+  84371503 W45N8 23,47 hits=4800 state=empty store=0
+  84371504 W45N8 24,46 hits=4800 state=empty store=0
+  84371505 W45N8 25,45 hits=4800 state=empty store=0
+  84371547 W45N8 24,46 hits=4800 state=empty store=0
+  84371548 W45N8 23,47 hits=4800 state=empty store=0
+  84371549 W45N8 22,48 hits=4800 state=empty store=0
+  84371550 W45N8 21,49 hits=4800 state=empty store=0
+  84371551 W45N7 21,1 hits=4800 state=empty store=0
+  84371552 W45N7 20,2 hits=4800 state=empty store=0
+  84371553 W45N7 20,3 hits=4800 state=empty store=0
+  84371554 W45N7 21,4 hits=4800 state=empty store=0
+  84371555 W45N7 22,5 hits=4800 state=empty store=0
+  84371556 W45N7 21,6 hits=4800 state=empty store=0
+  84371557 W45N7 20,7 hits=4800 state=empty store=0
+  84371558 W45N7 19,8 hits=4800 state=empty store=0
+  84371559 W45N7 20,9 hits=4800 state=empty store=0
+  84371560 W45N7 19,10 hits=4800 state=empty store=0
+  84371572 W45N7 20,9 hits=4800 state=empty store=0
+  84371573 W45N7 21,8 hits=4800 state=empty store=0
+  84371574 W45N7 21,7 hits=4800 state=empty store=0
+  84371575 W45N7 21,6 hits=4800 state=empty store=0
+  84371576 W45N7 21,5 hits=4800 state=empty store=0
+  84371577 W45N7 21,4 hits=4800 state=empty store=0
+  84371578 W45N7 21,3 hits=4800 state=empty store=0
+  84371579 W45N7 21,2 hits=4800 state=empty store=0
+  84371580 W45N7 21,1 hits=4800 state=empty store=0
+  84371581 W45N7 21,0 hits=4800 state=empty store=0
+  84371582 W45N8 21,48 hits=4800 state=empty store=0
+  84371585 W45N8 22,48 hits=4800 state=empty store=0
+  84371586 W45N8 23,47 hits=4800 state=empty store=0
+  84371587 W45N8 24,46 hits=4800 state=empty store=0
+  84371588 W45N8 25,45 hits=4800 state=empty store=0
+  84371600 W45N8 25,45 hits=4800 state=empty store=0
+  84371630 W45N8 25,44 hits=4800 state=empty store=0
+  84371631 W45N8 25,43 hits=4800 state=empty store=0
+  84371632 W45N8 26,42 hits=4800 state=empty store=0
+  84371633 W45N8 26,41 hits=4800 state=empty store=0
+  84371634 W45N8 26,40 hits=4800 state=empty store=0
+  84371635 W45N8 25,39 hits=4800 state=empty store=0
+  84371636 W45N8 24,38 hits=4800 state=empty store=0
+  84371637 W45N8 23,37 hits=4800 state=empty store=0
+  84371638 W45N8 22,37 hits=4800 state=empty store=0
+  84371639 W45N8 21,38 hits=4800 state=empty store=0
+  84371640 W45N8 20,39 hits=4800 state=empty store=0
+  84371641 W45N8 19,40 hits=4800 state=empty store=0
+  84371642 W45N8 18,41 hits=4800 state=empty store=0
+  84371643 W45N8 17,41 hits=4800 state=empty store=0
+  84371644 W45N8 16,40 hits=4800 state=empty store=0
+  84371645 W45N8 15,39 hits=4800 state=empty store=0
+  84371646 W45N8 14,38 hits=4800 state=empty store=0
+  84371647 W45N8 13,37 hits=4800 state=empty store=0
+  84371648 W45N8 12,36 hits=4800 state=empty store=0
+  84371649 W45N8 11,35 hits=4800 state=empty store=0
+  84371650 W45N8 10,34 hits=4800 state=empty store=0
+  84371651 W45N8 9,33 hits=4800 state=empty store=0
+  84371652 W45N8 9,32 hits=4800 state=empty store=0
+  84371653 W45N8 8,31 hits=4800 state=empty store=0
+  84371654 W45N8 7,30 hits=4800 state=empty store=0
+  84371655 W45N8 6,29 hits=4800 state=empty store=0
+  84371656 W45N8 5,28 hits=4800 state=empty store=0
+  84371657 W45N8 4,27 hits=4800 state=empty store=0
+  84371658 W45N8 3,26 hits=4800 state=empty store=0
+  84371659 W45N8 2,25 hits=4800 state=empty store=0
+  84371660 W45N8 2,24 hits=4800 state=empty store=0
+  84371661 W45N8 1,23 hits=4800 state=empty store=0
+  84371662 W45N8 1,22 hits=4800 state=empty store=0
+  84371663 W45N8 1,21 hits=4800 state=empty store=0
+  84371664 W45N8 1,20 hits=4800 state=empty store=0
+  84371665 W45N8 1,19 hits=4800 state=empty store=0
+  84371666 W45N8 1,18 hits=4800 state=empty store=0
+  84371667 W45N8 1,17 hits=4800 state=empty store=0
+  84371668 W45N8 1,16 hits=4800 state=empty store=0
+  84371673 W45N8 1,15 hits=4800 state=empty store=0
+  84371674 W45N8 1,14 hits=4800 state=empty store=0
+  84371675 W45N8 1,13 hits=4800 state=empty store=0
+  84371676 W45N8 2,12 hits=4800 state=empty store=0
+  84371677 W45N8 3,11 hits=4800 state=empty store=0
+  84371678 W45N8 4,11 hits=4800 state=empty store=0
+  84371679 W45N8 5,11 hits=4800 state=empty store=0
+  84371680 W45N8 6,10 hits=4800 state=empty store=0
+  84371681 W45N8 7,9 hits=4800 state=empty store=0
+  84371682 W45N8 8,9 hits=4800 state=empty store=0
+  84371695 W45N8 7,9 hits=4800 state=empty store=0
+  84371696 W45N8 6,10 hits=4800 state=empty store=0
+  84371697 W45N8 5,11 hits=4800 state=empty store=0
+  84371698 W45N8 4,11 hits=4800 state=empty store=0
+  84371699 W45N8 3,11 hits=4800 state=empty store=0
+  84371700 W45N8 2,12 hits=4800 state=empty store=0
+  84371701 W45N8 1,13 hits=4800 state=empty store=0
+  84371702 W45N8 1,14 hits=4800 state=empty store=0
+  84371703 W45N8 1,15 hits=4800 state=empty store=0
+  84371704 W45N8 2,16 hits=4800 state=empty store=0
+  84371709 W45N8 3,17 hits=4800 state=empty store=0
+  84371710 W45N8 3,18 hits=4800 state=empty store=0
+  84371711 W45N8 2,19 hits=4800 state=empty store=0
+  84371712 W45N8 2,20 hits=4800 state=empty store=0
+  84371713 W45N8 2,21 hits=4800 state=empty store=0
+  84371714 W45N8 3,22 hits=4800 state=empty store=0
+  84371715 W45N8 3,23 hits=4800 state=empty store=0
+  84371716 W45N8 3,24 hits=4800 state=empty store=0
+  84371717 W45N8 4,25 hits=4800 state=empty store=0
+  84371718 W45N8 5,26 hits=4800 state=empty store=0
+  84371719 W45N8 6,27 hits=4800 state=empty store=0
+  84371720 W45N8 7,28 hits=4800 state=empty store=0
+  84371721 W45N8 8,29 hits=4800 state=empty store=0
+  84371722 W45N8 9,30 hits=4800 state=empty store=0
+  84371723 W45N8 10,31 hits=4800 state=empty store=0
+  84371724 W45N8 10,32 hits=4800 state=empty store=0
+  84371725 W45N8 10,33 hits=4800 state=empty store=0
+  84371726 W45N8 11,34 hits=4800 state=empty store=0
+  84371727 W45N8 12,35 hits=4800 state=empty store=0
+  84371728 W45N8 13,36 hits=4800 state=empty store=0
+  84371729 W45N8 14,37 hits=4800 state=empty store=0
+  84371730 W45N8 14,38 hits=4800 state=empty store=0
+  84371731 W45N8 15,39 hits=4800 state=empty store=0
+  84371732 W45N8 16,40 hits=4800 state=empty store=0
+  84371733 W45N8 17,41 hits=4800 state=empty store=0
+  84371734 W45N8 18,41 hits=4800 state=empty store=0
+  84371735 W45N8 19,40 hits=4800 state=empty store=0
+  84371736 W45N8 20,39 hits=4800 state=empty store=0
+  84371737 W45N8 21,38 hits=4800 state=empty store=0
+  84371738 W45N8 22,37 hits=4800 state=empty store=0
+  84371739 W45N8 23,37 hits=4800 state=empty store=0
+  84371740 W45N8 24,38 hits=4800 state=empty store=0
+  84371741 W45N8 25,39 hits=4800 state=empty store=0
+  84371742 W45N8 26,40 hits=4800 state=empty store=0
+  84371743 W45N8 25,41 hits=4800 state=empty store=0
+  84371750 W45N8 25,41 hits=4800 state=empty store=0
+  84371785 W45N8 25,42 hits=4800 state=empty store=0
+  84371786 W45N8 25,43 hits=4800 state=empty store=0
+  84371787 W45N8 25,44 hits=4800 state=empty store=0
+  84371788 W45N8 25,45 hits=4800 state=empty store=0
+  84371789 W45N8 24,46 hits=4800 state=empty store=0
+  84371790 W45N8 23,47 hits=4800 state=empty store=0
+  84371791 W45N8 22,48 hits=4800 state=empty store=0
+  84371792 W45N8 21,49 hits=4800 state=empty store=0
+  84371793 W45N7 21,1 hits=4800 state=empty store=0
+  84371794 W45N7 20,2 hits=4800 state=empty store=0
+  84371795 W45N7 20,3 hits=4800 state=empty store=0
+  84371796 W45N7 21,4 hits=4800 state=empty store=0
+  84371797 W45N7 22,5 hits=4800 state=empty store=0
+  84371798 W45N7 21,6 hits=4800 state=empty store=0
+  84371799 W45N7 20,7 hits=4800 state=empty store=0
+  84371800 W45N7 19,8 hits=4800 state=empty store=0
+  84371948 W45N8 1,14 hits=4800 state=empty store=0
+  84371949 W45N8 1,15 hits=4800 state=empty store=0
+  84371950 W45N8 2,16 hits=4800 state=empty store=0
+  84371955 W45N8 3,17 hits=4800 state=empty store=0
+  84371956 W45N8 3,18 hits=4800 state=empty store=0
+  84371957 W45N8 2,19 hits=4800 state=empty store=0
+  84371958 W45N8 2,20 hits=4800 state=empty store=0
+  84371959 W45N8 2,21 hits=4800 state=empty store=0
+  84371960 W45N8 3,22 hits=4800 state=empty store=0
+  84371961 W45N8 3,23 hits=4800 state=empty store=0
+  84371962 W45N8 3,24 hits=4800 state=empty store=0
+  84371963 W45N8 4,25 hits=4800 state=empty store=0
+  84371964 W45N8 5,26 hits=4800 state=empty store=0
+  84371965 W45N8 6,27 hits=4800 state=empty store=0
+  84371966 W45N8 7,28 hits=4800 state=empty store=0
+  84371967 W45N8 8,29 hits=4800 state=empty store=0
+  84371968 W45N8 9,30 hits=4800 state=empty store=0
+  84371969 W45N8 10,31 hits=4800 state=empty store=0
+  84371970 W45N8 10,32 hits=4800 state=empty store=0
+  84371971 W45N8 10,33 hits=4800 state=empty store=0
+  84371972 W45N8 11,34 hits=4800 state=empty store=0
+  84371973 W45N8 12,35 hits=4800 state=empty store=0
+  84371974 W45N8 13,36 hits=4800 state=empty store=0
+  84371975 W45N8 14,37 hits=4800 state=empty store=0
+  84371976 W45N8 14,38 hits=4800 state=empty store=0
+  span 84371270..84371976 distinct=560 n=560
+  tick gaps n=1 first10=[(84371801, 84371947, 147)]
+
+=== W45N7 hostiles / invader-like creeps since 84371200 ===
+  ('reserver84370624', 'reserver', 84371200, 84371235, 36, 400, 400)
+  ('reserver84371065', 'reserver', 84371200, 84371676, 201, 400, 400)
+  ('rminer84370624', 'rminer', 84371200, 84372012, 301, 1000, 1000)
+  ('rhauler84371091', 'rhauler', 84371203, 84371772, 212, 1600, 1600)
+  ('defender84371269', 'defender', 84371478, 84371800, 62, 4784, 4800)
+  ('rhauler84370636', 'rhauler', 84371559, 84371995, 90, 1600, 1600)
+  ('rhauler84370862', 'rhauler', 84371588, 84372012, 83, 1600, 1600)
+  ('reserver84371506', 'reserver', 84371592, 84372012, 229, 400, 400)
+  ('rhauler84371499', 'rhauler', 84371614, 84371776, 163, 1600, 1600)
+  ('rhauler84371739', 'rhauler', 84372012, 84372012, 1, 1600, 1600)
+  ('rminer84371869', 'rminer', 84372012, 84372012, 1, 1000, 1000)
+
+=== invader_W45N7_908 trajectory ===
+n 0

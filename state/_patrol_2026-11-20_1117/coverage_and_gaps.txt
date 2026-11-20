@@ -1,0 +1,177 @@
+=== official window coverage 84371301..84372000 ===
+W46N8 distinct=600 want=700 missing_ticks=100 spans=[(84371601, 84371700, 100)]
+W47N8 distinct=700 want=700 missing_ticks=0 spans=[]
+W45N8 distinct=700 want=700 missing_ticks=0 spans=[]
+W45N7 distinct=477 want=700 missing_ticks=223 spans=[(84371301, 84371477, 177), (84371501, 84371546, 46)]
+W47N7 distinct=700 want=700 missing_ticks=0 spans=[]
+
+=== hour coverage LAST_TIP+1..latest creep tick ===
+global max tick 84372089
+W46N8 distinct=667 want=779 miss=112 nspans=2 biggest=(84371601, 84371700, 100) first_spans=[(84371601, 84371700, 100), (84372001, 84372012, 12)]
+W47N8 distinct=690 want=779 miss=89 nspans=1 biggest=(84372001, 84372089, 89) first_spans=[(84372001, 84372089, 89)]
+W45N8 distinct=690 want=779 miss=89 nspans=1 biggest=(84372001, 84372089, 89) first_spans=[(84372001, 84372089, 89)]
+W45N7 distinct=478 want=779 miss=301 nspans=4 biggest=(84371311, 84371477, 167) first_spans=[(84371311, 84371477, 167), (84371501, 84371546, 46), (84372001, 84372011, 11), (84372013, 84372089, 77)]
+W47N7 distinct=690 want=779 miss=89 nspans=1 biggest=(84372001, 84372089, 89) first_spans=[(84372001, 84372089, 89)]
+
+=== freeze-gap official/live fill ===
+
+-- 10:49-10:58 freeze STATS 84371591..84371729 (139t) --
+  W46N8 have=39/139 rows=298 creeps=10 miss_spans=[(84371601, 84371700, 100)]
+  W47N8 have=139/139 rows=1691 creeps=17 miss_spans=[]
+  W45N8 have=139/139 rows=589 creeps=8 miss_spans=[]
+  W45N7 have=139/139 rows=660 creeps=6 miss_spans=[]
+  W47N7 have=139/139 rows=608 creeps=7 miss_spans=[]
+
+-- 11:11:56 short STATS 84371891..84371919 (29t) --
+  W46N8 have=29/29 rows=306 creeps=11 miss_spans=[]
+  W47N8 have=29/29 rows=382 creeps=15 miss_spans=[]
+  W45N8 have=29/29 rows=159 creeps=7 miss_spans=[]
+  W45N7 have=29/29 rows=86 creeps=4 miss_spans=[]
+  W47N7 have=29/29 rows=121 creeps=6 miss_spans=[]
+
+-- 11:18:38 short STATS 84371991..84372019 (29t) --
+  W46N8 have=17/29 rows=158 creeps=11 miss_spans=[(84372001, 84372012, 12)]
+  W47N8 have=10/29 rows=135 creeps=14 miss_spans=[(84372001, 84372019, 19)]
+  W45N8 have=10/29 rows=75 creeps=8 miss_spans=[(84372001, 84372019, 19)]
+  W45N7 have=11/29 rows=35 creeps=6 miss_spans=[(84372001, 84372011, 11), (84372013, 84372019, 7)]
+  W47N7 have=10/29 rows=40 creeps=4 miss_spans=[(84372001, 84372019, 19)]
+
+=== W46N8 hole around 84371600 (known 404 candidate) ===
+  W46N8 0/100 []..[]
+  W47N8 100/100 [84371601, 84371602, 84371603]..[84371698, 84371699, 84371700]
+  W45N8 100/100 [84371601, 84371602, 84371603]..[84371698, 84371699, 84371700]
+  W45N7 100/100 [84371601, 84371602, 84371603]..[84371698, 84371699, 84371700]
+  W47N7 100/100 [84371601, 84371602, 84371603]..[84371698, 84371699, 84371700]
+
+=== W45N7 presence by 50t buckets 84371200..now ===
+  (84371200, 50, 165, 4, 0, 0)
+  (84371250, 21, 40, 2, 0, 0)
+  (84371450, 22, 22, 1, 1, 0)
+  (84371500, 4, 4, 2, 1, 0)
+  (84371550, 50, 152, 7, 1, 0)
+  (84371600, 50, 269, 6, 0, 0)
+  (84371650, 50, 227, 5, 0, 0)
+  (84371700, 50, 200, 4, 0, 0)
+  (84371750, 50, 233, 7, 1, 0)
+  (84371800, 50, 192, 5, 1, 0)
+  (84371850, 50, 133, 3, 0, 0)
+  (84371900, 50, 176, 5, 0, 0)
+  (84371950, 50, 169, 4, 0, 0)
+  (84372000, 2, 8, 6, 0, 0)
+
+=== W47 storage timeseries since 10:25 tip (every room_stats sample) ===
+n 62
+  84371310 2026-11-20 10:30:06.262038+08:00 stor=32061 d=None energy=5600 w8up=2 prog=5427034
+  84371340 2026-11-20 10:32:12.672959+08:00 stor=32502 d=441 energy=5600 w8up=2 prog=5427634
+  84371350 2026-11-20 10:32:54.907168+08:00 stor=33250 d=748 energy=5600 w8up=2 prog=5427834
+  84371360 2026-11-20 10:33:35.665054+08:00 stor=33996 d=746 energy=5600 w8up=2 prog=5428034
+  84371390 2026-11-20 10:35:38.220930+08:00 stor=34446 d=450 energy=5000 w8up=2 prog=5428634
+  84371400 2026-11-20 10:36:19.940020+08:00 stor=34794 d=348 energy=5600 w8up=2 prog=5428834
+  84371410 2026-11-20 10:37:02.505586+08:00 stor=34494 d=-300 energy=5600 w8up=2 prog=5429034
+  84371430 2026-11-20 10:38:27.183087+08:00 stor=35074 d=580 energy=5600 w8up=2 prog=5429434
+  84371520 2026-11-20 10:44:41.439836+08:00 stor=35335 d=261 energy=5600 w8up=2 prog=5431234
+  84371530 2026-11-20 10:45:23.089673+08:00 stor=35834 d=499 energy=5000 w8up=3 prog=5431434
+  84371540 2026-11-20 10:46:04.384766+08:00 stor=36384 d=550 energy=5600 w8up=3 prog=5431634
+  84371550 2026-11-20 10:46:45.686795+08:00 stor=35884 d=-500 energy=4650 w8up=3 prog=5431834
+  84371560 2026-11-20 10:47:25.636745+08:00 stor=35584 d=-300 energy=5400 w8up=3 prog=5432034
+  84371570 2026-11-20 10:48:07.262790+08:00 stor=34784 d=-800 energy=4800 w8up=3 prog=5432234
+  84371590 2026-11-20 10:49:29.879554+08:00 stor=34284 d=-500 energy=5600 w8up=3 prog=5432534
+  84371730 2026-11-20 10:59:08.320938+08:00 stor=35515 d=1231 energy=5600 w8up=2 prog=5434214
+  84371740 2026-11-20 10:59:49.292322+08:00 stor=35015 d=-500 energy=5600 w8up=2 prog=5434414
+  84371780 2026-11-20 11:02:32.837893+08:00 stor=34715 d=-300 energy=4900 w8up=2 prog=5435214
+  84371800 2026-11-20 11:03:56.216361+08:00 stor=34115 d=-600 energy=5600 w8up=2 prog=5435614
+  84371820 2026-11-20 11:05:22.899563+08:00 stor=33765 d=-350 energy=5600 w8up=2 prog=5436014
+  84371860 2026-11-20 11:08:12.133337+08:00 stor=33465 d=-300 energy=5500 w8up=2 prog=5436814
+  84371870 2026-11-20 11:08:55.521445+08:00 stor=32965 d=-500 energy=5600 w8up=2 prog=5437014
+  84371890 2026-11-20 11:10:18.354364+08:00 stor=31765 d=-1200 energy=5600 w8up=2 prog=5437414
+  84371930 2026-11-20 11:13:08.415730+08:00 stor=31465 d=-300 energy=4900 w8up=2 prog=5438214
+  84371950 2026-11-20 11:14:33.825940+08:00 stor=30965 d=-500 energy=5600 w8up=2 prog=5438614
+  84372040 2026-11-20 11:20:50.422273+08:00 stor=30615 d=-350 energy=5600 w8up=2 prog=5440414
+  min=30615@84372040 max=36384@84371540 first=32061 last=30615 net=-1446
+
+=== W46 storage timeseries since last tip ===
+n 62
+  84371310 2026-11-20 10:30:06.261976+08:00 stor=14929 d=None energy=2628 nUp=2 UNDER15k
+  84371400 2026-11-20 10:36:19.939906+08:00 stor=15829 d=100 energy=2514 nUp=2
+  84371430 2026-11-20 10:38:27.183029+08:00 stor=15329 d=-700 energy=3414 nUp=2
+  84371480 2026-11-20 10:41:53.097333+08:00 stor=14779 d=-750 energy=4314 nUp=2 UNDER15k
+  84371490 2026-11-20 10:42:35.530342+08:00 stor=14879 d=100 energy=4314 nUp=2 UNDER15k
+  84371500 2026-11-20 10:43:17.193757+08:00 stor=14979 d=100 energy=4000 nUp=2 UNDER15k
+  84371520 2026-11-20 10:44:41.439770+08:00 stor=13979 d=-1100 energy=3914 nUp=2 UNDER15k
+  84371530 2026-11-20 10:45:23.089611+08:00 stor=14079 d=100 energy=4400 nUp=1 UNDER15k
+  84371540 2026-11-20 10:46:04.384713+08:00 stor=14179 d=100 energy=3700 nUp=1 UNDER15k
+  84371550 2026-11-20 10:46:45.686737+08:00 stor=13179 d=-1000 energy=3814 nUp=1 UNDER15k
+  84371560 2026-11-20 10:47:25.636692+08:00 stor=13679 d=500 energy=4414 nUp=1 UNDER15k
+  84371570 2026-11-20 10:48:07.262724+08:00 stor=14979 d=1300 energy=4814 nUp=1 UNDER15k
+  84371580 2026-11-20 10:48:48.967458+08:00 stor=14279 d=-700 energy=4814 nUp=1 UNDER15k
+  84371590 2026-11-20 10:49:29.879485+08:00 stor=14379 d=100 energy=5300 nUp=1 UNDER15k
+  84371730 2026-11-20 10:59:08.320873+08:00 stor=15940 d=1561 energy=5500 nUp=1
+  84371750 2026-11-20 11:00:30.105119+08:00 stor=15840 d=-200 energy=5200 nUp=1
+  84371800 2026-11-20 11:03:56.216299+08:00 stor=16340 d=100 energy=5500 nUp=1
+  84371880 2026-11-20 11:09:36.796822+08:00 stor=16840 d=-200 energy=5200 nUp=1
+  84371920 2026-11-20 11:12:24.781861+08:00 stor=16714 d=-226 energy=5500 nUp=1
+  84371940 2026-11-20 11:13:51.171201+08:00 stor=16614 d=-200 energy=4410 nUp=1
+  84371950 2026-11-20 11:14:33.825889+08:00 stor=17114 d=500 energy=4200 nUp=1
+  84371960 2026-11-20 11:15:14.949167+08:00 stor=16414 d=-700 energy=4400 nUp=1
+  84371990 2026-11-20 11:17:18.944994+08:00 stor=15454 d=-1000 energy=4300 nUp=1
+  84372070 2026-11-20 11:22:54.359147+08:00 stor=17324 d=1500 energy=5500 nUp=1
+  84372080 2026-11-20 11:23:35.427689+08:00 stor=17124 d=-200 energy=4300 nUp=1
+  min=13179@84371550 max=17324@84372070 first=14929 last=17224
+  under15k samples=[(84371310, datetime.datetime(2026, 11, 20, 10, 30, 6, 261976, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 14929), (84371480, datetime.datetime(2026, 11, 20, 10, 41, 53, 97333, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 14779), (84371490, datetime.datetime(2026, 11, 20, 10, 42, 35, 530342, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 14879), (84371500, datetime.datetime(2026, 11, 20, 10, 43, 17, 193757, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 14979), (84371520, datetime.datetime(2026, 11, 20, 10, 44, 41, 439770, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 13979), (84371530, datetime.datetime(2026, 11, 20, 10, 45, 23, 89611, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 14079), (84371540, datetime.datetime(2026, 11, 20, 10, 46, 4, 384713, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 14179), (84371550, datetime.datetime(2026, 11, 20, 10, 46, 45, 686737, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 13179), (84371560, datetime.datetime(2026, 11, 20, 10, 47, 25, 636692, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 13679), (84371570, datetime.datetime(2026, 11, 20, 10, 48, 7, 262724, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 14979), (84371580, datetime.datetime(2026, 11, 20, 10, 48, 48, 967458, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 14279), (84371590, datetime.datetime(2026, 11, 20, 10, 49, 29, 879485, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 14379)]
+
+=== events since 84371200 (compact) ===
+cols ['ts', 'tick', 'kind', 'room', 'severity', 'episode', 'msg', 'data']
+n 53
+  (datetime.datetime(2026, 11, 20, 10, 29, 24, 741070, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84371300, 'alert_new', 'W45N7', 'medium', 'remote-W45N7-84371225', 'Invader', {'why': 'solo', 'room': 'W45N7', 'tick': 84371300, 'owner': 'Invader', 'state': 'THREAT', 'action': 'defender requested', 'creeps': 1, 'remote': 'W45N7', 'episode': 'remote-W45N7-84371225', 'invOnly': True, 'severity': 'medium', 'positions': [[19, 11]]})
+  (datetime.datetime(2026, 11, 20, 10, 40, 45, 891803, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84371464, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'defender84371269'], ['6010ee96cbca26e9512da6f0', 'reserver84370991'], ['6010ee96cbca26e9512da6f0', 'rminer84369973']], 'container': [566], 'reservation': [{'endTime': 84373797}]})
+  (datetime.datetime(2026, 11, 20, 10, 40, 49, 874266, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84371465, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'defender84371269'], ['6010ee96cbca26e9512da6f0', 'reserver84370991'], ['6010ee96cbca26e9512da6f0', 'rminer84369973']], 'container': [578], 'reservation': [{'endTime': 84373799}]})
+  (datetime.datetime(2026, 11, 20, 10, 40, 53, 855371, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84371466, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'defender84371269'], ['6010ee96cbca26e9512da6f0', 'reserver84370991'], ['6010ee96cbca26e9512da6f0', 'rminer84369973'], ['6010ee96cbca26e9512da6f0', 'rminer84371363']], 'container': [590], 'reservation': [{'endTime': 84373801}]})
+  (datetime.datetime(2026, 11, 20, 10, 40, 57, 743760, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84371467, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'defender84371269'], ['6010ee96cbca26e9512da6f0', 'reserver84370991'], ['6010ee96cbca26e9512da6f0', 'rminer84369973'], ['6010ee96cbca26e9512da6f0', 'rminer84371363']], 'container': [602], 'reservation': [{'endTime': 84373803}]})
+  (datetime.datetime(2026, 11, 20, 10, 41, 1, 945416, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84371468, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'defender84371269'], ['6010ee96cbca26e9512da6f0', 'reserver84370991'], ['6010ee96cbca26e9512da6f0', 'rminer84369973'], ['6010ee96cbca26e9512da6f0', 'rminer84371363']], 'container': [614], 'reservation': [{'endTime': 84373805}]})
+  (datetime.datetime(2026, 11, 20, 10, 41, 5, 880501, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84371469, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'defender84371269'], ['6010ee96cbca26e9512da6f0', 'reserver84370991'], ['6010ee96cbca26e9512da6f0', 'rminer84369973'], ['6010ee96cbca26e9512da6f0', 'rminer84371363']], 'container': [626], 'reservation': [{'endTime': 84373807}]})
+  (datetime.datetime(2026, 11, 20, 10, 41, 10, 271800, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84371470, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'defender84371269'], ['6010ee96cbca26e9512da6f0', 'reserver84370991'], ['6010ee96cbca26e9512da6f0', 'rminer84369973'], ['6010ee96cbca26e9512da6f0', 'rminer84371363']], 'container': [638], 'reservation': [{'endTime': 84373809}]})
+  (datetime.datetime(2026, 11, 20, 10, 41, 14, 553699, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84371471, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'defender84371269'], ['6010ee96cbca26e9512da6f0', 'reserver84370991'], ['6010ee96cbca26e9512da6f0', 'rminer84369973'], ['6010ee96cbca26e9512da6f0', 'rminer84371363']], 'container': [650], 'reservation': [{'endTime': 84373811}]})
+  (datetime.datetime(2026, 11, 20, 10, 41, 19, 26425, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84371472, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'defender84371269'], ['6010ee96cbca26e9512da6f0', 'reserver84370991'], ['6010ee96cbca26e9512da6f0', 'rminer84369973'], ['6010ee96cbca26e9512da6f0', 'rminer84371363']], 'container': [662], 'reservation': [{'endTime': 84373813}]})
+  (datetime.datetime(2026, 11, 20, 10, 41, 23, 234279, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84371473, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'defender84371269'], ['6010ee96cbca26e9512da6f0', 'reserver84370991'], ['6010ee96cbca26e9512da6f0', 'rminer84369973'], ['6010ee96cbca26e9512da6f0', 'rminer84371363']], 'container': [674], 'reservation': [{'endTime': 84373815}]})
+  (datetime.datetime(2026, 11, 20, 10, 41, 27, 257313, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84371474, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'defender84371269'], ['6010ee96cbca26e9512da6f0', 'reserver84370991'], ['6010ee96cbca26e9512da6f0', 'rminer84369973'], ['6010ee96cbca26e9512da6f0', 'rminer84371363']], 'container': [686], 'reservation': [{'endTime': 84373817}]})
+  (datetime.datetime(2026, 11, 20, 10, 41, 31, 151590, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84371475, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'defender84371269'], ['6010ee96cbca26e9512da6f0', 'reserver84370991'], ['6010ee96cbca26e9512da6f0', 'rminer84369973'], ['6010ee96cbca26e9512da6f0', 'rminer84371363']], 'container': [698], 'reservation': [{'endTime': 84373819}]})
+  (datetime.datetime(2026, 11, 20, 10, 41, 35, 272703, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84371476, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'defender84371269'], ['6010ee96cbca26e9512da6f0', 'reserver84370991'], ['6010ee96cbca26e9512da6f0', 'rminer84369973'], ['6010ee96cbca26e9512da6f0', 'rminer84371363']], 'container': [710], 'reservation': [{'endTime': 84373821}]})
+  (datetime.datetime(2026, 11, 20, 10, 41, 39, 238949, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84371477, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'reserver84370991'], ['6010ee96cbca26e9512da6f0', 'rminer84369973'], ['6010ee96cbca26e9512da6f0', 'rminer84371363']], 'container': [722], 'reservation': [{'endTime': 84373823}]})
+  (datetime.datetime(2026, 11, 20, 10, 41, 43, 281683, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84371478, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'reserver84370991'], ['6010ee96cbca26e9512da6f0', 'rminer84369973'], ['6010ee96cbca26e9512da6f0', 'rminer84371363']], 'container': [734], 'reservation': [{'endTime': 84373825}]})
+  (datetime.datetime(2026, 11, 20, 10, 41, 47, 214466, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84371479, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'reserver84370991'], ['6010ee96cbca26e9512da6f0', 'rminer84369973'], ['6010ee96cbca26e9512da6f0', 'rminer84371363']], 'container': [746], 'reservation': [{'endTime': 84373827}]})
+  (datetime.datetime(2026, 11, 20, 10, 41, 51, 266036, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84371480, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'reserver84370991'], ['6010ee96cbca26e9512da6f0', 'rminer84369973'], ['6010ee96cbca26e9512da6f0', 'rminer84371363']], 'container': [758], 'reservation': [{'endTime': 84373829}]})
+  (datetime.datetime(2026, 11, 20, 10, 41, 53, 97149, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84371480, 'alert_new', 'W45N7', 'high', 'W45N7-Invader-84371225', 'Invader', {'body': {'move': 5, 'work': 1, 'tough': 2, 'attack': 1, 'ranged_attack': 1}, 'room': 'W45N7', 'tick': 84371480, 'owner': 'Invader', 'bodies': [{'move': 5, 'work': 1, 'tough': 2, 'attack': 1, 'ranged_attack': 1}], 'creeps': 1, 'damaged': ['container'], 'episode': 'W45N7-Invader-84371225', 'severity': 'high', 'positions': [[19, 7]], 'eventDamage': 0, 'totalDamage': 10000, 'structureHitLoss': 10000})
+  (datetime.datetime(2026, 11, 20, 10, 41, 55, 600970, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84371481, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'reserver84370991'], ['6010ee96cbca26e9512da6f0', 'rminer84369973'], ['6010ee96cbca26e9512da6f0', 'rminer84371363']], 'container': [770], 'reservation': [{'endTime': 84373831}]})
+  (datetime.datetime(2026, 11, 20, 10, 41, 59, 870419, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84371482, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'reserver84370991'], ['6010ee96cbca26e9512da6f0', 'rminer84369973'], ['6010ee96cbca26e9512da6f0', 'rminer84371363']], 'container': [782], 'reservation': [{'endTime': 84373833}]})
+  (datetime.datetime(2026, 11, 20, 10, 42, 3, 958881, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84371483, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'reserver84370991'], ['6010ee96cbca26e9512da6f0', 'rhauler84370777'], ['6010ee96cbca26e9512da6f0', 'rminer84369973'], ['6010ee96cbca26e9512da6f0', 'rminer84371363']], 'container': [794], 'reservation': [{'endTime': 84373835}]})
+  (datetime.datetime(2026, 11, 20, 10, 42, 8, 285863, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84371484, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'reserver84370991'], ['6010ee96cbca26e9512da6f0', 'rhauler84370777'], ['6010ee96cbca26e9512da6f0', 'rminer84369973'], ['6010ee96cbca26e9512da6f0', 'rminer84371363']], 'container': [794], 'reservation': [{'endTime': 84373837}]})
+  (datetime.datetime(2026, 11, 20, 10, 42, 12, 335697, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84371485, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'reserver84370991'], ['6010ee96cbca26e9512da6f0', 'rhauler84370777'], ['6010ee96cbca26e9512da6f0', 'rminer84369973'], ['6010ee96cbca26e9512da6f0', 'rminer84371363']], 'container': [794], 'reservation': [{'endTime': 84373839}]})
+  (datetime.datetime(2026, 11, 20, 10, 42, 16, 605305, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84371486, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'reserver84370991'], ['6010ee96cbca26e9512da6f0', 'rhauler84370777'], ['6010ee96cbca26e9512da6f0', 'rminer84369973'], ['6010ee96cbca26e9512da6f0', 'rminer84371363']], 'container': [794], 'reservation': [{'endTime': 84373841}]})
+  (datetime.datetime(2026, 11, 20, 10, 42, 20, 805582, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84371487, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'reserver84370991'], ['6010ee96cbca26e9512da6f0', 'rhauler84370777'], ['6010ee96cbca26e9512da6f0', 'rminer84369973'], ['6010ee96cbca26e9512da6f0', 'rminer84371363']], 'container': [794], 'reservation': [{'endTime': 84373843}]})
+  (datetime.datetime(2026, 11, 20, 10, 42, 25, 261066, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84371488, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'reserver84370991'], ['6010ee96cbca26e9512da6f0', 'rhauler84370777'], ['6010ee96cbca26e9512da6f0', 'rminer84369973'], ['6010ee96cbca26e9512da6f0', 'rminer84371363']], 'container': [794], 'reservation': [{'endTime': 84373845}]})
+  (datetime.datetime(2026, 11, 20, 10, 42, 29, 460332, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84371489, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'reserver84370991'], ['6010ee96cbca26e9512da6f0', 'rhauler84370777'], ['6010ee96cbca26e9512da6f0', 'rminer84369973'], ['6010ee96cbca26e9512da6f0', 'rminer84371363']], 'container': [794], 'reservation': [{'endTime': 84373847}]})
+  (datetime.datetime(2026, 11, 20, 10, 42, 33, 879756, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84371490, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'reserver84370991'], ['6010ee96cbca26e9512da6f0', 'rhauler84370777'], ['6010ee96cbca26e9512da6f0', 'rminer84369973'], ['6010ee96cbca26e9512da6f0', 'rminer84371363']], 'container': [794], 'reservation': [{'endTime': 84373849}]})
+  (datetime.datetime(2026, 11, 20, 10, 42, 37, 944646, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84371491, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'reserver84370991'], ['6010ee96cbca26e9512da6f0', 'rhauler84370777'], ['6010ee96cbca26e9512da6f0', 'rminer84369973'], ['6010ee96cbca26e9512da6f0', 'rminer84371363']], 'container': [794], 'reservation': [{'endTime': 84373851}]})
+  (datetime.datetime(2026, 11, 20, 10, 42, 42, 258742, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84371492, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'reserver84370991'], ['6010ee96cbca26e9512da6f0', 'rhauler84370777'], ['6010ee96cbca26e9512da6f0', 'rminer84369973'], ['6010ee96cbca26e9512da6f0', 'rminer84371363']], 'container': [794], 'reservation': [{'endTime': 84373853}]})
+  (datetime.datetime(2026, 11, 20, 10, 43, 8, 244140, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84371498, 'alert_ended', 'W45N7', 'low', 'remote-W45N7-84371225', None, {'room': 'W45N7', 'tick': 84371498, 'ended': True, 'action': 'remote resumed', 'remote': 'W45N7', 'episode': 'remote-W45N7-84371225', 'severity': 'low'})
+  (datetime.datetime(2026, 11, 20, 10, 46, 29, 10678, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84371546, 'alert_ended', 'W45N7', 'high', 'W45N7-Invader-84371225', 'Invader', {'room': 'W45N7', 'tick': 84371546, 'ended': True, 'owner': 'Invader', 'episode': 'W45N7-Invader-84371225', 'duration': 263, 'severity': 'high', 'maxCreeps': 1, 'totalDamage': 10280})
+  (datetime.datetime(2026, 11, 20, 10, 58, 24, 796302, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84371592, 'box_pause', None, None, None, 'box frozen ~516s since 2026-11-20 10:49:41', {'sec': 516, 'from': '2026-11-20 10:49:41'})
+  (datetime.datetime(2026, 11, 20, 11, 14, 23, 768157, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84371948, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'defender84371269'], ['6010ee96cbca26e9512da6f0', 'rhauler84370862'], ['6010ee96cbca26e9512da6f0', 'rhauler84371091'], ['6010ee96cbca26e9512da6f0', 'rminer84371363'], ['6010ee96cbca26e9512da6f0', 'rminer84371869']], 'container': [498], 'reservation': [{'user': '6010ee96cbca26e9512da6f0', 'endTime': 84374073}]})
+  (datetime.datetime(2026, 11, 20, 11, 14, 27, 855315, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84371949, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'defender84371269'], ['6010ee96cbca26e9512da6f0', 'rhauler84370862'], ['6010ee96cbca26e9512da6f0', 'rhauler84371091'], ['6010ee96cbca26e9512da6f0', 'rminer84371363'], ['6010ee96cbca26e9512da6f0', 'rminer84371869']], 'container': [510], 'reservation': [{'user': '6010ee96cbca26e9512da6f0', 'endTime': 84374073}]})
+  (datetime.datetime(2026, 11, 20, 11, 14, 32, 67156, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84371950, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'defender84371269'], ['6010ee96cbca26e9512da6f0', 'rhauler84370777'], ['6010ee96cbca26e9512da6f0', 'rhauler84370862'], ['6010ee96cbca26e9512da6f0', 'rhauler84371091'], ['6010ee96cbca26e9512da6f0', 'rminer84371363'], ['6010ee96cbca26e9512da6f0', 'rminer84371869']], 'container': [522], 'reservation': [{'user': '6010ee96cbca26e9512da6f0', 'endTime': 84374073}]})
+  (datetime.datetime(2026, 11, 20, 11, 14, 36, 226455, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84371951, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'defender84371269'], ['6010ee96cbca26e9512da6f0', 'rhauler84370777'], ['6010ee96cbca26e9512da6f0', 'rhauler84370862'], ['6010ee96cbca26e9512da6f0', 'rhauler84371091'], ['6010ee96cbca26e9512da6f0', 'rminer84371363'], ['6010ee96cbca26e9512da6f0', 'rminer84371869']], 'container': [534], 'reservation': [{'user': '6010ee96cbca26e9512da6f0', 'endTime': 84374073}]})
+  (datetime.datetime(2026, 11, 20, 11, 14, 40, 201357, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84371952, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'defender84371269'], ['6010ee96cbca26e9512da6f0', 'rhauler84370777'], ['6010ee96cbca26e9512da6f0', 'rhauler84370862'], ['6010ee96cbca26e9512da6f0', 'rhauler84371091'], ['6010ee96cbca26e9512da6f0', 'rminer84371363'], ['6010ee96cbca26e9512da6f0', 'rminer84371869']], 'container': [546], 'reservation': [{'user': '6010ee96cbca26e9512da6f0', 'endTime': 84374073}]})
+  (datetime.datetime(2026, 11, 20, 11, 14, 44, 446403, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84371953, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'defender84371269'], ['6010ee96cbca26e9512da6f0', 'rhauler84370777'], ['6010ee96cbca26e9512da6f0', 'rhauler84370862'], ['6010ee96cbca26e9512da6f0', 'rhauler84371091'], ['6010ee96cbca26e9512da6f0', 'rminer84371363'], ['6010ee96cbca26e9512da6f0', 'rminer84371869']], 'container': [558], 'reservation': [{'user': '6010ee96cbca26e9512da6f0', 'endTime': 84374073}]})
+  (datetime.datetime(2026, 11, 20, 11, 14, 48, 513544, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84371954, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'defender84371269'], ['6010ee96cbca26e9512da6f0', 'rhauler84370777'], ['6010ee96cbca26e9512da6f0', 'rhauler84370862'], ['6010ee96cbca26e9512da6f0', 'rhauler84371091'], ['6010ee96cbca26e9512da6f0', 'rminer84371363'], ['6010ee96cbca26e9512da6f0', 'rminer84371869']], 'container': [570], 'reservation': [{'user': '6010ee96cbca26e9512da6f0', 'endTime': 84374073}]})
+  (datetime.datetime(2026, 11, 20, 11, 14, 52, 471407, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84371955, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'defender84371269'], ['6010ee96cbca26e9512da6f0', 'rhauler84370777'], ['6010ee96cbca26e9512da6f0', 'rhauler84370862'], ['6010ee96cbca26e9512da6f0', 'rhauler84371091'], ['6010ee96cbca26e9512da6f0', 'rminer84371363'], ['6010ee96cbca26e9512da6f0', 'rminer84371869']], 'container': [582], 'reservation': [{'user': '6010ee96cbca26e9512da6f0', 'endTime': 84374073}]})
+  (datetime.datetime(2026, 11, 20, 11, 14, 56, 696762, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84371956, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'defender84371269'], ['6010ee96cbca26e9512da6f0', 'rhauler84370777'], ['6010ee96cbca26e9512da6f0', 'rhauler84370862'], ['6010ee96cbca26e9512da6f0', 'rhauler84371091'], ['6010ee96cbca26e9512da6f0', 'rminer84371363'], ['6010ee96cbca26e9512da6f0', 'rminer84371869']], 'container': [594], 'reservation': [{'user': '6010ee96cbca26e9512da6f0', 'endTime': 84374073}]})
+  (datetime.datetime(2026, 11, 20, 11, 15, 0, 866007, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84371957, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'defender84371269'], ['6010ee96cbca26e9512da6f0', 'rhauler84370777'], ['6010ee96cbca26e9512da6f0', 'rhauler84370862'], ['6010ee96cbca26e9512da6f0', 'rhauler84371091'], ['6010ee96cbca26e9512da6f0', 'rminer84371363'], ['6010ee96cbca26e9512da6f0', 'rminer84371869']], 'container': [606], 'reservation': [{'user': '6010ee96cbca26e9512da6f0', 'endTime': 84374073}]})
+  (datetime.datetime(2026, 11, 20, 11, 15, 5, 22168, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84371958, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'defender84371269'], ['6010ee96cbca26e9512da6f0', 'rhauler84370777'], ['6010ee96cbca26e9512da6f0', 'rhauler84370862'], ['6010ee96cbca26e9512da6f0', 'rhauler84371091'], ['6010ee96cbca26e9512da6f0', 'rminer84371363'], ['6010ee96cbca26e9512da6f0', 'rminer84371869']], 'container': [618], 'reservation': [{'user': '6010ee96cbca26e9512da6f0', 'endTime': 84374073}]})
+  (datetime.datetime(2026, 11, 20, 11, 15, 9, 200454, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84371959, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'defender84371269'], ['6010ee96cbca26e9512da6f0', 'rhauler84370777'], ['6010ee96cbca26e9512da6f0', 'rhauler84370862'], ['6010ee96cbca26e9512da6f0', 'rhauler84371091'], ['6010ee96cbca26e9512da6f0', 'rminer84371363'], ['6010ee96cbca26e9512da6f0', 'rminer84371869']], 'container': [630], 'reservation': [{'user': '6010ee96cbca26e9512da6f0', 'endTime': 84374073}]})
+  (datetime.datetime(2026, 11, 20, 11, 15, 13, 295155, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84371960, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'defender84371269'], ['6010ee96cbca26e9512da6f0', 'rhauler84370777'], ['6010ee96cbca26e9512da6f0', 'rhauler84370862'], ['6010ee96cbca26e9512da6f0', 'rhauler84371091'], ['6010ee96cbca26e9512da6f0', 'rminer84371363'], ['6010ee96cbca26e9512da6f0', 'rminer84371869']], 'container': [642], 'reservation': [{'user': '6010ee96cbca26e9512da6f0', 'endTime': 84374073}]})
+  (datetime.datetime(2026, 11, 20, 11, 15, 17, 320265, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84371961, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'defender84371269'], ['6010ee96cbca26e9512da6f0', 'rhauler84370777'], ['6010ee96cbca26e9512da6f0', 'rhauler84370862'], ['6010ee96cbca26e9512da6f0', 'rhauler84371091'], ['6010ee96cbca26e9512da6f0', 'rminer84371363'], ['6010ee96cbca26e9512da6f0', 'rminer84371869']], 'container': [654], 'reservation': [{'user': '6010ee96cbca26e9512da6f0', 'endTime': 84374073}]})
+  (datetime.datetime(2026, 11, 20, 11, 15, 21, 472967, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84371962, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'defender84371269'], ['6010ee96cbca26e9512da6f0', 'rhauler84370777'], ['6010ee96cbca26e9512da6f0', 'rhauler84370862'], ['6010ee96cbca26e9512da6f0', 'rhauler84371091'], ['6010ee96cbca26e9512da6f0', 'rminer84371363'], ['6010ee96cbca26e9512da6f0', 'rminer84371869']], 'container': [666], 'reservation': [{'user': '6010ee96cbca26e9512da6f0', 'endTime': 84374073}]})
+  (datetime.datetime(2026, 11, 20, 11, 15, 25, 972933, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84371963, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'defender84371269'], ['6010ee96cbca26e9512da6f0', 'rhauler84370777'], ['6010ee96cbca26e9512da6f0', 'rhauler84370862'], ['6010ee96cbca26e9512da6f0', 'rhauler84371091'], ['6010ee96cbca26e9512da6f0', 'rminer84371363'], ['6010ee96cbca26e9512da6f0', 'rminer84371869']], 'container': [678], 'reservation': [{'user': '6010ee96cbca26e9512da6f0', 'endTime': 84374073}]})
+  (datetime.datetime(2026, 11, 20, 11, 15, 30, 135014, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84371964, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'defender84371269'], ['6010ee96cbca26e9512da6f0', 'rhauler84370777'], ['6010ee96cbca26e9512da6f0', 'rhauler84370862'], ['6010ee96cbca26e9512da6f0', 'rhauler84371091'], ['6010ee96cbca26e9512da6f0', 'rhauler84371739'], ['6010ee96cbca26e9512da6f0', 'rminer84371363'], ['6010ee96cbca26e9512da6f0', 'rminer84371869']], 'container': [12], 'reservation': [{'user': '6010ee96cbca26e9512da6f0', 'endTime': 84374073}]})
+  (datetime.datetime(2026, 11, 20, 11, 15, 50, 869983, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84371969, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'defender84371269'], ['6010ee96cbca26e9512da6f0', 'rhauler84370777'], ['6010ee96cbca26e9512da6f0', 'rhauler84370862'], ['6010ee96cbca26e9512da6f0', 'rhauler84371091'], ['6010ee96cbca26e9512da6f0', 'rhauler84371499'], ['6010ee96cbca26e9512da6f0', 'rhauler84371739'], ['6010ee96cbca26e9512da6f0', 'rminer84371363'], ['6010ee96cbca26e9512da6f0', 'rminer84371869']], 'container': [12], 'reservation': [{'user': '6010ee96cbca26e9512da6f0', 'endTime': 84374073}]})
+  (datetime.datetime(2026, 11, 20, 11, 15, 59, 445308, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84371971, 'watch', 'W45N8', None, None, None, {'creeps': [['6010ee96cbca26e9512da6f0', 'defender84371269'], ['6010ee96cbca26e9512da6f0', 'rhauler84370777'], ['6010ee96cbca26e9512da6f0', 'rhauler84370862'], ['6010ee96cbca26e9512da6f0', 'rhauler84371499'], ['6010ee96cbca26e9512da6f0', 'rhauler84371739'], ['6010ee96cbca26e9512da6f0', 'rminer84371363'], ['6010ee96cbca26e9512da6f0', 'rminer84371869']], 'container': [12], 'reservation': [{'user': '6010ee96cbca26e9512da6f0', 'endTime': 84374073}]})

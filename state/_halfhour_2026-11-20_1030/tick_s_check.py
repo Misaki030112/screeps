@@ -7,7 +7,7 @@ from zoneinfo import ZoneInfo
 from pathlib import Path
 
 ROOT = Path("/workspace/screeps")
-DIR = ROOT / "state" / "_halfhour_2026-11-20_1000"
+DIR = ROOT / "state" / "_halfhour_2026-11-20_1030"
 os.chdir(ROOT)
 sys.path.insert(0, "tools")
 sys.path.insert(0, "scripts")
@@ -16,37 +16,37 @@ import history_backfill as hb
 
 # Official chunk timestamps printed by history_backfill.py
 # First pass 35 of 35 official GETs 200, missing_chunks=0.
-# published_bases 84370200..84370800 at game.time=84370964; reconstructed 84370201..84370900 (700).
+# published_bases 84370700..84371300 at game.time=84371416; reconstructed 84370701..84371400 (700).
 # First-pass tick_s used min-of-all-rooms on the first two bases,
-# computed (MIN 84370300-84370200)/1000/100, script printed 4.213. First-pass realign moved 2438 (inserted=12322; already_in_db=11937).
-# 09:30 half-hour already wrote through 84370300 / reconstructed through 84370400 and just-published 84370400 for all 5 (ticks 84370401..84370500 at 09:37:02 gt=84370542).
-# No concurrent 1h patrol this run. No in-window official 404. Leftover official 404 W45N8@84368100 and older aged out of window start 84370201 and were not retried.
-# NEW box freeze 09:44:17-10:03:04 (1127s) STATS gap 84370641..84370929 (289) sits inside this reconstructed window through 84370900 (remainder 84370901..84370929 belongs to just-published 84370900); last STATS 84370640 at 09:43:47, next STATS 84370930 at 10:03:46 Asia/Hong_Kong (wall ~1199s); listener auto-restart 10:03:07 (pid 1244409 started 10:03:16). This run must not restart the listener.
-# Prior STATS gap 84370151..84370319 (169, freeze 09:09:35-09:20:53) also sits partly inside this window start 84370201 and was already official-filled (told status left to the 09:20 1h patrol). Older 84369801..84369979 and 84369461..84369489 have aged out or were already official-filled and told.
+# computed (MIN 84370800-84370700)/1000/100, script printed 4.129. First-pass realign moved 0 (inserted=2758; already_in_db=23071).
+# 10:00 half-hour already wrote through 84370800 / reconstructed through 84370900 and just-published 84370900 for all 5 (ticks 84370901..84371000 at 10:11:26 gt=84371041).
+# CONCURRENT 1h patrol _patrol_2026-11-20_1025 already official-filled 84370501..84371200 and just-published 84371200 at 10:35:10. No in-window official 404. Leftover official 404 W45N8@84368100 and older aged out of window start 84370701 and were not retried.
+# NEW box freeze 10:15:38-10:25:57 (611s) STATS gap 84371101..84371259 (159) sits inside this reconstructed window; last STATS 84371100 at 10:15:31, next STATS 84371260 at 10:26:40 Asia/Hong_Kong (wall ~669.3s); listener auto-restart 10:26:00 (pid 1251176 started 10:26:10). This run must not restart the listener.
+# Prior STATS gap 84370641..84370929 (289, freeze 09:44:17-10:03:04) also sits partly inside this window start 84370701 and was already official-filled (told status left to the concurrent 1h patrol). Older 84370151..84370319 has aged out of this window start.
 W46 = {
-    84370200: 1795137634265,
-    84370300: 1795138056928,
-    84370400: 1795138476372,
-    84370500: 1795138890163,
-    84370600: 1795139301908,
     84370700: 1795139715959,
     84370800: 1795140128889,
+    84370900: 1795140550031,
+    84371000: 1795140968890,
+    84371100: 1795141376322,
+    84371200: 1795141795790,
+    84371300: 1795142207073,
 }
 MIN_ALL = {
-    84370200: 1795137634265,  # W46N8 (W45N7 1795137634756 later)
-    84370300: 1795138055611,  # W45N7 (W46N8 1795138056928 later)
-    84370400: 1795138476372,  # W46N8 (W45N7 1795138477458 later)
-    84370500: 1795138890163,  # W46N8 (W45N7 1795138891182 later)
-    84370600: 1795139301908,  # W46N8 (W45N7 1795139303239 later)
     84370700: 1795139715959,  # W46N8 (W45N7 1795139717954 later)
     84370800: 1795140128889,  # W46N8 (W45N7 1795140131232 later)
+    84370900: 1795140550031,  # W46N8 (W45N7 1795140551693 later)
+    84371000: 1795140968890,  # W46N8 (W45N7 1795140969673 later)
+    84371100: 1795141376322,  # W46N8 (W45N7 1795141377316 later)
+    84371200: 1795141795790,  # W46N8 (W45N7 1795141797599 later)
+    84371300: 1795142207073,  # W46N8 (W45N7 1795142209191 later)
 }
-TMIN, TMAX = 84370201, 84370900
+TMIN, TMAX = 84370701, 84371400
 ROOMS = ("W46N8", "W47N8", "W45N8", "W45N7", "W47N7")
-TICK_S_FIRST = (MIN_ALL[84370300] - MIN_ALL[84370200]) / 1000.0 / 100  # script printed 4.213
-GT_FIRST = 84370964
-TS_REALIGNED_FIRST = 2438  # first-pass realign moved 2438 (inserted=12322, already_in_db=11937, missing_chunks=0)
-PREV_LATER_MEAN = 4.06605  # 09:30 half-hour in-use (first; later-mean-robust was refused)
+TICK_S_FIRST = (MIN_ALL[84370800] - MIN_ALL[84370700]) / 1000.0 / 100  # script printed 4.129
+GT_FIRST = 84371416
+TS_REALIGNED_FIRST = 0  # first-pass realign moved 0 (inserted=2758, already_in_db=23071, missing_chunks=0)
+PREV_LATER_MEAN = 4.157706666666667  # 10:00 half-hour in-use (all_mean)
 
 def intervals(d):
     bases = sorted(d)
@@ -182,11 +182,11 @@ def main():
     skipped_chunk = 0
     first_outlier = not (3.0 <= TICK_S_FIRST <= 6.0)
     first_pass_realign_error = (
-        f"First-pass realign with tick_s={TICK_S_FIRST:.5f} (printed 4.213) moved {TS_REALIGNED_FIRST} rows "
-        f"(ts_realigned_first={TS_REALIGNED_FIRST}, inserted=12322, already_in_db=11937, missing_chunks=0)."
+        f"First-pass realign with tick_s={TICK_S_FIRST:.5f} (printed 4.129) moved {TS_REALIGNED_FIRST} rows "
+        f"(ts_realigned_first={TS_REALIGNED_FIRST}, inserted=2758, already_in_db=23071, missing_chunks=0)."
     )
     reason = (
-        f"first-interval tick_s={TICK_S_FIRST:.5f} (printed 4.213, min-all-rooms first two bases) "
+        f"first-interval tick_s={TICK_S_FIRST:.5f} (printed 4.129, min-all-rooms first two bases) "
         f"{'is an OUTLIER' if first_outlier else 'is in the sane 3-6s band'}; "
         f"later-mean-robust {later_mean_robust:.5f} (raw later-mean {later_mean_raw:.5f}; "
         f"delta first-robust {first-later_mean_robust:.5f} s/tick, "

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Write local status records for the 10:00 half-hour official-history backfill."""
+"""Write local status records for the 10:30 half-hour official-history backfill."""
 from __future__ import annotations
 import json, shutil
 from datetime import datetime
@@ -12,40 +12,42 @@ import db
 
 HK = ZoneInfo("Asia/Hong_Kong")
 ROOT = Path("/workspace/screeps")
-DIR = ROOT / "state" / "_halfhour_2026-11-20_1000"
-assert "_halfhour_2026-11-20_1000" in str(DIR), DIR
+DIR = ROOT / "state" / "_halfhour_2026-11-20_1030"
+assert "_halfhour_2026-11-20_1030" in str(DIR), DIR
 ROOMS = ("W46N8", "W47N8", "W45N8", "W45N7", "W47N7")
-TMIN, TMAX = 84370201, 84370900
-PUB_BASES = "84370200..84370800"
-GT_FIRST = 84370964
-TICK_S_FIRST = 4.21346
-TICK_S_PRINTED = "4.213"
+TMIN, TMAX = 84370701, 84371400
+PUB_BASES = "84370700..84371300"
+GT_FIRST = 84371416
+TICK_S_FIRST = 4.1293
+TICK_S_PRINTED = "4.129"
 TICK_S_IN_USE = 4.157706666666667
-TS_REALIGNED_FIRST = 2438
+TS_REALIGNED_FIRST = 0
 NFIX_CORR = 0
-RECON_ROWS = 24259
-ALREADY = 11937
-INSERTED_FIRST = 12322
+RECON_ROWS = 25829
+ALREADY = 23071
+INSERTED_FIRST = 2758
 INSERTED_CONFIRM = 0
 INSERTED_RETRY2 = 0
-PER_ROOM_LINE = "W46N8:700t/3629new W47N8:700t/4651new W45N8:700t/1454new W45N7:700t/923new W47N7:700t/1665new"
+PER_ROOM_LINE = "W46N8:700t/1138new W47N8:700t/802new W45N8:700t/364new W45N7:700t/0new W47N7:700t/454new"
 MISSING_CHUNKS = 0
-JUST_BASE = 84370900
-JUST_T0, JUST_T1 = 84370901, 84371000
-JUST_THRESHOLD = 84371040
+JUST_BASE = 84371400
+JUST_T0, JUST_T1 = 84371401, 84371500
+JUST_THRESHOLD = 84371540
 FIRST_PASS_CORE = (
     "first pass 35 of 35 official GETs 200, missing_chunks=0; "
-    "09:30 half-hour already wrote through 84370300 / reconstructed through 84370400 "
-    "(just-published 84370400 written 09:37:02 at game.time=84370542, 200 for all 5, ticks 84370401..84370500); "
-    "no concurrent 1h patrol this run; "
-    "(this pass already_in_db=11937 / inserted=12322; overlap 84370201..84370500 already present from the 09:30 half-hour official fill through 84370500, plus live rotation W46N8 84370501..84370545 and W47N8 after 84370546; "
-    "this pass inserted 12322 additional rows: W46N8 3629, W47N8 4651, W45N8 1454, W45N7 923, W47N7 1665; four rooms 700t, W45N7 533t plus 167 official empty-no-creep ticks 84370301..84370447 and 84370666..84370685; "
-    "NEW box freeze 09:44:17-10:03:04 (1127s) STATS gap 84370641..84370929 (289) sits inside this reconstructed window through 84370900 (remainder 84370901..84370929 belongs to just-published 84370900): last STATS 84370640 at 09:43:47, next STATS 84370930 at 10:03:46 Asia/Hong_Kong (wall ~1199s); listener auto-restart 10:03:07 (listener.py pid 1244409 started 10:03:16); official-filled 289/289 in W46N8/W47N8/W45N8/W47N7; W45N7 269/289 with 20 official empty-no-creep ticks 84370666..84370685; told status left to the next 1h patrol; "
-    "prior box freeze 09:09:35-09:20:53 (672s) STATS gap 84370151..84370319 (169) also sits partly inside this window start 84370201 and was already official-filled 169/169 in W46N8/W47N8/W45N8/W47N7; W45N7 150/169 with 19 official empty-no-creep ticks 84370301..84370319 (recorded in the 09:30 half-hour; told status left to the 09:20 1h patrol; last STATS 84370150 at 09:09:26, next STATS 84370320 at 09:21:31, wall ~725s); "
-    "prior box freezes 08:45:32-08:56:59 (683s, STATS 84369801..84369979) and 08:22:11-08:23:13 (61s, STATS 84369461..84369489) and 07:46:17-08:04:28 (1086s, STATS 84368941..84369219) have aged out of this window start 84370201 and were already official-filled and told by the 08:26 / 09:20 1h patrols; "
-    "listener auto-restart 10:03:07 (pid 1244409 started 10:03:16) after the 09:44 freeze; this run did not itself restart the listener; "
-    "leftover official 404 W45N8@84368100, W47N7@84366500, W47N8@84366200, W45N7@84365200, W47N8@84363900, W46N8@84362700, W47N8@84361700, W46N8@84360600, W45N7@84360200, W47N8@84359900 and older aged out of this 40-min window and were not retried this pass (still unfilled; 09:20 1h patrol official_retry 09:24:54 still 404 on all 16 leftovers, inserted=0; W45N8@84368100 already told by the 07:29 1h patrol); "
-    "this window empty_no_creep=167 (W45N7 official empty 84370301..84370447 and 84370666..84370685; other 4 rooms 700/700 official recovered)"
+    "10:00 half-hour already wrote through 84370800 / reconstructed through 84370900 "
+    "(just-published 84370900 written 10:11:26 at game.time=84371041, 200 for all 5, ticks 84370901..84371000); "
+    "CONCURRENT 1h patrol _patrol_2026-11-20_1025 started 10:25:43 already official-filled 84370501..84371200 "
+    "(published_bases 84370500..84371100 at game.time=84371277, 35/35 official 200, missing_chunks=0, already_in_db=18605 inserted=6909, ts_realigned=2459) "
+    "and just-published 84371200 at 10:35:10 Asia/Hong_Kong game.time=84371383 (all 5 HTTP 200; W46N8 pre_distinct=47, others 0; insert 10:35:45 already_in_db=601 inserted=3027, ticks 84371201..84371300); "
+    "(this pass already_in_db=23071 / inserted=2758; overlap 84370701..84371300 already present from the 10:00 half-hour official fill through 84371000, the concurrent patrol official fill through 84371200 and just-published 84371200 through 84371300, plus live rotation; "
+    "this pass inserted 2758 additional rows: W46N8 1138, W47N8 802, W45N8 364, W45N7 0, W47N7 454; four rooms 700t, W45N7 570t plus 130 official empty-no-creep ticks 84371270 and 84371272..84371400; "
+    "NEW box freeze 10:15:38-10:25:57 (611s) STATS gap 84371101..84371259 (159) sits inside this reconstructed window: last STATS 84371100 at 10:15:31, next STATS 84371260 at 10:26:40 Asia/Hong_Kong (wall ~669.3s); listener auto-restart 10:26:00 (listener.py pid 1251176 started 10:26:10; parent run_listener.sh pid 4035476 from Nov 13); official-filled 159/159 in all 5 rooms (patrol coverage at 10:29 already had published part 84371101..84371200 100/100 all 5; remainder 84371201..84371259 filled 59/59 all 5 by the 10:35 just-published of 84371200); told=false, seen by this 10:30 half-hour, told status left to the concurrent/next 1h patrol; "
+    "prior box freeze 09:44:17-10:03:04 (1127s) STATS gap 84370641..84370929 (289) still overlaps this window start 84370701 and was already official-filled 289/289 in W46N8/W47N8/W45N8/W47N7; W45N7 269/289 with 20 official empty-no-creep ticks 84370666..84370685 (those 20 ticks are before this window start; in-window overlap 84370701..84370929 is 229/229 all 5; recorded in the 10:00 half-hour; told status left to the concurrent 1h patrol; last STATS 84370640 at 09:43:47, next STATS 84370930 at 10:03:46, wall ~1199s); "
+    "prior box freezes 09:09:35-09:20:53 (672s, STATS 84370151..84370319), 08:45:32-08:56:59 (683s, STATS 84369801..84369979), 08:22:11-08:23:13 (61s, STATS 84369461..84369489) and 07:46:17-08:04:28 (1086s, STATS 84368941..84369219) have aged out of this window start 84370701 and were already official-filled and told by the 08:26 / 09:20 1h patrols; "
+    "listener auto-restart 10:26:00 (pid 1251176 started 10:26:10) after the 10:15 freeze; this run did not itself restart the listener; "
+    "leftover official 404 W45N8@84368100, W47N8@84366200, W47N7@84366500, W45N7@84365200, W47N8@84363900, W46N8@84362700, W47N8@84361700, W46N8@84360600, W45N7@84360200, W47N8@84359900 and older aged out of this 40-min window and were not retried this pass (still unfilled; concurrent 1h patrol official_retry 10:35 still 404 on all 16 leftovers, inserted=0; W45N8@84368100 already told by the 07:29 1h patrol); "
+    "this window empty_no_creep=130 (W45N7 official empty 84371270 and 84371272..84371400; other 4 rooms 700/700 official recovered)"
 )
 
 coverage_payload = json.loads((DIR / "coverage_final.json").read_text())
@@ -108,6 +110,9 @@ with db.connect() as c:
     freeze0845 = {room: rng(c, room, 84369801, 84369979, 179) for room in ROOMS}
     freeze0909 = {room: rng(c, room, 84370151, 84370319, 169) for room in ROOMS}
     freeze0944 = {room: rng(c, room, 84370641, 84370929, 289) for room in ROOMS}
+    freeze0944_inwin = {room: rng(c, room, 84370701, 84370929, 229) for room in ROOMS}
+    freeze1015 = {room: rng(c, room, 84371101, 84371259, 159) for room in ROOMS}
+    freeze1015_rem = {room: rng(c, room, 84371201, 84371259, 59) for room in ROOMS}
     just_rng = {room: rng(c, room, JUST_T0, JUST_T1, 100) for room in ROOMS}
     hole_w45n8_68100 = rng(c, "W45N8", 84368101, 84368200, 100)
     hole_w47n7_66500 = rng(c, "W47N7", 84366501, 84366600, 100)
@@ -132,6 +137,9 @@ if just_pub_payload and just_pre:
         just_actual_parts.append(f"{room} {post_n}-{pre_n}={delta}")
 elif just_pub_payload:
     INSERTED_JUST = INSERTED_JUST_SCRIPT
+
+if just_pub_payload:
+    (DIR / "just_published_post_counts.json").write_text(json.dumps(just_rng, indent=2, default=str) + "\n")
 
 if just_pub_payload:
     just_distinct_note = ", ".join(
@@ -165,27 +173,28 @@ leftover_txt = (
     f"Aged leftover official 404 W46N8@84360600 (hole 84360601..84360700 still db {hole_w46n8_60600['distinct']}/100 live-only; already told) aged out and was not retried (still unfilled). "
     f"Aged leftover official 404 W45N7@84360200 (hole 84360201..84360300 still db {aged_w45n7_60200['distinct']}/100; already told) and W47N8@84359900 (hole 84359901..84360000 still db {aged_w47n8_59900['distinct']}/100; already told) also sit outside this window and were not retried (still unfilled). "
     "Aged leftover official 404 W47N8@84359500, W45N7@84358500, W47N8@84358700, W46N8@84354300, W47N7@84354300, W47N8@84352400, W47N7@84350700, W46N8@84346200, W47N8@84346200, W45N7@84347000, W45N8@84347100, W47N8@84347800 (and older) were not retried this pass (already outside this 40-min window). "
-    "No concurrent 1h patrol this run; the 09:20 1h patrol official_retry 09:24:54 Asia/Hong_Kong already retried 16 leftovers and all still 404 (inserted=0). "
-    f"This window has empty_no_creep={empty_no_creep} (W45N7 official empty-no-creep 84370301..84370447 and 84370666..84370685; other 4 rooms official-recovered 700/700)."
+    "CONCURRENT 1h patrol _patrol_2026-11-20_1025 official_retry 10:35 Asia/Hong_Kong already retried all 16 leftovers and all still 404 (inserted=0); this half-hour did not retry those aged leftovers. "
+    f"This window has empty_no_creep={empty_no_creep} (W45N7 official empty-no-creep 84371270 and 84371272..84371400; other 4 rooms official-recovered 700/700)."
 )
 
 def fill_counts(fills, expected_n):
     return ", ".join(f"{room} {fills[room]['distinct']}/{expected_n}" for room in ROOMS)
 
 freeze_para = (
-    f"NEW box freeze 09:44:17-10:03:04 Asia/Hong_Kong (1127s; run_listener.sh auto-restart 10:03:07, listener.py pid 1244409 started 10:03:16; this run did not itself restart the listener; told status left to the next 1h patrol) "
-    f"room_stats gap 84370641..84370929 (289) sits inside this reconstructed window through 84370900 and just-published 84370900 (remainder 84370901..84370929): last STATS 84370640 at 09:43:47, next STATS 84370930 at 10:03:46 (wall ~1199s); official-filled 289/289 in W46N8/W47N8/W45N8/W47N7; W45N7 269/289 with 20 official empty-no-creep ticks 84370666..84370685 (counts {fill_counts(freeze0944, 289)}). "
-    f"Prior box freeze 09:09:35-09:20:53 Asia/Hong_Kong (672s; already official-filled, recorded in the 09:30 half-hour; told status left to the 09:20 1h patrol) "
-    f"room_stats gap 84370151..84370319 (169) also sits partly inside this window start 84370201: last STATS 84370150 at 09:09:26, next STATS 84370320 at 09:21:31 (wall ~725s); official-filled 169/169 in W46N8/W47N8/W45N8/W47N7; W45N7 150/169 with 19 official empty-no-creep ticks 84370301..84370319 (counts {fill_counts(freeze0909, 169)}). "
-    f"Prior box freeze 08:45:32-08:56:59 Asia/Hong_Kong (683s; already official-filled 179/179 and recorded in the 09:00 half-hour; told status left to the 09:20 1h patrol) room_stats gap 84369801..84369979 (179) has aged out of this window start 84370201 (counts {fill_counts(freeze0845, 179)}). "
-    f"Prior box freeze 08:22:11-08:23:13 Asia/Hong_Kong (61s; already official-filled and told by the 08:26 1h patrol) room_stats gap 84369461..84369489 (29) has aged out of this window start 84370201 (counts {fill_counts(freeze0822, 29)}). "
-    f"Prior box freeze 07:46:17-08:04:28 Asia/Hong_Kong (1086s; already official-filled and told by the 08:26 1h patrol) room_stats gap 84368941..84369219 (279) has aged out of this window start 84370201 (counts {fill_counts(freeze0746, 279)}). "
-    "Box freezes 06:37:56-07:03:44, 06:14:32-06:19:42, 05:53:08-05:56:59, 05:59:54-06:01:32 and earlier have aged out of this window start 84370201 or were already told by the 08:26 / 07:29 / 06:29 1h patrols. "
-    "This run found the listener already auto-restarted (pid 1244409 started 10:03:16, after the 10:03:07 restart at the end of the 09:44 freeze) and did not itself restart it. "
+    f"NEW box freeze 10:15:38-10:25:57 Asia/Hong_Kong (611s; run_listener.sh auto-restart 10:26:00, listener.py pid 1251176 started 10:26:10, parent run_listener.sh pid 4035476 from Nov 13; this run did not itself restart the listener; told=false, seen by this 10:30 half-hour, told status left to the concurrent/next 1h patrol) "
+    f"room_stats gap 84371101..84371259 (159) sits inside this reconstructed window: last STATS 84371100 at 10:15:31, next STATS 84371260 at 10:26:40 (wall ~669.3s); official-filled 159/159 in all 5 rooms (patrol coverage at 10:29 already had published part 84371101..84371200 100/100 all 5; remainder 84371201..84371259 filled 59/59 all 5 by the concurrent patrol just-published 84371200 at 10:35:10; counts {fill_counts(freeze1015, 159)}). "
+    f"Prior box freeze 09:44:17-10:03:04 Asia/Hong_Kong (1127s; already official-filled, recorded in the 10:00 half-hour; told status left to the concurrent 1h patrol) "
+    f"room_stats gap 84370641..84370929 (289) still overlaps this window start 84370701: last STATS 84370640 at 09:43:47, next STATS 84370930 at 10:03:46 (wall ~1199s); official-filled 289/289 in W46N8/W47N8/W45N8/W47N7; W45N7 269/289 with 20 official empty-no-creep ticks 84370666..84370685 which sit before this window start; in-window overlap 84370701..84370929 is 229/229 all 5 (full-gap counts {fill_counts(freeze0944, 289)}; in-window counts {fill_counts(freeze0944_inwin, 229)}). "
+    f"Prior box freeze 09:09:35-09:20:53 Asia/Hong_Kong (672s; already official-filled and told by the 09:20 1h patrol finished 09:31) room_stats gap 84370151..84370319 (169) has aged out of this window start 84370701 (counts {fill_counts(freeze0909, 169)}). "
+    f"Prior box freeze 08:45:32-08:56:59 Asia/Hong_Kong (683s; already official-filled 179/179 and told by the 09:20 1h patrol) room_stats gap 84369801..84369979 (179) has aged out of this window start 84370701 (counts {fill_counts(freeze0845, 179)}). "
+    f"Prior box freeze 08:22:11-08:23:13 Asia/Hong_Kong (61s; already official-filled and told by the 08:26 1h patrol) room_stats gap 84369461..84369489 (29) has aged out of this window start 84370701 (counts {fill_counts(freeze0822, 29)}). "
+    f"Prior box freeze 07:46:17-08:04:28 Asia/Hong_Kong (1086s; already official-filled and told by the 08:26 1h patrol) room_stats gap 84368941..84369219 (279) has aged out of this window start 84370701 (counts {fill_counts(freeze0746, 279)}). "
+    "Box freezes 06:37:56-07:03:44, 06:14:32-06:19:42, 05:53:08-05:56:59, 05:59:54-06:01:32 and earlier have aged out of this window start 84370701 or were already told by the 08:26 / 07:29 / 06:29 1h patrols. "
+    "This run found the listener already auto-restarted (pid 1251176 started 10:26:10, after the 10:26:00 restart at the end of the 10:15 freeze) and did not itself restart it. "
     + leftover_txt + " "
-    f"live.json was fresh at pre-check 10:05:51 (age ~0.5s, tip stats.t=84370960, roomSlot W47N8; live.json gameTime and objects stayed empty after the 10:03:16 reconnect, but room ingest, CPU and path buffers were already flowing: creep_ticks W47N8 84370930..84370962 near tip, creep_cpu through 84370950 / path_arrivals through 84370943 / room_stats through 84370950); "
-    f"this pass inserted 12322 additional rows in 84370201..84370900 plus just-published actual {{INSERTED_JUST}} in 84370901..84371000; "
-    f"single_slot held, creep_cpu through {{cpu_tip}} / path_arrivals through {{path_tip}} / room_stats through {{rs_tip}} at wrapup; this run did not restart the listener."
+    f"live.json was fresh at pre-check 10:36:59 (age ~1.1s, tip stats.t=84371400, roomSlot W47N8; live.json gameTime stayed at 84371318 and objects stayed empty after the 10:26:10 reconnect, but room ingest, CPU and path buffers were already flowing: creep_ticks W47N8 84371380..84371411 near tip, creep_cpu through 84371400 / path_arrivals through 84371337 / room_stats through 84371400); "
+    f"this pass inserted 2758 additional rows in 84370701..84371400 plus just-published actual {INSERTED_JUST} in 84371401..84371500; "
+    f"single_slot held, creep_cpu through {cpu_tip} / path_arrivals through {path_tip} / room_stats through {rs_tip} at wrapup; this run did not restart the listener."
 )
 
 slot = live.get("roomSlot")
@@ -198,16 +207,16 @@ listener_line = (
 vs_first_s = vs_first or (vs_cand.get("first") or {})
 tick_s_line = (
     f"tick_s={TICK_S_PRINTED} (script {TICK_S_FIRST} printed {TICK_S_PRINTED} is in the sane 3-6s band; "
-    f"live-anchor-best is all_mean {TICK_S_IN_USE} "
-    f"(vs_all_mean over45={(vs_cand.get('all_mean') or {}).get('over45')} mean_off={(vs_cand.get('all_mean') or {}).get('mean_off')}, over15={(vs_cand.get('all_mean') or {}).get('over15')}; "
+    f"live-anchor-best is prev_later {TICK_S_IN_USE} "
+    f"(vs_prev_later over45={(vs_cand.get('prev_later') or {}).get('over45')} mean_off={(vs_cand.get('prev_later') or {}).get('mean_off')}, over15={(vs_cand.get('prev_later') or {}).get('over15')}; "
     f"vs_first over45={vs_first_s.get('over45')} mean_off={vs_first_s.get('mean_off')}, over15={vs_first_s.get('over15')}); "
-    f"later-mean-robust {tick_s.get('later_mean_w46_robust')} is worse than live-anchor-best all_mean "
+    f"later-mean-robust {tick_s.get('later_mean_w46_robust') or tick_s.get('later_mean_robust')} is worse than live-anchor-best prev_later "
     f"(later over45={(vs_later_after or vs_cand.get('later_robust') or {}).get('over45')} "
     f"mean_off={(vs_later_after or vs_cand.get('later_robust') or {}).get('mean_off')}) and was refused; "
-    f"all_mean {tick_s.get('all_mean_w46')}; prev_later {tick_s.get('prev_later_mean')} "
-    f"(vs_prev_later over45={(vs_cand.get('prev_later') or {}).get('over45')} mean_off={(vs_cand.get('prev_later') or {}).get('mean_off')}) is not live-anchor-best. "
+    f"all_mean {tick_s.get('all_mean_w46') or tick_s.get('all_mean')}; prev_later {tick_s.get('prev_later_mean')} "
+    f"is live-anchor-best. "
     f"First-pass realign moved {TS_REALIGNED_FIRST} rows onto {TICK_S_FIRST}; no corrective realign "
-    f"(live-anchor-best all_mean {TICK_S_IN_USE} already inside 45s gate, over45=0); in-use all_mean {TICK_S_IN_USE}; "
+    f"(live-anchor-best prev_later {TICK_S_IN_USE} already inside 45s gate, over45=0); in-use prev_later {TICK_S_IN_USE}; "
     f"no in-window official 404 (confirm/retry2 skipped, no targets); {just_note})"
 )
 
@@ -228,7 +237,7 @@ now_lines = [
     leftover_txt,
     freeze_para,
     listener_line,
-    f"confirm {finished_hkt.replace('Asia/Hong_Kong','').strip()} and retry2 were skipped (no in-window or aged targets; first pass 35/35 official 200); {just_note}; this pass inserted {INSERTED_FIRST} additional rows in the reconstructed window (W46N8 3629 / W47N8 4651 / W45N8 1454 / W45N7 923 / W47N7 1665) on top of the 09:30 half-hour official fill through 84370500 and live rotation",
+    f"confirm {finished_hkt.replace('Asia/Hong_Kong','').strip()} and retry2 were skipped (no in-window or aged targets; first pass 35/35 official 200); {just_note}; this pass inserted {INSERTED_FIRST} additional rows in the reconstructed window (W46N8 1138 / W47N8 802 / W45N8 364 / W45N7 0 / W47N7 454) on top of the 10:00 half-hour official fill through 84371000, the concurrent 1h patrol official fill through 84371200 and just-published 84371200 (ticks 84371201..84371300), plus live rotation",
     f"ok_quiet=True coverage={recovered}/{expected} inserted_window={INSERTED_WINDOW} inserted_total={INSERTED_TOTAL} tick_s_in_use={TICK_S_IN_USE} listener single_slot={single_slot}; no second listener; no war_cmd/pulse restart.",
 ]
 now_text = "\n".join(now_lines) + "\n"
@@ -253,17 +262,26 @@ payload = {
     "coverage": {"official_recovered": recovered, "expected": expected, "empty_no_creep": empty_no_creep, "official_404": official_404_missing, "unique_room_ticks": unique_after.get("distinct_room_ticks")},
     "tick_s_first": TICK_S_FIRST,
     "tick_s_in_use": TICK_S_IN_USE,
-    "tick_s_in_use_name": tick_s.get("tick_s_in_use_name") or "first",
+    "tick_s_in_use_name": tick_s.get("tick_s_in_use_name") or "prev_later",
     "ts_realigned_first": TS_REALIGNED_FIRST,
     "ts_realigned_corrective": NFIX_CORR,
     "just_published": {"base": JUST_BASE, "t0": JUST_T0, "t1": JUST_T1, "game_time": just_gt, "at": just_at, "all_five_200": all_five, "script_inserted": INSERTED_JUST_SCRIPT, "actual_inserted": INSERTED_JUST},
-    "new_box_freeze": {"from": "2026-11-20 09:44:17", "to": "2026-11-20 10:03:04", "sec": 1127, "gap": [84370641, 84370929], "span": 289, "wall_s": 1199, "last_stats": 84370640, "next_stats": 84370930, "told": False, "seen_by": "10:00 half-hour backfill; told status left to the next 1h patrol", "fill": "289/289 in W46N8 W47N8 W45N8 W47N7; W45N7 269/289 official empty-no-creep 84370666..84370685"},
-    "prior_box_freeze_0909": {"from": "2026-11-20 09:09:35", "to": "2026-11-20 09:20:53", "sec": 672, "gap": [84370151, 84370319], "span": 169, "wall_s": 725, "last_stats": 84370150, "next_stats": 84370320, "told": True, "recorded_in": "09:30 half-hour and 09:20 1h patrol; already told by the 09:20 1h patrol (finished 09:31)", "fill": "169/169 in W46N8 W47N8 W45N8 W47N7; W45N7 150/169 official empty-no-creep 84370301..84370319"},
-    "prior_box_freeze_0845": {"from": "2026-11-20 08:45:32", "to": "2026-11-20 08:56:59", "sec": 683, "gap": [84369801, 84369979], "span": 179, "wall_s": 740, "last_stats": 84369800, "next_stats": 84369980, "told": True, "recorded_in": "09:00 half-hour and 09:20 1h patrol; told status left to the 09:20 1h patrol; aged out of this window start 84370201"},
-    "prior_box_freeze_0822": {"from": "2026-11-20 08:22:11", "to": "2026-11-20 08:23:13", "sec": 61, "gap": [84369461, 84369489], "span": 29, "told": True, "recorded_in": "08:26 1h patrol"},
-    "prior_box_freeze_0746": {"from": "2026-11-20 07:46:17", "to": "2026-11-20 08:04:28", "sec": 1086, "gap": [84368941, 84369219], "span": 279, "told": True, "recorded_in": "08:26 1h patrol"},
-    "listener": {"single_slot": single_slot, "roomSlot": slot, "rot": rot, "pid": 1244409, "started": "10:03:16", "restart": "10:03:07", "this_run_restarted": False, "war_cmd_pulse_restart": False},
-    "concurrent_1h_patrol": None,
+    "new_box_freeze": {"from": "2026-11-20 10:15:38", "to": "2026-11-20 10:25:57", "sec": 611, "gap": [84371101, 84371259], "span": 159, "wall_s": 669.3, "last_stats": 84371100, "next_stats": 84371260, "told": False, "seen_by": "10:30 half-hour backfill; told status left to the concurrent/next 1h patrol", "fill": "159/159 in all 5 rooms (published 84371101..84371200 already 100/100 at patrol 10:29; remainder 84371201..84371259 59/59 filled by patrol just-published 84371200 at 10:35:10)"},
+    "prior_box_freeze_0944": {"from": "2026-11-20 09:44:17", "to": "2026-11-20 10:03:04", "sec": 1127, "gap": [84370641, 84370929], "span": 289, "wall_s": 1199, "last_stats": 84370640, "next_stats": 84370930, "told": False, "recorded_in": "10:00 half-hour; still overlaps this window start 84370701; told status left to the concurrent 1h patrol", "fill": "289/289 in W46N8 W47N8 W45N8 W47N7; W45N7 269/289 official empty-no-creep 84370666..84370685 (before this window); in-window overlap 84370701..84370929 229/229 all 5"},
+    "prior_box_freeze_0909": {"from": "2026-11-20 09:09:35", "to": "2026-11-20 09:20:53", "sec": 672, "gap": [84370151, 84370319], "span": 169, "wall_s": 725, "last_stats": 84370150, "next_stats": 84370320, "told": True, "recorded_in": "09:30 half-hour and 09:20 1h patrol; already told by the 09:20 1h patrol (finished 09:31); aged out of this window start 84370701", "fill": "169/169 in W46N8 W47N8 W45N8 W47N7; W45N7 150/169 official empty-no-creep 84370301..84370319"},
+    "prior_box_freeze_0845": {"from": "2026-11-20 08:45:32", "to": "2026-11-20 08:56:59", "sec": 683, "gap": [84369801, 84369979], "span": 179, "wall_s": 740, "last_stats": 84369800, "next_stats": 84369980, "told": True, "recorded_in": "09:00 half-hour and 09:20 1h patrol; told by the 09:20 1h patrol; aged out of this window start 84370701"},
+    "prior_box_freeze_0822": {"from": "2026-11-20 08:22:11", "to": "2026-11-20 08:23:13", "sec": 61, "gap": [84369461, 84369489], "span": 29, "told": True, "recorded_in": "08:26 1h patrol; aged out of this window start 84370701"},
+    "prior_box_freeze_0746": {"from": "2026-11-20 07:46:17", "to": "2026-11-20 08:04:28", "sec": 1086, "gap": [84368941, 84369219], "span": 279, "told": True, "recorded_in": "08:26 1h patrol; aged out of this window start 84370701"},
+    "listener": {"single_slot": single_slot, "roomSlot": slot, "rot": rot, "pid": 1251176, "started": "10:26:10", "restart": "10:26:00", "this_run_restarted": False, "war_cmd_pulse_restart": False, "parent_run_listener_sh": 4035476},
+    "concurrent_1h_patrol": {
+        "folder": "_patrol_2026-11-20_1025",
+        "started": "2026-11-20 10:25:43 Asia/Hong_Kong",
+        "running": True,
+        "history_backfill": "official-filled 84370501..84371200 (700) at game.time=84371277, published_bases 84370500..84371100, 35/35 official 200, missing_chunks=0, already_in_db=18605 inserted=6909, ts_realigned=2459; W45N7 distinct 680/700 official empty 84370666..84370685 (20), other 4 rooms 700/700",
+        "just_published": "base 84371200 at 10:35:10 Asia/Hong_Kong game.time=84371383, all 5 HTTP 200 (W46N8 pre_distinct=47, others 0); insert 10:35:45 already_in_db=601 inserted=3027, reconstructed ticks 84371201..84371300 rows=3628",
+        "official_retry": "10:35 all 16 leftover 404s still 404, inserted=0",
+        "note": "this half-hour did not write into or modify the patrol folder; did not retry aged leftover 404s",
+    },
     "cpu_tip": cpu_tip,
     "path_tip": path_tip,
     "room_stats_tip": rs_tip,
@@ -273,7 +291,7 @@ shutil.copyfile(DIR / "history_backfill.json", ROOT / "state" / "history_backfil
 shutil.copyfile(DIR / "history_backfill_now.txt", ROOT / "state" / "_halfhour_backfill_now.txt")
 
 verify = [
-    f"{finished_hkt_sec} verify 10:00 half-hour official-history backfill",
+    f"{finished_hkt_sec} verify 10:30 half-hour official-history backfill",
     f"window ticks {TMIN}..{TMAX} published_bases {PUB_BASES} game.time_first={GT_FIRST}",
     f"inserted_first={INSERTED_FIRST} confirm={INSERTED_CONFIRM} retry2={INSERTED_RETRY2} just_published={INSERTED_JUST} (script {INSERTED_JUST_SCRIPT}) total={INSERTED_TOTAL}",
     f"coverage {recovered}/{expected} empty_no_creep={empty_no_creep} official_404={official_404_missing}",
@@ -282,14 +300,14 @@ verify = [
     leftover_txt,
     freeze_para,
     listener_line,
-    "This run did not itself restart the listener. Last run_listener.sh auto-restart was 10:03:07 (listener.py pid 1244409 started 10:03:16) after NEW box freeze 09:44:17-10:03:04 (1127s, room_stats gap 84370641..84370929 (289; last STATS 84370640 at 09:43:47, next 84370930 at 10:03:46, wall ~1199s; official-filled 289/289 in W46N8/W47N8/W45N8/W47N7, W45N7 269/289 official empty-no-creep 84370666..84370685; told status left to the next 1h patrol). Prior 09:09:35-09:20:53 freeze and STATS gap 84370151..84370319 (169; official-filled 169/169 in W46N8/W47N8/W45N8/W47N7, W45N7 150/169 official empty-no-creep 84370301..84370319; seen by the 09:20 1h patrol finished 09:31; told status left to that patrol) still partly overlaps this window start 84370201. Prior 08:45:32-08:56:59 freeze and STATS gap 84369801..84369979 (179; official-filled 179/179) have aged out of this window start 84370201 (told status left to the 09:20 1h patrol). Prior 08:22:11-08:23:13 freeze and STATS gap 84369461..84369489 (29; official-filled 29/29) and 07:46:17-08:04:28 freeze and STATS gap 84368941..84369219 (279; official-filled 279/279) have aged out of this window start 84370201 and were already told by the 08:26 1h patrol. Box freeze 06:37:56-07:03:44 already told by the 07:29 1h patrol and has aged out of this window. Earlier already-told: 06:19:45 after 06:14:32-06:19:42; 06:01:35 after 05:59:54-06:01:32; 05:57:02 after 05:53:08-05:56:59 (told by the 06:29 1h patrol). By wrapup live.json was flowing on a single listener slot (gameTime/objects in the live.json snapshot stayed empty after the 10:03 reconnect, but room ingest and CPU/path buffers were flowing); single_slot held.",
+    "This run did not itself restart the listener. Last run_listener.sh auto-restart was 10:26:00 (listener.py pid 1251176 started 10:26:10, parent run_listener.sh pid 4035476 from Nov 13) after NEW box freeze 10:15:38-10:25:57 (611s, room_stats gap 84371101..84371259 (159; last STATS 84371100 at 10:15:31, next 84371260 at 10:26:40, wall ~669.3s; official-filled 159/159 in all 5 rooms including remainder 84371201..84371259 filled by the concurrent patrol just-published 84371200 at 10:35:10; told=false, seen by this 10:30 half-hour, told status left to the concurrent/next 1h patrol). Prior 09:44:17-10:03:04 freeze and STATS gap 84370641..84370929 (289; official-filled 289/289 in W46N8/W47N8/W45N8/W47N7, W45N7 269/289 official empty-no-creep 84370666..84370685; in-window overlap 84370701..84370929 229/229 all 5; recorded in the 10:00 half-hour; told status left to the concurrent 1h patrol) still overlaps this window start 84370701. Prior 09:09:35-09:20:53 freeze and STATS gap 84370151..84370319 (169; official-filled 169/169 in W46N8/W47N8/W45N8/W47N7, W45N7 150/169 official empty-no-creep 84370301..84370319; already told by the 09:20 1h patrol finished 09:31) have aged out of this window start 84370701. Prior 08:45:32-08:56:59 freeze and STATS gap 84369801..84369979 (179; official-filled 179/179) have aged out of this window start 84370701 (told by the 09:20 1h patrol). Prior 08:22:11-08:23:13 freeze and STATS gap 84369461..84369489 (29; official-filled 29/29) and 07:46:17-08:04:28 freeze and STATS gap 84368941..84369219 (279; official-filled 279/279) have aged out of this window start 84370701 and were already told by the 08:26 1h patrol. Box freeze 06:37:56-07:03:44 already told by the 07:29 1h patrol and has aged out of this window. Earlier already-told: 06:19:45 after 06:14:32-06:19:42; 06:01:35 after 05:59:54-06:01:32; 05:57:02 after 05:53:08-05:56:59 (told by the 06:29 1h patrol). By wrapup live.json was flowing on a single listener slot (gameTime/objects in the live.json snapshot stayed empty/stale after the 10:26 reconnect, but room ingest and CPU/path buffers were flowing); single_slot held. CONCURRENT 1h patrol _patrol_2026-11-20_1025 was left untouched.",
 ]
 verify_text = "\n".join(verify) + "\n"
 (DIR / "verify.txt").write_text(verify_text)
 (ROOT / "state" / "_halfhour_backfill_verify.txt").write_text(verify_text)
 retry2_src = DIR / "backfill_retry2.txt"
 if retry2_src.exists():
-    shutil.copyfile(retry2_src, ROOT / "state" / "_halfhour_backfill_retry2_1000.txt")
+    shutil.copyfile(retry2_src, ROOT / "state" / "_halfhour_backfill_retry2_1030.txt")
 summary = (
     f"{finished_hkt} wrapup ok\n"
     "wrote history_backfill.json history_backfill_now.txt verify.txt\n"

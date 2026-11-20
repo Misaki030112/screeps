@@ -9,21 +9,22 @@ import history_backfill as hb
 import db, api
 
 ROOMS = ("W46N8", "W47N8", "W45N8", "W45N7", "W47N7")
-# First pass at game.time=84370964; published_bases 84370200..84370800,
-# reconstructed 84370201..84370900 (700). inserted=12322, already_in_db=11937, reconstructed=24259,
-# ts_realigned_first_pass=2438 (first-interval tick_s=4.21346 script printed 4.213).
-# tick_s_in_use overwritten from tick_s_realign.json after tick_s_check (all_mean 4.15771).
+# First pass at game.time=84371416; published_bases 84370700..84371300,
+# reconstructed 84370701..84371400 (700). inserted=2758, already_in_db=23071, reconstructed=25829,
+# ts_realigned_first_pass=0 (first-interval tick_s=4.1293 script printed 4.129).
+# tick_s_in_use overwritten from tick_s_realign.json after tick_s_check.
 # First pass 35 of 35 official GETs 200, missing_chunks=0: no in-window official 404 to confirm.
-# Leftover official 404 W45N8@84368100 and older aged out of this window start 84370201 and are not retried.
-# 09:30 half-hour official already through 84370300 / reconstructed through 84370400
-# (just-published 84370400 was written then at 09:37:02 gt=84370542).
-# No concurrent 1h patrol this run.
+# Leftover official 404 W45N8@84368100 and older aged out of this window start 84370701 and are not retried
+# (1h patrol official_retry 10:35 still 404 on all 16 leftovers, inserted=0).
+# 10:00 half-hour official already through 84370800 / reconstructed through 84370900
+# (just-published 84370900 was written then at 10:11:26 gt=84371041).
+# CONCURRENT 1h patrol _patrol_2026-11-20_1025 already official-filled 84370501..84371200 and just-published 84371200 at 10:35:10.
 IN_WINDOW = []  # first pass 35/35 official 200, missing_chunks=0
 AGED = []
 TICK_S = 4.15771  # overwritten from tick_s_realign.json tick_s_in_use if present; first-pass printed 4.213; in-use all_mean
 PASS = sys.argv[1] if len(sys.argv) > 1 else "confirm"
-OUT = "/workspace/screeps/state/_halfhour_2026-11-20_1000/backfill_confirm_gets.json"
-TICK_S_FILE = "/workspace/screeps/state/_halfhour_2026-11-20_1000/tick_s_realign.json"
+OUT = "/workspace/screeps/state/_halfhour_2026-11-20_1030/backfill_confirm_gets.json"
+TICK_S_FILE = "/workspace/screeps/state/_halfhour_2026-11-20_1030/tick_s_realign.json"
 
 def load_tick_s():
 

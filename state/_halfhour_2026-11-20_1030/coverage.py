@@ -8,17 +8,17 @@ import sys
 sys.path.insert(0, "/workspace/screeps/tools")
 import db
 
-TMIN, TMAX = 84370201, 84370900
+TMIN, TMAX = 84370701, 84371400
 ROOMS = ("W46N8", "W47N8", "W45N8", "W45N7", "W47N7")
-DIR = "/workspace/screeps/state/_halfhour_2026-11-20_1000"
+DIR = "/workspace/screeps/state/_halfhour_2026-11-20_1030"
 # First pass 35 of 35 official GETs 200, missing_chunks=0.
-# published_bases 84370200..84370800 at game.time=84370964; reconstructed 84370201..84370900 (700).
-# 09:30 half-hour already official-filled through 84370300 / reconstructed through 84370400 (just-published 84370400 written 09:37:02 for all 5, ticks 84370401..84370500).
-# No concurrent 1h patrol this run. This first pass already_in_db=11937 / inserted=12322
-# (W46N8 3629, W47N8 4651, W45N8 1454, W45N7 923, W47N7 1665); overlap from 09:30 half-hour official fill through 84370500 and live rotation (W46N8 84370501..84370545, W47N8 after 84370546).
-# No in-window official 404. Leftover official 404 W45N8@84368100 and older aged out of this window start 84370201 and were not retried.
-# NEW box freeze 09:44:17-10:03:04 (1127s) STATS gap 84370641..84370929 (289) sits inside this window through 84370900; listener auto-restart 10:03:07 (pid 1244409 started 10:03:16).
-# Prior STATS gap 84370151..84370319 already official-filled (told status left to the 09:20 1h patrol); part of it (from 84370201) still overlaps this window start.
+# published_bases 84370700..84371300 at game.time=84371416; reconstructed 84370701..84371400 (700).
+# 10:00 half-hour already official-filled through 84370800 / reconstructed through 84370900 (just-published 84370900 written 10:11:26 for all 5, ticks 84370901..84371000).
+# CONCURRENT 1h patrol _patrol_2026-11-20_1025 already official-filled 84370501..84371200 and just-published 84371200 at 10:35:10 (game.time=84371383, all 5 HTTP 200, inserted=3027). This first pass already_in_db=23071 / inserted=2758
+# (W46N8 1138, W47N8 802, W45N8 364, W45N7 0, W47N7 454); overlap from 10:00 half-hour official fill through 84371000, patrol official fill through 84371200, patrol just-published 84371200 (ticks 84371201..84371300), plus live rotation.
+# No in-window official 404. Leftover official 404 W45N8@84368100 and older aged out of this window start 84370701 and were not retried (1h patrol official_retry 10:35 still 404 on all 16).
+# NEW box freeze 10:15:38-10:25:57 (611s) STATS gap 84371101..84371259 (159) sits inside this window; listener auto-restart 10:26:00 (pid 1251176 started 10:26:10).
+# Prior STATS gap 84370641..84370929 (09:44 freeze) still overlaps this window start 84370701 and was already official-filled (told status left to the concurrent 1h patrol). Prior 84370151..84370319 has aged out of this window start.
 IN_WINDOW_404 = set()  # first pass 35/35 official 200, missing_chunks=0
 OUT = sys.argv[1] if len(sys.argv) > 1 else f"{DIR}/coverage_final.json"
 
