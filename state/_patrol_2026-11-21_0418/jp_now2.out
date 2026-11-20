@@ -1,0 +1,21 @@
+game.time 84386749 at 2026-11-21 04:27:12 Asia/Hong_Kong
+=== retry2 IN_WINDOW ===
+  404 W47N8@84385900
+  404 W46N8@84386400
+=== just-published 84386600 gt 84386749 ===
+  W46N8@84386600 status=200 ticks=100 range=84386601..84386700 inserted=974 realign=0
+  W47N8@84386600 status=200 ticks=100 range=84386601..84386700 inserted=864 realign=0
+  404 W45N8@84386600
+  W45N7@84386600 status=200 ticks=100 range=84386601..84386700 inserted=322 realign=0
+  W47N7@84386600 status=200 ticks=100 range=84386601..84386700 inserted=413 realign=0
+=== post + freeze fill ===
+  post W47N8@84385900 distinct=0 rows=0 min=None max=None
+  post W46N8@84386400 distinct=6 rows=72 min=84386401 max=84386406
+  post W46N8@84386600 distinct=100 rows=974 min=84386601 max=84386700
+  post W47N8@84386600 distinct=100 rows=1315 min=84386601 max=84386700
+  post W45N8@84386600 distinct=27 rows=63 min=84386657 max=84386683
+  post W45N7@84386600 distinct=100 rows=373 min=84386601 max=84386700
+  post W47N7@84386600 distinct=100 rows=367 min=84386601 max=84386700
+freeze 0410 fill {'W46N8': '119/119', 'W47N8': '119/119', 'W45N8': '90/119', 'W45N7': '119/119', 'W47N7': '119/119'}
+jp chunk 84386601..84386700 {'W46N8': '100/100', 'W47N8': '100/100', 'W45N8': '27/100', 'W45N7': '100/100', 'W47N7': '100/100'}
+wrote /workspace/screeps/state/_patrol_2026-11-21_0418/just_published_84386600.json
