@@ -1,0 +1,52 @@
+
+=== backfill_40m_published 84370501..84371200 expected 700 ===
+  W46N8 distinct=700/700 range=84370501..84371200 rows=6765 missing=0
+  W47N8 distinct=700/700 range=84370501..84371200 rows=11068 missing=0
+  W45N8 distinct=700/700 range=84370501..84371200 rows=2654 missing=0
+  W45N7 distinct=680/700 range=84370501..84371200 rows=2085 missing=20
+    holes: [(84370666, 84370685, 20)]
+  W47N7 distinct=700/700 range=84370501..84371200 rows=2822 missing=0
+
+=== since_prev_tip_to_published 84370361..84371200 expected 840 ===
+  W46N8 distinct=840/840 range=84370361..84371200 rows=8722 missing=0
+  W47N8 distinct=840/840 range=84370361..84371200 rows=13070 missing=0
+  W45N8 distinct=840/840 range=84370361..84371200 rows=2998 missing=0
+  W45N7 distinct=733/840 range=84370448..84371200 rows=2138 missing=107
+  W47N7 distinct=840/840 range=84370361..84371200 rows=3214 missing=0
+
+=== freeze_0944 84370641..84370929 expected 289 ===
+  W46N8 distinct=289/289 range=84370641..84370929 rows=2740 missing=0
+  W47N8 distinct=289/289 range=84370641..84370929 rows=4533 missing=0
+  W45N8 distinct=289/289 range=84370641..84370929 rows=1278 missing=0
+  W45N7 distinct=269/289 range=84370641..84370929 rows=899 missing=20
+    holes: [(84370666, 84370685, 20)]
+  W47N7 distinct=289/289 range=84370641..84370929 rows=1207 missing=0
+
+=== freeze_1015_full 84371101..84371259 expected 159 ===
+  W46N8 distinct=106/159 range=84371101..84371259 rows=1053 missing=53
+    holes: [(84371201, 84371253, 53)]
+  W47N8 distinct=100/159 range=84371101..84371200 rows=1660 missing=59
+    holes: [(84371201, 84371259, 59)]
+  W45N8 distinct=100/159 range=84371101..84371200 rows=393 missing=59
+    holes: [(84371201, 84371259, 59)]
+  W45N7 distinct=100/159 range=84371101..84371200 rows=320 missing=59
+    holes: [(84371201, 84371259, 59)]
+  W47N7 distinct=100/159 range=84371101..84371200 rows=414 missing=59
+    holes: [(84371201, 84371259, 59)]
+
+=== freeze_1015_published 84371101..84371200 expected 100 ===
+  W46N8 distinct=100/100 range=84371101..84371200 rows=987 missing=0
+  W47N8 distinct=100/100 range=84371101..84371200 rows=1660 missing=0
+  W45N8 distinct=100/100 range=84371101..84371200 rows=393 missing=0
+  W45N7 distinct=100/100 range=84371101..84371200 rows=320 missing=0
+  W47N7 distinct=100/100 range=84371101..84371200 rows=414 missing=0
+
+=== freshness now ===
+room_stats (84371300, datetime.timedelta(seconds=6, microseconds=458994))
+creep_ticks (84371301, datetime.timedelta(seconds=4, microseconds=240611))
+creep_cpu (84371290, datetime.timedelta(seconds=17, microseconds=561462))
+ct ('W45N7', 84371200, datetime.timedelta(seconds=418, microseconds=315355))
+ct ('W45N8', 84371200, datetime.timedelta(seconds=418, microseconds=315355))
+ct ('W46N8', 84371301, datetime.timedelta(seconds=4, microseconds=743102))
+ct ('W47N7', 84371200, datetime.timedelta(seconds=418, microseconds=315355))
+ct ('W47N8', 84371200, datetime.timedelta(seconds=418, microseconds=315355))

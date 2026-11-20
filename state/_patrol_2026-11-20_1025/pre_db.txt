@@ -1,0 +1,37 @@
+=== freshness ===
+room_stats (84371270, datetime.datetime(2026, 11, 20, 10, 27, 21, 233946, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), datetime.timedelta(seconds=8, microseconds=671386), 194)
+creep_ticks (84371272, datetime.datetime(2026, 11, 20, 10, 27, 27, 869873, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), datetime.timedelta(seconds=2, microseconds=129554), 53231)
+creep_cpu (84371260, datetime.datetime(2026, 11, 20, 10, 27, 12, 595793, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), datetime.timedelta(seconds=19, microseconds=267776), 10982)
+console_events ERR relation "console_events" does not exist
+LINE 1: ...LTER (WHERE ts > now() - interval '2 hours') FROM console_ev...
+                                                             ^
+
+=== creep_ticks per room recent ===
+creep_ticks ('W45N7', 84371023, datetime.timedelta(seconds=1039, microseconds=825368), 5533)
+creep_ticks ('W45N8', 84371000, datetime.timedelta(seconds=1136, microseconds=168997), 6826)
+creep_ticks ('W46N8', 84371272, datetime.timedelta(seconds=4, microseconds=411252), 18834)
+creep_ticks ('W47N7', 84371000, datetime.timedelta(seconds=1136, microseconds=168997), 6176)
+creep_ticks ('W47N8', 84371000, datetime.timedelta(seconds=1136, microseconds=168997), 26501)
+creep_ticks ('W47N9', 84085592, datetime.timedelta(days=14, seconds=61047, microseconds=845789), 0)
+
+=== latest room_stats both homes ===
+W46N8 (84371270, datetime.datetime(2026, 11, 20, 10, 27, 21, 233818), 7, 8685147, 16929, 102, 17.59, 10000, '2b5398f7', 0, 0, {'miner': 2, 'queen': 2, 'hauler': 1, 'rminer': 2, 'rhauler': 6, 'w8miner': 2, 'defender': 1, 'reserver': 2, 'upgrader': 2, 'w8filler': 2, 'w8hauler': 3, 'w8rminer': 4, 'w8builder': 1, 'w8rhauler': 4, 'w8upgrader': 2})
+W47N8 (84371270, datetime.datetime(2026, 11, 20, 10, 27, 21, 233946), 7, 5426234, 31763, 5600, 17.59, 10000, '2b5398f7', 0, 0, {'miner': 2, 'queen': 2, 'hauler': 1, 'rminer': 2, 'rhauler': 6, 'w8miner': 2, 'defender': 1, 'reserver': 2, 'upgrader': 2, 'w8filler': 2, 'w8hauler': 3, 'w8rminer': 4, 'w8builder': 1, 'w8rhauler': 4, 'w8upgrader': 2})
+W45N8 None
+W45N7 None
+W47N7 None
+
+=== room_stats gaps last ~3h (W46N8 as clock) ===
+samples=155 first=(84368680, datetime.datetime(2026, 11, 20, 7, 27, 54, 810169, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai'))) last=(84371270, datetime.datetime(2026, 11, 20, 10, 27, 21, 233818, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')))
+gaps=6
+  STATS gap 84368941..84369219 missing=279 wall=1148.1s from 2026-11-20 07:45:43.462925+08:00 to 2026-11-20 08:04:51.567914+08:00 bkt 10000->10000 stor 13002->17248
+  STATS gap 84369461..84369489 missing=29 wall=130.6s from 2026-11-20 08:21:46.273316+08:00 to 2026-11-20 08:23:56.853444+08:00 bkt 10000->10000 stor 16598->16898
+  STATS gap 84369801..84369979 missing=179 wall=740.0s from 2026-11-20 08:45:09.538975+08:00 to 2026-11-20 08:57:29.511122+08:00 bkt 10000->10000 stor 18788->17808
+  STATS gap 84370151..84370319 missing=169 wall=725.3s from 2026-11-20 09:09:26.086802+08:00 to 2026-11-20 09:21:31.426149+08:00 bkt 10000->10000 stor 14868->15392
+  STATS gap 84370641..84370929 missing=289 wall=1199.0s from 2026-11-20 09:43:47.355485+08:00 to 2026-11-20 10:03:46.310909+08:00 bkt 10000->10000 stor 15422->15264
+  STATS gap 84371101..84371259 missing=159 wall=669.3s from 2026-11-20 10:15:31.229370+08:00 to 2026-11-20 10:26:40.493884+08:00 bkt 10000->10000 stor 15244->16829
+
+=== W47N8 room_stats last ===
+W47 (84371270, datetime.datetime(2026, 11, 20, 10, 27, 21, 233946), 31763, 5426234)
+W47 (84371260, datetime.datetime(2026, 11, 20, 10, 26, 40, 493996), 31763, 5426034)
+W47 (84371100, datetime.datetime(2026, 11, 20, 10, 15, 31, 229427), 29481, 5422834)
