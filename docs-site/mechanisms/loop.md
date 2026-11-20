@@ -105,7 +105,7 @@ Screeps 每个 tick 调用一次 `loop`。这一拍先让出生点、塔和补�
 
 `Memory.cmd` 的 `on` 为真，才算武装。武装时，creep 循环之前先跑 `runHeldStructures`：观察者、核弹、工厂、Power Spawn，以及挂了指令的实验室。塔、link、出生点在各自的管理器里已经看过指令。没武装时，这次判断是假，函数不调用。
 
-单只 creep 上，`consumeCreep` 接住了，就不再逃跑，也不再跑角色。动作表不在这一页。
+单只 creep 上，`consumeCreep` 接住了，就不再逃跑，也不再跑角色。动作、职责，以及建筑各自等在哪一拍，见 [指挥官接管](/mechanisms/commander)。
 
 袭击旗标在 creep 循环之前收一次，包在自己的错误处理里。哪怕每只袭击 creep 这一拍都被具体指令占住、角色脚本没跑，这次仍会跑。它只改小队记忆，不移动 creep。出击步骤不在这一页。
 

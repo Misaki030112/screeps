@@ -35,6 +35,7 @@ function tokenize(text: string): string[] {
 
 const mechanisms = [
   { text: '主循环与 CPU', link: '/mechanisms/loop' },
+  { text: '指挥官接管', link: '/mechanisms/commander' },
   { text: '孵化与身体', link: '/mechanisms/spawn' },
   { text: '搬运与能量', link: '/mechanisms/haul' },
   { text: '移动与寻路', link: '/mechanisms/move' },
