@@ -1,0 +1,50 @@
+post {
+  "W46N8": {
+    "distinct": 100,
+    "rows": 1341,
+    "min": 84378001,
+    "max": 84378100
+  },
+  "W47N8": {
+    "distinct": 100,
+    "rows": 1306,
+    "min": 84378001,
+    "max": 84378100
+  },
+  "W45N8": {
+    "distinct": 100,
+    "rows": 172,
+    "min": 84378001,
+    "max": 84378100
+  },
+  "W45N7": {
+    "distinct": 27,
+    "rows": 52,
+    "min": 84378001,
+    "max": 84378028
+  },
+  "W47N7": {
+    "distinct": 0,
+    "rows": 0,
+    "min": null,
+    "max": null
+  }
+}
+actual_by_room {'W46N8': 284, 'W47N8': 1048, 'W45N8': 172, 'W45N7': 52, 'W47N7': 0} sum 1556
+script_by {'W46N8': 284, 'W47N8': 1048, 'W45N8': 410, 'W45N7': 52, 'W47N7': 0} sum 1794
+gap freeze_1743 84377521..84377819
+  W46N8 199/299 rows=2434 range=84377521..84377819 missing_n=100 missing_range=84377601..84377700
+  W47N8 299/299 rows=5625 range=84377521..84377819 missing_n=0 missing_range=None
+  W45N8 299/299 rows=1539 range=84377521..84377819 missing_n=0 missing_range=None
+  W45N7 299/299 rows=597 range=84377521..84377819 missing_n=0 missing_range=None
+  W47N7 299/299 rows=684 range=84377521..84377819 missing_n=0 missing_range=None
+gap freeze_1709 84377041..84377289
+  W46N8 249/249 rows=2374 range=84377041..84377289 missing_n=0 missing_range=None
+  W47N8 149/249 rows=2221 range=84377041..84377289 missing_n=100 missing_range=84377101..84377200
+  W45N8 249/249 rows=1108 range=84377041..84377289 missing_n=0 missing_range=None
+  W45N7 249/249 rows=1205 range=84377041..84377289 missing_n=0 missing_range=None
+  W47N7 249/249 rows=970 range=84377041..84377289 missing_n=0 missing_range=None
+holes {'W46N8@84377600': {'distinct': 0, 'rows': 0, 'min': None, 'max': None}, 'W47N7@84378000': {'distinct': 0, 'rows': 0, 'min': None, 'max': None}}
+tips {'room_stats': 84378330, 'creep_cpu': 84378330, 'path_arrivals': 84378327}
+live near tip {'W46N8': {'distinct': 50, 'rows': 668, 'min': 84378290, 'max': 84378339}, 'W47N8': {'distinct': 0, 'rows': 0, 'min': None, 'max': None}, 'W45N8': {'distinct': 0, 'rows': 0, 'min': None, 'max': None}, 'W45N7': {'distinct': 0, 'rows': 0, 'min': None, 'max': None}, 'W47N7': {'distinct': 0, 'rows': 0, 'min': None, 'max': None}}
+wrote post_counts and summary

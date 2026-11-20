@@ -1,0 +1,97 @@
+2026-11-20 19:32:52 HKT check
+==== processes (screeps/pg/grafana/listener) ====
+   7854 Sun Nov  8 01:14:29 2026 /usr/lib/postgresql/17/bin/postgres -D /workspace/screeps/var/pg17 -c config_file=/etc/postgresql/17/main/postgresql.conf
+   8030 Sun Nov  8 01:14:38 2026 /usr/share/grafana/bin/grafana server --homepath /usr/share/grafana --config grafana/grafana.ini
+   8041 Sun Nov  8 01:14:38 2026 .venv/bin/python -m http.server 8787 --bind 127.0.0.1
+1452906 Fri Nov 20 19:24:03 2026 .venv/bin/python tools/listener.py
+4035476 Fri Nov 13 08:31:57 2026 /bin/bash tools/run_listener.sh
+==== pg_lsclusters ====
+17 main 5432 online postgres /workspace/screeps/var/pg17 /var/log/postgresql/postgresql-17-main.log
+==== listener pids / locks ====
+listener.py count=1
+run_listener.sh count=1
+yield_files=absent
+listener.lock mtime=2026-11-20 19:24
+pidfile=4035476 (run_listener.sh)
+==== listener_rot ====
+{"i": 1, "room": "W47N8", "left": 455.0, "at": "2026-11-20 19:32:49"}
+listener_rot.json age_s=2.5
+==== live.json summary ====
+  gameTime= 84379061
+  uid= 6010ee96cbca26e9512da6f0
+  roomSlot= W47N8
+  updated= 2026-11-20 19:32:51
+  cpu= {'cpu': 15, 'memory': 24117}
+  stats.t= 84379090 cpu= 15.03 b= 10000
+  objects_n= 0 (W47N8 slot)
+  live.json_mtime_age_s= 0.2
+  live.json_mtime= 2026-11-20 19:32:51 HKT
+==== HTTP ====
+grafana :3000 -> 200
+dashboard 127.0.0.1:8787 -> 200
+==== listener restarts / errors ====
+2026-11-20 16:03:42 restart
+2026-11-20 16:22:06 restart
+2026-11-20 16:56:35 restart
+2026-11-20 17:26:04 restart
+2026-11-20 18:02:56 restart
+2026-11-20 18:58:54 restart
+2026-11-20 18:59:10 restart
+2026-11-20 19:23:53 restart
+last_restart_line=2026-11-20 19:23:53 restart
+errors/pauses after last restart:
+(none)
+==== errors.log recent listener lines ====
+2026-11-20 16:03:38 [listener] box frozen ~1152s since 2026-11-20 15:44:21 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-20 16:22:02 [listener] box frozen ~289s since 2026-11-20 16:17:08 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-20 16:56:32 [listener] box frozen ~647s since 2026-11-20 16:45:36 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-20 17:26:01 [listener] box frozen ~1005s since 2026-11-20 17:09:11 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-20 18:02:53 [listener] box frozen ~1158s since 2026-11-20 17:43:34 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-20 18:58:51 [listener] box frozen ~742s since 2026-11-20 18:46:28 (VM hibernated; wall jumped, monotonic did not), reconnecting
+2026-11-20 18:59:10 [listener] ws error [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1029)
+2026-11-20 19:23:50 [listener] box frozen ~424s since 2026-11-20 19:16:42 (VM hibernated; wall jumped, monotonic did not), reconnecting
+==== box_pauses.jsonl last ====
+{"from": "2026-11-20 16:17:08", "to": "2026-11-20 16:22:02", "sec": 289}
+{"from": "2026-11-20 16:45:36", "to": "2026-11-20 16:56:32", "sec": 647}
+{"from": "2026-11-20 17:09:11", "to": "2026-11-20 17:26:01", "sec": 1005}
+{"from": "2026-11-20 17:43:34", "to": "2026-11-20 18:02:53", "sec": 1158}
+{"from": "2026-11-20 18:46:28", "to": "2026-11-20 18:58:51", "sec": 742}
+{"from": "2026-11-20 19:16:42", "to": "2026-11-20 19:23:50", "sec": 424}
+==== concurrent processes of note ====
+none
+==== db health + recent ingest ====
+db_now 2026-11-20 19:32:52.332794+08:00
+tip_room_stats=84379090
+  creep_ticks: last2h-ish ticks=84377090..84379097 rows=67087
+  creep_cpu: last2h-ish ticks=84377095..84379080 rows=13221
+  path_arrivals: last2h-ish ticks=84377094..84379073 rows=243
+  room_stats: last2h-ish ticks=84377290..84379090 rows=246
+creep_ticks since tick 84378701 (after 19:00 half-hour official reconstructed through 84378600 / just-published through 84378700; leftover official 404 W47N7@84378000 likely ages out of window start ~84378201; already-told W46N8@84377600 and older stay aged out; concurrent 1h patrol already backfilled 84378201..84378900 plus just-published 84378900 for W46N8/W47N8/W45N7; NEW box freeze 19:16:42-19:23:50; listener auto-restart 19:23:53; this run must not restart the listener):
+  W46N8 84378701..84379061 rows=3682 distinct=361
+  W47N8 84378701..84379097 rows=4184 distinct=336
+  W45N8 84378701..84378900 rows=700 distinct=200
+  W45N7 84378701..84379000 rows=1080 distinct=300
+  W47N7 84378701..84378900 rows=938 distinct=200
+creep_cpu tick>=84378700: ticks=84378700..84379080 rows=2680
+path_arrivals tick>=84378700: ticks=84378706..84379073 rows=56
+room_stats significant gaps since 84377600 (ignoring normal ~9-tick STATS cadence):
+  84378421..84378619 (199) last_stats=(84378420, datetime.datetime(2026, 11, 20, 18, 46, 0, 589089, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai'))) next_stats=(84378620, datetime.datetime(2026, 11, 20, 18, 59, 51, 638181, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')))
+creep_ticks in room_stats gap 84378421..84378619:
+  W46N8 84378421..84378619 rows=1509 distinct=199
+  W47N8 84378421..84378619 rows=2352 distinct=199
+  W45N8 84378421..84378619 rows=1208 distinct=199
+  W45N7 84378421..84378619 rows=477 distinct=171 missing 84378430, 84378423, 84378448, 84378425..84378426, 84378443, 84378436, 84378444, 84378432, 84378434, 84378449, 84378441, 84378440, 84378427, 84378439, 84378450, 84378447, 84378445, 84378424, 84378438, 84378437, 84378429, 84378433, 84378435, 84378442, 84378428, 84378431, 84378446 (28)
+  W47N7 84378421..84378619 rows=1215 distinct=199
+  84378861..84378969 (109) last_stats=(84378860, datetime.datetime(2026, 11, 20, 19, 16, 32, 734565, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai'))) next_stats=(84378970, datetime.datetime(2026, 11, 20, 19, 24, 8, 637125, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')))
+creep_ticks in room_stats gap 84378861..84378969:
+  W46N8 84378861..84378969 rows=1272 distinct=109
+  W47N8 84378861..84378969 rows=1305 distinct=109
+  W45N8 84378861..84378900 rows=87 distinct=40 missing 84378937, 84378940, 84378923, 84378953, 84378952, 84378906, 84378960, 84378917, 84378954, 84378959, 84378944, 84378936, 84378935, 84378969, 84378964, 84378920, 84378926, 84378916, 84378921, 84378915, 84378902, 84378938, 84378931, 84378956, 84378933, 84378951, 84378909, 84378932, 84378968, 84378961, 84378911, 84378928, 84378943, 84378941, 84378966, 84378929, 84378967, 84378908, 84378949, 84378939, 84378942, 84378948, 84378925, 84378918, 84378914, 84378919, 84378903..84378904, 84378965, 84378947, 84378910, 84378962, 84378950, 84378946, 84378905, 84378927, 84378958, 84378930, 84378957, 84378912, 84378955, 84378901, 84378907, 84378913, 84378963, 84378945, 84378924, 84378922, 84378934 (69)
+  W45N7 84378861..84378969 rows=304 distinct=109
+  W47N7 84378861..84378900 rows=249 distinct=40 missing 84378937, 84378940, 84378923, 84378953, 84378952, 84378906, 84378960, 84378917, 84378954, 84378959, 84378944, 84378936, 84378935, 84378969, 84378964, 84378920, 84378926, 84378916, 84378921, 84378915, 84378902, 84378938, 84378931, 84378956, 84378933, 84378951, 84378909, 84378932, 84378968, 84378961, 84378911, 84378928, 84378943, 84378941, 84378966, 84378929, 84378967, 84378908, 84378949, 84378939, 84378942, 84378948, 84378925, 84378918, 84378914, 84378919, 84378903..84378904, 84378965, 84378947, 84378910, 84378962, 84378950, 84378946, 84378905, 84378927, 84378958, 84378930, 84378957, 84378912, 84378955, 84378901, 84378907, 84378913, 84378963, 84378945, 84378924, 84378922, 84378934 (69)
+room_stats recent tip window: ticks=84379070..84379090 rows=6
+W47N8 live near tip >= 84379070: ticks=84379070..84379098 rows=399 distinct=29
+==== health verdict ====
+ok=True
+infra healthy: single listener, postgres/grafana/dashboard up, live.json fresh, no yield file
+wrote /workspace/screeps/state/_halfhour_2026-11-20_1930/pre.txt
