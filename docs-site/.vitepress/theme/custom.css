@@ -770,6 +770,121 @@ body {
 .core .c3334 { grid-area: y34x33; }
 .core .c3335 { grid-area: y35x33; }
 
+.salv-board {
+  margin: 0.15rem 0 0.85rem;
+}
+
+.salv-walk {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.salv-who,
+.salv-pile {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  font-size: 0.85rem;
+  letter-spacing: 0.06em;
+  border: 1px solid var(--rule);
+  background: var(--vp-c-bg-elv);
+  color: var(--ink);
+}
+
+.salv-pile {
+  border-color: color-mix(in srgb, var(--copper) 55%, var(--rule));
+  background: var(--copper-soft);
+}
+
+.salv-lane {
+  display: grid;
+  gap: 0.45rem;
+  min-width: 0;
+}
+
+.lane-row {
+  display: grid;
+  grid-template-columns: 2.2rem minmax(0, 1fr);
+  gap: 0.45rem;
+  align-items: center;
+}
+
+.lane-row > span:first-child {
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.lane-row .track {
+  display: block;
+  min-width: 0;
+}
+
+.lane-row .bar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  height: 1.35rem;
+  border-radius: 999px;
+  padding: 0 0.45rem;
+  box-sizing: border-box;
+}
+
+.lane-row .bar b {
+  font-size: 0.75rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+  color: var(--ink);
+}
+
+.lane-row .bar.energy {
+  width: 51%;
+  min-width: 2.6rem;
+  background: var(--copper-soft);
+  border: 1px solid color-mix(in srgb, var(--copper) 55%, var(--rule));
+}
+
+.lane-row .bar.loot {
+  width: 100%;
+  background: var(--green-soft);
+  border: 1px solid color-mix(in srgb, var(--green) 45%, var(--rule));
+}
+
+.salv-halo {
+  width: 4.6rem;
+  height: 4.6rem;
+  border-radius: 50%;
+  border: 1px dashed var(--copper);
+  display: grid;
+  place-items: center;
+  position: relative;
+  background: color-mix(in srgb, var(--copper-soft) 42%, transparent);
+}
+
+.salv-halo em {
+  position: absolute;
+  top: 0.12rem;
+  font-style: normal;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--copper);
+}
+
+.legend .lg-halt {
+  background: color-mix(in srgb, var(--copper-soft) 70%, transparent);
+  border-style: dashed;
+  border-color: var(--copper);
+  border-radius: 999px;
+}
+
 @media (min-width: 960px) {
   .stamps {
     grid-template-columns: repeat(3, minmax(0, 1fr));
