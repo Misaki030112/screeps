@@ -64,7 +64,7 @@ W47 升级工站位是 12,25、14,26、14,27。13,26 留给容器，13,25 是 li
 | W47 `RCL6_LABS` | false |
 | `Memory.ops.w47n9` | 不设 `on` 就不袭击 |
 | `Memory.ops.cq.armed` | 不设 true，征服和方阵不动 |
-| `Memory.cmd` | 不设，指挥官不接管 |
+| `Memory.cmd` | 不设，指挥官不接管。见 [指挥官接管](/mechanisms/commander) |
 | 安全模式 | 代码不调用 |
 
 CPU 账号限额是每 tick 20。上表没有 20，因为源码读的是当场的 `tickLimit`。

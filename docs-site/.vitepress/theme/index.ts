@@ -19,6 +19,7 @@ import HubCore from './components/HubCore.vue'
 import LabGates from './components/LabGates.vue'
 import LinkFlow from './components/LinkFlow.vue'
 import ColonyStrip from './components/ColonyStrip.vue'
+import CmdTick from './components/CmdTick.vue'
 import RemoteLines from './components/RemoteLines.vue'
 
 export default {
@@ -43,6 +44,7 @@ export default {
     app.component('LabGates', LabGates)
     app.component('LinkFlow', LinkFlow)
     app.component('ColonyStrip', ColonyStrip)
+    app.component('CmdTick', CmdTick)
     app.component('RemoteLines', RemoteLines)
   },
 }
