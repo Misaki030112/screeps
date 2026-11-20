@@ -1,0 +1,73 @@
+======= date =======
+Fri Nov 20 14:26:16 CST 2026
+======= services =======
+ok   postgres
+ok   views_apache
+ok   grafana
+ok   listener
+ok   dashboard
+======= listener =======
+    PID                  STARTED CMD
+1340444 Fri Nov 20 14:05:25 2026 .venv/bin/python tools/listener.py
+4035476 Fri Nov 13 06:34:08 2026 /bin/bash tools/run_listener.sh
+-rw-r--r-- 1 box box       68 Nov 20 14:26 metrics/listener_rot.json
+-rw-r--r-- 1 box box    10021 Nov 20 14:26 metrics/live.json
+-rw-r--r-- 1 box box 10506755 Nov 20 14:26 metrics/console.log
+-rw-r--r-- 1 box box        0 Nov 20 14:05 metrics/listener.lock
+-rw-r--r-- 1 box box    96359 Nov 20 14:05 metrics/listener.out
+-rw-r--r-- 1 box box        0 Nov 18 15:23 metrics/listener.loop.lock
+-rw-r--r-- 1 box box    13018 Nov 12 18:32 metrics/war_listen.out
+-rw-r--r-- 1 box box        8 Nov  5 15:06 metrics/listener.pid
+live.json mtime 2026-11-20 14:26:16.482945 size 10021
+live keys ['uid', 'stats', 'cpu', 'objects', 'gameTime', 'roomSlot', 'console_tail', 'errors_tail', 'updated']
+gameTime 84374575
+room W47N8
+======= box_pauses last 3h =======
+files ['metrics/box_pauses.jsonl']
+-rw-r--r-- 1 box box 33119 Nov 20 14:05 metrics/box_pauses.jsonl
+-rw-r--r-- 1 box box    43 Nov  5 17:30 metrics/war_cmd_pause
+=== freshness ===
+room_stats (84374690, datetime.datetime(2026, 11, 20, 14, 25, 46, 600980, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), datetime.timedelta(seconds=30, microseconds=669656))
+creep_ticks (84374697, datetime.datetime(2026, 11, 20, 14, 26, 14, 659079, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), datetime.timedelta(seconds=2, microseconds=633409))
+creep_cpu (84374690, datetime.datetime(2026, 11, 20, 14, 25, 59, 152476, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), datetime.timedelta(seconds=18, microseconds=488341))
+=== room_stats gaps since 84373750 W46N8 ===
+samples 73 first (84373700, datetime.datetime(2026, 11, 20, 13, 16, 46, 381085, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai'))) last (84374690, datetime.datetime(2026, 11, 20, 14, 25, 46, 600927, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')))
+GAP (84373870, datetime.datetime(2026, 11, 20, 13, 28, 49, 912310, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84373980, datetime.datetime(2026, 11, 20, 13, 36, 28, 656583, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 110, 458.744273)
+GAP (84374220, datetime.datetime(2026, 11, 20, 13, 53, 6, 202051, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84374400, datetime.datetime(2026, 11, 20, 14, 5, 31, 734843, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 180, 745.532792)
+=== listener log recent restarts / room slot ===
+-rw-r--r-- 1 box box 10506755 Nov 20 14:26 metrics/console.log
+-rw-r--r-- 1 box box   234254 Nov 20 14:20 metrics/api_memory.log
+-rw-r--r-- 1 box box  1105448 Nov 20 14:05 metrics/errors.log
+-rw-r--r-- 1 box box    37698 Nov  5 17:30 metrics/war_pulse.log
+-rw-r--r-- 1 box box    16172 Nov  5 17:29 metrics/war_observe_only.log
+-rw-r--r-- 1 box box    21285 Nov  5 17:27 metrics/war_cmd_exec_milestones.log
+"""Peacetime room slot for tools/listener.py.
+
+The official Screeps websocket allows 2 room subscriptions per user. With 3,
+the server answers 'subscribe limit reached' and every room loses ticks
+(measured 2026-10-17: 2 rooms 10/10, 3 rooms 7-8/10). Ops used to pin W46N8
+and rotate a second slot (W47N8 600s / W45N8 300s / W45N7 150s).
+
+A separate Grok bot (Screeps指挥官) needs that second slot. Peacetime ops
+therefore holds exactly one room and rotates it:
+
+    W46N8 : W47N8 : W45N8 : W45N7  =  5 : 5 : 1 : 1   (wall clock)
+
+UNIT_S = 120s, so the holds are 600, 600, 120, 120 (cycle 1440s). Creep
+motion is slow; Misaki accepted the sparser samples.
+
+Wartime, when that bot is live-commanding a local campaign: ops holds zero
+room subscriptions. Touch metrics/listener_yield_rooms; the listener drops
+its room within about 5s and keeps console + cpu (those are not room slots).
+The commander subscribes the battle rooms, both official slots if the fight
+needs two. Handback: commander unsubscribes, then remove the yield file.
+Ops resumes this schedule. See docs/COMMANDER.md.
+"""
+SHARD = 'shard3'
+HOME = 'W46N8'
+WATCH = 'W45N8'  # watch events + creep trail; not copied as the live.json room
+TRAIL = ('W47N8', 'W45N7')  # creep trail only (creep_ticks), not mixed into live.json
+UNIT_S = 120
+# Order is the rotation order. Weights are the wall-clock ratio, not tick counts.
+WEIGHTS = (('W46N8', 5), ('W47N8', 5), ('W45N8', 1), ('W45N7', 1))
+ROT = tuple((room, weight * UNIT_S) for room, weight in WEIGHTS)

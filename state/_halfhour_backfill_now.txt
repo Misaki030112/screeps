@@ -1,22 +1,57 @@
-2026-11-20 13:13 Asia/Hong_Kong half-hour backfill OK (quiet)
-game.time=84373504 published_bases=84372800..84373400 rooms=W46N8,W47N8,W45N8,W45N7,W47N7 dry=False
-  (12:30 half-hour already wrote through 84373200 / reconstructed through 84373100 (just-published 84373100 written 12:44:29 at game.time=84373240, 200 for all 5, ticks 84373101..84373200); prior 1h patrol _patrol_2026-11-20_1220 already delivered around 12:25 Asia/Hong_Kong and official-filled 84372201..84372900 and told the 11:36 short, 11:48-11:59 freeze, 12:01 short, 12:13:48-12:19:38 freeze, leftover official 404s including W46N8@84371600 still 404, and W45N7 Invader Core; this pass already_in_db=17223 / inserted=7520; overlap 84372801..84373200 already present from the 12:30 half-hour official fill through 84373200, plus the 12:25 patrol official fill through 84372900, plus live rotation; this pass first-pass inserted 7520 additional rows: W46N8 2486, W47N8 3023, W45N8 1180, W45N7 423, W47N7 408; confirm 13:05:06 gt=84373536 recovered first-pass 404s W47N8/W45N8/W47N7@84373400 inserted=2403 (W47N8 1346, W45N8 600, W47N7 457), window inserted after confirm=9923 (W46N8 2486, W47N8 4369, W45N8 1780, W45N7 423, W47N7 865); all 5 rooms 700t first-pass window except official holes and empty-no-creep (W46N8/W47N8/W45N8 700/700 official recovered; W45N7 417/700 with official empty-no-creep 183 ticks 84372897..84372999 (103, after the already-told W45N7 Invader Core) and 84373201..84373280 (80), plus official 404 84373301..84373400 (100, W45N7@84373300 still 404 after confirm+retry2); W47N7 600/700 with official 404 84373201..84373300 (100, W47N7@84373200 still 404 after confirm+retry2)); first-pass window is 700 ticks, published_bases 84372800..84373400 at game.time=84373504 (just-published base 84373400 was already in this first pass because gt=84373504 made latest=84373400; W46N8 and W45N7 were 200, W47N8/W45N8/W47N7 404 then recovered at confirm); NEW box freeze 12:47:51-13:00:11 (734s) in box_pauses.jsonl; STATS 84373281..84373469 (189t) wall ~792s from last STATS 84373280 at 12:47:15 to next 84373470 at 13:00:27; listener auto-restart 13:00:14; official-filled W46N8/W47N8/W45N8 189/189, W45N7 89/189 because of NEW official 404 W45N7@84373300, W47N7 169/189 because 20 ticks of NEW official 404 W47N7@84373200 overlap the gap; told=false, left to next 1h patrol; no additional short listener gap this window (last auto-restart before this freeze was 12:19:41; this run did not itself restart the listener or war_cmd/pulse; current listener.py pid 1315873 started 13:00:23, parent run_listener.sh pid 4035476 from Nov 13); prior freeze 12:13:48-12:19:38 STATS 84372791..84372889 (99) overlaps this window start and is official-filled 99/99 all 5 (already told by the 12:25 1h patrol); prior short 12:01:48 and earlier freezes/gaps aged out of this window start 84372801 and were already told; leftover official 404 W46N8@84371600 (hole 84371601..84371700 still 0/100) plus earlier W45N8@84368100, W47N8@84366200, W47N7@84366500, W45N7@84365200, W47N8@84363900, W46N8@84362700, W47N8@84361700, W46N8@84360600, W45N7@84360200, W47N8@84359900 and older aged out and were not retried (still unfilled; already told); NEW leftover official 404s W47N7@84373200 (hole 84373201..84373300 still 0/100 after confirm 13:05:06 gt=84373536 and retry2 13:07:08 gt=84373565) and W45N7@84373300 (hole 84373301..84373400 still 0/100 after the same retries), told=false, left to next 1h patrol; this window empty_no_creep=183 official_404=200 (official recovered 3117/3500); just-published 84373500 attempted at 2026-11-20 13:12:30 Asia/Hong_Kong game.time=84373640 (typically publishable around game.time>=84373640) and was 200 for all 5 rooms (script inserted=2905, actual db inserted=2832 [W46N8 663-662=1, W47N8 1351-0=1351, W45N8 533-0=533, W45N7 430-0=430, W47N7 517-0=517; script counted W45N8 534 vs actual 533, W47N7 589 vs actual 517]; ticks 84373501..84373600, all 5 rooms 100/100); see history_backfill.txt)
-tick_s=4.243 (first-interval 4.24261; in_use=4.22689 name=prev_later)
-reconstructed ticks=84372801..84373500 (700) creep_rows=24743 missing_chunks=5
-already_in_db=17223 would_insert=7520
-per_room W46N8:700t/2486new W47N8:600t/3023new W45N8:600t/1180new W45N7:600t/423new W47N7:500t/408new
-inserted=7520
-confirm_inserted=2403 retry2_inserted=0
-ts_realigned=8932 corrective=0
+game.time=84374425 published_bases=84373700..84374300 rooms=W46N8,W47N8,W45N8,W45N7,W47N7 dry=False
+  ok  W46N8@84373700 ticks=100 ts=1795152264076
+  ok  W47N8@84373700 ticks=100 ts=1795152312841
+  ok  W45N8@84373700 ticks=100 ts=1795152310217
+  404 W45N7@84373700
+  ok  W47N7@84373700 ticks=100 ts=1795152348008
+  ok  W46N8@84373800 ticks=100 ts=1795152689600
+  404 W47N8@84373800
+  ok  W45N8@84373800 ticks=100 ts=1795152735456
+  ok  W45N7@84373800 ticks=100 ts=1795152688758
+  ok  W47N7@84373800 ticks=100 ts=1795152775484
+  ok  W46N8@84373900 ticks=100 ts=1795153104698
+  ok  W47N8@84373900 ticks=100 ts=1795153151061
+  ok  W45N8@84373900 ticks=100 ts=1795153148349
+  ok  W45N7@84373900 ticks=100 ts=1795153106992
+  ok  W47N7@84373900 ticks=100 ts=1795153193667
+  ok  W46N8@84374000 ticks=100 ts=1795153523544
+  ok  W47N8@84374000 ticks=100 ts=1795153569856
+  ok  W45N8@84374000 ticks=100 ts=1795153562232
+  ok  W45N7@84374000 ticks=100 ts=1795153524333
+  ok  W47N7@84374000 ticks=100 ts=1795153611049
+  ok  W46N8@84374100 ticks=100 ts=1795153927210
+  ok  W47N8@84374100 ticks=100 ts=1795153965016
+  ok  W45N8@84374100 ticks=100 ts=1795153962290
+  ok  W45N7@84374100 ticks=100 ts=1795153928905
+  ok  W47N7@84374100 ticks=100 ts=1795154001264
+  ok  W46N8@84374200 ticks=100 ts=1795154339745
+  ok  W47N8@84374200 ticks=100 ts=1795154377963
+  ok  W45N8@84374200 ticks=100 ts=1795154374956
+  ok  W45N7@84374200 ticks=100 ts=1795154341734
+  ok  W47N7@84374200 ticks=100 ts=1795154415662
+  ok  W46N8@84374300 ticks=100 ts=1795154764931
+  ok  W47N8@84374300 ticks=100 ts=1795154804038
+  ok  W45N8@84374300 ticks=100 ts=1795154801531
+  ok  W45N7@84374300 ticks=100 ts=1795154767558
+  ok  W47N7@84374300 ticks=100 ts=1795154834154
+tick_s=4.247
+reconstructed ticks=84373701..84374400 (700) creep_rows=25175 missing_chunks=2
+already_in_db=14250 would_insert=10925
+per_room W46N8:700t/2791new W47N8:600t/3539new W45N8:700t/1949new W45N7:600t/1208new W47N7:700t/1438new
+inserted=10925
+ts_realigned=7373
 db_after
-  W45N7 ticks=84372801..84373500 rows=894 distinct=417
-  W45N8 ticks=84372801..84373500 rows=2971 distinct=700
-  W46N8 ticks=84372801..84373500 rows=8447 distinct=700
-  W47N7 ticks=84372801..84373500 rows=3076 distinct=600
-  W47N8 ticks=84372801..84373500 rows=11979 distinct=700
-coverage official_recovered=3117/3500 empty_no_creep=183 official_404=200
-in-window official 404 after first pass: W47N7@84373200, W45N7@84373300, W47N8@84373400, W45N8@84373400, W47N7@84373400 (5/35 official GETs 404, 30/35 200). Confirm 13:05:06 gt=84373536 recovered W47N8/W45N8/W47N7@84373400 inserted=2403; W47N7@84373200 and W45N7@84373300 still 404 after retry2 13:07:08 gt=84373565 (holes still 0/100). Leftover official 404 W46N8@84371600 aged out of window start 84372801 and was not retried (still unfilled; already told by the 12:25 1h patrol).
-NEW box freeze 12:47:51-13:00:11 (734s; STATS 84373281..84373469 189t wall ~792s from last STATS 84373280 at 12:47:15 to next 84373470 at 13:00:27; listener auto-restart 13:00:14, pid 1315873 started 13:00:23; official-filled W46N8/W47N8/W45N8 189/189, W45N7 89/189 because of NEW official 404 W45N7@84373300, W47N7 169/189 because 20 ticks of NEW official 404 W47N7@84373200 overlap the gap; told=false, left to next 1h patrol). No additional short listener gap this half-hour (last prior auto-restart 12:19:41; this run did not itself restart the listener). Prior freeze 12:13:48-12:19:38 STATS 84372791..84372889 (99) official-filled 99/99 all 5, already told by the 12:25 1h patrol. Prior short 12:01:48 and earlier freezes/gaps aged out of window start 84372801 and were already told.
-listener single_slot=True roomSlot=W47N8 rot={'i': 1, 'room': 'W47N8', 'left': 425.0, 'at': '2026-11-20 13:13:59'} yield=absent; no second listener started; no war_cmd/pulse restart.
-confirm recovered 3 of 5 first-pass 404s (inserted=2403); retry2 still_404 W47N7@84373200 and W45N7@84373300 inserted=0; just-published 84373500 attempted at 2026-11-20 13:12:30 Asia/Hong_Kong game.time=84373640 (typically publishable around game.time>=84373640) and was 200 for all 5 rooms (script inserted=2905, actual db inserted=2832 [W46N8 1, W47N8 1351, W45N8 533, W45N7 430, W47N7 517]; ticks 84373501..84373600, all 5 rooms 100/100); this pass inserted 9923 additional rows in the reconstructed window on top of the 12:30 half-hour official fill through 84373200 and the 12:25 patrol official fill through 84372900, plus live rotation
-ok_quiet=True coverage=3117/3500 inserted_window=9923 inserted_total=12755 tick_s_in_use=4.22689 listener single_slot=True; no second listener; no war_cmd/pulse restart.
+  W45N7 ticks=84373790..84374400 rows=2095 distinct=611
+  W45N8 ticks=84373701..84374400 rows=3038 distinct=700
+  W46N8 ticks=84373701..84374400 rows=6399 distinct=700
+  W47N7 ticks=84373701..84374400 rows=3730 distinct=700
+  W47N8 ticks=84373701..84374400 rows=8994 distinct=600
+
+---- wrap 2026-11-20 14:17:29 Asia/Hong_Kong ----
+confirm 14:09:16 Asia/Hong_Kong game.time=84374453 inserted=0 still_404=['W45N7@84373700', 'W47N8@84373800']
+retry2 14:12:10 Asia/Hong_Kong game.time=84374494 inserted=0 still_404=['W45N7@84373700', 'W47N8@84373800']
+tick_s_first=4.24682 printed=4.247 in_use=4.24682 (first) ts_realigned_first=7373 corrective=0
+coverage official_recovered=3311/3500 empty_no_creep=0 official_404=189
+just-published 84374400 at 2026-11-20 14:15:28 Asia/Hong_Kong game.time=84374541 all_five_200=True actual_inserted=2681 ticks 84374401..84374500 (all 5 rooms 100/100); script inserted=2684 (W45N8 script 395 vs actual 392).
+inserted_window=10925 inserted_total=13606
+ok_quiet=True
