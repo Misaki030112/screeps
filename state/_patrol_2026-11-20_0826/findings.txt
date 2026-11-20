@@ -1,0 +1,37 @@
+2026-11-20 08:26 Asia/Shanghai 1h peacetime patrol findings
+
+FORMAL
+- HOME upgrade formal CLEARS: exact2h 20.06/26=77.2% (prev 16.06=61.8%) back >=70%. One patrol back above is enough. Short last200 27.70=106.5% HARD does not affect the clear (home rule is exact2h only). 1h INTERP 22.25=85.6%.
+- W47 upgrade formal FIRES: second consecutive dual after the 06:29 clearance (07:29 was the first: exact2h 20.90=69.5% + short 20.00=66.5% soft). This hour exact2h 20.56/30.08=68.4% still under 70% AND short last200 17.58=58.4% still soft (last20 20.00=66.5% is designed keep=2 soft). Root remains designed keep=2 until 40k/500t locks. Do not change keep/softCap, do not add a standing third, do not unseal. Brief w8up=3 at 84368650-84368750 and 84369430-84369520 is handoff overlap.
+- HOME 15k floor formal CLEAR: tip 16688 later 17588@84369680 both ABOVE; consec-under=0. Mid-hour low 12902@84368930 07:45:03 recovered to 17248@84369220 08:04:51 after the freeze — not a tip-under. under15k samples 84368910-84368940 (14302,14402,12902,13002).
+- No formal missing-role: miner/queen/rminer/w8filler never zero. Home reserver 0 from 84369530 through later is designed (RES_SPAWN=2000; live res 2294/2364 still above). reserve7 stats None 84369220-84369460 then replacement reserve784369484 born 84369484 (wantSpawn when left<2500); reservation stayed 2449, not a formal gap.
+- No formal motion/CPU/infra alerts.
+
+ENERGY
+- Home tip stor 16688 p=8653736 (79.14%) later 17588 p=8656256@84369680 08:36:57. Hour min 12902@07:45 max 17948@84369320 08:11:55. 20k/300t unlocked (3h max 18613, 8h max 18864, best span=0).
+- nUp=2 work=28 why=ok rem W45N8:SAFE,W45N7:SAFE. Brief nUp=3 84368870-84368920 handoff; brief nUp=1 84369220-84369240 first samples after the 07:46 freeze, dual restored 08:06.
+- W47 tip/later stor 25254 p=5395035 (49.34%) later p=5397024. Hour min 21460@84368920 07:44:23 max 25603@84369400 08:17:30. 40k/500t unlocked (hour max 25603, 8h max 30080, n>=40k=0). keep=2 upgCeil=2 sealPark=1 sealMinE=25000 feedOk=1 phase=ready why=done upArm=40000 upLatched=0 bankWhy=ready softCap2=0 softLeft=0. over25k 11/68 samples this hour.
+- Model home 1h ticks=860 upgrade 22.2 stor_delta +1.61 income A 9.27 B 9.94 R(W45N8) 8.46; 2h ticks=1730 upgrade 20.10 stor_delta -0.23 income A 9.59 B 9.97 R 8.85. Biggest home gap: W45N8 harvest 8.46 vs 10 (1h); W45N7 not in model actual income (theoretical net 4.54 long haul).
+- Model W47 1h upgrade 20.42 stor_delta +2.47 src_B 8.5 R1 3.76 R2 6.98 (src_A actual dash); 2h upgrade 20.57 stor_delta +4.05 src_A 0.18 (known link-accounting artifact, miner seated 26,11) src_B 8.86 R1 5.66 R2 7.32. Biggest W47 gap is designed keep=2 upgrade 20.4 vs 30.03 (20 WORK vs 31). R1 measured 3.76 is not a missing miner: stands 18,17 and 31,34 had w8rminer 961/961 ticks in LAST..TIP.
+
+MOTION
+- creep_motion --patrol exit 1: known waiting_pickup / target_full / waiting_feed / queue_blocked / no_task. Not new stuck/osc.
+- creep_audit --patrol exit 2: standing stale deploy-window regression vs 2b5398f7@02:28, not new stuck.
+- w8filler stuck/osc counts sit under target_full (known).
+
+REMOTES / DEFENSE
+- Live 84369627: W45N8 res=2294, W45N7 2364, W47N7 2449, all by Misaki, cores 0, host 0, vis. uf.rem W45N8:SAFE,W45N7:SAFE. No defender started. No Safe Mode (sma 6/6, ttd 150000 both).
+- Labs KO still on (Memory.ops.labs.W46N8=KO), never unset. labReady why=active actOk=1.
+- Memory.cmd stale on at 84224348 by cmd, c/s empty — not live-commanding. No yield file. war_cmd/pulse not running. Single-slot 5:5:1:1 held (rot i=1 W47N8 then i=2 W45N8).
+
+INFRA / BACKFILL
+- services.sh 08:28: ok postgres/views_apache/grafana/listener/dashboard; did not restart listener (already pid 1209504). grafana 200 dashboard 200.
+- 40m official backfill game.time=84369564 published 84368800..84369400, ticks 84368801..84369500, first pass 35/35 official GETs 200, missing_chunks=0, inserted=6575, all 5 rooms distinct 700/700, tick_s=4.191.
+- just-published 84369500 ticks 84369501..84369600 all 5 rooms 200 at 08:34:20 Asia/Hong_Kong gt=84369641 inserted 2701 ts_realigned=0; post distinct 100/100 all 5. Residual unpublished after 84369600 expected.
+- Official 404 retry 16 leftover targets all still 404, inserted=0. No NEW official 404 this hour. Leftovers remain (already told): W45N8@84368100 and the prior list.
+- NEW box freeze 07:46:17-08:04:28 (1086s) STATS gap 84368940..84369220 (280t sample / 279t game 84368941..84369219) wall 1148.105s from 07:45:43; first STATS 08:04:51; listener auto-restart 08:04:32 (then pid 1200715 started 08:04:41); official-filled 279/279 all 5 rooms (inside 08:16 half-hour window and this 40m pass). Not yet told before this 1h log.
+- NEW short box hitch 08:22:11-08:23:13 (61s, box_pauses.jsonl); STATS gap 84369460..84369490 (30t) wall 130.580s from 08:21:46; listener auto-restart 08:23:16, pid 1209504 started 08:23:25. NOT a services.sh restart (08:16 half-hour explicitly did not restart; this run's services.sh 08:28 left the already-running pid in place). Official-filled in 84369400 chunk (200).
+- Prior freezes through 07:29 remain already told. 07:18:51 remains the previous patrol services.sh, not a freeze.
+- LIVE still 2b5398f7 (deploy@84345299 02:28). No src/ change, no tests, no deploy this run. deploy.lock absent, src/ clean.
+- CPU 1h (min 14.43 max 22.76 avg 17.14 p95 19.95 bucket 10000 n=58) ticks 84368730..84369590; bucket never drained.
+- exact2h shard_s/t=4.140 1h 4.149. Hostiles in owned-room room_stats 0 through later.
