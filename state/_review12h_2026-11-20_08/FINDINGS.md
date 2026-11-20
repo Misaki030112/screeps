@@ -1,0 +1,13 @@
+# 2026-11-20 08:2x 12h strategic review — findings
+
+Plan HOLDS. Docs only (ROADMAP / RCL7 / STRATEGY / MODEL / MODEL_W47N8 / MINERAL_DEFENSE). No game deploy. LIVE 2b5398f7 held (already-live since 02:28:52 11-19; no new deploy this window or after the 07:29 patrol).
+
+Window t84359020→84369500 (10480 t, 2026-11-19 20:27:50 → 2026-11-20 08:24:37 Asia/Hong_Kong, tick_s 4.104, coverage 692/1049 ≈ 66.0% after 25 box pauses totalling 13709 s). Shard sped up vs last evening's 4.694 — calendar ETAs tighten even where e/t slowed; do not read that as a healthier upgrade phase. Largest hole is 06:37:36–07:04:20 (STATS 84367950..84368340, 389 t) which hid the 06:41 core kill (reconstructed from official history). New freezes after the 07:29 already-told list: 07:46:17–08:04:28 and 08:22:11–08:23:13.
+
+- Home 79.12%, 19.29 e/t, ~5.62 d to RCL8 (was 77.27% / 21.61 / 6.25 d). 20k/300t still unlocked: **zero ≥20k samples**, max 18864 @00:39. Under-15k 22.25% (was 12.75%), longest 331 t (23:25–23:47, min 10350), min 10134 @23:19. Tip 16998 / live ~17098 nUp=2 why=ok work=28, above the floor. Home formal FIRED 06:29 / STAYS FIRED 07:29 (exact2h 61.8%, dragged by nUp=1 remote_pause in the 06:41 core fight) and is **CLEARED at this tip** (exact2h 19.37/26=74.5% ABOVE; short last200 28.00=107.7% HARD). Read as designed pause + short-window noise, not a phase issue — do not add a third, do not change the 15k floor.
+- W47 49.33%, 19.69 e/t, ~13.37 d (was 47.44% / 19.46 / 16.04 d). No 40k camp (max 30080 @03:29, only 11 t ≥30k; 24h max still 35585 @17:13 11-19). keep=2. Tip 24081, softCap2 OFF, sealPark because stor <25k, softLeft=919 hysteresis, upLatched=0. Under-15k 4.05% after the 23:36 W47N7 fight (min 11556 @23:55) then recovered. Tip exact2h 20.84/30.08=69.3% is the second consecutive slightly-under after the 06:29 clearance, short last200 20.31=67.5% IS soft — formal would re-fire on the dual rule; root remains designed keep=2 20 e/t=66.5%. Concurrent 08:26 hourly will settle the official fire. Strategy unchanged.
+- Remotes ALL SAFE after standing-ops: three W45N7 Invader Cores (~21:41, 03:41, 06:41) plus W47N7 23:36 duo and 05:35 solo, all cleared by designed full-budget defenders. No Safe Mode, commander not started.
+- Authorized home KO 27886→33121. 15k reaction floor not pausing. 20k boost skip held.
+- CPU 12h avg 17.61 / 20 (one spike 42.44 @04:37; bucket min 9997). Community 100k buffer (Overmind storageBuffer=100000 / energyPerBodyUnit=25000, re-checked on 2eae97b) still argues for holding gates, not loosening them, not opening industry / market / a new remote.
+
+Next 1–3: keep the 20k gate; W47 keep=2 until 40k/500t; continue authorized KO, boost still waits for ≥20k. No re-ask. No war_* restart.

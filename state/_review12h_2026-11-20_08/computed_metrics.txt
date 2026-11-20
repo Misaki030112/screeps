@@ -1,0 +1,102 @@
+computed official window t84359020→84369500 (first/last samples)
+wall 2026-11-19 20:27:50.119159+08:00 → 2026-11-20 08:24:37.706547+08:00 Asia/Hong_Kong
+ticks_sampled=10480 wall_s=43007.59 wall_h=11.947 tick_s=4.1038
+expected_10t_slots=1049 n_samples/room=692 coverage_pct=66.0
+(first and last samples sit on START/END, so tick_s=wall_s/ticks is valid; shard sped up vs last evening 4.6936)
+W46N8 first=8449133 last=8651276 delta=202143 e_per_t=19.2885 pct=79.1155 remaining=2283724 eta_days=5.62
+  stor_avg=15891.97 min=10134 max=18864 n=692 under15=154=22.25% ge20=0=0.00% ge25=0=0.00% ge30=0=0.00% ge40=0=0.00%
+W47N8 first=5187407 last=5393721 delta=206314 e_per_t=19.6865 pct=49.3253 remaining=5541279 eta_days=13.37
+  stor_avg=23887.17 min=11556 max=30080 n=692 under15=28=4.05% ge20=595=85.98% ge25=304=43.93% ge30=2=0.29% ge40=0=0.00%
+last evening tick_s was 4.6936; this window tick_s 4.1038 (shard faster — calendar tightens even if e/t slowed)
+TIP W46N8 t84369500 2026-11-20 08:24:37.706479+08:00 p=8651276 stor=16998
+  W46N8 exact2h INTERP dt=1739.7 dprog=33701.5 19.37/26.0=74.5% shard_s/t=4.139 start_tick=84367760.3 2026-11-20 06:24:37.706479+08:00
+  W46N8 1h INTERP dt=867.7 dprog=19310.1 22.25/26.0=85.6% shard_s/t=4.149 start_tick=84368632.3 2026-11-20 07:24:37.706479+08:00
+  W46N8 3h INTERP dt=2616.9 dprog=47394.1 18.11/26.0=69.7% shard_s/t=4.127 start_tick=84366883.1 2026-11-20 05:24:37.706479+08:00
+  W46N8 6h INTERP dt=5244.4 dprog=97837.7 18.66/26.0=71.8% shard_s/t=4.119 start_tick=84364255.6 2026-11-20 02:24:37.706479+08:00
+TIP W47N8 t84369500 2026-11-20 08:24:37.706547+08:00 p=5393721 stor=24081
+  W47N8 exact2h INTERP dt=1739.7 dprog=36261.6 20.84/30.08=69.3% shard_s/t=4.139 start_tick=84367760.3 2026-11-20 06:24:37.706547+08:00
+  W47N8 1h INTERP dt=867.7 dprog=17902.4 20.63/30.08=68.6% shard_s/t=4.149 start_tick=84368632.3 2026-11-20 07:24:37.706547+08:00
+  W47N8 3h INTERP dt=2616.9 dprog=54455.6 20.81/30.08=69.2% shard_s/t=4.127 start_tick=84366883.1 2026-11-20 05:24:37.706547+08:00
+  W47N8 6h INTERP dt=5244.4 dprog=107234.3 20.45/30.08=68.0% shard_s/t=4.119 start_tick=84364255.6 2026-11-20 02:24:37.706547+08:00
+short windows at tip:
+  W46N8 last20t (n=2 span=10) 28.00 e/t 107.7% stor 16898->16998 t84369490->84369500
+  W46N8 last30t (n=2 span=10) 28.00 e/t 107.7% stor 16898->16998 t84369490->84369500
+  W46N8 last70t (n=6 span=70) 28.00 e/t 107.7% stor 16548->16998 t84369430->84369500
+  W46N8 last100t (n=9 span=100) 28.00 e/t 107.7% stor 16848->16998 t84369400->84369500
+  W46N8 last140t (n=13 span=140) 28.00 e/t 107.7% stor 17248->16998 t84369360->84369500
+  W46N8 last200t (n=19 span=200) 28.00 e/t 107.7% stor 17348->16998 t84369300->84369500
+  W46N8 last300t (n=27 span=280) 24.20 e/t 93.1% stor 17248->16998 t84369220->84369500
+  W46N8 last500t (n=27 span=280) 24.20 e/t 93.1% stor 17248->16998 t84369220->84369500
+  W46N8 last800t (n=52 span=800) 21.84 e/t 84.0% stor 16253->16998 t84368700->84369500
+  W46N8 last1500t (n=86 span=1160) 22.06 e/t 84.8% stor 16429->16998 t84368340->84369500
+  W47N8 last20t (n=2 span=10) 13.90 e/t 46.2% stor 24581->24081 t84369490->84369500
+  W47N8 last30t (n=2 span=10) 13.90 e/t 46.2% stor 24581->24081 t84369490->84369500
+  W47N8 last70t (n=6 span=70) 18.10 e/t 60.2% stor 24553->24081 t84369430->84369500
+  W47N8 last100t (n=9 span=100) 20.02 e/t 66.6% stor 25603->24081 t84369400->84369500
+  W47N8 last140t (n=13 span=140) 20.44 e/t 68.0% stor 24381->24081 t84369360->84369500
+  W47N8 last200t (n=19 span=200) 20.31 e/t 67.5% stor 23801->24081 t84369300->84369500
+  W47N8 last300t (n=27 span=280) 20.26 e/t 67.4% stor 24473->24081 t84369220->84369500
+  W47N8 last500t (n=27 span=280) 20.26 e/t 67.4% stor 24473->24081 t84369220->84369500
+  W47N8 last800t (n=52 span=800) 20.68 e/t 68.8% stor 22687->24081 t84368700->84369500
+  W47N8 last1500t (n=86 span=1160) 20.47 e/t 68.1% stor 23169->24081 t84368340->84369500
+24h recap (wall 24h ending at tip, plus since last evening sampled start 84350530):
+  W46N8 24h-from-first-sample t84350530→84369500 (2026-11-19 09:23:41.184510+08:00 → 2026-11-20 08:24:37.706479+08:00) ticks=18970 wall_h=23.02 delta=385622 e_per_t=20.33 start_stor=15534
+    24h samples n=1138 min=10134 max=20829 under15=211=18.54% ge20=16 ge40=0
+    24h max 20829 @ t84352100 2026-11-19 11:28:08.147441+08:00; min 10134 @ t84361530 2026-11-19 23:19:04.413641+08:00
+  W47N8 24h-from-first-sample t84350530→84369500 (2026-11-19 09:23:41.184714+08:00 → 2026-11-20 08:24:37.706547+08:00) ticks=18970 wall_h=23.02 delta=371569 e_per_t=19.59 start_stor=24598
+    24h samples n=1138 min=11556 max=35585 under15=28=2.46% ge20=1034 ge40=0
+    24h max 35585 @ t84356440 2026-11-19 17:13:44.750871+08:00; min 11556 @ t84362070 2026-11-19 23:55:36.196383+08:00
+since last evening sampled start t84350530→84369500 (~23h from 09:23 11-19):
+  W46N8 t84350530→84369500 ticks=18970 wall_h=23.02 start_p=8265654 end_p=8651276 delta=385622 e_per_t=20.33 end_pct=79.12
+  W47N8 t84350530→84369500 ticks=18970 wall_h=23.02 start_p=5022152 end_p=5393721 delta=371569 e_per_t=19.59 end_pct=49.33
+hourly tick_s (W46N8 first/last sample of each clock hour):
+  2026-11-19 20:00:00 t84359020-84359230 n=22 dt=210 wall_s=856.0 tick_s=4.076
+  2026-11-19 21:00:00 t84359550-84360150 n=53 dt=600 wall_s=2453.6 tick_s=4.089
+  2026-11-19 22:00:00 t84360450-84361170 n=60 dt=720 wall_s=2957.1 tick_s=4.107
+  2026-11-19 23:00:00 t84361290-84362130 n=67 dt=840 wall_s=3419.6 tick_s=4.071
+  2026-11-20 00:00:00 t84362140-84362800 n=57 dt=660 wall_s=2698.1 tick_s=4.088
+  2026-11-20 01:00:00 t84363040-84363700 n=56 dt=660 wall_s=2709.9 tick_s=4.106
+  2026-11-20 02:00:00 t84363950-84364660 n=66 dt=710 wall_s=2893.6 tick_s=4.075
+  2026-11-20 03:00:00 t84364830-84365440 n=51 dt=610 wall_s=2521.2 tick_s=4.133
+  2026-11-20 04:00:00 t84365750-84366270 n=53 dt=520 wall_s=2137.7 tick_s=4.111
+  2026-11-20 05:00:00 t84366540-84367400 n=76 dt=860 wall_s=3545.8 tick_s=4.123
+  2026-11-20 06:00:00 t84367430-84367950 n=45 dt=520 wall_s=2142.6 tick_s=4.120
+  2026-11-20 07:00:00 t84368340-84368940 n=59 dt=600 wall_s=2482.9 tick_s=4.138
+  2026-11-20 08:00:00 t84369220-84369500 n=27 dt=280 wall_s=1186.1 tick_s=4.236
+CPU 12h n=692 avg=17.61 p95=20.73 max=42.44 bucket_min=9997 n_cpu>=40=1
+done
+
+=== formals at tip 84369500 / 08:24:37 Asia/Hong_Kong ===
+HOME exact2h INTERP 19.37/26.00=74.5% ABOVE (07:29 patrol 16.06=61.8% STAYS FIRED; 06:29 FIRED on second consecutive exact2h under 70% after 05:23 18.10=69.6%). Short last20-200 28.00=107.7% HARD; last300 span=280 (post 07:46-08:04 freeze) 24.20=93.1%. 1h 22.25=85.6%; 3h 18.11=69.7% still includes the 06:25-07:09 remote_pause; 6h 18.66=71.8%. Home formal CLEARED at this tip (exact2h back above 70%). Read as designed nUp=1 remote_pause during the 06:41 core + 15k-floor solo stretches overnight, not a phase issue and not a reason to add a third.
+W47 exact2h INTERP 20.84/30.08=69.3% UNDER (07:29 20.90=69.5% was the first slightly-under after 06:29 clearance 21.57=71.7%). Short last200 20.31=67.5% IS soft (designed keep=2 20 e/t=66.5%); last100 20.02=66.6%; last20-70 13.90/18.10 sit across the 08:21-08:23 10t gap / handoff (w8upgrader ttl=7 at the live query). 1h 20.63=68.6%; 3h 20.81=69.2%; 6h 20.45=68.0%. This tip is the second consecutive exact2h under 70% with short soft, so the W47 formal would re-fire on the dual rule; the concurrent 08:26 hourly will settle the official fire. Root remains designed keep=2. Strategy unchanged.
+Overnight W47 formal cycle (hourly, already delivered): FIRED 21:17 (2nd dual after 19:22 clearance) through 01:26 (6th); CLEARED 02:34 (short no longer soft); FIRED again 04:21 (2nd after 02:34); CLEARED 06:29 (exact2h 71.7%); 07:29 first slightly-under does not re-fire.
+
+=== standing ops this window (not a phase change) ===
+W45N7 Invader Core inc 84359712 pos 4,35 threat ~21:15, defender84359713 25A25M, adjacent ~21:32, killed ~21:41 (~135 t, full hits), cleared 84360099 dur 387.
+W47N8 1 hostile flicker 84361430 / 23:12 (single room_stats sample, next gone); designed guard/defender spawned; remotes stayed SAFE.
+W47N7 2 Invaders inc 84361783 23:36 (one 3-range at 39-40,49), two full-budget rdefs, defend 23:46; no alert_ended row (23:47-23:55 freeze); 00:18 patrol: invaders already 0, defenders still on station. W47 stor crashed (min 11556 @23:55; under15 151 t + 71 t + 31 t); one w8upgrader left seat ~23:45 and disappeared ~23:55 with ~400 ttl left (00:18: not pinned, no speculative code).
+W45N7 Invader Core inc 84364997 03:15, defender84364998 25A25M, dispatched 03:25, arrived 03:29, killed 03:41 dur 382, SAFE, res dropped then recovering.
+W47N7 solo Invader inc 84366821 05:20-05:35 why=solo killed dur 226 (rdef84366822).
+W45N7 Invader Core inc 84367621 corePos 7,38 appeared during 06:14-06:19 freeze; defend ev 06:25, arrive 84367835 06:29:42, adjacent 6,37 from 84367872-84368006, killed ~84368006 ~06:41, recycled 84368110 at W46N8 35,29. No incidents cleared row (06:37-07:03 freeze); reconstructed from official history. Home nUp=1 why=remote_pause 84367730-84368410 / 06:22-07:09, restored nUp=2 at stor 18613.
+Live remotes ALL SAFE vis res 2407/2461/2452, cores 0 host 0, no defenders left. No Safe Mode (sma 6/6 both, ttd 150000). Commander not started. Memory.cmd stale on@84224348.
+
+=== KO / labs / infra tip ===
+Memory.ops.labs={W46N8:'KO'} stayed ON. t84369520: output lab 34,22 285 KO (cd 5), storage 32836 KO, terminal 0, total 33121 (was 27886). Inputs 33,21 K 1615 / 33,22 O 1215. labReady why=active actOk=1 homeStor=17198 — 15k reaction floor not pausing. 20k boost skip held (zero >=20k samples this window, max 18864). W47 labs empty shells (w8min why=miner). w9 aborted_by_misaki. sites=0. Walls: home mw 300001 mr 300061; W47 mw 1000001 mr 300101.
+Live fillers: w8filler84368852 at 34,32 1200e ttl 946; w8filler84369229 at POST2 35,31 1200e ttl 1323 — already-live park fixes visible. w8up=3 at the live query is handoff (w8upgrader84367982 ttl=7 walking off) not a standing third. upgCeil=2 keep=2.
+
+=== ledger (previous snap t84359069 -> t84369582, 10513 t / 11.98 h) ===
+W46N8: spawn 16.77 (refund 1.96, net 14.81) | repair 4.96 (walls/ramparts 1.09) | up 16.45 (undercounts ~13%; room_stats 19.29) | build 0.00
+  net sp:upgrader 2.51-1.03=1.48 under the 5 e/t waste gate. Defender bills visible (sp:defender 0.93, sp:w8defender 0.95, rf:defender 0.72).
+W47N8: spawn 15.81 (refund 0.03, net 15.78) | repair 2.28 (w/r 0.37) | up 19.64 (matches room_stats 19.69) | build 0.00
+  sp:defender 1.58 (was 0.90 last evening's 24h) — core/invader standing ops. sp:w8guard 0.52.
+No clean 24h ledger snap (next older snap is t84340747 / 35.99 h).
+
+=== coverage / freezes / 404s ===
+25 box_pause events, 13709 s (~3.81 h). Coverage 692/1049=66.0% (better than last evening 52.6%).
+Largest STATS gaps: 84367950..84368340 miss 389 (06:37:36-07:04:20, the 06:41 core kill sits here); 84359230..84359550 miss 319 (20:42-21:03); 84365440..84365750 miss 309 (03:45-04:06); 84360150..84360450 miss 299 (21:44-22:05); 84368940..84369220 miss 279 (07:45:43-08:04:51).
+NEW since the 07:29 already-told list: 07:46:17-08:04:28 (1086 s, STATS 84368940..84369220) and 08:22:11-08:23:13 (61 s, STATS 84369460..84369490). 07:18:51 remains a services.sh restart, not a freeze.
+Official 404 leftover W45N8@84368100 still unfilled (inside the 06:37-07:03 freeze). 08:16 half-hour backfill of 84368501..84369200 had missing_chunks=0. Older leftovers unchanged (W47N8@84366200, W47N7@84366500, W45N7@84365200, W47N8@84363900, W46N8@84362700, W47N8@84361700, W46N8@84360600, W45N7@84360200, W47N8@84359900, plus older W47N8@84359500 / W45N7@84358500 / W47N8@84358700 / W46N8@84354300 / W47N7@84354300 / W47N8@84352400).
+tick_s 4.1038 is real (hourly in-sample ~4.07-4.14 all night; 07:29 patrol exact2h shard_s/t 4.116). Last evening was 4.6936 — shard sped up; calendar ETAs tighten even where e/t slowed. Do not treat the faster calendar as a healthier upgrade phase.
+
+=== LIVE / deploys ===
+All 691 room_stats samples this window are 2b5398f7; 1 empty-commit sample at 84364830 / 03:03:27 (after the 02:52-03:03 freeze). No new game deploy this window or after the 07:29 patrol. Last deploy remains 2b5398f7 @84345299 / 02:28:52 Asia/Hong_Kong. deploy.lock absent. Memory.stats.commit null at the live tip. src/ clean; this review ships no game code.
