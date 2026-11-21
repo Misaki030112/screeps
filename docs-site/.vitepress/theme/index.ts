@@ -23,6 +23,7 @@ import BuildYield from './components/BuildYield.vue'
 import SalvageScore from './components/SalvageScore.vue'
 import ColonyStrip from './components/ColonyStrip.vue'
 import CmdTick from './components/CmdTick.vue'
+import CmdLife from './components/CmdLife.vue'
 import RemoteLines from './components/RemoteLines.vue'
 
 export default {
@@ -51,6 +52,7 @@ export default {
     app.component('SalvageScore', SalvageScore)
     app.component('ColonyStrip', ColonyStrip)
     app.component('CmdTick', CmdTick)
+    app.component('CmdLife', CmdLife)
     app.component('RemoteLines', RemoteLines)
   },
 }
