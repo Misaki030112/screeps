@@ -1,0 +1,113 @@
+2026-11-21 17:05:31 HKT check
+==== processes (screeps/pg/grafana/listener) ====
+   7854 Sun Nov  8 07:38:55 2026 /usr/lib/postgresql/17/bin/postgres -D /workspace/screeps/var/pg17 -c config_file=/etc/postgresql/17/main/postgresql.conf
+   8030 Sun Nov  8 07:39:04 2026 /usr/share/grafana/bin/grafana server --homepath /usr/share/grafana --config grafana/grafana.ini
+   8041 Sun Nov  8 07:39:04 2026 .venv/bin/python -m http.server 8787 --bind 127.0.0.1
+1974391 Sat Nov 21 17:04:54 2026 .venv/bin/python tools/listener.py
+4035476 Fri Nov 13 14:56:23 2026 /bin/bash tools/run_listener.sh
+==== pg_lsclusters ====
+17 main 5432 online postgres /workspace/screeps/var/pg17 /var/log/postgresql/postgresql-17-main.log
+==== listener pids / locks ====
+listener.py count=1
+run_listener.sh count=1
+yield_files=absent
+listener.lock mtime=2026-11-21 17:04
+pidfile=4035476 (run_listener.sh)
+==== listener_rot ====
+{"i": 1, "room": "W47N8", "left": 203.9, "at": "2026-11-21 17:05:31"}
+listener_rot.json age_s=0.2
+==== live.json summary ====
+  gameTime= None
+  uid= 6010ee96cbca26e9512da6f0
+  roomSlot= W47N8
+  updated= 2026-11-21 17:05:27
+  cpu= {'cpu': 16, 'memory': 24857}
+  stats.t= 84397440 cpu= 19.03 b= 9999
+  objects_n= 0 (W47N8 slot)
+  live.json_mtime_age_s= 3.4
+  live.json_mtime= 2026-11-21 17:05:27 HKT
+==== HTTP ====
+grafana :3000 -> ERR timed out
+dashboard 127.0.0.1:8787 -> ERR timed out
+==== listener restarts / errors ====
+2026-11-21 13:56:59 restart
+2026-11-21 14:23:32 restart
+2026-11-21 14:56:57 restart
+2026-11-21 15:19:33 restart
+2026-11-21 15:58:33 restart
+2026-11-21 16:19:27 restart
+2026-11-21 16:22:05 restart
+2026-11-21 17:04:44 restart
+last_restart_line=2026-11-21 17:04:44 restart
+errors/pauses after last restart:
+awk: 1: unexpected character '\'
+==== errors.log recent listener lines ====
+2026-11-09 12:28:26 < QQ1794198504499748{"t":84160648,"v":"ERR TypeError: (m.alerts || []).slice is not a function\n    at eval (eval at <anonymous> (_console1794198506643_0:1:46), <anonymous>:1:314)\n    at eval (eval at <anonymous> (_console1794198506643_0:1:46), <anonymous>:1:339)\n    at eval (eval at <anonymous> (_console1794198506643_0:1:46), <anonymous>:1:377)\n    at _console1794198506643_0:1:46\n    at _console1794198506643_0:1:60\n    at Object.evalCode (<runtime>:15350:63)\n    at Object.run (<runtime>:21072:41)\n    at <runtime>:16207:22"}
+2026-11-09 13:20:43 < QQ17942016406323595{"t":84161367,"v":"ERR TypeError: Assignment to constant variable.\n    at eval (eval at <anonymous> (_console1794201643579_0:1:46), <anonymous>:1:211)\n    at eval (eval at <anonymous> (_console1794201643579_0:1:46), <anonymous>:1:636)\n    at eval (eval at <anonymous> (_console1794201643579_0:1:46), <anonymous>:1:674)\n    at _console1794201643579_0:1:46\n    at _console1794201643579_0:1:60\n    at Object.evalCode (<runtime>:15350:63)\n    at Object.run (<runtime>:21072:41)\n    at <runtime>:16207:22"}
+2026-11-10 00:22:56 < QQ17942413746652908{"t":84170495,"v":"ERR TypeError: Object.fromEntries(...).concat is not a function\n    at eval (eval at <anonymous> (_console1794241376044_0:1:46), <anonymous>:1:590)\n    at eval (eval at <anonymous> (_console1794241376044_0:1:46), <anonymous>:1:711)\n    at _console1794241376044_0:1:46\n    at _console1794241376044_0:1:60\n    at Object.evalCode (<runtime>:15350:63)\n    at Object.run (<runtime>:21072:41)\n    at <runtime>:16207:22"}
+2026-11-10 10:49:16 < QQ17942789549452157{"t":84179039,"v":"ERR ReferenceError: st is not defined\n    at eval (eval at <anonymous> (_console1794278956469_0:1:46), <anonymous>:1:710)\n    at <runtime>:3062:27\n    at <runtime>:3860:15\n    at baseForOwn (<runtime>:2833:14)\n    at <runtime>:3830:18\n    at baseMap (<runtime>:3061:7)\n    at lodash.map (<runtime>:7497:14)\n    at eval (eval at <anonymous> (_console1794278956469_0:1:46), <anonymous>:1:606)\n    at eval (eval at <anonymous> (_console1794278956469_0:1:46), <anonymous>:1:757)\n    at eval (eval at <anonymous> (_console1794278956469_0:1:46), <anonymous>:1:795)"}
+2026-11-10 20:26:00 < QQ17943135578644865{"t":84186904,"v":"ERR ReferenceError: uf is not defined\n    at eval (eval at <anonymous> (_console1794313560774_0:1:46), <anonymous>:1:591)\n    at eval (eval at <anonymous> (_console1794313560774_0:1:46), <anonymous>:1:712)\n    at eval (eval at <anonymous> (_console1794313560774_0:1:46), <anonymous>:1:750)\n    at _console1794313560774_0:1:46\n    at _console1794313560774_0:1:60\n    at Object.evalCode (<runtime>:15350:63)\n    at Object.run (<runtime>:21072:41)\n    at <runtime>:16207:22"}
+2026-11-11 15:27:48 < QQ17943820672596452{"t":84202420,"v":"ERR TypeError: Cannot read properties of undefined (reading 'pos')\n    at eval (eval at <anonymous> (_console1794382067996_0:1:46), <anonymous>:1:218)\n    at eval (eval at <anonymous> (_console1794382067996_0:1:46), <anonymous>:1:620)\n    at eval (eval at <anonymous> (_console1794382067996_0:1:46), <anonymous>:1:659)\n    at _console1794382067996_0:1:46\n    at _console1794382067996_0:1:60\n    at Object.evalCode (<runtime>:15350:63)\n    at Object.run (<runtime>:21072:41)\n    at <runtime>:16207:22"}
+2026-11-15 02:25:35 < QQ17946807335605721{"t":84269629,"v":"ERR TypeError: _.mapObject is not a function\n    at eval (eval at <anonymous> (_console1794680735363_0:1:46), <anonymous>:1:100)\n    at eval (eval at <anonymous> (_console1794680735363_0:1:46), <anonymous>:1:872)\n    at _console1794680735363_0:1:46\n    at _console1794680735363_0:1:60\n    at Object.evalCode (<runtime>:15350:63)\n    at Object.run (<runtime>:21072:41)\n    at <runtime>:16207:22"}
+2026-11-21 15:26:53 < QQ17952460098497527{"t":84396051,"v":"ERR ReferenceError: W46N8 is not defined\n    at eval (eval at <anonymous> (_console1795246013004_0:1:46), <anonymous>:1:112)\n    at eval (eval at <anonymous> (_console1795246013004_0:1:46), <anonymous>:1:922)\n    at eval (eval at <anonymous> (_console1795246013004_0:1:46), <anonymous>:1:960)\n    at _console1795246013004_0:1:46\n    at _console1795246013004_0:1:60\n    at Object.evalCode (<runtime>:15350:63)\n    at Object.run (<runtime>:21072:41)\n    at <runtime>:16207:22"}
+==== box_pauses.jsonl last ====
+{"from": "2026-11-21 13:09:46", "to": "2026-11-21 13:21:14", "sec": 680}
+{"from": "2026-11-21 13:49:01", "to": "2026-11-21 13:56:56", "sec": 475}
+{"from": "2026-11-21 14:15:50", "to": "2026-11-21 14:23:29", "sec": 450}
+{"from": "2026-11-21 14:40:53", "to": "2026-11-21 14:56:54", "sec": 952}
+{"from": "2026-11-21 15:14:38", "to": "2026-11-21 15:19:30", "sec": 292}
+{"from": "2026-11-21 15:47:29", "to": "2026-11-21 15:58:30", "sec": 655}
+{"from": "2026-11-21 16:16:43", "to": "2026-11-21 16:19:24", "sec": 161}
+{"from": "2026-11-21 16:48:46", "to": "2026-11-21 17:04:41", "sec": 954}
+==== concurrent processes of note ====
+none
+==== db health + recent ingest ====
+db_now 2026-11-21 17:05:37.375276+08:00
+tip_room_stats=84397440
+  creep_ticks: last2h-ish ticks=84395440..84397446 rows=65489
+  creep_cpu: last2h-ish ticks=84395440..84397430 rows=13939
+  path_arrivals: last2h-ish ticks=84395448..84397429 rows=262
+  room_stats: last2h-ish ticks=84395640..84397440 rows=256
+creep_ticks since tick 84397001 (after 16:30 half-hour official through 84397000 / just-published 84397000 actual 2598 all five; 16:32 patrol already official-filled 84396101..84396800 plus just-published 84396800; leftover W47N7@84395600 / W47N8@84395100 / W46N8@84394300 / W45N8@84392600 and older leftovers already told; already-told freezes 16:16:43-16:19:24 / 15:47:29-15:58:30 / 15:14:38-15:19:30 and earlier, and short WS gaps 16:22:02 / 12:10 / 12:18 / 11:12 told by 16:32 patrol; this run must not restart the listener):
+  W46N8 84397001..84397122 rows=1175 distinct=122
+  W47N8 84397001..84397447 rows=3036 distinct=193
+  W45N8 84397001..84397100 rows=404 distinct=100
+  W45N7 84397001..84397100 rows=245 distinct=100
+  W47N7 84397001..84397100 rows=393 distinct=100
+creep_cpu tick>=84397000: ticks=84397000..84397430 rows=2583
+path_arrivals tick>=84397000: ticks=84397011..84397429 rows=74
+room_stats significant gaps since 84395900 (ignoring normal ~9-tick STATS cadence):
+  84396331..84396509 (179) last_stats=(84396330, datetime.datetime(2026, 11, 21, 15, 46, 48, 813235, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai'))) next_stats=(84396510, datetime.datetime(2026, 11, 21, 15, 59, 23, 254394, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')))
+creep_ticks in room_stats gap 84396331..84396509:
+  W46N8 84396331..84396509 rows=1385 distinct=179
+  W47N8 84396331..84396509 rows=3056 distinct=179
+  W45N8 84396331..84396509 rows=902 distinct=179
+  W45N7 84396337..84396509 rows=624 distinct=173 missing 84396331..84396332, 84396335, 84396333..84396334, 84396336 (6)
+  W47N7 84396331..84396509 rows=946 distinct=179
+  84396751..84396799 (49) last_stats=(84396750, datetime.datetime(2026, 11, 21, 16, 16, 26, 749410, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai'))) next_stats=(84396800, datetime.datetime(2026, 11, 21, 16, 20, 1, 104403, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')))
+creep_ticks in room_stats gap 84396751..84396799:
+  W46N8 84396751..84396799 rows=764 distinct=49
+  W47N8 84396751..84396799 rows=838 distinct=49
+  W45N8 84396751..84396799 rows=207 distinct=49
+  W45N7 84396751..84396799 rows=54 distinct=49
+  W47N7 84396751..84396799 rows=204 distinct=49
+  84396821..84396839 (19) last_stats=(84396820, datetime.datetime(2026, 11, 21, 16, 21, 28, 715137, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai'))) next_stats=(84396840, datetime.datetime(2026, 11, 21, 16, 22, 54, 730781, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')))
+creep_ticks in room_stats gap 84396821..84396839:
+  W46N8 84396821..84396839 rows=204 distinct=19
+  W47N8 84396821..84396839 rows=331 distinct=19
+  W45N8 84396821..84396839 rows=97 distinct=19
+  W45N7 84396821..84396839 rows=74 distinct=19
+  W47N7 84396821..84396839 rows=57 distinct=19
+  84397201..84397439 (239) last_stats=(84397200, datetime.datetime(2026, 11, 21, 16, 48, 12, 255006, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai'))) next_stats=(84397440, datetime.datetime(2026, 11, 21, 17, 5, 10, 309685, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')))
+creep_ticks in room_stats gap 84397201..84397439:
+  W46N8 none (missing all 239)
+  W47N8 84397201..84397439 rows=105 distinct=7 missing 84397414, 84397366, 84397221, 84397400, 84397248, 84397354, 84397277, 84397228, 84397286, 84397324, 84397356, 84397418, 84397206, 84397321, 84397209, 84397370, 84397350, 84397230, 84397237, 84397306, 84397345, 84397222, 84397252, 84397318, 84397231, 84397379, 84397353, 84397279, 84397267, 84397314, 84397415, 84397327, 84397334, 84397255, 84397240, 84397283, 84397264, 84397210, 84397213, 84397212, 84397358, 84397272, 84397424, 84397325, 84397294, 84397258, 84397245, 84397351, 84397387, 84397432, 84397365, 84397392, 84397281, 84397329, 84397244, 84397422, 84397239, 84397256, 84397342, 84397405, 84397343, 84397308, 84397404, 84397275, 84397268, 84397299, 84397338, 84397301, 84397226, 84397309, 84397421, 84397371, 84397331, 84397384, 84397373, 84397340, 84397260, 84397436, 84397233, 84397328, 84397236, 84397249, 84397417, 84397416, 84397243, 84397377, 84397374, 84397280, 84397419, 84397401, 84397205, 84397296, 84397376, 84397273, 84397380, 84397359, 84397430, 84397218, 84397406, 84397381, 84397217, 84397407, 84397386, 84397388, 84397304, 84397295, 84397282, 84397271, 84397269, 84397263, 84397259, 84397285, 84397251, 84397224, 84397290, 84397214, 84397257, 84397234, 84397428, 84397425, 84397368, 84397320, 84397265, 84397394, 84397293, 84397270, 84397335, 84397362, 84397431, 84397391, 84397322, 84397349, 84397333, 84397288, 84397227, 84397337, 84397229, 84397332, 84397297, 84397232, 84397250, 84397312, 84397361, 84397396, 84397347, 84397247, 84397300, 84397225, 84397220, 84397246, 84397319, 84397302, 84397261, 84397411, 84397393, 84397326, 84397316, 84397410, 84397298, 84397413, 84397429, 84397352, 84397427, 84397241, 84397389, 84397235, 84397420, 84397360, 84397397, 84397330, 84397313, 84397355, 84397216, 84397346, 84397238, 84397274, 84397311, 84397323, 84397287, 84397208, 84397399, 84397303, 84397378, 84397382, 84397315, 84397434, 84397403, 84397390, 84397207, 84397284, 84397211, 84397408, 84397289, 84397276, 84397253, 84397305, 84397383, 84397372, 84397367, 84397307, 84397375, 84397223, 84397364, 84397385, 84397435, 84397433, 84397344, 84397310, 84397341, 84397254, 84397402, 84397278, 84397262, 84397348, 84397426, 84397339, 84397215, 84397336, 84397291, 84397395, 84397357, 84397423, 84397292, 84397266, 84397412, 84397317, 84397398, 84397363, 84397409, 84397242, 84397219, 84397369 (232)
+  W45N8 none (missing all 239)
+  W45N7 none (missing all 239)
+  W47N7 none (missing all 239)
+room_stats recent tip window: ticks=84397440..84397440 rows=2
+W47N8 live near tip >= 84397420: ticks=84397437..84397449 rows=207 distinct=13
+==== health verdict ====
+ok=True
+infra healthy: single listener, postgres/grafana/dashboard up, live.json fresh, no yield file
+wrote /workspace/screeps/state/_halfhour_2026-11-21_1700/pre.txt
