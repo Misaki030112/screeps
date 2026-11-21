@@ -1,0 +1,60 @@
+=== incidents W45N7 84393366 full ===
+(datetime.datetime(2026, 11, 21, 12, 15, 6, 462011, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84393366, 'W45N7', 84393366, 'threat', 'SAFE', 'THREAT', 'core', 0, 0, 'none', 0, {'ev': 'threat', 'def': 'none', 'dur': 0, 'inc': 84393366, 'inv': [], 'why': 'core', 'from': 'SAFE', 'tick': 84393366, 'state': 'THREAT', 'invTtl': 0, 'remote': 'W45N7', 'delivered': 3882911})
+(datetime.datetime(2026, 11, 21, 12, 15, 10, 79697, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84393367, 'W45N7', 84393366, 'spawn_start', None, 'THREAT', None, None, None, 'defender84393367', None, {'n': 1, 'ev': 'spawn_start', 'def': 'defender84393367', 'inc': 84393366, 'tick': 84393367, 'state': 'THREAT', 'remote': 'W45N7', 'waited': 1})
+(datetime.datetime(2026, 11, 21, 12, 25, 47, 671710, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84393517, 'W45N7', 84393366, 'defend', 'THREAT', 'DEFEND', 'dispatched', 0, 0, 'out', 151, {'ev': 'defend', 'def': 'out', 'dur': 151, 'inc': 84393366, 'inv': 0, 'why': 'dispatched', 'from': 'THREAT', 'tick': 84393517, 'state': 'DEFEND', 'invTtl': 0, 'remote': 'W45N7', 'delivered': 3882911})
+(datetime.datetime(2026, 11, 21, 12, 30, 15, 409536, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84393580, 'W45N7', 84393366, 'arrive', None, 'DEFEND', None, 0, 0, 'out', None, {'ev': 'arrive', 'def': 'out', 'inc': 84393366, 'inv': 0, 'tick': 84393580, 'state': 'DEFEND', 'invTtl': 0, 'remote': 'W45N7', 'travel': 63, 'delivered': 3882911})
+(datetime.datetime(2026, 11, 21, 12, 42, 37, 306198, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84393753, 'W45N7', 84393366, 'cleared', 'DEFEND', 'SAFE', 'killed', 0, 0, 'out', 387, {'ev': 'cleared', 'def': 'out', 'dur': 387, 'inc': 84393366, 'inv': 0, 'why': 'killed', 'from': 'DEFEND', 'tick': 84393753, 'state': 'SAFE', 'invTtl': 0, 'remote': 'W45N7', 'delivered': 3882911})
+
+=== defender84393367 trajectory ===
+rows 453
+(84393369, 'W46N8', 35, 28, 5000, 0, 'spawning', 'defender')
+(84393399, 'W46N8', 35, 28, 5000, 0, 'spawning', 'defender')
+(84393429, 'W46N8', 35, 28, 5000, 0, 'spawning', 'defender')
+(84393459, 'W46N8', 35, 28, 5000, 0, 'spawning', 'defender')
+(84393489, 'W46N8', 35, 28, 5000, 0, 'spawning', 'defender')
+(84393519, 'W46N8', 34, 31, 5000, 0, 'empty', 'defender')
+(84393581, 'W45N7', 21, 1, 5000, 0, 'empty', 'defender')
+(84393587, 'W45N7', 18, 7, 5000, 0, 'empty', 'defender')
+(84393617, 'W45N7', 8, 37, 5000, 0, 'empty', 'defender')
+(84393647, 'W45N7', 9, 39, 5000, 0, 'empty', 'defender')
+(84393677, 'W45N7', 9, 39, 5000, 0, 'empty', 'defender')
+(84393707, 'W45N7', 9, 39, 5000, 0, 'empty', 'defender')
+(84393737, 'W45N7', 9, 39, 5000, 0, 'empty', 'defender')
+(84393767, 'W45N7', 15, 25, 5000, 0, 'empty', 'defender')
+(84393793, 'W45N8', 22, 48, 5000, 0, 'empty', 'defender')
+(84393797, 'W45N8', 25, 45, 5000, 0, 'empty', 'defender')
+(84393827, 'W45N8', 4, 27, 5000, 0, 'empty', 'defender')
+(84393834, 'W46N8', 48, 21, 5000, 0, 'empty', 'defender')
+(84393857, 'W46N8', 34, 31, 5000, 0, 'empty', 'defender')
+(84393859, 'W46N8', 35, 29, 5000, 0, 'empty', 'defender')
+first (84393369, 'W46N8', 35, 28, 5000, 0, 'spawning', 'defender') last (84393859, 'W46N8', 35, 29, 5000, 0, 'empty', 'defender') hits min/max 5000 5000
+room segs [['W46N8', 84393369, 84393542, (49, 21)], ['W45N7', 84393581, 84393792, (21, 0)], ['W45N8', 84393793, 84393833, (0, 21)], ['W46N8', 84393834, 84393859, (35, 29)]]
+
+=== other defenders since 84393300 ===
+('defender84393367', 84393369, 84393859, 453, 5000, 5000, 'W46N8', 'W46N8')
+
+=== STATS gaps since 84393450 ===
+n unique 56 min 84393420 max 84394330
+gaps >10 ticks:
+(84393580, 84393660, 79, datetime.datetime(2026, 11, 21, 12, 30, 15, 409777, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), datetime.datetime(2026, 11, 21, 12, 36, 2, 128958, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')))
+(84393830, 84393970, 139, datetime.datetime(2026, 11, 21, 12, 48, 2, 932701, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), datetime.datetime(2026, 11, 21, 12, 57, 57, 957575, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')))
+(84394130, 84394300, 169, datetime.datetime(2026, 11, 21, 13, 9, 20, 782001, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), datetime.datetime(2026, 11, 21, 13, 21, 31, 100325, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')))
+
+near 13:09 freeze, last tick before and first after:
+84394070 2026-11-21 13:05:00.606747+08:00 16.36 10000
+84394080 2026-11-21 13:05:44.200527+08:00 18.08 9997
+84394090 2026-11-21 13:06:29.402899+08:00 15.43 10000
+84394100 2026-11-21 13:07:12.117119+08:00 17.51 10000
+84394110 2026-11-21 13:07:55.246788+08:00 17.11 10000
+84394120 2026-11-21 13:08:38.166469+08:00 16.85 10000
+84394130 2026-11-21 13:09:20.782001+08:00 15.36 10000
+84394300 2026-11-21 13:21:31.100325+08:00 20.77 10000
+84394310 2026-11-21 13:22:14.448543+08:00 17.87 10000
+84394320 2026-11-21 13:22:56.755910+08:00 18.67 10000
+84394330 2026-11-21 13:23:39.066164+08:00 21.38 10000
+
+=== box_pauses table if any ===
+[]
+
+=== room_stats storage / progress tip samples around last and now ===
+room_stats cols ['ts', 'tick', 'room', 'rcl', 'progress', 'progress_total', 'energy', 'energy_cap', 'sites', 'hostiles', 'safe_mode', 'cpu', 'bucket', 'trace_cpu', 'gcl_progress', 'creeps', 'commit', 'storage', 'ctl', 'ctl_ema']

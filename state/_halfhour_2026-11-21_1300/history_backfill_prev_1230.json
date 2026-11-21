@@ -1,0 +1,283 @@
+{
+  "at": "2026-11-21 12:44:25 Asia/Hong_Kong",
+  "ok_quiet": true,
+  "game_time_first": 84393684,
+  "published_bases": "84392900..84393500",
+  "reconstructed": [
+    84392901,
+    84393600
+  ],
+  "ticks": 700,
+  "creep_rows": 24967,
+  "missing_chunks": 0,
+  "already_in_db": 21541,
+  "inserted_first": 3426,
+  "inserted_confirm": 0,
+  "inserted_retry2": 0,
+  "inserted_just_script": 3192,
+  "inserted_just_actual": 3192,
+  "inserted_window": 3426,
+  "inserted_total": 6618,
+  "first_pass_by": "this 12:30 half-hour routine ran tools/history_backfill.py --minutes 40 (game.time=84393684, published_bases 84392900..84393500, reconstructed 84392901..84393600 missing_chunks=0 inserted=3426 already_in_db=21541); 35/35 official GETs 200. Confirm 2026-11-21 12:41:03 Asia/Hong_Kong skipped=True no targets, inserted=0. retry2 2026-11-21 12:41:03 Asia/Hong_Kong skipped=True no targets, inserted=0. Prior 12:00 half-hour official-filled 84392401..84393100 plus just-published 84393100 actual 2746; 12:26 1h patrol additionally filled just-published 84393400 (W47N8/W47N7 recovered on confirm).",
+  "tick_s_printed": 4.224,
+  "tick_s_first": 4.2237,
+  "tick_s_in_use": 4.271988333333334,
+  "tick_s_in_use_name": "all_mean",
+  "ts_realigned_first": 352,
+  "corrective": 0,
+  "corrective_note": "no corrective realign; live-anchor-best all_mean 4.27199 already inside 45s gate (over45=0 mean_off=4.7) at game.time=84393729; later-mean-robust 4.28165 was worse (over45=158 mean_off=9.2); first-pass tick_s=4.22370 (printed 4.224) realigned 352 rows",
+  "coverage_official_recovered": 3331,
+  "coverage_expected": 3500,
+  "empty_no_creep": 169,
+  "official_404": 0,
+  "empty_no_creep_note": "W45N7 official empty-no-creep 169 ticks: 84393411 and 84393413..84393580 (evac after W45N7 Invader core from ~12:15 / tick 84393366; not a 404).",
+  "per_room_new_first": {
+    "W46N8": {
+      "ticks": 700,
+      "new": 880
+    },
+    "W47N8": {
+      "ticks": 700,
+      "new": 1525
+    },
+    "W45N8": {
+      "ticks": 700,
+      "new": 239
+    },
+    "W45N7": {
+      "ticks": 700,
+      "new": 20
+    },
+    "W47N7": {
+      "ticks": 700,
+      "new": 762
+    }
+  },
+  "per_room_new_window": {
+    "W46N8": {
+      "distinct": 700,
+      "rows": 8023
+    },
+    "W47N8": {
+      "distinct": 700,
+      "rows": 9524
+    },
+    "W45N8": {
+      "distinct": 700,
+      "rows": 2644
+    },
+    "W45N7": {
+      "distinct": 531,
+      "rows": 1546
+    },
+    "W47N7": {
+      "distinct": 700,
+      "rows": 2693
+    }
+  },
+  "in_window_404_after_retry2": [],
+  "first_pass_404_recovered_before_confirm": [],
+  "first_pass_404_recovered_on_confirm": [],
+  "just_published_base": 84393600,
+  "just_published_at": "2026-11-21 12:41:44 Asia/Hong_Kong",
+  "just_published_gt": 84393740,
+  "just_published_all_five_200": true,
+  "just_published_script_by_room": {
+    "W46N8": 937,
+    "W47N8": 1473,
+    "W45N8": 229,
+    "W45N7": 100,
+    "W47N7": 453
+  },
+  "just_published_actual_by_room": {
+    "W46N8": 937,
+    "W47N8": 1473,
+    "W45N8": 229,
+    "W45N7": 100,
+    "W47N7": 453
+  },
+  "just_published_still_404": [],
+  "just_published_actual_note": "script inserted=3192 (W46N8 +937, W47N8 +1473, W45N8 +229, W45N7 +100, W47N7 +453). post-counts actual_sum=3192.  All five ended 100/100.",
+  "new_box_freeze": {
+    "from": "2026-11-21 12:30:42",
+    "to": "2026-11-21 12:35:35",
+    "sec": 283,
+    "stats": "84393581..84393659",
+    "span": 79,
+    "last_stats": "84393580 at 12:30:15",
+    "next_stats": "84393660 at 12:36:02",
+    "listener_restart": "12:35:38",
+    "listener_pid": 1869380,
+    "listener_started": "12:35:48",
+    "official_fill": {
+      "W46N8": "79/79",
+      "W47N8": "79/79",
+      "W45N8": "79/79",
+      "W45N7": "79/79",
+      "W47N7": "79/79"
+    },
+    "official_fill_missing": {},
+    "told": false,
+    "told_by": null,
+    "first_recorded_by": "12:30 half-hour backfill",
+    "note": "NEW this run, not yet told. Box freeze 12:30:42-12:35:35 (283s); STATS 84393581..84393659 (79t). last_stats 84393580 at 12:30:15, next 84393660 at 12:36:02. Listener auto-restart 12:35:38, python 1869380 started 12:35:48, parent=4035476. This backfill official-filled all five 79/79 (published chunk 84393500 covering 84393581..84393600, plus just-published 84393600 covering the unpublished tail 84393601..84393659). Sits in official window start 84392901 and just-published 84393600. Next 1h patrol should tell this freeze."
+  },
+  "new_short_listener_gap": null,
+  "new_official_404": [],
+  "prior_untold_box_freeze_in_window": null,
+  "prior_untold_short_listener_gap_in_window": null,
+  "already_told_official_404_in_window": {},
+  "already_told_box_freeze_in_window": {
+    "from": "2026-11-21 11:49:12",
+    "to": "2026-11-21 11:57:31",
+    "sec": 494,
+    "stats": "84393001..84393129",
+    "span": 129,
+    "official_fill": {
+      "W46N8": "129/129",
+      "W47N8": "129/129",
+      "W45N8": "129/129",
+      "W45N7": "129/129",
+      "W47N7": "129/129"
+    },
+    "official_fill_missing": {},
+    "told": true,
+    "told_by": "12:26 1h patrol t508s3573",
+    "note": "Already told by the 12:26 1h patrol. Box freeze 11:49:12-11:57:31 (494s); official-filled all five 129/129. Still in official window start 84392901. Do not re-tell."
+  },
+  "already_told_short_listener_gap_1210": {
+    "from": "2026-11-21 12:10:56",
+    "to": "2026-11-21 12:10:59",
+    "kind": "ws_ping_pong_timeout",
+    "not_a_box_freeze": true,
+    "stats": "84393291..84393319",
+    "span": 29,
+    "official_fill": {
+      "W46N8": "29/29",
+      "W47N8": "29/29",
+      "W45N8": "29/29",
+      "W45N7": "29/29",
+      "W47N7": "29/29"
+    },
+    "told": true,
+    "told_by": "12:26 1h patrol t508s3573",
+    "note": "Already told by the 12:26 1h patrol. Short listener WS ping/pong, not a box freeze; official-filled all five 29/29. Still in official window start 84392901. Do not re-tell."
+  },
+  "already_told_short_listener_gap_1218": {
+    "from": "2026-11-21 12:18:13",
+    "to": "2026-11-21 12:18:17",
+    "kind": "ws_ping_pong_timeout",
+    "not_a_box_freeze": true,
+    "stats": "84393391..84393419",
+    "span": 29,
+    "official_fill": {
+      "W46N8": "29/29",
+      "W47N8": "29/29",
+      "W45N8": "29/29",
+      "W45N7": "21/29",
+      "W47N7": "29/29"
+    },
+    "official_fill_missing": {
+      "W45N7": "84393411..84393419 (8)"
+    },
+    "told": true,
+    "told_by": "12:26 1h patrol t508s3573",
+    "note": "Already told by the 12:26 1h patrol. Short listener WS ping/pong, not a box freeze. Four rooms official-filled 29/29; W45N7 21/29 missing 84393411 and 84393413..84393419 is official empty-no-creep after invader-core evac, not a 404. Still in official window start 84392901. Do not re-tell."
+  },
+  "aged_out_leftover_official_404s": {
+    "W45N8@84392600": {
+      "chunk": "W45N8@84392600",
+      "hole": "84392601..84392663 and 84392693..84392700",
+      "missing_n": 71,
+      "listener": "84392664..84392692",
+      "listener_n": 29,
+      "distinct": 29,
+      "rows": 177,
+      "range": "84392664..84392692",
+      "told": true,
+      "told_by": "12:26 1h patrol t508s3573",
+      "note": "Already told by the 12:26 1h patrol (confirm+retry2 12:08 and patrol retry 12:25 still 404). Ages out of window start 84392901 and was not retried here. Listener 29/100; hole 71 ticks."
+    },
+    "W46N8@84390800": {
+      "chunk": "W46N8@84390800",
+      "distinct": 0,
+      "rows": 0,
+      "told": true,
+      "told_by": "09:42 1h patrol",
+      "note": "Already told. Aged out of window start 84392901 and was not retried here."
+    },
+    "W47N7@84390900": {
+      "chunk": "W47N7@84390900",
+      "distinct": 0,
+      "rows": 0,
+      "told": true,
+      "told_by": "09:42 1h patrol",
+      "note": "Already told. Aged out of window start 84392901 and was not retried here."
+    },
+    "W46N8@84390400": {
+      "chunk": "W46N8@84390400",
+      "distinct": 59,
+      "rows": 563,
+      "told": true,
+      "told_by": "09:42 1h patrol",
+      "note": "Already told. Aged out of window start 84392901 and was not retried here."
+    },
+    "W45N7@84388500": {
+      "chunk": "W45N7@84388500",
+      "distinct": 0,
+      "rows": 0,
+      "told": true,
+      "told_by": "07:37 1h patrol",
+      "note": "Already told. Aged out of window start 84392901 and was not retried here."
+    },
+    "W45N8@84386600": {
+      "chunk": "W45N8@84386600",
+      "distinct": 27,
+      "rows": 63,
+      "told": true,
+      "told_by": "04:18/04:29 1h patrol",
+      "note": "Already told. Aged out of window start 84392901 and was not retried here."
+    }
+  },
+  "confirm": {
+    "at": "2026-11-21 12:41:03 Asia/Hong_Kong",
+    "game_time": null,
+    "still_404": [],
+    "inserted": 0,
+    "recovered": [],
+    "skipped": true,
+    "reason": "first pass 35/35 official GETs 200, missing_chunks=0; no in-window official 404s to retry"
+  },
+  "retry2": {
+    "at": "2026-11-21 12:41:03 Asia/Hong_Kong",
+    "game_time": null,
+    "still_404": [],
+    "inserted": 0,
+    "recovered": [],
+    "skipped": true,
+    "reason": "no targets"
+  },
+  "listener": {
+    "pid": 1869380,
+    "started": "12:35:48",
+    "parent": 4035476,
+    "slot": "W47N8",
+    "rot": {
+      "i": 1,
+      "room": "W47N8",
+      "left": 480.0,
+      "at": "2026-11-21 12:44:23"
+    },
+    "yield": "absent",
+    "restarted_this_run": false,
+    "last_auto_restart": "12:35:38 after box freeze 12:30:42-12:35:35; existing run_listener.sh parent 4035476 relaunched listener.py; this run did not restart the listener or war_cmd/pulse",
+    "peacetime_single_slot": "W46N8:W47N8:W45N8:W45N7=5:5:1:1"
+  },
+  "prior_halfhour": "_halfhour_2026-11-21_1200 finished ~12:08; official through 84393100 + just-published 84393100 actual 2746; leftover official 404 W45N8@84392600 still 404 after confirm+retry2; later told by the 12:26 1h patrol",
+  "prior_1h_patrol": "_patrol_2026-11-21_1217 finished ~12:27, USER_LOG delivered ~12:26 Asia/Hong_Kong t508s3573. Told box freeze 11:49:12-11:57:31 (official-filled all five 129/129), leftover official 404 W45N8@84392600 (listener 29/100, hole 71), and short listener WS gaps 11:12:51-11:12:54, 12:10:59, and 12:18:17. Older already-told freezes through 11:19:06-11:20:43 and 10:47:36-10:59:07 remain already told. Do not re-tell those. Fold only the newer freeze 12:30:42-12:35:35 (not yet told).",
+  "tips": {
+    "room_stats": 84393770,
+    "creep_cpu": 84393770,
+    "path_arrivals": 84393760
+  }
+}
