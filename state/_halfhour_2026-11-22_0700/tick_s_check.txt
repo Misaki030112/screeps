@@ -1,0 +1,32 @@
+intervals_w46:
+  84408600..84408700 4.05100
+  84408700..84408800 4.17541
+  84408800..84408900 4.10469
+  84408900..84409000 4.09428
+  84409000..84409100 3.95921
+  84409100..84409200 4.13529
+intervals_min_all_rooms:
+  84408600..84408700 4.05100
+  84408700..84408800 4.17010
+  84408800..84408900 4.11000
+  84408900..84409000 4.09428
+  84409000..84409100 3.95921
+  84409100..84409200 4.13529
+first=4.05100 later_mean_raw=4.09378 later_mean_robust=4.09378
+all_mean=4.08665 span_mean=4.08665 script_tick_s=4.05100 prev_later=4.1112625000000005
+delta_first_minus_later_raw=-0.04278 s/tick; at tmin vs gt_first ~31.4s
+delta_first_minus_later_robust=-0.04278 s/tick; at tmin vs gt_first ~31.4s
+anchor 2026-11-22 07:07:16 Asia/Hong_Kong game.time=84409367
+vs_first tick_s=4.05100 {'over45': 0, 'over15': 8923, 'n': 24507, 'mean_off': -12.254334954992451, 'min_off': -40.482268, 'max_off': 8.08039}
+vs_later_raw tick_s=4.09378 {'over45': 0, 'over15': 3479, 'n': 24507, 'mean_off': 5.802289644346513, 'min_off': -14.089476, 'max_off': 36.569206}
+vs_later_robust tick_s=4.09378 {'over45': 0, 'over15': 3479, 'n': 24507, 'mean_off': 5.802289644346513, 'min_off': -14.089476, 'max_off': 36.569206}
+vs_all_mean tick_s=4.08665 {'over45': 0, 'over15': 1768, 'n': 24507, 'mean_off': 2.7928522116130083, 'min_off': -18.488275, 'max_off': 31.82107}
+vs_span_mean tick_s=4.08665 {'over45': 0, 'over15': 1768, 'n': 24507, 'mean_off': 2.7928522116130083, 'min_off': -18.488275, 'max_off': 31.82107}
+vs_prev_later tick_s=4.11126 {'over45': 48, 'over15': 8081, 'n': 24507, 'mean_off': 13.18369923731995, 'min_off': -3.520591, 'max_off': 48.215215}
+lowest_over45_among_sane=all_mean {'over45': 0, 'over15': 1768, 'n': 24507, 'mean_off': 2.7928522116130083, 'min_off': -18.488275, 'max_off': 31.82107}
+refusing later-mean-robust; live-anchor-best=all_mean 4.08665
+corrective_applied=False
+tick_s_in_use=4.08665 (all_mean)
+wrote /workspace/screeps/state/_halfhour_2026-11-22_0700/tick_s_realign.json
+corrective_applied=False nfix=0 skipped_cross_chunk=0
+reason: first-interval tick_s=4.05100 (printed 4.051, min-all-rooms first two bases) is in the sane 3-6s band; later-mean-robust 4.09378 (raw later-mean 4.09378; delta first-robust -0.04278 s/tick, ~31.4s at tmin). First-pass realign with tick_s=4.05100 (printed 4.051) moved 1316 rows (ts_realigned_first=1316, inserted=10151, already_in_db=13284, missing_chunks=0).; later-mean-robust 4.09378 is worse than live-anchor-best all_mean 4.08665 (later over45=0 mean_off=5.8 vs best over45=0 mean_off=2.8); will not blindly apply later; live-anchor-best all_mean 4.08665 already inside 45s gate (over45=0), no corrective realign
