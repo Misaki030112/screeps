@@ -21,7 +21,7 @@ ROOMS = ("W46N8", "W47N8", "W45N8", "W45N7", "W47N7")
 # NEW box freeze 15:15:12-15:26:38 STATS 84375391..84375569 sits inside this window.
 IN_WINDOW = []  # first pass 35/35 official GETs 200, missing_chunks=0; confirm/retry2 skip no targets.
 AGED = []
-TICK_S = 4.34864
+TICK_S = 4.322434
 PASS = sys.argv[1] if len(sys.argv) > 1 else "confirm"
 OUT = "/workspace/screeps/state/_halfhour_2026-11-21_2330/backfill_confirm_gets.json"
 TICK_S_FILE = "/workspace/screeps/state/_halfhour_2026-11-21_2330/tick_s_realign.json"
