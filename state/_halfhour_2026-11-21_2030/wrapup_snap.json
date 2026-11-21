@@ -1,0 +1,583 @@
+{
+  "ok_quiet": true,
+  "at": "2026-11-21 20:45:18 Asia/Hong_Kong",
+  "window": [
+    84399701,
+    84400400
+  ],
+  "published_bases": [
+    84399700,
+    84400300
+  ],
+  "game_time_first": 84400419,
+  "first_pass": {
+    "gets_200": 32,
+    "gets_total": 35,
+    "missing_chunks": [
+      "W45N7@84399800",
+      "W47N8@84400100",
+      "W45N7@84400300"
+    ],
+    "reconstructed": [
+      84399701,
+      84400400
+    ],
+    "creep_rows": 25360,
+    "already_in_db": 22878,
+    "inserted": 2482,
+    "ts_realigned": 56,
+    "tick_s_printed": 4.21,
+    "overlap_compared": 22399,
+    "overlap_match": 22397,
+    "overlap_differ": 2,
+    "overlap_note": "Backfill does not overwrite existing rows. First-pass overlap 22397/22399 match; 2 W47N8 diffs at 84400267 (w8rhauler84399119) and 84400296 (w8rminer84400063) during evac (listener vs official)."
+  },
+  "confirm": {
+    "at": "2026-11-21 20:40:15 Asia/Hong_Kong",
+    "skipped": false,
+    "game_time": 84400446,
+    "still_404": [
+      "W45N7@84399800",
+      "W47N8@84400100",
+      "W45N7@84400300"
+    ],
+    "inserted": 0,
+    "recovered": [],
+    "ssl_note": "W47N8@84400100 confirm attempt 1 transient URLError SSL EOF; subsequent attempt returned official 404 (not an aborted retry)."
+  },
+  "retry2": {
+    "at": "2026-11-21 20:42:08 Asia/Hong_Kong",
+    "skipped": false,
+    "game_time": 84400473,
+    "still_404": [
+      "W45N7@84399800",
+      "W47N8@84400100",
+      "W45N7@84400300"
+    ],
+    "inserted": 0,
+    "recovered": []
+  },
+  "late_retry": {
+    "at": "2026-11-21 20:43:51 Asia/Hong_Kong",
+    "game_time": 84400497,
+    "targets": [
+      "W45N7@84399800",
+      "W47N8@84400100",
+      "W45N7@84400300"
+    ],
+    "still_404": [
+      "W45N7@84399800",
+      "W47N8@84400100",
+      "W45N7@84400300"
+    ],
+    "inserted": 0,
+    "recovered": []
+  },
+  "just_published": {
+    "base": 84400300,
+    "included_in_first_pass": true,
+    "first_pass_at": "2026-11-21 20:38:16 Asia/Hong_Kong",
+    "first_pass_game_time": 84400419,
+    "reget_at": "2026-11-21 20:42:22 Asia/Hong_Kong",
+    "game_time": 84400476,
+    "all_five_200": false,
+    "script_sum": 3,
+    "actual_sum": 0,
+    "script_by_room": {
+      "W46N8": 3,
+      "W47N8": 0,
+      "W45N8": 0,
+      "W45N7": 0,
+      "W47N7": 0
+    },
+    "actual_by_room": {
+      "W46N8": 0,
+      "W47N8": 0,
+      "W45N8": 0,
+      "W45N7": 0,
+      "W47N7": 0
+    },
+    "still_404": [
+      "W45N7@84400300"
+    ],
+    "w46n8_note": "W46N8 script 3 vs actual 0 (insert WHERE NOT EXISTS on creep+tick; db already 1223/100 at GET time, post still 1223).",
+    "w47n7_note": "W47N7 official 200 empty 0/100 ticks 84400301..84400400 (evac; our creeps gone; not a 404). Combined with official-200 empty 84400296..84400300 in chunk 84400200 = 105t.",
+    "w45n7_note": "W45N7@84400300 still 404 on first pass, confirm, retry2, just-published re-GET, and late retry; listener 0/100; hole 100 ticks 84400301..84400400."
+  },
+  "coverage": {
+    "official_recovered": 3095,
+    "expected": 3500,
+    "empty_no_creep": 105,
+    "official_404_missing": 300,
+    "w47n7_empty": "official 200 evac empty 84400296..84400300 (5t) in official-200 chunk 84400200 and 84400301..84400400 (100t) in official-200 chunk 84400300; 105t total, not 404s."
+  },
+  "inserted_total": 2482,
+  "tick_s_in_use": 4.267425,
+  "tick_s_in_use_name": "all_mean",
+  "tick_s_first": 4.20998,
+  "ts_realigned_first": 56,
+  "corrective": false,
+  "tips": {
+    "room_stats": 84400510,
+    "creep_cpu": 84400490,
+    "path_arrivals": 84400489
+  },
+  "window_db": {
+    "W46N8": {
+      "distinct": 700,
+      "rows": 6297,
+      "min": 84399701,
+      "max": 84400400
+    },
+    "W47N8": {
+      "distinct": 600,
+      "rows": 9700,
+      "min": 84399701,
+      "max": 84400400
+    },
+    "W45N8": {
+      "distinct": 700,
+      "rows": 3131,
+      "min": 84399701,
+      "max": 84400400
+    },
+    "W45N7": {
+      "distinct": 500,
+      "rows": 2704,
+      "min": 84399701,
+      "max": 84400300
+    },
+    "W47N7": {
+      "distinct": 595,
+      "rows": 3073,
+      "min": 84399701,
+      "max": 84400295
+    }
+  },
+  "just_published_post": {
+    "W46N8": {
+      "distinct": 100,
+      "rows": 1223,
+      "min": 84400301,
+      "max": 84400400
+    },
+    "W47N8": {
+      "distinct": 100,
+      "rows": 1975,
+      "min": 84400301,
+      "max": 84400400
+    },
+    "W45N8": {
+      "distinct": 100,
+      "rows": 312,
+      "min": 84400301,
+      "max": 84400400
+    },
+    "W45N7": {
+      "distinct": 0,
+      "rows": 0,
+      "min": null,
+      "max": null
+    },
+    "W47N7": {
+      "distinct": 0,
+      "rows": 0,
+      "min": null,
+      "max": null
+    }
+  },
+  "gaps": {
+    "gap_1952_2002": {
+      "W46N8": {
+        "fill": "149/149",
+        "distinct": 149,
+        "rows": 1299,
+        "min": 84399771,
+        "max": 84399919,
+        "missing_n": 0,
+        "missing_range": null
+      },
+      "W47N8": {
+        "fill": "149/149",
+        "distinct": 149,
+        "rows": 2104,
+        "min": 84399771,
+        "max": 84399919,
+        "missing_n": 0,
+        "missing_range": null
+      },
+      "W45N8": {
+        "fill": "149/149",
+        "distinct": 149,
+        "rows": 695,
+        "min": 84399771,
+        "max": 84399919,
+        "missing_n": 0,
+        "missing_range": null
+      },
+      "W45N7": {
+        "fill": "49/149",
+        "distinct": 49,
+        "rows": 248,
+        "min": 84399771,
+        "max": 84399919,
+        "missing_n": 100,
+        "missing_range": "84399801..84399900"
+      },
+      "W47N7": {
+        "fill": "149/149",
+        "distinct": 149,
+        "rows": 929,
+        "min": 84399771,
+        "max": 84399919,
+        "missing_n": 0,
+        "missing_range": null
+      }
+    },
+    "gap_2021_shortws": {
+      "W46N8": {
+        "fill": "19/19",
+        "distinct": 19,
+        "rows": 228,
+        "min": 84400171,
+        "max": 84400189,
+        "missing_n": 0,
+        "missing_range": null
+      },
+      "W47N8": {
+        "fill": "0/19",
+        "distinct": 0,
+        "rows": 0,
+        "min": null,
+        "max": null,
+        "missing_n": 19,
+        "missing_range": "84400171..84400189"
+      },
+      "W45N8": {
+        "fill": "19/19",
+        "distinct": 19,
+        "rows": 57,
+        "min": 84400171,
+        "max": 84400189,
+        "missing_n": 0,
+        "missing_range": null
+      },
+      "W45N7": {
+        "fill": "19/19",
+        "distinct": 19,
+        "rows": 95,
+        "min": 84400171,
+        "max": 84400189,
+        "missing_n": 0,
+        "missing_range": null
+      },
+      "W47N7": {
+        "fill": "19/19",
+        "distinct": 19,
+        "rows": 120,
+        "min": 84400171,
+        "max": 84400189,
+        "missing_n": 0,
+        "missing_range": null
+      }
+    },
+    "gap_1910_1918": {
+      "W46N8": {
+        "fill": "115/119",
+        "distinct": 115,
+        "rows": 1232,
+        "min": 84399191,
+        "max": 84399309,
+        "missing_n": 4,
+        "missing_range": "84399197..84399200"
+      },
+      "W47N8": {
+        "fill": "109/119",
+        "distinct": 109,
+        "rows": 1969,
+        "min": 84399201,
+        "max": 84399309,
+        "missing_n": 10,
+        "missing_range": "84399191..84399200"
+      },
+      "W45N8": {
+        "fill": "100/119",
+        "distinct": 100,
+        "rows": 814,
+        "min": 84399201,
+        "max": 84399300,
+        "missing_n": 19,
+        "missing_range": "84399191..84399309"
+      },
+      "W45N7": {
+        "fill": "47/119",
+        "distinct": 47,
+        "rows": 80,
+        "min": 84399249,
+        "max": 84399309,
+        "missing_n": 72,
+        "missing_range": "84399191..84399300"
+      },
+      "W47N7": {
+        "fill": "109/119",
+        "distinct": 109,
+        "rows": 201,
+        "min": 84399201,
+        "max": 84399309,
+        "missing_n": 10,
+        "missing_range": "84399191..84399200"
+      }
+    }
+  },
+  "holes": {
+    "W45N7@84399800": {
+      "distinct": 0,
+      "rows": 0,
+      "min": null,
+      "max": null,
+      "hole_ticks": 100,
+      "hole_ranges": [
+        [
+          84399801,
+          84399900
+        ]
+      ],
+      "missing": "84399801..84399900"
+    },
+    "W47N8@84400100": {
+      "distinct": 0,
+      "rows": 0,
+      "min": null,
+      "max": null,
+      "hole_ticks": 100,
+      "hole_ranges": [
+        [
+          84400101,
+          84400200
+        ]
+      ],
+      "missing": "84400101..84400200"
+    },
+    "W45N7@84400300": {
+      "distinct": 0,
+      "rows": 0,
+      "min": null,
+      "max": null,
+      "hole_ticks": 100,
+      "hole_ranges": [
+        [
+          84400301,
+          84400400
+        ]
+      ],
+      "missing": "84400301..84400400"
+    },
+    "W45N8@84399500": {
+      "distinct": 28,
+      "rows": 113,
+      "min": 84399548,
+      "max": 84399575,
+      "hole_ticks": 72,
+      "hole_ranges": [
+        [
+          84399501,
+          84399547
+        ],
+        [
+          84399576,
+          84399600
+        ]
+      ],
+      "missing": [
+        84399501,
+        84399502,
+        84399503,
+        84399504,
+        84399505,
+        84399506,
+        84399507,
+        84399508,
+        84399509,
+        84399510,
+        84399511,
+        84399512,
+        84399513,
+        84399514,
+        84399515,
+        84399516,
+        84399517,
+        84399518,
+        84399519,
+        84399520,
+        84399521,
+        84399522,
+        84399523,
+        84399524,
+        84399525,
+        84399526,
+        84399527,
+        84399528,
+        84399529,
+        84399530,
+        84399531,
+        84399532,
+        84399533,
+        84399534,
+        84399535,
+        84399536,
+        84399537,
+        84399538,
+        84399539,
+        84399540,
+        84399541,
+        84399542,
+        84399543,
+        84399544,
+        84399545,
+        84399546,
+        84399547,
+        84399576,
+        84399577,
+        84399578,
+        84399579,
+        84399580,
+        84399581,
+        84399582,
+        84399583,
+        84399584,
+        84399585,
+        84399586,
+        84399587,
+        84399588,
+        84399589,
+        84399590,
+        84399591,
+        84399592,
+        84399593,
+        84399594,
+        84399595,
+        84399596,
+        84399597,
+        84399598,
+        84399599,
+        84399600
+      ]
+    },
+    "W45N8@84399300": {
+      "distinct": 0,
+      "rows": 0,
+      "min": null,
+      "max": null,
+      "hole_ticks": 100,
+      "hole_ranges": [
+        [
+          84399301,
+          84399400
+        ]
+      ],
+      "missing": "84399301..84399400"
+    }
+  },
+  "listener": {
+    "pid": 2064860,
+    "started": "20:21:51",
+    "parent": 4035476,
+    "ps": "2064860 4035476 Sat Nov 21 20:21:51 2026       23:36 Sl   .venv/bin/python tools/listener.py",
+    "slot": "W46N8",
+    "rot": {
+      "i": 0,
+      "room": "W46N8",
+      "left": 229.9,
+      "at": "2026-11-21 20:45:13"
+    },
+    "yield_absent": true,
+    "restarted_this_run": false,
+    "auto_restart_before_this_run": "2026-11-21 20:21:41 after short WS 20:21:38 (already in _patrol_2026-11-21_2020 USER_LOG); python 2064860 started 20:21:51",
+    "count": 1
+  },
+  "written_in_2020_patrol_user_log": {
+    "patrol_dir": "_patrol_2026-11-21_2020",
+    "finished_at": "2026-11-21 20:35:40 CST",
+    "treat_as_already_told_after_delivery": true,
+    "box_freezes": [
+      "19:52:19-20:02:21"
+    ],
+    "short_ws": [
+      "20:21:38"
+    ],
+    "official_404s": [
+      "W45N8@84399500",
+      "W45N7@84399800",
+      "W47N8@84400100"
+    ],
+    "note": "Do not re-tell these after the 20:20/20:35 patrol delivery. Official fill for 19:52 freeze is now W46N8/W47N8/W45N8/W47N7 149/149, W45N7 49/149 (30 ticks 84399771..84399800 plus 19 ticks 84399901..84399919 later filled; still missing leftover official 404 W45N7@84399800 100t)."
+  },
+  "already_told_by_1918_patrol": {
+    "box_freezes_aged_or_out": [
+      "19:10:45-19:18:45",
+      "18:47:50-18:58:17",
+      "17:51:07-17:58:33"
+    ],
+    "official_404s_aged_out": [
+      "W45N8@84399300",
+      "W46N8@84399100",
+      "W47N8@84399100",
+      "W45N8@84399100",
+      "W45N7@84399100",
+      "W47N7@84399100"
+    ]
+  },
+  "new_untold_box_freezes": [],
+  "new_untold_official_404s": [
+    {
+      "room": "W45N7",
+      "base": 84400300,
+      "ticks": [
+        84400301,
+        84400400
+      ],
+      "listener": {
+        "distinct": 0,
+        "rows": 0,
+        "min": null,
+        "max": null
+      },
+      "hole_ticks": 100,
+      "hole_ranges": [
+        [
+          84400301,
+          84400400
+        ]
+      ],
+      "first_seen": "first-pass 2026-11-21 20:38:16 Asia/Hong_Kong gt=84400419 still 404 (just-published 84400300 included in first pass, before typical base+140=84400440)",
+      "confirm": {
+        "at": "2026-11-21 20:40:15 Asia/Hong_Kong",
+        "game_time": 84400446,
+        "still_404": true,
+        "inserted": 0
+      },
+      "retry2": {
+        "at": "2026-11-21 20:42:08 Asia/Hong_Kong",
+        "game_time": 84400473,
+        "still_404": true,
+        "inserted": 0
+      },
+      "just_published": {
+        "at": "2026-11-21 20:42:22 Asia/Hong_Kong",
+        "game_time": 84400476,
+        "still_404": true,
+        "inserted": 0
+      },
+      "late_retry": {
+        "at": "2026-11-21 20:43:51 Asia/Hong_Kong",
+        "game_time": 84400497,
+        "still_404": true,
+        "inserted": 0
+      },
+      "not_yet_told": true
+    }
+  ],
+  "new_untold_short_ws": [],
+  "concurrent_patrol": "finished _patrol_2026-11-21_2020 at 20:35:40 CST before this run; _review12h_2026-11-21_20 was also in progress; did not write a patrol or 12h folder",
+  "did_not_write_patrol_folder": true
+}

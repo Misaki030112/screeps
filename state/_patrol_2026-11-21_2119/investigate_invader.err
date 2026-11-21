@@ -1,0 +1,21 @@
+Traceback (most recent call last):
+  File "/workspace/screeps/state/_patrol_2026-11-21_2119/investigate_invader.py", line 143, in <module>
+    rows=c.execute("SELECT * FROM box_pauses WHERE ts >= '2026-11-21 20:00:00+08' OR COALESCE(started_at, '1970-01-01') >= '2026-11-21 20:00:00+08' ORDER BY 1").fetchall()
+         ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/screeps/.venv/lib/python3.13/site-packages/psycopg/connection.py", line 304, in execute
+    raise ex.with_traceback(None)
+psycopg.errors.UndefinedTable: relation "box_pauses" does not exist
+LINE 1: SELECT * FROM box_pauses WHERE ts >= '2026-11-21 20:00:00+08...
+                      ^
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/workspace/screeps/state/_patrol_2026-11-21_2119/investigate_invader.py", line 150, in <module>
+    rows=c.execute("SELECT * FROM box_pauses ORDER BY 1 DESC LIMIT 8").fetchall()
+         ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/screeps/.venv/lib/python3.13/site-packages/psycopg/connection.py", line 304, in execute
+    raise ex.with_traceback(None)
+psycopg.errors.UndefinedTable: relation "box_pauses" does not exist
+LINE 1: SELECT * FROM box_pauses ORDER BY 1 DESC LIMIT 8
+                      ^
