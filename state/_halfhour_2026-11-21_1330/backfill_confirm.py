@@ -19,12 +19,12 @@ ROOMS = ("W46N8", "W47N8", "W45N8", "W45N7", "W47N7")
 # (just-published 84375200 was written then at 15:10:58 gt=84375341).
 # Concurrent 1h patrol _patrol_2026-11-20_1526 is running; do not write its folder.
 # NEW box freeze 15:15:12-15:26:38 STATS 84375391..84375569 sits inside this window.
-IN_WINDOW = []  # first pass 35/35 official GETs 200, missing_chunks=0. Already-told leftover official 404s W45N8@84392600, W46N8@84390800, W47N7@84390900, W46N8@84390400, W45N7@84388500, W45N8@84386600 and older age out of window start 84393201 and are not retried here. No in-window official 404s this first pass.
+IN_WINDOW = [("W46N8", 84394300)]  # first pass 34/35 official GETs 200, missing_chunks=1. Already-told leftover official 404s W45N8@84392600, W46N8@84390800, W47N7@84390900, W46N8@84390400, W45N7@84388500, W45N8@84386600 and older age out of window start 84393701 and are not retried here. In-window first-pass official 404s: W46N8@84394300.
 AGED = []
-TICK_S = 4.27231
+TICK_S = 4.23635
 PASS = sys.argv[1] if len(sys.argv) > 1 else "confirm"
-OUT = "/workspace/screeps/state/_halfhour_2026-11-21_1300/backfill_confirm_gets.json"
-TICK_S_FILE = "/workspace/screeps/state/_halfhour_2026-11-21_1300/tick_s_realign.json"
+OUT = "/workspace/screeps/state/_halfhour_2026-11-21_1330/backfill_confirm_gets.json"
+TICK_S_FILE = "/workspace/screeps/state/_halfhour_2026-11-21_1330/tick_s_realign.json"
 
 def load_tick_s():
 

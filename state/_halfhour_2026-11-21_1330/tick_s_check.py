@@ -7,7 +7,7 @@ from zoneinfo import ZoneInfo
 from pathlib import Path
 
 ROOT = Path("/workspace/screeps")
-DIR = ROOT / "state" / "_halfhour_2026-11-21_1300"
+DIR = ROOT / "state" / "_halfhour_2026-11-21_1330"
 os.chdir(ROOT)
 sys.path.insert(0, "tools")
 sys.path.insert(0, "scripts")
@@ -26,28 +26,27 @@ import history_backfill as hb
 # Official 404 leftover W45N8@84375300 (hole 84375301..84375400, told=false) ages out of this window start 84375401 and was not retried.
 # MIN_ALL uses W45N7 on 84375500 (slightly earlier than W46N8); every other base uses W46N8 (earliest timestamp).
 W46 = {
-    84393200: 1795234260778,
-    84393300: 1795234688009,
-    84393400: 1795235110667,
-    84393500: 1795235534271,
-    84393600: 1795235977326,
     84393700: 1795236400198,
     84393800: 1795236823833,
+    84393900: 1795237246890,
+    84394000: 1795237666450,
+    84394100: 1795238097467,
+    84394200: 1795238525293,
 }
 MIN_ALL = {
-    84393200: 1795234260778,  # W46N8
-    84393300: 1795234688009,  # W46N8
-    84393400: 1795235110667,  # W46N8
-    84393500: 1795235534271,  # W46N8
-    84393600: 1795235977326,  # W46N8
     84393700: 1795236400198,  # W46N8
     84393800: 1795236823833,  # W46N8
+    84393900: 1795237246890,  # W46N8
+    84394000: 1795237666450,  # W46N8
+    84394100: 1795238097467,  # W46N8
+    84394200: 1795238525293,  # W46N8
+    84394300: 1795238963732,  # W45N7
 }
-TMIN, TMAX = 84393201, 84393900
+TMIN, TMAX = 84393701, 84394400
 ROOMS = ("W46N8", "W47N8", "W45N8", "W45N7", "W47N7")
-TICK_S_FIRST = (MIN_ALL[84393300] - MIN_ALL[84393200]) / 1000.0 / 100  # script printed 4.272, exact 4.27231
-GT_FIRST = 84393990
-TS_REALIGNED_FIRST = 0  # first-pass realign moved 0 (inserted=5897, already_in_db=19540, missing_chunks=0)
+TICK_S_FIRST = (MIN_ALL[84393800] - MIN_ALL[84393700]) / 1000.0 / 100  # script printed 4.236, exact 4.23635
+GT_FIRST = 84394426
+TS_REALIGNED_FIRST = 0  # first-pass realign moved 0 (inserted=531, already_in_db=26099, missing_chunks=1)
 PREV_LATER_MEAN = 4.222478  # 07:30 half-hour tick_s_in_use (later_raw)
 
 

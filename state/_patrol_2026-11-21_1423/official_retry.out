@@ -1,0 +1,71 @@
+game.time 84395237 at 2026-11-21 14:28:29 Asia/Hong_Kong tick_s 4.239
+=== pre db ranges ===
+  pre W46N8@84394300 distinct=79 rows=893 min=84394301 max=84394379
+  pre W45N8@84392600 distinct=29 rows=177 min=84392664 max=84392692
+  pre W46N8@84390400 distinct=59 rows=563 min=84390442 max=84390500
+  pre W46N8@84390800 distinct=0 rows=0 min=None max=None
+  pre W47N7@84390900 distinct=0 rows=0 min=None max=None
+  pre W45N7@84388500 distinct=0 rows=0 min=None max=None
+  pre W45N8@84386600 distinct=27 rows=63 min=84386657 max=84386683
+  pre W46N8@84386400 distinct=6 rows=72 min=84386401 max=84386406
+  pre W47N8@84385900 distinct=0 rows=0 min=None max=None
+  pre W47N8@84385300 distinct=0 rows=0 min=None max=None
+  pre W45N7@84383500 distinct=0 rows=0 min=None max=None
+  pre W45N7@84383900 distinct=0 rows=0 min=None max=None
+  pre W45N8@84382600 distinct=0 rows=0 min=None max=None
+  pre W45N7@84382700 distinct=0 rows=0 min=None max=None
+  pre W46N8@84382900 distinct=67 rows=628 min=84382934 max=84383000
+=== retry IN_WINDOW / leftover hole ===
+  404 W46N8@84394300
+=== retry LEFTOVER already-told ===
+  404 W45N8@84392600
+  404 W46N8@84390400
+  404 W46N8@84390800
+  404 W47N7@84390900
+  404 W45N7@84388500
+  404 W45N8@84386600
+  404 W46N8@84386400
+  404 W47N8@84385900
+  404 W47N8@84385300
+  404 W45N7@84383500
+  404 W45N7@84383900
+  404 W45N8@84382600
+  404 W45N7@84382700
+  404 W46N8@84382900
+=== just-published 84395100 (gt=84395237) ===
+  W46N8@84395100 status=200 ticks=100 range=84395101..84395200 inserted=899 realign=0
+  404 W47N8@84395100
+  W45N8@84395100 status=200 ticks=100 range=84395101..84395200 inserted=512 realign=0
+  W45N7@84395100 status=200 ticks=100 range=84395101..84395200 inserted=334 realign=0
+  W47N7@84395100 status=200 ticks=100 range=84395101..84395200 inserted=628 realign=0
+=== post db ranges ===
+  post W46N8@84394300 distinct=79 rows=893 min=84394301 max=84394379
+  post W45N8@84392600 distinct=29 rows=177 min=84392664 max=84392692
+  post W46N8@84390400 distinct=59 rows=563 min=84390442 max=84390500
+  post W46N8@84390800 distinct=0 rows=0 min=None max=None
+  post W47N7@84390900 distinct=0 rows=0 min=None max=None
+  post W45N7@84388500 distinct=0 rows=0 min=None max=None
+  post W45N8@84386600 distinct=27 rows=63 min=84386657 max=84386683
+  post W46N8@84386400 distinct=6 rows=72 min=84386401 max=84386406
+  post W47N8@84385900 distinct=0 rows=0 min=None max=None
+  post W47N8@84385300 distinct=0 rows=0 min=None max=None
+  post W45N7@84383500 distinct=0 rows=0 min=None max=None
+  post W45N7@84383900 distinct=0 rows=0 min=None max=None
+  post W45N8@84382600 distinct=0 rows=0 min=None max=None
+  post W45N7@84382700 distinct=0 rows=0 min=None max=None
+  post W46N8@84382900 distinct=67 rows=628 min=84382934 max=84383000
+  post W46N8@84395100 distinct=100 rows=1201 min=84395101 max=84395200
+  post W47N8@84395100 distinct=0 rows=0 min=None max=None
+  post W45N8@84395100 distinct=100 rows=435 min=84395101 max=84395200
+  post W45N7@84395100 distinct=100 rows=334 min=84395101 max=84395200
+  post W47N7@84395100 distinct=100 rows=628 min=84395101 max=84395200
+=== hour-window coverage LAST_TIP+1..TIP === 84395240
+  W46N8 889/910 min=84394331 max=84395240
+  W47N8 770/910 min=84394331 max=84395100
+  W45N8 870/910 min=84394331 max=84395200
+  W45N7 870/910 min=84394331 max=84395200
+  W47N7 870/910 min=84394331 max=84395200
+=== room_stats gaps since 84394300 ===
+  STATS gap 84394681..84394809 (129t) after 2026-11-21 13:48:26.326180+08:00 before 2026-11-21 13:57:43.681650+08:00 fill {'W46N8': '129/129', 'W47N8': '129/129', 'W45N8': '129/129', 'W45N7': '129/129', 'W47N7': '129/129'}
+  STATS gap 84395061..84395179 (119t) after 2026-11-21 14:15:39.563167+08:00 before 2026-11-21 14:24:16.369378+08:00 fill {'W46N8': '119/119', 'W47N8': '40/119', 'W45N8': '119/119', 'W45N7': '119/119', 'W47N7': '119/119'}
+wrote /workspace/screeps/state/_patrol_2026-11-21_1423/official_retries.json

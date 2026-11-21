@@ -9,19 +9,20 @@ import sys
 sys.path.insert(0, "/workspace/screeps/tools")
 import db
 
-DIR = Path("/workspace/screeps/state/_halfhour_2026-11-21_1300")
+DIR = Path("/workspace/screeps/state/_halfhour_2026-11-21_1330")
 ROOMS = ("W46N8", "W47N8", "W45N8", "W45N7", "W47N7")
-JUST_BASE = 84393900
+JUST_BASE = 84394400
 T0, T1 = JUST_BASE + 1, JUST_BASE + 100
-WIN_TMIN, WIN_TMAX = 84393201, 84393900
+WIN_TMIN, WIN_TMAX = 84393701, 84394400
 GAPS = [
-    ("gap_1248_1257", 84393831, 84393969),  # NEW this run, not yet told (box freeze 12:48:14-12:57:17, 534s); 139t; last_stats 84393830 at 12:48:02, next 84393970 at 12:57:57; listener auto-restart 12:57:20, python 1876378 started 12:57:29; official window start 84393201 covers 84393831..84393900 (chunk 84393800); tail 84393901..84393969 needs just-published 84393900.
-    ("gap_1230_1235", 84393581, 84393659),  # not yet told (recorded by 12:30 half-hour backfill; box freeze 12:30:42-12:35:35, 283s); 79t; official-filled all five 79/79 at 12:30 run; still in official window start 84393201. Fold into next 1h patrol together with 12:48 freeze; do not treat as already told.
-    ("gap_1218", 84393391, 84393419),  # already-told by the 12:26 1h patrol (short listener WS ping/pong 12:18:13, restart 12:18:17; not a box freeze); 29t; official 84393400 confirm-filled; W45N7 may have empty-no-creep after evac; still in official window start 84393201
-    ("gap_1210", 84393291, 84393319),  # already-told by the 12:26 1h patrol (short listener WS ping/pong 12:10:56, restart 12:10:59; not a box freeze); 29t; official-filled all five 29/29; still in official window start 84393201
-    ("gap_1149_1157", 84393001, 84393129),  # already-told by the 12:26 1h patrol (box freeze 11:49:12-11:57:31, 494s); 129t; official-filled all five 129/129; ages out of window start 84393201
-    ("gap_1119_1120", 84392571, 84392609),  # already-told by the 11:28 1h patrol (box freeze 11:19:06-11:20:43, 88s); leftover official 404 W45N8@84392600 already told by 12:26 patrol; ages out of window start 84393201
-    ("gap_1111_1113", 84392471, 84392499),  # already-told by the 12:26 1h patrol (short listener WS ping/pong 11:12:51-11:12:54, not a box freeze); official-filled all five 29/29; ages out of window start 84393201
+    ("gap_1309_1321", 84394131, 84394299),  # NEW this run, not yet told (box freeze 13:09:46-13:21:14, 680s); 169t; last_stats 84394130 at 13:09:20, next 84394300 at 13:21:31; listener auto-restart 13:21:17, python 1883231 started 13:21:26; official window start 84393701 covers the whole 169t (chunks 84394100 and 84394200).
+    ("gap_1248_1257", 84393831, 84393969),  # still not yet told (recorded by 13:00 half-hour backfill; box freeze 12:48:14-12:57:17, 534s); 139t; official-filled all five 139/139 at 13:00 run; still in official window start 84393701. Fold into next 1h patrol together with 13:09 freeze.
+    ("gap_1230_1235", 84393581, 84393659),  # still not yet told (recorded by 12:30 half-hour backfill; box freeze 12:30:42-12:35:35, 283s); 79t; official-filled all five 79/79; ages out of official window start 84393701. Still fold into next 1h patrol; do not treat as already told.
+    ("gap_1218", 84393391, 84393419),  # already-told by the 12:26 1h patrol (short listener WS ping/pong 12:18:13, restart 12:18:17; not a box freeze); 29t; W45N7 may have empty-no-creep after evac; ages out of official window start 84393701
+    ("gap_1210", 84393291, 84393319),  # already-told by the 12:26 1h patrol (short listener WS ping/pong 12:10:56, restart 12:10:59; not a box freeze); 29t; official-filled all five 29/29; ages out of official window start 84393701
+    ("gap_1149_1157", 84393001, 84393129),  # already-told by the 12:26 1h patrol (box freeze 11:49:12-11:57:31, 494s); 129t; official-filled all five 129/129; ages out of window start 84393701
+    ("gap_1119_1120", 84392571, 84392609),  # already-told by the 11:28 1h patrol (box freeze 11:19:06-11:20:43, 88s); leftover official 404 W45N8@84392600 already told by 12:26 patrol; ages out of window start 84393701
+    ("gap_1111_1113", 84392471, 84392499),  # already-told by the 12:26 1h patrol (short listener WS ping/pong 11:12:51-11:12:54, not a box freeze); official-filled all five 29/29; ages out of window start 84393701
 ]
 HK = ZoneInfo("Asia/Hong_Kong")
 
