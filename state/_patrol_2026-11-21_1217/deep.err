@@ -1,0 +1,17 @@
+Traceback (most recent call last):
+  File "/tmp/patrol_deep.py", line 13, in <module>
+    rows = c.execute("""
+           ~~~~~~~~~^^^^
+        SELECT tick, ts, storage, progress, cpu, bucket, hostiles, sites, energy,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+               (stats->>'nUp')::int AS nup, (stats->>'w8up')::int AS w8up
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        FROM room_stats WHERE room=%s AND tick>=84393450 ORDER BY tick
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    """, (room,)).fetchall()
+    ^^^^^^^^^^^^^
+  File "/workspace/screeps/.venv/lib/python3.13/site-packages/psycopg/connection.py", line 304, in execute
+    raise ex.with_traceback(None)
+psycopg.errors.UndefinedColumn: column "stats" does not exist
+LINE 3:                (stats->>'nUp')::int AS nup, (stats->>'w8up')...
+                        ^

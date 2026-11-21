@@ -1,0 +1,15 @@
+Traceback (most recent call last):
+  File "/tmp/patrol_deep2.py", line 177, in <module>
+    rows=c.execute("""
+         ~~~~~~~~~^^^^
+    SELECT tick, count(DISTINCT creep) FROM creep_ticks
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    WHERE role ILIKE 'reserver%' AND tick BETWEEN %s AND %s
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    GROUP BY tick ORDER BY tick
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    """, (LAST, 84393400)).fetchall()
+    ^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/screeps/.venv/lib/python3.13/site-packages/psycopg/connection.py", line 304, in execute
+    raise ex.with_traceback(None)
+psycopg.ProgrammingError: only '%s', '%b', '%t' are allowed as placeholders, got '%''
