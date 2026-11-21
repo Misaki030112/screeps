@@ -1,0 +1,10 @@
+## 2026-11-21 20:2x Asia/Hong_Kong — 12h strategic review (plan holds; home 84.69% ~4.35 d, 20k max 21259 / 121 t still unlatched, W47 first 40k touch max 42468 / 211 t still unlatched, KO 48511, gates held)
+
+Sampled window t84390120→84400280 (10160 t, tick_s 4.273, 2026-11-21 08:24:47 → 20:28:19 Asia/Hong_Kong, coverage 752/1017 ≈ 73.9%). LIVE **2b5398f7** held. No game deploy this review.
+
+Home **84.69%** (9,261,359 / 10,935,000); +193,481 ≈ **19.04 e/t** → RCL8 ≈ **4.35 days** (was 82.93% / 21.05 / 4.32 d). tick_s 4.206→4.273 is slightly slower; e/t 21.05→19.04 slowed after a heavier under-15k afternoon, so the calendar is essentially flat. Stor avg 16,047 max **21,259** @12:02 min **10,928** @16:10; under-15k **23.80%** (was 9.76%); 14 samples ≥20k (1.86%). Longest clean ≥20k stretch **121 t** (11:58–12:06). Live tip 19,333 / later ~19,433 why=ok nUp=2 work=28. exact2h 18.20/26=70.0% on the 70% line; last20–70 28.00=107.7% HARD; last800 17.16=66.0% soft. Formal stayed CLEARED through 19:28. 20k/300t and 15k floor **held**. Ledger net sp:upgrader 1.68, under the 5 e/t waste gate.
+
+W47 **54.79%** (5,991,203); +194,681 ≈ **19.16 e/t** → RCL8 ≈ **12.76 days** (was 53.01% / 19.31 / 12.95 d). Stor avg 30,662 max **42,468** @09:24–09:27 min 23,855 @19:43; 0% <15k, 100% ≥20k, 94.8% ≥25k, 48.7% ≥30k, 4.8% ≥40k. Longest clean ≥40k **211 t**; longest ≥30k 681 t (17:58–18:47, peak 36,750). Live 36,049 / later ~34.6–35.3k, keep=2, softCap2 **ON** (live W47N7 solo threatSoft), sealPark=1 after the 19:43 25k-edge dip, upLatched=0. Two 10W upgraders. exact2h 19.32/30.08=64.2% under; last20–300 designed 20.00=66.5%; last800 19.62=65.2% still soft. 40k/500t **held**. Do not unpark ceil/seal.
+
+Remotes: standing ops. Three W45N7 cores (12:15, 15:23, 18:15) all killed; W45N7 / W47N7 solos earlier in the window closed; a live W47N7 solo from 20:24 with a full-budget defender still spawning. KO 43,431→48,511; boost skip held. CPU avg 17.84 max 40.06, bucket min 9987, one ≥40 pre-freeze spike. Community 100k buffer unchanged — hold gates, no industry / market / new remote re-ask. Next: 20k gate, W47 keep=2 until 40k, authorized KO continues.
+

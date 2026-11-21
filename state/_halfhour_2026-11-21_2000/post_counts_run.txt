@@ -1,0 +1,58 @@
+skipped_just_published False
+post {
+  "W46N8": {
+    "distinct": 100,
+    "rows": 814,
+    "min": 84399901,
+    "max": 84400000
+  },
+  "W47N8": {
+    "distinct": 100,
+    "rows": 1526,
+    "min": 84399901,
+    "max": 84400000
+  },
+  "W45N8": {
+    "distinct": 100,
+    "rows": 402,
+    "min": 84399901,
+    "max": 84400000
+  },
+  "W45N7": {
+    "distinct": 12,
+    "rows": 36,
+    "min": 84399989,
+    "max": 84400000
+  },
+  "W47N7": {
+    "distinct": 100,
+    "rows": 474,
+    "min": 84399901,
+    "max": 84400000
+  }
+}
+actual_by_room {'W46N8': 814, 'W47N8': 257, 'W45N8': 402, 'W45N7': 36, 'W47N7': 474} sum 1983
+script_by {'W46N8': 814, 'W47N8': 257, 'W45N8': 471, 'W45N7': 36, 'W47N7': 476} sum 2054
+gap gap_1952_2002 84399771..84399919
+  W46N8 149/149 rows=1299 range=84399771..84399919 missing_n=0 missing_range=None
+  W47N8 149/149 rows=2085 range=84399771..84399919 missing_n=0 missing_range=None
+  W45N8 149/149 rows=695 range=84399771..84399919 missing_n=0 missing_range=None
+  W45N7 30/149 rows=153 range=84399771..84399800 missing_n=119 missing_range=84399801..84399919
+  W47N7 149/149 rows=929 range=84399771..84399919 missing_n=0 missing_range=None
+gap gap_1910_1918 84399191..84399309
+  W46N8 115/119 rows=1232 range=84399191..84399309 missing_n=4 missing_range=84399197..84399200
+  W47N8 109/119 rows=1969 range=84399201..84399309 missing_n=10 missing_range=84399191..84399200
+  W45N8 100/119 rows=814 range=84399201..84399300 missing_n=19 missing_range=84399191..84399309
+  W45N7 47/119 rows=80 range=84399249..84399309 missing_n=72 missing_range=84399191..84399300
+  W47N7 109/119 rows=201 range=84399201..84399309 missing_n=10 missing_range=84399191..84399200
+gap gap_1847_1858 84398871..84399029
+  W46N8 159/159 rows=1368 range=84398871..84399029 missing_n=0 missing_range=None
+  W47N8 159/159 rows=2436 range=84398871..84399029 missing_n=0 missing_range=None
+  W45N8 159/159 rows=1203 range=84398871..84399029 missing_n=0 missing_range=None
+  W45N7 29/159 rows=116 range=84399001..84399029 missing_n=130 missing_range=84398871..84399000
+  W47N7 159/159 rows=632 range=84398871..84399029 missing_n=0 missing_range=None
+holes {'W45N8@84399300': {'distinct': 0, 'rows': 0, 'min': None, 'max': None}, 'W45N8@84399500': {'distinct': 28, 'rows': 113, 'min': 84399548, 'max': 84399575}, 'W45N7@84399800': {'distinct': 0, 'rows': 0, 'min': None, 'max': None}, 'W46N8@84399100': {'distinct': 36, 'rows': 356, 'min': 84399161, 'max': 84399196}, 'W47N8@84399100': {'distinct': 5, 'rows': 80, 'min': 84399101, 'max': 84399105}, 'W45N8@84399100': {'distinct': 28, 'rows': 138, 'min': 84399106, 'max': 84399133}, 'W45N7@84399100': {'distinct': 27, 'rows': 108, 'min': 84399134, 'max': 84399160}, 'W47N7@84399100': {'distinct': 0, 'rows': 0, 'min': None, 'max': None}}
+tips {'room_stats': 84400060, 'creep_cpu': 84400040, 'path_arrivals': 84400038}
+live near tip {'W46N8': {'distinct': 0, 'rows': 0, 'min': None, 'max': None}, 'W47N8': {'distinct': 10, 'rows': 126, 'min': 84400020, 'max': 84400029}, 'W45N8': {'distinct': 28, 'rows': 131, 'min': 84400030, 'max': 84400057}, 'W45N7': {'distinct': 4, 'rows': 16, 'min': 84400058, 'max': 84400061}, 'W47N7': {'distinct': 0, 'rows': 0, 'min': None, 'max': None}}
+first_pass_window {'W46N8': {'distinct': 700, 'rows': 6791, 'min': 84399201, 'max': 84399900}, 'W47N8': {'distinct': 700, 'rows': 11704, 'min': 84399201, 'max': 84399900}, 'W45N8': {'distinct': 528, 'rows': 3209, 'min': 84399201, 'max': 84399900}, 'W45N7': {'distinct': 538, 'rows': 2070, 'min': 84399249, 'max': 84399800}, 'W47N7': {'distinct': 700, 'rows': 3107, 'min': 84399201, 'max': 84399900}}
+wrote post_counts and summary

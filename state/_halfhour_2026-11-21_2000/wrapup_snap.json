@@ -1,0 +1,148 @@
+{
+  "at": "2026-11-21 20:14:19 Asia/Hong_Kong",
+  "ok_quiet": true,
+  "inserted_total": 11533,
+  "just_actual": 1983,
+  "coverage": {
+    "official_recovered": 3166,
+    "expected": 3500,
+    "empty_no_creep": 62,
+    "official_404_missing": 272,
+    "w45n7_empty": "official 200 empty 84399201..84399248 (48t) and 84399287..84399300 (14t) in official-200 chunk 84399200; 62t total, not 404s. Earlier evac empty 84398866..84399000 aged out of window start 84399201."
+  },
+  "new_untold_box_freezes": [
+    {
+      "from": "2026-11-21 19:52:19",
+      "to": "2026-11-21 20:02:21",
+      "sec": 599,
+      "already_healed": true,
+      "stats": [
+        84399771,
+        84399919
+      ],
+      "stats_ticks": 149,
+      "official_fill": {
+        "W46N8": "149/149",
+        "W47N8": "149/149",
+        "W45N8": "149/149",
+        "W45N7": "30/149",
+        "W47N7": "149/149"
+      },
+      "w45n7_note": "W45N7 30/149 only 84399771..84399800 because NEW leftover official 404 W45N7@84399800 (100t 84399801..84399900) plus official-200 empty 84399901..84399919 (19t) in just-published 84399900.",
+      "listener_auto_restart": "2026-11-21 20:02:25",
+      "python_started": "20:02:34",
+      "python_pid": 2055432,
+      "not_yet_told": true
+    }
+  ],
+  "new_untold_official_404s": [
+    {
+      "room": "W45N8",
+      "base": 84399500,
+      "ticks": [
+        84399501,
+        84399600
+      ],
+      "listener": {
+        "distinct": 28,
+        "rows": 113,
+        "min": 84399548,
+        "max": 84399575
+      },
+      "hole_ticks": 72,
+      "hole_ranges": [
+        [
+          84399501,
+          84399547
+        ],
+        [
+          84399576,
+          84399600
+        ]
+      ],
+      "first_seen": "just-published 2026-11-21 19:43:00 Asia/Hong_Kong gt=84399641 still 404",
+      "confirm": {
+        "at": "2026-11-21 20:06:05 Asia/Hong_Kong",
+        "game_time": 84399968,
+        "still_404": true,
+        "inserted": 0
+      },
+      "retry2": {
+        "at": "2026-11-21 20:07:42 Asia/Hong_Kong",
+        "game_time": 84399990,
+        "still_404": true,
+        "inserted": 0
+      },
+      "late_retry": null,
+      "not_yet_told": true,
+      "carried_from": "_halfhour_2026-11-21_1930"
+    },
+    {
+      "room": "W45N7",
+      "base": 84399800,
+      "ticks": [
+        84399801,
+        84399900
+      ],
+      "listener": {
+        "distinct": 0,
+        "rows": 0,
+        "min": null,
+        "max": null
+      },
+      "hole_ticks": 100,
+      "hole_ranges": [
+        [
+          84399801,
+          84399900
+        ]
+      ],
+      "first_seen": "first-pass 2026-11-21 20:04:11 Asia/Hong_Kong gt=84399941 still 404",
+      "confirm": {
+        "at": "2026-11-21 20:06:05 Asia/Hong_Kong",
+        "game_time": 84399968,
+        "still_404": true,
+        "inserted": 0
+      },
+      "retry2": {
+        "at": "2026-11-21 20:07:42 Asia/Hong_Kong",
+        "game_time": 84399990,
+        "still_404": true,
+        "inserted": 0
+      },
+      "late_retry": {
+        "at": "2026-11-21 20:12:18 Asia/Hong_Kong",
+        "game_time": 84400054,
+        "still_404": true,
+        "inserted": 0
+      },
+      "not_yet_told": true
+    }
+  ],
+  "new_untold_short_ws": [],
+  "tips": {
+    "room_stats": 84400060,
+    "creep_cpu": 84400040,
+    "path_arrivals": 84400038
+  },
+  "listener": {
+    "pid": 2055432,
+    "started": "20:02:34",
+    "parent": 4035476,
+    "slot": "W45N7",
+    "rot": {
+      "i": 3,
+      "room": "W45N7",
+      "left": 15.0,
+      "at": "2026-11-21 20:14:16"
+    },
+    "yield_absent": true,
+    "restarted_this_run": false,
+    "auto_restarted_before_first_pass": {
+      "listener_out": "2026-11-21 20:02:25 restart",
+      "python_started": "20:02:34",
+      "python_pid": 2055432,
+      "reason": "box freeze 19:52:19-20:02:21 ended; run_listener.sh relaunched listener.py; NEW not yet told, leave to next 1h patrol"
+    }
+  }
+}

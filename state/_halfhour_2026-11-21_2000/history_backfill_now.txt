@@ -1,0 +1,51 @@
+game.time=84399941 published_bases=84399200..84399800 rooms=W46N8,W47N8,W45N8,W45N7,W47N7 dry=False
+  ok  W46N8@84399200 ticks=100 ts=1795259930232
+  ok  W47N8@84399200 ticks=100 ts=1795259964976
+  ok  W45N8@84399200 ticks=100 ts=1795259962697
+  ok  W45N7@84399200 ticks=100 ts=1795259931102
+  ok  W47N7@84399200 ticks=100 ts=1795260001126
+  ok  W46N8@84399300 ticks=100 ts=1795260356442
+  ok  W47N8@84399300 ticks=100 ts=1795260397790
+  404 W45N8@84399300
+  ok  W45N7@84399300 ticks=100 ts=1795260359212
+  ok  W47N7@84399300 ticks=100 ts=1795260432113
+  ok  W46N8@84399400 ticks=100 ts=1795260808259
+  ok  W47N8@84399400 ticks=100 ts=1795260849198
+  ok  W45N8@84399400 ticks=100 ts=1795260845956
+  ok  W45N7@84399400 ticks=100 ts=1795260811121
+  ok  W47N7@84399400 ticks=100 ts=1795260881016
+  ok  W46N8@84399500 ticks=100 ts=1795261237132
+  ok  W47N8@84399500 ticks=100 ts=1795261281540
+  404 W45N8@84399500
+  ok  W45N7@84399500 ticks=100 ts=1795261240622
+  ok  W47N7@84399500 ticks=100 ts=1795261309526
+  ok  W46N8@84399600 ticks=100 ts=1795261658344
+  ok  W47N8@84399600 ticks=100 ts=1795261697240
+  ok  W45N8@84399600 ticks=100 ts=1795261694200
+  ok  W45N7@84399600 ticks=100 ts=1795261660947
+  ok  W47N7@84399600 ticks=100 ts=1795261724530
+  ok  W46N8@84399700 ticks=100 ts=1795262092408
+  ok  W47N8@84399700 ticks=100 ts=1795262139881
+  ok  W45N8@84399700 ticks=100 ts=1795262133426
+  ok  W45N7@84399700 ticks=100 ts=1795262093688
+  ok  W47N7@84399700 ticks=100 ts=1795262165798
+  ok  W46N8@84399800 ticks=100 ts=1795262513406
+  ok  W47N8@84399800 ticks=100 ts=1795262566828
+  ok  W45N8@84399800 ticks=100 ts=1795262559105
+  404 W45N7@84399800
+  ok  W47N7@84399800 ticks=100 ts=1795262597106
+tick_s=4.262
+reconstructed ticks=84399201..84399900 (700) creep_rows=24052 missing_chunks=3
+already_in_db=14502 would_insert=9550
+overlap compared=13510 match=13510 differ=0
+per_room W46N8:700t/1359new W47N8:700t/4173new W45N8:500t/1321new W45N7:600t/877new W47N7:700t/1820new
+inserted=9550
+ts_realigned=0
+db_after
+  W45N7 ticks=84399249..84399800 rows=2070 distinct=538
+  W45N8 ticks=84399201..84399900 rows=3209 distinct=528
+  W46N8 ticks=84399201..84399900 rows=6791 distinct=700
+  W47N7 ticks=84399201..84399900 rows=3107 distinct=700
+  W47N8 ticks=84399201..84399900 rows=11704 distinct=700
+---- wrap 2026-11-21 20:14:19 Asia/Hong_Kong ----
+confirm at 2026-11-21 20:06:05 Asia/Hong_Kong gt=84399968 still_404 W45N8@84399300, W45N8@84399500, W45N7@84399800 inserted=0; retry2 at 2026-11-21 20:07:42 Asia/Hong_Kong gt=84399990 still_404 same three inserted=0. First pass 32/35 official GETs 200, missing_chunks=3 (W45N8@84399300 already told by the delivered 19:18/19:28 1h patrol; W45N8@84399500 not yet told from the quiet 19:47 backfill; W45N7@84399800 new first-pass 404). Already-told leftover official 404s all five @84399100 / W45N7@84397400 / W47N7@84395600 / W47N8@84395100 / W46N8@84394300 / W45N8@84392600 and older aged out of window start 84399201 and were not retried. W45N7 official-200 empty in this window: 84399201..84399248 (48t) and 84399287..84399300 (14t) in official-200 chunk 84399200, 62t total, not 404s. Just-published 84399900 at 2026-11-21 20:11:20 Asia/Hong_Kong gt=84400041 all_five_200=True script=2054 actual=1983; W46N8 script 814 vs actual 814, W47N8 script 257 vs actual 257, W45N8 script 471 vs actual 402, W45N7 script 36 vs actual 36, W47N7 script 476 vs actual 474. W45N8 script 471 vs actual 402 (69-row difference; insert WHERE NOT EXISTS on creep+tick; db already 402/100 at GET time). W47N7 script 476 vs actual 474 (2-row difference; typical). W45N7 just-pub official 200 but only 12/100 ticks 84399989..84400000 rows=36 (official empty 84399901..84399988, not a 404). Coverage official_recovered=3166/3500 empty_no_creep=62 official_404=272. inserted_first=9550 confirm=0 retry2=0 late=0 just_actual=1983 total=11533. tick_s_printed=4.262 first=4.26210 in_use=4.26210 (first) ts_realigned_first=0 corrective=0. First-pass overlap compared=13510 match=13510 differ=0 (not overwritten). Listener pid=2055432 started=20:02:34 parent=4035476 slot=W45N7 rot={"i": 3, "room": "W45N7", "left": 15.0, "at": "2026-11-21 20:14:16"} yield=absent restarted_this_run=False (auto-restart 20:02:25 after NEW freeze 19:52:19-20:02:21). NEW not-yet-told 盒子休眠 19:52:19-20:02:21 (599s, already healed; STATS 84399771..84399919, 149t; official-filled W46N8/W47N8/W45N8/W47N7 149/149, W45N7 30/149 only 84399771..84399800 because NEW leftover official 404 W45N7@84399800 plus official-200 empty 84399901..84399919; listener auto-restart 20:02:25, python 2055432 started 20:02:34). NEW not-yet-told leftover official 404 W45N7@84399800 (first-pass + confirm 20:06:05 gt=84399968 + retry2 20:07:42 gt=84399990 + late retry 20:12:18 gt=84400054 still 404; listener 0/100; hole 100 ticks 84399801..84399900). Still not-yet-told leftover official 404 W45N8@84399500 (from quiet 19:47 backfill; confirm 20:06:05 and retry2 20:07:42 this run still 404; listener 28/100 84399548..84399575; hole 72 ticks 84399501..84399547 and 84399576..84399600). No new short WS this run. Already told by the delivered 19:18/19:28 1h patrol and still in official window start 84399201: box freeze 19:10:45-19:18:45 (476s; STATS 84399191..84399309, 119t; official-filled W46N8 115/119, W47N8 109/119, W45N8 100/119, W45N7 47/119, W47N7 109/119; missing head leftover official 404 84399100 now aged out of official window start 84399201; listener auto-restart 19:18:48), leftover official 404 W45N8@84399300 (confirm+retry2 this run still 404; listener 0/100; hole 100 ticks 84399301..84399400). Already-told and now aged out of window start 84399201: box freeze 18:47:50-18:58:17, leftover official 404 all five @84399100, box freeze 17:51:07-17:58:33, short WS 17:23:22, leftover official 404 W45N7@84397400, and earlier already-told freezes/404s. Fold only newer freezes, short WS gaps, or leftover official 404s than the already-told 19:18/19:28 set plus W45N8@84399500 (once told) plus this NEW 19:52:19-20:02:21 freeze and NEW W45N7@84399800 once they are told; do not re-tell 19:10:45-19:18:45, 18:47:50-18:58:17, all-five @84399100, W45N8@84399300, 17:51:07-17:58:33, or earlier already-told items.

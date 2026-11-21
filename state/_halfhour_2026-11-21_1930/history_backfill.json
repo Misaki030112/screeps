@@ -1,0 +1,250 @@
+{
+  "ok_quiet": true,
+  "at": "2026-11-21 19:47:23 Asia/Hong_Kong",
+  "window": [
+    84398801,
+    84399500
+  ],
+  "published_bases": [
+    84398800,
+    84399400
+  ],
+  "game_time_first": 84399534,
+  "first_pass": {
+    "gets_200": 29,
+    "gets_total": 35,
+    "missing_chunks": [
+      "W46N8@84399100",
+      "W47N8@84399100",
+      "W45N8@84399100",
+      "W45N7@84399100",
+      "W47N7@84399100",
+      "W45N8@84399300"
+    ],
+    "reconstructed": [
+      84398801,
+      84399500
+    ],
+    "creep_rows": 23086,
+    "already_in_db": 19697,
+    "inserted": 3389,
+    "ts_realigned": 4275,
+    "tick_s_printed": 4.261,
+    "overlap_compared": 17889,
+    "overlap_match": 17889,
+    "overlap_differ": 0,
+    "overlap_note": "Backfill does not overwrite existing rows. First-pass overlap 17889/17889 match."
+  },
+  "confirm": {
+    "at": "2026-11-21 19:36:23 Asia/Hong_Kong",
+    "skipped": false,
+    "game_time": 84399548,
+    "still_404": [
+      "W46N8@84399100",
+      "W47N8@84399100",
+      "W45N8@84399100",
+      "W45N7@84399100",
+      "W47N7@84399100",
+      "W45N8@84399300"
+    ],
+    "inserted": 0,
+    "recovered": []
+  },
+  "retry2": {
+    "at": "2026-11-21 19:37:45 Asia/Hong_Kong",
+    "skipped": false,
+    "game_time": 84399568,
+    "still_404": [
+      "W46N8@84399100",
+      "W47N8@84399100",
+      "W45N8@84399100",
+      "W45N7@84399100",
+      "W47N7@84399100",
+      "W45N8@84399300"
+    ],
+    "inserted": 0,
+    "recovered": []
+  },
+  "late_retry": {
+    "at": "2026-11-21 19:45:06 Asia/Hong_Kong",
+    "game_time": 84399671,
+    "target": "W45N8@84399500",
+    "still_404": true,
+    "inserted": 0
+  },
+  "just_published": {
+    "base": 84399500,
+    "at": "2026-11-21 19:43:00 Asia/Hong_Kong",
+    "game_time": 84399641,
+    "all_five_200": false,
+    "script_sum": 2703,
+    "actual_sum": 2702,
+    "script_by_room": {
+      "W46N8": 1052,
+      "W47N8": 954,
+      "W45N8": 0,
+      "W45N7": 331,
+      "W47N7": 366
+    },
+    "actual_by_room": {
+      "W46N8": 1052,
+      "W47N8": 954,
+      "W45N8": 0,
+      "W45N7": 331,
+      "W47N7": 365
+    },
+    "still_404": [
+      "W45N8@84399500"
+    ],
+    "w47n7_note": "W47N7 script 366 vs actual 365 (1-row difference; typical).",
+    "w45n8_note": "NEW leftover official 404 W45N8@84399500; late retry 19:45:06 gt=84399671 still 404; listener 28/100 84399548..84399575; hole 72 ticks 84399501..84399547 and 84399576..84399600."
+  },
+  "coverage": {
+    "official_recovered": 2799,
+    "expected": 3500,
+    "empty_no_creep": 197,
+    "official_404_missing": 504,
+    "w45n7_empty": "official 200 empty 84398866..84399000 (135t, evac after Invader Core 84398417) plus 84399201..84399248 (48t) and 84399287..84399300 (14t) in official-200 chunk 84399200; 197t total, not 404s."
+  },
+  "inserted_total": 6091,
+  "tick_s_in_use": 4.2793866666666664,
+  "tick_s_in_use_name": "prev_later",
+  "tick_s_first": 4.26115,
+  "ts_realigned_first": 4275,
+  "corrective": false,
+  "tips": {
+    "room_stats": 84399680,
+    "creep_cpu": 84399670,
+    "path_arrivals": 84399666
+  },
+  "window_db": {
+    "W46N8": {
+      "distinct": 636,
+      "rows": 6372,
+      "min": 84398801,
+      "max": 84399500
+    },
+    "W47N8": {
+      "distinct": 605,
+      "rows": 10126,
+      "min": 84398801,
+      "max": 84399500
+    },
+    "W45N8": {
+      "distinct": 528,
+      "rows": 3777,
+      "min": 84398801,
+      "max": 84399500
+    },
+    "W45N7": {
+      "distinct": 430,
+      "rows": 1288,
+      "min": 84398801,
+      "max": 84399500
+    },
+    "W47N7": {
+      "distinct": 600,
+      "rows": 1941,
+      "min": 84398801,
+      "max": 84399500
+    }
+  },
+  "listener": {
+    "pid": 2035841,
+    "started": "19:18:58",
+    "parent": 4035476,
+    "slot": "W46N8",
+    "rot": {
+      "i": 0,
+      "room": "W46N8",
+      "left": 175.0,
+      "at": "2026-11-21 19:47:22"
+    },
+    "yield_absent": true,
+    "restarted_this_run": false,
+    "auto_restarted_before_first_pass": {
+      "listener_out": "2026-11-21 19:18:48 restart",
+      "python_started": "19:18:58",
+      "python_pid": 2035841,
+      "reason": "box freeze 19:10:45-19:18:45 ended; run_listener.sh relaunched listener.py; already told by the delivered 19:18/19:28 1h patrol"
+    }
+  },
+  "already_told_by_1918_patrol": {
+    "box_freezes_in_window": [
+      "18:47:50-18:58:17",
+      "19:10:45-19:18:45"
+    ],
+    "short_ws_in_window": [],
+    "official_404s_in_window": [
+      "W46N8@84399100",
+      "W47N8@84399100",
+      "W45N8@84399100",
+      "W45N7@84399100",
+      "W47N7@84399100",
+      "W45N8@84399300"
+    ],
+    "box_freezes_aged_out": [
+      "17:51:07-17:58:33",
+      "16:48:46-17:04:41",
+      "16:16:43-16:19:24",
+      "15:47:29-15:58:30",
+      "15:14:38-15:19:30",
+      "14:40:53-14:56:54",
+      "14:15:50-14:23:29",
+      "13:49:01-13:56:56",
+      "13:09:46-13:21:14"
+    ],
+    "short_ws_aged_out": [
+      "17:23:22",
+      "16:22:02"
+    ],
+    "official_404s_aged_out": [
+      "W45N7@84397400",
+      "W47N7@84395600",
+      "W47N8@84395100",
+      "W46N8@84394300",
+      "W45N8@84392600"
+    ]
+  },
+  "new_untold_box_freezes": [],
+  "new_untold_official_404s": [
+    {
+      "room": "W45N8",
+      "base": 84399500,
+      "ticks": [
+        84399501,
+        84399600
+      ],
+      "listener": {
+        "distinct": 28,
+        "rows": 113,
+        "min": 84399548,
+        "max": 84399575
+      },
+      "hole_ticks": 72,
+      "hole_ranges": [
+        [
+          84399501,
+          84399547
+        ],
+        [
+          84399576,
+          84399600
+        ]
+      ],
+      "first_seen": "just-published 2026-11-21 19:43:00 Asia/Hong_Kong gt=84399641 still 404",
+      "confirm": null,
+      "retry2": null,
+      "late_retry": {
+        "at": "2026-11-21 19:45:06 Asia/Hong_Kong",
+        "game_time": 84399671,
+        "still_404": true,
+        "inserted": 0
+      },
+      "not_yet_told": true
+    }
+  ],
+  "new_untold_short_ws": [],
+  "concurrent_patrol": "finished _patrol_2026-11-21_1918 at 19:29:30 CST before this run; did not write that folder",
+  "did_not_write_patrol_folder": true
+}
