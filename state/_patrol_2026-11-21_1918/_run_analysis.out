@@ -1,0 +1,32 @@
+launched pids 2037884 2037885 2037886 2037889 2037891 2037893 2037896 2037897 2037901
+ALL_DONE
+2026-11-21 19:22:53 CST
+model_1h rc=0
+model_2h rc=0
+model_w8_1h rc=0
+model_w8_2h rc=0
+audit_patrol rc=2
+motion_1h rc=1
+motion_2h rc=1
+freeze_clock rc=0
+probe rc=1
+  ERR:
+Traceback (most recent call last):
+  File "/workspace/screeps/state/_patrol_2026-11-21_1918/_probe.py", line 428, in <module>
+    main()
+    ~~~~^^
+  File "/workspace/screeps/state/_patrol_2026-11-21_1918/_probe.py", line 313, in main
+    names = c.execute("""
+            ~~~~~~~~~^^^^
+        SELECT DISTINCT name FROM creep_ticks
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+        ORDER BY name
+        ^^^^^^^^^^^^^
+    """).fetchall()
+    ^^^^
+  File "/workspace/screeps/.venv/lib/python3.13/site-packages/psycopg/connection.py", line 304, in execute
+    raise ex.with_traceback(None)
+psycopg.errors.UndefinedColumn: column "name" does not exist
+LINE 2:         SELECT DISTINCT name FROM creep_ticks
+                                ^

@@ -1,0 +1,19 @@
+Traceback (most recent call last):
+  File "/workspace/screeps/state/_patrol_2026-11-21_1918/_probe.py", line 428, in <module>
+    main()
+    ~~~~^^
+  File "/workspace/screeps/state/_patrol_2026-11-21_1918/_probe.py", line 313, in main
+    names = c.execute("""
+            ~~~~~~~~~^^^^
+        SELECT DISTINCT name FROM creep_ticks
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+        ORDER BY name
+        ^^^^^^^^^^^^^
+    """).fetchall()
+    ^^^^
+  File "/workspace/screeps/.venv/lib/python3.13/site-packages/psycopg/connection.py", line 304, in execute
+    raise ex.with_traceback(None)
+psycopg.errors.UndefinedColumn: column "name" does not exist
+LINE 2:         SELECT DISTINCT name FROM creep_ticks
+                                ^

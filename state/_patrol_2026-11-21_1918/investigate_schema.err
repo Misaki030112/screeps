@@ -1,0 +1,16 @@
+Traceback (most recent call last):
+  File "/workspace/screeps/state/_patrol_2026-11-21_1918/investigate.py", line 39, in <module>
+    rows = c.execute("""
+           ~~~~~~~~~^^^^
+        SELECT tick, ts, hostiles, cores, stor, rcl, progress, cpu, bucket, n_up, n_w8up
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<2 lines>...
+        ORDER BY tick
+        ^^^^^^^^^^^^^
+    """, (room, LAST-50)).fetchall()
+    ^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/screeps/.venv/lib/python3.13/site-packages/psycopg/connection.py", line 304, in execute
+    raise ex.with_traceback(None)
+psycopg.errors.UndefinedColumn: column "cores" does not exist
+LINE 2:         SELECT tick, ts, hostiles, cores, stor, rcl, progres...
+                                           ^

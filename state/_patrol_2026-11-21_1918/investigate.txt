@@ -1,0 +1,166 @@
+=== incidents since last tip ===
+n 3
+  2026-11-21 18:26:54 84398581 W45N7 84398417 defend THREAT DEFEND dispatched 0 0 out 164
+  2026-11-21 18:31:48 84398649 W45N7 84398417 arrive None DEFEND None 0 0 out None
+  2026-11-21 18:44:14 84398824 W45N7 84398417 cleared DEFEND SAFE killed 0 0 out 407
+
+=== events interesting since last ===
+n 43
+kinds {'watch': 40, 'box_pause': 2, 'alert_ended': 1}
+  2026-11-21 18:44:14 84398824 alert_ended W45N7 low remote-W45N7-84398417 None
+
+=== defender84398431 trajectory summary ===
+n 769
+first 84398432 2026-11-21 18:16:13 W46N8 30 34 hits 5000 state spawning
+last 84399300 2026-11-21 19:18:23 W45N8 3 26 hits 5000 state empty
+hits min/max 5000 5000
+   84398432 2026-11-21 18:16:13 W46N8 30 34 hits 5000 state spawning
+   84398581 2026-11-21 18:26:53 W46N8 29 33 hits 5000 state empty
+   84398612 2026-11-21 18:30:02 W45N8 1 22 hits 5000 state empty
+   84398649 2026-11-21 18:32:38 W45N7 21 0 hits 5000 state empty
+   84398866 2026-11-21 18:47:53 W45N8 22 48 hits 5000 state empty
+   84398907 2026-11-21 18:50:46 W46N8 48 21 hits 5000 state empty
+   84398933 2026-11-21 18:52:36 W45N8 3 26 hits 5000 state empty
+  tail:
+   84399296 2026-11-21 19:18:06 W45N8 3 26 hits 5000 state empty
+   84399297 2026-11-21 19:18:10 W45N8 3 26 hits 5000 state empty
+   84399298 2026-11-21 19:18:15 W45N8 3 26 hits 5000 state empty
+   84399299 2026-11-21 19:18:19 W45N8 3 26 hits 5000 state empty
+   84399300 2026-11-21 19:18:23 W45N8 3 26 hits 5000 state empty
+
+=== any other def/guard creeps since last-200 ===
+  ('defender84398431', 'defender', 84398432, 84399300, 769, 5000, 5000, ['W45N7', 'W45N8', 'W46N8'])
+
+=== official coverage 84398601..84399300 ===
+W46N8 distinct 636 missing 64 spans [(84399101, 84399160, 60), (84399197, 84399200, 4)] 
+W47N8 distinct 605 missing 95 spans [(84399106, 84399200, 95)] 
+W45N8 distinct 628 missing 72 spans [(84399101, 84399105, 5), (84399134, 84399200, 67)] 
+W45N7 distinct 382 missing 318 spans [(84398601, 84398648, 48), (84398866, 84399000, 135), (84399101, 84399133, 33), (84399161, 84399248, 88), (84399287, 84399300, 14)] 
+W47N7 distinct 600 missing 100 spans [(84399101, 84399200, 100)] 
+
+=== STATS gaps W46N8 since last-400 (dtick>15) ===
+n 95 min 84398190 max 84399390 last_ts 2026-11-21 19:24:47
+  STATS gap 84398870@2026-11-21 18:47:31 -> 84399030@2026-11-21 18:58:50 dtick=160 wall=678s missing 84398871..84399029 (159t)
+  STATS gap 84399190@2026-11-21 19:10:16 -> 84399310@2026-11-21 19:19:07 dtick=120 wall=531s missing 84399191..84399309 (119t)
+
+=== storage extremes since last ===
+W46N8 n 61 first 84398530 15888 last 84399390 17114 min 84398640 2026-11-21 18:31:10 14347 max 84399310 2026-11-21 19:19:07 17414
+  under15k 9 / 61 = 14.8 %
+    over16k 84398550 2026-11-21 18:24:39 16088 prev 15988
+    under16k 84398610 2026-11-21 18:29:02 15847 prev 16547
+    under15k 84398630 2026-11-21 18:30:28 14447 prev 15147
+    over15k 84398720 2026-11-21 18:36:52 15187 prev 14797
+    over16k 84398770 2026-11-21 18:40:26 16087 prev 15987
+    under16k 84398840 2026-11-21 18:45:23 15987 prev 16687
+    over16k 84399030 2026-11-21 18:58:50 16734 prev 15187
+W47N8 n 61 first 84398530 33758 last 84399390 25612 min 84399180 2026-11-21 19:09:32 25408 max 84398530 2026-11-21 18:23:16 33758
+  over25k 61 / 61 over40k 0 under25k 0
+
+=== nUp / def / reserver changes ===
+  W46N8 84398530 2026-11-21 18:23:16 stor=15888 nUp=2 def=1 res=1 {'miner': 2, 'queen': 2, 'rminer': 2, 'w8miner': 2, 'defender': 1, 'reserve7': 1, 'upgrader': 2, 'w8filler': 3, 'w8rminer': 2, 'w8upgrader': 2}
+  W46N8 84398600 2026-11-21 18:28:19 stor=16547 nUp=2 def=1 res=2 {'miner': 2, 'queen': 2, 'rminer': 2, 'w8miner': 2, 'defender': 1, 'reserve7': 1, 'reserver': 1, 'upgrader': 2, 'w8filler': 2, 'w8rminer': 2, 'w8upgrader': 2}
+  W46N8 84398610 2026-11-21 18:29:02 stor=15847 nUp=3 def=1 res=2 {'miner': 2, 'queen': 2, 'rminer': 2, 'w8miner': 2, 'defender': 1, 'reserve7': 1, 'reserver': 1, 'upgrader': 3, 'w8filler': 2, 'w8rminer': 2, 'w8upgrader': 2}
+  W46N8 84398690 2026-11-21 18:34:45 stor=14597 nUp=2 def=1 res=2 {'miner': 2, 'queen': 2, 'rminer': 2, 'w8miner': 2, 'defender': 1, 'reserve7': 1, 'reserver': 1, 'upgrader': 2, 'w8filler': 2, 'w8rminer': 2, 'w8upgrader': 2}
+  W46N8 84398720 2026-11-21 18:36:52 stor=15187 nUp=1 def=1 res=2 {'miner': 2, 'queen': 2, 'rminer': 2, 'w8miner': 2, 'defender': 1, 'reserve7': 1, 'reserver': 1, 'upgrader': 1, 'w8filler': 2, 'w8rminer': 2, 'w8upgrader': 2}
+  W46N8 84398830 2026-11-21 18:44:40 stor=16687 nUp=1 def=1 res=3 {'miner': 2, 'queen': 2, 'rminer': 2, 'w8miner': 2, 'defender': 1, 'reserve7': 1, 'reserver': 2, 'upgrader': 1, 'w8filler': 2, 'w8rminer': 3, 'w8upgrader': 2}
+  W46N8 84399030 2026-11-21 18:58:50 stor=16734 nUp=2 def=0 res=2 {'miner': 2, 'queen': 2, 'rminer': 3, 'w8miner': 2, 'reserver': 2, 'upgrader': 2, 'w8filler': 2, 'w8rminer': 2, 'w8upgrader': 2}
+  W47N8 84398530 2026-11-21 18:23:16 stor=33758 nUp=2 def=1 res=1 {'miner': 2, 'queen': 2, 'rminer': 2, 'w8miner': 2, 'defender': 1, 'reserve7': 1, 'upgrader': 2, 'w8filler': 3, 'w8rminer': 2, 'w8upgrader': 2}
+  W47N8 84398600 2026-11-21 18:28:19 stor=32708 nUp=2 def=1 res=2 {'miner': 2, 'queen': 2, 'rminer': 2, 'w8miner': 2, 'defender': 1, 'reserve7': 1, 'reserver': 1, 'upgrader': 2, 'w8filler': 2, 'w8rminer': 2, 'w8upgrader': 2}
+  W47N8 84398830 2026-11-21 18:44:40 stor=30358 nUp=2 def=1 res=3 {'miner': 2, 'queen': 2, 'rminer': 2, 'w8miner': 2, 'defender': 1, 'reserve7': 1, 'reserver': 2, 'upgrader': 1, 'w8filler': 2, 'w8rminer': 3, 'w8upgrader': 2}
+  W47N8 84399030 2026-11-21 18:58:50 stor=28808 nUp=2 def=0 res=2 {'miner': 2, 'queen': 2, 'rminer': 3, 'w8miner': 2, 'reserver': 2, 'upgrader': 2, 'w8filler': 2, 'w8rminer': 2, 'w8upgrader': 2}
+
+=== W45N7 / W47N7 occupancy role changes ===
+W45N7 ticks_present 382 range (84398649, 84399286)
+   84398649 2026-11-21 18:32:38 n 1 roles ['defender']
+   84399001 2026-11-21 18:56:43 n 4 roles ['reserver', 'rhauler', 'rminer']
+   84399060 2026-11-21 19:00:55 n 5 roles ['reserver', 'rhauler', 'rminer']
+   84399073 2026-11-21 19:01:51 n 4 roles ['reserver', 'rhauler', 'rminer']
+   84399249 2026-11-21 19:14:48 n 1 roles ['rhauler']
+W47N7 ticks_present 671 range (84398530, 84399300)
+   84398530 2026-11-21 18:23:13 n 4 roles ['reserve', 'wrhauler', 'wrminer']
+   84398542 2026-11-21 18:24:05 n 3 roles ['reserve', 'wrminer']
+   84398646 2026-11-21 18:32:25 n 4 roles ['reserve', 'wrhauler', 'wrminer']
+   84398676 2026-11-21 18:34:32 n 5 roles ['reserve', 'wrhauler', 'wrminer']
+   84398689 2026-11-21 18:35:27 n 4 roles ['reserve', 'wrhauler', 'wrminer']
+   84398748 2026-11-21 18:39:36 n 3 roles ['reserve', 'wrminer']
+   84398779 2026-11-21 18:41:46 n 4 roles ['reserve', 'wrhauler', 'wrminer']
+   84398822 2026-11-21 18:44:48 n 3 roles ['reserve', 'wrminer']
+   84398906 2026-11-21 18:50:42 n 4 roles ['reserve', 'wrhauler', 'wrminer']
+   84398920 2026-11-21 18:51:41 n 5 roles ['reserve', 'wrhauler', 'wrminer']
+   84398949 2026-11-21 18:53:43 n 4 roles ['reserve', 'wrhauler', 'wrminer']
+   84398969 2026-11-21 18:55:07 n 5 roles ['reserve', 'wrhauler', 'wrminer']
+   84398971 2026-11-21 18:55:16 n 4 roles ['wrhauler', 'wrminer']
+   84398987 2026-11-21 18:55:38 n 5 roles ['wrhauler', 'wrminer']
+   84398991 2026-11-21 18:55:56 n 4 roles ['wrhauler', 'wrminer']
+   84398997 2026-11-21 18:56:22 n 3 roles ['wrhauler', 'wrminer']
+   84399001 2026-11-21 18:56:43 n 4 roles ['wrhauler', 'wrminer']
+   84399030 2026-11-21 18:58:47 n 3 roles ['wrhauler', 'wrminer']
+   84399044 2026-11-21 18:59:47 n 2 roles ['wrminer']
+   84399201 2026-11-21 19:11:26 n 1 roles ['wrminer']
+   84399268 2026-11-21 19:16:08 n 2 roles ['wrhauler', 'wrminer']
+   84399270 2026-11-21 19:16:17 n 3 roles ['wrhauler', 'wrminer']
+W45N8 ticks_present 699 range (84398530, 84399300)
+   84398530 2026-11-21 18:23:13 n 2 roles ['rminer']
+   84398570 2026-11-21 18:26:05 n 1 roles ['rminer']
+   84398587 2026-11-21 18:27:19 n 2 roles ['rhauler', 'rminer']
+   84398612 2026-11-21 18:30:02 n 3 roles ['defender', 'rhauler', 'rminer']
+   84398628 2026-11-21 18:31:10 n 4 roles ['defender', 'reserver', 'rhauler', 'rminer']
+   84398648 2026-11-21 18:32:34 n 3 roles ['defender', 'reserver', 'rminer']
+   84398649 2026-11-21 18:32:38 n 2 roles ['reserver', 'rminer']
+   84398677 2026-11-21 18:34:36 n 3 roles ['reserver', 'rhauler', 'rminer']
+   84398785 2026-11-21 18:42:12 n 2 roles ['reserver', 'rminer']
+   84398844 2026-11-21 18:46:20 n 3 roles ['reserver', 'rminer']
+   84398845 2026-11-21 18:46:25 n 4 roles ['reserver', 'rhauler', 'rminer']
+   84398846 2026-11-21 18:46:29 n 3 roles ['reserver', 'rminer']
+   84398847 2026-11-21 18:46:33 n 4 roles ['reserver', 'rhauler', 'rminer']
+   84398848 2026-11-21 18:46:37 n 5 roles ['reserver', 'rhauler', 'rminer']
+   84398850 2026-11-21 18:46:46 n 6 roles ['reserver', 'rhauler', 'rminer']
+   84398861 2026-11-21 18:47:32 n 7 roles ['reserver', 'rhauler', 'rminer']
+   84398866 2026-11-21 18:47:53 n 8 roles ['defender', 'reserver', 'rhauler', 'rminer']
+   84398867 2026-11-21 18:47:57 n 9 roles ['defender', 'reserver', 'rhauler', 'rminer']
+   84398898 2026-11-21 18:50:08 n 8 roles ['defender', 'reserver', 'rhauler', 'rminer']
+   84398907 2026-11-21 18:50:46 n 7 roles ['reserver', 'rhauler', 'rminer']
+   84398933 2026-11-21 18:52:36 n 8 roles ['defender', 'reserver', 'rhauler', 'rminer']
+   84398997 2026-11-21 18:56:22 n 10 roles ['defender', 'reserver', 'rhauler', 'rminer']
+   84399001 2026-11-21 18:56:43 n 6 roles ['defender', 'reserver', 'rhauler', 'rminer']
+   84399010 2026-11-21 18:57:22 n 5 roles ['defender', 'reserver', 'rhauler', 'rminer']
+   84399060 2026-11-21 19:00:55 n 4 roles ['defender', 'reserver', 'rhauler', 'rminer']
+   84399067 2026-11-21 19:01:25 n 5 roles ['defender', 'reserver', 'rhauler', 'rminer']
+   84399071 2026-11-21 19:01:43 n 6 roles ['defender', 'reserver', 'rhauler', 'rminer']
+   84399073 2026-11-21 19:01:51 n 7 roles ['defender', 'reserver', 'rhauler', 'rminer']
+   84399106 2026-11-21 19:04:09 n 5 roles ['reserver', 'rhauler', 'rminer']
+   84399115 2026-11-21 19:04:49 n 4 roles ['reserver', 'rhauler', 'rminer']
+   84399117 2026-11-21 19:04:57 n 5 roles ['reserver', 'rhauler', 'rminer']
+   84399201 2026-11-21 19:11:26 n 8 roles ['defender', 'reserver', 'rhauler', 'rminer']
+   84399205 2026-11-21 19:11:43 n 7 roles ['defender', 'reserver', 'rhauler', 'rminer']
+   84399211 2026-11-21 19:12:08 n 8 roles ['defender', 'reserver', 'rhauler', 'rminer']
+   84399217 2026-11-21 19:12:33 n 9 roles ['defender', 'reserver', 'rhauler', 'rminer']
+   84399249 2026-11-21 19:14:48 n 8 roles ['defender', 'reserver', 'rhauler', 'rminer']
+   84399274 2026-11-21 19:16:33 n 7 roles ['defender', 'reserver', 'rhauler', 'rminer']
+   84399287 2026-11-21 19:17:28 n 8 roles ['defender', 'reserver', 'rhauler', 'rminer']
+   84399300 2026-11-21 19:18:23 n 9 roles ['defender', 'reserver', 'rhauler', 'rminer']
+
+=== W47N7 miners/haulers last hour presence ===
+  ('reserve784398359', 'reserve', 84398530, 84398970, 441)
+  ('w8rhauler84397387', 'wrhauler', 84398530, 84398688, 55)
+  ('w8rminer84398213', 'wrminer', 84398530, 84399300, 671)
+  ('w8rminer84397461', 'wrminer', 84398530, 84398990, 461)
+  ('w8rhauler84398322', 'wrhauler', 84398676, 84398948, 115)
+  ('w8rhauler84398615', 'wrhauler', 84398779, 84398821, 43)
+  ('w8rhauler84398808', 'wrhauler', 84398920, 84398996, 77)
+  ('w8rhauler84398858', 'wrhauler', 84398969, 84399043, 75)
+  ('w8rhauler84397654', 'wrhauler', 84398987, 84399029, 43)
+  ('w8rminer84398763', 'wrminer', 84399001, 84399100, 100)
+  ('w8rhauler84399119', 'wrhauler', 84399268, 84399300, 33)
+  ('w8rhauler84399156', 'wrhauler', 84399270, 84399300, 31)
+
+=== freshness ===
+room_stats 84399390 2026-11-21 19:24:47 0:00:09.899190
+creep_ticks 84399392 2026-11-21 19:24:54 0:00:02.938696
+creep_cpu 84399370 2026-11-21 19:24:03 0:00:54.575418
+
+=== 12h/24h W47 storage max (40k lock) ===
+  3h max 84398220 2026-11-21 18:00:56 36750 n>=40k 0
+  12h max 84390960 2026-11-21 09:24:15 42468 n>=40k 36
+  24h max 84390960 2026-11-21 09:24:15 42468 n>=40k 36
+home 3h max 84398310 2026-11-21 18:07:17 17798
