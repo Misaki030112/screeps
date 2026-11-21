@@ -1,0 +1,4 @@
+## 2026-11-21 08:2x — 12h actuals (plan holds)
+
+Sampled 12h window t84379800→84390120 (10320 t, tick_s 4.206, coverage 676/1033 ≈ 65.4%; first/last samples sit on the window bounds; slightly slower than last evening 4.175): home upgrade **21.05** e/t (80.94% last evening → 82.93%, +217k; RCL8 ≈ **4.32 d**, was 5.20 d). The 19.36→21.05 e/t rise is a real rate improvement (tick_s slightly slower), so this calendar tightening is a healthier phase. 2×14W remain energy-bound (live why=ok nUp=2 work=28, exact2h 26.84/26=103.2% HARD after last evening's 63.0% first-under, short last200 26.45=101.7% HARD, 1h 26.32 / 3h 23.39 / 6h 21.57). Stor avg 16.72k max **21122** min **13659**; **9.76% under 15k** (was 18.09%); first ≥20k samples (26 / 3.85%), longest clean stretch **70 t**, 20k/300t gate held. Longest under-15k 111 t (02:36–02:44, min 14020) — do not change the 15k floor. 12.05h ledger net sp:upgrader **1.67**, under the 5 e/t waste gate. See docs/RCL7.md 08:2x.
+
