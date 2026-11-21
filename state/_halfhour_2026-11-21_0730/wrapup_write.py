@@ -270,6 +270,7 @@ payload = {
         f"script inserted={script_sum} ({script_parts}). "
         f"post-counts actual_sum={actual_sum}{mismatch_s}"
         + (" All five ended 100/100." if jp_all_five else "")
+        + " Concurrent 07:25 1h patrol also fetched just-published 84389300 (json 07:34, retry 07:35, retry2 07:37) and already filled W46N8/W47N8/W45N8/W45N7 to 100/100 before this GET; W47N7 pre-snapshot was 0 and filled during this GET, so actual 479 counts the patrol's W47N7 rows plus this script's 2. This routine's own official insert for the chunk is 2."
     ),
     "new_box_freeze": new_freeze,
     "new_short_listener_gap": None,
