@@ -11,6 +11,7 @@ import HaulOrder from './components/HaulOrder.vue'
 import HaulReads from './components/HaulReads.vue'
 import ThreatFsm from './components/ThreatFsm.vue'
 import DefenseEnergy from './components/DefenseEnergy.vue'
+import RampHold from './components/RampHold.vue'
 import DeployPath from './components/DeployPath.vue'
 import UnstuckLadder from './components/UnstuckLadder.vue'
 import HubYield from './components/HubYield.vue'
@@ -38,6 +39,7 @@ export default {
     app.component('HaulReads', HaulReads)
     app.component('ThreatFsm', ThreatFsm)
     app.component('DefenseEnergy', DefenseEnergy)
+    app.component('RampHold', RampHold)
     app.component('DeployPath', DeployPath)
     app.component('UnstuckLadder', UnstuckLadder)
     app.component('HubYield', HubYield)
