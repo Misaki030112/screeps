@@ -65,6 +65,12 @@ W47 升级工站位是 12,25、14,26、14,27。13,26 留给容器，13,25 是 li
 | `Memory.ops.w47n9` | 不设 `on` 就不袭击 |
 | `Memory.ops.cq.armed` | 不设 true，征服和方阵不动 |
 | `Memory.cmd` | 不设，指挥官不接管。见 [指挥官接管](/mechanisms/commander) |
-| 安全模式 | 代码不调用 |
+| 安全模式 | 缺省不调用。防御只写建议；唯一调用要征服工人的 `autoSafe` |
+
+W47 的 `plan` 只有两档建议。推演仍赢不了，而且武装已经在封墙里面，`advise` 才是 `safemode`；否则是空字符串。`assessRun` 只在建议非空时写入 `Memory.ops.w8adv`，四格是 `t`、`advise`、`why`，以及这次拿去推演的条数 `n`。房间模块不调用 `activateSafeMode`。空字符串不会清掉已经写下的键。上一次评估还不到 **10** 拍，这一拍直接返回，不重写这个键。房间里没有还活着的攻击或远程部件，并且北口标记 `w8invN` 不在最近 **60** 拍里，评估删掉 `w8assess` 和 `w8roster`。`w8adv` 留着。`src/` 里没有第二处写入或删除它，也不给它加过期标记。旧不旧只看 `t`。名单见 [防御与威胁](/mechanisms/defense)。指挥官不打开安全模式，见 [指挥官接管](/mechanisms/commander)。
+
+<SafeModeNote />
+
+`src/` 里会调用 `activateSafeMode` 的，只有征服工人 `cqworker`。要 `Memory.ops.cq.autoSafe` 为真，可用次数大于 0，当前不在安全模式，控制器至少 **2** 级。这个旗标缺省不设。工人还停在缺省的 `hold` 或 `retreat`，身上没有能量，控制器还不是自己的，或这一拍要去升级控制器，都到不了这一行。安全模式结束、次数还在，工人再次走到这里，会再试。征服要孵这些人，`wantSpawn` 还要 `Memory.ops.cq.armed === true`。调用那一行不再读 `armed`。平时的防御不读 `autoSafe`。raid9 不调用，只读对方控制器上的 `safeMode`。
 
 CPU 账号限额是每 tick 20。上表没有 20，因为源码读的是当场的 `tickLimit`。

@@ -21,6 +21,7 @@ import LabGates from './components/LabGates.vue'
 import LinkFlow from './components/LinkFlow.vue'
 import BuildYield from './components/BuildYield.vue'
 import SalvageScore from './components/SalvageScore.vue'
+import SafeModeNote from './components/SafeModeNote.vue'
 import ColonyStrip from './components/ColonyStrip.vue'
 import CmdTick from './components/CmdTick.vue'
 import CmdLife from './components/CmdLife.vue'
@@ -51,6 +52,7 @@ export default {
     app.component('LinkFlow', LinkFlow)
     app.component('BuildYield', BuildYield)
     app.component('SalvageScore', SalvageScore)
+    app.component('SafeModeNote', SafeModeNote)
     app.component('ColonyStrip', ColonyStrip)
     app.component('CmdTick', CmdTick)
     app.component('CmdLife', CmdLife)
