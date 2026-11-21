@@ -8,9 +8,9 @@ import sys
 sys.path.insert(0, "/workspace/screeps/tools")
 import db
 
-TMIN, TMAX = 84402501, 84403200
+TMIN, TMAX = 84403001, 84403700
 ROOMS = ("W46N8", "W47N8", "W45N8", "W45N7", "W47N7")
-DIR = "/workspace/screeps/state/_halfhour_2026-11-22_0000"
+DIR = "/workspace/screeps/state/_halfhour_2026-11-22_0030"
 # First pass 34 of 35 official GETs 200, missing_chunks=1 W45N8@84375300.
 # published_bases 84374900..84375500 at game.time=84375643; reconstructed 84374901..84375600 (700).
 # 15:00 half-hour already official-filled through 84375200 / just-published 84375200 for all 5 (ticks 84375201..84375300 at 15:10:58 gt=84375341).

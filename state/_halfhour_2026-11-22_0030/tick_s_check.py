@@ -7,7 +7,7 @@ from zoneinfo import ZoneInfo
 from pathlib import Path
 
 ROOT = Path("/workspace/screeps")
-DIR = ROOT / "state" / "_halfhour_2026-11-22_0000"
+DIR = ROOT / "state" / "_halfhour_2026-11-22_0030"
 os.chdir(ROOT)
 sys.path.insert(0, "tools")
 sys.path.insert(0, "scripts")
@@ -34,29 +34,29 @@ import history_backfill as hb
 # W47N7 official-200 evac empty 84400296..84400300 (and possibly 84400301..84400400 if no our creeps).
 # MIN_ALL equals W46N8 on every published base in this window.
 W46 = {
-    84402500: 1795274080394,
-    84402600: 1795274516001,
-    84402700: 1795274945617,
-    84402800: 1795275380122,
-    84402900: 1795275812253,
     84403000: 1795276234666,
     84403100: 1795276652155,
+    84403200: 1795277080013,
+    84403300: 1795277534257,
+    84403400: 1795277964590,
+    84403500: 1795278413015,
+    84403600: 1795278847751,
 }
 MIN_ALL = {
-    84402500: 1795274080394,  # W46N8
-    84402600: 1795274516001,  # W46N8
-    84402700: 1795274945617,  # W46N8
-    84402800: 1795275380122,  # W46N8
-    84402900: 1795275812253,  # W46N8
     84403000: 1795276234666,  # W46N8
     84403100: 1795276652155,  # W46N8
+    84403200: 1795277080013,  # W46N8
+    84403300: 1795277534257,  # W46N8
+    84403400: 1795277964590,  # W46N8
+    84403500: 1795278412927,  # W45N7
+    84403600: 1795278847751,  # W46N8
 }
-TMIN, TMAX = 84402501, 84403200
+TMIN, TMAX = 84403001, 84403700
 ROOMS = ("W46N8", "W47N8", "W45N8", "W45N7", "W47N7")
-TICK_S_FIRST = (MIN_ALL[84402600] - MIN_ALL[84402500]) / 1000.0 / 100  # script printed 4.356, exact 4.35607
-GT_FIRST = 84403236
-TS_REALIGNED_FIRST = 7742  # first-pass realign moved 7742 (inserted=5825, already_in_db=19014, missing_chunks=0)
-PREV_LATER_MEAN = 4.30514  # 23:30 half-hour tick_s_in_use (later_raw)
+TICK_S_FIRST = (MIN_ALL[84403100] - MIN_ALL[84403000]) / 1000.0 / 100  # script printed 4.175, exact 4.17489
+GT_FIRST = 84403738
+TS_REALIGNED_FIRST = 17206  # first-pass realign moved 17206 (inserted=2380, already_in_db=22134, missing_chunks=0)
+PREV_LATER_MEAN = 4.30514  # 00:00 half-hour tick_s_in_use (prev_later)
 
 def intervals(d):
     bases = sorted(d)
@@ -192,11 +192,11 @@ def main():
     skipped_chunk = 0
     first_outlier = not (3.0 <= TICK_S_FIRST <= 6.0)
     first_pass_realign_error = (
-        f"First-pass realign with tick_s={TICK_S_FIRST:.5f} (printed 4.356) moved {TS_REALIGNED_FIRST} rows "
-        f"(ts_realigned_first={TS_REALIGNED_FIRST}, inserted=5825, already_in_db=19014, missing_chunks=0)."
+        f"First-pass realign with tick_s={TICK_S_FIRST:.5f} (printed 4.175) moved {TS_REALIGNED_FIRST} rows "
+        f"(ts_realigned_first={TS_REALIGNED_FIRST}, inserted=2380, already_in_db=22134, missing_chunks=0)."
     )
     reason = (
-        f"first-interval tick_s={TICK_S_FIRST:.5f} (printed 4.356, min-all-rooms first two bases) "
+        f"first-interval tick_s={TICK_S_FIRST:.5f} (printed 4.175, min-all-rooms first two bases) "
         f"{'is an OUTLIER' if first_outlier else 'is in the sane 3-6s band'}; "
         f"later-mean-robust {later_mean_robust:.5f} (raw later-mean {later_mean_raw:.5f}; "
         f"delta first-robust {first-later_mean_robust:.5f} s/tick, "

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Fetch just-published official history base 84403200 once game.time is safely past 84403340."""
+"""Fetch just-published official history base 84403700 once game.time is safely past 84403840."""
 from __future__ import annotations
 import json, sys, time
 from datetime import datetime, timezone
@@ -11,14 +11,14 @@ import history_backfill as hb
 import db, api
 
 # Reuse confirm helpers (tick_s loader, retry_one, db_range)
-sys.path.insert(0, "/workspace/screeps/state/_halfhour_2026-11-22_0000")
+sys.path.insert(0, "/workspace/screeps/state/_halfhour_2026-11-22_0030")
 import backfill_confirm as confirm
 
 ROOMS = ("W46N8", "W47N8", "W45N8", "W45N7", "W47N7")
-JUST_BASE = 84403200
+JUST_BASE = 84403700
 WAIT_UNTIL_GT = JUST_BASE + 140
 LIVE = Path("/workspace/screeps/metrics/live.json")
-DIR = Path("/workspace/screeps/state/_halfhour_2026-11-22_0000")
+DIR = Path("/workspace/screeps/state/_halfhour_2026-11-22_0030")
 OUT = DIR / f"just_published_{JUST_BASE}.json"
 HK = ZoneInfo("Asia/Hong_Kong")
 

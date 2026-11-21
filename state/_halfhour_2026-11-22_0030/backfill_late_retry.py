@@ -7,10 +7,10 @@ from zoneinfo import ZoneInfo
 sys.path.insert(0, "/workspace/screeps/tools")
 import history_backfill as hb
 import db, api
-sys.path.insert(0, "/workspace/screeps/state/_halfhour_2026-11-22_0000")
+sys.path.insert(0, "/workspace/screeps/state/_halfhour_2026-11-22_0030")
 import backfill_confirm as confirm
 
-DIR = Path("/workspace/screeps/state/_halfhour_2026-11-22_0000")
+DIR = Path("/workspace/screeps/state/_halfhour_2026-11-22_0030")
 HK = ZoneInfo("Asia/Hong_Kong")
 TARGETS = []  # no leftover / first-pass official 404s in this window
 
