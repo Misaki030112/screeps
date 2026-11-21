@@ -1,0 +1,51 @@
+source=this_halfhour_first_pass _halfhour_2026-11-22_0600
+game.time=84408480 published_bases=84407700..84408300 rooms=W46N8,W47N8,W45N8,W45N7,W47N7 dry=False
+  ok  W46N8@84407700 ticks=100 ts=1795296062259
+  ok  W47N8@84407700 ticks=100 ts=1795296095357
+  404 W45N8@84407700
+  ok  W45N7@84407700 ticks=100 ts=1795296063223
+  ok  W47N7@84407700 ticks=100 ts=1795296120223
+  ok  W46N8@84407800 ticks=100 ts=1795296469090
+  ok  W47N8@84407800 ticks=100 ts=1795296504059
+  ok  W45N8@84407800 ticks=100 ts=1795296501049
+  ok  W45N7@84407800 ticks=100 ts=1795296470280
+  ok  W47N7@84407800 ticks=100 ts=1795296531093
+  ok  W46N8@84407900 ticks=100 ts=1795296887458
+  ok  W47N8@84407900 ticks=100 ts=1795296930440
+  ok  W45N8@84407900 ticks=100 ts=1795296926249
+  ok  W45N7@84407900 ticks=100 ts=1795296884206
+  404 W47N7@84407900
+  ok  W46N8@84408000 ticks=100 ts=1795297287538
+  ok  W47N8@84408000 ticks=100 ts=1795297328158
+  ok  W45N8@84408000 ticks=100 ts=1795297325382
+  ok  W45N7@84408000 ticks=100 ts=1795297289264
+  ok  W47N7@84408000 ticks=100 ts=1795297365217
+  ok  W46N8@84408100 ticks=100 ts=1795297700818
+  ok  W47N8@84408100 ticks=100 ts=1795297731607
+  ok  W45N8@84408100 ticks=100 ts=1795297728788
+  ok  W45N7@84408100 ticks=100 ts=1795297698117
+  ok  W47N7@84408100 ticks=100 ts=1795297764938
+  ok  W46N8@84408200 ticks=100 ts=1795298095591
+  ok  W47N8@84408200 ticks=100 ts=1795298134836
+  ok  W45N8@84408200 ticks=100 ts=1795298131959
+  ok  W45N7@84408200 ticks=100 ts=1795298097196
+  ok  W47N7@84408200 ticks=100 ts=1795298163237
+  404 W46N8@84408300
+  404 W47N8@84408300
+  ok  W45N8@84408300 ticks=100 ts=1795298554877
+  ok  W45N7@84408300 ticks=100 ts=1795298515973
+  ok  W47N7@84408300 ticks=100 ts=1795298586244
+tick_s=4.068
+reconstructed ticks=84407701..84408400 (700) creep_rows=22369 missing_chunks=4
+already_in_db=14500 would_insert=7869
+per_room W46N8:600t/538new W47N8:600t/2880new W45N8:600t/1283new W45N7:700t/1055new W47N7:600t/2113new
+inserted=7869
+ts_realigned=0
+db_after
+  W45N7 ticks=84407701..84408400 rows=2661 distinct=700
+  W45N8 ticks=84407801..84408400 rows=2814 distinct=600
+  W46N8 ticks=84407701..84408300 rows=5476 distinct=600
+  W47N7 ticks=84407701..84408400 rows=3067 distinct=600
+  W47N8 ticks=84407701..84408300 rows=9903 distinct=600
+---- wrap 2026-11-22 06:15:03 Asia/Hong_Kong ----
+confirm at 2026-11-22 06:08:27 Asia/Hong_Kong gt=84408506 still_404=['W45N8@84407700', 'W47N7@84407900', 'W46N8@84408300', 'W47N8@84408300'] inserted=0. retry2 at 2026-11-22 06:08:33 Asia/Hong_Kong gt=84408508 still_404=['W45N8@84407700', 'W47N7@84407900', 'W46N8@84408300', 'W47N8@84408300'] inserted=0. late retry at 2026-11-22 06:11:24 Asia/Hong_Kong gt=84408548 still_404=['W45N8@84407700', 'W47N7@84407900', 'W46N8@84408300', 'W47N8@84408300'] inserted=0. First pass 31/35 official GETs 200, missing_chunks=4 W45N8@84407700, W47N7@84407900, W46N8@84408300, and W47N8@84408300; confirm+retry2+late still 404, leftover. First pass completed cleanly at 2026-11-22 06:07:20 Asia/Hong_Kong onward (exit=0, no abort). Already-told leftover official 404s W46N8@84407000, W45N8@84406400, W46N8@84406600, W46N8@84406700, W45N7@84403800, W45N7@84403700, W45N7@84400400, W45N7@84400300, and W47N8@84400100 aged out of window start 84407701 and were not retried as new aged leftovers (W45N8@84407700 and W47N7@84407900 were in this first pass and were retried confirm+retry2+late; W46N8@84408300 and W47N8@84408300 are new first-pass 404s in this window and were also retried confirm+retry2+late). Just-published 84408400 was not in first pass (first pass ended at published 84408300 / reconstructed 84407701..84408400 at game.time=84408480, 31/35 200 with 4 in-window 404s still leftover). GET at 2026-11-22 06:10:52 Asia/Hong_Kong gt=84408540 all_five_200=True script=3264 actual=2912; W46N8 script 955 vs actual 955, W47N8 script 694 vs actual 694, W45N8 script 504 vs actual 504, W45N7 script 405 vs actual 308, W47N7 script 706 vs actual 451. Coverage official_recovered=3100/3500 empty_no_creep=0 official_404=400. W47N7 official empty_no_creep in this first-pass window: none (the 100-tick gap 84407901..84408000 is leftover official 404 W47N7@84407900, not empty). W45N8 official empty_no_creep in this first-pass window: none (the 100-tick gap 84407701..84407800 is leftover official 404 W45N8@84407700, not empty). W46N8 official empty_no_creep in this first-pass window: none (the 100-tick gap 84408301..84408400 is leftover official 404 W46N8@84408300, not empty). W47N8 official empty_no_creep in this first-pass window: none (the 100-tick gap 84408301..84408400 is leftover official 404 W47N8@84408300, not empty). inserted_first=7869 confirm=0 retry2=0 late=0 just_actual=2912 total=10781. tick_s_in_use=4.06831 (first) first=4.06831 ts_realigned_first=0 corrective=0 (later-mean 4.0662525 worse than live-anchor-best first; first already realigned 0; live-anchor-best already inside 45s gate, no corrective). NEW leftover official 404 this run: W46N8@84408300 (confirm 06:08:30, retry2 06:08:37, late 06:11:29 still 404; listener 0/100; hole 100 ticks 84408301..84408400) -- not yet told, fold into the next 1h patrol. NEW leftover official 404 this run: W47N8@84408300 (confirm 06:08:32, retry2 06:08:38, late 06:11:31 still 404; listener 0/100; hole 100 ticks 84408301..84408400) -- not yet told, fold into the next 1h patrol. Still-untold leftover official 404 from the quiet 05:30 backfill: W47N7@84407900 was retried this run and still 404 (confirm 06:08:29, retry2 06:08:35, late 06:11:27 still 404; listener 0/100; hole 100 ticks 84407901..84408000) -- still not yet told, fold into the next 1h patrol. Already-told leftover official 404 W45N8@84407700 was retried this run and still 404 (confirm 06:08:27, retry2 06:08:34, late 06:11:25 still 404; listener 0/100; hole 100 ticks 84407701..84407800) -- already told in the 05:22 _patrol_2026-11-22_0522 USER_LOG; do not re-tell. Already-told leftover official 404 W46N8@84407000 aged out of window start 84407701 and was not retried this pass (listener 85/100 84407016..84407100; hole 15 ticks 84407001..84407015) -- already told in the 05:22 _patrol_2026-11-22_0522 USER_LOG; do not re-tell. Already-told leftover official 404s aged out of window start 84407701 and were not retried: W45N8@84406400 (listener 0/100; hole 100 ticks 84406401..84406500), W46N8@84406600 (listener 0/100; hole 100 ticks 84406601..84406700), W46N8@84406700 (listener 40/100 84406715..84406754; hole 60 ticks 84406701..84406714 and 84406755..84406800) -- already told in the 04:33 _patrol_2026-11-22_0422 USER_LOG; do not re-tell. Already-told leftover official 404 W45N7@84403800 aged out of window start 84407701 and was not retried (listener 28/100 84403818..84403845; hole 72 ticks 84403801..84403817 and 84403846..84403900) -- already told in the finished 01:31 _patrol_2026-11-22_0121 USER_LOG; do not re-tell. Already-told leftover official 404 W45N7@84403700 aged out of window start 84407701 and was not retried (listener 0/100; hole 100 ticks 84403701..84403800) -- already told in the 01:31 patrol USER_LOG; do not re-tell. NEW short WS this run: none. NEW box freeze this run: 盒子休眠 05:52:44-06:04:12 (683s, already healed; STATS 84408271..84408449, 179t; official-filled W46N8 79/179, W47N8 79/179, W45N8 179/179, W45N7 179/179, W47N7 179/179; W46N8 and W47N8 short because leftover official 404 W46N8@84408300 and W47N8@84408300 cover 84408301..84408400; listener auto-restart 06:04:15, python 2290083 started 06:04:25) -- not yet told, fold into the next 1h patrol. _patrol_2026-11-22_0522 USER_LOG (written 05:38) already includes (treat as already told; do not re-tell): 盒子休眠 04:41:06-04:59:17 (1086s; STATS 84407211..84407499, 289t; official-filled W46N8 289/289, W47N8 289/289, W45N8 289/289, W45N7 289/289, W47N7 289/289; listener auto-restart 04:59:20, python 2264003 started 04:59:30); 盒子休眠 05:17:11-05:23:17 (361s; STATS 84407741..84407849, 109t; official-filled W46N8 109/109, W47N8 109/109, W45N8 49/109, W45N7 109/109, W47N7 109/109; W45N8 short because leftover official 404 W45N8@84407700 covers 84407741..84407800; listener auto-restart 05:23:20); 监听短中断 05:25:19-05:27:20 (no box_pauses row; STATS 84407871..84407899, 29t; official-filled W46N8 29/29, W47N8 29/29, W45N8 29/29, W45N7 29/29, W47N7 29/29; listener ws ping/pong 05:26:35, auto-restart 05:26:38, python 2274875 started 05:26:47); leftover official 404 W46N8@84407000 / W45N8@84407700. Official fill re-verified this run: 05:52 STATS 84408271..84408449 179t official-filled W46N8 79/179, W47N8 79/179, W45N8 179/179, W45N7 179/179, W47N7 179/179; 05:17 STATS 84407741..84407849 109t official-filled W46N8 109/109, W47N8 109/109, W45N8 49/109, W45N7 109/109, W47N7 109/109; 05:25 short WS STATS 84407871..84407899 29t official-filled W46N8 29/29, W47N8 29/29, W45N8 29/29, W45N7 29/29, W47N7 29/29; 04:41 STATS 84407211..84407499 289t official-filled W46N8 289/289, W47N8 289/289, W45N8 289/289, W45N7 289/289, W47N7 289/289; 04:18 STATS 84406881..84406949 69t official-filled W46N8 69/69, W47N8 69/69, W45N8 69/69, W45N7 69/69, W47N7 20/69; 03:47 STATS 84406431..84406719 289t official-filled W46N8 175/289, W47N8 289/289, W45N8 219/289, W45N7 289/289, W47N7 289/289; 02:44 STATS 84405501..84405799 299t official-filled W46N8 299/299, W47N8 299/299, W45N8 299/299, W45N7 13/299, W47N7 299/299. _patrol_2026-11-22_0422 USER_LOG already includes (treat as already told; do not re-tell): 盒子休眠 03:47:58-04:06:12 and 04:18:46-04:22:28; leftover official 404 W45N8@84406400 / W46N8@84406600 / W46N8@84406700. Single listener 2290083 since 06:04:25 after the 05:52 box freeze auto-restart, peacetime one-slot rotation, yield_absent=True. Did not start a second listener or restart war_cmd/pulse. listener_rot {'i': 3, 'room': 'W45N7', 'left': 55.0, 'at': '2026-11-22 06:15:13'} tips {'room_stats': 84408600, 'creep_cpu': 84408590, 'path_arrivals': 84408584}.
