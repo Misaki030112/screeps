@@ -1,0 +1,60 @@
+Screeps shard3 1h peacetime patrol ~16:32 Saturday 2026-11-21 Asia/Hong_Kong (UTC+8).
+
+WINDOW
+- Previous 1h patrol: 15:28 Asia/Hong_Kong, analysis tip 84395990 15:22:30, later 84396067 15:28 stor 13576/28732.
+- This analysis tip: 84396870 at 16:25:01 Asia/Hong_Kong. Home stor 14828, W47 stor 25405, p=9196983/5927585, cpu 18.94, bucket 10000, commit 2b5398f7.
+- Later live: 84396949 at 16:30:40-ish Asia/Hong_Kong. Home stor 14688, W47 stor 25005, p=9197871/5928475, nUp=1 why=floor_bank, rem W45N8:SAFE,W45N7:SAFE, keep=2, upLatched=0, sealPark=1, threatSoft=1, softLeft=0, w8up=2, bucket 10000, cpu 16.73.
+- Intermediate later room_stats after tip: home 14928@84396880, 15028@84396890 (briefly over 15k), 15018@84396900; W47 24505@84396880-90, 25005@84396900.
+- Window last 84395991..84396870 / later 84396949. shard_s/t exact2h 4.288, 1h 4.262.
+
+FORMAL ALERTS
+- W45N7 Invader Core CLEARED (lead item, not a new fight alert). inc 84395886 ~15:15; ev=cleared tick 84396271 ~15:42 why=killed dur=385; arrive 84396100 ~15:30 travel=63. Full-budget defender84395887 spawn 84395889 hits=5000, hatch 84396037 ~15:25, hits stayed 5000 throughout, last seen 84396374 ~15:49 back in W46N8 35,29 then gone (recycled). Civilians returned from 84396337 ~15:47 (rhauler84395041 first, reserver84396272 at 84396360, rminer84395197 at 84396398). Last civilian evac remains rminer84395197 left via 21,0 @84395929 ~15:18 (already told 15:28). All three remotes now visible, SAFE, host=0, core=0. Do not start 指挥官. No Safe Mode.
+- ALERT FORMAL W47 upgrade HOLDS — twenty-fifth consecutive dual after the 12:25 clearance. exact2h 19.52/30.08=64.9% (prev 18.57=61.7%) still under 70%, AND meaningful short last800 20.52=68.2% still soft. last20/30/70 20.00 e/t=66.5% is designed keep=2 and must NOT clear. last500 21.34=70.9% is recent and must NOT clear. Do not change keep=2, no standing third, do not unseal 40k lock. 40k/500t still unlocked (upLatched=0); this hour no touch of 40k (W47 stor min 24070 @84396730 16:14:58, max 31852 @84395990 prev tip, tip 25405, later 25005). Threat-seal still on (sealPark=1, bankWhy=threatSoft, w8soft.why=threat). keep stayed 2 (not dropped to 1). w8up=2 + replacement hatching mid-window (handoff overlap of 3 at 84396040 and 84396840); later w8up=2.
+- Home formal upgrade stays CLEARED: exact2h 14.93/26=57.4% (prev 22.23=85.5%) is FIRST under after clearance, does not fire. 1h 12.00/26=46.1%. Short last800 11.94=45.9% also soft because nUp=1 floor_bank after storage stayed under 15k — context only, needs two consecutive duals to re-fire.
+- ALERT FORMAL storage-floor HOLDS: analysis tip 14828 UNDER after prev tip 13955 UNDER and the tip before that 13883 UNDER (consec-under=3). This hour min 10928 @84396660 16:10:01; stayed under almost the whole hour; later 14688 still under (brief 15028@84396890 then back under). Do not change the 15k floor. 20k/300t still unlocked (3h max 18051, best>=20k tick-span=0).
+
+ENERGY (exact2h / short)
+- Home W46N8 RCL7 84.11% p=9196983 (~919.7万). exact2h INTERP 14.93/26.0=57.4% (tick 84395191.01, dprog=25064.7, dt=1678.99). 1h INTERP 12.00/26.0=46.1%. Short: last20 6.10=23.5%; last30 8.73=33.6%; last70/100 10.59=40.7%; last140 12.29=47.3%; last200 12.80=49.2%; last300 13.20=50.8%; last500 13.34=51.3%; last800 11.94=45.9%; last1500 15.23=58.6%. nUp=2 at 84395990 stor=13955, then nUp=1 from 84396030 stor=13555 why=floor_bank through tip and later. ticksToDowngrade live 150000; safeModeAvailable 6.
+- W47N8 RCL7 54.21% p=5927585 (~592.8万). exact2h INTERP 19.52/30.08=64.9% (dprog=32781.9). 1h INTERP 20.77/30.08=69.1%. Short: last20/30/70/100 20.00=66.5%; last140 20.60=68.5%; last200 20.80=69.1%; last300 20.69=68.8%; last500 21.34=70.9%; last800 20.52=68.2%; last1500 20.66=68.7%. keep=2, upgCeil=2, upArm=40000, upStickyT=500, upLatched=0.
+- Home storage since last tip: min 10928 max 15028 (max is post-tip); tip 14828; later 14688. W47 min 24070 max 31852; tip 25405; later 25005; 0 samples >=40k.
+
+REMOTES / DEFENSE
+- Live later 84396950: W45N8 vis res=2353 SAFE host=0 core=0; W45N7 vis res=1745 SAFE host=0 core=0 (reservation dipped during evac, reserver returned); W47N7 vis res=2860 SAFE host=0 core=0. Earlier live 84396854: res 2257/1591/2920, all vis SAFE.
+- W47 threat window opened 84395969 (already told 15:28) still open: w8defender84395962 spawn 84395964 hatch 84396112, parked W47N8 28,5 hits=5000 (parked_threat); w8guard84395961 spawn 84395962 hatch 84396084, parked W47N8 29,5 hits=4100. Leftover rdef84394792 patrolled W47N7 until last 84396441 ~15:54 28,17 hits=5000 then gone (ttl). No hostiles in owned rooms this hour (room_stats hostiles=0).
+- Labs KO still on (Memory.ops.labs.W46N8=KO, never unset). labReady actOk=0 actGaps=homeStor, actHome=15000. Home stor minerals K=222956 O=92000 KO=45636; term K=3000 O=3000 KO=800.
+
+MOTION
+- creep_audit --patrol exit 2: known REGRESSION [deploy] class vs 2b5398f7 2026-11-19 02:28, not alert (d). No NEW stuck/oscillation.
+- creep_motion --patrol exit 1 (same as 15:28): lost_h>=60 from known watches — waiting_pickup, target_full, queue_blocked, waiting_feed, no_task, parked_threat (w8defender/w8guard), w8hauler circ, w8rminer swamp source, rdef post-fight patrol until expiry. Not worse in a shippable new-bug way; no code change.
+- Home critical roles present: miner=2, queen=2, hauler=1, upgrader=1 (designed floor_bank). Reserver zero_run 84395990..84396270 (280t) is designed evac during the core, reservation stayed healthy — not formal (c).
+
+CPU / INFRA
+- CPU 1h (room_stats): min 14.25 max 28.82 mean 18.015 n=63 ticks 84396030..84396870; max at 84396820 16:21:28 bucket 10000. since_last mean 17.90 max 28.82. wall-1h mean 18.11 bucket min 9998 max 10000. 2h max 40.06 is the already-told 14:40 freeze-start spike. Bucket full. No persistent drain.
+- Services: postgres, views_apache, grafana, listener, dashboard all ok at start (tools/services.sh). Listener peacetime single-slot 5:5:1:1 confirmed (W46N8:W47N8:W45N8:W45N7). later rot W45N8. Memory.cmd on=1 but empty c={}, at=84224348 by=cmd — leftover, not a live commander; did not restart listener; did not start 指挥官. q.py live replies fresh. LIVE commit still 2b5398f7 (deploy 2026-11-19 02:28). No game-code deploy this hour. Cited docs baseline remains 289a7f06. Official docs PRs through PR 76 already told — not re-told. No src changes, no deploy.
+
+BACKFILL / 404s / FREEZES
+- 40-min official history first pass at gt=84396830: published_bases 84396100..84396700, reconstructed 84396101..84396800 (700), missing_chunks=0, all 35 official GETs 200, tick_s=4.279, inserted=7670 (already_in_db=18773). Per-room official 700t each. creep_ticks after: W46N8/W47N8/W45N8/W47N7 700/700; W45N7 464/700 missing 84396101..84396336 (236) evac empty official 200 not a 404 (first civilian 84396337).
+- 16:11 half-hour already filled 84395801..84396600; this run continued idempotently through 84396800 plus late just-published 84396800.
+- Just-published 84396800: first try 404 all five at 16:27:18 gt=84396902 (expected unpublished lag). Late retry 16:31:38 gt=84396964 all_five_200=True inserted=2511; post all five 100/100 ticks 84396801..84396900. After that, WS-gap creep_ticks 84396821..84396839 all five 19/19.
+- Leftover official 404s retried 16:25 gt=84396870 still 404 (no new leftovers): W47N7@84395600 (already told 15:28; aged out of window start 84396101; hole 100: 84395601..84395700), W47N8@84395100 (0/100), W46N8@84394300 (79/100 hole 21: 84394380..84394400), W45N8@84392600 (29/100 hole 71: 84392601..84392663 and 84392693..84392700), plus aged W46N8@84390400 / W46N8@84390800 / W47N7@84390900 / W45N7@84388500 / W45N8@84386600. Fold only newer leftovers than this already-told set; NEW this hour: none.
+- NEW box freezes told this 1h log (verify vs box_pauses / STATS / official fill):
+  1) 15:47:29–15:58:30 (655s, already healed). STATS 84396331..84396509 (179t); room_stats gap after 15:46:48 before 15:59:23. Official-filled W46N8/W47N8/W45N8/W47N7 179/179, W45N7 173/179 evac empty tail 84396331..84396336 official 200 not a 404. Listener auto-restart 15:58:33.
+  2) 16:16:43–16:19:24 (161s, already healed; box_pauses row). STATS 84396751..84396799 (49t); room_stats gap after 16:16:26 before 16:20:01. Official-filled all five 49/49. Listener auto-restart 16:19:27.
+- NEW short listener WS ping/pong (not a box freeze; no box_pauses row): 16:22:02 error, listener restart 16:22:05, slot resume 16:22:16. STATS gap 84396821..84396839 (19t) after 16:21:28 before 16:22:54. creep_ticks later official-filled all five 19/19.
+- Already-told freezes 14:40:53–14:56:54 (952s / 239t) and 15:14:38–15:19:30 (292s / 89t) — do not re-tell. Listener auto-restarts are not additional box freezes.
+
+CODE
+- No code change and no deploy this hour (src clean, deploy.lock absent, commit still 2b5398f7). Locked policy unchanged: 15k floor, W47 keep=2, no standing third, no 40k unseal, labs KO left on, no Safe Mode, no commander in peacetime.
+
+CHINESE USER LOG
+【Screeps 1小时巡检 16:32 亚洲/香港】W45N7 的 Invader 核心已被消灭。约 15:15（tick 84395886）出现，15:42（tick 84396271）清除，持续 385 tick，游戏记录是打死的。全身防御者 15:25 出壳（tick 84396037），15:30 到达（行程 63 tick），命中始终 5000，约 15:49 回到本家后消失。平民从约 15:47 开始返回。现在三个外矿都看得见、都安全，视野里没有敌人。W47 威胁窗还开着，那名 5000 命中的防御者和 4100 命中的守卫仍在本家北口待命，威胁封仓还在，升级仍按 keep=2。不要启动指挥官。未开 Safe Mode。
+
+告警：W47 升级正式警报仍在。这是今天 12:25 解除后的第二十五次连续双条件：两小时 19.52/30.08=64.9%（上轮 18.57=61.7%）仍低于 70%，有意义短窗最近 800 tick 20.52=68.2% 仍软。近端最近 20–30 tick 正好 20 e/t=66.5% 是 keep=2 的设计值，不能用来解除。不要改 keep，不加常驻第三人，也不解开 40k 锁。40k/500t 仍未锁定，本小时没有摸到 40k（仓储最低约 2.41 万，最高约 3.19 万，尖端 25405，过后约 2.50 万）。威胁封仓仍在，升级工按 keep=2 在跑，不是改政策。
+
+本家升级正式警报保持解除。两小时 14.93/26=57.4%（上轮 22.23=85.5%）是解除后第一次低于 70%，还不能拉响；短窗最近 800 tick 11.94=45.9% 也软，是因为仓储一直在 15k 以下、升级按地板收到 1 人。要连续两轮双条件才会再拉响。
+
+告警：本家仓库正式警报仍在。尖端 14828 低于 15k，上轮尖端 13955、再上轮 13883 也低于 15k，连续三轮。本小时最低约 1.09 万（16:10），几乎一直在地板下，过后约 1.47 万，一度刚过 15k 又跌回去。不要改 15k 地板。20k/300t 仍未锁定（近三小时最高 18051）。
+
+外矿：W45N8 预订约 2353、安全；W45N7 预订约 1745、安全（撤离期间掉了一些，预订者已回来）；W47N7 预订约 2860、安全。本家 KO 反应仍在维持（仓储低于地板时实验室暂时停手，没有关掉开关）。
+
+本小时有两段新的盒子休眠，都已自愈：15:47:29–15:58:30 约 11 分钟（179 tick），四个房间轨迹补满，W45N7 缺的 6 tick 是撤离后还没有人回去的空 tick，不是 404；16:16:43–16:19:24 约 2.5 分钟（49 tick），五个房间都补满。另外有一次短的监听 ping/pong 中断（16:22:02，不是盒子休眠），19 tick 的轨迹已在稍后官方补齐。没有新的官方 404。已经说过的 W47N7@84395600 仍是 404，已不在本小时回填窗里。基础设施正常，平时单槽轮询。运动没有新的卡住或振荡。CPU 一小时均值约 18.0，最高 28.8 是 16:21 的单点，bucket 满。本家 RCL7 进度 84.11%（约 919.7 万），W47 54.21%（约 592.8 万）。本小时没有改代码，也没有部署。

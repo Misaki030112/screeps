@@ -1,0 +1,65 @@
+game.time 84396870 at 2026-11-21 16:25:02 Asia/Hong_Kong tick_s 4.279
+=== pre db ranges ===
+  pre W47N7@84395600 distinct=0 rows=0 min=None max=None
+  pre W47N8@84395100 distinct=0 rows=0 min=None max=None
+  pre W46N8@84394300 distinct=79 rows=893 min=84394301 max=84394379
+  pre W45N8@84392600 distinct=29 rows=177 min=84392664 max=84392692
+  pre W46N8@84390400 distinct=59 rows=563 min=84390442 max=84390500
+  pre W46N8@84390800 distinct=0 rows=0 min=None max=None
+  pre W47N7@84390900 distinct=0 rows=0 min=None max=None
+  pre W45N7@84388500 distinct=0 rows=0 min=None max=None
+  pre W45N8@84386600 distinct=27 rows=63 min=84386657 max=84386683
+=== retry IN_WINDOW / leftover hole ===
+=== retry LEFTOVER already-told ===
+  404 W47N7@84395600
+  404 W47N8@84395100
+  404 W46N8@84394300
+  404 W45N8@84392600
+  404 W46N8@84390400
+  404 W46N8@84390800
+  404 W47N7@84390900
+  404 W45N7@84388500
+  404 W45N8@84386600
+=== just-published 84396800 (gt=84396870) ===
+  wait gt=84396870 < 84396900
+  wait gt=84396877 < 84396900
+  wait gt=84396880 < 84396900
+  wait gt=84396884 < 84396900
+  wait gt=84396887 < 84396900
+  wait gt=84396891 < 84396900
+  wait gt=84396895 < 84396900
+  wait gt=84396898 < 84396900
+  404 W46N8@84396800
+  404 W47N8@84396800
+  404 W45N8@84396800
+  404 W45N7@84396800
+  404 W47N7@84396800
+=== post db ranges ===
+  post W47N7@84395600 distinct=0 rows=0 min=None max=None
+  post W47N8@84395100 distinct=0 rows=0 min=None max=None
+  post W46N8@84394300 distinct=79 rows=893 min=84394301 max=84394379
+  post W45N8@84392600 distinct=29 rows=177 min=84392664 max=84392692
+  post W46N8@84390400 distinct=59 rows=563 min=84390442 max=84390500
+  post W46N8@84390800 distinct=0 rows=0 min=None max=None
+  post W47N7@84390900 distinct=0 rows=0 min=None max=None
+  post W45N7@84388500 distinct=0 rows=0 min=None max=None
+  post W45N8@84386600 distinct=27 rows=63 min=84386657 max=84386683
+  post W46N8@84396800 distinct=0 rows=0 min=None max=None
+  post W47N8@84396800 distinct=89 rows=1492 min=84396801 max=84396900
+  post W45N8@84396800 distinct=0 rows=0 min=None max=None
+  post W45N7@84396800 distinct=0 rows=0 min=None max=None
+  post W47N7@84396800 distinct=0 rows=0 min=None max=None
+=== hour-window coverage LAST_TIP+1..TIP === 84396900
+  W46N8 810/910 min=84395991 max=84396800
+  W47N8 899/910 min=84395991 max=84396900
+  W45N8 810/910 min=84395991 max=84396800
+  W45N7 464/910 min=84396337 max=84396800
+  W47N7 810/910 min=84395991 max=84396800
+=== room_stats gaps since 84394800 ===
+  STATS gap 84395061..84395179 (119t) after 2026-11-21 14:15:39.563167+08:00 before 2026-11-21 14:24:16.369378+08:00 fill {'W46N8': '119/119', 'W47N8': '40/119', 'W45N8': '119/119', 'W45N7': '119/119', 'W47N7': '119/119'}
+  STATS gap 84395401..84395639 (239t) after 2026-11-21 14:40:12.564344+08:00 before 2026-11-21 14:57:09.623884+08:00 fill {'W46N8': '239/239', 'W47N8': '239/239', 'W45N8': '239/239', 'W45N7': '239/239', 'W47N7': '200/239'}
+  STATS gap 84395871..84395959 (89t) after 2026-11-21 15:13:55.699566+08:00 before 2026-11-21 15:20:21.623617+08:00 fill {'W46N8': '89/89', 'W47N8': '89/89', 'W45N8': '89/89', 'W45N7': '59/89', 'W47N7': '89/89'}
+  STATS gap 84396331..84396509 (179t) after 2026-11-21 15:46:48.813235+08:00 before 2026-11-21 15:59:23.254394+08:00 fill {'W46N8': '179/179', 'W47N8': '179/179', 'W45N8': '179/179', 'W45N7': '173/179', 'W47N7': '179/179'}
+  STATS gap 84396751..84396799 (49t) after 2026-11-21 16:16:26.749410+08:00 before 2026-11-21 16:20:01.104403+08:00 fill {'W46N8': '49/49', 'W47N8': '49/49', 'W45N8': '49/49', 'W45N7': '49/49', 'W47N7': '49/49'}
+  STATS gap 84396821..84396839 (19t) after 2026-11-21 16:21:28.715137+08:00 before 2026-11-21 16:22:54.730781+08:00 fill {'W46N8': '0/19', 'W47N8': '8/19', 'W45N8': '0/19', 'W45N7': '0/19', 'W47N7': '0/19'}
+wrote /workspace/screeps/state/_patrol_2026-11-21_1618/official_retries.json
