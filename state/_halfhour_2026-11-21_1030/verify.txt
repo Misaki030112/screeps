@@ -1,0 +1,30 @@
+2026-11-21 10:42:23 Asia/Hong_Kong
+first pass 35/35 official GETs 200 missing_chunks=0 reconstructed 84391201..84391900 (700); confirm skipped no targets inserted=0; retry2 skipped no targets inserted=0
+coverage official_recovered=3271/3500 empty_no_creep=229 official_404=0
+  W46N8 distinct=700 rows=8329 84391201..84391900
+  W47N8 distinct=700 rows=11226 84391201..84391900
+  W45N8 distinct=700 rows=3485 84391201..84391900
+  W45N7 distinct=471 rows=1300 84391201..84391900
+  W47N7 distinct=700 rows=2423 84391201..84391900
+just-published 84391900 ticks 84391901..84392000 actual_inserted=2568 script=2571 all_five_200=True
+  W46N8 actual=224 script=224 distinct=100 rows=944
+  W47N8 actual=1382 script=1382 distinct=100 rows=1643
+  W45N8 actual=388 script=391 distinct=100 rows=388
+  W45N7 actual=347 script=347 distinct=100 rows=347
+  W47N7 actual=227 script=227 distinct=100 rows=227
+confirm/retry2 skipped (no targets); no in-window official 404s; already-told leftover official 404s W46N8@84390800 0/100 (hole 84390801..84390900), W47N7@84390900 0/100 (hole 84390901..84391000), W46N8@84390400 hole 84390401..84390441 59/100 (listener 84390442..84390500) aged out of window start 84391201, not retried
+gap_1017_1024 STATS 84391711..84391819 (109) already-told by 10:31 patrol (box freeze 10:17:34-10:24:42, 423s); listener auto-restart 10:24:45, python 1808991 started 10:24:54; official first-pass filled former unpublished tail 84391801..84391819 via chunk 84391800
+  W46N8 109/109  W47N8 109/109  W45N8 109/109  W45N7 109/109  W47N7 109/109
+gap_0958_1005 STATS 84391431..84391549 (119) already-told by 10:31 patrol (box freeze 09:58:02-10:05:00, 412s); listener auto-restart 10:05:03, python 1801941 started 10:05:13
+  W46N8 119/119  W47N8 119/119  W45N8 119/119  W45N7 29/119 missing 84391431..84391537 (90)  W47N7 119/119
+gap_0915_0923 STATS 84390831..84390959 (129) already-told by 09:42 patrol (box freeze 09:15:27-09:23:48, 492s); ages out of window start 84391201
+  W46N8 59/129 missing 84390831..84390900 (70)  W47N8 129/129  W45N8 129/129  W45N7 129/129  W47N7 70/129 missing 84390901..84390959 (59)
+gap_0852_0856 STATS 84390511..84390579 (69) already-told by 09:42 patrol (box freeze 08:52:35-08:56:43, 248s); official-filled all five 69/69; ages out of window start 84391201
+  W46N8 69/69  W47N8 69/69  W45N8 69/69  W45N7 69/69  W47N7 69/69
+gap_0818_0823 STATS 84390031..84390119 (89) already-told by 08:32 patrol (box freeze 08:18:49-08:23:57, 299s); official-filled all five 89/89; ages out of window start 84391201
+  W46N8 89/89  W47N8 89/89  W45N8 89/89  W45N7 89/89  W47N7 89/89
+no in-window leftover official 404s this run; aged-out already-told official 404s W46N8@84390800 / W47N7@84390900 / W46N8@84390400 not retried — do not re-tell
+tick_s_in_use=4.25891 (all_mean) first=4.20613 printed=4.206 corrective=0 ts_realigned_first=3287
+tips room_stats=84392060 creep_cpu=84392060 path_arrivals=84392055
+listener pid=1808991 started=10:24:54 parent=4035476 slot=W47N8 rot={"i": 1, "room": "W47N8", "left": 255.0, "at": "2026-11-21 10:42:23"} yield=absent restarted_this_run=false
+ok_quiet=True
