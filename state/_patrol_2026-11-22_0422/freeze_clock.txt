@@ -1,0 +1,41 @@
+=== box_pauses after 03:30 ===
+{"from": "2026-11-22 03:47:58", "to": "2026-11-22 04:06:12", "sec": 1093}
+{"from": "2026-11-22 04:18:46", "to": "2026-11-22 04:22:28", "sec": 221}
+=== listener restarts after 03:30 ===
+2026-11-22 04:06:15 restart
+2026-11-22 04:22:31 restart
+console lines after 03:20 in tail: 42
+first: 2026-11-22 03:24:22+08:00 2026-11-22 03:24:22 < QQ1795289059293382{"t":84406093,"v":[[19,16],[22,7],[21,6],[20,5],[19,3],[19,1],[25,11],[23,7],[31,32],[30,31],[31,33],[20,16],[21,17],[21
+last: 2026-11-22 04:25:19+08:00 2026-11-22 04:25:19 [listener] room slot W45N7 120s (1 slot, weights 5:5:1:1)
+=== console silences >=60s after 03:30 ===
+  2026-11-22 03:28:24 -> 2026-11-22 03:36:56 (512s)
+    last: 2026-11-22 03:28:24 < QQ17952893011940894{"t":84406152,"v":{"t":84406152,"r":{"W46N8":{"vis":true,"hc":0,"h":[]},"W47N8":{"vis":true,"hc":0,"h":[]},"W45N8":{"vis":true,"hc":0,"h":[]},"W45N7":{"vis":true,"hc":0,"h":[]},"W
+    next: 2026-11-22 03:36:56 [listener] room slot W45N8 120s (1 slot, weights 5:5:1:1)
+  2026-11-22 03:36:56 -> 2026-11-22 03:38:56 (120s)
+    last: 2026-11-22 03:36:56 [listener] room slot W45N8 120s (1 slot, weights 5:5:1:1)
+    next: 2026-11-22 03:38:56 [listener] room slot W45N7 120s (1 slot, weights 5:5:1:1)
+  2026-11-22 03:38:56 -> 2026-11-22 03:40:56 (120s)
+    last: 2026-11-22 03:38:56 [listener] room slot W45N7 120s (1 slot, weights 5:5:1:1)
+    next: 2026-11-22 03:40:56 [listener] room slot W46N8 600s (1 slot, weights 5:5:1:1)
+  2026-11-22 03:40:56 -> 2026-11-22 04:06:26 (1530s)
+    last: 2026-11-22 03:40:56 [listener] room slot W46N8 600s (1 slot, weights 5:5:1:1)
+    next: 2026-11-22 04:06:26 [listener] room slot W46N8 177s (1 slot, weights 5:5:1:1)
+  2026-11-22 04:06:26 -> 2026-11-22 04:09:24 (178s)
+    last: 2026-11-22 04:06:26 [listener] room slot W46N8 177s (1 slot, weights 5:5:1:1)
+    next: 2026-11-22 04:09:24 [listener] room slot W47N8 600s (1 slot, weights 5:5:1:1)
+  2026-11-22 04:09:24 -> 2026-11-22 04:12:17 (173s)
+    last: 2026-11-22 04:09:24 [listener] room slot W47N8 600s (1 slot, weights 5:5:1:1)
+    next: 2026-11-22 04:12:17 INCIDENT {"remote":"W47N7","tick":84406796,"inc":84406796,"state":"THREAT","inv":[{"x":43,"y":49,"ttl":1500,"heal":false,"ranged3":false,"ra":1,"hits":1000,"hitsMax":1000,"boosted":false}],"invTtl":15
+  2026-11-22 04:12:21 -> 2026-11-22 04:22:42 (621s)
+    last: 2026-11-22 04:12:21 INCIDENT {"remote":"W47N7","tick":84406797,"inc":84406796,"state":"THREAT","ev":"spawn_start","def":"rdef84406797","n":1,"waited":1}
+    next: 2026-11-22 04:22:42 [listener] room slot W47N8 37s (1 slot, weights 5:5:1:1)
+  2026-11-22 04:23:19 -> 2026-11-22 04:25:18 (119s)
+    last: 2026-11-22 04:23:19 [listener] room slot W45N8 120s (1 slot, weights 5:5:1:1)
+    next: 2026-11-22 04:25:18 INCIDENT {"remote":"W47N7","tick":84406986,"inc":84406796,"state":"DEFEND","inv":1,"invTtl":1310,"def":"out","delivered":0,"ev":"arrive","travel":39}
+=== short console gaps 3-59s after 03:30 (possible WS) ===
+  2026-11-22 04:12:17 -> 2026-11-22 04:12:21 (4s)
+    last: 2026-11-22 04:12:17 INCIDENT {"remote":"W47N7","tick":84406796,"inc":84406796,"state":"THREAT","inv":[{"x":43,"y":49,"ttl":1500,"heal":false,"ranged3":false,"ra
+    next: 2026-11-22 04:12:21 INCIDENT {"remote":"W47N7","tick":84406797,"inc":84406796,"state":"THREAT","ev":"spawn_start","def":"rdef84406797","n":1,"waited":1}
+  2026-11-22 04:22:42 -> 2026-11-22 04:23:19 (37s)
+    last: 2026-11-22 04:22:42 [listener] room slot W47N8 37s (1 slot, weights 5:5:1:1)
+    next: 2026-11-22 04:23:19 [listener] room slot W45N8 120s (1 slot, weights 5:5:1:1)
