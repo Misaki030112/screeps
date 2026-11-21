@@ -24,6 +24,7 @@ import SalvageScore from './components/SalvageScore.vue'
 import ColonyStrip from './components/ColonyStrip.vue'
 import CmdTick from './components/CmdTick.vue'
 import CmdLife from './components/CmdLife.vue'
+import LedgerWhen from './components/LedgerWhen.vue'
 import RemoteLines from './components/RemoteLines.vue'
 
 export default {
@@ -53,6 +54,7 @@ export default {
     app.component('ColonyStrip', ColonyStrip)
     app.component('CmdTick', CmdTick)
     app.component('CmdLife', CmdLife)
+    app.component('LedgerWhen', LedgerWhen)
     app.component('RemoteLines', RemoteLines)
   },
 }
