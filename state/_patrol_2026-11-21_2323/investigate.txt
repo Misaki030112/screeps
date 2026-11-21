@@ -1,0 +1,61 @@
+=== room_stats freshness ===
+W46N8 (84402850, datetime.datetime(2026, 11, 21, 23, 32, 16, 535567, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), datetime.timedelta(seconds=8, microseconds=537363))
+W47N8 (84402850, datetime.datetime(2026, 11, 21, 23, 32, 16, 535635, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), datetime.timedelta(seconds=8, microseconds=542908))
+=== creep_ticks freshness ===
+W46N8 (84402773, datetime.datetime(2026, 11, 21, 23, 26, 42, 809932, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), datetime.timedelta(seconds=342, microseconds=270042), 7503)
+W47N8 (84402851, datetime.datetime(2026, 11, 21, 23, 32, 20, 10355, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), datetime.timedelta(seconds=5, microseconds=441070), 11578)
+W45N8 (84402700, datetime.datetime(2026, 11, 21, 23, 21, 35, 417302, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), datetime.timedelta(seconds=650, microseconds=354987), 3263)
+W45N7 (84402700, datetime.datetime(2026, 11, 21, 23, 21, 35, 417302, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), datetime.timedelta(seconds=650, microseconds=509082), 2169)
+W47N7 (84402700, datetime.datetime(2026, 11, 21, 23, 21, 35, 417302, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), datetime.timedelta(seconds=650, microseconds=616053), 3122)
+=== room_stats gaps since last tip (>=30t) ===
+W46N8 n 67 min 84401970 max 84402850
+  holes>30 [(84402240, 84402410, 170), (84402680, 84402750, 70)]
+W47N8 n 67 min 84401970 max 84402850
+  holes>30 [(84402240, 84402410, 170), (84402680, 84402750, 70)]
+=== map wall-clock freezes to room_stats ticks ===
+--- freeze 22:49:18-22:59:56 (634s) ---
+  W46N8 last_before (84402240, datetime.datetime(2026, 11, 21, 22, 48, 32, 782565, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai'))) first_after (84402410, datetime.datetime(2026, 11, 21, 23, 0, 34, 106735, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')))
+    span 84402241..84402409 missing_stats=169 present=(None, None, 0)
+  W47N8 last_before (84402240, datetime.datetime(2026, 11, 21, 22, 48, 32, 782620, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai'))) first_after (84402410, datetime.datetime(2026, 11, 21, 23, 0, 34, 106842, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')))
+    span 84402241..84402409 missing_stats=169 present=(None, None, 0)
+--- freeze 23:20:38-23:24:23 (224s) ---
+  W46N8 last_before (84402680, datetime.datetime(2026, 11, 21, 23, 20, 11, 386237, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai'))) first_after (84402750, datetime.datetime(2026, 11, 21, 23, 25, 4, 968259, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')))
+    span 84402681..84402749 missing_stats=69 present=(None, None, 0)
+  W47N8 last_before (84402680, datetime.datetime(2026, 11, 21, 23, 20, 11, 386265, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai'))) first_after (84402750, datetime.datetime(2026, 11, 21, 23, 25, 4, 968323, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')))
+    span 84402681..84402749 missing_stats=69 present=(None, None, 0)
+=== official creep_ticks fill for freeze ranges ===
+--- f2249_STATS_84402241_84402409 84402241..84402409 want=169 ---
+  W46N8 distinct=169/169 range=84402241..84402409
+  W47N8 distinct=169/169 range=84402241..84402409
+  W45N8 distinct=169/169 range=84402241..84402409
+  W45N7 distinct=169/169 range=84402241..84402409
+  W47N7 distinct=169/169 range=84402241..84402409
+--- f2320_STATS_84402681_84402749 84402681..84402749 want=69 ---
+  W46N8 distinct=25/69 range=84402681..84402749
+  W47N8 distinct=20/69 range=84402681..84402700
+  W45N8 distinct=20/69 range=84402681..84402700
+  W45N7 distinct=20/69 range=84402681..84402700
+  W47N7 distinct=20/69 range=84402681..84402700
+--- f2320_official_through_84402700 84402681..84402700 want=20 ---
+  W46N8 distinct=20/20 range=84402681..84402700
+  W47N8 distinct=20/20 range=84402681..84402700
+  W45N8 distinct=20/20 range=84402681..84402700
+  W45N7 distinct=20/20 range=84402681..84402700
+  W47N7 distinct=20/20 range=84402681..84402700
+--- f2320_unpublished_tail_84402701_84402749 84402701..84402749 want=49 ---
+  W46N8 distinct=5/49 range=84402745..84402749
+  W47N8 distinct=0/49 range=None..None
+  W45N8 distinct=0/49 range=None..None
+  W45N7 distinct=0/49 range=None..None
+  W47N7 distinct=0/49 range=None..None
+=== hostiles / incidents since last tip ===
+W46N8 hostiles_samples (0,)
+W47N8 hostiles_samples (0,)
+incidents err UndefinedColumn column "room" does not exist
+LINE 1: SELECT tick, room, kind, detail FROM incidents WHERE tick>=$...
+                     ^
+=== guard / rdef in creep_ticks this hour ===
+  ('w8guard84401622', 'wguard', 84401970, 84402853, 4100, 4100, 811)
+=== home storage under 15k since last ===
+[(84402600, datetime.datetime(2026, 11, 21, 23, 14, 12, 80922, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 14976), (84402820, datetime.datetime(2026, 11, 21, 23, 30, 7, 966733, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 14406), (84402830, datetime.datetime(2026, 11, 21, 23, 30, 52, 23508, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 13706), (84402840, datetime.datetime(2026, 11, 21, 23, 31, 34, 157218, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 13806), (84402850, datetime.datetime(2026, 11, 21, 23, 32, 16, 535567, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 13906)]
+DONE
