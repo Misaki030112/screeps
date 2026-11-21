@@ -1,62 +1,14 @@
-2026-11-21 14:14:03 Asia/Hong_Kong
-first pass 34/35 official GETs 200 missing_chunks=1 W46N8@84394300 reconstructed 84394101..84394800 (700); confirm still 404 inserted=0; retry2 still 404 inserted=0; late retry 14:10:21 gt=84394985 still 404 inserted=0
-coverage official_recovered=3479/3500 empty_no_creep=0 official_404=21
-  W46N8 ticks=84394101..84394800 rows=7363 distinct=679
-  W47N8 ticks=84394101..84394800 rows=12698 distinct=700
-  W45N8 ticks=84394101..84394800 rows=2612 distinct=700
-  W45N7 ticks=84394101..84394800 rows=2009 distinct=700
-  W47N7 ticks=84394101..84394800 rows=2749 distinct=700
-just-published 84394800 ticks 84394801..84394900 actual_inserted=2384 script=2386 all_five_200=True
-  W46N8 actual=+723 script=+723 post_distinct=100 post_rows=977
-  W47N8 actual=+608 script=+608 post_distinct=100 post_rows=2045
-  W45N8 actual=+553 script=+553 post_distinct=100 post_rows=553
-  W45N7 actual=+306 script=+306 post_distinct=100 post_rows=306
-  W47N7 actual=+194 script=+196 post_distinct=100 post_rows=194
-Already-told leftover official 404 W46N8@84394300 79/100 (listener 84394301..84394379, 79; hole 21 ticks 84394380..84394400) still in window start 84394101, already told by the 13:32 1h patrol t508s3575; confirm+retry2+late_retry still 404. Already-told leftover official 404 W45N8@84392600 29/100 (listener 84392664..84392692, 29; hole 71) aged out of window start 84394101, not retried. Already-told leftovers W46N8@84390800 / W47N7@84390900 / W46N8@84390400 / W45N7@84388500 / W45N8@84386600 also aged out, not retried
-gap_1349_1356 STATS 84394681..84394809 (129) NEW this run, not yet told (box freeze 13:49:01-13:56:56, 475s); last_stats 84394680 at 13:48:26, next 84394810 at 13:57:43; listener auto-restart 13:56:59, python 1901116 started 13:57:09; official-filled all five 129/129; whole gap sits in official window start 84394101 (chunks 84394600 and 84394700)
-  W46N8 fill=129/129 rows=1524
-  W47N8 fill=129/129 rows=1864
-  W45N8 fill=129/129 rows=643
-  W45N7 fill=129/129 rows=396
-  W47N7 fill=129/129 rows=861
-gap_1309_1321 STATS 84394131..84394299 (169) already-told by 13:32 patrol (box freeze 13:09:46-13:21:14, 680s); official-filled all five 169/169; still in official window start 84394101
-  W46N8 fill=169/169 rows=1499
-  W47N8 fill=169/169 rows=3432
-  W45N8 fill=169/169 rows=627
-  W45N7 fill=169/169 rows=447
-  W47N7 fill=169/169 rows=501
-gap_1248_1257 STATS 84393831..84393969 (139) already-told by 13:32 patrol (box freeze 12:48:14-12:57:17, 534s); official-filled all five 139/139; ages out of official window start 84394101
-  W46N8 fill=139/139 rows=1060
-  W47N8 fill=139/139 rows=2460
-  W45N8 fill=139/139 rows=939
-  W45N7 fill=139/139 rows=458
-  W47N7 fill=139/139 rows=417
-gap_1230_1235 STATS 84393581..84393659 (79) already-told by 13:32 patrol (box freeze 12:30:42-12:35:35, 283s); official-filled all five 79/79; ages out of official window start 84394101
-  W46N8 fill=79/79 rows=1268
-  W47N8 fill=79/79 rows=1128
-  W45N8 fill=79/79 rows=243
-  W45N7 fill=79/79 rows=79
-  W47N7 fill=79/79 rows=410
-gap_1218 STATS 84393391..84393419 (29) already-told by 12:26/13:32 patrols (short listener WS ping/pong 12:18:13, restart 12:18:17, not a box freeze); four rooms 29/29; W45N7 21/29 missing 84393411..84393419 official empty-no-creep after evac, not a 404; ages out of official window start 84394101
-  W46N8 fill=29/29 rows=332
-  W47N8 fill=29/29 rows=444
-  W45N8 fill=29/29 rows=179
-  W45N7 fill=21/29 rows=40 missing 84393411..84393419 (8)
-  W47N7 fill=29/29 rows=96
-gap_1210 STATS 84393291..84393319 (29) already-told by 12:26/13:32 patrols (short listener WS ping/pong 12:10:56, restart 12:10:59, not a box freeze); official-filled all five 29/29; ages out of official window start 84394101
-  W46N8 fill=29/29 rows=297
-  W47N8 fill=29/29 rows=377
-  W45N8 fill=29/29 rows=138
-  W45N7 fill=29/29 rows=102
-  W47N7 fill=29/29 rows=113
-gap_1149_1157 STATS 84393001..84393129 (129) already-told by 12:26/13:32 patrols (box freeze 11:49:12-11:57:31, 494s); official-filled all five 129/129; ages out of official window start 84394101
-  W46N8 fill=129/129 rows=1236
-  W47N8 fill=129/129 rows=1598
-  W45N8 fill=129/129 rows=498
-  W45N7 fill=129/129 rows=313
-  W47N7 fill=129/129 rows=467
-NEW box freeze 13:49:01-13:56:56 not yet told (official-filled all five 129/129). Already-told leftover official 404 W46N8@84394300 still in window (listener 79/100, hole 21; confirm+retry2+late_retry still 404) — do not re-tell. Already-told freeze 13:09:46-13:21:14 still in window (official-filled all five 169/169) — do not re-tell. Already-told freezes 12:48:14-12:57:17 and 12:30:42-12:35:35, short WS gaps 12:10/12:18/11:12, leftover official 404 W45N8@84392600 and older leftovers, and freeze 11:49:12-11:57:31 age out of this official window — do not re-tell.
-tick_s_in_use=4.26294 (span_mean) first=4.27826 printed=4.278 corrective=0 ts_realigned_first=0
-tips room_stats=84394970 creep_cpu=84394970 path_arrivals=84394962
-listener pid=1901116 started=13:57:09 parent=4035476 slot=W46N8 rot={"i": 0, "room": "W46N8", "left": 555.0, "at": "2026-11-21 14:14:02"} yield=absent restarted_this_run=false
-ok_quiet=True
+wrap 2026-11-21 15:10:59 Asia/Hong_Kong
+window 84394901..84395600 first_pass 34/35 missing_chunks=1 W47N8@84395100
+db_window {"W46N8": {"distinct": 700, "rows": 7264, "min": 84394901, "max": 84395600}, "W47N8": {"distinct": 600, "rows": 10404, "min": 84394901, "max": 84395600}, "W45N8": {"distinct": 700, "rows": 4343, "min": 84394901, "max": 84395600}, "W45N7": {"distinct": 700, "rows": 2617, "min": 84394901, "max": 84395600}, "W47N7": {"distinct": 700, "rows": 2666, "min": 84394901, "max": 84395600}}
+W47N8@84395100 hole distinct=0 rows=0 range=None..None (listener 0/100; already told by 14:32 patrol)
+W47N7@84395600 just-published hole distinct=0 rows=0 range=None..None (listener 0/100; NEW leftover, not yet told)
+W46N8@84394300 aged-out hole distinct=79 rows=893 range=84394301..84394379 (listener 79/100, not retried this run)
+just_published 84395600 all_five_200=False script=2699 actual=2694 by_actual={'W46N8': 784, 'W47N8': 1275, 'W45N8': 354, 'W45N7': 281, 'W47N7': 0} by_script={'W46N8': 784, 'W47N8': 1275, 'W45N8': 357, 'W45N7': 283, 'W47N7': 0}
+coverage official_recovered=3400/3500 empty_no_creep=0 official_404=100
+inserted_first=11674 confirm=0 retry2=0 just_actual=2694 total=14368
+tick_s_in_use=4.35744 (first) first=4.35744 ts_realigned_first=12328 corrective=0
+tips {'room_stats': 84395820, 'creep_cpu': 84395820, 'path_arrivals': 84395811}
+listener pid=1923029 started=14:57:06 parent=4035476 slot=W46N8 rot={"i": 0, "room": "W46N8", "left": 9.9, "at": "2026-11-21 15:10:59"} yield_absent=True restarted_this_run=False
+ok_quiet=True new_official_404_untold=['W47N7@84395600'] new_box_freeze_untold=['14:40:53-14:56:54']
+NEW not-yet-told for the next 1h patrol: box freeze 14:40:53-14:56:54 (952s; STATS 84395401..84395639, 239t; official-filled four rooms 239/239, W47N7 200/239 missing 84395601..84395639 because of leftover official 404 W47N7@84395600; listener auto-restart 14:56:57, python 1923029 started 14:57:06); leftover official 404 W47N7@84395600 (just-published GET 15:04:47 gt=84395741, retry 15:07:01 gt=84395776, and retry2 15:09:23 gt=84395809 still 404; listener 0/100; hole 100 ticks 84395601..84395700). Already told by the delivered 14:32 亚洲/香港 1h patrol t508s3576 and still in official window start 84394901: box freeze 14:15:50-14:23:29 (450s; STATS 84395061..84395179, 119t; official-filled four rooms 119/119, W47N8 40/119 missing 84395101..84395179 because of leftover official 404 W47N8@84395100; listener auto-restart 14:23:32, python 1910963 started 14:23:42); leftover official 404 W47N8@84395100 (confirm 15:01:07, retry2 15:01:29, and late retry 15:05:11 gt=84395751 still 404; listener 0/100; hole 100 ticks 84395101..84395200). Already told by the 14:32 patrol and now age out of window start 84394901: box freeze 13:49:01-13:56:56 (475s; STATS 84394681..84394809, 129t; official-filled all five 129/129), leftover official 404 W46N8@84394300 (listener 79/100 84394301..84394379, hole 21 ticks 84394380..84394400), box freeze 13:09:46-13:21:14, earlier already-told freezes 12:48:14-12:57:17 / 12:30:42-12:35:35 / 11:49:12-11:57:31 / 11:19:06-11:20:43, short WS gaps 12:10 / 12:18 / 11:12, and older leftover official 404s W45N8@84392600 / W46N8@84390800 / W47N7@84390900 / W46N8@84390400 / W45N7@84388500 / W45N8@84386600. Fold only newer freezes, short WS gaps, or leftover official 404s than the 14:32-told set plus this run's NEW 14:40:53-14:56:54 freeze and W47N7@84395600 once those have been told; do not re-tell W47N8@84395100, the 14:15 or 13:49 freezes, or earlier already-told items.

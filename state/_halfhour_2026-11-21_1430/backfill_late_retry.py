@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Late retry of already-told leftover official 404 W46N8@84394300. Does not overwrite confirm JSON."""
+"""Late retry of first-pass official 404 W47N8@84395100. Does not overwrite confirm JSON."""
 from __future__ import annotations
 import json, sys, time
 from datetime import datetime, timezone
@@ -13,7 +13,7 @@ import db, api
 import backfill_confirm as confirm
 
 confirm.load_tick_s()
-room, base = "W46N8", 84394300
+room, base = "W47N8", 84395100
 our = hb.uid()
 now_ts = datetime.now(timezone.utc)
 hk = datetime.now(ZoneInfo("Asia/Hong_Kong")).strftime("%Y-%m-%d %H:%M:%S Asia/Hong_Kong")
@@ -53,6 +53,6 @@ payload = {
     "db_rows": res.get("db_rows"),
 }
 DIR = Path("/workspace/screeps/state/_halfhour_2026-11-21_1430")
-(DIR / "backfill_late_retry_W46N8_84394300.json").write_text(json.dumps(payload, indent=2) + chr(10))
-(DIR / "backfill_late_retry_W46N8_84394300.txt").write_text("%s gt=%s %s@%s code=%s inserted=%s still_404=%s%s" % (hk, gt, room, base, res["status"], res["inserted"], still, chr(10)))
+(DIR / "backfill_late_retry_W47N8_84395100.json").write_text(json.dumps(payload, indent=2) + chr(10))
+(DIR / "backfill_late_retry_W47N8_84395100.txt").write_text("%s gt=%s %s@%s code=%s inserted=%s still_404=%s%s" % (hk, gt, room, base, res["status"], res["inserted"], still, chr(10)))
 print("finished")
