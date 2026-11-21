@@ -1,0 +1,36 @@
+2026-11-21 09:50:01 Asia/Hong_Kong
+first pass 32/35 official GETs 200 missing_chunks=3 W46N8@84390400, W46N8@84390800, W47N7@84390900 reconstructed 84390301..84391000 (700); confirm still_404=['W46N8@84390400', 'W46N8@84390800', 'W47N7@84390900'] inserted=0; retry2 still_404=['W46N8@84390400', 'W46N8@84390800', 'W47N7@84390900'] inserted=0
+coverage official_recovered=3259/3500 empty_no_creep=0 official_404=241
+  W46N8 distinct=559 rows=6527 84390301..84391000
+  W47N8 distinct=700 rows=10192 84390301..84391000
+  W45N8 distinct=700 rows=2766 84390301..84391000
+  W45N7 distinct=700 rows=2072 84390301..84391000
+  W47N7 distinct=600 rows=2728 84390301..84390900
+just-published 84391000 ticks 84391001..84391100 actual_inserted=2498 script=2668 all_five_200=True
+  W46N8 actual=2 script=2 distinct=100 rows=879
+  W47N8 actual=1320 script=1320 distinct=100 rows=1320
+  W45N8 actual=450 script=454 distinct=100 rows=450
+  W45N7 actual=411 script=411 distinct=100 rows=411
+  W47N7 actual=315 script=481 distinct=100 rows=315
+confirm/retry2 recovered none; leftover official 404s W46N8@84390400 59/100 (hole 84390401..84390441, listener 84390442..84390500), W46N8@84390800 0/100 (hole 84390801..84390900), W47N7@84390900 0/100 (hole 84390901..84391000) — all already told by 09:42 1h patrol; already-told leftover official 404 W45N7@84388500 hole 84388501..84388600 0/100 aged out of window start 84390301, not retried
+gap_0915_0923 STATS 84390831..84390959 (129) already-told by 09:42 patrol (box freeze 09:15:27-09:23:48, 492s); listener auto-restart 09:23:51, python 1782523 started 09:24:01
+  W46N8 59/129 missing 84390831..84390900 (70)  W47N8 129/129  W45N8 129/129  W45N7 129/129  W47N7 70/129 missing 84390901..84390959 (59)
+gap_0852_0856 STATS 84390511..84390579 (69) already-told by 09:42 patrol (box freeze 08:52:35-08:56:43, 248s); official-filled all five 69/69; still in official window start 84390301
+  W46N8 69/69  W47N8 69/69  W45N8 69/69  W45N7 69/69  W47N7 69/69
+gap_0818_0823 STATS 84390031..84390119 (89) already-told by 08:32 patrol (box freeze 08:18:49-08:23:57, 299s); official-filled all five 89/89; ages out of window start 84390301
+  W46N8 89/89  W47N8 89/89  W45N8 89/89  W45N7 89/89  W47N7 89/89
+gap_0743_0801 STATS 84389531..84389789 (259) already-told by 08:32 patrol (box freeze 07:43:15-08:01:01, 1056s); official-filled all five 259/259; aged out of window start 84390301
+  W46N8 259/259  W47N8 259/259  W45N8 259/259  W45N7 259/259  W47N7 259/259
+gap_0722_0725 STATS 84389231..84389299 (69) already-told by 07:37 patrol (box freeze 07:22:15-07:25:56, 214s); official-filled all five 69/69; aged out of window start 84390301
+  W46N8 69/69  W47N8 69/69  W45N8 69/69  W45N7 69/69  W47N7 69/69
+gap_0642_0704 STATS 84388671..84388999 (329) already-told by 07:37 patrol (box freeze 06:42:51-07:04:46, 1315s); official-filled all five 329/329; aged out of window start 84390301
+  W46N8 329/329  W47N8 329/329  W45N8 329/329  W45N7 329/329  W47N7 329/329
+gap_0634_0637 STATS 84388561..84388599 (39) already-told by 07:37 patrol (short listener gap 06:34:33-06:37:21); W45N7 0/39 missing because of official 404 W45N7@84388500; aged out of window start 84390301
+  W46N8 39/39  W47N8 39/39  W45N8 39/39  W45N7 0/39 missing 84388561..84388599 (39)  W47N7 39/39
+already-told leftover official 404 W46N8@84390400 59/100 / W46N8@84390800 0/100 / W47N7@84390900 0/100 (first told by 09:42 1h patrol) — do not re-tell
+aged-out already-told official 404 W45N7@84388500 0/100 (hole 84388501..84388600; first told by 07:37 1h patrol) not retried this run
+aged-out already-told official 404 W46N8@84386400 6/100, W47N8@84385900 0/100, W47N8@84385300 0/100, W45N8@84386600 27/100 not retried
+tick_s_in_use=4.28286 (later_raw) first=4.20511 printed=4.334 corrective=0 ts_realigned_first=324
+tips room_stats=84391320 creep_cpu=84391320 path_arrivals=84391304
+listener pid=1782523 started=09:24:01 parent=4035476 slot=W46N8 rot={"i": 0, "room": "W46N8", "left": 495.0, "at": "2026-11-21 09:49:58"} yield=absent restarted_this_run=false
+ok_quiet=True
