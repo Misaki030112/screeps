@@ -1,0 +1,65 @@
+=== room_stats freshness ===
+W46N8 (84401980, datetime.datetime(2026, 11, 21, 22, 29, 58, 807113, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), datetime.timedelta(seconds=2, microseconds=972209))
+W47N8 (84401980, datetime.datetime(2026, 11, 21, 22, 29, 58, 807199, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), datetime.timedelta(seconds=2, microseconds=978977))
+=== creep_ticks freshness ===
+W46N8 (84401900, datetime.datetime(2026, 11, 21, 22, 24, 25, 799164, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), datetime.timedelta(seconds=335, microseconds=988298), 7763)
+W47N8 (84401981, datetime.datetime(2026, 11, 21, 22, 30, 1, 364232, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), datetime.timedelta(microseconds=788777), 11949)
+W45N8 (84401900, datetime.datetime(2026, 11, 21, 22, 24, 25, 799164, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), datetime.timedelta(seconds=336, microseconds=656728), 3427)
+W45N7 (84401900, datetime.datetime(2026, 11, 21, 22, 24, 25, 799164, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), datetime.timedelta(seconds=336, microseconds=798577), 2686)
+W47N7 (84401900, datetime.datetime(2026, 11, 21, 22, 24, 25, 799164, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), datetime.timedelta(seconds=336, microseconds=903249), 4208)
+=== room_stats gaps since 84401080 (decile / any hole >5) ===
+W46N8 n 54 min 84401000 max 84401980
+  holes>5 [(84401000, 84401010, 10), (84401010, 84401020, 10), (84401020, 84401030, 10), (84401030, 84401040, 10), (84401040, 84401050, 10), (84401050, 84401060, 10), (84401060, 84401070, 10), (84401070, 84401080, 10), (84401080, 84401090, 10), (84401090, 84401100, 10), (84401100, 84401110, 10), (84401110, 84401120, 10), (84401120, 84401130, 10), (84401130, 84401140, 10), (84401140, 84401150, 10), (84401150, 84401160, 10), (84401160, 84401170, 10), (84401170, 84401180, 10), (84401180, 84401190, 10), (84401190, 84401200, 10), (84401200, 84401210, 10), (84401210, 84401220, 10), (84401220, 84401230, 10), (84401230, 84401240, 10), (84401240, 84401250, 10), (84401250, 84401260, 10), (84401260, 84401270, 10), (84401270, 84401280, 10), (84401280, 84401290, 10), (84401290, 84401300, 10)] count 53
+W47N8 n 54 min 84401000 max 84401980
+  holes>5 [(84401000, 84401010, 10), (84401010, 84401020, 10), (84401020, 84401030, 10), (84401030, 84401040, 10), (84401040, 84401050, 10), (84401050, 84401060, 10), (84401060, 84401070, 10), (84401070, 84401080, 10), (84401080, 84401090, 10), (84401090, 84401100, 10), (84401100, 84401110, 10), (84401110, 84401120, 10), (84401120, 84401130, 10), (84401130, 84401140, 10), (84401140, 84401150, 10), (84401150, 84401160, 10), (84401160, 84401170, 10), (84401170, 84401180, 10), (84401180, 84401190, 10), (84401190, 84401200, 10), (84401200, 84401210, 10), (84401210, 84401220, 10), (84401220, 84401230, 10), (84401230, 84401240, 10), (84401240, 84401250, 10), (84401250, 84401260, 10), (84401260, 84401270, 10), (84401270, 84401280, 10), (84401280, 84401290, 10), (84401290, 84401300, 10)] count 53
+=== map wall-clock freezes to room_stats ticks ===
+--- freeze 21:42:29-22:01:09 (1115s) ---
+  W46N8 last_before (84401310, datetime.datetime(2026, 11, 21, 21, 42, 21, 89730, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai'))) first_after (84401590, datetime.datetime(2026, 11, 21, 22, 2, 3, 204740, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')))
+    span 84401311..84401589 missing_stats=279 present=(None, None, 0)
+  W47N8 last_before (84401310, datetime.datetime(2026, 11, 21, 21, 42, 21, 89782, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai'))) first_after (84401590, datetime.datetime(2026, 11, 21, 22, 2, 3, 204809, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')))
+    span 84401311..84401589 missing_stats=279 present=(None, None, 0)
+--- freeze 22:14:12-22:26:30 (737s) ---
+  W46N8 last_before (84401750, datetime.datetime(2026, 11, 21, 22, 13, 37, 461420, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai'))) first_after (84401940, datetime.datetime(2026, 11, 21, 22, 27, 11, 485735, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')))
+    span 84401751..84401939 missing_stats=189 present=(None, None, 0)
+  W47N8 last_before (84401750, datetime.datetime(2026, 11, 21, 22, 13, 37, 461493, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai'))) first_after (84401940, datetime.datetime(2026, 11, 21, 22, 27, 11, 485934, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')))
+    span 84401751..84401939 missing_stats=189 present=(None, None, 0)
+=== official creep_ticks fill for candidate freeze tick ranges ===
+--- known_2142 84401311..84401589 want=279 ---
+  W46N8 279/279 min=84401311 max=84401589
+  W47N8 279/279 min=84401311 max=84401589
+  W45N8 279/279 min=84401311 max=84401589
+  W45N7 279/279 min=84401311 max=84401589
+  W47N7 279/279 min=84401311 max=84401589
+--- probe_2214_wide 84401650..84401950 want=301 ---
+  W46N8 251/301 min=84401650 max=84401900
+  W47N8 267/301 min=84401650 max=84401950
+  W45N8 251/301 min=84401650 max=84401900
+  W45N7 251/301 min=84401650 max=84401900
+  W47N7 251/301 min=84401650 max=84401900
+=== incidents since 84401080 ===
+incidents cols ['ts', 'tick', 'remote', 'inc', 'ev', 'from_state', 'state', 'why', 'inv', 'inv_ttl', 'def', 'dur', 'data']
+INC (datetime.datetime(2026, 11, 21, 20, 39, 4, 433741, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84400430, 'W47N7', 84400223, 'cleared', 'DEFEND', 'SAFE', 'killed', 0, 0, 'out', 207, {'ev': 'cleared', 'def': 'out', 'dur': 207, 'inc': 84400223, 'inv': 0, 'why': 'killed', 'from': 'DEFEND', 'tick': 84400430, 'state': 'SAFE', 'invTtl': 0, 'remote': 'W47N7', 'delivered': 0})
+INC (datetime.datetime(2026, 11, 21, 20, 37, 52, 667803, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84400413, 'W47N7', 84400223, 'arrive', None, 'DEFEND', None, 1, 1310, 'out', None, {'ev': 'arrive', 'def': 'out', 'inc': 84400223, 'inv': 1, 'tick': 84400413, 'state': 'DEFEND', 'invTtl': 1310, 'remote': 'W47N7', 'travel': 39, 'delivered': 0})
+INC (datetime.datetime(2026, 11, 21, 20, 35, 4, 946784, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84400374, 'W47N7', 84400223, 'defend', 'THREAT', 'DEFEND', 'dispatched', 0, 0, 'out', 151, {'ev': 'defend', 'def': 'out', 'dur': 151, 'inc': 84400223, 'inv': 0, 'why': 'dispatched', 'from': 'THREAT', 'tick': 84400374, 'state': 'DEFEND', 'invTtl': 0, 'remote': 'W47N7', 'delivered': 0})
+INC (datetime.datetime(2026, 11, 21, 20, 24, 21, 41763, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84400224, 'W47N7', 84400223, 'spawn_start', None, 'THREAT', None, None, None, 'rdef84400224', None, {'n': 1, 'ev': 'spawn_start', 'def': 'rdef84400224', 'inc': 84400223, 'tick': 84400224, 'state': 'THREAT', 'remote': 'W47N7', 'waited': 1})
+INC (datetime.datetime(2026, 11, 21, 20, 24, 17, 235576, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84400223, 'W47N7', 84400223, 'threat', 'SAFE', 'THREAT', 'solo', 1, 1500, 'none', 0, {'ev': 'threat', 'def': 'none', 'dur': 0, 'inc': 84400223, 'inv': [{'x': 45, 'y': 49, 'ra': 1, 'ttl': 1500, 'heal': False, 'hits': 1000, 'boosted': True, 'hitsMax': 1000, 'ranged3': False}], 'why': 'solo', 'from': 'SAFE', 'tick': 84400223, 'state': 'THREAT', 'invTtl': 1500, 'remote': 'W47N7', 'delivered': 0})
+=== threat / rem events in console_events or alerts if any ===
+table events (76414,)
+no table alerts UndefinedTable
+no table console_events UndefinedTable
+no table threat_incidents UndefinedTable
+no table remote_threat UndefinedTable
+=== room_stats hostiles since 84401080 ===
+hostiles rows 0
+=== storage / nUp-related room_stats extrema since last tip ===
+W46N8 minstor [(84401620, datetime.datetime(2026, 11, 21, 22, 4, 12, 367177, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 14000, 9298339), (84401630, datetime.datetime(2026, 11, 21, 22, 4, 56, 342452, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 14100, 9298619), (84401660, datetime.datetime(2026, 11, 21, 22, 7, 5, 137813, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 14100, 9299389)]
+W46N8 maxstor [(84401980, datetime.datetime(2026, 11, 21, 22, 29, 58, 807113, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 16964, 9303869), (84401230, datetime.datetime(2026, 11, 21, 21, 36, 38, 568245, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 16540, 9287765), (84401100, datetime.datetime(2026, 11, 21, 21, 27, 16, 154807, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 16450, 9284125)]
+W46N8 under15k (9, 14000)
+W47N8 minstor [(84401680, datetime.datetime(2026, 11, 21, 22, 8, 32, 397287, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 23656, 6018991), (84401690, datetime.datetime(2026, 11, 21, 22, 9, 15, 682498, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 23656, 6019191), (84401700, datetime.datetime(2026, 11, 21, 22, 9, 58, 946912, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 23656, 6019391)]
+W47N8 maxstor [(84401980, datetime.datetime(2026, 11, 21, 22, 29, 58, 807199, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 27548, 6025249), (84401960, datetime.datetime(2026, 11, 21, 22, 28, 35, 52066, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 26299, 6024729), (84401970, datetime.datetime(2026, 11, 21, 22, 29, 15, 807996, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 26299, 6024989)]
+W47N8 under15k (0, None)
+=== w8 / Memory ops snapshots if stored ===
+no table ops_snaps UndefinedTable
+no table memory_ops UndefinedTable
+no table ledger_snaps UndefinedTable
+no table mem_stats UndefinedTable

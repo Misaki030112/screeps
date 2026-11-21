@@ -1,0 +1,614 @@
+{
+  "ok_quiet": true,
+  "at": "2026-11-21 21:37:45 Asia/Hong_Kong",
+  "window": [
+    84400401,
+    84401100
+  ],
+  "published_bases": [
+    84400400,
+    84401000
+  ],
+  "game_time_first": 84401126,
+  "first_pass": {
+    "gets_200": 34,
+    "gets_total": 35,
+    "missing_chunks": [
+      "W45N7@84400400"
+    ],
+    "reconstructed": [
+      84400401,
+      84401100
+    ],
+    "creep_rows": 25421,
+    "already_in_db": 22480,
+    "inserted": 2941,
+    "ts_realigned": 15307,
+    "tick_s_printed": 4.171,
+    "overlap_compared": 21561,
+    "overlap_match": 20867,
+    "overlap_differ": 694,
+    "overlap_note": "Backfill does not overwrite existing rows. First-pass overlap 20867/21561 match; 694 diffs, samples include W47N8 84400786-84400787 (live listener just after 21:04 reconnect vs official history) and W46N8 rhauler store at 84401005."
+  },
+  "confirm": {
+    "at": "2026-11-21 21:31:31 Asia/Hong_Kong",
+    "skipped": false,
+    "game_time": 84401159,
+    "still_404": [
+      "W45N7@84400400"
+    ],
+    "inserted": 0,
+    "recovered": []
+  },
+  "retry2": {
+    "at": "2026-11-21 21:33:40 Asia/Hong_Kong",
+    "skipped": false,
+    "game_time": 84401189,
+    "still_404": [
+      "W45N7@84400400"
+    ],
+    "inserted": 0,
+    "recovered": []
+  },
+  "late_retry": {
+    "at": "2026-11-21 21:36:10 Asia/Hong_Kong",
+    "game_time": 84401223,
+    "targets": [
+      "W45N7@84400400"
+    ],
+    "still_404": [
+      "W45N7@84400400"
+    ],
+    "inserted": 0,
+    "recovered": []
+  },
+  "just_published": {
+    "base": 84401000,
+    "included_in_first_pass": true,
+    "first_pass_at": "2026-11-21 21:29:10 Asia/Hong_Kong",
+    "first_pass_game_time": 84401126,
+    "first_pass_all_five_200": true,
+    "reget_at": "2026-11-21 21:31:43 Asia/Hong_Kong",
+    "game_time": 84401162,
+    "all_five_200": true,
+    "script_inserted": 27,
+    "actual_inserted": 0,
+    "by_script": {
+      "W46N8": 0,
+      "W47N8": 0,
+      "W45N8": 7,
+      "W45N7": 0,
+      "W47N7": 20
+    },
+    "by_actual": {
+      "W46N8": 0,
+      "W47N8": 0,
+      "W45N8": 0,
+      "W45N7": 0,
+      "W47N7": 0
+    },
+    "still_404": []
+  },
+  "coverage": {
+    "official_recovered": 3331,
+    "expected": 3500,
+    "empty_no_creep": 96,
+    "official_404_missing": 73,
+    "per_room": {
+      "W46N8": {
+        "distinct": 700,
+        "missing_n": 0,
+        "missing_ranges": [],
+        "official_empty_no_creep": 0,
+        "official_empty_no_creep_ranges": [],
+        "official_404_missing": 0,
+        "official_404_ranges": []
+      },
+      "W47N8": {
+        "distinct": 700,
+        "missing_n": 0,
+        "missing_ranges": [],
+        "official_empty_no_creep": 0,
+        "official_empty_no_creep_ranges": [],
+        "official_404_missing": 0,
+        "official_404_ranges": []
+      },
+      "W45N8": {
+        "distinct": 700,
+        "missing_n": 0,
+        "missing_ranges": [],
+        "official_empty_no_creep": 0,
+        "official_empty_no_creep_ranges": [],
+        "official_404_missing": 0,
+        "official_404_ranges": []
+      },
+      "W45N7": {
+        "distinct": 627,
+        "missing_n": 73,
+        "missing_ranges": [
+          [
+            84400401,
+            84400402
+          ],
+          [
+            84400430,
+            84400500
+          ]
+        ],
+        "official_empty_no_creep": 0,
+        "official_empty_no_creep_ranges": [],
+        "official_404_missing": 73,
+        "official_404_ranges": [
+          [
+            84400401,
+            84400402
+          ],
+          [
+            84400430,
+            84400500
+          ]
+        ]
+      },
+      "W47N7": {
+        "distinct": 604,
+        "missing_n": 96,
+        "missing_ranges": [
+          [
+            84400401,
+            84400496
+          ]
+        ],
+        "official_empty_no_creep": 96,
+        "official_empty_no_creep_ranges": [
+          [
+            84400401,
+            84400496
+          ]
+        ],
+        "official_404_missing": 0,
+        "official_404_ranges": []
+      }
+    },
+    "w47n7_official_200_evac_empty": [
+      [
+        84400401,
+        84400496
+      ]
+    ],
+    "w47n7_empty_ticks": 96
+  },
+  "tick_s_first": 4.17088,
+  "tick_s_in_use": 4.17088,
+  "tick_s_in_use_name": "first",
+  "ts_realigned_first": 15307,
+  "corrective": {
+    "applied": true,
+    "nfix": 285,
+    "tick_s": 4.17088,
+    "note": "corrective realign used first-interval tick_s, not later-mean"
+  },
+  "inserted_total": 2941,
+  "inserted_breakdown": {
+    "first": 2941,
+    "confirm": 0,
+    "retry2": 0,
+    "late": 0,
+    "just_actual": 0
+  },
+  "window_db": {
+    "W46N8": {
+      "distinct": 700,
+      "rows": 7223,
+      "min": 84400401,
+      "max": 84401100
+    },
+    "W47N8": {
+      "distinct": 700,
+      "rows": 9081,
+      "min": 84400401,
+      "max": 84401100
+    },
+    "W45N8": {
+      "distinct": 700,
+      "rows": 3234,
+      "min": 84400401,
+      "max": 84401100
+    },
+    "W45N7": {
+      "distinct": 627,
+      "rows": 2823,
+      "min": 84400403,
+      "max": 84401100
+    },
+    "W47N7": {
+      "distinct": 604,
+      "rows": 2932,
+      "min": 84400497,
+      "max": 84401100
+    }
+  },
+  "gaps": {
+    "gap_2049_2104": {
+      "W46N8": {
+        "fill": "229/229",
+        "distinct": 229,
+        "rows": 2150,
+        "min": 84400561,
+        "max": 84400789,
+        "missing_n": 0,
+        "missing_range": null
+      },
+      "W47N8": {
+        "fill": "229/229",
+        "distinct": 229,
+        "rows": 2600,
+        "min": 84400561,
+        "max": 84400789,
+        "missing_n": 0,
+        "missing_range": null
+      },
+      "W45N8": {
+        "fill": "229/229",
+        "distinct": 229,
+        "rows": 849,
+        "min": 84400561,
+        "max": 84400789,
+        "missing_n": 0,
+        "missing_range": null
+      },
+      "W45N7": {
+        "fill": "229/229",
+        "distinct": 229,
+        "rows": 1288,
+        "min": 84400561,
+        "max": 84400789,
+        "missing_n": 0,
+        "missing_range": null
+      },
+      "W47N7": {
+        "fill": "229/229",
+        "distinct": 229,
+        "rows": 1106,
+        "min": 84400561,
+        "max": 84400789,
+        "missing_n": 0,
+        "missing_range": null
+      }
+    },
+    "gap_1952_2002": {
+      "W46N8": {
+        "fill": "149/149",
+        "distinct": 149,
+        "rows": 1299,
+        "min": 84399771,
+        "max": 84399919,
+        "missing_n": 0,
+        "missing_range": null
+      },
+      "W47N8": {
+        "fill": "149/149",
+        "distinct": 149,
+        "rows": 2104,
+        "min": 84399771,
+        "max": 84399919,
+        "missing_n": 0,
+        "missing_range": null
+      },
+      "W45N8": {
+        "fill": "149/149",
+        "distinct": 149,
+        "rows": 695,
+        "min": 84399771,
+        "max": 84399919,
+        "missing_n": 0,
+        "missing_range": null
+      },
+      "W45N7": {
+        "fill": "49/149",
+        "distinct": 49,
+        "rows": 248,
+        "min": 84399771,
+        "max": 84399919,
+        "missing_n": 100,
+        "missing_range": "84399801..84399900"
+      },
+      "W47N7": {
+        "fill": "149/149",
+        "distinct": 149,
+        "rows": 929,
+        "min": 84399771,
+        "max": 84399919,
+        "missing_n": 0,
+        "missing_range": null
+      }
+    },
+    "gap_2021_shortws": {
+      "W46N8": {
+        "fill": "19/19",
+        "distinct": 19,
+        "rows": 228,
+        "min": 84400171,
+        "max": 84400189,
+        "missing_n": 0,
+        "missing_range": null
+      },
+      "W47N8": {
+        "fill": "0/19",
+        "distinct": 0,
+        "rows": 0,
+        "min": null,
+        "max": null,
+        "missing_n": 19,
+        "missing_range": "84400171..84400189"
+      },
+      "W45N8": {
+        "fill": "19/19",
+        "distinct": 19,
+        "rows": 57,
+        "min": 84400171,
+        "max": 84400189,
+        "missing_n": 0,
+        "missing_range": null
+      },
+      "W45N7": {
+        "fill": "19/19",
+        "distinct": 19,
+        "rows": 95,
+        "min": 84400171,
+        "max": 84400189,
+        "missing_n": 0,
+        "missing_range": null
+      },
+      "W47N7": {
+        "fill": "19/19",
+        "distinct": 19,
+        "rows": 120,
+        "min": 84400171,
+        "max": 84400189,
+        "missing_n": 0,
+        "missing_range": null
+      }
+    }
+  },
+  "holes": {
+    "W45N7@84400400": {
+      "distinct": 27,
+      "rows": 99,
+      "min": 84400403,
+      "max": 84400429,
+      "hole_ticks": 73,
+      "hole_ranges": [
+        [
+          84400401,
+          84400402
+        ],
+        [
+          84400430,
+          84400500
+        ]
+      ],
+      "missing": [
+        84400401,
+        84400402,
+        84400430,
+        84400431,
+        84400432,
+        84400433,
+        84400434,
+        84400435,
+        84400436,
+        84400437,
+        84400438,
+        84400439,
+        84400440,
+        84400441,
+        84400442,
+        84400443,
+        84400444,
+        84400445,
+        84400446,
+        84400447,
+        84400448,
+        84400449,
+        84400450,
+        84400451,
+        84400452,
+        84400453,
+        84400454,
+        84400455,
+        84400456,
+        84400457,
+        84400458,
+        84400459,
+        84400460,
+        84400461,
+        84400462,
+        84400463,
+        84400464,
+        84400465,
+        84400466,
+        84400467,
+        84400468,
+        84400469,
+        84400470,
+        84400471,
+        84400472,
+        84400473,
+        84400474,
+        84400475,
+        84400476,
+        84400477,
+        84400478,
+        84400479,
+        84400480,
+        84400481,
+        84400482,
+        84400483,
+        84400484,
+        84400485,
+        84400486,
+        84400487,
+        84400488,
+        84400489,
+        84400490,
+        84400491,
+        84400492,
+        84400493,
+        84400494,
+        84400495,
+        84400496,
+        84400497,
+        84400498,
+        84400499,
+        84400500
+      ]
+    },
+    "W45N7@84400300": {
+      "distinct": 0,
+      "rows": 0,
+      "min": null,
+      "max": null,
+      "hole_ticks": 100,
+      "hole_ranges": [
+        [
+          84400301,
+          84400400
+        ]
+      ],
+      "missing": "84400301..84400400"
+    },
+    "W47N8@84400100": {
+      "distinct": 0,
+      "rows": 0,
+      "min": null,
+      "max": null,
+      "hole_ticks": 100,
+      "hole_ranges": [
+        [
+          84400101,
+          84400200
+        ]
+      ],
+      "missing": "84400101..84400200"
+    }
+  },
+  "tips": {
+    "room_stats": 84401240,
+    "creep_cpu": 84401230,
+    "path_arrivals": 84401229
+  },
+  "listener": {
+    "pid": 2086972,
+    "parent": 4035476,
+    "started": "24:10",
+    "count": 1,
+    "slot": "W47N8",
+    "rot": {
+      "i": 1,
+      "room": "W47N8",
+      "left": 44.9,
+      "at": "2026-11-21 21:37:44"
+    },
+    "yield_absent": true,
+    "restarted_this_run": false,
+    "restarts_before_this_run": [
+      {
+        "at": "21:04:06",
+        "why": "box freeze 20:49:04-21:04:03",
+        "python_started": "21:04:16",
+        "pid": 2082229
+      },
+      {
+        "at": "21:13:33",
+        "why": "ws ping/pong timed out 21:13:29",
+        "python_started": "21:13:43",
+        "pid": 2086972
+      }
+    ]
+  },
+  "new_untold_official_404s": [],
+  "still_untold_from_2100": [
+    "W45N7@84400400"
+  ],
+  "still_untold_from_2030": [
+    "W45N7@84400300"
+  ],
+  "new_untold_box_freezes": [],
+  "new_untold_short_ws": [],
+  "still_untold_box_freeze_from_2100": [
+    "20:49:04-21:04:03"
+  ],
+  "still_untold_short_ws_from_2100": [
+    "21:13:29"
+  ],
+  "still_untold_84400400": {
+    "room": "W45N7",
+    "base": 84400400,
+    "from_run": "_halfhour_2026-11-21_2100",
+    "still_404_this_run": true,
+    "listener": {
+      "distinct": 27,
+      "rows": 99,
+      "min": 84400403,
+      "max": 84400429
+    },
+    "hole_ticks": 73,
+    "hole_ranges": [
+      [
+        84400401,
+        84400402
+      ],
+      [
+        84400430,
+        84400500
+      ]
+    ],
+    "confirm": {
+      "at": "2026-11-21 21:31:31 Asia/Hong_Kong",
+      "game_time": 84401159,
+      "still_404": true,
+      "inserted": 0
+    },
+    "retry2": {
+      "at": "2026-11-21 21:33:40 Asia/Hong_Kong",
+      "game_time": 84401189,
+      "still_404": true,
+      "inserted": 0
+    },
+    "late_retry": {
+      "at": "2026-11-21 21:36:10 Asia/Hong_Kong",
+      "game_time": 84401223,
+      "still_404": true,
+      "inserted": 0
+    },
+    "not_yet_told": true
+  },
+  "still_untold_84400300": {
+    "room": "W45N7",
+    "base": 84400300,
+    "from_run": "_halfhour_2026-11-21_2030",
+    "aged_out_of_window_start": 84400401,
+    "retried_this_run": false,
+    "still_404_this_run": true,
+    "listener": {
+      "distinct": 0,
+      "rows": 0
+    },
+    "hole_ticks": 100,
+    "hole_ranges": [
+      [
+        84400301,
+        84400400
+      ]
+    ],
+    "not_yet_told": true
+  },
+  "written_in_2020_patrol_user_log": [
+    "box_freeze 19:52:19-20:02:21",
+    "short_ws 20:21:38",
+    "W45N8@84399500",
+    "W45N7@84399800",
+    "W47N8@84400100"
+  ],
+  "concurrent_1h_patrol": "_patrol likely started 21:19; do not write its folder; if it delivers the 21:00 backfill untold set, treat those as told after that delivery"
+}
