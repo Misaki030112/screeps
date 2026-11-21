@@ -30,7 +30,7 @@
       </div>
     </div>
     <figcaption>
-      缺省活 200 拍。sticky 不看时钟。到点就删。单条 on 为 0 的留下，但不执行。
+      缺省活 200 拍。sticky 不看时钟。整层开着时，到点就删。单条 on 为 0 的留下，但不执行。
     </figcaption>
   </figure>
 </template>
