@@ -1,0 +1,9 @@
+Traceback (most recent call last):
+  File "/workspace/screeps/state/_patrol_2026-11-22_2224/db_focus.py", line 71, in <module>
+    rows=c.execute("""SELECT name, room, MIN(tick), MAX(tick), COUNT(*), MIN(hits), MAX(hits) FROM creep_ticks WHERE name LIKE 'rdef%' AND tick>=84422400 GROUP BY 1,2 ORDER BY 1,2""").fetchall()
+         ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/screeps/.venv/lib/python3.13/site-packages/psycopg/connection.py", line 304, in execute
+    raise ex.with_traceback(None)
+psycopg.errors.UndefinedColumn: column "name" does not exist
+LINE 1: SELECT name, room, MIN(tick), MAX(tick), COUNT(*), MIN(hits)...
+               ^
