@@ -1,24 +1,30 @@
 # 手册编辑备忘
 
-给下一轮写公开手册的人。此文件不在网站导航里。`docs-site/.vitepress/config.mts` 的 `srcExclude` 也不会把它编成页面。
+给下一轮写公开手册的人。此文件不在网站导航里。`docs-site/.vitepress/config.mts` 的 `srcExclude` 也不会把它编成页面。保持这个排除。
 
-日期：2026-11-21（Asia/Hong_Kong）。这一轮改的是「房间与常数」里「默认关着的开关」的安全模式那一格，没有新开机制页。手册对照的游戏代码仍是 `289a7f066127a5a8b256df4ecda3771433d8a89c`（`289a7f06`，`fix(w47n8): take the filler post when hub container 33,33 is occupied`）。`git log -1 -- src/` 的最新一笔仍是它。不要在页面上写成更新的 LIVE。这一轮没有改 `src/`。`now.md` 里的百分比仍是 2026-11-17、对照 `85c19c2e` 的快照，没有重算。
+日期：2026-11-22（Asia/Hong_Kong）。这一轮只加深「主循环与 CPU」末尾那一句控制台 `STATS`。没有新开页面，没有新的导航项，没有改 `src/`。手册对照的游戏代码仍是 `289a7f066127a5a8b256df4ecda3771433d8a89c`（`289a7f06`，`fix(w47n8): take the filler post when hub container 33,33 is occupied`）。`git log -1 -- src/` 的最新一笔仍是它。不要在页面上写成更新的 LIVE，也不要把这次文档改动写成一次游戏部署。`now.md` 里的百分比仍是 2026-11-17、对照 `85c19c2e` 的快照，没有重算。
 
 公开手册只写 `src/` 里现在生效的规则。不要写入令牌、密码、内网地址，也不要写监听、数据库或仪表盘。能量账是游戏里的 `Memory.ledger`。不要写成有人在仓库外盯着这本账。`src/utils/ledger.js` 文件头指向 `docs/LEDGER.md`，仓库里仍然没有这份文件。不要新建它，公开页也不要指向它。注释里的毫秒数没有写进公开页。
 
 ## 这一轮做了什么
 
-「房间与常数」的安全模式那一格原来写「代码不调用」。这句比源码更绝对。公开页改成代码实际做的事：防御只写建议，建议键会留下；`src/` 里唯一的调用在征服工人，而且 `autoSafe` 缺省不设。图是 `SafeModeNote`。没有新开机制页，没有改防御页和指挥官页，用的是交叉引用。没有把征服或 raid9 写成出击步骤，也没有写成有人在仓库外收到警报。
+「主循环与 CPU」里，能量账两节（「结尾不指挥下一只」「账上没有的进出」）没有改写。安全模式那一格也没有动。页末原来那句把控制台一行说成：时间、用掉的 CPU、桶、GCL、房间、各角色的数量、错误数。少了 `tr`，也没有说清 `nerr` 数的是什么。
+
+现在仍是同一处。控制台 `STATS` 是给人看的摘要，`report.run` 缺省每 **10** 拍才打；`Memory.stats` 每拍都写，里面有这一拍收集到的警报和错误，没打那一行的拍统计照写。八个字段用一张安静的表：`t`、`cpu`、`b`、`gcl`、`rooms`、`creeps`、`nerr`、`tr`。表后没有再列别的键。没有新组件，没有路线叠加，没有记忆段 90，也没有把 `rooms` 拆成一张房间表。
 
 对过的行为，按代码留下来的有这些：
 
-- `src/rooms/w47n8/index.js` 文件头写本模块不自己开安全模式。`assessRun` 调用 `defense.plan`。`advise` 只有在推演仍赢不了、而且 `o.inside` 为真时才是 `'safemode'`，否则是空字符串。非空才写 `Memory.ops.w8adv = { t: Game.time, advise, why, n: force.length }`。不调用 `activateSafeMode`。`defense.assess` 用同一条建议条件，房间写入这个键的是 `plan` 的返回。
-- 空字符串不会清掉已经写下的键。上一次 `w8assess` 还不到 10 拍，函数在推演之前返回，也不重写 `w8adv`。
-- 威胁清空的条件比「没有武装」更窄：房间里没有活着的攻击或远程部件，并且 `Memory.ops.w8invN` 不在最近 60 拍里（没写、写成 0，或已经过了 60 拍，都算）。这时删 `room.memory.w8assess` 和 `Memory.ops.w8roster`，不删 `w8adv`。只带 WORK 或治疗的 creep 不挡住这次删除。`src/` 里没有第二处写入或删除 `w8adv`，也没有别处再读它来决定开不开。代码不给这个键加过期标记。旧不旧只看 `t`。
-- `src/` 里唯一的 `activateSafeMode()` 在 `src/roles/conquest.js` 的 `runWorker`。`Memory.ops.cq.autoSafe` 缺省不设，文件头写明缺省关闭。走到那一行还要可用次数大于 0、当前不在安全模式、控制器至少 2 级。`cmd` 还是缺省的 `hold` 或是 `retreat`、身上没有能量、控制器还不是自己的、或这一拍要去升级控制器，都会提前返回。安全模式结束且次数还在，工人再次走到这里会再试。`wantSpawn` 要 `Memory.ops.cq.armed === true` 才孵人。调用那一行不再读 `armed`。平时的防御不读 `autoSafe`。
-- `src/roles/raid9.js` 文件头写 NEVER 调用。它只读目标房间控制器上的 `safeMode`。`tests/raid9.js` 断言这份源码里没有 `.activateSafeMode(`。公开页一笔带过，不写破墙、入口或编制。
-- `src/utils/cmd.js` 不打开安全模式。`src/managers/stats.js` 把控制器上现成的 `safeMode` 和 `safeModeAvailable` 放进房间统计。`src/managers/alerts.js` 在警报载荷里带上这两个数，也不调用，也不读 `w8adv`。公开页不写这两处，以免写成监听或仓库外的警报。
-- `tools/conquest.py` 只改 `autoSafe` 旗标，不调用 `activateSafeMode`。公开页不写这个工具怎么用。
+- `src/utils/report.js` 是整个模块。`run(every = 10)`。`Game.time % every` 非 0 就返回。否则 `console.log('STATS ' + JSON.stringify({...}))`。主循环调用的是 `report.run()`，没有另传间隔。公开页不写文件头里的 websocket。
+- 这一行的顶层字段就是 `t`、`cpu`、`b`、`gcl`、`rooms`、`creeps`、`nerr`、`tr`。`s = Memory.stats || {}`。
+- `t` 是 `Game.time`。统计里另有 `s.time`，这一行不读它。
+- `cpu` 是 `+(s.cpu || 0).toFixed(2)`。`src/managers/stats.js` 在 `stats.run` 里写 `s.cpu = Game.cpu.getUsed()`，位置在房间、creep、错误和警报之后。
+- `b` 是打印时的 `Game.cpu.bucket`。`stats.js` 也写 `s.bucket`，这一行不读那个副本。
+- `gcl` 是 `s.gcl`，形状是 `{ level, progress, progressTotal }`，取自 `Game.gcl`。
+- `rooms` 是 `s.rooms`。房间对象里字段很多，其中有控制器上现成的 `safeMode` / `safeModeAvailable`。那是统计对象里的数。这一轮没有拆开，也没有回头改安全模式那一格。房间详情大多在 `Game.time % 5 === 0` 或还没有 `s.rooms` 时整块重写；已有房间的 `energy` 和 `progress` 每拍另写。公开页不写这个节奏。
+- `creeps` 是 `s.creeps = _.countBy(Game.creeps, c => c.memory.role)`。
+- `nerr` 是 `(s.errors || []).length`：留下的条数，不是这一拍新发生的条数。`stats.run` 先接到这一拍 `err.flush()` 交来的新错误，再 `slice(-10)`。最多 **10** 条。这一拍没有新的，旧的还在。`src/managers/stats.js` 文件头写 “keeps last 20 errors”，和代码不符。公开页跟代码，写 10。**不要为了这句注释去改 `src/`。**
+- `tr` 是 `Memory.traceCpu`。`src/main.js` 在统计和报告之前计时：`err.wrap('trace', () => { trace.tick(); trace.run(); })`，然后 `Memory.traceCpu = Math.round((Game.cpu.getUsed() - tt) * 1000) / 1000`。这是跟踪这一步本拍用掉的 CPU，三位小数。不是 creep 循环里逐只累加的那份。公开页不展开记忆段 90。
+- `s.alerts` 是 `concat` 再 `slice(-12)`。`s.prof` 以及 `remote`、`lastErrorTick`、`lastAlertTick` 也在 `Memory.stats` 里。它们都不是 `STATS` 那一行的顶层字段。公开页只说警报留在统计里，没有把 `prof` 写进字段表。
 
 ## 路线叠加：不要再排
 
@@ -34,14 +40,23 @@
 
 ## 下一轮
 
-**在已有的「主循环与 CPU」页，补上结尾那一行 `STATS` 实际有哪些字段。** 现在那句写的是：时间、用掉的 CPU、桶、GCL、房间、各角色的数量、错误数。`src/utils/report.js` 打出的顶层字段是 `t`、`cpu`、`b`、`gcl`、`rooms`、`creeps`、`nerr`、`tr`。`tr` 是 `Memory.traceCpu`。`nerr` 是 `(Memory.stats.errors || []).length`，也就是留下的条数，不是这一拍新发生的条数。`src/managers/stats.js` 用 `slice(-10)` 留下这些错误，文件头注释写的 20 已经过时。写之前再对这两处。只补字段名字，以及 `nerr` 数的是什么。`rooms` 里面还有控制器上现成的 `safeMode` 数字，那是统计对象里的数，不要在这一句里拆成仪表盘，也不要回头改安全模式那一格。不要展开记忆段 90。不要写成监听、数据库或仪表盘。文件头提到 websocket，公开页不写。路线叠加不要再排。
+**把 `docs-site/plan.md` 里「绝不自动开安全模式」改得和房间页一样具体。** 短改措辞，加一处指向 [房间与常数](/reference/rooms) 的交叉引用。不要重写安全模式那一格，不要改防御页，不要把征服或 raid9 写成出击步骤。
 
-它排在安全模式这一格后面，是因为主循环页已经点了这行摘要的名字，却少了 `tr`，也没有说清 `nerr` 数的是留下的条数。改的是已有页末的一句，不开专页。
+它排在 `STATS` 字段后面，是因为规划页「已经在跑」里这句仍比代码更绝对。房间页已经写成：缺省不调用；防御只写建议；唯一调用要征服工人的 `autoSafe`，而且缺省不设。规划页不该停在「绝不」。
+
+写之前再读这几处。这一轮对过、下一轮仍要自己再看一眼的有：
+
+- `docs-site/plan.md`「已经在跑」仍有「低 CPU 桶时的执行顺序，以及「绝不自动开安全模式」」。同页「明确没有开始」还有一条「主动开战、为矿物新占外矿、自动安全模式」，后一句是旗标要人打开才动。那一条不要展开成用法。若同一小段改完后，「自动安全模式」仍比房间页更绝对，只把那一个说法对齐，仍用交叉引用。
+- `src/` 里 `activateSafeMode` 的调用只在 `src/roles/conquest.js` 的 `runWorker`。条件是 `P.autoSafe && ctl.safeModeAvailable > 0 && !ctl.safeMode && ctl.level >= 2`。文件头写明 `autoSafe` 缺省关闭。`cmd` 缺省 `hold`，`hold` 和 `retreat` 在这一行之前返回。身上没有能量、控制器还不是自己的、或这一拍要去升级，也会提前返回。
+- `src/roles/raid9.js` 文件头写 NEVER 调用。防御写建议、不调用，房间页已经写了。不要在规划页把建议键再讲一遍。
+- `docs-site/now.md` 仍有「不自动开安全模式」和「真正按下去的是人」。那不是这一轮要改的句子，也不是下一轮规划页这一句的替代。
 
 ## 再往后
 
 1. **不要把文档写成代码变更。** 不要在手册里修改 15000 的地板，也不要把 W47 的 keep=2 写成已经松开。那道闩要存储连续 500 tick 不低于 40000 才到 3。没有常设的第三只升级工。只描述当前代码。防御页里「升级工保持 2 只」是现在的本地窗口，不是一次发布说明。
-2. **可选，更往后。** 给 `now.md` 做一次注明日期的重算。百分比仍对照 `85c19c2e`。不是 `STATS` 字段这一句的替代。
+2. **可选，更往后。** 给 `now.md` 做一次注明日期的重算。百分比仍是 2026-11-17、对照 `85c19c2e` 的快照，已经明显落后于现在的进度。重算不是 `STATS` 字段那一句的替代，也不是规划页安全模式措辞的替代。同页「真正按下去的是人」比房间页更绝对。若重算时碰到这句，跟房间页对齐，不要写成出击步骤。
 3. **道路不用为英文笔记再开一页。** `docs/ROADS.md` 只是指到公开的外矿页。家的路网已经写在 [外矿与预定](/mechanisms/remotes) 的「路」，主循环和建造页也点过阶段名。不要把这份短笔记展开成新的机制页。
 4. **矿物与终端不用新开一页。** 现有页已经写了一次送多少、手续费，以及 `Game.market` 只用于算手续费、没有订单。不要把「市场规则还薄」再排成新页。
-5. **跟踪不要写成专页。** 导读已经把监听、数据库、仪表盘留在手册外面。`STATS` 那一句补完字段之后，也不要为此再开一页，不要展开记忆段 90。
+5. **跟踪不要写成专页。** 导读已经把监听、数据库、仪表盘留在手册外面。`STATS` 那一行的字段已经补在主循环页上。不要为此再开一页，不要展开记忆段 90，也不要把 `rooms` 拆成仪表盘。`Memory.stats` 里的 `prof`、`remote`、`s.bucket`、`s.time` 都不是那一行的顶层字段，不要回头补进字段表。
+6. **不要把游戏里的 `RoomVisual` / 路线叠加排进公开的主循环页。** 模块没有从 `main.js` 挂上，人在游戏里看不到那条线。仓库里的 `docs/CPU.md` 和 `docs/VISUALS.md` 在这一点上是旧的，以后可以只在仓库内改正，仍不进公开导航，也不要摘到公开的主循环页。
+7. **探针不在公开手册里。** `docs/PROBE.md` 和 `src/` 里的角色都还没写进公开页。以后只有先确认它是每天都在跑的机制，才考虑一句很短的公开说明。不要写成侦察或进攻的步骤。
