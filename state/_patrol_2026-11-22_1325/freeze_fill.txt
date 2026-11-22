@@ -1,0 +1,44 @@
+=== room_stats around freezes ===
+freeze 12:51:44-13:03:45 bracket ticks 84414370 84414560
+  W46N8 last before (84414370, datetime.datetime(2026, 11, 22, 12, 51, 3, 766766, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai'))) first after (84414560, datetime.datetime(2026, 11, 22, 13, 4, 9, 345327, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai'))) interior=None
+  W47N8 last before (84414370, datetime.datetime(2026, 11, 22, 12, 51, 3, 766824, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai'))) first after (84414560, datetime.datetime(2026, 11, 22, 13, 4, 9, 345403, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai'))) interior=None
+  interior 84414371..84414559 want 189
+  creep_ticks W46N8 distinct=189/189 rows=1610 range=84414371..84414559
+  creep_ticks W47N8 distinct=189/189 rows=3008 range=84414371..84414559
+  creep_ticks W45N8 distinct=189/189 rows=707 range=84414371..84414559
+  creep_ticks W45N7 distinct=189/189 rows=720 range=84414371..84414559
+  creep_ticks W47N7 distinct=189/189 rows=909 range=84414371..84414559
+
+freeze 13:16:57-13:26:20 bracket ticks 84414730 84414880
+  W46N8 last before (84414730, datetime.datetime(2026, 11, 22, 13, 16, 9, 332205, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai'))) first after (84414880, datetime.datetime(2026, 11, 22, 13, 26, 36, 779481, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai'))) interior=None
+  W47N8 last before (84414730, datetime.datetime(2026, 11, 22, 13, 16, 9, 332288, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai'))) first after (84414880, datetime.datetime(2026, 11, 22, 13, 26, 36, 779539, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai'))) interior=None
+  interior 84414731..84414879 want 149
+  creep_ticks W46N8 distinct=79/149 rows=832 range=84414801..84414879
+  creep_ticks W47N8 distinct=149/149 rows=2001 range=84414731..84414879
+  creep_ticks W45N8 distinct=149/149 rows=560 range=84414731..84414879
+  creep_ticks W45N7 distinct=149/149 rows=638 range=84414731..84414879
+  creep_ticks W47N7 distinct=149/149 rows=821 range=84414731..84414879
+
+=== W46N8@84414700 listener/official coverage 84414701..84414800 ===
+W46N8 distinct 0 min None max None rows 0
+W47N8 distinct 100 min 84414701 max 84414800 rows 1346
+W45N8 distinct 100 min 84414701 max 84414800 rows 352
+W45N7 distinct 100 min 84414701 max 84414800 rows 489
+W47N7 distinct 100 min 84414701 max 84414800 rows 589
+W46N8 ticks in 404 chunk: []
+W46N8 missing n= 100
+W46N8 missing spans [(84414701, 84414800, 100)]
+
+=== freeze 13:16 STATS 84414731..84414879 split by official chunk ===
+-- overlap 404 W46N8@84414700 84414731..84414800 want 70
+  W46N8 0/70
+  W47N8 70/70
+  W45N8 70/70
+  W45N7 70/70
+  W47N7 70/70
+-- official W46N8@84414800 200 84414801..84414879 want 79
+  W46N8 79/79
+  W47N8 79/79
+  W45N8 79/79
+  W45N7 79/79
+  W47N7 79/79

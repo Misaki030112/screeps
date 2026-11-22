@@ -12,7 +12,7 @@ import backfill_confirm as confirm
 
 DIR = Path("/workspace/screeps/state/_halfhour_2026-11-22_1230")
 HK = ZoneInfo("Asia/Hong_Kong")
-TARGETS = []  # no in-window first-pass 404 this pass; W47N7@84412400 aged out, already told
+TARGETS = [("W46N8", 84413700)]  # still 404 after confirm 12:34:52 and retry2 12:35:05; W47N7@84414000 recovered
 
 def main():
     confirm.load_tick_s()

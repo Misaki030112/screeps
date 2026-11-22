@@ -15,46 +15,50 @@ import db, api
 import history_backfill as hb
 
 # Official chunk timestamps printed by history_backfill.py
-# First pass 35 of 35 official GETs 200, missing_chunks=0, exit=0.
-# published_bases 84412900..84413500 at game.time=84413674; reconstructed 84412901..84413600 (700).
+# First pass 33 of 35 official GETs 200, missing_chunks=2, exit=0.
+# published_bases 84413400..84414000 at game.time=84414117; reconstructed 84413401..84414100 (700).
 # First-pass tick_s used min-of-all-rooms on the first two published bases,
-# computed (MIN 84413000-84412900)/1000/100 = 4.07886, script printed 4.079.
-# Insert committed inserted=9907 already_in_db=15246, first-pass realign committed
-# ts_realigned=0 (0 rows over the 45s gate vs first-interval tick_s).
-# 11:30 half-hour already wrote through 84413100 / just-published 84413200 for all 5.
-# Concurrent 1h patrol _patrol_2026-11-22_1117 already delivered ~11:28 USER_LOG.
-# 12h review already delivered ~08:33 t508s3618. Do not write those folders.
-# Do not restart the listener or war_cmd/pulse. Single listener 2431743 since 12:00:59
-# after NEW box freeze 11:45:08-12:00:47 (931s; STATS 84413411..84413649, 239t;
-# listener auto-restart 12:00:50). Fold this freeze into the next 1h patrol USER_LOG.
-# Already-told leftover official 404 W47N7@84412400 aged out of window start 84412901
+# computed (MIN 84413500-84413400)/1000/100 = 3.96454, script printed 3.965.
+# Insert committed inserted=2290 already_in_db=22078, first-pass realign committed
+# ts_realigned=3327 (rows over the 45s gate vs first-interval tick_s).
+# Confirm 12:34:53 recovered W47N7@84414000 inserted=303; retry2 12:35:06 inserted=2
+# (already 100 distinct); late 12:35:21 still 404 W46N8@84413700 leftover.
+# 12:00 half-hour already wrote through 84413500 / just-published 84413600 for all 5.
+# Concurrent 1h patrol _patrol_2026-11-22_1222 is in progress; last delivered USER_LOG
+# is still ~11:28 _patrol_2026-11-22_1117. 12h review already delivered ~08:33 t508s3618.
+# Do not write those folders. Do not restart the listener or war_cmd/pulse.
+# Single listener 2442173 since 12:23:23 after NEW box freeze 12:20:45-12:23:11
+# (139s; STATS 84413921..84413969, 49t; listener auto-restart 12:23:14) and after
+# short WS ping/pong 12:14:41 restart 12:14:44 (STATS 84413821..84413849, 29t).
+# Also still-untold freeze 11:45:08-12:00:47 (STATS 84413411..84413649) from the 12:00 wrapup.
+# Fold new 404 / freezes / short WS into the next 1h patrol USER_LOG.
+# Already-told leftover official 404 W47N7@84412400 aged out of window start 84413401
 # and is not retried this pass (already told in the 11:28 patrol), along with older
-# W45N7@84411500 and earlier leftovers. No in-window first-pass 404. Unpublished
-# tail after 84413600 waits on just-published 84413600.
+# leftovers. Unpublished tail after 84414100 waits on just-published 84414100.
+# W46N8@84413700 has no official timestamp (leftover 404); omit from W46/MIN_ALL.
 W46 = {
-    84412900: 1795317439258,
-    84413000: 1795317847144,
-    84413100: 1795318264641,
-    84413200: 1795318670212,
-    84413300: 1795319071157,
     84413400: 1795319499587,
     84413500: 1795319895942,
+    84413600: 1795320324231,
+    84413800: 1795321152608,
+    84413900: 1795321572105,
+    84414000: 1795321984358,
 }
 MIN_ALL = {
-    84412900: 1795317439258,  # W46N8
-    84413000: 1795317847144,  # W46N8
-    84413100: 1795318263810,  # W45N7
-    84413200: 1795318670212,  # W46N8
-    84413300: 1795319071157,  # W46N8
     84413400: 1795319499488,  # W45N7
     84413500: 1795319895942,  # W46N8
+    84413600: 1795320324231,  # W46N8
+    84413700: 1795320733239,  # W45N7 (W46N8 404)
+    84413800: 1795321151444,  # W45N7
+    84413900: 1795321572105,  # W46N8
+    84414000: 1795321984358,  # W46N8
 }
-TMIN, TMAX = 84412901, 84413600
+TMIN, TMAX = 84413401, 84414100
 ROOMS = ("W46N8", "W47N8", "W45N8", "W45N7", "W47N7")
-TICK_S_FIRST = (MIN_ALL[84413000] - MIN_ALL[84412900]) / 1000.0 / 100  # script printed 4.079, exact 4.07886
-GT_FIRST = 84413674
-TS_REALIGNED_FIRST = 0  # first-pass realign committed, 0 rows over 45s
-PREV_LATER_MEAN = 4.154238333333334  # tick_s_in_use from quiet 11:30 halfhour (span_mean)
+TICK_S_FIRST = (MIN_ALL[84413500] - MIN_ALL[84413400]) / 1000.0 / 100  # script printed 3.965, exact 3.96454
+GT_FIRST = 84414117
+TS_REALIGNED_FIRST = 3327  # first-pass realign committed
+PREV_LATER_MEAN = 4.097596  # tick_s_in_use from quiet 12:00 halfhour (later_raw)
 
 
 def intervals(d):

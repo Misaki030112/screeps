@@ -9,18 +9,19 @@ import history_backfill as hb
 import db, api
 
 ROOMS = ("W46N8", "W47N8", "W45N8", "W45N7", "W47N7")
-# First pass at game.time=84413674; published_bases 84412900..84413500,
-# reconstructed 84412901..84413600 (700). inserted=9907, already_in_db=15246, reconstructed=25153,
-# ts_realigned_first_pass=0 (first-interval tick_s=4.07886 script printed 4.079).
+# First pass at game.time=84414117; published_bases 84413400..84414000,
+# reconstructed 84413401..84414100 (700). inserted=2290, already_in_db=22078, reconstructed=24368,
+# ts_realigned_first_pass=3327 (first-interval tick_s script printed 3.965).
 # tick_s_in_use overwritten from tick_s_realign.json after tick_s_check.
-# First pass 35 of 35 official GETs 200, missing_chunks=0.
-# Already-told leftover official 404 W47N7@84412400 aged out of window start 84412901
+# First pass 33 of 35 official GETs 200, missing_chunks=2:
+# W46N8@84413700 and W47N7@84414000.
+# Already-told leftover official 404 W47N7@84412400 aged out of window start 84413401
 # and is not retried this pass (already told in the 11:28 patrol), along with older
-# W45N7@84411500 and earlier leftovers. No in-window first-pass 404.
-# 11:30 half-hour official already through 84413100 / just-published 84413200.
-IN_WINDOW = []
+# W45N7@84411500 and earlier leftovers.
+# 12:00 half-hour official already through 84413500 / just-published 84413600.
+IN_WINDOW = [("W46N8", 84413700), ("W47N7", 84414000)]
 AGED = []
-TICK_S = 4.079
+TICK_S = 3.965
 PASS = sys.argv[1] if len(sys.argv) > 1 else "confirm"
 OUT = "/workspace/screeps/state/_halfhour_2026-11-22_1230/backfill_confirm_gets.json"
 TICK_S_FILE = "/workspace/screeps/state/_halfhour_2026-11-22_1230/tick_s_realign.json"

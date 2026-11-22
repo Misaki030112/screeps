@@ -8,7 +8,7 @@ import sys
 sys.path.insert(0, "/workspace/screeps/tools")
 import db
 
-TMIN, TMAX = 84412901, 84413600
+TMIN, TMAX = 84413401, 84414100
 ROOMS = ("W46N8", "W47N8", "W45N8", "W45N7", "W47N7")
 DIR = "/workspace/screeps/state/_halfhour_2026-11-22_1230"
 # First pass 34 of 35 official GETs 200, missing_chunks=1 W45N8@84375300.
@@ -20,7 +20,7 @@ DIR = "/workspace/screeps/state/_halfhour_2026-11-22_1230"
 # Prior short listener gaps 15:02:26 STATS 84374991..84375229 and 14:34:16 STATS 84374801..84374819 sit in/age around this window and were already official-filled (told=false, left to 1h patrol).
 # NEW box freeze 15:15:12-15:26:38 STATS 84375391..84375569 (179t) sits inside this window; first-pass official covers through 84375600 except the W45N8@84375300 hole. This run must not restart the listener.
 # Concurrent 1h patrol _patrol_2026-11-20_1526 is running; do not write its folder.
-IN_WINDOW_404 = set()  # first pass 35/35, no in-window official 404; W47N7@84412400 aged out
+IN_WINDOW_404 = {("W46N8", 84413700)}  # leftover official 404 after confirm/retry2/late; W47N7@84414000 recovered
 OUT = sys.argv[1] if len(sys.argv) > 1 else f"{DIR}/coverage_final.json"
 
 def chunk_base(tick):
