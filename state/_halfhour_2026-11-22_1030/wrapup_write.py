@@ -7,7 +7,7 @@ from zoneinfo import ZoneInfo
 
 ROOT = Path("/workspace/screeps")
 STATE = ROOT / "state"
-DIR = Path("/workspace/screeps/state/_halfhour_2026-11-22_1000")
+DIR = Path("/workspace/screeps/state/_halfhour_2026-11-22_1030")
 ROOMS = ("W46N8", "W47N8", "W45N8", "W45N7", "W47N7")
 HK = ZoneInfo("Asia/Hong_Kong")
 NL = chr(10)
@@ -15,11 +15,12 @@ os.chdir(ROOT)
 sys.path.insert(0, "tools")
 import db
 
-T0, T1 = 84411201, 84411900
-JP_BASE = 84411900
+T0, T1 = 84411601, 84412300
+JP_BASE = 84412300
 JP_T0, JP_T1 = JP_BASE + 1, JP_BASE + 100
 
 GAPS = [
+    ("gap_1016_1022", 84412131, 84412219),
     ("gap_0941_0959", 84411621, 84411889),
     ("gap_0914_0919", 84411221, 84411299),
     ("gap_0851_0901", 84410881, 84411039),
@@ -180,8 +181,8 @@ def main():
     else:
         script_by = {r: None for r in ROOMS}
 
-    # First pass inserted=12510 is the real DB insert. confirm recovered W47N7@84411800 inserted=385; retry2/late still 404 W45N7@84411500.
-    inserted_first = 12510
+    # First pass inserted=2940 is the real DB insert. confirm/retry2/late still 404 W45N7@84411500 (leftover just outside window, not yet told from 10:11).
+    inserted_first = 2940
     inserted_confirm_script = int(confirm.get("inserted") or 0)
     inserted_retry2_script = int((confirm.get("retry2") or {}).get("inserted") or confirm.get("retry2_inserted") or 0)
     inserted_confirm = inserted_confirm_script
@@ -207,6 +208,7 @@ def main():
     w45n7_84403800 = holes["W45N7@84403800"]
     w45n7_84403700 = holes["W45N7@84403700"]
 
+    fill1016 = fill_txt(gaps["gap_1016_1022"])
     fill0941 = fill_txt(gaps["gap_0941_0959"])
     fill0914 = fill_txt(gaps["gap_0914_0919"])
     fill0851 = fill_txt(gaps["gap_0851_0901"])
@@ -223,7 +225,7 @@ def main():
     fill0244 = fill_txt(gaps["gap_0244_0303"])
 
     tick_s_in_use = tick.get("tick_s_in_use")
-    first = tick.get("tick_s_used_first_pass") or 4.149
+    first = tick.get("tick_s_used_first_pass") or 4.195
     later = tick.get("later_mean_w46") or tick.get("later_mean_robust")
     corrective = int(tick.get("ts_realigned_to_later_mean") or 0)
     tick_s_label = tick.get("tick_s_in_use_name") or "all_mean"
@@ -249,44 +251,44 @@ def main():
     script_vs_txt = ", ".join(script_vs(r) for r in ROOMS)
 
     now_txt = (
-        "source=this_halfhour_first_pass _halfhour_2026-11-22_1000" + NL
+        "source=this_halfhour_first_pass _halfhour_2026-11-22_1030" + NL
         + first_txt
         + f"---- wrap {now} ----" + NL
-        + f"confirm at {confirm_at} gt={confirm_gt} recovered W47N7@84411800 inserted={inserted_confirm_script}; still_404 W45N7@84411500. "
+        + f"confirm at {confirm_at} gt={confirm_gt} still_404 W45N7@84411500 inserted={inserted_confirm_script}. "
         + f"retry2 at {retry2_at} gt={retry2_gt} still_404 W45N7@84411500 inserted={inserted_retry2_script}. "
         + f"late retry at {late_at} gt={late_gt} still_404 W45N7@84411500 inserted={inserted_late}. "
-        + "First pass 33/35 official GETs 200, missing_chunks=2 W45N7@84411500 and W47N7@84411800. "
-        + "First pass started 2026-11-22 10:01:17 Asia/Hong_Kong and finished 10:02:04 (exit=0): "
-        + "inserted=12510 already_in_db=10921, first-pass realign committed ts_realigned_first=0 (no rows over the 45s gate). "
-        + "tick_s_check chose live-anchor-best span_mean 4.11235 already inside the 45s gate (over45=0), so no corrective realign. "
+        + "First pass 35/35 official GETs 200, missing_chunks=0. "
+        + "First pass started 2026-11-22 10:29:56 Asia/Hong_Kong and finished 10:30:37 (exit=0): "
+        + "inserted=2940 already_in_db=22511, first-pass realign committed ts_realigned_first=13903 (13903 rows were over the 45s gate and were realigned). "
+        + "tick_s_check chose live-anchor-best first 4.19489 (later-mean-robust 4.10583 was worse: over45=8489 mean_off=-28.3 vs first over45=66 mean_off=7.2) and applied a corrective first realign of 272 rows at game.time=84412355; still_over_45s_vs_target=0, skipped_cross_chunk=0. "
         + "Concurrent 1h patrol already delivered 09:29 _patrol_2026-11-22_0918 USER_LOG; do not re-tell or write its folder. 12h review already delivered ~08:33 t508s3618; do not re-tell or write its folder. "
-        + "09:30 half-hour already official-filled through 84411300 / just-published 84411400; this run is idempotent overlap plus new official 84411500..84411800 and just-published 84411900. "
+        + "10:00 half-hour already official-filled through 84411800 / just-published 84411900; this run is idempotent overlap plus new official 84412000..84412200 and just-published 84412300. "
         + "Already-told leftover official 404s W47N8@84409800, W46N8@84408300, W47N8@84408300, W47N7@84407900, W46N8@84407000, W45N8@84407700, W45N8@84406400, W46N8@84406600, W46N8@84406700, "
-        + "W45N7@84403800, W45N7@84403700, W45N7@84400400, W45N7@84400300, and W47N8@84400100 aged out of window start 84411201 "
+        + "W45N7@84403800, W45N7@84403700, W45N7@84400400, W45N7@84400300, and W47N8@84400100 aged out of window start 84411601 "
         + "and were not retried this pass (already told in the 08:28 _patrol_2026-11-22_0818 or earlier USER_LOG; do not re-tell). "
         + "W47N7@84411200 was 404 in the 09:18 patrol first pass and already recovered on that patrol confirm (this first pass 200); not a leftover. "
-        + f"Just-published 84411900 was not in first pass (first pass ended at published 84411800 / reconstructed 84411201..84411900 at "
-        + f"game.time=84411913, 33/35 200, missing_chunks=2). GET at {jp_at} gt={jp_gt} all_five_200={jp_all5} "
+        + f"Just-published 84412300 was not in first pass (first pass ended at published 84412200 / reconstructed 84411601..84412300 at "
+        + f"game.time=84412325, 35/35 200, missing_chunks=0). GET at {jp_at} gt={jp_gt} all_five_200={jp_all5} "
         + f"script={script_sum} actual={actual_sum}; {script_vs_txt}. "
         + f"Coverage official_recovered={cov['official_recovered']}/{cov['expected']} empty_no_creep={cov['empty_no_creep']} official_404={cov['official_404_missing']}. "
         + "W46N8 official empty_no_creep in this first-pass window: none. "
         + "W47N8 official empty_no_creep in this first-pass window: none. "
         + "W45N8 / W45N7 / W47N7 official empty_no_creep in this first-pass window: none. "
         + f"inserted_first={inserted_first} confirm={inserted_confirm} retry2={inserted_retry2} late={inserted_late} just_actual={actual_sum} total={inserted_total}. "
-        + f"tick_s_in_use={tick_s_in_use} ({tick_s_label}) first={first} ts_realigned_first=0 corrective={corrective} "
-        + f"(later-raw later-mean {later}; first-pass realign committed ts_realigned=0; live-anchor-best span_mean already inside 45s gate (over45=0), no corrective realign). "
-        + f"Already-told leftover official 404 W47N8@84409800 aged out of window start 84411201 and was not retried this pass (listener {w47n8_84409800['distinct']}/100 range {w47n8_84409800['min']}..{w47n8_84409800['max']}; hole {w47n8_84409800['hole_ticks']} ticks {hole_range_txt(w47n8_84409800)}) -- already told in the 08:28 _patrol_2026-11-22_0818 USER_LOG; do not re-tell. "
-        + f"Already-told leftover official 404 W46N8@84408300 aged out of window start 84411201 and was not retried this pass (listener {w46n8_84408300['distinct']}/100; hole {w46n8_84408300['hole_ticks']} ticks {hole_range_txt(w46n8_84408300)}) -- already told in the 06:44 _patrol_2026-11-22_0625 t508s3614 USER_LOG; do not re-tell. "
-        + f"Already-told leftover official 404 W47N8@84408300 aged out of window start 84411201 and was not retried this pass (listener {w47n8_84408300['distinct']}/100; hole {w47n8_84408300['hole_ticks']} ticks {hole_range_txt(w47n8_84408300)}) -- already told in the 06:44 patrol t508s3614 USER_LOG; do not re-tell. "
-        + f"Already-told leftover official 404 W47N7@84407900 aged out of window start 84411201 and was not retried this pass (listener {w47n7_84407900['distinct']}/100; hole {w47n7_84407900['hole_ticks']} ticks {hole_range_txt(w47n7_84407900)}) -- already told in the 06:44 patrol t508s3614 USER_LOG; do not re-tell. "
-        + f"Already-told leftover official 404 W45N8@84407700 aged out of window start 84411201 and was not retried this pass (listener {w45n8_84407700['distinct']}/100; hole {w45n8_84407700['hole_ticks']} ticks {hole_range_txt(w45n8_84407700)}) -- already told in the 05:38 _patrol_2026-11-22_0522 USER_LOG; do not re-tell. "
-        + f"Already-told leftover official 404 W46N8@84407000 aged out of window start 84411201 and was not retried this pass (listener {w46n8_84407000['distinct']}/100; hole {w46n8_84407000['hole_ticks']} ticks {hole_range_txt(w46n8_84407000)}) -- already told in the 05:38 _patrol_2026-11-22_0522 USER_LOG; do not re-tell. "
-        + f"Already-told leftover official 404s aged out of window start 84411201 and were not retried: W45N8@84406400 (listener {w45n8_84406400['distinct']}/100; hole {w45n8_84406400['hole_ticks']} ticks {hole_range_txt(w45n8_84406400)}), W46N8@84406600 (listener {w46n8_84406600['distinct']}/100; hole {w46n8_84406600['hole_ticks']} ticks {hole_range_txt(w46n8_84406600)}), W46N8@84406700 (listener {w46n8_84406700['distinct']}/100; hole {w46n8_84406700['hole_ticks']} ticks {hole_range_txt(w46n8_84406700)}) -- already told in the 04:33 _patrol_2026-11-22_0422 USER_LOG; do not re-tell. "
-        + f"Already-told leftover official 404 W45N7@84403800 aged out of window start 84411201 and was not retried (listener {w45n7_84403800['distinct']}/100; hole {w45n7_84403800['hole_ticks']} ticks {hole_range_txt(w45n7_84403800)}) -- already told in the 01:31 _patrol_2026-11-22_0121 USER_LOG; do not re-tell. "
-        + f"Already-told leftover official 404 W45N7@84403700 aged out of window start 84411201 and was not retried (listener {w45n7_84403700['distinct']}/100; hole {w45n7_84403700['hole_ticks']} ticks {hole_range_txt(w45n7_84403700)}) -- already told in the 01:31 patrol USER_LOG; do not re-tell. "
-        + f"NEW leftover official 404 this run: W45N7@84411500 (confirm 10:03:16, retry2 10:03:38, and late retry 10:03:56 still 404; listener {w45n7_84411500['distinct']}/100 range {w45n7_84411500['min']}..{w45n7_84411500['max']}; hole {w45n7_84411500['hole_ticks']} ticks {hole_range_txt(w45n7_84411500)}) -- not yet told; fold into the next 1h patrol USER_LOG. W47N7@84411800 was 404 in this first pass and recovered on confirm (inserted=385, 100/100); not a leftover. "
+        + f"tick_s_in_use={tick_s_in_use} ({tick_s_label}) first={first} ts_realigned_first=13903 corrective={corrective} "
+        + f"(later-raw later-mean {later}; first-pass realign committed ts_realigned=13903; live-anchor-best first 4.19489, corrective first realign of 272 rows, still_over_45s=0). "
+        + f"Already-told leftover official 404 W47N8@84409800 aged out of window start 84411601 and was not retried this pass (listener {w47n8_84409800['distinct']}/100 range {w47n8_84409800['min']}..{w47n8_84409800['max']}; hole {w47n8_84409800['hole_ticks']} ticks {hole_range_txt(w47n8_84409800)}) -- already told in the 08:28 _patrol_2026-11-22_0818 USER_LOG; do not re-tell. "
+        + f"Already-told leftover official 404 W46N8@84408300 aged out of window start 84411601 and was not retried this pass (listener {w46n8_84408300['distinct']}/100; hole {w46n8_84408300['hole_ticks']} ticks {hole_range_txt(w46n8_84408300)}) -- already told in the 06:44 _patrol_2026-11-22_0625 t508s3614 USER_LOG; do not re-tell. "
+        + f"Already-told leftover official 404 W47N8@84408300 aged out of window start 84411601 and was not retried this pass (listener {w47n8_84408300['distinct']}/100; hole {w47n8_84408300['hole_ticks']} ticks {hole_range_txt(w47n8_84408300)}) -- already told in the 06:44 patrol t508s3614 USER_LOG; do not re-tell. "
+        + f"Already-told leftover official 404 W47N7@84407900 aged out of window start 84411601 and was not retried this pass (listener {w47n7_84407900['distinct']}/100; hole {w47n7_84407900['hole_ticks']} ticks {hole_range_txt(w47n7_84407900)}) -- already told in the 06:44 patrol t508s3614 USER_LOG; do not re-tell. "
+        + f"Already-told leftover official 404 W45N8@84407700 aged out of window start 84411601 and was not retried this pass (listener {w45n8_84407700['distinct']}/100; hole {w45n8_84407700['hole_ticks']} ticks {hole_range_txt(w45n8_84407700)}) -- already told in the 05:38 _patrol_2026-11-22_0522 USER_LOG; do not re-tell. "
+        + f"Already-told leftover official 404 W46N8@84407000 aged out of window start 84411601 and was not retried this pass (listener {w46n8_84407000['distinct']}/100; hole {w46n8_84407000['hole_ticks']} ticks {hole_range_txt(w46n8_84407000)}) -- already told in the 05:38 _patrol_2026-11-22_0522 USER_LOG; do not re-tell. "
+        + f"Already-told leftover official 404s aged out of window start 84411601 and were not retried: W45N8@84406400 (listener {w45n8_84406400['distinct']}/100; hole {w45n8_84406400['hole_ticks']} ticks {hole_range_txt(w45n8_84406400)}), W46N8@84406600 (listener {w46n8_84406600['distinct']}/100; hole {w46n8_84406600['hole_ticks']} ticks {hole_range_txt(w46n8_84406600)}), W46N8@84406700 (listener {w46n8_84406700['distinct']}/100; hole {w46n8_84406700['hole_ticks']} ticks {hole_range_txt(w46n8_84406700)}) -- already told in the 04:33 _patrol_2026-11-22_0422 USER_LOG; do not re-tell. "
+        + f"Already-told leftover official 404 W45N7@84403800 aged out of window start 84411601 and was not retried (listener {w45n7_84403800['distinct']}/100; hole {w45n7_84403800['hole_ticks']} ticks {hole_range_txt(w45n7_84403800)}) -- already told in the 01:31 _patrol_2026-11-22_0121 USER_LOG; do not re-tell. "
+        + f"Already-told leftover official 404 W45N7@84403700 aged out of window start 84411601 and was not retried (listener {w45n7_84403700['distinct']}/100; hole {w45n7_84403700['hole_ticks']} ticks {hole_range_txt(w45n7_84403700)}) -- already told in the 01:31 patrol USER_LOG; do not re-tell. "
+        + f"NEW leftover official 404 this run: none. Still-untold leftover official 404 W45N7@84411500 (this confirm 10:32:11, retry2 10:32:33, and late retry 10:32:56 still 404; listener {w45n7_84411500['distinct']}/100 range {w45n7_84411500['min']}..{w45n7_84411500['max']}; hole {w45n7_84411500['hole_ticks']} ticks {hole_range_txt(w45n7_84411500)}) -- first recorded in the quiet 10:11 _halfhour_2026-11-22_1000 backfill; still not yet told; fold into the next 1h patrol USER_LOG. "
         + "NEW short WS this run: none. "
-        + f"NEW box freeze this run: 盒子休眠 09:41:41-09:59:05 (1037s; STATS 84411621..84411889, 269t; official-filled {fill0941}; listener auto-restart 09:59:08, python 2385251 started 09:59:17) -- not yet told; fold into the next 1h patrol USER_LOG. "
+        + f"NEW box freeze this run: 盒子休眠 10:16:39-10:22:23 (338s; STATS 84412131..84412219, 89t; official-filled {fill1016}; listener auto-restart 10:22:26, python 2394456 started 10:22:36) -- not yet told; fold into the next 1h patrol USER_LOG. 盒子休眠 09:41:41-09:59:05 (1037s; STATS 84411621..84411889, 269t; official-filled {fill0941}; listener auto-restart 09:59:08, python 2385251 started 09:59:17) -- still not yet told (first recorded in the quiet 10:11 _halfhour_2026-11-22_1000 backfill); fold into the next 1h patrol USER_LOG. "
         + f"盒子休眠 09:14:15-09:19:05 (283s; STATS 84411221..84411299, 79t; official-filled {fill0914}; listener auto-restart 09:19:08, python 2371673 started 09:19:17) -- already told in the 09:29 _patrol_2026-11-22_0918 USER_LOG; do not re-tell. "
         + f"盒子休眠 08:51:14-09:01:02 (581s; STATS 84410881..84411039, 159t; official-filled {fill0851}; listener auto-restart 09:01:06, python 2364487 started 09:01:15) -- already told in the 09:29 _patrol_2026-11-22_0918 USER_LOG; do not re-tell. "
         + f"_patrol_2026-11-22_0918 USER_LOG (delivered 09:29) already includes (treat as already told; do not re-tell): 盒子休眠 08:51:14-09:01:02 and 09:14:15-09:19:05; W47N7@84411200 first-pass 404 recovered on confirm (no leftover). "
@@ -306,9 +308,9 @@ def main():
         + f"盒子休眠 05:17:11-05:23:17 (361s; STATS 84407741..84407849, 109t; official-filled {fill0517}; W45N8 short because leftover official 404 W45N8@84407700 covers 84407741..84407800; listener auto-restart 05:23:20); "
         + f"监听短中断 05:25:19-05:27:20 (no box_pauses row; STATS 84407871..84407899, 29t; official-filled {fill0525}; listener ws ping/pong 05:26:35, auto-restart 05:26:38); "
         + "leftover official 404 W46N8@84407000 / W45N8@84407700. "
-        + f"Official fill re-verified this run: 09:41 STATS 84411621..84411889 269t official-filled {fill0941}; 09:14 STATS 84411221..84411299 79t official-filled {fill0914}; 08:51 STATS 84410881..84411039 159t official-filled {fill0851}; 07:44 STATS 84409901..84410189 289t official-filled {fill0744}; 07:20 STATS 84409551..84409649 99t official-filled {fill0720}; 06:50 STATS 84409111..84409299 189t official-filled {fill0650}; 06:21 STATS 84408691..84408779 89t official-filled {fill0621}; 05:52 STATS 84408271..84408449 179t official-filled {fill0552}; 05:17 STATS 84407741..84407849 109t official-filled {fill0517}; 05:25 short WS STATS 84407871..84407899 29t official-filled {fill0525}; 04:41 STATS 84407211..84407499 289t official-filled {fill0441}; 04:18 STATS 84406881..84406949 69t official-filled {fill0418}; 03:47 STATS 84406431..84406719 289t official-filled {fill0347}; 02:44 STATS 84405501..84405799 299t official-filled {fill0244}. "
+        + f"Official fill re-verified this run: 10:16 STATS 84412131..84412219 89t official-filled {fill1016}; 09:41 STATS 84411621..84411889 269t official-filled {fill0941}; 09:14 STATS 84411221..84411299 79t official-filled {fill0914}; 08:51 STATS 84410881..84411039 159t official-filled {fill0851}; 07:44 STATS 84409901..84410189 289t official-filled {fill0744}; 07:20 STATS 84409551..84409649 99t official-filled {fill0720}; 06:50 STATS 84409111..84409299 189t official-filled {fill0650}; 06:21 STATS 84408691..84408779 89t official-filled {fill0621}; 05:52 STATS 84408271..84408449 179t official-filled {fill0552}; 05:17 STATS 84407741..84407849 109t official-filled {fill0517}; 05:25 short WS STATS 84407871..84407899 29t official-filled {fill0525}; 04:41 STATS 84407211..84407499 289t official-filled {fill0441}; 04:18 STATS 84406881..84406949 69t official-filled {fill0418}; 03:47 STATS 84406431..84406719 289t official-filled {fill0347}; 02:44 STATS 84405501..84405799 299t official-filled {fill0244}. "
         + "_patrol_2026-11-22_0422 USER_LOG already includes (treat as already told; do not re-tell): 盒子休眠 03:47:58-04:06:12 and 04:18:46-04:22:28; leftover official 404 W45N8@84406400 / W46N8@84406600 / W46N8@84406700. "
-        + "Single listener 2385251 since 09:59:17 after the 09:41 box freeze auto-restart, peacetime one-slot rotation, yield_absent=True. Did not start a second listener or restart war_cmd/pulse. "
+        + "Single listener 2394456 since 10:22:36 after the 10:16 box freeze auto-restart, peacetime one-slot rotation, yield_absent=True. Did not start a second listener or restart war_cmd/pulse. "
         + f"listener_rot {rot} tips {tips}."
         + NL
     )
@@ -320,20 +322,20 @@ def main():
     verify = (
         f"wrap {now}" + NL
         + f"ok_quiet=True inserted_total={inserted_total}" + NL
-        + f"first_pass game.time=84411913 published_bases=84411200..84411800 reconstructed=84411201..84411900 (700) "
-        + f"33/35 200 missing_chunks=2 W45N7@84411500 W47N7@84411800 inserted_first={inserted_first} already_in_db=10921 ts_realigned_first=0 (realign committed, no rows over 45s)" + NL
-        + "confirm recovered W47N7@84411800 inserted=385; retry2/late still_404 W45N7@84411500 inserted=0 (NEW leftover official 404, not yet told). Already-told leftover official 404s W47N8@84409800 / W46N8@84408300 / W47N8@84408300 / W47N7@84407900 and older aged out of window start 84411201, already told in 08:28 patrol or earlier" + NL
-        + f"just_published 84411900 at {jp_at} gt={jp_gt} all_five_200={jp_all5} script={script_sum} actual={actual_sum} script_by={script_by} actual_by={actual}" + NL
+        + f"first_pass game.time=84412325 published_bases=84411600..84412200 reconstructed=84411601..84412300 (700) "
+        + f"35/35 200 missing_chunks=0 inserted_first={inserted_first} already_in_db=22511 ts_realigned_first=13903 (realign committed, 13903 rows over 45s); tick_s_check corrective first 272 rows, still_over_45s=0" + NL
+        + "confirm/retry2/late still_404 W45N7@84411500 inserted=0 (still-untold leftover first recorded in 10:11 halfhour, just outside window start 84411601, retried this pass). Already-told leftover official 404s W47N8@84409800 / W46N8@84408300 / W47N8@84408300 / W47N7@84407900 and older aged out of window start 84411601, already told in 08:28 patrol or earlier" + NL
+        + f"just_published 84412300 at {jp_at} gt={jp_gt} all_five_200={jp_all5} script={script_sum} actual={actual_sum} script_by={script_by} actual_by={actual}" + NL
         + f"coverage official_recovered={cov['official_recovered']}/{cov['expected']} empty_no_creep={cov['empty_no_creep']} official_404={cov['official_404_missing']}" + NL
         + f"tick_s_in_use={tick_s_in_use} ({tick_s_label}) first={first} corrective_applied={bool(tick.get('corrective_applied'))} nfix={corrective}" + NL
         + f"window_db={window_db}" + NL
         + f"dup={dup}" + NL
         + f"tips={tips}" + NL
         + f"listener {listener_lines} rot={rot} yield_absent={yield_absent}" + NL
-        + f"gaps 0941={{ { {r: gaps['gap_0941_0959'][r]['fill'] for r in ROOMS} } }} 0914={{ { {r: gaps['gap_0914_0919'][r]['fill'] for r in ROOMS} } }} 0851={{ { {r: gaps['gap_0851_0901'][r]['fill'] for r in ROOMS} } }} 0744={{ { {r: gaps['gap_0744_0802'][r]['fill'] for r in ROOMS} } }} 0720={{ { {r: gaps['gap_0720_0726'][r]['fill'] for r in ROOMS} } }} 0650={{ { {r: gaps['gap_0650_0702'][r]['fill'] for r in ROOMS} } }} 0621={{ { {r: gaps['gap_0621_0626'][r]['fill'] for r in ROOMS} } }} 0552={{ { {r: gaps['gap_0552_0604'][r]['fill'] for r in ROOMS} } }} 0517={{ { {r: gaps['gap_0517_0523'][r]['fill'] for r in ROOMS} } }} 0525={{ { {r: gaps['gap_0525_0527'][r]['fill'] for r in ROOMS} } }} 0441={{ { {r: gaps['gap_0441_0459'][r]['fill'] for r in ROOMS} } }}" + NL
+        + f"gaps 1016={{ { {r: gaps['gap_1016_1022'][r]['fill'] for r in ROOMS} } }} 0941={{ { {r: gaps['gap_0941_0959'][r]['fill'] for r in ROOMS} } }} 0914={{ { {r: gaps['gap_0914_0919'][r]['fill'] for r in ROOMS} } }} 0851={{ { {r: gaps['gap_0851_0901'][r]['fill'] for r in ROOMS} } }} 0744={{ { {r: gaps['gap_0744_0802'][r]['fill'] for r in ROOMS} } }} 0720={{ { {r: gaps['gap_0720_0726'][r]['fill'] for r in ROOMS} } }} 0650={{ { {r: gaps['gap_0650_0702'][r]['fill'] for r in ROOMS} } }} 0621={{ { {r: gaps['gap_0621_0626'][r]['fill'] for r in ROOMS} } }} 0552={{ { {r: gaps['gap_0552_0604'][r]['fill'] for r in ROOMS} } }} 0517={{ { {r: gaps['gap_0517_0523'][r]['fill'] for r in ROOMS} } }} 0525={{ { {r: gaps['gap_0525_0527'][r]['fill'] for r in ROOMS} } }} 0441={{ { {r: gaps['gap_0441_0459'][r]['fill'] for r in ROOMS} } }}" + NL
         + f"holes={holes}" + NL
         + "already_told by _patrol_2026-11-22_0918 USER_LOG (do not re-tell): 盒子休眠 08:51:14-09:01:02 and 09:14:15-09:19:05; W47N7@84411200 first-pass 404 recovered on confirm (no leftover). Already told by _patrol_2026-11-22_0818 USER_LOG (do not re-tell): 盒子休眠 07:44:22-08:02:42; leftover official 404 W47N8@84409800. Already told by _patrol_2026-11-22_0725 USER_LOG (do not re-tell): 盒子休眠 07:20:32-07:26:28 and 06:50:03-07:02:08; leftover official 404 W46N8@84408300 / W47N8@84408300 / W47N7@84407900. Already told by _patrol_2026-11-22_0625 USER_LOG t508s3614 (do not re-tell): 盒子休眠 05:52:44-06:04:12 and 06:21:56-06:26:26. Already told by _patrol_2026-11-22_0522 USER_LOG (do not re-tell): 盒子休眠 04:41:06-04:59:17 and 05:17:11-05:23:17; 监听短中断 05:25:19-05:27:20; leftover official 404 W46N8@84407000 and W45N8@84407700. Older already-told freezes through 04:18 / 03:47 / 02:44 and leftover official 404s through W45N8@84406400 / W46N8@84406600 / W46N8@84406700 and earlier." + NL
-        + "ok_quiet=True new_official_404_untold=[W45N7@84411500] still_untold_from_0800=[] still_untold_from_0730=[] still_untold_from_0700=[] still_untold_from_0600=[] still_untold_from_0530=[] new_box_freeze_untold=[09:41:41-09:59:05 STATS 84411621..84411889 269t] still_untold_freeze_from_0800=[] still_untold_freeze_from_0730=[] still_untold_freeze_from_0700=[] still_untold_freeze_from_0600=[] new_short_ws_untold=[] first_pass_source=this_halfhour_1000 concurrent_patrol=already_delivered_0929_do_not_write_its_folder concurrent_12h_review=already_delivered_0833_do_not_write_its_folder" + NL
+        + "ok_quiet=True new_official_404_untold=[] still_untold_from_1000=[W45N7@84411500] still_untold_from_0800=[] still_untold_from_0730=[] still_untold_from_0700=[] still_untold_from_0600=[] still_untold_from_0530=[] new_box_freeze_untold=[10:16:39-10:22:23 STATS 84412131..84412219 89t] still_untold_freeze_from_1000=[09:41:41-09:59:05 STATS 84411621..84411889 269t] still_untold_freeze_from_0800=[] still_untold_freeze_from_0730=[] still_untold_freeze_from_0700=[] still_untold_freeze_from_0600=[] new_short_ws_untold=[] first_pass_source=this_halfhour_1030 concurrent_patrol=already_delivered_0929_do_not_write_its_folder concurrent_12h_review=already_delivered_0833_do_not_write_its_folder" + NL
     )
 
     (DIR / "verify.txt").write_text(verify)
@@ -365,13 +367,15 @@ def main():
         "listener": listener_lines,
         "rot": rot,
         "yield_absent": yield_absent,
-        "new_official_404_untold": ["W45N7@84411500"],
+        "new_official_404_untold": [],
+        "still_untold_from_1000": ["W45N7@84411500"],
         "still_untold_from_0800": [],
         "still_untold_from_0730": [],
         "still_untold_from_0700": [],
         "still_untold_from_0600": [],
         "still_untold_from_0530": [],
-        "new_box_freeze_untold": ["09:41:41-09:59:05 STATS 84411621..84411889 269t"],
+        "new_box_freeze_untold": ["10:16:39-10:22:23 STATS 84412131..84412219 89t"],
+        "still_untold_freeze_from_1000": ["09:41:41-09:59:05 STATS 84411621..84411889 269t"],
         "still_untold_freeze_from_0800": [],
         "still_untold_freeze_from_0730": [],
         "still_untold_freeze_from_0700": [],
@@ -380,7 +384,7 @@ def main():
         "concurrent_patrol": "already_delivered_0929_do_not_write_its_folder",
         "concurrent_12h_review": "already_delivered_0833_do_not_write_its_folder",
         "did_not_write_patrol_folder": True,
-        "first_pass_realign": "committed ts_realigned=0; tick_s_check no corrective when over45=0 (in_use=span_mean 4.11235)",
+        "first_pass_realign": "committed ts_realigned=13903; tick_s_check corrective first 272 rows, still_over_45s=0 (in_use=first 4.19489)",
     }
     (DIR / "wrapup_snap.json").write_text(json.dumps(snap, indent=2, default=str) + NL)
     (DIR / "wrapup_run.txt").write_text(f"wrap {now} ok_quiet=True inserted_total={inserted_total}{NL}")
