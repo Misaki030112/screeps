@@ -1,0 +1,55 @@
+source=this_halfhour_first_pass _halfhour_2026-11-23_0000
+game.time=84424007 published_bases=84423300..84423900 rooms=W46N8,W47N8,W45N8,W45N7,W47N7 dry=False
+  ok  W46N8@84423300 ticks=100 ts=1795360852498
+  ok  W47N8@84423300 ticks=100 ts=1795360892315
+  ok  W45N8@84423300 ticks=100 ts=1795360889650
+  ok  W45N7@84423300 ticks=100 ts=1795360853835
+  ok  W47N7@84423300 ticks=100 ts=1795360916644
+  ok  W46N8@84423400 ticks=100 ts=1795361277753
+  ok  W47N8@84423400 ticks=100 ts=1795361322686
+  ok  W45N8@84423400 ticks=100 ts=1795361318272
+  ok  W45N7@84423400 ticks=100 ts=1795361278496
+  ok  W47N7@84423400 ticks=100 ts=1795361356680
+  ok  W46N8@84423500 ticks=100 ts=1795361706087
+  ok  W47N8@84423500 ticks=100 ts=1795361740712
+  ok  W45N8@84423500 ticks=100 ts=1795361735819
+  ok  W45N7@84423500 ticks=100 ts=1795361702921
+  ok  W47N7@84423500 ticks=100 ts=1795361775573
+  ok  W46N8@84423600 ticks=100 ts=1795362124153
+  ok  W47N8@84423600 ticks=100 ts=1795362167400
+  ok  W45N8@84423600 ticks=100 ts=1795362165154
+  ok  W45N7@84423600 ticks=100 ts=1795362124904
+  ok  W47N7@84423600 ticks=100 ts=1795362198140
+  ok  W46N8@84423700 ticks=100 ts=1795362530951
+  ok  W47N8@84423700 ticks=100 ts=1795362568546
+  ok  W45N8@84423700 ticks=100 ts=1795362566462
+  ok  W45N7@84423700 ticks=100 ts=1795362531309
+  ok  W47N7@84423700 ticks=100 ts=1795362597688
+  ok  W46N8@84423800 ticks=100 ts=1795362950703
+  ok  W47N8@84423800 ticks=100 ts=1795362990774
+  ok  W45N8@84423800 ticks=100 ts=1795362987422
+  ok  W45N7@84423800 ticks=100 ts=1795362953045
+  ok  W47N7@84423800 ticks=100 ts=1795363019153
+  ok  W46N8@84423900 ticks=100 ts=1795363389321
+  404 W47N8@84423900
+  404 W45N8@84423900
+  ok  W45N7@84423900 ticks=100 ts=1795363391627
+  404 W47N7@84423900
+tick_s=4.253
+reconstructed ticks=84423301..84424000 (700) creep_rows=24474 missing_chunks=3
+already_in_db=16711 would_insert=7763
+per_room W46N8:700t/2543new W47N8:600t/1787new W45N8:600t/824new W45N7:700t/1214new W47N7:600t/1395new
+inserted=7763
+ts_realigned=0
+db_after
+  W45N7 ticks=84423301..84424000 rows=2451 distinct=700
+  W45N8 ticks=84423301..84423900 rows=2790 distinct=600
+  W46N8 ticks=84423301..84424000 rows=7107 distinct=700
+  W47N7 ticks=84423301..84423900 rows=3529 distinct=600
+  W47N8 ticks=84423301..84424000 rows=8928 distinct=635
+---- wrap 2026-11-23 00:18:04 Asia/Hong_Kong ----
+confirm at 2026-11-23 00:05:26 Asia/Hong_Kong gt=84424042 still_404=[] recovered=['W47N8@84423900', 'W45N8@84423900', 'W47N7@84423900'] inserted=2354. retry2 at 2026-11-23 00:06:01 Asia/Hong_Kong gt=None skipped no targets inserted=0. late retry at 2026-11-23 00:06:01 Asia/Hong_Kong gt=None skipped no targets inserted=0. post-JP leftover retry at 2026-11-23 00:13:04 Asia/Hong_Kong gt=None skipped no targets inserted=0. First pass 32/35 official GETs 200, missing_chunks=3 W47N8@84423900, W45N8@84423900, W47N7@84423900. First pass started 2026-11-23 00:03:00 Asia/Hong_Kong and finished 00:03:44 (exit=0): inserted=7763 already_in_db=16711, first-pass realign moved 0 rows ts_realigned_first=0 (first-interval tick_s printed 4.253, exact 4.25255). Overlap with the 23:45 half-hour (official 84422901..84423600 / JP 84423600) and the 23:31 patrol (official+JP through 84423500) accounts for already_in_db=16711. Confirm 00:05:26 gt=84424042 recovered all three first-pass 404s inserted=2354 still_404=[]. No same-payload extra-row collision this first pass. tick_s_check chose live-anchor-best later_raw 4.223135999999999 (later-mean 4.223135999999999; first 4.25255); corrective=0; still_over_45s_vs_first=0 skipped_cross_chunk=0. Last delivered USER_LOG is ~23:31 _patrol_2026-11-22_2316 (finished_at 23:32:40); do not re-tell it. This half-hour did not write a patrol or 12h-review folder. 12h review _review12h_2026-11-22_20 already completed ~20:37 (docs-only, LIVE still 2b5398f7, not a game deploy); do not re-tell or write its folder. 23:45 half-hour already official-filled 84422901..84423600 / just-published 84423600. 23:31 patrol already official+JP filled through 84423500, and already told leftover 404 W45N8@84422100 and W45N8@84422400 plus 盒子休眠 22:43:27-23:05:49 (and 21:45:57-22:04:37 and 20:49:49-20:59:53 and 19:43:54-19:59:40). This run is overlap of that window plus new official 84423300..84423900 and just-published 84424000. Already-told leftover official 404s W45N8@84422100 and W45N8@84422400 aged out of window start 84423301 and were not retried this pass (already told in the 22:37 patrol and mentioned as already-told in the 23:31 _patrol_2026-11-22_2316 USER_LOG; do not re-tell). Older already-told leftovers W45N7@84419300, W45N8@84419600, all five @84418900, W45N7@84419000, W45N8@84415500, W46N8@84414700, W46N8@84413700, W47N7@84412400, W45N7@84411500, W47N8@84409800, W46N8@84408300, W47N8@84408300, W47N7@84407900, W46N8@84407000, W45N8@84407700, W45N8@84406400, W46N8@84406600, W46N8@84406700, W45N7@84403800, W45N7@84403700, W45N7@84400400, W45N7@84400300, and W47N8@84400100 also aged out of window start 84423301 and were not retried this pass; do not re-tell. Just-published 84424000 was not in first pass (first pass ended at published 84423900 / reconstructed 84423301..84424000 at game.time=84424007, 32/35 200, missing_chunks=3 recovered on confirm). GET at 2026-11-23 00:12:29 Asia/Hong_Kong gt=84424140 all_five_200=True. script=2846 actual=2840; W46N8 script 784 vs actual 783, W47N8 script 685 vs actual 685, W45N8 script 271 vs actual 271, W45N7 script 327 vs actual 325, W47N7 script 779 vs actual 776. Coverage official_recovered=3500/3500 empty_no_creep=0 official_404=0. W46N8 official empty_no_creep in this first-pass window: none. W47N8 official empty_no_creep in this first-pass window: none. W45N8 official empty_no_creep in this first-pass window: none. W45N7 official empty_no_creep in this first-pass window: none. W47N7 official empty_no_creep in this first-pass window: none. inserted_first=7763 confirm=2354 retry2=0 late=0 just_actual=2840 total=12957. NEW leftover official 404 this run: none (first-pass 404s W47N8@84423900, W45N8@84423900, W47N7@84423900 all recovered on confirm). Already-told leftover official 404 W45N8@84422100 (listener 0/100 range None..None; hole 100 ticks 84422101..84422200; sits inside already-told freeze STATS 84422041..84422319) and W45N8@84422400 (listener 0/100 range None..None; hole 100 ticks 84422401..84422500) aged out of window start 84423301 and were not retried this pass; already told in the ~22:37 patrol and mentioned as already-told in the ~23:31 _patrol_2026-11-22_2316 USER_LOG; do not re-tell. tick_s_in_use=4.223135999999999 (later_raw) first=4.25255 ts_realigned_first=0 corrective=0 (later-mean 4.223135999999999; first-pass realign moved 0 rows with first-interval 4.25255, over45=0 vs first; tick_s_check chose live-anchor-best later_raw 4.223135999999999 inside 45s gate, no corrective realign, skipped_cross_chunk=0). NEW 盒子休眠 this run 23:52:01-23:59:48 Asia/Hong_Kong (459s, box_pauses row; STATS 84423801..84423969, 169t; official-filled W46N8 169/169, W47N8 169/169, W45N8 169/169, W45N7 169/169, W47N7 169/169; listener auto-restart 23:59:51, python 2749374 started 00:00:01, parent 4035476). The 23:51:41 no-STATS reconnect (197s) sits at the front of the same STATS gap and is not a separate 监听短中断. NEW 监听短中断 this run: none. Already-told 盒子休眠 22:43:27-23:05:49 (1334s; STATS 84422871..84423199 official-filled W46N8 329/329, W47N8 329/329, W45N8 329/329, W45N7 329/329, W47N7 329/329; listener auto-restart 23:05:52, python 2722653 started 23:06:02, parent 4035476; already told in the 23:31 patrol; do not re-tell). Already-told 盒子休眠 21:45:57-22:04:37 (1120s; STATS 84422041..84422319 official-filled W46N8 279/279, W47N8 279/279, W45N8 179/279, W45N7 279/279, W47N7 279/279; already told in the 22:37 patrol; do not re-tell). Already-told 盒子休眠 20:49:49-20:59:53 and 19:43:54-19:59:40 and 17:41:00-18:04:50 and older; already-told 监听短中断 through 19:12:43-19:12:57 and 16:02:42-16:02:55 and 12:14:21-12:14:56 and 05:25:19-05:27:20; do not re-tell. window_db={'W46N8': {'distinct': 700, 'rows': 7107, 'min': 84423301, 'max': 84424000}, 'W47N8': {'distinct': 700, 'rows': 9978, 'min': 84423301, 'max': 84424000}, 'W45N8': {'distinct': 700, 'rows': 3354, 'min': 84423301, 'max': 84424000}, 'W45N7': {'distinct': 700, 'rows': 2451, 'min': 84423301, 'max': 84424000}, 'W47N7': {'distinct': 700, 'rows': 4119, 'min': 84423301, 'max': 84424000}}
+jp_post={'W46N8': {'distinct': 100, 'rows': 783, 'min': 84424001, 'max': 84424100}, 'W47N8': {'distinct': 100, 'rows': 1392, 'min': 84424001, 'max': 84424100}, 'W45N8': {'distinct': 100, 'rows': 386, 'min': 84424001, 'max': 84424100}, 'W45N7': {'distinct': 100, 'rows': 379, 'min': 84424001, 'max': 84424100}, 'W47N7': {'distinct': 100, 'rows': 776, 'min': 84424001, 'max': 84424100}} jp_script_by={'W46N8': 784, 'W47N8': 685, 'W45N8': 271, 'W45N7': 327, 'W47N7': 779} jp_actual_by={'W46N8': 783, 'W47N8': 685, 'W45N8': 271, 'W45N7': 325, 'W47N7': 776}
+tips={'room_stats': 84424230, 'creep_cpu': 84424220, 'path_arrivals': 84424210}
+listener ['2749374 4035476 Mon Nov 23 00:00:01 2026       18:48 Sl   .venv/bin/python tools/listener.py'] rot={'i': 0, 'room': 'W46N8', 'left': 89.9, 'at': '2026-11-23 00:18:47'} yield_absent=True
+Single listener 2749374 since 00:00:01 after the NEW 盒子休眠 23:52:01-23:59:48 auto-restart 23:59:51 (parent 4035476), peacetime one-slot rotation, yield_absent=True. Did not start a second listener or restart war_cmd/pulse. listener_rot {'i': 0, 'room': 'W46N8', 'left': 89.9, 'at': '2026-11-23 00:18:47'} tips {'room_stats': 84424230, 'creep_cpu': 84424220, 'path_arrivals': 84424210}.
