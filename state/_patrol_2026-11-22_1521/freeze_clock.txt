@@ -1,0 +1,28 @@
+=== box_pauses after 14:20 ===
+{"from": "2026-11-22 14:47:50", "to": "2026-11-22 15:01:16", "sec": 797}
+=== listener restarts after 14:20 ===
+2026-11-22 14:20:04 restart
+2026-11-22 15:01:19 restart
+console lines after 14:00 in tail: 42
+first: 2026-11-22 14:00:17+08:00 2026-11-22 14:00:17 [listener] room slot W46N8 600s (1 slot, weights 5:5:1:1)
+last: 2026-11-22 15:16:33+08:00 2026-11-22 15:16:33 [listener] room slot W47N8 600s (1 slot, weights 5:5:1:1)
+=== console silences >=60s after 14:30 ===
+  2026-11-22 14:29:01 -> 2026-11-22 14:39:01 (600s)
+    last: 2026-11-22 14:29:01 [listener] room slot W46N8 600s (1 slot, weights 5:5:1:1)
+    next: 2026-11-22 14:39:01 [listener] room slot W47N8 600s (1 slot, weights 5:5:1:1)
+  2026-11-22 14:39:01 -> 2026-11-22 15:01:30 (1349s)
+    last: 2026-11-22 14:39:01 [listener] room slot W47N8 600s (1 slot, weights 5:5:1:1)
+    next: 2026-11-22 15:01:30 [listener] room slot W47N8 62s (1 slot, weights 5:5:1:1)
+  2026-11-22 15:01:30 -> 2026-11-22 15:02:33 (63s)
+    last: 2026-11-22 15:01:30 [listener] room slot W47N8 62s (1 slot, weights 5:5:1:1)
+    next: 2026-11-22 15:02:33 [listener] room slot W45N8 120s (1 slot, weights 5:5:1:1)
+  2026-11-22 15:02:33 -> 2026-11-22 15:04:33 (120s)
+    last: 2026-11-22 15:02:33 [listener] room slot W45N8 120s (1 slot, weights 5:5:1:1)
+    next: 2026-11-22 15:04:33 [listener] room slot W45N7 120s (1 slot, weights 5:5:1:1)
+  2026-11-22 15:04:33 -> 2026-11-22 15:06:33 (120s)
+    last: 2026-11-22 15:04:33 [listener] room slot W45N7 120s (1 slot, weights 5:5:1:1)
+    next: 2026-11-22 15:06:33 [listener] room slot W46N8 600s (1 slot, weights 5:5:1:1)
+  2026-11-22 15:06:33 -> 2026-11-22 15:16:33 (600s)
+    last: 2026-11-22 15:06:33 [listener] room slot W46N8 600s (1 slot, weights 5:5:1:1)
+    next: 2026-11-22 15:16:33 [listener] room slot W47N8 600s (1 slot, weights 5:5:1:1)
+=== short console gaps 3-59s after 14:30 (possible WS) ===

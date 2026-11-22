@@ -1,0 +1,36 @@
+=== latest room_stats ===
+W46N8 (84416620, datetime.datetime(2026, 11, 22, 15, 28, 5, 88334, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')))
+W47N8 (84416620, datetime.datetime(2026, 11, 22, 15, 28, 5, 88399, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')))
+=== STATS holes after tick 84415570 (from 14:15 freeze start-ish) ===
+W46N8 room_stats n=79 min=84415570 max=84416620
+STATS tick-holes (>11 gap) n=2
+  STATS hole 84415571..84415649 (79t)  2026-11-22 14:15:00.817552+08:00 -> 2026-11-22 14:20:35.810963+08:00  wall=335.0s
+  STATS hole 84416041..84416249 (209t)  2026-11-22 14:47:34.138041+08:00 -> 2026-11-22 15:02:04.757146+08:00  wall=870.6s
+
+=== official creep_ticks fill for expected 14:47 freeze 84416041..84416249 (209t) ===
+  W46N8 209/209 min=84416041 max=84416249 missing=0
+  W47N8 209/209 min=84416041 max=84416249 missing=0
+  W45N8 209/209 min=84416041 max=84416249 missing=0
+  W45N7 209/209 min=84416041 max=84416249 missing=0
+  W47N7 209/209 min=84416041 max=84416249 missing=0
+
+=== official fill for any other STATS holes after 84415570 ===
+-- hole 84415571..84415649 (79t) --
+  W46N8 79/79 min=84415571 max=84415649 missing=0
+  W47N8 79/79 min=84415571 max=84415649 missing=0
+  W45N8 49/79 min=84415601 max=84415649 missing=30
+  W45N7 79/79 min=84415571 max=84415649 missing=0
+  W47N7 79/79 min=84415571 max=84415649 missing=0
+-- hole 84416041..84416249 (209t) --
+  W46N8 209/209 min=84416041 max=84416249 missing=0
+  W47N8 209/209 min=84416041 max=84416249 missing=0
+  W45N8 209/209 min=84416041 max=84416249 missing=0
+  W45N7 209/209 min=84416041 max=84416249 missing=0
+  W47N7 209/209 min=84416041 max=84416249 missing=0
+
+=== already-told leftover W45N8@84415500 (ticks 84415501..84415600) still ===
+W45N8@84415500 (0, None, None)
+
+=== listener / freshness now ===
+room_stats (84416620, datetime.timedelta(seconds=13, microseconds=909590))
+creep_ticks (84416623, datetime.timedelta(seconds=2, microseconds=423508))
