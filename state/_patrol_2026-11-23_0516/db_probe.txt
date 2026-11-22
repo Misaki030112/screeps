@@ -1,0 +1,86 @@
+=== later room_stats after TIP 84428620 ===
+W46N8 n 4
+  (84428630, datetime.datetime(2026, 11, 23, 5, 32, 38, 498095, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 17965, 9852248, 16.04, 10000, 0, 5500, {'miner': 2, 'queen': 2, 'hauler': 1, 'rminer': 2, 'rhauler': 7, 'w8miner': 2, 'defender': 1, 'reserver': 2, 'upgrader': 2, 'w8filler': 2, 'w8hauler': 3, 'w8mminer': 1, 'w8rminer': 2, 'w8builder': 1, 'w8rhauler': 4, 'w8upgrader': 3})
+  (84428640, datetime.datetime(2026, 11, 23, 5, 33, 22, 630985, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 18065, 9852528, 18.49, 10000, 0, 5500, {'miner': 2, 'queen': 2, 'hauler': 1, 'rminer': 2, 'rhauler': 7, 'w8miner': 2, 'defender': 1, 'reserver': 2, 'upgrader': 2, 'w8filler': 2, 'w8hauler': 3, 'w8mminer': 1, 'w8rminer': 2, 'w8builder': 1, 'w8rhauler': 4, 'w8upgrader': 3})
+  (84428650, datetime.datetime(2026, 11, 23, 5, 34, 4, 659180, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 18165, 9852808, 16.17, 10000, 0, 5500, {'miner': 2, 'queen': 2, 'hauler': 1, 'rminer': 2, 'rhauler': 7, 'w8miner': 2, 'defender': 1, 'reserver': 2, 'upgrader': 2, 'w8filler': 2, 'w8hauler': 3, 'w8mminer': 1, 'w8rminer': 2, 'w8builder': 1, 'w8rhauler': 4, 'w8upgrader': 3})
+  (84428660, datetime.datetime(2026, 11, 23, 5, 34, 48, 594470, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 18265, 9853088, 17.84, 10000, 0, 5500, {'miner': 2, 'queen': 2, 'hauler': 1, 'rminer': 2, 'rhauler': 7, 'w8miner': 2, 'defender': 1, 'reserver': 2, 'upgrader': 2, 'w8filler': 2, 'w8hauler': 3, 'w8mminer': 1, 'w8rminer': 2, 'w8builder': 1, 'w8rhauler': 4, 'w8upgrader': 3})
+W47N8 n 4
+  (84428630, datetime.datetime(2026, 11, 23, 5, 32, 38, 498133, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 19263, 6551040, 16.04, 10000, 0, 5600, {'miner': 2, 'queen': 2, 'hauler': 1, 'rminer': 2, 'rhauler': 7, 'w8miner': 2, 'defender': 1, 'reserver': 2, 'upgrader': 2, 'w8filler': 2, 'w8hauler': 3, 'w8mminer': 1, 'w8rminer': 2, 'w8builder': 1, 'w8rhauler': 4, 'w8upgrader': 3})
+  (84428640, datetime.datetime(2026, 11, 23, 5, 33, 22, 631033, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 20007, 6551240, 18.49, 10000, 0, 5600, {'miner': 2, 'queen': 2, 'hauler': 1, 'rminer': 2, 'rhauler': 7, 'w8miner': 2, 'defender': 1, 'reserver': 2, 'upgrader': 2, 'w8filler': 2, 'w8hauler': 3, 'w8mminer': 1, 'w8rminer': 2, 'w8builder': 1, 'w8rhauler': 4, 'w8upgrader': 3})
+  (84428650, datetime.datetime(2026, 11, 23, 5, 34, 4, 659228, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 20007, 6551340, 16.17, 10000, 0, 5600, {'miner': 2, 'queen': 2, 'hauler': 1, 'rminer': 2, 'rhauler': 7, 'w8miner': 2, 'defender': 1, 'reserver': 2, 'upgrader': 2, 'w8filler': 2, 'w8hauler': 3, 'w8mminer': 1, 'w8rminer': 2, 'w8builder': 1, 'w8rhauler': 4, 'w8upgrader': 3})
+  (84428660, datetime.datetime(2026, 11, 23, 5, 34, 48, 594525, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 20007, 6551440, 17.84, 10000, 0, 5600, {'miner': 2, 'queen': 2, 'hauler': 1, 'rminer': 2, 'rhauler': 7, 'w8miner': 2, 'defender': 1, 'reserver': 2, 'upgrader': 2, 'w8filler': 2, 'w8hauler': 3, 'w8mminer': 1, 'w8rminer': 2, 'w8builder': 1, 'w8rhauler': 4, 'w8upgrader': 3})
+=== room_stats columns ===
+['ts', 'tick', 'room', 'rcl', 'progress', 'progress_total', 'energy', 'energy_cap', 'sites', 'hostiles', 'safe_mode', 'cpu', 'bucket', 'trace_cpu', 'gcl_progress', 'creeps', 'commit', 'storage', 'ctl', 'ctl_ema']
+=== STATS gaps W46N8 around 05:16 freeze ===
+n 24 first (84428300, datetime.datetime(2026, 11, 23, 5, 8, 35, 199154, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai'))) last (84428660, datetime.datetime(2026, 11, 23, 5, 34, 48, 594470, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')))
+  STATS gap 84428400..84428539 missing=139 2026-11-23 05:15:58.172155+08:00 -> 2026-11-23 05:26:05.289735+08:00
+=== creep_ticks fill candidates for 05:16 freeze ===
+  STATS 84428320 2026-11-23 05:10:05.475168+08:00
+  STATS 84428330 2026-11-23 05:10:49.037871+08:00
+  STATS 84428340 2026-11-23 05:11:32.678159+08:00
+  STATS 84428350 2026-11-23 05:12:18.119587+08:00
+  STATS 84428360 2026-11-23 05:13:03.614371+08:00
+  STATS 84428370 2026-11-23 05:13:47.161931+08:00
+  STATS 84428380 2026-11-23 05:14:31.727375+08:00
+  STATS 84428390 2026-11-23 05:15:14.205037+08:00
+  STATS 84428400 2026-11-23 05:15:58.172155+08:00
+  STATS 84428540 2026-11-23 05:26:05.289735+08:00
+  STATS 84428550 2026-11-23 05:26:50.196599+08:00
+  STATS 84428560 2026-11-23 05:27:33.407693+08:00
+  STATS 84428570 2026-11-23 05:28:18.279481+08:00
+  STATS 84428580 2026-11-23 05:29:00.183152+08:00
+  STATS 84428590 2026-11-23 05:29:43.106517+08:00
+  STATS 84428600 2026-11-23 05:30:26.558933+08:00
+  STATS 84428610 2026-11-23 05:31:11.662052+08:00
+  STATS 84428620 2026-11-23 05:31:55.458239+08:00
+  STATS 84428630 2026-11-23 05:32:38.498095+08:00
+  STATS 84428640 2026-11-23 05:33:22.630985+08:00
+  STATS 84428650 2026-11-23 05:34:04.659180+08:00
+  STATS 84428660 2026-11-23 05:34:48.594470+08:00
+=== home under15k samples since LAST_TIP ===
+  (84426210, datetime.datetime(2026, 11, 23, 2, 37, 28, 670174, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 14111, {'miner': 2, 'queen': 3, 'hauler': 1, 'rminer': 2, 'builder': 1, 'rhauler': 7, 'w8guard': 2, 'w8miner': 2, 'reserve7': 1, 'reserver': 1, 'upgrader': 2, 'w8filler': 2, 'w8hauler': 3, 'w8mminer': 1, 'w8rminer': 2, 'w8builder': 1, 'w8rhauler': 4, 'w8upgrader': 2})
+  (84426220, datetime.datetime(2026, 11, 23, 2, 38, 11, 716937, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 14211, {'miner': 2, 'queen': 3, 'hauler': 1, 'rminer': 2, 'builder': 1, 'rhauler': 7, 'w8guard': 2, 'w8miner': 2, 'reserve7': 1, 'reserver': 1, 'upgrader': 1, 'w8filler': 2, 'w8hauler': 3, 'w8mminer': 1, 'w8rminer': 2, 'w8builder': 1, 'w8rhauler': 4, 'w8upgrader': 2})
+  (84426230, datetime.datetime(2026, 11, 23, 2, 38, 55, 66708, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 14931, {'miner': 2, 'queen': 3, 'hauler': 1, 'rminer': 2, 'builder': 1, 'rhauler': 7, 'w8guard': 2, 'w8miner': 2, 'reserve7': 1, 'reserver': 1, 'upgrader': 1, 'w8filler': 2, 'w8hauler': 3, 'w8mminer': 1, 'w8rminer': 2, 'w8builder': 1, 'w8rhauler': 4, 'w8upgrader': 2})
+  (84428080, datetime.datetime(2026, 11, 23, 4, 52, 36, 822519, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 14972, {'miner': 2, 'queen': 2, 'hauler': 1, 'rminer': 3, 'rhauler': 8, 'w8miner': 2, 'reserve7': 1, 'reserver': 2, 'upgrader': 2, 'w8filler': 2, 'w8hauler': 3, 'w8mminer': 1, 'w8rminer': 4, 'w8builder': 1, 'w8rhauler': 5, 'w8upgrader': 2})
+  (84428170, datetime.datetime(2026, 11, 23, 4, 59, 2, 934751, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 14947, {'miner': 3, 'queen': 2, 'hauler': 1, 'rminer': 3, 'rhauler': 7, 'w8miner': 2, 'reserve7': 1, 'reserver': 1, 'upgrader': 1, 'w8filler': 2, 'w8hauler': 3, 'w8mminer': 1, 'w8rminer': 2, 'w8builder': 1, 'w8rhauler': 5, 'w8upgrader': 2})
+=== W47 storage min/max since last and 3h ===
+since_last n 173 min (84428540, datetime.datetime(2026, 11, 23, 5, 26, 5, 289800, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 17267) max (84426210, datetime.datetime(2026, 11, 23, 2, 37, 28, 670238, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 31121) last (84428660, datetime.datetime(2026, 11, 23, 5, 34, 48, 594525, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 20007) over40 0 []
+3h n 185 min (84428540, datetime.datetime(2026, 11, 23, 5, 26, 5, 289800, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 17267) max (84426190, datetime.datetime(2026, 11, 23, 2, 36, 3, 383893, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 32321) last (84428660, datetime.datetime(2026, 11, 23, 5, 34, 48, 594525, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 20007) over40 0 []
+=== rdef / defender / threat-related creeps last 3h ===
+  ('W47N8', 'w8guard84426193', 'wguard', 84426210, 84427815, 1606, 4100, 4100, 24, 34, 1, 30)
+  ('W47N8', 'w8guard84426194', 'wguard', 84426210, 84427816, 1607, 4100, 4100, 24, 34, 2, 31)
+  ('W47N8', 'rdef84428191', 'rdef', 84428193, 84428382, 190, 5000, 5000, 11, 34, 29, 49)
+  ('W47N7', 'rdef84428191', 'rdef', 84428383, 84428600, 218, 5000, 5000, 18, 30, 1, 24)
+=== W47N7 creep presence around 84428300 hole ===
+  84428250..84428257 n=8 creeps_first=(2, ['reserve784427735', 'w8rminer84427899']) creeps_last=(2, ['reserve784427735', 'w8rminer84427899'])
+  84428258..84428302 n=45 creeps_first=(1, ['reserve784427735']) creeps_last=(1, ['reserve784427735'])
+  84428383..84428450 n=68 creeps_first=(1, ['rdef84428191']) creeps_last=(1, ['rdef84428191'])
+missing ticks in 84428250..84428450 80 [84428303, 84428304, 84428305, 84428306, 84428307, 84428308, 84428309, 84428310, 84428311, 84428312, 84428313, 84428314, 84428315, 84428316, 84428317, 84428318, 84428319, 84428320, 84428321, 84428322] ...
+=== nUp / w8up from room_stats creeps since last (counts) ===
+  84426210 2026-11-23 02:37:28.670174+08:00 stor 14111 up 2 w8up 2 def None w8g 2 r7 1 res 1
+  84426220 2026-11-23 02:38:11.716937+08:00 stor 14211 up 1 w8up 2 def None w8g 2 r7 1 res 1
+  84426250 2026-11-23 02:40:18.731961+08:00 stor 15805 up 1 w8up 2 def None w8g 2 r7 None res 1
+  84426320 2026-11-23 02:45:13.711603+08:00 stor 16755 up 1 w8up 3 def None w8g 2 r7 None res 1
+  84426380 2026-11-23 02:49:27.578484+08:00 stor 16555 up 1 w8up 2 def None w8g 2 r7 None res 1
+  84426520 2026-11-23 02:59:14.377594+08:00 stor 16205 up 1 w8up 2 def None w8g 2 r7 None res 2
+  84426690 2026-11-23 03:11:24.027787+08:00 stor 15968 up 1 w8up 2 def None w8g 2 r7 1 res 2
+  84426750 2026-11-23 03:15:44.147408+08:00 stor 16038 up 1 w8up 2 def None w8g 2 r7 1 res 1
+  84426960 2026-11-23 03:30:42.125263+08:00 stor 15620 up 3 w8up 2 def None w8g 2 r7 1 res 1
+  84426970 2026-11-23 03:31:24.066320+08:00 stor 15050 up 2 w8up 2 def None w8g 2 r7 1 res 1
+  84427040 2026-11-23 03:36:23.777905+08:00 stor 15200 up 2 w8up 2 def None w8g 2 r7 1 res None
+  84427080 2026-11-23 03:39:15.236837+08:00 stor 15600 up 2 w8up 2 def None w8g 2 r7 1 res 1
+  84427160 2026-11-23 03:45:06.685066+08:00 stor 15627 up 2 w8up 3 def None w8g 2 r7 1 res 1
+  84427250 2026-11-23 03:51:39.866768+08:00 stor 16227 up 2 w8up 2 def None w8g 2 r7 1 res 1
+  84427360 2026-11-23 03:59:44.754301+08:00 stor 16678 up 2 w8up 2 def None w8g 2 r7 None res 1
+  84427490 2026-11-23 04:09:27.197435+08:00 stor 15968 up 2 w8up 2 def None w8g 2 r7 None res 2
+  84427860 2026-11-23 04:36:37.891944+08:00 stor 17322 up 2 w8up 2 def None w8g None r7 1 res 1
+  84428070 2026-11-23 04:51:53.668039+08:00 stor 15872 up 2 w8up 2 def None w8g None r7 1 res 2
+  84428170 2026-11-23 04:59:02.934751+08:00 stor 14947 up 1 w8up 2 def None w8g None r7 1 res 1
+  84428200 2026-11-23 05:01:13.595829+08:00 stor 15247 up 1 w8up 2 def 1 w8g None r7 1 res 1
+  84428310 2026-11-23 05:09:20.075776+08:00 stor 16047 up 1 w8up 2 def 1 w8g None r7 None res 1
+  84428360 2026-11-23 05:13:03.614371+08:00 stor 16785 up 2 w8up 2 def 1 w8g None r7 None res 1
+  84428380 2026-11-23 05:14:31.727375+08:00 stor 18025 up 3 w8up 2 def 1 w8g None r7 None res 1
+  84428540 2026-11-23 05:26:05.289735+08:00 stor 17365 up 2 w8up 2 def 1 w8g None r7 None res 1
+  84428570 2026-11-23 05:28:18.279481+08:00 stor 17665 up 2 w8up 2 def 1 w8g None r7 None res 2
+  84428590 2026-11-23 05:29:43.106517+08:00 stor 17565 up 2 w8up 3 def 1 w8g None r7 None res 2
+DONE

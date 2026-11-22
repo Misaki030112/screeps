@@ -1,0 +1,112 @@
+=== official fill NOT-YET-TOLD freezes ===
+-- 04:53:04-04:58:42 STATS 84428081..84428169 (89t) --
+  W46N8 fill=89/89 rows=1144 range=84428081..84428169 missing=[]
+  W47N8 fill=89/89 rows=1490 range=84428081..84428169 missing=[]
+  W45N8 fill=89/89 rows=797 range=84428081..84428169 missing=[]
+  W45N7 fill=89/89 rows=240 range=84428081..84428169 missing=[]
+  W47N7 fill=89/89 rows=563 range=84428081..84428169 missing=[]
+-- 04:20:59-04:35:45 STATS 84427641..84427859 (219t) --
+  W46N8 fill=219/219 rows=2731 range=84427641..84427859 missing=[]
+  W47N8 fill=219/219 rows=3860 range=84427641..84427859 missing=[]
+  W45N8 fill=219/219 rows=1704 range=84427641..84427859 missing=[]
+  W45N7 fill=219/219 rows=594 range=84427641..84427859 missing=[]
+  W47N7 fill=219/219 rows=636 range=84427641..84427859 missing=[]
+-- 03:52:38-03:58:50 STATS 84427261..84427359 (99t) --
+  W46N8 fill=99/99 rows=1017 range=84427261..84427359 missing=[]
+  W47N8 fill=99/99 rows=1600 range=84427261..84427359 missing=[]
+  W45N8 fill=99/99 rows=819 range=84427261..84427359 missing=[]
+  W45N7 fill=99/99 rows=342 range=84427261..84427359 missing=[]
+  W47N7 fill=99/99 rows=301 range=84427261..84427359 missing=[]
+-- 03:22:33-03:29:51 STATS 84426841..84426959 (119t) --
+  W46N8 fill=119/119 rows=1305 range=84426841..84426959 missing=[]
+  W47N8 fill=119/119 rows=1886 range=84426841..84426959 missing=[]
+  W45N8 fill=119/119 rows=664 range=84426841..84426959 missing=[]
+  W45N7 fill=119/119 rows=434 range=84426841..84426959 missing=[]
+  W47N7 fill=119/119 rows=447 range=84426841..84426959 missing=[]
+-- 02:51:37-02:58:39 STATS 84426401..84426519 (119t) --
+  W46N8 fill=119/119 rows=1508 range=84426401..84426519 missing=[]
+  W47N8 fill=119/119 rows=1950 range=84426401..84426519 missing=[]
+  W45N8 fill=119/119 rows=769 range=84426401..84426519 missing=[]
+  W45N7 fill=119/119 rows=312 range=84426401..84426519 missing=[]
+  W47N7 fill=119/119 rows=436 range=84426401..84426519 missing=[]
+=== leftover official 404 holes ===
+  W45N8@84425500 already_told distinct=0 rows=0 range=None..None want=100 missing=100
+  W45N8@84425800 already_told distinct=0 rows=0 range=None..None want=100 missing=100
+  W45N8@84426200 still_untold distinct=0 rows=0 range=None..None want=100 missing=100
+  W45N7@84428300 NEW distinct=0 rows=0 range=None..None want=100 missing=100
+  W45N8@84422100 already_told aged distinct=0 rows=0 range=None..None want=100 missing=100
+  W45N8@84422400 already_told aged distinct=0 rows=0 range=None..None want=100 missing=100
+=== official window coverage 84425101..84428500 ===
+  W46N8 distinct=3400/3400 missing_n=0 spans=[]
+  W47N8 distinct=3400/3400 missing_n=0 spans=[]
+  W45N8 distinct=3100/3400 missing_n=300 spans=[(84425501, 84425600, 100), (84425801, 84425900, 100), (84426201, 84426300, 100)]
+  W45N7 distinct=3300/3400 missing_n=100 spans=[(84428301, 84428400, 100)]
+  W47N7 distinct=3320/3400 missing_n=80 spans=[(84428303, 84428382, 80)]
+=== storage / progress since LAST_TIP 84426210 ===
+-- W46N8 --
+  n 171 min_t 84426210 max_t 84428640
+  stor min 14111 tick 84426210 ts 2026-11-23 02:37:28.670174+08:00
+  stor max 18065 tick 84428640 ts 2026-11-23 05:33:22.630985+08:00
+  stor first 14111 tick 84426210 last 18065 tick 84428640
+  under15k n 5 first (84426210, datetime.datetime(2026, 11, 23, 2, 37, 28, 670174, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 14111) last (84428170, datetime.datetime(2026, 11, 23, 4, 59, 2, 934751, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 14947)
+  over40k n 0 first None
+   84426210 2026-11-23 02:37:28.670174+08:00 stor 14111 prog 9803096 cpu 20.39 bkt 10000 host 0 e 4960 cr {'miner': 2, 'queen': 3, 'hauler': 1, 'rminer': 2, 'builder': 1, 'rhauler': 7, 'w8guard': 2, 'w8miner': 2, 'reserve7': 1, 'reserver': 1, 'upgrader': 2, 'w8filler': 2, 'w8hauler': 3, 'w8mminer': 1, 'w8rminer': 2, 'w8builder': 1, 'w8rhauler': 4, 'w8upgrader': 2}
+   84426300 2026-11-23 02:43:47.714624+08:00 stor 16705 prog 9804356 cpu 16.64 bkt 10000 host 0 e 5500 cr {'miner': 2, 'queen': 2, 'hauler': 1, 'rminer': 2, 'builder': 1, 'rhauler': 7, 'w8guard': 2, 'w8miner': 2, 'reserver': 1, 'upgrader': 1, 'w8filler': 2, 'w8hauler': 2, 'w8mminer': 1, 'w8rminer': 2, 'w8builder': 1, 'w8rhauler': 4, 'w8upgrader': 2}
+   84426400 2026-11-23 02:51:09.204140+08:00 stor 16455 prog 9805756 cpu 16.61 bkt 10000 host 0 e 4800 cr {'miner': 3, 'queen': 2, 'hauler': 1, 'rminer': 3, 'builder': 1, 'rhauler': 6, 'w8guard': 2, 'w8miner': 2, 'reserver': 1, 'upgrader': 1, 'w8filler': 2, 'w8hauler': 3, 'w8mminer': 1, 'w8rminer': 2, 'w8builder': 1, 'w8rhauler': 4, 'w8upgrader': 2}
+   84426600 2026-11-23 03:04:51.828008+08:00 stor 16935 prog 9808556 cpu 19.28 bkt 10000 host 0 e 4610 cr {'miner': 2, 'queen': 2, 'hauler': 1, 'rminer': 3, 'builder': 1, 'rhauler': 8, 'w8guard': 2, 'w8miner': 2, 'reserver': 2, 'upgrader': 1, 'w8filler': 2, 'w8hauler': 4, 'w8mminer': 1, 'w8rminer': 3, 'w8rhauler': 5, 'w8upgrader': 2}
+   84426700 2026-11-23 03:12:06.415278+08:00 stor 15868 prog 9809956 cpu 19.85 bkt 10000 host 0 e 5300 cr {'miner': 2, 'queen': 2, 'hauler': 1, 'rminer': 3, 'builder': 1, 'rhauler': 8, 'w8guard': 2, 'w8miner': 2, 'reserve7': 1, 'reserver': 2, 'upgrader': 1, 'w8filler': 2, 'w8hauler': 3, 'w8mminer': 1, 'w8rminer': 4, 'w8rhauler': 4, 'w8upgrader': 2}
+   84426800 2026-11-23 03:19:18.640957+08:00 stor 15988 prog 9811356 cpu 17.38 bkt 10000 host 0 e 5500 cr {'miner': 3, 'queen': 2, 'hauler': 1, 'rminer': 2, 'builder': 1, 'rhauler': 7, 'w8guard': 2, 'w8miner': 2, 'reserve7': 1, 'reserver': 1, 'upgrader': 1, 'w8filler': 2, 'w8hauler': 3, 'w8mminer': 1, 'w8rminer': 2, 'w8rhauler': 4, 'w8upgrader': 2}
+   84427000 2026-11-23 03:33:29.689815+08:00 stor 15350 prog 9814836 cpu 18.28 bkt 10000 host 0 e 4950 cr {'miner': 2, 'queen': 2, 'hauler': 1, 'rminer': 2, 'builder': 1, 'rhauler': 7, 'w8guard': 2, 'w8miner': 2, 'reserve7': 1, 'reserver': 1, 'upgrader': 2, 'w8filler': 2, 'w8hauler': 3, 'w8mminer': 1, 'w8rminer': 2, 'w8rhauler': 4, 'w8upgrader': 2}
+   84427100 2026-11-23 03:40:43.775170+08:00 stor 15600 prog 9817636 cpu 19.7 bkt 10000 host 0 e 5250 cr {'miner': 2, 'queen': 2, 'hauler': 1, 'rminer': 2, 'builder': 1, 'rhauler': 7, 'w8guard': 2, 'w8miner': 2, 'reserve7': 1, 'reserver': 1, 'upgrader': 2, 'w8filler': 2, 'w8hauler': 3, 'w8mminer': 1, 'w8rminer': 2, 'w8rhauler': 5, 'w8upgrader': 2}
+   84427200 2026-11-23 03:48:00.340956+08:00 stor 16027 prog 9820436 cpu 19.33 bkt 10000 host 0 e 5200 cr {'miner': 2, 'queen': 2, 'hauler': 1, 'rminer': 2, 'builder': 1, 'rhauler': 7, 'w8guard': 2, 'w8miner': 2, 'reserve7': 1, 'reserver': 1, 'upgrader': 2, 'w8filler': 2, 'w8hauler': 2, 'w8mminer': 1, 'w8rminer': 2, 'w8builder': 1, 'w8rhauler': 5, 'w8upgrader': 3}
+   84427400 2026-11-23 04:02:44.007389+08:00 stor 16968 prog 9825220 cpu 18.11 bkt 10000 host 0 e 4300 cr {'miner': 2, 'queen': 3, 'hauler': 1, 'rminer': 2, 'builder': 1, 'rhauler': 6, 'w8guard': 2, 'w8miner': 2, 'reserver': 1, 'upgrader': 2, 'w8filler': 2, 'w8hauler': 3, 'w8mminer': 1, 'w8rminer': 2, 'w8builder': 1, 'w8rhauler': 4, 'w8upgrader': 2}
+   84427500 2026-11-23 04:10:10.653499+08:00 stor 16068 prog 9828020 cpu 19.95 bkt 10000 host 0 e 4600 cr {'miner': 2, 'queen': 2, 'hauler': 1, 'rminer': 2, 'rhauler': 7, 'w8guard': 2, 'w8miner': 2, 'reserver': 2, 'upgrader': 2, 'w8filler': 2, 'w8hauler': 3, 'w8mminer': 1, 'w8rminer': 2, 'w8builder': 1, 'w8rhauler': 4, 'w8upgrader': 2}
+   84427600 2026-11-23 04:17:33.096592+08:00 stor 16352 prog 9830820 cpu 18.4 bkt 10000 host 0 e 5084 cr {'miner': 2, 'queen': 2, 'hauler': 1, 'rminer': 2, 'rhauler': 7, 'w8guard': 2, 'w8miner': 2, 'reserver': 2, 'upgrader': 2, 'w8filler': 2, 'w8hauler': 3, 'w8mminer': 1, 'w8rminer': 2, 'w8builder': 1, 'w8rhauler': 5, 'w8upgrader': 2}
+   84427900 2026-11-23 04:39:33.025112+08:00 stor 17722 prog 9837686 cpu 19.08 bkt 10000 host 0 e 5122 cr {'miner': 3, 'queen': 2, 'hauler': 1, 'rminer': 3, 'rhauler': 7, 'w8miner': 2, 'reserve7': 1, 'reserver': 1, 'upgrader': 2, 'w8filler': 3, 'w8hauler': 3, 'w8mminer': 1, 'w8rminer': 3, 'w8builder': 1, 'w8rhauler': 5, 'w8upgrader': 2}
+   84428000 2026-11-23 04:46:51.084562+08:00 stor 16772 prog 9839870 cpu 18.04 bkt 10000 host 0 e 5000 cr {'miner': 2, 'queen': 2, 'hauler': 1, 'rminer': 2, 'rhauler': 7, 'w8miner': 2, 'reserve7': 1, 'reserver': 1, 'upgrader': 2, 'w8filler': 2, 'w8hauler': 3, 'w8mminer': 1, 'w8rminer': 4, 'w8builder': 1, 'w8rhauler': 6, 'w8upgrader': 2}
+   84428200 2026-11-23 05:01:13.595829+08:00 stor 15247 prog 9843838 cpu 18.48 bkt 10000 host 0 e 5500 cr {'miner': 3, 'queen': 2, 'hauler': 1, 'rminer': 2, 'rhauler': 6, 'w8miner': 2, 'defender': 1, 'reserve7': 1, 'reserver': 1, 'upgrader': 1, 'w8filler': 2, 'w8hauler': 3, 'w8mminer': 1, 'w8rminer': 2, 'w8builder': 1, 'w8rhauler': 5, 'w8upgrader': 2}
+   84428300 2026-11-23 05:08:35.199154+08:00 stor 15947 prog 9845220 cpu 15.89 bkt 10000 host 0 e 5500 cr {'miner': 2, 'queen': 2, 'hauler': 1, 'rminer': 2, 'rhauler': 7, 'w8miner': 4, 'defender': 1, 'reserve7': 1, 'reserver': 1, 'upgrader': 1, 'w8filler': 2, 'w8hauler': 3, 'w8mminer': 1, 'w8rminer': 2, 'w8builder': 1, 'w8rhauler': 5, 'w8upgrader': 2}
+   84428400 2026-11-23 05:15:58.172155+08:00 stor 16625 prog 9846620 cpu 16.26 bkt 10000 host 0 e 4600 cr {'miner': 2, 'queen': 2, 'hauler': 1, 'rminer': 2, 'rhauler': 7, 'w8miner': 2, 'defender': 1, 'reserver': 1, 'upgrader': 3, 'w8filler': 2, 'w8hauler': 3, 'w8mminer': 2, 'w8rminer': 2, 'w8builder': 1, 'w8rhauler': 5, 'w8upgrader': 2}
+   84428600 2026-11-23 05:30:26.558933+08:00 stor 17665 prog 9851464 cpu 17.24 bkt 10000 host 0 e 5500 cr {'miner': 2, 'queen': 2, 'hauler': 1, 'rminer': 2, 'rhauler': 7, 'w8miner': 2, 'defender': 1, 'reserver': 2, 'upgrader': 2, 'w8filler': 2, 'w8hauler': 3, 'w8mminer': 1, 'w8rminer': 2, 'w8builder': 1, 'w8rhauler': 4, 'w8upgrader': 3}
+   84428640 2026-11-23 05:33:22.630985+08:00 stor 18065 prog 9852528 cpu 18.49 bkt 10000 host 0 e 5500 cr {'miner': 2, 'queen': 2, 'hauler': 1, 'rminer': 2, 'rhauler': 7, 'w8miner': 2, 'defender': 1, 'reserver': 2, 'upgrader': 2, 'w8filler': 2, 'w8hauler': 3, 'w8mminer': 1, 'w8rminer': 2, 'w8builder': 1, 'w8rhauler': 4, 'w8upgrader': 3}
+-- W47N8 --
+  n 171 min_t 84426210 max_t 84428640
+  stor min 17267 tick 84428540 ts 2026-11-23 05:26:05.289800+08:00
+  stor max 31121 tick 84426210 ts 2026-11-23 02:37:28.670238+08:00
+  stor first 31121 tick 84426210 last 20007 tick 84428640
+  under15k n 0 first None last None
+  over40k n 0 first None
+   84426210 2026-11-23 02:37:28.670238+08:00 stor 31121 prog 6502167 cpu 20.39 bkt 10000 host 1 e 2260 cr {'miner': 2, 'queen': 3, 'hauler': 1, 'rminer': 2, 'builder': 1, 'rhauler': 7, 'w8guard': 2, 'w8miner': 2, 'reserve7': 1, 'reserver': 1, 'upgrader': 2, 'w8filler': 2, 'w8hauler': 3, 'w8mminer': 1, 'w8rminer': 2, 'w8builder': 1, 'w8rhauler': 4, 'w8upgrader': 2}
+   84426300 2026-11-23 02:43:47.714681+08:00 stor 27961 prog 6503967 cpu 16.64 bkt 10000 host 1 e 5600 cr {'miner': 2, 'queen': 2, 'hauler': 1, 'rminer': 2, 'builder': 1, 'rhauler': 7, 'w8guard': 2, 'w8miner': 2, 'reserver': 1, 'upgrader': 1, 'w8filler': 2, 'w8hauler': 2, 'w8mminer': 1, 'w8rminer': 2, 'w8builder': 1, 'w8rhauler': 4, 'w8upgrader': 2}
+   84426400 2026-11-23 02:51:09.204159+08:00 stor 25841 prog 6505567 cpu 16.61 bkt 10000 host 1 e 5600 cr {'miner': 3, 'queen': 2, 'hauler': 1, 'rminer': 3, 'builder': 1, 'rhauler': 6, 'w8guard': 2, 'w8miner': 2, 'reserver': 1, 'upgrader': 1, 'w8filler': 2, 'w8hauler': 3, 'w8mminer': 1, 'w8rminer': 2, 'w8builder': 1, 'w8rhauler': 4, 'w8upgrader': 2}
+   84426600 2026-11-23 03:04:51.828066+08:00 stor 25199 prog 6509703 cpu 19.28 bkt 10000 host 0 e 5600 cr {'miner': 2, 'queen': 2, 'hauler': 1, 'rminer': 3, 'builder': 1, 'rhauler': 8, 'w8guard': 2, 'w8miner': 2, 'reserver': 2, 'upgrader': 1, 'w8filler': 2, 'w8hauler': 4, 'w8mminer': 1, 'w8rminer': 3, 'w8rhauler': 5, 'w8upgrader': 2}
+   84426700 2026-11-23 03:12:06.415327+08:00 stor 25069 prog 6511703 cpu 19.85 bkt 10000 host 0 e 5600 cr {'miner': 2, 'queen': 2, 'hauler': 1, 'rminer': 3, 'builder': 1, 'rhauler': 8, 'w8guard': 2, 'w8miner': 2, 'reserve7': 1, 'reserver': 2, 'upgrader': 1, 'w8filler': 2, 'w8hauler': 3, 'w8mminer': 1, 'w8rminer': 4, 'w8rhauler': 4, 'w8upgrader': 2}
+   84426800 2026-11-23 03:19:18.641017+08:00 stor 25318 prog 6513703 cpu 17.38 bkt 10000 host 0 e 5600 cr {'miner': 3, 'queen': 2, 'hauler': 1, 'rminer': 2, 'builder': 1, 'rhauler': 7, 'w8guard': 2, 'w8miner': 2, 'reserve7': 1, 'reserver': 1, 'upgrader': 1, 'w8filler': 2, 'w8hauler': 3, 'w8mminer': 1, 'w8rminer': 2, 'w8rhauler': 4, 'w8upgrader': 2}
+   84427000 2026-11-23 03:33:29.689881+08:00 stor 25043 prog 6517703 cpu 18.28 bkt 10000 host 0 e 5600 cr {'miner': 2, 'queen': 2, 'hauler': 1, 'rminer': 2, 'builder': 1, 'rhauler': 7, 'w8guard': 2, 'w8miner': 2, 'reserve7': 1, 'reserver': 1, 'upgrader': 2, 'w8filler': 2, 'w8hauler': 3, 'w8mminer': 1, 'w8rminer': 2, 'w8rhauler': 4, 'w8upgrader': 2}
+   84427100 2026-11-23 03:40:43.775223+08:00 stor 25137 prog 6519703 cpu 19.7 bkt 10000 host 0 e 5600 cr {'miner': 2, 'queen': 2, 'hauler': 1, 'rminer': 2, 'builder': 1, 'rhauler': 7, 'w8guard': 2, 'w8miner': 2, 'reserve7': 1, 'reserver': 1, 'upgrader': 2, 'w8filler': 2, 'w8hauler': 3, 'w8mminer': 1, 'w8rminer': 2, 'w8rhauler': 5, 'w8upgrader': 2}
+   84427200 2026-11-23 03:48:00.341008+08:00 stor 25182 prog 6521703 cpu 19.33 bkt 10000 host 0 e 5600 cr {'miner': 2, 'queen': 2, 'hauler': 1, 'rminer': 2, 'builder': 1, 'rhauler': 7, 'w8guard': 2, 'w8miner': 2, 'reserve7': 1, 'reserver': 1, 'upgrader': 2, 'w8filler': 2, 'w8hauler': 2, 'w8mminer': 1, 'w8rminer': 2, 'w8builder': 1, 'w8rhauler': 5, 'w8upgrader': 3}
+   84427400 2026-11-23 04:02:44.007443+08:00 stor 24228 prog 6524923 cpu 18.11 bkt 10000 host 0 e 5600 cr {'miner': 2, 'queen': 3, 'hauler': 1, 'rminer': 2, 'builder': 1, 'rhauler': 6, 'w8guard': 2, 'w8miner': 2, 'reserver': 1, 'upgrader': 2, 'w8filler': 2, 'w8hauler': 3, 'w8mminer': 1, 'w8rminer': 2, 'w8builder': 1, 'w8rhauler': 4, 'w8upgrader': 2}
+   84427500 2026-11-23 04:10:10.653546+08:00 stor 25559 prog 6526959 cpu 19.95 bkt 10000 host 0 e 5600 cr {'miner': 2, 'queen': 2, 'hauler': 1, 'rminer': 2, 'rhauler': 7, 'w8guard': 2, 'w8miner': 2, 'reserver': 2, 'upgrader': 2, 'w8filler': 2, 'w8hauler': 3, 'w8mminer': 1, 'w8rminer': 2, 'w8builder': 1, 'w8rhauler': 4, 'w8upgrader': 2}
+   84427600 2026-11-23 04:17:33.096641+08:00 stor 25142 prog 6528959 cpu 18.4 bkt 10000 host 0 e 5600 cr {'miner': 2, 'queen': 2, 'hauler': 1, 'rminer': 2, 'rhauler': 7, 'w8guard': 2, 'w8miner': 2, 'reserver': 2, 'upgrader': 2, 'w8filler': 2, 'w8hauler': 3, 'w8mminer': 1, 'w8rminer': 2, 'w8builder': 1, 'w8rhauler': 5, 'w8upgrader': 2}
+   84427900 2026-11-23 04:39:33.025166+08:00 stor 24142 prog 6534544 cpu 19.08 bkt 10000 host 0 e 4800 cr {'miner': 3, 'queen': 2, 'hauler': 1, 'rminer': 3, 'rhauler': 7, 'w8miner': 2, 'reserve7': 1, 'reserver': 1, 'upgrader': 2, 'w8filler': 3, 'w8hauler': 3, 'w8mminer': 1, 'w8rminer': 3, 'w8builder': 1, 'w8rhauler': 5, 'w8upgrader': 2}
+   84428000 2026-11-23 04:46:51.084616+08:00 stor 24692 prog 6537096 cpu 18.04 bkt 10000 host 0 e 4950 cr {'miner': 2, 'queen': 2, 'hauler': 1, 'rminer': 2, 'rhauler': 7, 'w8miner': 2, 'reserve7': 1, 'reserver': 1, 'upgrader': 2, 'w8filler': 2, 'w8hauler': 3, 'w8mminer': 1, 'w8rminer': 4, 'w8builder': 1, 'w8rhauler': 6, 'w8upgrader': 2}
+   84428200 2026-11-23 05:01:13.595865+08:00 stor 25608 prog 6541156 cpu 18.48 bkt 10000 host 0 e 1200 cr {'miner': 3, 'queen': 2, 'hauler': 1, 'rminer': 2, 'rhauler': 6, 'w8miner': 2, 'defender': 1, 'reserve7': 1, 'reserver': 1, 'upgrader': 1, 'w8filler': 2, 'w8hauler': 3, 'w8mminer': 1, 'w8rminer': 2, 'w8builder': 1, 'w8rhauler': 5, 'w8upgrader': 2}
+   84428300 2026-11-23 05:08:35.199187+08:00 stor 21927 prog 6543465 cpu 15.89 bkt 10000 host 0 e 5600 cr {'miner': 2, 'queen': 2, 'hauler': 1, 'rminer': 2, 'rhauler': 7, 'w8miner': 4, 'defender': 1, 'reserve7': 1, 'reserver': 1, 'upgrader': 1, 'w8filler': 2, 'w8hauler': 3, 'w8mminer': 1, 'w8rminer': 2, 'w8builder': 1, 'w8rhauler': 5, 'w8upgrader': 2}
+   84428400 2026-11-23 05:15:58.172210+08:00 stor 19567 prog 6545936 cpu 16.26 bkt 10000 host 0 e 5600 cr {'miner': 2, 'queen': 2, 'hauler': 1, 'rminer': 2, 'rhauler': 7, 'w8miner': 2, 'defender': 1, 'reserver': 1, 'upgrader': 3, 'w8filler': 2, 'w8hauler': 3, 'w8mminer': 2, 'w8rminer': 2, 'w8builder': 1, 'w8rhauler': 5, 'w8upgrader': 2}
+   84428600 2026-11-23 05:30:26.558984+08:00 stor 18921 prog 6550440 cpu 17.24 bkt 10000 host 0 e 5500 cr {'miner': 2, 'queen': 2, 'hauler': 1, 'rminer': 2, 'rhauler': 7, 'w8miner': 2, 'defender': 1, 'reserver': 2, 'upgrader': 2, 'w8filler': 2, 'w8hauler': 3, 'w8mminer': 1, 'w8rminer': 2, 'w8builder': 1, 'w8rhauler': 4, 'w8upgrader': 3}
+   84428640 2026-11-23 05:33:22.631033+08:00 stor 20007 prog 6551240 cpu 18.49 bkt 10000 host 0 e 5600 cr {'miner': 2, 'queen': 2, 'hauler': 1, 'rminer': 2, 'rhauler': 7, 'w8miner': 2, 'defender': 1, 'reserver': 2, 'upgrader': 2, 'w8filler': 2, 'w8hauler': 3, 'w8mminer': 1, 'w8rminer': 2, 'w8builder': 1, 'w8rhauler': 4, 'w8upgrader': 3}
+=== CPU since LAST_TIP ===
+  n 171 min 13.65 max 26.99 tick 84428080 ts 2026-11-23 04:52:36.822519+08:00 mean 17.48842105263158
+  bucket min 9993 last 10000 tick 84428640
+=== hostiles in room_stats since LAST_TIP ===
+  W46N8 hostile_ticks=0 
+  W47N8 hostile_ticks=28 ('first', (84426210, datetime.datetime(2026, 11, 23, 2, 37, 28, 670238, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 1), 'last', (84426590, datetime.datetime(2026, 11, 23, 3, 4, 8, 28577, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 1))
+  W45N8 hostile_ticks=0 
+  W45N7 hostile_ticks=0 
+  W47N7 hostile_ticks=0 
+=== invader/guard creep names since LAST_TIP (creep_ticks) ===
+  ('W47N8', 'w8guard84426193', 84426210, 84427815, 1606, 4100, 4100)
+  ('W47N8', 'w8guard84426194', 84426210, 84427816, 1607, 4100, 4100)
+  ('W47N8', 'rdef84428191', 84428193, 84428382, 190, 5000, 5000)
+  ('W47N7', 'rdef84428191', 84428383, 84428500, 118, 5000, 5000)
+DONE
