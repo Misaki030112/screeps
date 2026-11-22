@@ -1,0 +1,60 @@
+=== latest room_stats ===
+('W46N8', 84415690, datetime.datetime(2026, 11, 22, 14, 23, 19, 542440, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')))
+('W47N8', 84415690, datetime.datetime(2026, 11, 22, 14, 23, 19, 542478, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')))
+=== large STATS gaps (>20 ticks) since 84414900 on W46N8 ===
+  STATS hole 84415191..84415339 (149t)  2026-11-22 13:48:15.126241+08:00 -> 2026-11-22 13:58:52.702124+08:00
+  STATS hole 84415571..84415649 (79t)  2026-11-22 14:15:00.817552+08:00 -> 2026-11-22 14:20:35.810963+08:00
+=== room_stats around 14:15-14:20 ===
+  (84415500, datetime.datetime(2026, 11, 22, 14, 10, 7, 207119, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')))
+  (84415510, datetime.datetime(2026, 11, 22, 14, 10, 50, 111181, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')))
+  (84415520, datetime.datetime(2026, 11, 22, 14, 11, 30, 911941, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')))
+  (84415530, datetime.datetime(2026, 11, 22, 14, 12, 13, 79382, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')))
+  (84415540, datetime.datetime(2026, 11, 22, 14, 12, 54, 883230, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')))
+  (84415550, datetime.datetime(2026, 11, 22, 14, 13, 36, 83493, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')))
+  (84415560, datetime.datetime(2026, 11, 22, 14, 14, 17, 470002, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')))
+  (84415570, datetime.datetime(2026, 11, 22, 14, 15, 0, 817552, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')))
+  (84415650, datetime.datetime(2026, 11, 22, 14, 20, 35, 810963, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')))
+  (84415660, datetime.datetime(2026, 11, 22, 14, 21, 17, 11833, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')))
+  (84415670, datetime.datetime(2026, 11, 22, 14, 21, 58, 679589, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')))
+=== also 13:40-14:05 for 13:48 freeze check ===
+  STATS hole 84415191..84415339 (149t)  2026-11-22 13:48:15.126241+08:00 -> 2026-11-22 13:58:52.702124+08:00
+=== official creep_ticks fill ===
+-- gap_1348_1357 84415191..84415339 (149t) --
+  W46N8 149/149 min=84415191 max=84415339 missing=0
+  W47N8 149/149 min=84415191 max=84415339 missing=0
+  W45N8 149/149 min=84415191 max=84415339 missing=0
+  W45N7 149/149 min=84415191 max=84415339 missing=0
+  W47N7 149/149 min=84415191 max=84415339 missing=0
+-- gap_84415191_84415339 84415191..84415339 (149t) --
+  W46N8 149/149 min=84415191 max=84415339 missing=0
+  W47N8 149/149 min=84415191 max=84415339 missing=0
+  W45N8 149/149 min=84415191 max=84415339 missing=0
+  W45N7 149/149 min=84415191 max=84415339 missing=0
+  W47N7 149/149 min=84415191 max=84415339 missing=0
+-- gap_84415571_84415649 84415571..84415649 (79t) --
+  W46N8 30/79 min=84415571 max=84415600 missing=49
+  W47N8 34/79 min=84415571 max=84415649 missing=45
+  W45N8 0/79 min=None max=None missing=79
+  W45N7 30/79 min=84415571 max=84415600 missing=49
+  W47N7 30/79 min=84415571 max=84415600 missing=49
+done
+=== after JP official+JP 84414901..84415700 ===
+  W46N8 800/800 min=84414901 max=84415700
+  W47N8 800/800 min=84414901 max=84415700
+  W45N8 700/800 min=84414901 max=84415700
+  W45N7 800/800 min=84414901 max=84415700
+  W47N7 800/800 min=84414901 max=84415700
+=== 14:15 freeze STATS 84415571..84415649 after JP ===
+  W46N8 79/79 min=84415571 max=84415649 missing=0
+  W47N8 79/79 min=84415571 max=84415649 missing=0
+  W45N8 49/79 min=84415601 max=84415649 missing=30
+  W45N7 79/79 min=84415571 max=84415649 missing=0
+  W47N7 79/79 min=84415571 max=84415649 missing=0
+=== 13:48 freeze still ===
+  W46N8 149/149
+  W47N8 149/149
+  W45N8 149/149
+  W45N7 149/149
+  W47N7 149/149
+=== W45N8@84415500 still ===
+(0, None, None)

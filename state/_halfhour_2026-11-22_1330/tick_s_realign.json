@@ -1,0 +1,137 @@
+{
+  "first_interval": 4.20271,
+  "later_mean_w46": 4.2145525,
+  "later_mean_w46_raw": 4.2145525,
+  "later_mean_w46_robust": 4.2145525,
+  "all_mean_w46": 4.21218,
+  "span_mean": 4.2067,
+  "prev_later_mean": 4.127002,
+  "intervals": [
+    {
+      "from": 84414300,
+      "to": 84414400,
+      "tick_s": 4.20271,
+      "outlier": false
+    },
+    {
+      "from": 84414400,
+      "to": 84414500,
+      "tick_s": 4.12409,
+      "outlier": false
+    },
+    {
+      "from": 84414500,
+      "to": 84414600,
+      "tick_s": 4.33707,
+      "outlier": false
+    },
+    {
+      "from": 84414600,
+      "to": 84414800,
+      "tick_s": 4.17927,
+      "outlier": false
+    },
+    {
+      "from": 84414800,
+      "to": 84414900,
+      "tick_s": 4.21778,
+      "outlier": false
+    }
+  ],
+  "gt_first": 84415051,
+  "gt_check": 84415084,
+  "gt_realign": 84415084,
+  "now_check": "2026-11-22T13:40:53+08:00",
+  "now_realign": "2026-11-22T13:40:53+08:00",
+  "tick_s_used_first_pass": 4.20271,
+  "ts_realigned_first_pass": 12345,
+  "ts_realigned_first_pass_error": "First-pass realign with tick_s=4.20271 (printed 4.203) committed ts_realigned_first=12345 (inserted=0 already_in_db=24024, missing_chunks=1; 12345 rows over the 45s gate).",
+  "still_over_45s_vs_first": 0,
+  "still_over_15s_vs_first": 6603,
+  "vs_candidates": {
+    "first": {
+      "over45": 0,
+      "over15": 6603,
+      "n": 24456,
+      "mean_off": 8.720570776169447,
+      "min_off": -3.081146,
+      "max_off": 44.326208,
+      "tick_s": 4.20271
+    },
+    "later_raw": {
+      "over45": 725,
+      "over15": 7541,
+      "n": 24456,
+      "mean_off": 13.892701299313051,
+      "min_off": -0.890284,
+      "max_off": 49.726388,
+      "tick_s": 4.2145525
+    },
+    "later_robust": {
+      "over45": 725,
+      "over15": 7541,
+      "n": 24456,
+      "mean_off": 13.892701299313051,
+      "min_off": -0.890284,
+      "max_off": 49.726388,
+      "tick_s": 4.2145525
+    },
+    "all_mean": {
+      "over45": 575,
+      "over15": 7408,
+      "n": 24456,
+      "mean_off": 12.858275194717043,
+      "min_off": -1.328456,
+      "max_off": 48.646352,
+      "tick_s": 4.21218
+    },
+    "span_mean": {
+      "over45": 186,
+      "over15": 6959,
+      "n": 24456,
+      "mean_off": 10.462447961604514,
+      "min_off": -2.343304,
+      "max_off": 46.144888,
+      "tick_s": 4.2067
+    },
+    "prev_later": {
+      "over45": 6899,
+      "over15": 13015,
+      "n": 24456,
+      "mean_off": -24.34437814924763,
+      "min_off": -59.868636,
+      "max_off": 9.80336,
+      "tick_s": 4.127002
+    }
+  },
+  "still_over_45s_vs_later_before": 725,
+  "still_over_15s_vs_later_before": 7541,
+  "still_over_45s_vs_later": 725,
+  "still_over_15s_vs_later": 7541,
+  "corrective_applied": false,
+  "ts_realigned_to_later_mean": 0,
+  "skipped_cross_chunk": 0,
+  "reason": "first-interval tick_s=4.20271 (printed 4.203, min-all-rooms first two bases) is in the sane 3-6s band; later-mean-robust 4.21455 (raw later-mean 4.21455; delta first-robust -0.01184 s/tick, ~8.9s at tmin). First-pass realign with tick_s=4.20271 (printed 4.203) committed ts_realigned_first=12345 (inserted=0 already_in_db=24024, missing_chunks=1; 12345 rows over the 45s gate).; later-mean-robust 4.21455 is worse than live-anchor-best first 4.20271 (later over45=725 mean_off=13.9 vs best over45=0 mean_off=8.7); will not blindly apply later; live-anchor-best first 4.20271 already inside 45s gate (over45=0), no corrective realign",
+  "game_time_error": null,
+  "lowest_over45_sane": "first",
+  "vs_first": {
+    "over45": 0,
+    "over15": 6603,
+    "n": 24456,
+    "mean_off": 8.720570776169447,
+    "min_off": -3.081146,
+    "max_off": 44.326208
+  },
+  "vs_later_after": {
+    "over45": 725,
+    "over15": 7541,
+    "n": 24456,
+    "mean_off": 13.892701299313051,
+    "min_off": -0.890284,
+    "max_off": 49.726388
+  },
+  "tick_s_in_use": 4.20271,
+  "tick_s_in_use_name": "first",
+  "later_is_worse_than_best": true,
+  "_restored_from": "tick_s_check.txt after accidental overwrite by 14:00 run; values taken from the original 13:40:53 Asia/Hong_Kong check printout"
+}
