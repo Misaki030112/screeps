@@ -1,0 +1,142 @@
+{
+  "first_interval": 4.32228,
+  "later_mean_w46": 4.212736,
+  "later_mean_w46_raw": 4.212736,
+  "later_mean_w46_robust": 4.212736,
+  "all_mean_w46": 4.230993333333333,
+  "span_mean": 4.230993333333333,
+  "prev_later_mean": 4.118992,
+  "intervals": [
+    {
+      "from": 84418200,
+      "to": 84418300,
+      "tick_s": 4.32228,
+      "outlier": false
+    },
+    {
+      "from": 84418300,
+      "to": 84418400,
+      "tick_s": 4.18891,
+      "outlier": false
+    },
+    {
+      "from": 84418400,
+      "to": 84418500,
+      "tick_s": 4.15383,
+      "outlier": false
+    },
+    {
+      "from": 84418500,
+      "to": 84418600,
+      "tick_s": 4.21957,
+      "outlier": false
+    },
+    {
+      "from": 84418600,
+      "to": 84418700,
+      "tick_s": 4.17296,
+      "outlier": false
+    },
+    {
+      "from": 84418700,
+      "to": 84418800,
+      "tick_s": 4.32841,
+      "outlier": false
+    }
+  ],
+  "gt_first": 84418931,
+  "gt_check": 84418998,
+  "gt_realign": 84418998,
+  "now_check": "2026-11-22T18:13:37.534135+08:00",
+  "now_realign": "2026-11-22T18:13:37.533674+08:00",
+  "tick_s_used_first_pass": 4.29007,
+  "ts_realigned_first_pass": 0,
+  "ts_realigned_first_pass_error": "First-pass realign with tick_s=4.29007 (printed 4.290) FAILED UniqueViolation _hyper_6_90_chunk_creep_ticks_uq (queen84417115, 84418201, 2026-11-22 17:16:40.328277+08) and rolled back, so ts_realigned_first=0 (inserted=21724 already_in_db=9092, missing_chunks=0). Cause was 342 same-payload extra (creep,tick) rows in W46N8 ticks 84418201..84418239; deduped (kept earlier ts) before this check.",
+  "still_over_45s_vs_first": 7540,
+  "still_over_15s_vs_first": 8910,
+  "vs_candidates": {
+    "first": {
+      "over45": 7540,
+      "over15": 8910,
+      "n": 28690,
+      "mean_off": 21.742057656395957,
+      "min_off": -1.150933,
+      "max_off": 81.861522,
+      "tick_s": 4.29007
+    },
+    "later_raw": {
+      "over45": 0,
+      "over15": 14664,
+      "n": 28690,
+      "mean_off": -12.358656714743812,
+      "min_off": -41.234825,
+      "max_off": 23.957974,
+      "tick_s": 4.212736
+    },
+    "later_robust": {
+      "over45": 0,
+      "over15": 14664,
+      "n": 28690,
+      "mean_off": -12.358656714743812,
+      "min_off": -41.234825,
+      "max_off": 23.957974,
+      "tick_s": 4.212736
+    },
+    "all_mean": {
+      "over45": 0,
+      "over15": 15394,
+      "n": 28690,
+      "mean_off": -4.3080178078773095,
+      "min_off": -30.335197,
+      "max_off": 34.777419,
+      "tick_s": 4.230993333333333
+    },
+    "span_mean": {
+      "over45": 0,
+      "over15": 15394,
+      "n": 28690,
+      "mean_off": -4.3080178078773095,
+      "min_off": -30.335197,
+      "max_off": 34.777419,
+      "tick_s": 4.230993333333333
+    },
+    "prev_later": {
+      "over45": 20297,
+      "over15": 28056,
+      "n": 28690,
+      "mean_off": -53.695421501359355,
+      "min_off": -97.199993,
+      "max_off": -11.832071,
+      "tick_s": 4.118992
+    }
+  },
+  "still_over_45s_vs_later_before": 0,
+  "still_over_15s_vs_later_before": 14664,
+  "still_over_45s_vs_later": 0,
+  "still_over_15s_vs_later": 14664,
+  "corrective_applied": false,
+  "ts_realigned_to_later_mean": 0,
+  "skipped_cross_chunk": 0,
+  "reason": "first-interval tick_s=4.29007 (printed 4.290, min-all-rooms first two bases) is in the sane 3-6s band; later-mean-robust 4.21274 (raw later-mean 4.21274; delta first-robust 0.10954 s/tick, ~80.0s at tmin). First-pass realign with tick_s=4.29007 (printed 4.290) FAILED UniqueViolation _hyper_6_90_chunk_creep_ticks_uq (queen84417115, 84418201, 2026-11-22 17:16:40.328277+08) and rolled back, so ts_realigned_first=0 (inserted=21724 already_in_db=9092, missing_chunks=0). Cause was 342 same-payload extra (creep,tick) rows in W46N8 ticks 84418201..84418239; deduped (kept earlier ts) before this check.; later-mean-robust 4.21274 is worse than live-anchor-best all_mean 4.23099 (later over45=0 mean_off=-12.4 vs best over45=0 mean_off=-4.3); will not blindly apply later; live-anchor-best all_mean 4.23099 already inside 45s gate (over45=0), no corrective realign",
+  "game_time_error": null,
+  "lowest_over45_sane": "all_mean",
+  "vs_first": {
+    "over45": 7540,
+    "over15": 8910,
+    "n": 28690,
+    "mean_off": 21.742057656395957,
+    "min_off": -1.150933,
+    "max_off": 81.861522
+  },
+  "vs_later_after": {
+    "over45": 0,
+    "over15": 14664,
+    "n": 28690,
+    "mean_off": -12.358656714743812,
+    "min_off": -41.234825,
+    "max_off": 23.957974
+  },
+  "tick_s_in_use": 4.230993333333333,
+  "tick_s_in_use_name": "all_mean",
+  "later_is_worse_than_best": true
+}
