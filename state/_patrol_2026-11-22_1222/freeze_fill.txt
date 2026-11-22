@@ -1,0 +1,39 @@
+=== room_stats around freezes ===
+freeze 11:45:08-12:00:47 room_stats in closed window []
+  W46N8 last before (84413410, datetime.datetime(2026, 11, 22, 11, 44, 52, 192712, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai'))) first after (84413650, datetime.datetime(2026, 11, 22, 12, 1, 17, 611638, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')))
+shortWS 12:14:21-12:14:56 room_stats in closed window []
+  W46N8 last before (84413820, datetime.datetime(2026, 11, 22, 12, 13, 10, 536752, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai'))) first after (84413850, datetime.datetime(2026, 11, 22, 12, 15, 14, 515716, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')))
+freeze 12:20:45-12:23:11 room_stats in closed window []
+  W46N8 last before (84413920, datetime.datetime(2026, 11, 22, 12, 20, 6, 241218, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai'))) first after (84413970, datetime.datetime(2026, 11, 22, 12, 23, 33, 157035, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')))
+
+=== STATS-like: look at a samples table if any ===
+tables ['alert_state', 'cpu_prof', 'creep_cpu', 'events', 'role_cpu_10m', 'room_stats', 'room_stats_10m']
+
+=== infer tick holes from W46N8 room_stats bracketing ===
+freeze 11:45:08-12:00:47 bracket ticks 84413410 84413650
+  interior 84413411..84413649 want 239
+  creep_ticks W46N8 distinct=239/239 rows=1935 range=84413411..84413649
+  creep_ticks W47N8 distinct=239/239 rows=3010 range=84413411..84413649
+  creep_ticks W45N8 distinct=239/239 rows=811 range=84413411..84413649
+  creep_ticks W45N7 distinct=239/239 rows=1117 range=84413411..84413649
+  creep_ticks W47N7 distinct=239/239 rows=1470 range=84413411..84413649
+  room_stats W46N8 distinct=0 rows=0 range=None..None
+  room_stats W47N8 distinct=0 rows=0 range=None..None
+shortWS 12:14:21-12:14:56 bracket ticks 84413820 84413850
+  interior 84413821..84413849 want 29
+  creep_ticks W46N8 distinct=29/29 rows=339 range=84413821..84413849
+  creep_ticks W47N8 distinct=29/29 rows=377 range=84413821..84413849
+  creep_ticks W45N8 distinct=29/29 rows=119 range=84413821..84413849
+  creep_ticks W45N7 distinct=29/29 rows=93 range=84413821..84413849
+  creep_ticks W47N7 distinct=29/29 rows=116 range=84413821..84413849
+  room_stats W46N8 distinct=0 rows=0 range=None..None
+  room_stats W47N8 distinct=0 rows=0 range=None..None
+freeze 12:20:45-12:23:11 bracket ticks 84413920 84413970
+  interior 84413921..84413969 want 49
+  creep_ticks W46N8 distinct=10/49 rows=76 range=84413921..84413969
+  creep_ticks W47N8 distinct=0/49 rows=0 range=None..None
+  creep_ticks W45N8 distinct=0/49 rows=0 range=None..None
+  creep_ticks W45N7 distinct=0/49 rows=0 range=None..None
+  creep_ticks W47N7 distinct=0/49 rows=0 range=None..None
+  room_stats W46N8 distinct=0 rows=0 range=None..None
+  room_stats W47N8 distinct=0 rows=0 range=None..None
