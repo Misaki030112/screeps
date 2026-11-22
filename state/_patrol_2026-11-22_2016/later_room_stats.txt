@@ -1,0 +1,9 @@
+Traceback (most recent call last):
+  File "<string>", line 6, in <module>
+    print("w47 24h max", c.execute("SELECT max(storage_energy), min(storage_energy), max(storage_energy) FILTER (WHERE storage_energy>=40000), count(*) FILTER (WHERE storage_energy>=40000) FROM room_stats WHERE room=%s AND tick>=%s",("W47N8",84420810-int(24*3600/4.2))).fetchone())
+                         ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/screeps/.venv/lib/python3.13/site-packages/psycopg/connection.py", line 304, in execute
+    raise ex.with_traceback(None)
+psycopg.errors.UndefinedColumn: column "storage_energy" does not exist
+LINE 1: SELECT max(storage_energy), min(storage_energy), max(storage...
+                   ^
