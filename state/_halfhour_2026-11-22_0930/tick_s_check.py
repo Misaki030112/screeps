@@ -7,7 +7,7 @@ from zoneinfo import ZoneInfo
 from pathlib import Path
 
 ROOT = Path("/workspace/screeps")
-DIR = ROOT / "state" / "_halfhour_2026-11-22_0900"
+DIR = ROOT / "state" / "_halfhour_2026-11-22_0930"
 os.chdir(ROOT)
 sys.path.insert(0, "tools")
 sys.path.insert(0, "scripts")
@@ -16,42 +16,46 @@ import history_backfill as hb
 
 # Official chunk timestamps printed by history_backfill.py
 # First pass 35 of 35 official GETs 200, missing_chunks=0, exit=0.
-# published_bases 84410300..84410900 at game.time=84411068; reconstructed 84410301..84411000 (700).
+# published_bases 84410700..84411300 at game.time=84411454; reconstructed 84410701..84411400 (700).
 # First-pass tick_s used min-of-all-rooms on the first two published bases,
-# computed (MIN 84410400-84410300)/1000/100 = 4.10147, script printed 4.101.
-# Insert committed inserted=9250 already_in_db=15658, first-pass realign succeeded
-# ts_realigned=23.
-# 08:30 half-hour already wrote through 84410600 / just-published 84410600 for all 5.
-# 1h patrol already delivered 08:28 _patrol_2026-11-22_0818. Concurrent none.
-# Do not restart the listener or war_cmd/pulse. Single listener 2364487 since 09:01:15
-# after NEW box freeze 08:51:14-09:01:02 (581s; STATS 84410881..84411039, 159t;
-# listener auto-restart 09:01:06). Leftover official 404 W47N8@84409800 and older
-# aged out of window start 84410301 and are not retried this pass. Unpublished tail
-# after 84411000 waits on just-published 84411000.
+# computed (MIN 84410800-84410700)/1000/100 = 4.07557, script printed 4.076.
+# Insert committed inserted=200 already_in_db=25034, first-pass realign committed
+# ts_realigned=0 (no rows over the 45s gate).
+# 09:00 half-hour already wrote through 84411000 / just-published 84411000 for all 5.
+# Concurrent 1h patrol _patrol_2026-11-22_0918 already delivered 09:29 USER_LOG
+# (also official-filled 84410601..84411300 and just-published 84411300 through 84411400).
+# 12h review already delivered ~08:33 t508s3618. Do not write those folders.
+# Do not restart the listener or war_cmd/pulse. Single listener 2371673 since 09:19:17
+# after NEW box freeze 09:14:15-09:19:05 (283s; STATS 84411221..84411299, 79t;
+# listener auto-restart 09:19:08). 08:51 and 09:14 freezes already told in the 09:29
+# patrol USER_LOG. Leftover official 404 W47N8@84409800 and older aged out of
+# window start 84410701 and are not retried this pass. W47N7@84411200 was 404 in
+# the patrol first pass and already recovered on that patrol's confirm (this first
+# pass got 200). Unpublished tail after 84411400 waits on just-published 84411400.
 W46 = {
-    84410300: 1795306701333,
-    84410400: 1795307111480,
-    84410500: 1795307542103,
-    84410600: 1795307946021,
     84410700: 1795308347692,
     84410800: 1795308755249,
     84410900: 1795309161287,
+    84411000: 1795309580854,
+    84411100: 1795309983841,
+    84411200: 1795310396821,
+    84411300: 1795310810262,
 }
 MIN_ALL = {
-    84410300: 1795306701333,  # W46N8
-    84410400: 1795307111480,  # W46N8
-    84410500: 1795307541399,  # W45N7 (earlier than W46N8 1795307542103)
-    84410600: 1795307946021,  # W46N8
     84410700: 1795308347692,  # W46N8
     84410800: 1795308755249,  # W46N8
     84410900: 1795309161287,  # W46N8
+    84411000: 1795309580854,  # W46N8
+    84411100: 1795309983841,  # W46N8
+    84411200: 1795310395391,  # W45N7 (earlier than W46N8 1795310396821)
+    84411300: 1795310810262,  # W46N8
 }
-TMIN, TMAX = 84410301, 84411000
+TMIN, TMAX = 84410701, 84411400
 ROOMS = ("W46N8", "W47N8", "W45N8", "W45N7", "W47N7")
-TICK_S_FIRST = (MIN_ALL[84410400] - MIN_ALL[84410300]) / 1000.0 / 100  # script printed 4.101, exact 4.10147
-GT_FIRST = 84411068
-TS_REALIGNED_FIRST = 23  # first-pass realign succeeded
-PREV_LATER_MEAN = 4.11553  # tick_s_in_use from quiet 08:30 halfhour
+TICK_S_FIRST = (MIN_ALL[84410800] - MIN_ALL[84410700]) / 1000.0 / 100  # script printed 4.076, exact 4.07557
+GT_FIRST = 84411454
+TS_REALIGNED_FIRST = 0  # first-pass realign committed, no rows over 45s
+PREV_LATER_MEAN = 4.099614  # tick_s_in_use from quiet 09:00 halfhour
 
 
 def intervals(d):
@@ -188,11 +192,12 @@ def main():
     skipped_chunk = 0
     first_outlier = not (3.0 <= TICK_S_FIRST <= 6.0)
     first_pass_realign_error = (
-        f"First-pass realign with tick_s={TICK_S_FIRST:.5f} (printed 4.101) succeeded "
-        f"ts_realigned_first=23 (inserted=9250 already_in_db=15658, missing_chunks=0)."
+        f"First-pass realign with tick_s={TICK_S_FIRST:.5f} (printed 4.076) committed "
+        f"ts_realigned_first=0 (inserted=200 already_in_db=25034, missing_chunks=0; "
+        f"no rows over the 45s gate)."
     )
     reason = (
-        f"first-interval tick_s={TICK_S_FIRST:.5f} (printed 4.101, min-all-rooms first two bases) "
+        f"first-interval tick_s={TICK_S_FIRST:.5f} (printed 4.076, min-all-rooms first two bases) "
         f"{'is an OUTLIER' if first_outlier else 'is in the sane 3-6s band'}; "
         f"later-mean-robust {later_mean_robust:.5f} (raw later-mean {later_mean_raw:.5f}; "
         f"delta first-robust {first-later_mean_robust:.5f} s/tick, "

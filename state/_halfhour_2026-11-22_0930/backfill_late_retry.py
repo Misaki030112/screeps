@@ -7,12 +7,12 @@ from zoneinfo import ZoneInfo
 sys.path.insert(0, "/workspace/screeps/tools")
 import history_backfill as hb
 import db, api
-sys.path.insert(0, "/workspace/screeps/state/_halfhour_2026-11-22_0900")
+sys.path.insert(0, "/workspace/screeps/state/_halfhour_2026-11-22_0930")
 import backfill_confirm as confirm
 
-DIR = Path("/workspace/screeps/state/_halfhour_2026-11-22_0900")
+DIR = Path("/workspace/screeps/state/_halfhour_2026-11-22_0930")
 HK = ZoneInfo("Asia/Hong_Kong")
-TARGETS = []  # first pass 35/35 200; leftovers aged out of window start 84410301
+TARGETS = []  # first pass 35/35 200; leftovers aged out of window start 84410701
 
 def main():
     confirm.load_tick_s()
