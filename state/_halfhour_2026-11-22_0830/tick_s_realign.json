@@ -1,0 +1,142 @@
+{
+  "first_interval": 3.9969400000000004,
+  "later_mean_w46": 4.139248,
+  "later_mean_w46_raw": 4.139248,
+  "later_mean_w46_robust": 4.139248,
+  "all_mean_w46": 4.115530000000001,
+  "span_mean": 4.114356666666667,
+  "prev_later_mean": 4.1147,
+  "intervals": [
+    {
+      "from": 84409900,
+      "to": 84410000,
+      "tick_s": 3.9969400000000004,
+      "outlier": false
+    },
+    {
+      "from": 84410000,
+      "to": 84410100,
+      "tick_s": 4.21619,
+      "outlier": false
+    },
+    {
+      "from": 84410100,
+      "to": 84410200,
+      "tick_s": 3.92062,
+      "outlier": false
+    },
+    {
+      "from": 84410200,
+      "to": 84410300,
+      "tick_s": 4.15173,
+      "outlier": false
+    },
+    {
+      "from": 84410300,
+      "to": 84410400,
+      "tick_s": 4.10147,
+      "outlier": false
+    },
+    {
+      "from": 84410400,
+      "to": 84410500,
+      "tick_s": 4.30623,
+      "outlier": false
+    }
+  ],
+  "gt_first": 84410669,
+  "gt_check": 84410712,
+  "gt_realign": 84410712,
+  "now_check": "2026-11-22T08:39:25.586160+08:00",
+  "now_realign": "2026-11-22T08:39:25.586109+08:00",
+  "tick_s_used_first_pass": 3.9969400000000004,
+  "ts_realigned_first_pass": 0,
+  "ts_realigned_first_pass_error": "First-pass realign with tick_s=3.99694 (printed 3.997) FAILED CheckViolation on _hyper_6_88_chunk constraint_88 (would-be ts 2026-11-22 08:00:02.731301+08 for W46N8 hauler84408751 tick 84410122); realign transaction rolled back so ts_realigned_first=0 (inserted=2813 already committed, already_in_db=24222, missing_chunks=0).",
+  "still_over_45s_vs_first": 15910,
+  "still_over_15s_vs_first": 24452,
+  "vs_candidates": {
+    "first": {
+      "over45": 15910,
+      "over15": 24452,
+      "n": 27205,
+      "mean_off": -55.15961835714023,
+      "min_off": -108.782411,
+      "max_off": -1.909323,
+      "tick_s": 3.9969400000000004
+    },
+    "later_raw": {
+      "over45": 1524,
+      "over15": 4813,
+      "n": 27205,
+      "mean_off": 10.154496537915824,
+      "min_off": -1.18417,
+      "max_off": 48.472128,
+      "tick_s": 4.139248
+    },
+    "later_robust": {
+      "over45": 1524,
+      "over15": 4813,
+      "n": 27205,
+      "mean_off": 10.154496537915824,
+      "min_off": -1.18417,
+      "max_off": 48.472128,
+      "tick_s": 4.139248
+    },
+    "all_mean": {
+      "over45": 0,
+      "over15": 6238,
+      "n": 27205,
+      "mean_off": -0.7311892779268517,
+      "min_off": -18.891191,
+      "max_off": 34.972167,
+      "tick_s": 4.115530000000001
+    },
+    "span_mean": {
+      "over45": 0,
+      "over15": 6647,
+      "n": 27205,
+      "mean_off": -1.26970593243889,
+      "min_off": -19.780578,
+      "max_off": 34.60726,
+      "tick_s": 4.114356666666667
+    },
+    "prev_later": {
+      "over45": 0,
+      "over15": 6530,
+      "n": 27205,
+      "mean_off": -1.1121286162837714,
+      "min_off": -19.520331,
+      "max_off": 34.714037,
+      "tick_s": 4.1147
+    }
+  },
+  "still_over_45s_vs_later_before": 1524,
+  "still_over_15s_vs_later_before": 4813,
+  "still_over_45s_vs_later": 1524,
+  "still_over_15s_vs_later": 4813,
+  "corrective_applied": false,
+  "ts_realigned_to_later_mean": 0,
+  "skipped_cross_chunk": 0,
+  "reason": "first-interval tick_s=3.99694 (printed 3.997, min-all-rooms first two bases) is in the sane 3-6s band; later-mean-robust 4.13925 (raw later-mean 4.13925; delta first-robust -0.14231 s/tick, ~109.3s at tmin). First-pass realign with tick_s=3.99694 (printed 3.997) FAILED CheckViolation on _hyper_6_88_chunk constraint_88 (would-be ts 2026-11-22 08:00:02.731301+08 for W46N8 hauler84408751 tick 84410122); realign transaction rolled back so ts_realigned_first=0 (inserted=2813 already committed, already_in_db=24222, missing_chunks=0).; later-mean-robust 4.13925 is worse than live-anchor-best all_mean 4.11553 (later over45=1524 mean_off=10.2 vs best over45=0 mean_off=-0.7); will not blindly apply later; live-anchor-best all_mean 4.11553 already inside 45s gate (over45=0), no corrective realign",
+  "game_time_error": null,
+  "lowest_over45_sane": "all_mean",
+  "vs_first": {
+    "over45": 15910,
+    "over15": 24452,
+    "n": 27205,
+    "mean_off": -55.15961835714023,
+    "min_off": -108.782411,
+    "max_off": -1.909323
+  },
+  "vs_later_after": {
+    "over45": 1524,
+    "over15": 4813,
+    "n": 27205,
+    "mean_off": 10.154496537915824,
+    "min_off": -1.18417,
+    "max_off": 48.472128
+  },
+  "tick_s_in_use": 4.115530000000001,
+  "tick_s_in_use_name": "all_mean",
+  "later_is_worse_than_best": true
+}
