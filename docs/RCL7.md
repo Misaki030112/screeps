@@ -1,6 +1,16 @@
 <!-- 2026-11-09 17:1x: Phase0 waiting on ticks; see STRATEGY Current state + ROADMAP 17:1x; 12h reviews must score T3 Phase0/1/2. -->
 # Home W46N8 RCL7 readiness (strategy review 2026-10-19 18:4x UTC+8)
 
+## 2026-11-22 08:2x Asia/Hong_Kong — 12h strategic review (plan holds; home 86.59% ~3.53 d, 20k max 20870 / 81 t still unlatched, W47 40k touch max 41133 / 71 t still unlatched, KO 53631, gates held)
+
+Sampled window t84400280→84410500 (10220 t, tick_s 4.206, 2026-11-21 20:28:19 → 2026-11-22 08:24:45 Asia/Hong_Kong, coverage 678/1023 ≈ 66.3%). LIVE **2b5398f7** held. No game deploy this review.
+
+Home **86.59%** (9,468,107 / 10,935,000); +206,748 ≈ **20.23 e/t** → RCL8 ≈ **3.53 days** (was 84.69% / 19.04 / 4.35 d). tick_s 4.273→4.206 is slightly faster; e/t 19.04→20.23 and under-15k 23.80%→12.54% recovered, so the calendar is a real acceleration (the tip is back on the 15k floor, so the next hours may slow). Stor avg 16,482 max **20,870** @03:22 min **12,152** @04:34; under-15k **12.54%** (was 23.80%); 9 samples ≥20k (1.33%). Longest clean ≥20k stretch **81 t** (03:16–03:22). Live tip 14,904 / later ~14.1–14.4k why=floor_bank nUp=2 tUp=1 work=28. exact2h 22.39/26=86.1% ABOVE; last20–140 at the tip 28.00=107.7% HARD; last800 24.62=94.7% HARD. Formal stayed CLEARED. 20k/300t and 15k floor **held**. Ledger net sp:upgrader 1.54, under the 5 e/t waste gate.
+
+W47 **56.63%** (6,192,769); +201,566 ≈ **19.72 e/t** → RCL8 ≈ **11.71 days** (was 54.79% / 19.16 / 12.76 d). Stor avg 29,096 max **41,133** @04:06 min 23,656 @22:08; 0% <15k, 100% ≥20k, 95.6% ≥25k, 38.2% ≥30k, 1.18% ≥40k. Longest clean ≥40k **71 t**; longest ≥30k 391 t (01:22–01:50, peak 38,042). Live 25,266 / later ~26.6–27.1k, keep=2, softCap2 **OFF** (last evening's live solo has cleared), sealPark=0, sealRaise=1, upLatched=0. Two 10W upgraders. exact2h 20.19/30.08=67.1% under; last20–100 designed 20.00=66.5%; last800 20.72=68.9% still soft. Formal re-fired at 07:35 (second dual after the 05:38 clearance) and still holds — strategy unchanged. 40k/500t **held**. Do not unpark ceil/seal.
+
+Remotes: standing ops. Last evening's live W47N7 solo cleared 20:35–20:39; one W45N7 core (00:26) and W45N7 / W47N7 solos (02:36 / 04:12) all killed. Tip and later all three vis SAFE. KO 48,511→53,631; 15k reaction floor pausing at the tip (homeStor ~14k); boost skip held. CPU avg 17.29 max 33.99, bucket min 9997, zero ≥40. Community 100k buffer unchanged — hold gates, no industry / market / new remote re-ask. Next: 20k gate, W47 keep=2 until 40k, authorized KO continues.
+
 ## 2026-11-21 20:2x Asia/Hong_Kong — 12h strategic review (plan holds; home 84.69% ~4.35 d, 20k max 21259 / 121 t still unlatched, W47 first 40k touch max 42468 / 211 t still unlatched, KO 48511, gates held)
 
 Sampled window t84390120→84400280 (10160 t, tick_s 4.273, 2026-11-21 08:24:47 → 20:28:19 Asia/Hong_Kong, coverage 752/1017 ≈ 73.9%). LIVE **2b5398f7** held. No game deploy this review.
