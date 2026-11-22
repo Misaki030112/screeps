@@ -1,0 +1,100 @@
+  STATS_GAP (84421171, 84421179, 9)
+  STATS_GAP (84421181, 84421189, 9)
+  STATS_GAP (84421191, 84421199, 9)
+  STATS_GAP (84421201, 84421209, 9)
+  STATS_GAP (84421211, 84421219, 9)
+  STATS_GAP (84421221, 84421389, 169)
+  STATS_GAP (84421391, 84421399, 9)
+  STATS_GAP (84421401, 84421409, 9)
+  STATS_GAP (84421411, 84421419, 9)
+  STATS_GAP (84421421, 84421429, 9)
+  STATS_GAP (84421431, 84421439, 9)
+  STATS_GAP (84421441, 84421449, 9)
+  STATS_GAP (84421451, 84421459, 9)
+  STATS_GAP (84421461, 84421469, 9)
+  STATS_GAP (84421471, 84421479, 9)
+  STATS_GAP (84421481, 84421489, 9)
+  STATS_GAP (84421491, 84421499, 9)
+  STATS_GAP (84421501, 84421509, 9)
+  STATS_GAP (84421511, 84421519, 9)
+  STATS_GAP (84421521, 84421529, 9)
+  STATS_GAP (84421531, 84421539, 9)
+  STATS_GAP (84421541, 84421549, 9)
+  STATS_GAP (84421551, 84421559, 9)
+  STATS_GAP (84421561, 84421569, 9)
+  STATS_GAP (84421571, 84421579, 9)
+  STATS_GAP (84421581, 84421589, 9)
+  STATS_GAP (84421591, 84421599, 9)
+  STATS_GAP (84421601, 84421609, 9)
+  STATS_GAP (84421611, 84421619, 9)
+  STATS_GAP (84421621, 84421629, 9)
+  STATS_GAP (84421631, 84421639, 9)
+  STATS_GAP (84421641, 84421649, 9)
+  STATS_GAP (84421651, 84421659, 9)
+  STATS_GAP (84421661, 84421669, 9)
+  STATS_GAP (84421671, 84421679, 9)
+  STATS_GAP (84421681, 84421689, 9)
+  STATS_GAP (84421691, 84421699, 9)
+  STATS_GAP (84421701, 84421709, 9)
+=== room_stats around freezes and this hour (sample edges) ===
+  84406400..84406750 n=8 min=84406400 max=84406750 gaps=[(84406401, 84406409, 9), (84406411, 84406419, 9), (84406421, 84406429, 9), (84406431, 84406719, 289), (84406721, 84406729, 9), (84406731, 84406739, 9), (84406741, 84406749, 9)]
+  84406431..84406719 n=0 min=None max=None gaps=[]
+  84406850..84406990 n=9 min=84406850 max=84406990 gaps=[(84406851, 84406859, 9), (84406861, 84406869, 9), (84406871, 84406879, 9), (84406881, 84406949, 69), (84406951, 84406959, 9), (84406961, 84406969, 9), (84406971, 84406979, 9), (84406981, 84406989, 9)]
+=== creep_ticks coverage LAST_TIP+1..max ===
+ global max 84421719
+  W46N8 distinct=871 range=84420811..84421719 want~909 missing_ticks=38 spans=[(84421601, 84421638, 38)]
+  W47N8 distinct=790 range=84420811..84421600 want~909 missing_ticks=119 spans=[(84421601, 84421719, 119)]
+  W45N8 distinct=799 range=84420811..84421609 want~909 missing_ticks=110 spans=[(84421610, 84421719, 110)]
+  W45N7 distinct=819 range=84420811..84421638 want~909 missing_ticks=90 spans=[(84421601, 84421609, 9), (84421639, 84421719, 81)]
+  W47N7 distinct=790 range=84420811..84421600 want~909 missing_ticks=119 spans=[(84421601, 84421719, 119)]
+=== freeze window creep_ticks 84406431..84406719 and 84406881..84406949 ===
+  window 84406431..84406719 want=289
+    W46N8 175/289
+    W47N8 289/289
+    W45N8 219/289
+    W45N7 289/289
+    W47N7 289/289
+  window 84406881..84406949 want=69
+    W46N8 69/69
+    W47N8 69/69
+    W45N8 69/69
+    W45N7 69/69
+    W47N7 20/69
+=== infer 03:40-04:30 freeze STATS holes ===
+ stats samples 03:40-04:30 n=39
+  jump 84406430 2026-11-22 03:47:10.503530+08:00 -> 84406720 2026-11-22 04:06:53.501818+08:00 dtick=290 dsec=1183.0
+  jump 84406880 2026-11-22 04:18:04.932492+08:00 -> 84406950 2026-11-22 04:22:51.266267+08:00 dtick=70 dsec=286.3
+  first (84406330, datetime.datetime(2026, 11, 22, 3, 40, 22, 547715, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai'))) last (84407050, datetime.datetime(2026, 11, 22, 4, 29, 42, 251403, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')))
+=== leftover official-404 chunk presence ===
+  W46N8@84408300 distinct=0/100 range=None..None
+  W47N8@84408300 distinct=0/100 range=None..None
+  W47N7@84407900 distinct=0/100 range=None..None
+  W45N8@84407700 distinct=0/100 range=None..None
+  W46N8@84407000 distinct=85/100 range=84407016..84407100
+  W45N8@84406400 distinct=0/100 range=None..None
+  W46N8@84406600 distinct=0/100 range=None..None
+  W46N8@84406700 distinct=40/100 range=84406715..84406754
+  W45N7@84403700 distinct=0/100 range=None..None
+  W45N7@84403800 distinct=28/100 range=84403818..84403845
+  W45N7@84400300 distinct=0/100 range=None..None
+  W45N7@84400400 distinct=27/100 range=84400403..84400429
+  W47N8@84400100 distinct=0/100 range=None..None
+=== room_stats last 8 raw ===
+ COLS ['ts', 'tick', 'room', 'rcl', 'progress', 'progress_total', 'energy', 'energy_cap', 'sites', 'hostiles', 'safe_mode', 'cpu', 'bucket', 'trace_cpu', 'gcl_progress', 'creeps', 'commit', 'storage', 'ctl', 'ctl_ema']
+  W46N8 (datetime.datetime(2026, 11, 22, 21, 23, 40, 977582, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84421720, 'W46N8', 7, 9699624, 10935000, 4960, 5600, 0, 0, 0, 17.71, 10000, 0.643, 3988373.9745240323, {'miner': 2, 'queen': 2, 'hauler': 1, 'rminer': 2, 'rhauler': 6, 'w8guard': 1, 'w8miner': 2, 'reserve7': 1, 'reserver': 2, 'upgrader': 2, 'w8filler': 2, 'w8hauler': 3, 'w8mminer': 1, 'w8rminer': 2, 'w8builder': 1, 'w8rhauler': 6, 'w8upgrader': 2}, '2b5398f7', 19202, 1510, 1158)
+  W46N8 (datetime.datetime(2026, 11, 22, 21, 22, 58, 519839, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84421710, 'W46N8', 7, 9699344, 10935000, 4960, 5600, 0, 0, 0, 17.42, 10000, 0.602, 3987893.9745240323, {'miner': 2, 'queen': 2, 'hauler': 1, 'rminer': 2, 'rhauler': 6, 'w8guard': 1, 'w8miner': 2, 'reserve7': 1, 'reserver': 2, 'upgrader': 2, 'w8filler': 2, 'w8hauler': 3, 'w8mminer': 1, 'w8rminer': 2, 'w8builder': 1, 'w8rhauler': 6, 'w8upgrader': 2}, '2b5398f7', 19102, 1282, 1154)
+  W46N8 (datetime.datetime(2026, 11, 22, 21, 22, 16, 501950, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84421700, 'W46N8', 7, 9699064, 10935000, 4960, 5600, 0, 0, 0, 18.35, 10000, 1.06, 3987413.9745240323, {'miner': 2, 'queen': 2, 'hauler': 1, 'rminer': 2, 'rhauler': 7, 'w8guard': 1, 'w8miner': 2, 'reserve7': 1, 'reserver': 2, 'upgrader': 2, 'w8filler': 2, 'w8hauler': 3, 'w8mminer': 1, 'w8rminer': 2, 'w8builder': 1, 'w8rhauler': 6, 'w8upgrader': 2}, '2b5398f7', 19002, 1282, 1154)
+  W46N8 (datetime.datetime(2026, 11, 22, 21, 21, 36, 293193, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84421690, 'W46N8', 7, 9698784, 10935000, 4960, 5600, 0, 0, 0, 16.28, 10000, 0.816, 3986933.9745240323, {'miner': 2, 'queen': 2, 'hauler': 1, 'rminer': 2, 'rhauler': 7, 'w8guard': 1, 'w8miner': 2, 'reserve7': 1, 'reserver': 2, 'upgrader': 2, 'w8filler': 2, 'w8hauler': 3, 'w8mminer': 1, 'w8rminer': 2, 'w8builder': 1, 'w8rhauler': 6, 'w8upgrader': 2}, '2b5398f7', 18902, 1534, 1146)
+  W46N8 (datetime.datetime(2026, 11, 22, 21, 20, 55, 441416, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84421680, 'W46N8', 7, 9698504, 10935000, 4960, 5600, 0, 0, 0, 17.88, 10000, 0.613, 3986453.9745240323, {'miner': 2, 'queen': 2, 'hauler': 1, 'rminer': 2, 'rhauler': 7, 'w8guard': 1, 'w8miner': 2, 'reserve7': 1, 'reserver': 2, 'upgrader': 2, 'w8filler': 2, 'w8hauler': 3, 'w8mminer': 1, 'w8rminer': 2, 'w8builder': 1, 'w8rhauler': 6, 'w8upgrader': 2}, '2b5398f7', 18802, 1828, 1128)
+  W46N8 (datetime.datetime(2026, 11, 22, 21, 20, 13, 673242, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84421670, 'W46N8', 7, 9698224, 10935000, 4800, 5600, 0, 0, 0, 18.25, 10000, 0.647, 3985973.9745240323, {'miner': 2, 'queen': 2, 'hauler': 1, 'rminer': 2, 'rhauler': 7, 'w8guard': 1, 'w8miner': 2, 'reserve7': 1, 'reserver': 2, 'upgrader': 2, 'w8filler': 2, 'w8hauler': 3, 'w8mminer': 1, 'w8rminer': 2, 'w8builder': 1, 'w8rhauler': 6, 'w8upgrader': 2}, '2b5398f7', 18590, 2000, 1101)
+  W47N8 (datetime.datetime(2026, 11, 22, 21, 23, 40, 977640, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84421720, 'W47N8', 7, 6415610, 10935000, 5600, 5600, 0, 0, 0, 17.71, 10000, 0.643, 3988373.9745240323, {'miner': 2, 'queen': 2, 'hauler': 1, 'rminer': 2, 'rhauler': 6, 'w8guard': 1, 'w8miner': 2, 'reserve7': 1, 'reserver': 2, 'upgrader': 2, 'w8filler': 2, 'w8hauler': 3, 'w8mminer': 1, 'w8rminer': 2, 'w8builder': 1, 'w8rhauler': 6, 'w8upgrader': 2}, '2b5398f7', 29105, 2000, None)
+  W47N8 (datetime.datetime(2026, 11, 22, 21, 22, 58, 519893, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84421710, 'W47N8', 7, 6415410, 10935000, 5600, 5600, 0, 0, 0, 17.42, 10000, 0.602, 3987893.9745240323, {'miner': 2, 'queen': 2, 'hauler': 1, 'rminer': 2, 'rhauler': 6, 'w8guard': 1, 'w8miner': 2, 'reserve7': 1, 'reserver': 2, 'upgrader': 2, 'w8filler': 2, 'w8hauler': 3, 'w8mminer': 1, 'w8rminer': 2, 'w8builder': 1, 'w8rhauler': 6, 'w8upgrader': 2}, '2b5398f7', 29105, 2000, None)
+  W47N8 (datetime.datetime(2026, 11, 22, 21, 22, 16, 502022, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84421700, 'W47N8', 7, 6415210, 10935000, 5600, 5600, 0, 0, 0, 18.35, 10000, 1.06, 3987413.9745240323, {'miner': 2, 'queen': 2, 'hauler': 1, 'rminer': 2, 'rhauler': 7, 'w8guard': 1, 'w8miner': 2, 'reserve7': 1, 'reserver': 2, 'upgrader': 2, 'w8filler': 2, 'w8hauler': 3, 'w8mminer': 1, 'w8rminer': 2, 'w8builder': 1, 'w8rhauler': 6, 'w8upgrader': 2}, '2b5398f7', 28411, 2000, None)
+  W47N8 (datetime.datetime(2026, 11, 22, 21, 21, 36, 293274, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84421690, 'W47N8', 7, 6415010, 10935000, 5600, 5600, 0, 0, 0, 16.28, 10000, 0.816, 3986933.9745240323, {'miner': 2, 'queen': 2, 'hauler': 1, 'rminer': 2, 'rhauler': 7, 'w8guard': 1, 'w8miner': 2, 'reserve7': 1, 'reserver': 2, 'upgrader': 2, 'w8filler': 2, 'w8hauler': 3, 'w8mminer': 1, 'w8rminer': 2, 'w8builder': 1, 'w8rhauler': 6, 'w8upgrader': 2}, '2b5398f7', 28411, 2000, None)
+  W47N8 (datetime.datetime(2026, 11, 22, 21, 20, 55, 441470, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84421680, 'W47N8', 7, 6414810, 10935000, 5600, 5600, 0, 0, 0, 17.88, 10000, 0.613, 3986453.9745240323, {'miner': 2, 'queen': 2, 'hauler': 1, 'rminer': 2, 'rhauler': 7, 'w8guard': 1, 'w8miner': 2, 'reserve7': 1, 'reserver': 2, 'upgrader': 2, 'w8filler': 2, 'w8hauler': 3, 'w8mminer': 1, 'w8rminer': 2, 'w8builder': 1, 'w8rhauler': 6, 'w8upgrader': 2}, '2b5398f7', 28411, 2000, None)
+  W47N8 (datetime.datetime(2026, 11, 22, 21, 20, 13, 673320, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 84421670, 'W47N8', 7, 6414610, 10935000, 5600, 5600, 0, 0, 0, 18.25, 10000, 0.647, 3985973.9745240323, {'miner': 2, 'queen': 2, 'hauler': 1, 'rminer': 2, 'rhauler': 7, 'w8guard': 1, 'w8miner': 2, 'reserve7': 1, 'reserver': 2, 'upgrader': 2, 'w8filler': 2, 'w8hauler': 3, 'w8mminer': 1, 'w8rminer': 2, 'w8builder': 1, 'w8rhauler': 6, 'w8upgrader': 2}, '2b5398f7', 28411, 2000, None)
+=== incidents since LAST_TIP ===
+ n 0
+=== listener_rot / live files ===
+ live.updated 2026-11-22 21:23:44 roomSlot W46N8 stats.t 84421720
+ rot {'i': 0, 'room': 'W46N8', 'left': 255.0, 'at': '2026-11-22 21:23:44'}
