@@ -159,6 +159,19 @@ link 记的是损耗：数量乘 **0.03**，再向上取整。没写数量，就
 
 计数留在 `Memory.ledger`。下一只 creep 去哪，仍由上面的角色、换位和桶决定。控制台的 `STATS` 仍是下面这一行。
 
-统计每拍都写，里面有这一拍收集到的警报和错误。控制台的 `STATS` 每 **10** 拍一行：时间、用掉的 CPU、桶、GCL、房间、各角色的数量、错误数。它是给人看的摘要。
+它是给人看的摘要。`report.run` 的间隔缺省是 **10**。`Game.time` 除以这个间隔，余数不是 0，函数立刻返回。能被 **10** 整除的那一拍才打这一行。`Memory.stats` 每拍都写，里面有这一拍收集到的警报和错误。警报留在统计里。没打这一行的拍，统计照写。
+
+这一行以 `STATS` 起头，后面是一个 JSON。这一行的字段就是这八个：`t`、`cpu`、`b`、`gcl`、`rooms`、`creeps`、`nerr`、`tr`。
+
+| 字段 | 写的是 |
+| --- | --- |
+| `t` | 这一拍的 `Game.time` |
+| `cpu` | `Memory.stats.cpu`，四舍五入到两位小数。`stats.run` 里写成当时的 `Game.cpu.getUsed()` |
+| `b` | 打印这一行时读到的 `Game.cpu.bucket` |
+| `gcl` | `Memory.stats.gcl`。三个数是 `level`、`progress`、`progressTotal`，取自 `Game.gcl` |
+| `rooms` | `Memory.stats.rooms`。各房间已经记下的那一块，整块放进这一行 |
+| `creeps` | `Game.creeps` 按 `memory.role` 数出来的各角色数量 |
+| `nerr` | `Memory.stats.errors` 里还留着的条数，从 0 到 **10**。新的接在后面，只留最后 **10** 条。这一拍没有新的，旧的还在。数的是留下的条目，不是这一拍新发生了几条 |
+| `tr` | `Memory.traceCpu`。统计之前，主循环给 `trace.tick` 和 `trace.run` 计时，四舍五入到三位小数。这是跟踪这一步本拍用掉的 CPU |
 
 孵化、每一间房、外矿、道路、指挥官、袭击旗标、每只 creep 的解脱和角色脚本、换位、能量账、跟踪、统计和报告，各自包在 `utils/errors` 里。一段抛错会记下来，下一整段继续。塔的失败不会取消后面的 creep。一只 creep 的角色脚本抛错，会记下来，后面的 creep 和这行摘要仍会跑。
