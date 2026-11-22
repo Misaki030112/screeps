@@ -47,7 +47,7 @@
         <div class="tag">不做</div>
         <div class="node stop">
           <strong>市场、主动开战、为了矿物再占外矿</strong>
-          <span>代码里没有交易。袭击和征服模块默认关着。不会自动开安全模式。</span>
+          <span>代码里没有交易。袭击和征服模块默认关着。安全模式的 <code>autoSafe</code> 缺省不设。</span>
         </div>
       </div>
     </div>
