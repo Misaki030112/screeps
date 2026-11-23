@@ -1,0 +1,136 @@
+{
+  "first_interval": 4.1043,
+  "later_mean_w46": 4.18606625,
+  "later_mean_w46_raw": 4.18606625,
+  "later_mean_w46_robust": 4.18606625,
+  "all_mean_w46": 4.169713,
+  "span_mean": 4.177291666666667,
+  "prev_later_mean": 4.2975,
+  "intervals": [
+    {
+      "from": 84430300,
+      "to": 84430400,
+      "tick_s": 4.1043,
+      "outlier": false
+    },
+    {
+      "from": 84430400,
+      "to": 84430600,
+      "tick_s": 4.215185,
+      "outlier": false
+    },
+    {
+      "from": 84430600,
+      "to": 84430700,
+      "tick_s": 4.07704,
+      "outlier": false
+    },
+    {
+      "from": 84430700,
+      "to": 84430800,
+      "tick_s": 4.32228,
+      "outlier": false
+    },
+    {
+      "from": 84430800,
+      "to": 84430900,
+      "tick_s": 4.12976,
+      "outlier": false
+    }
+  ],
+  "gt_first": 84431052,
+  "gt_check": 84431071,
+  "gt_realign": 84431071,
+  "now_check": "2026-11-23T08:32:05.812108+08:00",
+  "now_realign": "2026-11-23T08:32:05.812071+08:00",
+  "tick_s_used_first_pass": 4.1043,
+  "ts_realigned_first_pass": 0,
+  "ts_realigned_first_pass_error": "First-pass realign with tick_s=4.10430 (printed 4.104) CRASHED (hypertable CheckViolation) after insert; ts_realigned_first=0 (inserted=301 already_in_db=24157, missing_chunks=3).",
+  "still_over_45s_vs_first": 19786,
+  "still_over_15s_vs_first": 29083,
+  "vs_candidates": {
+    "first": {
+      "over45": 19786,
+      "over15": 29083,
+      "n": 30798,
+      "mean_off": -63.936029764595105,
+      "min_off": -162.983778,
+      "max_off": 10.919273,
+      "tick_s": 4.1043
+    },
+    "later_raw": {
+      "over45": 5955,
+      "over15": 19454,
+      "n": 30798,
+      "mean_off": -29.207417391064354,
+      "min_off": -110.735144,
+      "max_off": 27.599588,
+      "tick_s": 4.18606625
+    },
+    "later_robust": {
+      "over45": 5955,
+      "over15": 19454,
+      "n": 30798,
+      "mean_off": -29.207417391064354,
+      "min_off": -110.735144,
+      "max_off": 27.599588,
+      "tick_s": 4.18606625
+    },
+    "all_mean": {
+      "over45": 9104,
+      "over15": 23788,
+      "n": 30798,
+      "mean_off": -36.153139810344825,
+      "min_off": -121.184871,
+      "max_off": 24.263525,
+      "tick_s": 4.169713
+    },
+    "span_mean": {
+      "over45": 7203,
+      "over15": 21945,
+      "n": 30798,
+      "mean_off": -32.934249651341,
+      "min_off": -116.342103,
+      "max_off": 25.809573,
+      "tick_s": 4.177291666666667
+    },
+    "prev_later": {
+      "over45": 199,
+      "over15": 18135,
+      "n": 30798,
+      "mean_off": 18.12188439866225,
+      "min_off": -39.528978,
+      "max_off": 50.332073,
+      "tick_s": 4.2975
+    }
+  },
+  "still_over_45s_vs_later_before": 5955,
+  "still_over_15s_vs_later_before": 19454,
+  "still_over_45s_vs_later": 6407,
+  "still_over_15s_vs_later": 22238,
+  "corrective_applied": true,
+  "ts_realigned_to_later_mean": 94,
+  "skipped_cross_chunk": 0,
+  "reason": "first-interval tick_s=4.10430 (printed 4.104, min-all-rooms first two bases) is in the sane 3-6s band; later-mean-robust 4.18607 (raw later-mean 4.18607; delta first-robust -0.08177 s/tick, ~61.4s at tmin). First-pass realign with tick_s=4.10430 (printed 4.104) CRASHED (hypertable CheckViolation) after insert; ts_realigned_first=0 (inserted=301 already_in_db=24157, missing_chunks=3).; later-mean-robust 4.18607 is worse than live-anchor-best prev_later 4.29750 (later over45=5955 mean_off=-29.2 vs best over45=199 mean_off=18.1); will not blindly apply later; applied corrective prev_later realign of 94 rows at game.time=84431071 tick_s=4.29750; still_over_45s_vs_target=0; skipped_cross_chunk=0",
+  "game_time_error": null,
+  "lowest_over45_sane": "prev_later",
+  "vs_first": {
+    "over45": 19786,
+    "over15": 29083,
+    "n": 30798,
+    "mean_off": -63.936029764595105,
+    "min_off": -162.983778,
+    "max_off": 10.919273
+  },
+  "vs_later_after": {
+    "over45": 6407,
+    "over15": 22238,
+    "n": 30798,
+    "mean_off": -32.05814598467433,
+    "min_off": -113.444082,
+    "max_off": 20.707468
+  },
+  "tick_s_in_use": 4.2975,
+  "tick_s_in_use_name": "prev_later",
+  "later_is_worse_than_best": true
+}
