@@ -1,0 +1,108 @@
+from datetime import datetime
+from zoneinfo import ZoneInfo
+from pathlib import Path
+
+DIR = Path("/workspace/screeps/state/_halfhour_2026-11-24_0130")
+STATE = Path("/workspace/screeps/state")
+hk = ZoneInfo("Asia/Hong_Kong")
+now = datetime.now(hk)
+wrapped = now.strftime("%Y-%m-%d %H:%M:%S Asia/Hong_Kong")
+DIR.joinpath("wrapped_at.txt").write_text(str(int(now.timestamp())) + "\n")
+DIR.joinpath("wrapped_at_human.txt").write_text(wrapped + "\n")
+nl = "\n"
+
+body = (
+"quiet 30-min trajectory backfill _halfhour_2026-11-24_0130 OK (wrap " + wrapped + ", started_at 01:35:42). "
+"Official history shard3 5 rooms ticks 84444801..84445500 (700, published_bases 84444800..84445400 at game.time=84445535; "
+"first pass 33/35 official GETs 200, missing_chunks=2 W45N7@84444900, W47N8@84445100). "
+"First pass started 01:37:46 finished 01:38:27 exit=0 inserted=9103 already_in_db=15176 ts_realigned=0; "
+"tick_s printed 4.277 / first=4.27742 (min-all 84444800..84444900; W45N7@84444900 official 404 skipped); "
+"tick_s_check chose live-anchor-best first 4.27742 "
+"(first 4.27742 over45=0 mean_off=3.16; later_raw 4.24958 over45=0 mean_off=-7.72; all_mean 4.25422 over45=0 mean_off=-5.90; "
+"span_mean 4.25422 over45=0 mean_off=-5.90; prev_later 4.25917 is quiet 0100 tick_s_in_use, over45=0 mean_off=-3.97); "
+"corrective_applied=False nfix=0 skipped_cross_chunk=0 at gt=84445560; tick_s_in_use=4.27742 (first). "
+"confirm 01:39:44 gt=84445563 inserted=0 (all 12 leftover targets still 404) / "
+"retry2 01:40:22 gt=84445572 inserted=0 / late 01:40:55 gt=84445580 inserted=0 / "
+"postjp 01:45:47 gt=84445648 still_404=[W45N7@84444900, W47N8@84445100, W46N8@84444500, W46N8@84444200, W47N8@84443800, W47N7@84443300, W45N7@84441900, W47N7@84440900, W45N8@84439200, W45N8@84439300, W45N8@84439500, W47N7@84438700] inserted=0 "
+"(648/548/1048/1348/1748/2248/3648/4648/6348/6248/6048/6848 ticks past the bases at postjp; "
+"W45N7@84444900 is 548 ticks past chunk close 84445000; W47N8@84445100 is 448 ticks past chunk close 84445200; "
+"W46N8@84444500 is 948 ticks past chunk close 84444600; W46N8@84444200 is 1248 ticks past chunk close 84444300; "
+"not mere publish lag). "
+"JP 84445500 GET 01:45:18 gt=84445641 all_five_200=False still_404=[W46N8@84445500] script=2633 actual=2553 "
+"(script vs actual: W46N8 0/0, W47N8 1426/1426, W45N8 354/350, W45N7 353/353, W47N7 500/424; "
+"W46N8 official 404, listener already 100/100 ticks 84445501..84445600 rows=963, no trajectory hole, outside the 40-min window). "
+"JP retry 01:49:31 gt=84445700 inserted=80 / retry2 01:56:34 gt=84445800 inserted=80, still W46N8@84445500 404 "
+"(300 ticks past the base / 200 past chunk close 84445600 at retry2, not mere publish lag, because the other four rooms on 84445500 already succeeded at +141). "
+"Coverage official_recovered=3212/3500 empty_no_creep=91 official_404=197. "
+"W47N8 603/700 is reduced by the in-window official 404 W47N8@84445100 (listener 3/100 ticks 84445101..84445103, 97 missing). "
+"W45N7 569/700 is reduced by the in-window official 404 W45N7@84444900 (100, listener 0/100) plus official empty_no_creep 31 ticks 84444870..84444900. "
+"W47N7 640/700 is official empty_no_creep 60 ticks 84444801..84444860 (not a 404). "
+"W46N8 and W45N8 are 700/700. "
+"JP 84445500 is outside the 40-min window (TMAX=84445500). "
+"W46N8@84444500 aged out of window start 84444801; listener 0/100; does not reduce this window. "
+"W46N8@84444200 aged out of window start 84444801; listener 0/100; does not reduce this window. "
+"W47N8@84443800 aged out of window start 84444801; listener already 100/100; does not reduce coverage. "
+"inserted_first=9103 confirm=0 retry2=0 late=0 postjp=0 just_actual=2553 total=11656. "
+"NEW leftover official 404 W46N8@84445500 (first recorded as a just-published official 404 in this 0130 half-hour; still 404 through JP GET 01:45:20 gt=84445641 / retry 01:49:33 gt=84445700 / retry2 01:56:36 gt=84445800 official inserted=0; listener already 100/100 ticks 84445501..84445600; 300 ticks past the base / 200 past chunk close 84445600 at retry2, not mere publish lag, because the other four rooms on 84445500 already succeeded at +141; outside TMAX=84445500, does not reduce this window, and is not a trajectory hole) is NOT YET TOLD. "
+"Still-untold leftover official 404 W45N7@84444900 remains NOT YET TOLD from the quiet 0100 wrap; still in window start 84444801; retried, still 404; listener also 0/100; reduces W45N7 coverage; do not relabel NEW. "
+"Still-untold leftover official 404 W47N8@84445100 remains NOT YET TOLD from the quiet 0100 wrap; still in window start 84444801; retried, still 404; listener 3/100; reduces W47N8 coverage; do not relabel NEW. "
+"Still-untold leftover official 404 W46N8@84444500 remains NOT YET TOLD from the quiet 0030 wrap; aged out of window start 84444801; retried, still 404; listener also 0/100; do not relabel NEW. "
+"Still-untold leftover official 404 W46N8@84444200 remains NOT YET TOLD from the quiet 0000 wrap; aged out of window start 84444801; retried, still 404; listener also 0/100; do not relabel NEW. "
+"Still-untold leftover official 404 W47N8@84443800 remains NOT YET TOLD from the quiet 2330 wrap; aged out of window start 84444801; retried, still 404; listener already 100/100; do not relabel NEW. "
+"Already-told leftover official 404s W47N7@84443300 and W45N7@84441900 were told in the ~23:33 2321 USER_LOG; both aged out of window start 84444801; both retried, still 404; do not re-tell and do not relabel NEW. "
+"Already-told leftovers W47N7@84440900, W45N8@84439200, W45N8@84439300, W45N8@84439500 and W47N7@84438700 remain still 404; do not re-tell and do not relabel NEW. "
+"No new 盒子休眠 this pass after the last box_pauses row 22:59:15-23:05:47. "
+"Already-told 盒子休眠 20:56:44-21:01:46, 21:21:51-21:28:39, 21:43:28-22:01:34, 22:23:02-22:35:40, and 22:59:15-23:05:47 (official-filled W46N8/W47N8/W45N8/W45N7 199/199; W47N7 99/199 missing 84443301..84443400 due to leftover official 404 W47N7@84443300) were told in the ~23:33 2321 USER_LOG; do not re-tell and do not relabel NEW. "
+"Already-told 盒子休眠 18:16:12-18:35:22, 18:52:46-18:58:58, 19:21:55-19:34:51, and 20:14:37-20:28:31, plus 监听短中断 20:01:56, were told in the ~20:44 2028 USER_LOG; do not re-tell and do not relabel NEW. "
+"No new 监听短中断 this pass after the last errors.log freeze/shortws line 01:04:10. "
+"Still-untold 监听短中断 01:02:38 remains NOT YET TOLD from the quiet 0100 wrap (errors.log no STATS for 348s since ~00:56:50; then 01:04:10 ws error ping/pong timed out; no box_pauses row and no box-frozen line; listener auto-restarted 01:02:38 and 01:04:14, python 3379693 started 01:04:24, parent 4035476; STATS gap 84444961..84445069 109t; official-filled W46N8/W47N8/W45N8/W47N7 109/109; W45N7 69/109 missing 84444961..84445000 due to leftover official 404 W45N7@84444900); do not relabel NEW. "
+"Still-untold 监听短中断 00:34:41 remains NOT YET TOLD from the quiet 0030 wrap (STATS gap 84444571..84444659 89t; official-filled W47N8/W45N8/W45N7/W47N7 89/89; W46N8 59/89 missing 84444571..84444600 due to leftover official 404 W46N8@84444500); do not relabel NEW. "
+"Services ok (postgres/grafana/listener). Single listener 3379693 since 01:04:24, yield_absent=True, no second slot, war_cmd/pulse not restarted. "
+"Last delivered patrol is ~23:33 _patrol_2026-11-23_2321 USER_LOG finished_at 23:33:16; do not re-tell already-told 2321/2028/1728 leftovers/freezes. Quiet wrap only."
+)
+
+verify_body = (
+"quiet 30-min trajectory backfill _halfhour_2026-11-24_0130 OK. "
+"Official history shard3 5 rooms ticks 84444801..84445500 (700, published_bases 84444800..84445400 at game.time=84445535; "
+"first pass 33/35 official GETs 200, missing_chunks=2 W45N7@84444900, W47N8@84445100). "
+"First pass started 01:37:46 finished 01:38:27 exit=0 inserted=9103 already_in_db=15176 ts_realigned=0; "
+"tick_s printed 4.277 / first=4.27742; tick_s_check chose live-anchor-best first 4.27742 "
+"(first 4.27742 over45=0 mean_off=3.16; later_raw 4.24958 over45=0 mean_off=-7.72; all_mean 4.25422 over45=0 mean_off=-5.90; "
+"span_mean 4.25422 over45=0 mean_off=-5.90; prev_later 4.25917 is quiet 0100 tick_s_in_use, over45=0 mean_off=-3.97); "
+"corrective_applied=False nfix=0 skipped_cross_chunk=0 at gt=84445560; tick_s_in_use=4.27742 (first). "
+"confirm 01:39:44 gt=84445563 inserted=0 / retry2 01:40:22 gt=84445572 inserted=0 / late 01:40:55 gt=84445580 inserted=0 / "
+"postjp 01:45:47 gt=84445648 still_404=[W45N7@84444900, W47N8@84445100, W46N8@84444500, W46N8@84444200, W47N8@84443800, W47N7@84443300, W45N7@84441900, W47N7@84440900, W45N8@84439200, W45N8@84439300, W45N8@84439500, W47N7@84438700] inserted=0. "
+"JP 84445500 GET 01:45:18 gt=84445641 all_five_200=False still_404=[W46N8@84445500] script=2633 actual=2553 "
+"(W46N8 0/0, W47N8 1426/1426, W45N8 354/350, W45N7 353/353, W47N7 500/424; W46N8 official 404, listener already 100/100); "
+"JP retry 01:49:31 gt=84445700 inserted=80 / retry2 01:56:34 gt=84445800 inserted=80, still W46N8@84445500 404 "
+"(200 ticks past chunk close 84445600 at retry2, not mere publish lag). "
+"Coverage official_recovered=3212/3500 empty_no_creep=91 official_404=197. "
+"W47N8 603/700 is reduced by in-window official 404 W47N8@84445100 (listener 3/100, 97 missing). "
+"W45N7 569/700 is reduced by in-window official 404 W45N7@84444900 (listener 0/100) plus official empty_no_creep 31 ticks 84444870..84444900. "
+"W47N7 640/700 is official empty_no_creep 60 ticks 84444801..84444860 (not a 404). "
+"W46N8 and W45N8 are 700/700. "
+"inserted_first=9103 confirm=0 retry2=0 late=0 postjp=0 just_actual=2553 total=11656. "
+"NEW leftover official 404 W46N8@84445500 is NOT YET TOLD (still 404 through JP retry +200 / retry2 +300 official inserted=0; listener already 100/100; 200 ticks past chunk close 84445600 at retry2, not mere publish lag; outside TMAX=84445500; not a trajectory hole). "
+"Still-untold leftover official 404s W45N7@84444900 and W47N8@84445100 remain NOT YET TOLD from quiet 0100; still in window start 84444801; retried, still 404; do not relabel NEW. "
+"Still-untold leftover official 404s W46N8@84444500 (from quiet 0030), W46N8@84444200 (from quiet 0000) and W47N8@84443800 (from quiet 2330) remain NOT YET TOLD; aged out of window start 84444801; retried, still 404; do not relabel NEW. "
+"Already-told leftovers W47N7@84443300, W45N7@84441900, W47N7@84440900, W45N8@84439200, W45N8@84439300, W45N8@84439500 and W47N7@84438700 remain still 404; do not re-tell and do not relabel NEW. "
+"No new 盒子休眠 this pass after the last box_pauses row 22:59:15-23:05:47. "
+"No new 监听短中断 this pass after the last errors.log freeze/shortws line 01:04:10. "
+"Still-untold 监听短中断 01:02:38 remains NOT YET TOLD from quiet 0100; do not relabel NEW. "
+"Still-untold 监听短中断 00:34:41 remains NOT YET TOLD from quiet 0030; do not relabel NEW. "
+"Services ok (postgres/grafana/listener). Single listener 3379693 since 01:04:24, yield_absent=True, no second slot, war_cmd/pulse not restarted. "
+"Last delivered patrol is ~23:33 _patrol_2026-11-23_2321 USER_LOG finished_at 23:33:16; do not re-tell already-told 2321/2028/1728 leftovers/freezes. Quiet wrap only."
+)
+
+wrap = "---- wrap " + wrapped + " ----" + nl + body + nl
+verify = "---- verify " + wrapped + " ----" + nl + verify_body + nl
+
+(DIR / "_halfhour_backfill_now.txt").write_text(wrap)
+(DIR / "history_backfill_now.txt").write_text(wrap)
+(DIR / "_wrap_body.in.txt").write_text(wrap)
+(DIR / "_halfhour_backfill_verify.txt").write_text(verify)
+(DIR / "_verify_body.in.txt").write_text(verify)
+(STATE / "_halfhour_backfill_now.txt").write_text(wrap)
+(STATE / "_halfhour_backfill_verify.txt").write_text(verify)
+print("wrapped_at", wrapped)
+print("wrap_chars", len(wrap), "verify_chars", len(verify))

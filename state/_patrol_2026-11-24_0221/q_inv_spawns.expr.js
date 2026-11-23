@@ -1,0 +1,1 @@
+(()=>{const s={};for(const n in Game.spawns){const p=Game.spawns[n];s[n]={rm:p.pos.roomName,sp:p.spawning&&{name:p.spawning.name,need:p.spawning.needTime,rem:p.spawning.remainingTime}};}return {t:Game.time,s};})()

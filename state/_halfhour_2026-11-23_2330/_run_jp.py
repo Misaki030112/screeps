@@ -24,8 +24,8 @@ proc = subprocess.run(
 )
 out.close(); err.close()
 (d / "just_published.exit").write_text(str(proc.returncode) + "\n")
-src = d / "just_published_84443400.json"
+src = d / "just_published_84443800.json"
 if src.exists():
-    shutil.copyfile(src, d / "just_published_84443400_first.json")
+    shutil.copyfile(src, d / "just_published_84443800_first.json")
 stamp("just_published", "done")
 print("exit", proc.returncode, flush=True)

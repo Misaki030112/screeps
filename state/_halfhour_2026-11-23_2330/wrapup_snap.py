@@ -12,9 +12,9 @@ ROOT = Path("/workspace/screeps")
 DIR = ROOT / "state" / "_halfhour_2026-11-23_2330"
 HK = ZoneInfo("Asia/Hong_Kong")
 ROOMS = ("W46N8", "W47N8", "W45N8", "W45N7", "W47N7")
-TMIN, TMAX = 84442701, 84443400
-JP_BASE = 84443400
-HOLES = [("W47N7", 84443300), ("W45N7", 84441900), ("W47N7", 84440900), ("W45N8", 84439200), ("W45N8", 84439300), ("W45N8", 84439500), ("W47N7", 84438700), ("W45N8", 84437100), ("W47N7", 84436400)]
+TMIN, TMAX = 84443101, 84443800
+JP_BASE = 84443800
+HOLES = [("W47N8", 84443800), ("W47N7", 84443300), ("W45N7", 84441900), ("W47N7", 84440900), ("W45N8", 84439200), ("W45N8", 84439300), ("W45N8", 84439500), ("W47N7", 84438700), ("W45N8", 84437100), ("W47N7", 84436400)]
 FREEZES = {
     "freeze_1450_1502": (84436431, 84436619),
     "freeze_1521_1531": (84436871, 84437029),
@@ -27,11 +27,11 @@ FREEZES = {
     "freeze_1921_1934": (84440261, 84440459),  # already told in 20:44 2028 patrol; 盒子休眠 19:21:55-19:34:51; STATS 199t
     "shortws_2001": (84440811, 84440839),  # already told in 20:44 2028 patrol; 监听短中断 20:01:56; STATS 29t
     "freeze_2014_2028": (84441001, 84441209),  # already told in 20:44 2028 patrol; 盒子休眠 20:14:37-20:28:31; STATS 209t; official-filled all five 209/209
-    "freeze_2056_2101": (84441591, 84441679),  # still-untold from quiet 2100; 盒子休眠 20:56:44-21:01:46; STATS 89t; official-filled all five 89/89; do not relabel NEW
-    "freeze_2121_2128": (84441901, 84442049),  # still-untold from quiet 2130; 盒子休眠 21:21:51-21:28:39; STATS 149t; official-filled W46N8/W47N8/W45N8/W47N7 149/149, W45N7 49/149 due to leftover official 404 W45N7@84441900; do not relabel NEW
-    "freeze_2143_2201": (84442251, 84442509),  # still-untold from quiet 2200; 盒子休眠 21:43:28-22:01:34; STATS 259t; official-filled all five 259/259 after 2200 first pass plus JP 84442500; do not relabel NEW
-    "freeze_2223_2235": (84442741, 84442989),  # still-untold from quiet 2230; 盒子休眠 22:23:02-22:35:40; STATS 249t; official-filled all five 249/249 after 2230 first pass, which included published 84442700..84442900; do not relabel NEW
-    "freeze_2259_2305": (84443221, 84443419),  # NEW 盒子休眠 22:59:15-23:05:47 (385s, box_pauses); STATS 199t; not yet told; first pass included published 84443200..84443300; JP 84443400 may cover the tail
+    "freeze_2056_2101": (84441591, 84441679),  # already told in 23:33 2321 patrol; 盒子休眠 20:56:44-21:01:46; STATS 89t; official-filled all five 89/89; do not relabel NEW
+    "freeze_2121_2128": (84441901, 84442049),  # already told in 23:33 2321 patrol; 盒子休眠 21:21:51-21:28:39; STATS 149t; official-filled W46N8/W47N8/W45N8/W47N7 149/149, W45N7 49/149 due to leftover official 404 W45N7@84441900; do not relabel NEW
+    "freeze_2143_2201": (84442251, 84442509),  # already told in 23:33 2321 patrol; 盒子休眠 21:43:28-22:01:34; STATS 259t; official-filled all five 259/259 after 2200 first pass plus JP 84442500; do not relabel NEW
+    "freeze_2223_2235": (84442741, 84442989),  # already told in 23:33 2321 patrol; 盒子休眠 22:23:02-22:35:40; STATS 249t; official-filled all five 249/249 after 2230 first pass, which included published 84442700..84442900; do not relabel NEW
+    "freeze_2259_2305": (84443221, 84443419),  # already told in 23:33 2321 patrol; 盒子休眠 22:59:15-23:05:47; STATS 199t; official-filled W46N8/W47N8/W45N8/W45N7 199/199 after 2300 first pass plus JP 84443400; W47N7 99/199 missing 84443301..84443400 due to leftover official 404 W47N7@84443300; do not relabel NEW
 }
 
 

@@ -12,13 +12,13 @@ import backfill_confirm as confirm
 
 DIR = Path("/workspace/screeps/state/_halfhour_2026-11-23_2330")
 TARGETS = [
-    ("W47N7", 84443300),  # NEW first-pass in-window 404 this 2300 pass; still in window start 84442701; retry; may be publish lag until postjp
-    ("W45N7", 84441900),  # still-untold leftover from quiet 2130 first-pass; aged out of window start 84442701; retry as near-window; do not relabel NEW
-    ("W47N7", 84440900),  # already told in 20:44 2028 patrol; leftover from quiet 2030 first-pass; aged out of window start 84442701; retry as near-window; do not relabel NEW
-    ("W45N8", 84439200),  # already told in 20:44 2028 patrol; leftover from quiet 1830; aged out of window start 84442701; retry as near-window; do not relabel NEW
-    ("W45N8", 84439300),  # already told in 20:44 2028 patrol; leftover from quiet 1830; aged out of window start 84442701; retry as near-window; do not relabel NEW
-    ("W45N8", 84439500),  # already told in 20:44 2028 patrol; leftover from quiet 1830; aged out of window start 84442701; retry as near-window; do not relabel NEW
-    ("W47N7", 84438700),  # already told in 20:44 2028 patrol; leftover from quiet 1730 JP; aged out of window start 84442701; retry as near-window; do not relabel NEW
+    ("W47N7", 84443300),  # already told in 23:33 2321 patrol; first recorded as first-pass in-window 404 in quiet 2300; still in window start 84443101; retry; not mere publish lag; do not relabel NEW
+    ("W45N7", 84441900),  # already told in 23:33 2321 patrol; leftover from quiet 2130 first-pass; aged out of window start 84443101; retry as near-window; do not relabel NEW
+    ("W47N7", 84440900),  # already told in 20:44 2028 patrol (also mentioned in 23:33 2321); leftover from quiet 2030 first-pass; aged out of window start 84443101; retry as near-window; do not relabel NEW
+    ("W45N8", 84439200),  # already told in 20:44 2028 patrol; leftover from quiet 1830; aged out of window start 84443101; retry as near-window; do not relabel NEW
+    ("W45N8", 84439300),  # already told in 20:44 2028 patrol; leftover from quiet 1830; aged out of window start 84443101; retry as near-window; do not relabel NEW
+    ("W45N8", 84439500),  # already told in 20:44 2028 patrol; leftover from quiet 1830; aged out of window start 84443101; retry as near-window; do not relabel NEW
+    ("W47N7", 84438700),  # already told in 20:44 2028 patrol; leftover from quiet 1730 JP; aged out of window start 84443101; retry as near-window; do not relabel NEW
 ]  # W45N8@84437100 and W47N7@84436400 already told in 17:46 1728 patrol; aged out of window start 84440101; not retried
 
 def main():

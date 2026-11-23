@@ -40,29 +40,29 @@ import history_backfill as hb
 # Do not manually restart the healthy listener.
 # Single-slot 5:5:1:1. Do not write a patrol folder.
 W46 = {
-    84442700: 1795443780299,
-    84442800: 1795444202146,
-    84442900: 1795444633865,
-    84443000: 1795445060631,
     84443100: 1795445478784,
     84443200: 1795445913542,
     84443300: 1795446339561,
+    84443400: 1795446775009,
+    84443500: 1795447200079,
+    84443600: 1795447636094,
+    84443700: 1795448060475,
 }
 MIN_ALL = {
-    84442700: 1795443780299,  # W46N8
-    84442800: 1795444202146,  # W46N8
-    84442900: 1795444633865,  # W46N8
-    84443000: 1795445060631,  # W46N8
     84443100: 1795445478784,  # W46N8
     84443200: 1795445913542,  # W46N8
     84443300: 1795446339561,  # W46N8 (W47N7 official 404)
+    84443400: 1795446775009,  # W46N8
+    84443500: 1795447200079,  # W46N8
+    84443600: 1795447636094,  # W46N8
+    84443700: 1795448057979,  # W45N7 (2496ms before W46N8 1795448060475)
 }
-TMIN, TMAX = 84442701, 84443400
+TMIN, TMAX = 84443101, 84443800
 ROOMS = ("W46N8", "W47N8", "W45N8", "W45N7", "W47N7")
-TICK_S_FIRST = (MIN_ALL[84442800] - MIN_ALL[84442700]) / 1000.0 / 100  # script printed 4.218, exact 4.21847
-GT_FIRST = 84443464
-TS_REALIGNED_FIRST = 5334  # first-pass realign committed 5334 rows (inserted=9456 already_in_db=14875)
-PREV_LATER_MEAN = 4.28346  # tick_s_in_use from quiet 2230 half-hour (live-anchor-best prev_later)
+TICK_S_FIRST = (MIN_ALL[84443200] - MIN_ALL[84443100]) / 1000.0 / 100  # script printed 4.348, exact 4.34758
+GT_FIRST = 84443823
+TS_REALIGNED_FIRST = 8078  # first-pass realign committed 8078 rows (inserted=2717 already_in_db=22612)
+PREV_LATER_MEAN = 4.26544  # tick_s_in_use from quiet 2300 half-hour (live-anchor-best all_mean)
 
 
 def intervals(d):

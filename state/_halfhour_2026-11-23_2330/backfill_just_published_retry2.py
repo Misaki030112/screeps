@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Retry2 just-published official history base 84443400 at +300 after +140 and +200 if any 404 remains."""
+"""Retry2 just-published official history base 84443800 at +300 after +140 and +200 if any 404 remains."""
 from __future__ import annotations
 import json, sys, time
 from datetime import datetime, timezone
@@ -14,7 +14,7 @@ sys.path.insert(0, "/workspace/screeps/state/_halfhour_2026-11-23_2330")
 import backfill_confirm as confirm
 
 ROOMS = ("W46N8", "W47N8", "W45N8", "W45N7", "W47N7")
-JUST_BASE = 84443400
+JUST_BASE = 84443800
 WAIT_UNTIL_GT = JUST_BASE + 300
 LIVE = Path("/workspace/screeps/metrics/live.json")
 DIR = Path("/workspace/screeps/state/_halfhour_2026-11-23_2330")

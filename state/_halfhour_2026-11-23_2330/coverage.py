@@ -8,7 +8,7 @@ import sys
 sys.path.insert(0, "/workspace/screeps/tools")
 import db
 
-TMIN, TMAX = 84442701, 84443400
+TMIN, TMAX = 84443101, 84443800
 ROOMS = ("W46N8", "W47N8", "W45N8", "W45N7", "W47N7")
 DIR = "/workspace/screeps/state/_halfhour_2026-11-23_2330"
 # First pass --minutes 40. First pass 35/35 official GETs 200, missing_chunks=0.

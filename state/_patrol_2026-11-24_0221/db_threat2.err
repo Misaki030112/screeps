@@ -1,0 +1,16 @@
+Traceback (most recent call last):
+  File "/workspace/screeps/state/_patrol_2026-11-24_0221/db_threat2.py", line 70, in <module>
+    for row in c.execute(
+               ~~~~~~~~~^
+        """
+        ^^^
+    ...<8 lines>...
+        """
+        ^^^
+    ):
+    ^
+  File "/workspace/screeps/.venv/lib/python3.13/site-packages/psycopg/connection.py", line 304, in execute
+    raise ex.with_traceback(None)
+psycopg.errors.UndefinedColumn: column "name" does not exist
+LINE 2:     SELECT name, min(tick) mint, max(tick) maxt, min(room), ...
+                   ^
