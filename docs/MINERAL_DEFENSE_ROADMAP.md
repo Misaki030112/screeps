@@ -3,6 +3,10 @@
 Live refresh **17:4x UTC+8 2026-11-01** tick ~84003240。**不自动交易、不开 safe mode。**
 Misaki **已点头翻 `RCL6_MINERALS`**（b758f38）；labs/industry/market/W47N9 仍 OFF。W47 **terminal+minCont+trunk DONE**；w8mminer ON；homeTermK≥4k → `labReady.propose=1` 等她设 `ops.labs={W46N8:'KO'}`。§5.20 leanBank re-arm 已让 W47 回到 ~18–20k hold；§5.21 = thin-K + `ops.labs=KO` 激活顺序（仍等她点头）。**02:4x §5.22** = soft-cap 下 link-era HMAX 2→3（溢出搬运阀；不翻 labs）。**08:4x §5.23** 停车带到 25k；**11:4x §5.24** threat soft（`TH.localOn`）在 stor≥25k 时仍把 w8upgrader 压在 ≤2（可逆；不翻 labs）。
 
+## 2026-11-23 20:3x — home KO stockpile grew 63861→69001; 15k reaction floor is pausing at the tip; boost still waits on the 20k energy skip; industry / market stay off
+
+Authorized home KO continues (Memory.ops.labs={W46N8:'KO'}, why=active). Stockpile **69001** (stor 68236 + lab 765 at 34,22). actOk=0 actGaps=homeStor at the tip (homeStor ~14.0–14.2k) — the 15k reaction floor is pausing as designed, do not override. 20k boost skip held (window max 21008, longest clean ≥20k 121 t, no 300 t latch). Labs 6/6 + factory + terminal both rooms; reactions-on / industry / market / W47 labs stay off. No re-ask.
+
 ## 2026-11-23 08:2x — home KO stockpile grew 58851→63861; 15k reaction floor is pausing at the tip; boost still waits on the 20k energy skip; industry / market stay off
 
 Authorized home KO continues (Memory.ops.labs={W46N8:'KO'}, why=active). Stockpile **63861** (stor 63236 + lab 625 at 34,22). actOk=0 actGaps=homeStor at the tip (homeStor ~13.9k) — the 15k reaction floor is pausing as designed, do not override. 20k boost skip held (window max 19585, zero ≥20k samples). Labs 6/6 + factory + terminal both rooms; reactions-on / industry / market / W47 labs stay off. No re-ask.
