@@ -12,7 +12,8 @@ import backfill_confirm as confirm
 
 DIR = Path("/workspace/screeps/state/_halfhour_2026-11-23_1730")
 TARGETS = [
-]  # no leftover/in-window 404s in/near this window; W45N8@84437100 and W47N7@84436400 aged out of 84437701
+    ("W47N7", 84438700),  # still 404 after JP 17:40:41 gt=84438841, retry 17:44:58 gt=84438900, retry2 17:52:09 gt=84439000 (300 ticks past base; not mere publish lag)
+]  # W45N8@84437100 and W47N7@84436400 aged out of window start 84438001; not retried
 
 def main():
     confirm.load_tick_s()
