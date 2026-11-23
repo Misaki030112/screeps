@@ -13,6 +13,10 @@ Outputs: `metrics/model.json`, `docs/model_routes.png` (terrain + ideal routes +
 ## Actuals (DB, default 6 h)
 upgrade rate (room_stats progress), pickups per source (positive store deltas within 2 tiles of the source, normalised by tick coverage — a lower bound), deliveries (hub vs controller container), per-role idle/repaths/CPU (creep_cpu), planned vs actual path length (path_arrivals), hauler cycle median, share of hauling traffic on ideal-route tiles ± 1.
 
+## 2026-11-23 08:2x — 12h actuals (plan holds)
+
+Sampled window t84420960→84430950 (9990 t, tick_s 4.281, 20:30:49→08:23:32 Asia/Hong_Kong, coverage 68.4%). Home upgrade **22.54 e/t** (progress 9683494→9908717, 90.61%, RCL8 ≈2.26 d); 3h 24.36 / 6h 22.37 / exact2h 23.80=91.5% ABOVE. Ledger (t84420996→84431020, 10024 t) undercounts upgrade at 19.19 e/t as designed (~13%). Stor avg 16.52k max 19585 min 13299, 7.75% under 15k, **0 ≥20k**. Tip why=floor_bank nUp=1 work=14. CPU avg 17.39 p95 20.81 max 28.09, bucket min 9860, n≥40=0.
+
 ## 2026-11-22 20:3x — 12h actuals (plan holds)
 
 Sampled 12h window t84410500→84420960 (10460 t, tick_s 4.165, coverage 752/1047 ≈ 71.8%; first/last samples sit on the window bounds; slightly faster than this morning 4.206): home upgrade **20.59** e/t (86.59% this morning → 88.56%, +215k; RCL8 ≈ **2.93 d**, was 3.53 d). The 20.23→20.59 e/t rise with a slightly faster shard and a healthy tip above the 15k floor is a real modest acceleration. 2×14W remain energy-bound (live why=ok nUp=2 tUp=2 work=28, exact2h 23.37/26=89.9% ABOVE, short last20–100 at the tip 28.00=107.7% HARD, last800 25.50=98.1% HARD, 1h 25.62 / 3h 20.41 / 6h 20.00). Formal stayed CLEARED. Stor avg 16.19k max **19770** min **12382**; **13.56% under 15k** (was 12.54%); **0 samples ≥20k**, 20k/300t gate held. Longest clean under-15k 131 t (18:19:22–18:28:30, min in-stretch 14222; window min 12382 is a 61 t stretch before the 13:48 freeze) — do not change the 15k floor; do not merge across freeze holes. 12.08h ledger net sp:upgrader **1.69**, under the 5 e/t waste gate. See docs/RCL7.md 20:3x.
