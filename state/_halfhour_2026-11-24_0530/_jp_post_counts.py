@@ -6,9 +6,9 @@ import db
 DIR = Path("/workspace/screeps/state/_halfhour_2026-11-24_0530")
 ROOMS = ("W46N8", "W47N8", "W45N8", "W45N7", "W47N7")
 pre = json.loads((DIR / "just_published_pre_counts.json").read_text())
-base = 84448400
+base = 84448800
 t0, t1 = base + 1, base + 100
-script = {"W46N8": 914, "W47N8": 827, "W45N8": 358, "W45N7": 415, "W47N7": 497}
+script = {"W46N8": 288, "W47N8": 1095, "W45N8": 318, "W45N7": 0, "W47N7": 425}  # JP tool inserted
 post = {}
 nl = chr(10)
 with db.connect() as c:

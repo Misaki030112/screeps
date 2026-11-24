@@ -25,7 +25,10 @@ DIR = "/workspace/screeps/state/_halfhour_2026-11-24_0530"
 # of 84441001; not retried.
 # First pass inserted=9432 already_in_db=16526 ts_realigned=12; tick_s printed 4.199.
 # Do not restart the listener. Do not write a patrol folder.
-IN_WINDOW_404 = {("W47N8", 84447700),  # NOT YET TOLD leftover from quiet 0430; still in window start 84447701; still 404 at this 0500 first pass; do not relabel NEW
+IN_WINDOW_404 = {("W46N8", 84448500),  # NEW first-pass in-window official 404 at this 0530 first pass; other four rooms 200; listener 50/100 84448501..84448550
+                 ("W45N8", 84448600),  # NEW first-pass in-window official 404 at this 0530 first pass; other four rooms 200; listener 12/100 84448689..84448700
+                 ("W47N8", 84448400),  # NOT YET TOLD leftover from quiet 0500 JP; still in window start 84448101; still 404 through postjp; listener 0/100; do not relabel NEW
+                 ("W47N8", 84447700),  # NOT YET TOLD leftover from quiet 0430; still in window start 84447701; still 404 at this 0500 first pass; do not relabel NEW
                  ("W45N8", 84447400),  # NOT YET TOLD leftover from quiet 0400; aged out of window start 84447701; retry as near-window; do not relabel NEW
     ("W47N7", 84446600),  # still-untold leftover official 404 from quiet 0300; aged out of this window start 84446801; listener 0/100; do not relabel NEW
     # First pass 33/35 official GETs 200, missing_chunks=2 W45N8@84447400, W47N8@84447700.

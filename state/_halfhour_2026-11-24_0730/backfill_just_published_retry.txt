@@ -1,0 +1,15 @@
+retry live game.time=84450700 >= 84450700 after 190s; proceeding
+just_published RETRY GET start 2026-11-24 07:48:55 Asia/Hong_Kong live_gt=84450700 tick_s=4.30087 base=84450500 threshold>=84450700
+wrote pre_counts at retry GET time {'W46N8': {'distinct': 0, 'rows': 0, 'min': None, 'max': None}, 'W47N8': {'distinct': 100, 'rows': 1468, 'min': 84450501, 'max': 84450600}, 'W45N8': {'distinct': 100, 'rows': 602, 'min': 84450501, 'max': 84450600}, 'W45N7': {'distinct': 100, 'rows': 250, 'min': 84450501, 'max': 84450600}, 'W47N7': {'distinct': 100, 'rows': 511, 'min': 84450501, 'max': 84450600}}
+  pre  W46N8@84450500 distinct=0 rows=0 range=None..None
+  still_404 W46N8@84450500 at 07:48:57 game.time=84450700
+  pre  W47N8@84450500 distinct=100 rows=1468 range=84450501..84450600
+  recovered_or_ok W47N8@84450500 ticks=100 ts=1795477376611 at 07:49:00 inserted=0
+  pre  W45N8@84450500 distinct=100 rows=602 range=84450501..84450600
+  recovered_or_ok W45N8@84450500 ticks=100 ts=1795477374008 at 07:49:06 inserted=0
+  pre  W45N7@84450500 distinct=100 rows=250 range=84450501..84450600
+  recovered_or_ok W45N7@84450500 ticks=100 ts=1795477343699 at 07:49:10 inserted=90
+  pre  W47N7@84450500 distinct=100 rows=511 range=84450501..84450600
+  recovered_or_ok W47N7@84450500 ticks=100 ts=1795477402456 at 07:49:14 inserted=1
+retry recovered=['W47N8@84450500', 'W45N8@84450500', 'W45N7@84450500', 'W47N7@84450500'] still_404=['W46N8@84450500'] inserted=91 ts_realigned=0
+finished retry

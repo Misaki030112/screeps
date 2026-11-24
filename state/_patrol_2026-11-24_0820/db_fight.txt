@@ -1,0 +1,36 @@
+=== events non-watch since 84448700 ===
+(84448747, datetime.datetime(2026, 11, 24, 5, 28, 18, 873248, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 'alert_new', 'W45N7', 'medium', 'W45N7-Invader-84448747', 'Invader')
+(84448747, datetime.datetime(2026, 11, 24, 5, 28, 18, 863441, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 'alert_new', 'W45N7', 'medium', 'remote-W45N7-84448747', 'Invader')
+(84448881, datetime.datetime(2026, 11, 24, 5, 56, 28, 353480, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 'box_pause', None, None, None, 'box frozen ~261s since 2026-11-24 05:51:59')
+(84449146, datetime.datetime(2026, 11, 24, 5, 57, 3, 299378, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 'alert_escalated', 'W45N7', 'high', 'W45N7-Invader-84448747', 'Invader')
+(84449281, datetime.datetime(2026, 11, 24, 6, 34, 24, 394477, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 'box_pause', None, None, None, 'box frozen ~1097s since 2026-11-24 06:16:01')
+(84449868, datetime.datetime(2026, 11, 24, 6, 58, 46, 917307, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 'box_pause', None, None, None, 'box frozen ~68s since 2026-11-24 06:57:38')
+(84449910, datetime.datetime(2026, 11, 24, 6, 52, 13, 62605, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 'alert_new', 'W47N7', 'medium', 'remote-W47N7-84449910', 'Invader')
+(84450115, datetime.datetime(2026, 11, 24, 7, 6, 57, 347740, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 'alert_ended', 'W47N7', 'low', 'remote-W47N7-84449910', None)
+(84450221, datetime.datetime(2026, 11, 24, 7, 36, 22, 80075, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 'box_pause', None, None, None, 'box frozen ~1188s since 2026-11-24 07:16:30')
+(84450838, datetime.datetime(2026, 11, 24, 8, 12, 1, 997999, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 'box_pause', None, None, None, 'box frozen ~153s since 2026-11-24 08:09:21')
+(84451076, datetime.datetime(2026, 11, 24, 8, 21, 2, 435791, tzinfo=zoneinfo.ZoneInfo(key='Asia/Shanghai')), 'box_pause', None, None, None, 'box frozen ~307s since 2026-11-24 08:15:47')
+=== W45N7 invader/def/rminer 84448740..84449250 ===
+W45N7 n 70
+  rminer84448336 n 51 first (84448740, 'rminer84448336', 'rminer', 21, 15, 1000, 'loaded') last (84448790, 'rminer84448336', 'rminer', 21, 0, 1000, 'loaded')
+  defender84448870 n 19 first (84449078, 'defender84448870', 'defender', 21, 1, 4800, 'empty') last (84449096, 'defender84448870', 'defender', 21, 0, 4800, 'empty')
+=== W47N7 invader/rdef/rminer 84449890..84450150 ===
+W47N7 n 466
+  w8rminer84448415 n 261 first (84449890, 'w8rminer84448415', 'wrminer', 31, 34, 1000, 'loaded') last (84450150, 'w8rminer84448415', 'wrminer', 31, 34, 1000, 'loaded')
+  w8rminer84449649 n 63 first (84449890, 'w8rminer84449649', 'wrminer', 18, 17, 1000, 'loaded') last (84449952, 'w8rminer84449649', 'wrminer', 18, 17, 1000, 'loaded')
+  w8rminer84449745 n 91 first (84449890, 'w8rminer84449745', 'wrminer', 31, 35, 1000, 'loaded') last (84449980, 'w8rminer84449745', 'wrminer', 31, 35, 1000, 'loaded')
+  rdef84449916 n 51 first (84450100, 'rdef84449916', 'rdef', 17, 1, 4792, 'empty') last (84450150, 'rdef84449916', 'rdef', 27, 19, 4800, 'empty')
+=== W47N8 invader/rdef 84450070..84450140 ===
+W47N8 n 30
+  rdef84449916 n 30 first (84450070, 'rdef84449916', 'rdef', 28, 35, 4800, 'empty') last (84450099, 'rdef84449916', 'rdef', 18, 49, 4800, 'empty')
+=== defender84448870 path ===
+n 2115
+first (84448871, 'W46N8', 35, 28, 4800, 'spawning') last (84451100, 'W45N8', 5, 11, 4800, 'empty')
+ room W46N8 n 168 first (84448871, 35, 28, 4800, 'spawning') last (84449038, 48, 20, 4800, 'empty')
+ room W45N8 n 1813 first (84449039, 0, 21, 4800, 'empty') last (84451100, 5, 11, 4800, 'empty')
+ room W45N7 n 134 first (84449078, 21, 1, 4800, 'empty') last (84450403, 21, 0, 4800, 'empty')
+=== rdef84449916 path ===
+n 1184
+first (84449917, 'W47N8', 33, 30, 4800, 'spawning') last (84451100, 'W47N7', 31, 19, 4800, 'empty')
+ room W47N8 n 183 first (84449917, 33, 30, 4800, 'spawning') last (84450099, 18, 49, 4800, 'empty')
+ room W47N7 n 1001 first (84450100, 17, 1, 4792, 'empty') last (84451100, 31, 19, 4800, 'empty')
