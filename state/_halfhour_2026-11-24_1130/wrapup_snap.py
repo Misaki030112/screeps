@@ -50,8 +50,8 @@ FREEZES = {
     "freeze_0923_0930": (84452011, 84452129),  # still-untold from quiet 0930; 盒子休眠 09:23:04-09:30:46 (462s, STATS 119t); official-filled all five 119/119; do not relabel NEW
     "freeze_0948_1000": (84452371, 84452549),  # NOT YET TOLD; NEW 盒子休眠 09:48:37-10:00:27 (703s, STATS 179t from pre_run 84452371..84452549); box_pauses row present; errors.log box frozen ~703s; listener auto-restarted 10:00:31, python 3611057 started 10:00:40, parent 4035476; fold into next 3h patrol
     "freeze_1018_1028": (84452781, 84452939),  # NOT YET TOLD; NEW 盒子休眠 10:18:29-10:28:45 (610s, STATS 159t from pre_run 84452781..84452939); box_pauses row present; errors.log box frozen ~610s; listener auto-restarted 10:28:48, python 3622271 started 10:28:58, parent 4035476; fold into next 3h patrol
-    "freeze_1047_1100": (84453181, 84453379),
-    "freeze_1123_1129": (84453681, 84453789),  # NOT YET TOLD; NEW box freeze 11:23:06-11:29:38 (385s, STATS 84453681..84453789); fold into next 3h patrol  # NOT YET TOLD; NEW 盒子休眠 10:47:01-11:00:07 (785s, STATS 199t from pre_run 84453181..84453379); box_pauses row present; errors.log box frozen ~785s; listener auto-restarted 11:00:10, python 3634246 started 11:00:20, parent 4035476; fold into next 3h patrol
+    "freeze_1047_1100": (84453181, 84453379),  # NOT YET TOLD from quiet 1100; 盒子休眠 10:47:01-11:00:07 (785s, official-filled all five 199/199; STATS 84453181..84453379); do not relabel NEW
+    "freeze_1123_1129": (84453681, 84453789),  # NOT YET TOLD; NEW 盒子休眠 11:23:06-11:29:38 (385s, STATS 109t 84453681..84453789); box_pauses row present; errors.log box frozen ~385s; listener auto-restarted 11:29:41, python 3648347 started 11:29:51, parent 4035476; fold into next 3h patrol
 }
 
 
