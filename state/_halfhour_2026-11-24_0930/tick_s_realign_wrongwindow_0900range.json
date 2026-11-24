@@ -1,0 +1,142 @@
+{
+  "first_interval": 4.2808,
+  "later_mean_w46": 4.272416,
+  "later_mean_w46_raw": 4.272416,
+  "later_mean_w46_robust": 4.272416,
+  "all_mean_w46": 4.273813333333333,
+  "span_mean": 4.273813333333333,
+  "prev_later_mean": 4.32493,
+  "intervals": [
+    {
+      "from": 84451100,
+      "to": 84451200,
+      "tick_s": 4.2808,
+      "outlier": false
+    },
+    {
+      "from": 84451200,
+      "to": 84451300,
+      "tick_s": 4.22192,
+      "outlier": false
+    },
+    {
+      "from": 84451300,
+      "to": 84451400,
+      "tick_s": 4.3031299999999995,
+      "outlier": false
+    },
+    {
+      "from": 84451400,
+      "to": 84451500,
+      "tick_s": 4.18795,
+      "outlier": false
+    },
+    {
+      "from": 84451500,
+      "to": 84451600,
+      "tick_s": 4.24035,
+      "outlier": false
+    },
+    {
+      "from": 84451600,
+      "to": 84451700,
+      "tick_s": 4.40873,
+      "outlier": false
+    }
+  ],
+  "gt_first": 84451819,
+  "gt_check": 84452185,
+  "gt_realign": 84452186,
+  "now_check": "2026-11-24T09:35:03.924890+08:00",
+  "now_realign": "2026-11-24T09:35:03.924832+08:00",
+  "tick_s_used_first_pass": 4.2808,
+  "ts_realigned_first_pass": 0,
+  "ts_realigned_first_pass_error": "First-pass realign with tick_s=4.28080 (printed 4.263) committed ts_realigned_first=0 (inserted=6192 already_in_db=15127, missing_chunks=5).",
+  "still_over_45s_vs_first": 10628,
+  "still_over_15s_vs_first": 16183,
+  "vs_candidates": {
+    "first": {
+      "over45": 10628,
+      "over15": 16183,
+      "n": 25528,
+      "mean_off": 30.370326867322156,
+      "min_off": -5.985432,
+      "max_off": 72.700582,
+      "tick_s": 4.2808
+    },
+    "later_raw": {
+      "over45": 8880,
+      "over15": 12816,
+      "n": 25528,
+      "mean_off": 24.184561221443122,
+      "min_off": -13.740917,
+      "max_off": 66.127526,
+      "tick_s": 4.272416
+    },
+    "later_robust": {
+      "over45": 8880,
+      "over15": 12816,
+      "n": 25528,
+      "mean_off": 24.184561221443122,
+      "min_off": -13.740917,
+      "max_off": 66.127526,
+      "tick_s": 4.272416
+    },
+    "all_mean": {
+      "over45": 9165,
+      "over15": 13560,
+      "n": 25528,
+      "mean_off": 25.21552216193983,
+      "min_off": -12.35057,
+      "max_off": 67.223035,
+      "tick_s": 4.273813333333333
+    },
+    "span_mean": {
+      "over45": 9165,
+      "over15": 13560,
+      "n": 25528,
+      "mean_off": 25.21552216193983,
+      "min_off": -12.35057,
+      "max_off": 67.223035,
+      "tick_s": 4.273813333333333
+    },
+    "prev_later": {
+      "over45": 18323,
+      "over15": 24288,
+      "n": 25528,
+      "mean_off": 62.929706394116266,
+      "min_off": 11.697668,
+      "max_off": 107.298502,
+      "tick_s": 4.32493
+    }
+  },
+  "still_over_45s_vs_later_before": 8880,
+  "still_over_15s_vs_later_before": 12816,
+  "still_over_45s_vs_later": 0,
+  "still_over_15s_vs_later": 4077,
+  "corrective_applied": true,
+  "ts_realigned_to_later_mean": 9483,
+  "skipped_cross_chunk": 0,
+  "reason": "first-interval tick_s=4.28080 (printed 4.263, min-all-rooms first two bases) is in the sane 3-6s band; later-mean-robust 4.27242 (raw later-mean 4.27242; delta first-robust 0.00838 s/tick, ~6.0s at tmin). First-pass realign with tick_s=4.28080 (printed 4.263) committed ts_realigned_first=0 (inserted=6192 already_in_db=15127, missing_chunks=5).; applied corrective later_raw realign of 9483 rows at game.time=84452186 tick_s=4.27242; still_over_45s_vs_target=0; skipped_cross_chunk=0",
+  "game_time_error": null,
+  "lowest_over45_sane": "later_raw",
+  "vs_first": {
+    "over45": 10628,
+    "over15": 16183,
+    "n": 25528,
+    "mean_off": 30.370326867322156,
+    "min_off": -5.985432,
+    "max_off": 72.700582
+  },
+  "vs_later_after": {
+    "over45": 0,
+    "over15": 4077,
+    "n": 25528,
+    "mean_off": 4.772364902890943,
+    "min_off": -12.255855,
+    "max_off": 44.9757
+  },
+  "tick_s_in_use": 4.272416,
+  "tick_s_in_use_name": "later_raw",
+  "later_is_worse_than_best": false
+}
