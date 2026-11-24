@@ -33,7 +33,17 @@ Last full refresh: **2026-11-09 17:1x** (autonomous push — docs/canvas scorebo
 - One-line verdict: `waiting on ticks` | `small safe ship` | `phase exit` — capability to stock a kiter ≠ order to fight.
 
 
-## Current state (2026-11-23 ~20:3x Asia/Hong_Kong · 12h review)
+## Current state (2026-11-24 ~08:2x Asia/Hong_Kong · 12h review)
+
+| Room | Notes |
+|------|-------|
+| W46N8 (home) | **RCL7** 94.44% (10.327M/10.935M); +205k/sampled 11.90h ≈ 20.58 e/t → RCL8 ≈ **1.47 days** at this pace (was 20.73 / 1.93 d; tick_s 4.245→4.295 slightly slower, and e/t 20.73→20.58 essentially flat — the calendar shortened on progress); stor avg 16.42k max **19512** min 12310, **15.86% under 15k** (was 15.76%), **0% ≥20k**; live tip 13888 / later ~14.4–14.5k why=floor_bank nUp=1 tUp=1 work=14; 20k/300t still unlocked (dry window after last evening's unlatched 21008 / 121 t kisses); labsN=6, factory done, sites=0; **KO ON** (authorized; stockpile **73976** already ≥900 — 73241 stor + 735 lab; 15k reaction floor pausing at the tip / 20k boost skip held); LIVE **2b5398f7** (@84345299 / 02:28:52 HKT, already-live civilian-hold fix) |
+| W47N8 | **RCL7** 63.90% (6.987M); +194k ≈ **19.45 e/t** → RCL8 ≈ **10.09 days** (was 19.39 / 10.49 d); stor avg 27.95k max **36591** min 19076 (0% <15k, 99.17% ≥20k, 80.28% ≥25k, 31.72% ≥30k, 0% ≥40k); live stor 28278 later 28778 keep=2 phase=ready siteRem=0 leanBank0 softCap2 **on** threatSoft=1 bankWhy=threatSoft softLeft=0 sealPark=1 (25k sealMinE rule; leftover stamps from the 04:21 owned-room Invader and the 06:52 W47N7 solo); two 10W upgraders; no 40k touch this window (max 36591), latch not armed |
+
+**08:2x scorecard:** Phase0 home floor **held, and is working at the tip** (15.86% of the sampled window under 15k, was 15.76%; longest clean dip 251 t / min 12.3k at 20:47, tip 13888 / later ~14.4–14.5k why=floor_bank tUp=1; 20k gate never latched — **zero** ≥20k samples this window, max 19512; trailing 24h max remains last evening's 21008 / 121 t). W47 had **zero** samples under 15k and peaked at **36591** (no ≥40k stretch this window, longest ≥30k 811 t; 24h max 36591); live ~28.8k, softCap2 **ON**, threatSoft=1, bankWhy=threatSoft, sealPark=1 — do not unpark ceil/seal, do not add a third. Energy-side is above 25k for 80.3% of samples and above 30k for 31.7% (was 73.4% / 12.8%); the still-dry 40k window is mid-wait, not a latch; the all-time high remains 11-17 morning's 44416; live ~29k, upLatched=0. 40k latch **waiting**. Phase1 blocked (mid 40k wait). Phase2 home is still the lead and is at 94.4% (~1.47 d, was 1.93 d); the RCL8 funnel is still planned, not coded — prepare it hard-gated before arrival, not this morning. W47 pace ~19.45 e/t / ~10.09 d. Home exact2h 73.3% after a CLEARED formal; W47 exact2h 62.9% under + last500 still soft is the designed keep=2 20 e/t=66.5% (the 05:38 patrol CLEARED after the seventh dual; this tip is under again for the 08:20 patrol) and is not a phase issue. Phase3 lean KO is **on** and the stockpile has grown **69001→73976**; reactions are pausing because homeStor is under the 15k floor; boost still waits for a stable stor ≥20k; full industry / XGH2O / market stay deferred (energy 14k / 29k live, window max 19.5k / 36.6k ≪ 100k). Verdict: waiting on ticks (20k gate + W47 40k latch held; a dry 20k window after unlatched kisses, a 36591 high with no 40k touch, standing-ops Invader waves, a tip under the 15k floor, and 94.4% progress are not phase exits; KO 73976 is stockpile growth, not a boost/industry turn-on; already-live 2b5398f7; no new game code this review).
+
+### Previous (2026-11-23 ~20:3x Asia/Hong_Kong · 12h review)
+
 
 | Room | Notes |
 |------|-------|
