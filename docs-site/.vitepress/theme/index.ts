@@ -4,6 +4,7 @@ import './custom.css'
 import ArchDiagram from './components/ArchDiagram.vue'
 import CpuOrder from './components/CpuOrder.vue'
 import FlowDiagram from './components/FlowDiagram.vue'
+import ExportFlow from './components/ExportFlow.vue'
 import RoadmapDiagram from './components/RoadmapDiagram.vue'
 import SpawnQueue from './components/SpawnQueue.vue'
 import UpgradeFloors from './components/UpgradeFloors.vue'
@@ -35,6 +36,7 @@ export default {
     app.component('ArchDiagram', ArchDiagram)
     app.component('CpuOrder', CpuOrder)
     app.component('FlowDiagram', FlowDiagram)
+    app.component('ExportFlow', ExportFlow)
     app.component('RoadmapDiagram', RoadmapDiagram)
     app.component('SpawnQueue', SpawnQueue)
     app.component('UpgradeFloors', UpgradeFloors)

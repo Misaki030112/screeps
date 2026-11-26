@@ -21,7 +21,7 @@
           <span class="yl">26</span>
           <div class="node stop"><strong>E</strong></div>
           <div class="node stop"><strong>E</strong></div>
-          <div class="node"><strong>L</strong><span>RCL8</span></div>
+          <div class="node later"><strong>L</strong><span>不放</span></div>
           <div class="node stop"><strong>E</strong></div>
           <div class="node stop"><strong>E</strong></div>
           <span class="yl">27</span>
@@ -93,7 +93,7 @@
           <span class="yl">25</span>
           <div class="node stop"><strong>E</strong></div>
           <div class="node stop"><strong>E</strong></div>
-          <div class="node"><strong>L</strong><span>RCL8</span></div>
+          <div class="node later"><strong>L</strong><span>不放</span></div>
           <div class="node stop"><strong>E</strong></div>
           <div class="node stop"><strong>E</strong></div>
           <span class="yl">26</span>
@@ -118,7 +118,7 @@
       <li><i class="lg-stop"></i>延伸</li>
     </ul>
     <figcaption>
-      印章 C 的字母 S 在 30,23，规划器写成 RCL8 的延伸。字母 K 在 30,27，规划器写成 RCL6 的路。RCL8 的出生点是印章 A 南面的 35,29。管理者 36,30 在印章外，目标是 0。
+      印章 C 的字母 S 在 30,23，规划器写成 RCL8 的延伸。字母 K 在 30,27，规划器写成 RCL6 的路。35,26 和 30,25 的字母仍是 L，计划不再放 link。32,34 的 L 仍在 RCL7。RCL8 的出生点是印章 A 南面的 35,29。管理者 36,30 在印章外，目标是 0。
     </figcaption>
   </figure>
 </template>

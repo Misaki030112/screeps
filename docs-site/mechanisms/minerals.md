@@ -6,7 +6,7 @@ outline: [2, 3]
 
 # 矿物与终端
 
-矿物线是为家里的 KO 准备的，不是为了出售。家的矿是氧，W47 的矿是钾。家的 `RCL6_MINERALS`（`src/utils/plan.js`）和 W47 的 `RCL6_MINERALS`（`src/rooms/w47n8/config.js`）都是 true。矿工会孵，终端和萃取器在计划里。家的这道开关还把三座 RCL6 实验室排进去。W47 的实验室是另一道开关 `RCL6_LABS`，现在是 false。
+矿物线是为家里的 KO 准备的，不是为了出售。家的矿是氧，W47 的矿是钾。家到 RCL8 之后，终端还会把能量送到 W47。那一趟不走这一页的钾批量，也不是市场订单，见 [搬运](/mechanisms/haul)。家的 `RCL6_MINERALS`（`src/utils/plan.js`）和 W47 的 `RCL6_MINERALS`（`src/rooms/w47n8/config.js`）都是 true。矿工会孵，终端和萃取器在计划里。家的这道开关还把三座 RCL6 实验室排进去。W47 的实验室是另一道开关 `RCL6_LABS`，现在是 false。
 
 | | 家 W46N8 | W47N8 |
 | --- | --- | --- |

@@ -12,6 +12,6 @@
         <div class="node"><strong>矿物</strong><span>K 送到家。实验室做 KO。Boost 还要存储留得住 20000。</span></div>
       </div>
     </div>
-    <figcaption>和平时期的顺序是：先让房间还能孵化、还能打，再把多余能量送去升级。市场不在这条路上。</figcaption>
+    <figcaption>和平时期的顺序是：先让房间还能孵化、还能打，再把多余能量送去升级。家到 RCL8 之后，这一截改送 W47。市场不在这条路上。</figcaption>
   </figure>
 </template>
