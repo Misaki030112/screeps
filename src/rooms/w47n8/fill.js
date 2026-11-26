@@ -80,9 +80,8 @@ const hubNeedy = (room, D) => objs([].concat(...D.strip, D.point)).some(s => fre
 const free = s => (s && s.store ? s.store.getFreeCapacity(E) : 0);
 const needT = s => s.structureType === STRUCTURE_TOWER ? free(s) >= 300 : free(s) > 0;
 const objs = ids => ids.map(id => Game.getObjectById(id)).filter(Boolean);
-// RCL8 export receive (managers/export.js, 2026-11-26): home sends energy into terminal 33,32, which touches POST 34,32 like the
-// storage. Terminal energy above TERM_KEEP (K send fees use ~1000) is drawn first and parked in storage when the hub is full, so
-// W47's storage-based upgrader rules see it.
+// Terminal surplus (2026-11-26): terminal 33,32 touches POST 34,32 like the storage. Energy above TERM_KEEP (K send fees use
+// ~1000) is drawn first and parked in storage when the hub is full, so W47's storage-based rules see it. Normally idle.
 const TERM_KEEP = 3000;
 const termSurplus = room => (room.terminal && room.terminal.store ? Math.max(0, (room.terminal.store[E] || 0) - TERM_KEEP) : 0);
 function source(room) {

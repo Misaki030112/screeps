@@ -2,14 +2,23 @@
 // Dormant until a new kite is standing in W46N8. Does not set Memory.ops.labs and does not
 // start W47 reactions. Core busters (ATTACK, no RANGED_ATTACK) and melee w8guards are skipped.
 // A 19 RA kite needs 570 KO and 380 energy. The lab is filled toward KO>=900 when the colony has it.
-// Lab energy is not taken from storage while storage is under STOR_SAFE (20k); the creep leaves
-// unboosted instead of dipping the 15k floor. A lab that already holds the energy can still boost.
+// 2026-11-26 (Misaki t516u: ~95k KO and not one boosted creep). Root cause, live: both kites alive carried noBoost=1 and
+// every lab held 0 energy. plan() needs 20 energy per RA part from the lab or from storage above STOR_SAFE, and the old
+// STOR_SAFE was 20k while home storage sat at 4-15k for weeks -> 'skip energy' -> noBoost on every spawn.
+// First principles: a 25 RA kite costs ~5000 energy; KO doubles its ranged damage for 750 KO + 500 energy. So:
+//   - STOR_SAFE 20k -> 5k: the boost's energy is worth more than the same energy left in storage.
+//   - a standing boost lab: the free lab (not a reaction input/output) is kept at STOCK_KO KO + STOCK_E energy by the home
+//     hauler (stockTask), so a fresh kite only walks to the lab and boosts — no hauling while it waits.
+//   - never slow an urgent sortie: a kite waits at most BOOST_WAIT ticks, and while home itself is in combat it boosts only
+//     if the lab is ready right now.
 const HOME = 'W46N8';
 const KO = 'KO';
 const PART_KO = 30;
 const PART_E = 20;
 const KO_FILL = 900;
-const STOR_SAFE = 20000;
+const STOR_SAFE = 5000;
+const STOCK_KO = 1500, STOCK_E = 1000, RESTOCK = 300; // standing boost lab (refill when this far below)
+const BOOST_WAIT = 30;
 const KITE_ROLES = { defender: 1, guard: 1, rdef: 1, w8defender: 1, w8guard: 1 };
 const E = () => (typeof RESOURCE_ENERGY !== 'undefined' ? RESOURCE_ENERGY : 'energy');
 const RA = () => (typeof RANGED_ATTACK !== 'undefined' ? RANGED_ATTACK : 'ranged_attack');
@@ -84,7 +93,7 @@ function plan(room, c) {
   const labK = pile(pick.lab.store, KO), labE = pile(pick.lab.store, E());
   const energy = safeEnergy(room);
   if (labE + energy.fromStor + energy.termE < needE) return { act: 'skip', why: 'energy', pick, needK, needE, bar };
-  if (labK >= bar && labE >= needE) return { act: 'ready', pick, needK, needE, bar };
+  if (labK >= needK && labE >= needE) return { act: 'ready', pick, needK, needE, bar }; // enough for this creep (was >= 900 bar)
   return { act: 'wait', pick, needK, needE, bar };
 }
 function waiters(room) {
@@ -126,12 +135,32 @@ function haulTask(room) {
       }
     }
     const labE = pile(lab.store, E());
-    if (labE < p.needE) {
-      const want = p.needE - labE;
+    if (labE < Math.max(p.needE, STOCK_E)) {
+      const want = Math.max(p.needE, STOCK_E) - labE; // ready once labE >= needE; the rest is the standing stock
       const energy = safeEnergy(room);
       if (energy.fromStor > 0 && room.storage) return { from: room.storage.id, to: lab.id, res: E(), amt: Math.min(energy.fromStor, want) };
       if (energy.termE > 0 && room.terminal) return { from: room.terminal.id, to: lab.id, res: E(), amt: Math.min(energy.termE, want) };
     }
+  }
+  return stockTask(room);
+}
+// Standing boost lab: keep the free lab at STOCK_KO / STOCK_E between sorties (refill only when RESTOCK below, so a trip is
+// worth it). A foreign mineral in that lab goes back to the terminal first. No free lab (all six in the reaction) -> nothing.
+function stockTask(room) {
+  if (!room || room.name !== HOME || !room.terminal) return null;
+  const pick = pickLab(room); if (!pick || pick.pause) return null;
+  const lab = pick.lab, other = Object.keys(lab.store || {}).find(k => k !== E() && k !== KO && pile(lab.store, k) > 0);
+  if (other) return { from: lab.id, to: room.terminal.id, res: other, amt: pile(lab.store, other) };
+  const labK = pile(lab.store, KO);
+  if (labK <= STOCK_KO - RESTOCK) {
+    const want = STOCK_KO - labK, tK = pile(room.terminal.store, KO), sK = pile(room.storage && room.storage.store, KO);
+    if (tK > 0) return { from: room.terminal.id, to: lab.id, res: KO, amt: Math.min(tK, want) };
+    if (sK > 0) return { from: room.storage.id, to: lab.id, res: KO, amt: Math.min(sK, want) };
+  }
+  const labE = pile(lab.store, E());
+  if (labE <= STOCK_E - RESTOCK) {
+    const want = STOCK_E - labE, energy = safeEnergy(room);
+    if (energy.fromStor >= want && room.storage) return { from: room.storage.id, to: lab.id, res: E(), amt: want };
   }
   return null;
 }
@@ -145,6 +174,11 @@ function hold(c) {
   if (p.act === 'done') { c.memory.boosted = 1; return false; }
   if (p.act === 'skip' || !p.pick) { c.memory.noBoost = 1; return false; }
   const lab = p.pick.lab;
+  // urgent sorties: home in combat -> boost only if the lab is ready now; otherwise wait at most BOOST_WAIT ticks
+  let busy = false; try { busy = !!require('./home').active(room); } catch (e) { busy = false; }
+  if (busy && p.act !== 'ready') { c.memory.noBoost = 1; return false; }
+  if (!c.memory.bw) c.memory.bw = Game.time;
+  if (Game.time - c.memory.bw > BOOST_WAIT) { c.memory.noBoost = 1; return false; }
   c.memory.bl = lab.id;
   let there = false;
   try { there = require('../utils/move').to(c, lab.pos.x, lab.pos.y, 1); } catch (e) { there = false; }
@@ -155,5 +189,5 @@ function hold(c) {
   return true;
 }
 module.exports = {
-  HOME, KO, PART_KO, PART_E, KO_FILL, STOR_SAFE, isKite, raNeed, pickLab, plan, haulTask, blocksReaction, hold,
+  HOME, KO, PART_KO, PART_E, KO_FILL, STOR_SAFE, STOCK_KO, STOCK_E, RESTOCK, BOOST_WAIT, stockTask, isKite, raNeed, pickLab, plan, haulTask, blocksReaction, hold,
 };

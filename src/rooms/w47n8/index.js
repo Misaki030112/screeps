@@ -36,8 +36,8 @@ function bodyFor(role, e) {
   if (role === 'w8hauler') { if (e < 450) { const n = Math.max(2, Math.floor(e / 100)); return rep(n, CARRY).concat(rep(n, MOVE)); }
     const k = Math.min(5, Math.floor(e / 150)); return rep(2 * k, CARRY).concat(rep(k, MOVE)); }
   // 18:58: upgraders sit beside the ctl container 13,26 (1750/2000 full, spawn idle at 550/550): WORK-heavy 4W1C2M instead of 2W2C2M
-  // 2026-11-26 RCL8 plan (t511u): home exports energy here, so 2 stands must burn ~30 e/t. 15W1C3M (1700): refill at <2xWORK
-  // keeps the 1C refill + upgrade in one tick (home 15W1C proves it); 3 MOVE = 3 t/tile loaded on the hub->ctl road (was 10W1C2M).
+  // 2026-11-26: 15W1C3M (1700, was 10W1C2M). W47 alone: lets 2 stands burn W47's own storage surplus above the bank lines faster
+  // (leanBank / LEAN_SOFT still limit the draw); refill at <2xWORK keeps refill + upgrade in one tick (home 15W1C proves it).
   if (role === 'w8upgrader' && e >= 1700) return rep(15, WORK).concat([CARRY, MOVE, MOVE, MOVE]);
   if (role === 'w8upgrader' && e >= 550) { const w = Math.min(10, Math.floor((e - 150) / 100)); return rep(w, WORK).concat([CARRY, MOVE, MOVE]); }
   const n = Math.max(1, Math.min(6, Math.floor(e / 200))); return rep(n, WORK).concat(rep(n, CARRY), rep(n, MOVE)); // upgrader/builder
@@ -564,12 +564,11 @@ const LEAN_SOFT_ARM = 22000;
 // 11-10: upgrader latch, separate from LEAN_SOFT / seal. Hold keep=2 until storage has stayed
 // >= 40k for 500 consecutive ticks, then a steady 3. Re-arm to 2 below 30k. A brief cross of
 // the 25k seal line must not spawn 4–6, and must not sit at 3 on that thin edge either.
-// 2026-11-26 RCL8 plan (Misaki t511u, first principles): the 40k/500t latch guarded a feed that could not carry 3x10W. With
-// 2x15W (30 e/t) as the base and home's RCL8 surplus arriving by terminal, storage is a buffer, not a goal: a 3rd 15W joins
-// once storage has held >= 30k for 300 ticks (the inflow outruns 30 e/t) and leaves below 20k. threatSoft still caps at 2.
-const UP_STICKY = 30000;
-const UP_STICKY_T = 300;
-const UP_REARM = 20000;
+// 2026-11-26 (Misaki t514u, rooms independent — no energy from home): back to 40k/500t, re-arm 30k. W47 alone upgrades
+// ~20-24 e/t; 2x15W already cover 30 e/t, so a 3rd (45 e/t) is only worth it when W47's own storage really piles up.
+const UP_STICKY = 40000;
+const UP_STICKY_T = 500;
+const UP_REARM = 30000;
 function upBankTick(storE) {
   const o = (Memory.ops = Memory.ops || {});
   const s = (o.w8up = o.w8up || { on: 0, since: 0 });

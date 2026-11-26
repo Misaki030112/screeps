@@ -215,8 +215,8 @@ function boostHaul(c, room) {
 // from the manager tile (hub + storage both in range 1), so the queen no longer leaves stamp A to drain it
 // (patrol 10-18 12:38: ~25% of queen windows were hub/storage trips over the x=38 corridor; hauler idle 49% at 31,13).
 function hubPickup(room) {
-  // RCL8 export (managers/export.js): no home upgrader, so source A's link energy lands in the hub link — same manager-tile pickup.
-  if (!room.storage || !(require('../managers/walls').noUpgrade(room) || (room.controller && room.controller.level >= 8 && require('../managers/export').exporting()))) return null;
+  // RCL8: one upgrader takes <= 15 e/t, so source A's link overflow lands in the hub link (ctl link full) — same pickup.
+  if (!room.storage || !(require('../managers/walls').noUpgrade(room) || (room.controller && room.controller.level >= 8))) return null;
   const R = require('../managers/links').roles(room);
   return R.hub && R.sources.length ? R.hub : null;
 }
@@ -247,35 +247,15 @@ function linkFed(room, a) {
   let ls = []; try { ls = require('../managers/links').roles(room).sources || []; } catch (err) { ls = []; }
   return ls.some(l => l && l.pos && Math.max(Math.abs(l.pos.x - a[0]), Math.abs(l.pos.y - a[1])) <= 1);
 }
-// RCL8 export fill (managers/export.js): storage -> home terminal from the manager tile (storage 37,31, terminal 35,31 and hub
-// 37,29 are all in range 1 of 36,30). Sticky memory.xf: a load taken for the terminal goes to the terminal, nowhere else.
-function exportFill(c, room, start) {
-  const m = c.memory, X = require('../managers/export');
-  if (m.xf) {
-    const t = room.terminal;
-    if (!t || !c.store[RESOURCE_ENERGY]) { delete m.xf; return false; }
-    if (move.to(c, t.pos.x, t.pos.y, 1)) { c.transfer(t, RESOURCE_ENERGY); delete m.xf; }
-    return true;
-  }
-  if (!start || room.name !== X.HOME || (m.home && m.home !== X.HOME) || m.working) return false;
-  if (Object.keys(c.store).some(r => c.store[r] > 0)) return false;
-  const amt = Math.min(c.store.getCapacity(), X.fillAmount(room));
-  if (amt < 400) return false;
-  m.xf = 1; const st = room.storage;
-  if (move.to(c, st.pos.x, st.pos.y, 1)) c.withdraw(st, RESOURCE_ENERGY, amt);
-  return true;
-}
 function homeHauler(room) { return Object.values(Game.creeps || {}).some(x => x.memory.role === 'hauler' && (x.memory.home || x.room.name) === room.name); }
-module.exports = { hubStand, exportFill, pickups, handoff, ctlLow, mineralRun, labRun, termPark, boostHaul, hubPickup, homeHauler, idlePark, run(c) {
+module.exports = { hubStand, pickups, handoff, ctlLow, mineralRun, labRun, termPark, boostHaul, hubPickup, homeHauler, idlePark, run(c) {
   if (require('../utils/cmd').yieldCreep(c)) return; // Memory.cmd off => one check (docs/COMMANDER.md)
   const room = c.room, P = plan.get(room.name);
-  if (exportFill(c, room, false)) return; // carrying an export load: finish it first
   if (mineralRun(c, room, P)) return;
   if (boostHaul(c, room)) return; // a kite waiting at home, before the terminal is drained
   if (termPark(c, room, false)) return; // tight terminal: park surplus before another lab fill seals it
   if (labRun(c, room)) return;
   if (termPark(c, room, true)) return;  // lab inputs satisfied: keep draining surplus down to the 3000 buffers
-  if (exportFill(c, room, true)) return; // RCL8: storage above 20k -> terminal for the W47N8 send
   if (room.name === c.memory.home && salvage.dump(c)) return; // Invader loot (minerals) -> storage first
   if (c.memory.working && c.store[RESOURCE_ENERGY] === 0) { c.memory.working = false; delete c.memory.dst; delete c.memory.fl; }
   if (!c.memory.working && c.store.getFreeCapacity() === 0) c.memory.working = true;

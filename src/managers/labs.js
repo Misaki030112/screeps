@@ -21,6 +21,17 @@ const TERM_FREE_TARGET = TERM_FREE_KO + TERM_FREE_SEND;
 // Dormant readyObs is a FIND_MY_STRUCTURES every tick (~0.10 CPU) while Memory.ops.labs is off.
 // Rescan every READY_EVERY ticks (inside 10–50). Turning labs on scans immediately. Never starts a reaction.
 const READY_EVERY = 20;
+// Product cap (Misaki 2026-11-26 t514u, RCL8 first-principles review): KO stood at ~95k = ~3,200 boosted RANGED parts (30 each),
+// years of kite boosts, while each 1k KO burns 500 O that home mines at the O mineral (28.7k left). Above PRODUCT_CAP the
+// reaction and the lab input loads pause (outputs still empty); O then banks and the mineral cap stops the mminer.
+// Memory.ops.labs is untouched — turn the cap off with Memory.ops.labCap = 0, or set another number.
+const PRODUCT_CAP = 60000;
+function productCap() { const v = typeof Memory !== 'undefined' && Memory.ops && Memory.ops.labCap; return v === 0 ? Infinity : (typeof v === 'number' ? v : PRODUCT_CAP); }
+function productStock(room, res, labs) {
+  const a = s => (s && s.store && s.store[res]) || 0;
+  return a(room.storage) + a(room.terminal) + (labs || []).reduce((t, l) => t + a(l), 0);
+}
+function capped(room, res, labs) { return productStock(room, res, labs) >= productCap(); }
 function cfg(room) { const o = typeof Memory !== 'undefined' && Memory.ops && Memory.ops.labs; return o && R[o[room.name]] ? o[room.name] : null; }
 function roles(labs) {
   if (labs.length < 3) return null;
@@ -32,9 +43,10 @@ const amt = (l, r) => (l.store && l.store[r]) || 0;
 const kind = l => Object.keys(l.store || {}).find(k => k !== 'energy' && l.store[k] > 0);
 function task(room, labs) {
   const c = cfg(room); if (!c || !room.terminal) return null; const ro = roles(labs); if (!ro) return null;
+  const full = capped(room, c, labs);
   for (let i = 0; i < 2; i++) { const l = ro.ins[i], need = R[c][i], k = kind(l);
     if (k && k !== need) return { from: l.id, to: room.terminal.id, res: k };            // wrong reagent: empty it
-    if (amt(l, need) < 1000 && (room.terminal.store[need] || 0) >= 100) return { from: room.terminal.id, to: l.id, res: need }; }
+    if (!full && amt(l, need) < 1000 && (room.terminal.store[need] || 0) >= 100) return { from: room.terminal.id, to: l.id, res: need }; }
   const k = kind(ro.out); if (k && amt(ro.out, k) >= 1000) return { from: ro.out.id, to: room.terminal.id, res: k };
   return null;
 }
@@ -124,7 +136,7 @@ function readyObs(room) {
     actHome: ACT_HOME_STOR, actK: ACT_K_BUF, actO: ACT_O_BUF,
   };
 }
-module.exports = { R, cfg, roles, task, parkTask, PROPOSE_K, PROPOSE_O, ACT_HOME_STOR, ACT_K_BUF, ACT_O_BUF, TERM_FREE_KO, TERM_FREE_SEND, TERM_FREE_TARGET, READY_EVERY, readyObs, run(room) {
+module.exports = { PRODUCT_CAP, productCap, productStock, capped, R, cfg, roles, task, parkTask, PROPOSE_K, PROPOSE_O, ACT_HOME_STOR, ACT_K_BUF, ACT_O_BUF, TERM_FREE_KO, TERM_FREE_SEND, TERM_FREE_TARGET, READY_EVERY, readyObs, run(room) {
   readyObs(room);
   const c = cfg(room); if (!c) return 0;
   const labs = room.find(FIND_MY_STRUCTURES).filter(s => s.structureType === STRUCTURE_LAB), ro = roles(labs); if (!ro) return 0;
@@ -137,6 +149,7 @@ module.exports = { R, cfg, roles, task, parkTask, PROPOSE_K, PROPOSE_O, ACT_HOME
     if ((oo && cmd.consumeLab(ro.out)) || ro.ins.some(l => cmd.consumeLab(l))) return 0;
   } }
   if (ro.out.cooldown || amt(a, ra) < 5 || amt(b, rb) < 5) return 0;
+  if (capped(room, c, labs)) return 0; // product cap: enough stock, keep the reagents
   const k = kind(ro.out); if (k && k !== c) return 0;
   // A spare lab is the boost lab. If the only choice is this output, pause the reaction while a kite waits.
   try { if (require('./boost').blocksReaction(room)) return 0; } catch (e) { /* boost absent in a partial stub */ }

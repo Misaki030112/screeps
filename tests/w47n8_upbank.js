@@ -20,9 +20,9 @@ const L = require(path.join(__dirname, '..', 'src', 'rooms', 'w47n8', 'layout.js
 const cmd = require(path.join(__dirname, '..', 'src', 'utils', 'cmd.js'));
 
 assert.strictEqual(W.LEAN_SOFT, 25000, 'seal line stays 25k');
-assert.strictEqual(W.UP_STICKY, 30000); // 2026-11-26 RCL8 plan: was 40000
-assert.strictEqual(W.UP_STICKY_T, 300); // was 500
-assert.strictEqual(W.UP_REARM, 20000); // was 30000
+assert.strictEqual(W.UP_STICKY, 40000);
+assert.strictEqual(W.UP_STICKY_T, 500);
+assert.strictEqual(W.UP_REARM, 30000);
 assert.strictEqual(W.IDLE_EVERY, 4);
 
 const cells = {};
@@ -92,7 +92,7 @@ function pair() {
   return { spawned, a: mk('SpawnA'), b: mk('SpawnB') };
 }
 
-// dayObs: 30k must hold for 300 ticks before keep becomes 3. 25k never opens 4–6.
+// dayObs: 40k must hold for 500 ticks before keep becomes 3. 25k never opens 4–6.
 {
   Game.time = 200000;
   boot(26000, 4);
@@ -104,45 +104,45 @@ function pair() {
   assert.strictEqual(W.LEAN_SOFT, 25000);
 
   Game.time = 201000;
-  boot(30000, 4);
+  boot(40000, 4);
   W.dayObs(room);
-  assert.strictEqual(Memory.ops.w8day.upLatched, 0, 'first tick at 30k does not latch');
+  assert.strictEqual(Memory.ops.w8day.upLatched, 0, 'first tick at 40k does not latch');
   assert.strictEqual(Memory.ops.w8day.upgKeep, 2);
   const since = Memory.ops.w8up.since;
   assert.strictEqual(since, 201000);
-  Game.time = since + 299;
-  room.storage.store.energy = 31000;
+  Game.time = since + 499;
+  room.storage.store.energy = 41000;
   W.dayObs(room);
-  assert.strictEqual(Memory.ops.w8day.upLatched, 0, '299 ticks at ≥30k still keep=2');
+  assert.strictEqual(Memory.ops.w8day.upLatched, 0, '499 ticks at ≥40k still keep=2');
   assert.strictEqual(Memory.ops.w8day.upgKeep, 2);
-  Game.time = since + 300;
-  room.storage.store.energy = 29000; // dipped under 30k before the latch: streak resets
+  Game.time = since + 500;
+  room.storage.store.energy = 39000; // dipped under 40k before the latch: streak resets
   W.dayObs(room);
-  assert.strictEqual(Memory.ops.w8day.upLatched, 0, 'a dip under 30k before 300 ticks restarts the streak');
+  assert.strictEqual(Memory.ops.w8day.upLatched, 0, 'a dip under 40k before 500 ticks restarts the streak');
   assert.strictEqual(Memory.ops.w8up.since, 0);
 
   Game.time = 202000;
-  room.storage.store.energy = 30000;
+  room.storage.store.energy = 40000;
   W.dayObs(room);
   const since2 = Memory.ops.w8up.since;
-  Game.time = since2 + 300;
-  room.storage.store.energy = 32000;
+  Game.time = since2 + 500;
+  room.storage.store.energy = 42000;
   delete Memory.ops.w8recycle;
   W.dayObs(room);
   assert.strictEqual(Memory.ops.w8day.upLatched, 1);
-  assert.strictEqual(Memory.ops.w8day.upgKeep, 3, 'after 300 ticks at ≥30k, steady 3');
+  assert.strictEqual(Memory.ops.w8day.upgKeep, 3, 'after 500 ticks at ≥40k, steady 3');
   assert.strictEqual(Memory.ops.w8day.upgCeil, 3, 'not 4–6');
   assert.strictEqual((Memory.ops.w8recycle || []).length, 1, '4 upgraders trim to 3, not to 0');
 
-  room.storage.store.energy = 25000;
+  room.storage.store.energy = 35000;
   W.dayObs(room);
-  assert.strictEqual(Memory.ops.w8day.upLatched, 1, '25k stays latched');
+  assert.strictEqual(Memory.ops.w8day.upLatched, 1, '35k stays latched');
   assert.strictEqual(Memory.ops.w8day.upgKeep, 3);
 
-  room.storage.store.energy = 19999;
+  room.storage.store.energy = 29999;
   delete Memory.ops.w8recycle;
   W.dayObs(room);
-  assert.strictEqual(Memory.ops.w8day.upLatched, 0, 'below 20k re-arms');
+  assert.strictEqual(Memory.ops.w8day.upLatched, 0, 'below 30k re-arms');
   assert.strictEqual(Memory.ops.w8day.upgKeep, 2);
   assert.ok((Memory.ops.w8recycle || []).length >= 2, 'drop back to 2');
 

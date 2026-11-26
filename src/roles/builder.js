@@ -6,7 +6,7 @@
 // when even that is idle the remapped creep upgrades from fc/source containers (never drains the storage reserve).
 const plan = require('../utils/plan'), move = require('../utils/move'), rc = require('../utils/roomcache');
 const remote = require('../managers/remote'), trace = require('../utils/trace');
-const PRIO = { spawn: 0, tower: 1, extension: 2, container: 3, storage: 4, link: 5, rampart: 6, constructedWall: 6, road: 7 }; // v5: ring walls (1e each) before roads // match layout PRIORITY (tower before extension)
+const PRIO = { spawn: 0, tower: 1, extension: 2, container: 3, storage: 4, link: 5, rampart: 6, constructedWall: 6, road: 7, observer: 8, powerSpawn: 9, nuker: 10 }; // RCL8 (managers/rcl8.js): observer 8k first, nuker last // v5: ring walls (1e each) before roads // match layout PRIORITY (tower before extension)
 function remoteRoadSite() {
   for (const r in remote.CFG) {
     if (remote.paused(r) || remote.CFG[r].via) continue; // multi-hop W45N7: no road (docs/ROADS.md)
@@ -229,11 +229,12 @@ module.exports = { ROUTE_FIX, routeJob, remoteRoadSite, remoteRefill, pickSource
   // a new site (home OR remote road) outranks any repair. Live 00:05 swamp7: all 5 builders stuck on container 34,34 at 86% hits
   // (sticky clears at 90%, repairables pick at 80%) while W45N8 15,39/16,40/25,39 sat 0/1500 — line only checked home sites.
   // (a route road repair in the remote stays sticky until 90%: re-picking every tick bounced between 2,12 and 12,10 ~10 tiles apart)
-  if (t && t.progress === undefined && t.pos.roomName === hm.name && !(c.memory.tcap && W.belowFloor(hm)) && (rc.sites(Game.rooms[c.memory.home] || room).length || remoteRoadSite())) t = null;
+  if (t && t.progress === undefined && t.pos.roomName === hm.name && !(c.memory.tcap && W.belowFloor(hm)) && (rc.sites(Game.rooms[c.memory.home] || room).some(z => !require('../managers/rcl8').deferSite(Game.rooms[c.memory.home] || room, z)) || remoteRoadSite())) t = null;
   // Stickiness must not skip a higher-priority site (patrol 10-14 22:40: tower 37,33 at 0 while extensions built).
   if (t && t.progress !== undefined) {
     const home = Game.rooms[c.memory.home] || room;
-    if (rc.sites(home).some(s => (PRIO[s.structureType] ?? 9) < (PRIO[t.structureType] ?? 9))) t = null;
+    if (require('../managers/rcl8').deferSite(home, t)) t = null; // RCL8 power spawn / nuker: surplus only (managers/rcl8.js)
+    else if (rc.sites(home).some(s => (PRIO[s.structureType] ?? 9) < (PRIO[t.structureType] ?? 9))) t = null;
     // a held home road site yields to an open remote route road site too (same rule as the pick below; live 11:3x 28,10 kept it)
     else if (t.structureType === STRUCTURE_ROAD && t.pos.roomName === home.name && routeJob()) t = null;
   }
@@ -250,7 +251,8 @@ module.exports = { ROUTE_FIX, routeJob, remoteRoadSite, remoteRefill, pickSource
     // route-road builder refilled at the W45N8 container, walked home and built re-sited home spurs 30,12/29,11/28,10/15,43
     // for ~800t while the 13 W45N8 sites stayed 0 (Misaki: remote roads must never decay away). Non-road home sites still go first.
     const rs = sites.some(s => s.structureType === STRUCTURE_ROAD) && routeJob(); // route road < 50% too (17:4x)
-    const pick = rs ? sites.filter(s => s.structureType !== STRUCTURE_ROAD) : sites;
+    const R8 = require('../managers/rcl8'), open8 = sites.filter(s => !R8.deferSite(home, s)); // power spawn / nuker wait for surplus
+    const pick = rs ? open8.filter(s => s.structureType !== STRUCTURE_ROAD) : open8;
     // v5: spread builders over far wall sites: a site another builder already holds costs +60 range
     const held = new Set(Object.values(Game.creeps).filter(x => x !== c && x.memory.role === 'builder').map(x => x.memory.t));
     if (pick.length) t = _.min(pick, s => (PRIO[s.structureType] ?? 9) * 100 + (s.pos.roomName === c.pos.roomName ? c.pos.getRangeTo(s) : 50) + (held.has(s.id) ? 60 : 0));

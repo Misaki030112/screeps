@@ -1,5 +1,5 @@
 // Default KO boost for home kites. Core busters are skipped. Lab energy is not pulled from
-// storage under 20k. The boost lab is not a KO reaction input/output unless reactions pause.
+// storage under 5k (2026-11-26, was 20k). The boost lab is not a KO reaction input/output unless reactions pause.
 // node tests/boost.js
 const path = require('path'), assert = require('assert');
 const src = p => path.join(__dirname, '..', 'src', p);
@@ -33,7 +33,7 @@ const HOME = [
 ];
 function room(labs, term, stor) {
   const t = { id: 't', store: Object.assign({}, term), pos: { x: 11, y: 11 } };
-  const s = { id: 's', store: Object.assign({ energy: 21000 }, stor), pos: { x: 12, y: 12 } };
+  const s = { id: 's', store: Object.assign({ energy: 6000 }, stor), pos: { x: 12, y: 12 } };
   OBJS.t = t; OBJS.s = s;
   return {
     name: 'W46N8', terminal: t, storage: s, labs,
@@ -90,7 +90,7 @@ assert.ok(free.length >= 1, 'a lab is outside the reaction pair');
   free[0].store = { KO: 900, energy: 400 };
   const c = creep('defender', kiteBody());
   const rm = arm(c);
-  rm.storage.store.energy = 16700;
+  rm.storage.store.energy = 1700;
   const p = B.plan(rm, c);
   assert.strictEqual(p.act, 'ready', 'lab already holds KO and energy');
   assert.strictEqual(p.pick.lab.id, free[0].id);
@@ -109,7 +109,7 @@ assert.ok(free.length >= 1, 'a lab is outside the reaction pair');
   free[0].store = { KO: 900, energy: 0 };
   const c = creep('guard', kiteBody());
   const rm = arm(c);
-  rm.storage.store.energy = 16700;
+  rm.storage.store.energy = 1700;
   rm.terminal.store = { KO: 0, energy: 0 };
   const p = B.plan(rm, c);
   assert.strictEqual(p.act, 'skip');
@@ -120,13 +120,13 @@ assert.ok(free.length >= 1, 'a lab is outside the reaction pair');
   assert.strictEqual(free[0].boosts, 0);
 }
 
-// Storage 20300 can only spare 300, a max kite needs 380: skip rather than cross 20k.
+// Storage 5300 can only spare 300, a max kite needs 380: skip rather than cross 20k.
 {
   for (const l of HOME) { l.store = {}; l.boosts = 0; }
   free[0].store = { KO: 900, energy: 0 };
   const c = creep('defender', kiteBody());
   const rm = arm(c);
-  rm.storage.store.energy = 20300;
+  rm.storage.store.energy = 5300;
   assert.strictEqual(B.plan(rm, c).why, 'energy');
   assert.strictEqual(B.haulTask(rm), null);
 }
@@ -138,14 +138,14 @@ assert.ok(free.length >= 1, 'a lab is outside the reaction pair');
   const c = creep('defender', kiteBody());
   delete c.memory.noBoost;
   const rm = arm(c);
-  rm.storage.store.energy = 21000;
+  rm.storage.store.energy = 6000;
   assert.strictEqual(B.plan(rm, c).act, 'wait');
   const job = B.haulTask(rm);
   assert.strictEqual(job.res, 'energy');
-  assert.strictEqual(job.amt, 380);
+  assert.strictEqual(job.amt, 1000, 'tops the boost lab to the 1000 standing stock (covers this kite\'s 380)');
   assert.strictEqual(job.from, 's');
   assert.strictEqual(job.to, free[0].id);
-  assert.ok(21000 - job.amt >= 20000);
+  assert.ok(6000 - job.amt >= 5000);
   assert.ok(ro.ins.every(l => l.id !== job.to) && ro.out.id !== job.to);
   assert.strictEqual(B.hold(c), true, 'waits until the lab has energy');
   assert.strictEqual(free[0].boosts, 0);
@@ -162,7 +162,7 @@ assert.ok(free.length >= 1, 'a lab is outside the reaction pair');
   const c = creep('defender', kiteBody());
   delete c.memory.boosted;
   const rm = arm(c);
-  rm.storage.store = { energy: 21000 };
+  rm.storage.store = { energy: 6000 };
   rm.terminal.store = { KO: 100, energy: 0 };
   assert.strictEqual(B.plan(rm, c).why, 'ko');
   rm.terminal.store.KO = 900;
@@ -184,7 +184,7 @@ assert.ok(free.length >= 1, 'a lab is outside the reaction pair');
   const c = creep('defender', kiteBody());
   delete c.memory.boosted; delete c.memory.noBoost; delete c.memory.bl;
   const rm = arm(c);
-  rm.storage.store = { energy: 21000 };
+  rm.storage.store = { energy: 6000 };
   rm.terminal.store = { energy: 400 };
   const job = B.haulTask(rm);
   assert.ok(job, 'output KO is a haul source');
@@ -208,7 +208,7 @@ assert.ok(free.length >= 1, 'a lab is outside the reaction pair');
   const c = creep('defender', kiteBody());
   delete c.memory.boosted; delete c.memory.noBoost; delete c.memory.bl;
   Game.creeps = { [c.name]: c };
-  const rm = room(trio, { K: 3000, O: 3000, KO: 900, energy: 0 }, { energy: 21000 });
+  const rm = room(trio, { K: 3000, O: 3000, KO: 900, energy: 0 }, { energy: 6000 });
   c.room = rm;
   const pick = B.pickLab(rm);
   assert.strictEqual(pick.pause, true);
@@ -223,7 +223,7 @@ assert.ok(free.length >= 1, 'a lab is outside the reaction pair');
   for (const l of HOME) { l.store = {}; l.reacts = 0; l.boosts = 0; }
   HOME.forEach(l => { if (ro.ins.indexOf(l) >= 0) l.store = l === ro.ins[0] ? { K: 50 } : { O: 50 }; });
   Game.creeps = {};
-  const rm = room(HOME, { K: 3000, O: 3000, KO: 0 }, { energy: 21000 });
+  const rm = room(HOME, { K: 3000, O: 3000, KO: 0 }, { energy: 6000 });
   assert.strictEqual(B.blocksReaction(rm), false);
   assert.strictEqual(L.run(rm), 1);
   assert.ok(ro.out.reacts >= 1, 'reaction still runs on its own output');
@@ -243,7 +243,7 @@ const H = require(src('roles/hauler.js'));
   const c = creep('defender', kiteBody());
   delete c.memory.boosted; delete c.memory.noBoost; delete c.memory.bl;
   const rm = arm(c);
-  rm.storage.store.energy = 16700;
+  rm.storage.store.energy = 1700;
   const hauler = {
     memory: { home: 'W46N8' }, store: {}, got: [],
     withdraw(s, r, amt) { this.got.push(['w', s.id, r, amt]); return 0; },
@@ -251,26 +251,26 @@ const H = require(src('roles/hauler.js'));
   };
   assert.strictEqual(H.boostHaul(hauler, rm), false, 'hauler does not pull storage energy under 20k');
   assert.deepStrictEqual(hauler.got, []);
-  rm.storage.store.energy = 21000;
+  rm.storage.store.energy = 6000;
   delete c.memory.noBoost;
   const slow = hauler300();
   assert.strictEqual(H.boostHaul(slow, rm), true);
-  assert.deepStrictEqual(slow.got, [['w', 's', 'energy', 300]], '380 energy is taken 300 at a time');
+  assert.deepStrictEqual(slow.got, [['w', 's', 'energy', 300]], 'lab energy is taken 300 at a time');
   assert.strictEqual(H.boostHaul(slow, rm), true, 'delivers the energy before the next withdraw');
   assert.strictEqual(slow.store.energy || 0, 0);
   assert.strictEqual(free[0].store.energy, 300);
   slow.got = [];
-  assert.strictEqual(H.boostHaul(slow, rm), true, 'second trip finishes the 80');
-  assert.deepStrictEqual(slow.got, [['w', 's', 'energy', 80]]);
+  assert.strictEqual(H.boostHaul(slow, rm), true, 'second trip');
+  assert.deepStrictEqual(slow.got, [['w', 's', 'energy', 300]]);
   assert.ok(slow.got.every(g => g[0] !== 'w' || g[3] <= 300));
-  // Assigned at 21000, storage fell to 20100 before the withdraw. 20100 - 380 is under 20k.
+  // Assigned at 6000, storage fell to 5100 before the withdraw. 5100 - 380 is under 20k.
   const late = {
     memory: { home: 'W46N8', bk: 1, bkFrom: 's', bkTo: free[0].id, bkRes: 'energy', bkAmt: 380 },
     store: {}, got: [],
     withdraw(s, r, amt) { this.got.push(['w', s.id, r, amt]); return 0; },
     transfer() { return 0; },
   };
-  rm.storage.store.energy = 20100;
+  rm.storage.store.energy = 5100;
   assert.strictEqual(H.boostHaul(late, rm), false, 'resume does not finish a withdraw that crosses 20k');
   assert.deepStrictEqual(late.got, []);
   assert.ok(!late.memory.bk);
@@ -281,7 +281,7 @@ const H = require(src('roles/hauler.js'));
   const c = creep('defender', kiteBody());
   delete c.memory.boosted; delete c.memory.noBoost; delete c.memory.bl;
   const rm = arm(c);
-  rm.storage.store = { energy: 21000 };
+  rm.storage.store = { energy: 6000 };
   rm.terminal.store = { KO: 900, energy: 0 };
   const h = hauler300();
   assert.strictEqual(H.boostHaul(h, rm), true);

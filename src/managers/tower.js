@@ -85,7 +85,7 @@ module.exports = { growthPaused, upkeep, coverTarget, IND_RAMP, IND_LEGACY, run(
   if (Game.time % 10 === 0) {
     const P = plan.get(room.name), st = room.storage;
     const funded = !st || st.store[RESOURCE_ENERGY] >= require('./threat').reserve(room.name);
-    const lvl = room.controller.level, rclT = RAMPART_TARGET[lvl] || 0;
+    const lvl = room.controller.level, rclT = require('./rcl8').rampTarget(room, RAMPART_TARGET[lvl] || 0); // RCL8: 3M only from surplus
     // Per-rampart cap. Lab/factory covers use 300k unless already on the legacy 1M path (coverTarget).
     // Unfunded storage still only holds the floor, and v4 gate ramparts stay builder work (walls.js).
     const W = require('./walls');

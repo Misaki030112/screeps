@@ -152,8 +152,9 @@ function targets(room, count, backlog, ctlEnergy, sites) {
   const storE = st ? (room.storage.store[RESOURCE_ENERGY] || 0) : 0;
   const extra = Math.floor(ctlEnergy / 700);
   const allowExtra = upExtraTick(room, storE, ctlEnergy, floor);
-  // RCL8 (2026-11-26 t511u): home exports to W47N8 instead of feeding a capped GCL-only controller; guard upgrader only (export.js)
-  T.upgrader = rcl >= 8 ? require('./export').homeUpgrade8(room) : Math.min(P.pos.upgraders.length, (sites ? 1 : 2) + (allowExtra ? extra : 0));
+  // RCL8 (Misaki 2026-11-26 t514u, rooms develop independently): one 15W upgrader for GCL. It is throttled by supply, not by
+  // count: source A's link feeds it ~10 e/t; the ctl container / hub link only get storage energy above the defence floor.
+  T.upgrader = rcl >= 8 ? 1 : Math.min(P.pos.upgraders.length, (sites ? 1 : 2) + (allowExtra ? extra : 0));
   // RCL6+ wall banking (managers/walls.js): one upgrader until storage reaches the wall start (20k), then the latch releases it.
   if (rcl >= 6 && rcl < 8 && ['bank', 'roads'].includes(require('./walls').phase(room))) T.upgrader = Math.min(T.upgrader, 1);
   // Build hold (walls.noUpgrade): 0 upgraders during the road plan; falls back to the 1 minimal (700e) upgrader above
@@ -474,7 +475,7 @@ function setRoleTargets(room) {
   const m = room.memory, ce = cc ? cc.store[RESOURCE_ENERGY] : 0;
   m.ctlEma = m.ctlEma === undefined ? ce : m.ctlEma + (ce - m.ctlEma) * Math.min(1, (Game.time - (m.ctlEmaT || Game.time)) / 300);
   m.ctlEma = Math.round(m.ctlEma); m.ctlEmaT = Game.time;
-  const nSites = rc.sites(room).length, rcl = room.controller.level;
+  const nSites = rc.sites(room).filter(x => !require('./rcl8').deferSite(room, x)).length, rcl = room.controller.level;
   const T = targets(room, count, backlog, m.ctlEma, nSites);
   let roadBuilder = false;
   { const Wr = require('./walls'), dr = Wr.defReserve ? Wr.defReserve() : 0, war = Wr.siege(room), fundWall = !!(Wr.fundSpend && Wr.fundSpend(room));
@@ -660,7 +661,7 @@ function run1(spawn, onWait) {
   const m = room.memory, ce = cc ? cc.store[RESOURCE_ENERGY] : 0;
   m.ctlEma = m.ctlEma === undefined ? ce : m.ctlEma + (ce - m.ctlEma) * Math.min(1, (Game.time - (m.ctlEmaT || Game.time)) / 300);
   m.ctlEma = Math.round(m.ctlEma); m.ctlEmaT = Game.time;
-  const nSites = rc.sites(room).length;
+  const nSites = rc.sites(room).filter(x => !require('./rcl8').deferSite(room, x)).length;
   const T = targets(room, count, backlog, m.ctlEma, nSites);
   // defense reserve banking (walls.defLow): no builders/upgraders until storage reaches Memory.defense.reserveE
   // reserve hysteresis (13:06 trace: storage hovered at 15k; each crossing spawned up to 4 builders x 1600e which then starved at the

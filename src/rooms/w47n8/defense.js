@@ -220,9 +220,14 @@ const raBody = (e, max = 25) => { const k = Math.max(1, Math.min(max, Math.floor
 // Local W47N8 defenders = fewest (0-4) that win (no losses) together with the baseline. Extra home defenders (up to 4 total) only if
 // the sim says they turn a loss into a win (home iterated from the baseline upward, local 0-4 each). Still unwinnable -> baseline only, no local spawns (never feed a lost fight); inside the seal -> advise safe mode.
 const MAXH = 4, MAXL = 4, HEAL_AT = 4; // Misaki 17:56: home max 4, W47N8 local max 4
+const TOWER_ONLY_T = 30;
 function plan(o) {
   const fighters = o.force.filter(c => live(c, 'attack') + live(c, 'ranged_attack') > 0);
   if (!fighters.length) return { home: 0, w8: 0, w8m: 0, win: true, why: 'unarmed', advise: '' };
+  // 2026-11-26 (patrol + Misaki t514u, rooms independent): towers first. A force with no HEAL that W47N8's towers kill alone
+  // within TOWER_ONLY_T ticks needs no defender at all — the home side used to add one 25RA/25M (~5k energy) on every NPC.
+  if (!o.force.some(c => live(c, 'heal') > 0)) { const r0 = sim(o.force, o.towerR, [], 0, o);
+    if (r0.result === 'win' && !r0.lost && r0.ticks <= TOWER_ONLY_T) return { home: 0, w8: 0, w8m: 0, hl: '', win: true, why: 'towers', advise: '' }; }
   const hb = raBody(o.homeCap || 0), wb = raBody(o.w8Cap || 0, 25), mb = meleeBody(o.w8Cap || 0), base = o.homeOk ? 1 : 0;
   const wins = defs => { const r = defs.length ? sim(o.force, o.towerR, defs, 0, o) : sim(o.force, o.towerR, wb, 0, o); return r.result === 'win' && !r.lost; };
   // 18:04 (Misaki): a roster of >= 4 combat defenders always includes one dedicated healer (home at max cap if home is safe, else local),
@@ -249,4 +254,4 @@ function repairStand(wall, hs, open = () => true) {
 }
 // body summary {attack:n,...} (tools/north_watch.py) -> body list in the worst-case order (tough, move, work parts last)
 function fromCounts(b) { const out = []; for (const t of ['tough', 'move', 'attack', 'ranged_attack', 'heal', 'work', 'claim', 'carry']) for (let i = 0; i < (b[t] | 0); i++) out.push({ type: t, hits: 100 }); return { body: out, hits: out.length * 100 }; }
-module.exports = { catchable, meleeBody, guardPlan, GATE, GHOLD, SAFE_HY, hSafe, HEAL_AT, healBody, healPlan, HIDLE, MAXH, MAXL, healAct, segSplit, atkPow, towerPick, sim, assess, defPlan, postTile, POSTS, IDLE, plan, raBody, repairPick, repairStand, COVER, RECYCLE, fromCounts, cls, armed, respond, toSpec, inBase, FLOOR, SEAL_Y };
+module.exports = { TOWER_ONLY_T, catchable, meleeBody, guardPlan, GATE, GHOLD, SAFE_HY, hSafe, HEAL_AT, healBody, healPlan, HIDLE, MAXH, MAXL, healAct, segSplit, atkPow, towerPick, sim, assess, defPlan, postTile, POSTS, IDLE, plan, raBody, repairPick, repairStand, COVER, RECYCLE, fromCounts, cls, armed, respond, toSpec, inBase, FLOOR, SEAL_Y };

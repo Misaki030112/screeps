@@ -96,7 +96,8 @@ p = D.defPlan(me(27, 6), [c('a', 26, 7, { ranged_attack: 2, move: 2 }), c('b', 2
 // ---- joint planner (one place for W46N8 + W47N8; Misaki 17:45: baseline 1 home defender, extra only if it turns a loss into a win)
 const P = f => D.plan(Object.assign({ towerR: [32], homeOk: true, homeCap: 2300, w8Cap: 1300 }, f));
 const B9 = a => a.map(fc), RA = (k) => ({ ranged_attack: k, move: k }), HL = k => ({ heal: k, move: k });
-let pl = P({ force: B9([RA(6), RA(8)]) }); assert.deepStrictEqual([pl.home, pl.w8, pl.win], [1, 0, true], 'pair: baseline home 1 even though towers win');
+let pl = P({ force: B9([RA(6), RA(8)]) }); assert.deepStrictEqual([pl.home, pl.w8, pl.win, pl.why], [0, 0, true, 'towers'], 'pair, no HEAL: towers win alone -> no defender at all (2026-11-26, was baseline home 1)');
+{ const far = P({ force: B9([RA(25)].concat([RA(25)])), towerR: [40], towerE: 0 }); assert.ok(far.why !== 'towers', 'towers without energy cannot win alone -> normal roster'); }
 pl = P({ force: B9([RA(6), RA(8), HL(7), HL(7)]) }); assert.deepStrictEqual([pl.home, pl.w8], [1, 1], 'pair + 2 healers: baseline + fewest local that win');
 pl = P({ force: B9([RA(6), RA(8), HL(7), HL(7), HL(7)]) }); assert.ok(pl.home >= 1 && pl.home <= 4, 'pair + 3 healers: baseline, extras only if they win');
 if (pl.home >= 2) assert.ok(pl.win, 'extra home defenders only when they turn it into a win'); else assert.ok(pl.win || pl.w8 === 0, 'baseline: local only when it wins');
