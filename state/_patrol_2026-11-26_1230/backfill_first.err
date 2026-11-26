@@ -1,0 +1,17 @@
+Traceback (most recent call last):
+  File "/workspace/screeps/tools/history_backfill.py", line 297, in <module>
+    print(f'ts_realigned={nfix}')
+             ^^^^^^
+  File "/workspace/screeps/tools/history_backfill.py", line 283, in main
+    with c.cursor() as cur:
+       ^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/screeps/tools/history_backfill.py", line 155, in realign_ts
+    def tick_time(now_ts, gt, tick, tick_s):
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+    def realign_ts(c, tmin, tmax, rooms, now_ts, gt, tick_s):
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/screeps/.venv/lib/python3.13/site-packages/psycopg/connection.py", line 304, in execute
+    raise ex.with_traceback(None)
+psycopg.errors.CheckViolation: new row for relation "_hyper_6_97_chunk" violates check constraint "constraint_97"
+DETAIL:  Failing row contains (2026-11-26 07:59:13.202014+08, 84490579, W47N8, w8hauler84453334, whauler, 17, 33, 1500, 340, loaded, 2b5398f7).
