@@ -220,6 +220,28 @@ function hubPickup(room) {
   const R = require('../managers/links').roles(room);
   return R.hub && R.sources.length ? R.hub : null;
 }
+// Stand tile for the hub pickup: the manager tile while a creep can still reach it. Live 2026-11-26 (patrol 12:3x JST): the
+// RCL8 spawn 35,29 closed the last free neighbour of 36,30 (spawn/tower/link/factory/ext/terminal/ext/storage on all 8), so
+// move.to(36,30) never arrived and the hauler ping-ponged 34,31<->35,32 (rp/100 2.6 -> 41, idle 87%) while source A backed
+// up into its container. Fallback: an open, reachable tile beside the hub link, preferring one that also touches storage.
+const standCache = {};
+function hubStand(room, hb, P) {
+  const m = P.pos.manager, k = room.name, now = (typeof Game !== 'undefined' && Game.time) || 0;
+  const hit = standCache[k]; if (hit && hit.hub === hb.id && now - hit.t < 100) return hit.p;
+  const T = room.getTerrain(), OBS = typeof OBSTACLE_OBJECT_TYPES !== 'undefined' ? OBSTACLE_OBJECT_TYPES : ['spawn', 'extension', 'link', 'storage', 'tower', 'observer', 'powerSpawn', 'lab', 'terminal', 'nuker', 'factory', 'constructedWall'];
+  const open = (x, y) => x >= 1 && y >= 1 && x <= 48 && y <= 48 && T.get(x, y) !== 1 && !room.lookForAt(LOOK_STRUCTURES, x, y).some(s => OBS.includes(s.structureType));
+  const reach = (x, y) => { if (!open(x, y)) return false; for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) if ((dx || dy) && open(x + dx, y + dy)) return true; return false; };
+  let p = m && reach(m[0], m[1]) ? m : null;
+  if (!p) {
+    const st = room.storage && room.storage.pos, cands = [];
+    for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) { const x = hb.pos.x + dx, y = hb.pos.y + dy; if ((dx || dy) && reach(x, y)) cands.push([x, y]); }
+    const touchSt = ([x, y]) => (st && Math.max(Math.abs(st.x - x), Math.abs(st.y - y)) <= 1 ? 0 : 1);
+    cands.sort((a, b) => touchSt(a) - touchSt(b));
+    p = cands[0] || m; // nothing open: keep the old target (no worse than before)
+  }
+  standCache[k] = { t: now, hub: hb.id, p };
+  return p;
+}
 function linkFed(room, a) {
   if (!a) return false;
   let ls = []; try { ls = require('../managers/links').roles(room).sources || []; } catch (err) { ls = []; }
@@ -244,7 +266,7 @@ function exportFill(c, room, start) {
   return true;
 }
 function homeHauler(room) { return Object.values(Game.creeps || {}).some(x => x.memory.role === 'hauler' && (x.memory.home || x.room.name) === room.name); }
-module.exports = { exportFill, pickups, handoff, ctlLow, mineralRun, labRun, termPark, boostHaul, hubPickup, homeHauler, idlePark, run(c) {
+module.exports = { hubStand, exportFill, pickups, handoff, ctlLow, mineralRun, labRun, termPark, boostHaul, hubPickup, homeHauler, idlePark, run(c) {
   if (require('../utils/cmd').yieldCreep(c)) return; // Memory.cmd off => one check (docs/COMMANDER.md)
   const room = c.room, P = plan.get(room.name);
   if (exportFill(c, room, false)) return; // carrying an export load: finish it first
@@ -269,10 +291,12 @@ module.exports = { exportFill, pickups, handoff, ctlLow, mineralRun, labRun, ter
     const a = assignPickup(c, room, P), cont = a && rc.at(room, a[0], a[1], STRUCTURE_CONTAINER);
     const hb = hubPickup(room); // ignores a stale legacy flag (lp): live 12:47 the hauler idled at the ctl drop with lp=1 and nothing >= 100 to pick
     if (hb && !(cont && cont.store[RESOURCE_ENERGY] >= c.store.getCapacity())) { // container only when the link path overflowed
-      const [mx, my] = P.pos.manager; delete c.memory.wt; delete c.memory.lp;
+      const [mx, my] = hubStand(room, hb, P); delete c.memory.wt; delete c.memory.lp;
+      const have = hb.store[RESOURCE_ENERGY], need = Math.min(c.store.getFreeCapacity(), require('../managers/links').SEND);
+      const m0 = P.pos.manager, onRoad = !(m0 && m0[0] === mx && m0[1] === my); // fallback stand sits on the x=38 corridor
+      if (onRoad && have < need) { trace.why(c, 'p'); idlePark(c, room, P); return; } // wait off the corridor, come when it holds a load
       if (!move.to(c, mx, my, 0)) return;
-      const have = hb.store[RESOURCE_ENERGY];
-      if (have >= Math.min(c.store.getFreeCapacity(), require('../managers/links').SEND)) { c.withdraw(hb, RESOURCE_ENERGY); c.memory.working = true; return; }
+      if (have >= need) { c.withdraw(hb, RESOURCE_ENERGY); c.memory.working = true; return; }
       trace.why(c, 'p'); return;
     }
     // fallbacks: container missing, or waited > 60 ticks without filling (miner dead/absent) -> one nearest-energy trip

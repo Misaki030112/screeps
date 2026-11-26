@@ -103,9 +103,17 @@ def merge_chunk(j, state):
             ticks[int(k)] = v
         except (TypeError, ValueError):
             continue
+    first = min(ticks) if ticks else None
     for t in sorted(ticks):
         upd = ticks[t]
-        if upd is not None:
+        if t == first and isinstance(upd, dict):
+            # The opening tick is a FULL snapshot (verified 2026-11-26 W47N8@84493000: 256 objects vs 24 in the
+            # next delta). Replace, do not merge: a creep that died at a chunk boundary or inside a 404 chunk has
+            # no null delta here, and merging kept it forever (42h catch-up 11-26: 211 creep rows/tick vs ~40 alive,
+            # dead w8filler84455512 still "at 34,32" 35k ticks later).
+            state.clear()
+            state.update({k: dict(v) for k, v in upd.items() if isinstance(v, dict)})
+        elif upd is not None:
             apply_update(state, upd)
         yield t + 1, state
 
@@ -117,6 +125,11 @@ def creep_rows(tick, room, objects, our_uid, ts, cm):
             continue
         name = o.get('name')
         if not name or o.get('x') is None or o.get('y') is None:
+            continue
+        # ageTime = the tick the creep dies of old age. History has no null delta for that death (seen 11-26:
+        # miner84489574 ageTime 84491100, last delta at 84491099, simply absent from the next chunk), so a creep that
+        # ages out mid-chunk would otherwise ride along until the next full snapshot. tick here is history T + 1.
+        if o.get('ageTime') and tick - 1 >= int(o['ageTime']):
             continue
         e = (o.get('store') or {}).get('energy') or 0
         spawning = o.get('spawning') not in (None, False, 0)

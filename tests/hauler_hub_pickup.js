@@ -37,5 +37,10 @@ const cases = [
   ['no hold, link-fed A, container 900 (link backed up): legacy fetch from A', () => assert.deepStrictEqual(run({ hold: false, arrived: false, ka: box('ka', 31, 12, 900, 2000) }).moved, [31, 12])],
   ['no hold, no source link beside the miner: fixed miner container as before', () => assert.deepStrictEqual(run({ hold: false, arrived: false, src: [box('sx', 20, 20, 0, 800)] }).moved, [31, 12])],
 ];
+// 2026-11-26: RCL8 spawn 35,29 walled the manager tile 36,30 in (live W46N8 grid) -> stand on 38,30 (touches hub + storage)
+const GRID = { '35,29': 'spawn', '36,29': 'tower', '37,29': 'link', '35,30': 'factory', '37,30': 'extension', '35,31': 'terminal', '36,31': 'extension', '37,31': 'storage', '36,28': 'extension', '37,28': 'extension', '38,30': 'road', '38,29': 'road', '38,28': 'road' };
+const roomSealed = { name: 'W46N9', storage: box('st', 37, 31, 9000, 1e6), getTerrain: () => ({ get: () => 0 }), lookForAt: (t, x, y) => (GRID[x + ',' + y] ? [{ structureType: GRID[x + ',' + y] }] : []) };
+cases.push(['sealed manager tile: hubStand -> 38,30 (beside hub and storage)', () => assert.deepStrictEqual(H.hubStand(roomSealed, box('hub', 37, 29, 0, 800), P), [38, 30])]);
+cases.push(['open manager tile: hubStand keeps 36,30', () => { const g = Object.assign({}, GRID); delete g['35,29']; const rm = Object.assign({}, roomSealed, { name: 'W46N10', lookForAt: (t, x, y) => (g[x + ',' + y] ? [{ structureType: g[x + ',' + y] }] : []) }); assert.deepStrictEqual(H.hubStand(rm, box('hub', 37, 29, 0, 800), P), [36, 30]); }]);
 let fail = 0; for (const [n, f] of cases) { try { f(); console.log('ok  ', n); } catch (e) { fail++; console.log('FAIL', n, e.message); } }
 console.log(`hauler hub pickup: ${cases.length - fail}/${cases.length}`); process.exit(fail ? 1 : 0);
