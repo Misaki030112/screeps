@@ -6,7 +6,7 @@ import db
 DIR = Path("/workspace/screeps/state/_halfhour_2026-11-26_1330")
 ROOMS = ("W46N8", "W47N8", "W45N8", "W45N7", "W47N7")
 pre = json.loads((DIR / "just_published_pre_counts.json").read_text())
-base = 84494700
+base = 84495200
 t0, t1 = base + 1, base + 100
 script = {"W46N8": 861, "W47N8": 194, "W45N8": 523, "W45N7": 322, "W47N7": 419}
 post = {}

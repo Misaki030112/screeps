@@ -25,6 +25,8 @@ ROOMS = ("W46N8", "W47N8", "W45N8", "W45N7", "W47N7")
 # window start 84440101; not retried; do not relabel NEW.
 # tick_s_in_use loaded from tick_s_realign.json when present (4.272365 all_mean).
 IN_WINDOW = [
+    ("W47N8", 84494800),
+    ("W45N7", 84495000),
 ]
 AGED = []
 TICK_S = 4.34950

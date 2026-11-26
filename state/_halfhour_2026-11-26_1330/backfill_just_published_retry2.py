@@ -14,7 +14,7 @@ sys.path.insert(0, "/workspace/screeps/state/_halfhour_2026-11-26_1330")
 import backfill_confirm as confirm
 
 ROOMS = ("W46N8", "W47N8", "W45N8", "W45N7", "W47N7")
-JUST_BASE = 84494700
+JUST_BASE = 84495200
 WAIT_UNTIL_GT = JUST_BASE + 300
 LIVE = Path("/workspace/screeps/metrics/live.json")
 DIR = Path("/workspace/screeps/state/_halfhour_2026-11-26_1330")

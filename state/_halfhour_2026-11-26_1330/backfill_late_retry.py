@@ -13,6 +13,8 @@ import backfill_confirm as confirm
 DIR = Path("/workspace/screeps/state/_halfhour_2026-11-26_1330")
 HK = ZoneInfo("Asia/Hong_Kong")
 TARGETS = [
+    ("W47N8", 84494800),
+    ("W45N7", 84495000),
 ]
 
 def main():

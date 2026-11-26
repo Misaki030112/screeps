@@ -8,7 +8,7 @@ import sys
 sys.path.insert(0, "/workspace/screeps/tools")
 import db
 
-TMIN, TMAX = 84494001, 84494800
+TMIN, TMAX = 84494501, 84495300
 ROOMS = ("W46N8", "W47N8", "W45N8", "W45N7", "W47N7")
 DIR = "/workspace/screeps/state/_halfhour_2026-11-26_1330"
 # First pass --minutes 40. First pass 35/35 official GETs 200, missing_chunks=0.
@@ -26,6 +26,8 @@ DIR = "/workspace/screeps/state/_halfhour_2026-11-26_1330"
 # First pass inserted=9432 already_in_db=16526 ts_realigned=12; tick_s printed 4.199.
 # Do not restart the listener. Do not write a patrol folder.
 IN_WINDOW_404 = {
+    ("W47N8", 84494800),
+    ("W45N7", 84495000),
 }
 OUT = sys.argv[1] if len(sys.argv) > 1 else f"{DIR}/coverage_final.json"
 

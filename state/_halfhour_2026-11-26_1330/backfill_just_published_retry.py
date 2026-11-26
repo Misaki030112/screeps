@@ -14,7 +14,7 @@ sys.path.insert(0, "/workspace/screeps/state/_halfhour_2026-11-26_1330")
 import backfill_confirm as confirm
 
 ROOMS = ("W46N8", "W47N8", "W45N8", "W45N7", "W47N7")
-JUST_BASE = 84494700
+JUST_BASE = 84495200
 # First attempt at +140 was all-five 404; wait to +200 so the chunk can actually publish.
 WAIT_UNTIL_GT = JUST_BASE + 200
 LIVE = Path("/workspace/screeps/metrics/live.json")
