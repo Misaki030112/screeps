@@ -12,21 +12,21 @@
         <div class="tag">已有</div>
         <div class="node done">
           <strong>家已到 RCL8，外矿、link、矿物线</strong>
-          <span>家把多余能量送到 W47，不养只涨 GCL 的升级工。W47 把 K 送回家。KO 仍在家。</span>
+          <span>两房各自升级，不转运能量。家养 1 只升级工。W47 把 K 送回家。KO 仍在家。</span>
         </div>
       </div>
       <div class="phase now">
         <div class="tag">现在</div>
         <div class="node now">
           <strong>能量垫</strong>
-          <span>家的 15000 仍是防御垫。外送从 20000 起。W47 平时 2 只 15 WORK，第三只要存储连续 300 tick 不低于 30000。</span>
+          <span>家守 15000。RCL8 的电力孵化器和核弹要存储到 40000 才建。W47 平时 2 只，第三只要连续 500 tick 不低于 40000。</span>
         </div>
       </div>
       <div class="phase">
         <div class="tag">其后</div>
         <div class="node later">
           <strong>W47 拉到 RCL8</strong>
-          <span>W47 还低于 8 级时，家才往这边送能量。到了 8 级，输能关掉，家的升级目标回到 1。不新开市场。</span>
+          <span>用 W47 自己的能量。不从家抽，也不新开市场。</span>
         </div>
       </div>
       <div class="phase">

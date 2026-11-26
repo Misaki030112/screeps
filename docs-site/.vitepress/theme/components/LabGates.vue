@@ -7,8 +7,8 @@
         <span><code>ACT_HOME_STOR</code>。写进 <code>labReady.actOk</code>。存储能量低于它，缺口是 <code>homeStor</code>。已经装进输入实验室的原料继续反应。</span>
       </div>
       <div class="node now">
-        <strong>20000 · 从存储取 boost 能量</strong>
-        <span><code>STOR_SAFE</code>。能从存储计入的，只是高出这道线的部分。终端能量，以及实验室里已经有的能量，仍可以用来强化。</span>
+        <strong>5000 · 从存储取 boost 能量</strong>
+        <span><code>STOR_SAFE</code>。能从存储计入的，只是高出这道线的部分。终端能量，以及实验室里已经有的能量，仍可以用来强化。产物到 60000 反应暂停。</span>
       </div>
       <div class="node">
         <strong>3000 · 终端里的工作库存</strong>

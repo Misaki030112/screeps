@@ -39,13 +39,6 @@
       </div>
       <div class="step">
         <span class="num">6</span>
-        <div class="node now">
-          <strong>外送到终端</strong>
-          <span>RCL8 输能开着、存储至少 20000、这一趟至少 400：从存储搬进家的终端，留下不低于 18000。已经抱在身上的，排在第 1 步之前。</span>
-        </div>
-      </div>
-      <div class="step">
-        <span class="num">7</span>
         <div class="node">
           <strong>还拿在手里的矿物</strong>
           <span>前面没接住的非能量送进存储。实验室开着时，第 4 步通常已经把它交给终端。</span>
@@ -53,7 +46,7 @@
       </div>
     </div>
     <figcaption>
-      这些步都在捡能量之前。第 3 到第 5 步要 <code>Memory.ops.labs</code> 已经给这间房配了反应。第 2 步看的是有没有风筝兵在家等，不看这个旗标。存储能量低于整理终端用的那条线时，第 3 步和第 5 步不新开；已经接在手上的会走完。第 6 步是 RCL8 才有的外送，条件和暂停写在正文。
+      这六步都在捡能量之前。第 3 到第 5 步要 <code>Memory.ops.labs</code> 已经给这间房配了反应。第 2 步看的是有没有风筝兵在家等，不看这个旗标。存储能量低于整理终端用的那条线时，第 3 步和第 5 步不新开；已经接在手上的会走完。
     </figcaption>
   </figure>
 </template>
