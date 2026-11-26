@@ -1,4 +1,4 @@
-// Final-plan convergence: <=5 containers alive at any RCL, removals only from layout.remove, 6 links by RCL8.
+// Final-plan convergence: <=5 containers alive at any RCL, removals only from layout.remove, 4 links by RCL8 (l5/l6 filler links dropped 2026-11-26 while STATIONARY_FILL is off).
 const assert = require('assert');
 Object.assign(global, { STRUCTURE_CONTAINER: 'container', STRUCTURE_LINK: 'link', STRUCTURE_STORAGE: 'storage', STRUCTURE_SPAWN: 'spawn', STRUCTURE_TOWER: 'tower', STRUCTURE_TERMINAL: 'terminal', STRUCTURE_CONTROLLER: 'controller', STRUCTURE_RAMPART: 'rampart', STRUCTURE_ROAD: 'road', STRUCTURE_CONTAINER_: 0, EXTENSION_ENERGY_CAPACITY: [], Memory: {}, _: require('lodash') });
 const plan = require('../src/utils/plan');
@@ -8,7 +8,7 @@ for (let r = 1; r <= 8; r++) {
   assert(c.length <= 5, `RCL${r}: ${c.length} containers`);
 }
 assert(!P.any[plan.key(30, 27)] || P.any[plan.key(30, 27)].type === 'road', 'filler container 30,27 not planned (v5: road to stamp-C stop 31,26)');
-assert.strictEqual(plan.upTo('W46N8', 8).filter(s => s.type === 'link').length, 6);
+assert.strictEqual(plan.upTo('W46N8', 8).filter(s => s.type === 'link').length, 4);
 assert.strictEqual(plan.upTo('W46N8', 6).filter(s => s.type === 'link').length, 3);
 assert.strictEqual(P.any[plan.key(38, 32)].removeAt, 4); assert.strictEqual(P.any[plan.key(31, 12)].removeAt, 6);
 // obsoleteContainer: only listed containers with a link/storage next to them

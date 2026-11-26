@@ -6,13 +6,13 @@ const plan = require(src('utils/plan.js'));
 
 const cases = [
   ['STATIONARY_FILL stays false', () => assert.strictEqual(plan.STATIONARY_FILL, false)],
-  ['LINK_PLAN A: hub+ctl@5, srcA@6, l4 stampB@7, l5/l6@8', () => {
+  ['LINK_PLAN A: hub+ctl@5, srcA@6, l4 stampB@7, no l5/l6 (filler links dropped)', () => {
     assert.deepStrictEqual(plan.LINK_PLAN.hub, [37, 29, 5]);
     assert.deepStrictEqual(plan.LINK_PLAN.ctl, [30, 31, 5]);
     assert.deepStrictEqual(plan.LINK_PLAN.srcA, [30, 11, 6]);
     assert.deepStrictEqual(plan.LINK_PLAN.l4, [32, 34, 7]);
-    assert.deepStrictEqual(plan.LINK_PLAN.l5, [30, 25, 8]);
-    assert.deepStrictEqual(plan.LINK_PLAN.l6, [35, 26, 8]);
+    assert.strictEqual(plan.LINK_PLAN.l5, undefined);
+    assert.strictEqual(plan.LINK_PLAN.l6, undefined);
   }],
   ['12 filler stands + manager (layout) — more than T.filler=4', () => {
     const P = plan.get('W46N8');

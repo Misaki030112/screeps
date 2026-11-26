@@ -152,7 +152,8 @@ function targets(room, count, backlog, ctlEnergy, sites) {
   const storE = st ? (room.storage.store[RESOURCE_ENERGY] || 0) : 0;
   const extra = Math.floor(ctlEnergy / 700);
   const allowExtra = upExtraTick(room, storE, ctlEnergy, floor);
-  T.upgrader = rcl >= 8 ? 1 : Math.min(P.pos.upgraders.length, (sites ? 1 : 2) + (allowExtra ? extra : 0));
+  // RCL8 (2026-11-26 t511u): home exports to W47N8 instead of feeding a capped GCL-only controller; guard upgrader only (export.js)
+  T.upgrader = rcl >= 8 ? require('./export').homeUpgrade8(room) : Math.min(P.pos.upgraders.length, (sites ? 1 : 2) + (allowExtra ? extra : 0));
   // RCL6+ wall banking (managers/walls.js): one upgrader until storage reaches the wall start (20k), then the latch releases it.
   if (rcl >= 6 && rcl < 8 && ['bank', 'roads'].includes(require('./walls').phase(room))) T.upgrader = Math.min(T.upgrader, 1);
   // Build hold (walls.noUpgrade): 0 upgraders during the road plan; falls back to the 1 minimal (700e) upgrader above

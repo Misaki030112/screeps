@@ -4,7 +4,10 @@ const cache = {};
 // Link plan A (Misaki 10-14, docs/RCL5.md): the ONLY source of link positions while STATIONARY_FILL is off (overrides the v2
 // json links). RCL5 hub (next to storage/manager tile) + controller; RCL6 source A -> ctl. Queen stays through RCL7.
 // RCL7/8 (2026-10-15, final plan docs/final_layout_rcl8.png): 3 more links from the v2 slots -> 6 = CONTROLLER_STRUCTURES[8].
-const LINK_PLAN = { hub: [37, 29, 5], ctl: [30, 31, 5], srcA: [30, 11, 6], l4: [32, 34, 7], l5: [30, 25, 8], l6: [35, 26, 8] };
+// 2026-11-26 RCL8 plan: l5 30,25 / l6 35,26 are stamp-C/A filler links, only useful with STATIONARY_FILL (off; queens fill).
+// 35,26 is also the busiest queen/econ road tile (861 entries/day) — a link there would wall the stamp-A route. Not planned
+// while STATIONARY_FILL is off (10k energy saved); re-add both if stationary fillers ever ship.
+const LINK_PLAN = { hub: [37, 29, 5], ctl: [30, 31, 5], srcA: [30, 11, 6], l4: [32, 34, 7] }; // was + l5: [30, 25, 8], l6: [35, 26, 8]
 const key = (x, y) => x * 50 + y;
 function build(name) {
   const p = PLANS[name]; if (!p) return null;

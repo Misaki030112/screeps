@@ -26,9 +26,12 @@ const SWAMP7 = [[15, 39], [16, 40], [25, 39]];
 const memo = {};
 // Tiles per phase: { phase: [[room, x, y], ...] } (deduplicated, earlier phase wins)
 function tiles(P) {
-  if (memo.t) return memo.t;
+  // RCL8 (2026-11-26, Misaki: 40,23 road site blocked the 6th tower): a tile the plan reserves for a non-road structure at or
+  // below the home RCL is never a road tile (was <= 6 only, so RCL7/8 tiles such as tower 40,23 kept road sites forever).
+  const hr = (typeof Game !== 'undefined' && Game.rooms && Game.rooms[HOME] && Game.rooms[HOME].controller && Game.rooms[HOME].controller.level) || 6;
+  if (memo.t && memo.rcl === hr) return memo.t;
   const seen = new Set(), out = { haul: [], W45N8: [], econ: [], home: [], swamp7: [] };
-  const busy = (r, x, y) => { if (r !== HOME || !P || !P.any) return false; const w = P.any[x * 50 + y]; return !!(w && w.type !== 'road' && (w.rcl || 0) <= 6); };
+  const busy = (r, x, y) => { if (r !== HOME || !P || !P.any) return false; const w = P.any[x * 50 + y]; return !!(w && w.type !== 'road' && (w.rcl || 0) <= Math.max(6, hr)); };
   const add = (ph, r, x, y) => { if (busy(r, x, y) || x <= 0 || y <= 0 || x >= 49 || y >= 49) return; // exit tiles: createConstructionSite -> ERR_INVALID_TARGET (-7, live 83705660)
     const k = r + ':' + x + ':' + y; if (seen.has(k)) return; seen.add(k); out[ph].push([r, x, y]); };
   for (const [rm, x, y] of ROUTES.W45N8) if (rm === HOME) add('haul', rm, x, y); // storage 38,30 -> exit 49,14 (W45N7-only leg dropped)
@@ -38,7 +41,7 @@ function tiles(P) {
   const d = P && P.raw && P.raw.defense, order = ['TR', 'S', 'W']; // trunks last; within them short/cheap first
   if (d) for (const g of order.concat(Object.keys(d.trunks).filter(k => order.indexOf(k) < 0)))
     if (d.trunks[g] && d.trunks[g].mode === 'with_gate') for (const [x, y] of d.trunks[g].new_tiles) add('home', HOME, x, y);
-  return (memo.t = out);
+  memo.rcl = hr; return (memo.t = out);
 }
 // Misaki 09:18: W46N8 leg of the W47N8<->home link road (layouts/w8link.js). Infrastructure only; placed/maintained by home,
 // independent of the RCL6 phase machine (few tiles: 6 new, the rest already road).

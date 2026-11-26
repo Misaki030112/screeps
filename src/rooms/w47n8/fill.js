@@ -80,9 +80,15 @@ const hubNeedy = (room, D) => objs([].concat(...D.strip, D.point)).some(s => fre
 const free = s => (s && s.store ? s.store.getFreeCapacity(E) : 0);
 const needT = s => s.structureType === STRUCTURE_TOWER ? free(s) >= 300 : free(s) > 0;
 const objs = ids => ids.map(id => Game.getObjectById(id)).filter(Boolean);
+// RCL8 export receive (managers/export.js, 2026-11-26): home sends energy into terminal 33,32, which touches POST 34,32 like the
+// storage. Terminal energy above TERM_KEEP (K send fees use ~1000) is drawn first and parked in storage when the hub is full, so
+// W47's storage-based upgrader rules see it.
+const TERM_KEEP = 3000;
+const termSurplus = room => (room.terminal && room.terminal.store ? Math.max(0, (room.terminal.store[E] || 0) - TERM_KEEP) : 0);
 function source(room) {
   const st = room.storage, hc = room.lookForAt(LOOK_STRUCTURES, C.HUB_CONT[0], C.HUB_CONT[1]).find(s => s.structureType === STRUCTURE_CONTAINER);
-  return [st, hc].filter(s => s && s.store[E] > 0); // 10-20 17:0x (Misaki): storage first, hub container only as fallback
+  const tm = termSurplus(room) >= 200 ? room.terminal : null;
+  return [tm, st, hc].filter(s => s && s.store[E] > 0); // 10-20 17:0x (Misaki): storage first, hub container only as fallback
 }
 const fillers = room => room.find(FIND_MY_CREEPS, { filter: c => c.memory.role === 'w8filler' });
 // Prefer POST; the other filler idles at POST2 so it cannot sit on the south-rail exit.
@@ -172,7 +178,11 @@ function run(c) {
   if (c.ticksToLive < 15 && held > 0 && room.storage) { if (!did && c.pos.isNearTo(room.storage)) c.transfer(room.storage, E); else go(c, room.storage.pos.x, room.storage.pos.y, 1); return; }
   // 2) top up whenever beside the storage / hub container (withdraw and move can share a tick)
   const src = source(room).filter(s => c.pos.isNearTo(s))[0];
-  if (!did && src && c.store.getFreeCapacity(E) > 0) { c.withdraw(src, E); delete m.fm; held = Math.min(c.store.getCapacity(), held + src.store[E]); }
+  let wd = false;
+  if (!did && src && c.store.getFreeCapacity(E) > 0) {
+    const amt = src === room.terminal ? Math.min(c.store.getFreeCapacity(E), termSurplus(room)) : undefined;
+    c.withdraw(src, E, amt); wd = true; delete m.fm; held = Math.min(c.store.getCapacity(), held + (amt === undefined ? src.store[E] : amt));
+  }
   // 3) sweeping a strip
   if (m.fs !== undefined && m.fs >= 0) {
     const i = m.fs, d = m.fd | 0, R = ROUTES[i], needy = objs(D.strip[i]).filter(s => left(s) > 0);
@@ -231,6 +241,11 @@ function run(c) {
   if (C.FILL_CLUSTER && waiting && !others.some(o => o.memory.fs === 'c')) {
     const cl = objs(D.cluster).filter(s => free(s) > 0), claimed = new Set(room.find(FIND_MY_CREEPS, { filter: o => o.memory.ft }).map(o => o.memory.ft));
     if (cl.some(s => !claimed.has(s.id))) { m.fs = 'c'; return; }
+  }
+  // RCL8 export receive: hub duty full and terminal still above TERM_KEEP -> park the load in storage (2-tick cycle at POST).
+  if (termSurplus(room) >= 200 && room.storage && c.pos.isNearTo(room.storage) && c.pos.isNearTo(room.terminal) && room.storage.store.getFreeCapacity(E) > 0) {
+    if (!did && !wd && c.store[E] > 0) c.transfer(room.storage, E);
+    return;
   }
   // 23:4x strategy: idle hub-link ferry (dormant until HUB_LINK built). Mirror home queen.standby —
   // when hub duty is full, top the hub link so linkRun can push hub→ctl whenever ctl battery dips
@@ -322,4 +337,4 @@ function yieldHub(a, b) {
     costs.set(EXIT[0], EXIT[1], EXIT_COST);
   return costs;
 }
-module.exports = { run, want, body, active, alive, stock, reserve, duty, ROUTES, POST, POST2, POST_COST, POCKET, POCKET_COST, EXIT, EXIT_APPROACH, EXIT_COST, idlePost, yieldPost, yieldHub, ENTRY: () => ENTRY, isDuty: (room, s) => s.structureType !== STRUCTURE_TOWER && duty(room).byKey[K(s.pos.x, s.pos.y)] === s.id };
+module.exports = { TERM_KEEP, termSurplus, run, want, body, active, alive, stock, reserve, duty, ROUTES, POST, POST2, POST_COST, POCKET, POCKET_COST, EXIT, EXIT_APPROACH, EXIT_COST, idlePost, yieldPost, yieldHub, ENTRY: () => ENTRY, isDuty: (room, s) => s.structureType !== STRUCTURE_TOWER && duty(room).byKey[K(s.pos.x, s.pos.y)] === s.id };
