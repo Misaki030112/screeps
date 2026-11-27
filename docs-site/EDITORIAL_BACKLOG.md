@@ -2,48 +2,46 @@
 
 给下一轮写公开手册的人。此文件不在网站导航里。`docs-site/.vitepress/config.mts` 的 `srcExclude` 也不会把它编成页面。保持这个排除。
 
-日期：2026-11-27（Asia/Tokyo）。这一轮改的是防御页开头，把「按键的是人」对齐到房间页和指挥官页。没有改 `src/`。
+日期：2026-11-27（Asia/Tokyo）。这一轮只补孵化页的空闲跳过。没有改 `src/`。
 
 公开手册只写代码里的规则。不要写入令牌、密码、内网地址，也不要写监听、数据库或仪表盘。能量账是游戏里的 `Memory.ledger`。不要写成有人在仓库外盯着这本账。`src/utils/ledger.js` 文件头指向 `docs/LEDGER.md`，仓库里仍然没有这份文件。不要新建它，公开页也不要指向它。
 
 引用分支时写分支名和短提交号，不要写机器路径。不要把文档提交写成游戏部署。
 
-公开页按已部署、尚未合进 master 的 `feat/rcl8-economy` 尖端 `ab1f9730` 写。master 上的 `src/rooms/w47n8/threat.js` 里，`flee()` 只看 `w8flee` 的 20 拍；尖端还有 `remoteThreatOpen()`。master 的 `plan()` 也还没有 `TOWER_ONLY_T` 那一档。不要用 master 的这两处把防御页改回去。安全模式那一行，尖端和 master 的 `src/roles/conquest.js` 是同一处调用。
+公开页按已部署、尚未合进 master 的 `feat/rcl8-economy` 尖端 `ab1f9730`（2026-11-26）写。master 上的 `src/rooms/w47n8/threat.js` 里，`flee()` 只看 `w8flee` 的 20 拍；尖端还有 `remoteThreatOpen()`。master 的 `plan()` 也还没有 `TOWER_ONLY_T` 那一档。不要用 master 的这两处把防御页改回去。安全模式那一行，尖端和 master 的 `src/roles/conquest.js` 是同一处调用。
 
 ## 这一轮做了什么
 
-`docs-site/mechanisms/defense.md` 开头不再写「按键的是人」。三层都自己跑：外矿状态机派防御 creep，家里的塔治疗、开枪、补城门，带攻击、远程、治疗或 WORK 的敌人走进 W46N8 就孵守卫，W47 的塔按自己的名单打。
+`docs-site/mechanisms/spawn.md` 在近满之后、家的身体之前，加了「空闲跳过」。家和 W47 分成两小节。两边各自一个 `IDLE_EVERY`，都写成 **4**。
 
-`assessRun` 只在建议非空时写 `Memory.ops.w8adv`。推演仍赢不了，而且武装已经在封墙里面，`advise` 才是 `safemode`。空建议不删旧键。没有塔就不评估。房间里没有还活着的攻击或远程，并且 `w8invN` 不在最近 60 拍里，删 `w8assess` 和 `w8roster`，`w8adv` 留着。还要估时，10 拍缓存直接返回；没有上一份，或者已经满 10 拍，才把配兵写进 `w8roster`。链到 [房间与常数](/reference/rooms#默认关着的开关)。
+家提前打开的是：房间里任何敌对 creep（过路人没有攻击、远程、治疗或 WORK 也算）、指挥官整层已经武装、`defenseDue`（外矿要防御、`holding`、`energyHold`、家里要守卫），以及上一笔花费这一拍已经够付。一间房一拍只走一次队列；没孵出 creep，另一座返回。成功孵出之后 `ne` 订在 4 拍之后，这一拍的决定已经算完，另一座还能再开始一只。等待和真正无事可做同样武装这 4 拍。抛错把 `ne` 和花费写成 0。指挥官占住空闲出生点时不武装。正忙、门开着、还没走过队列时，`roleTargets` 按房间刷新一次；不是敌人、指挥官或 `defenseDue` 打开的，刷新完再订 4 拍。链到矿物页「家」。
 
-`flee()` 为真的两笔，以及矿工必收、搬运工还要空手或不在 W47N8，开头用了一句，细节仍留在「外矿什么时候收」。这一节没有重写。30 tick 的 `towers` 那一句也没有动，尖端 `plan()` 里 `TOWER_ONLY_T` 是 30，对得上。
+W47 提前打开的是敌对 creep、指挥官武装，以及外矿那三笔，没有家里的守卫。W47N7 上的威胁不是 W47N8 里的敌对 creep。够付同样打开。40000 那道升级闩的连续计数在跳过的拍里仍更新。成功孵出把 `ne` 写成 0，另一座这一拍还跑。第二座空闲的出生点在第一座没孵出时不再清点；第一座真的开始了，第二座仍跑。正忙时，敌人、指挥官或外矿那三笔仍走清点。
 
-安全模式缺省不调用。`src/` 里唯一的 `activateSafeMode` 在征服工人 `cqworker`，要 `Memory.ops.cq.autoSafe`，缺省不设。平时的防御不读它。`hold`、`retreat`、身上没有能量、控制器还不是自己的、这一拍要去升级，都到不了那一行。指挥官不打开安全模式，也不 claim。袭击和征服要人把 `Memory.ops` 里的旗标打开才动。家里守卫那一节补了一句，指向同一处，免得读到「防御代码不调用」就停在那里。
-
-塔帽、外矿状态机的数字、城门修理，都没有改。
+矿物页那句「不是每一拍都重写」加了指向「空闲跳过」的一行。指挥官页「孵化闸都会把这一拍的空闲跳过打开」也加了一行，指向同一节。身体配方和队列顺序没有改。主循环页没有加 `RoomVisual`。
 
 ## 对照的提交
 
-尖端 `ab1f9730`（`feat/rcl8-economy`，2026-11-26）。`activateSafeMode` 在 `src/roles/conquest.js` 的 `runWorker`。`assessRun` 和 `w8adv` 在 `src/rooms/w47n8/index.js`。`advise` 来自 `src/rooms/w47n8/defense.js` 的 `plan`。`flee()` 在 `src/rooms/w47n8/threat.js`，矿工和搬运工的条件在 `src/rooms/w47n8/roles.js`。家里守卫是 `src/managers/home.js` 的 `wantGuards`。`src/utils/cmd.js` 没有 `activateSafeMode`，也没有 `claimController`。`src/roles/raid9.js` 的 `wantSpawn` 要 `raidActive`，也就是 `Memory.ops.w47n9.on === true`。征服的 `wantSpawn` 要 `Memory.ops.cq.armed === true`。
+尖端 `ab1f9730`（`feat/rcl8-economy`，2026-11-26）。master 这一轮对照的是 `98ed81df`（2026-11-27，防御页开头那一笔）。
 
-master 的 `conquest.js`、`cmd.js`、`home.js` 和 `roles.js` 里这几处与尖端相同。`threat.js` 的 `flee()` 和 `defense.js` 的 `plan()` 不同，见上面。公开页按尖端。
+家的 `spawnGate`、`defenseDue`、`run()` 里空闲跳过那一段、以及 `IDLE_EVERY`，在 `src/managers/spawn.js`。W47 的 `IDLE_EVERY`、`spawnForce`、`spawnGate`、`markSpawn` / `markIdle` / `markWait`，以及正忙时跳过第二遍清点，在 `src/rooms/w47n8/index.js`。这几处函数，master 和尖端相同。公开页按尖端写；这一段不必为了 master 改字。
+
+两个文件在别的地方仍不同，跟这道闸无关：尖端的家在 RCL8 把升级目标写成 1，工地计数会滤掉延后的电力孵化器和核弹；W47 的升级工在 1700 以上是 15 WORK。那些已经写在升级页和现状页，这一轮没动。
+
+`threat.js` 的 `flee()` 和 `defense.js` 的 `plan()` 仍是上面说的那两处差别。不要用 master 把防御页改回去。
 
 ## 下一轮
 
-**只补孵化页的空闲跳过，把数字写上。** `docs-site/mechanisms/spawn.md` 还没有 `IDLE_EVERY`。矿物页只说出生点不是每一拍都重写 `roleTargets`。指挥官页已经写「整层一武装，家和 W47 的孵化闸都会把这一拍的空闲跳过打开」，孵化页却没有这道闸。
+**给 `docs-site/now.md` 做一次注明日期的重算。** 开头已经写明家在 2026-11-26 的部署里是 RCL8，但表里的百分比仍是 **2026-11-17** 的 RCL7 快照，对照代码 `85c19c2e`。家那一格是约 68.6%（749.8 万 / 1093.5 万），并注明部署时已到 RCL8、这一格没有重算。W47 那一格是约 39.3%（429.8 万 / 1093.5 万），升级工仍写着那天的两只 10 WORK。重算只更新这份注明日期的数字和「那天」的列，不改「正在生效的选择」里已经按 `ab1f9730` 写过的门，也不改 `src/`。它不代替下面几条。
 
-家在 `src/managers/spawn.js`：`IDLE_EVERY` 是 4。敌人、指挥官已经武装、`defenseDue`（外矿要防御、`energyHold`、`holding`、或家里要守卫）、以及 `waitCost` 已经够付，会提前打开。成功孵出一只之后，家把下一次跳过武装到 4 拍之后；这一拍的门已经开着，另一座出生点还能再开始一只。W47 在 `src/rooms/w47n8/index.js` 另有一个 `IDLE_EVERY` 4。提前打开的是敌人、指挥官武装，以及外矿那三笔，没有家里的守卫。真正开始孵的那一笔把 `ne` 清成 0，另一座这一拍还跑。
-
-要写就写在孵化页，家和 W47 分成两句，把矿物页那句链过去。不要改身体配方。
-
-选它是因为防御页开头和房间页、指挥官页已经对齐。`flee()` 和 30 tick 对过尖端，不是错句。孵化页缺的是读者从指挥官页走过来时对不上的那一个数。
+这一轮看过孵化闸，没有发现比这份旧百分比更急、而且尖端里已经落地、公开页却写错的句子。塔的后两笔和「最近的空闲出生点」都还没进尖端，不能提前写。
 
 ## 再往后
 
-1. **塔的后两笔还没进尖端。** `ab1f9730` 的 `src/managers/tower.js` 里，`RAMPART_TARGET` 的 RCL3 是 20000，防御页已经写成「3 级 2 万」。没有「仓库不到 2 万就不加墙」，也没有「修路修容器只派最近、刚好够补满的那一座塔」。合进尖端之后再开一轮，只补新门。
-2. **「升级者优先由离控制器最近的空闲出生点孵化」不在尖端。** `ab1f9730` 的 `birthDirs` 仍只排出生方向，`spawnCreep` 用的是这份方向。没有按到控制器的距离挑选空闲出生点。哪一笔提交把它加进 `feat/rcl8-economy` 之后，再只补升级页这一句。
-3. **可选，更往后。** 给 `now.md` 做一次注明日期的重算。百分比仍是 2026-11-17 的 RCL7 快照。家当时还不是 RCL8。重算不代替上面几条，也不改 `src/`。
-4. **指挥官页没有「关掉指令会消失」。** 对过 `docs-site/mechanisms/commander.md` 和 `CmdLife.vue`。单条 `on` 写成 0，条目留着，不算活，也不算过期。整层 `on` 写成 0，袋子留着，这一拍不扫。不必为这句话再开一轮。
+1. **塔的后两笔还没进尖端。** 再对过 `ab1f9730` 的 `src/managers/tower.js`：`RAMPART_TARGET` 的 RCL3 仍是 20000，防御页的「3 级 2 万」不用改。没有「仓库不到 2 万就不加墙」，也没有「修路修容器只派最近、刚好够补满的那一座塔」。合进尖端之后再开一轮，只补新门。
+2. **「升级者优先由离控制器最近的空闲出生点孵化」不在尖端。** 再对过 `ab1f9730` 的 `birthDirs`：仍只排出生方向，`spawnCreep` 用的是这份方向。没有按到控制器的距离挑选空闲出生点。哪一笔提交把它加进 `feat/rcl8-economy` 之后，再只补升级页这一句。
+3. **现状页的百分比重算就是上面的下一轮。** 百分比仍是 2026-11-17 的 RCL7 快照。家今天是 RCL8。重算不代替第 1、2、4 到 7 条，也不改 `src/`。做完之前不要从这张清单里拿掉。
+4. **指挥官页没有「关掉指令会消失」。** 再对过 `ab1f9730` 的 `src/utils/cmd.js`：`dead()` 在单条 `on` 为 0 时返回假，过期才删。整层 `on` 为 0 时 `bagOrder` 不扫，袋子还在。`docs-site/mechanisms/commander.md` 没有写成「关掉就消失」。不必为这句话再开一轮。
 5. **道路不用为英文笔记再开一页。** 40,23 已经写在布局页和主循环页。
 6. **跟踪不要写成专页。** 导读已经把监听、数据库、仪表盘留在手册外面。
-7. **不要把游戏里的 `RoomVisual` 排进公开的主循环页。** 探针也不在公开手册里。以后只有先确认它每天都在跑，才考虑一句很短的说明。
+7. **不要把游戏里的 `RoomVisual` 排进公开的主循环页。** 这一轮没有加。探针也不在公开手册里。以后只有先确认它每天都在跑，才考虑一句很短的说明。
