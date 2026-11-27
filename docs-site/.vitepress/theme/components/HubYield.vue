@@ -32,7 +32,7 @@
       </div>
       <div class="node done c3433">
         <strong>34,33 路</strong>
-        <span>被占时南下。仍是 1。</span>
+        <span>空着是 1。容器也有人，写成 12。</span>
       </div>
       <div class="node stop c3234">
         <strong>32,34 延伸</strong>
@@ -40,7 +40,7 @@
       </div>
       <div class="node done c3334">
         <strong>33,34 路</strong>
-        <span>南下接上。仍是 1。</span>
+        <span>空着是 1。这一格有人，写成 12。</span>
       </div>
     </div>
     <ul class="legend">
@@ -49,7 +49,7 @@
       <li><i class="lg-stop"></i>建筑，走不过</li>
     </ul>
     <figcaption>
-      容器空着，过路走 32,32 再进 33,33。容器上有人，南下走 34,32 → 34,33 → 33,34。已经在 32,32，从 33,31 出来。
+      容器空着，过路走 32,32 再进 33,33。容器上有人，南下走 34,32 → 34,33 → 33,34。已经在 32,32，从 33,31 出来。33,34 上有人，这一格写成 12。人还在北侧，改走 32,29 → 31,28。
     </figcaption>
   </figure>
 </template>
